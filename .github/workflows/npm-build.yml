@@ -38,4 +38,8 @@ jobs:
         npm run build dpr
         npm run build o3t
         npm run build pol
+        npm run build qer-app-portal
+        npm run build qbm-app-landingpage
+        npm run build qer-app-operationssupport
+        npm run build qer-app-pwdportal
 
