@@ -26,4 +26,4 @@ jobs:
       run: |
         cd imxweb
         npm install
-        ng build qbm
+        npm run build qbm
