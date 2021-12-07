@@ -22,8 +22,20 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Build QBM
+    - name: Build Angular projects
       run: |
         cd imxweb
         npm install
         npm run build qbm
+        npm run build qer
+        npm run build tsb
+        npm run build att
+        npm run build rms
+        npm run build aad
+        npm run build aob
+        npm run build uci
+        npm run build cpl
+        npm run build dpr
+        npm run build o3t
+        npm run build pol
+
