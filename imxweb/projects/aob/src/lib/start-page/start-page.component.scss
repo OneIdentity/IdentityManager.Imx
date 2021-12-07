@@ -1,0 +1,88 @@
+@import "../../../../../shared/assets/variables.scss";
+
+// Host
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  overflow: auto;
+}
+
+img {
+  max-width: 100px;
+  max-height: 100px;
+}
+
+// material classes
+.mat-card {
+  width: 365px;
+  height: 179px;
+  margin: 50px 20px 0px;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+}
+
+
+
+.mat-card-title {
+  padding: 20px 33px 0px;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+
+.mat-card > .mat-card-actions:last-child {
+  padding-bottom: 25px;
+}
+
+.mat-card-content {
+  font-size: 16px;
+  padding: 5px 33px 10px;
+  margin-bottom: 0;
+  flex-grow: 1;
+}
+
+.mat-card-actions {
+  display: flex;
+  flex-direction: row;
+  padding: 0 25px;
+}
+
+.mat-button {
+  font-size: 16px;
+}
+
+// own classes
+.imx-user-card {
+  font-size: 24px;
+  padding: 0px 10px 18px;
+}
+
+.imx-user-image-row {
+  text-align: center;
+}
+
+.imx-user-text-row {
+  text-align: center;
+  text-overflow: ellipsis;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.imx-user-name {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+.imx-user-icon {
+  font-size: 100px;
+  text-align: center;
+  display: inline;
+  color: $VI_Common_Color_MastHead;
+}

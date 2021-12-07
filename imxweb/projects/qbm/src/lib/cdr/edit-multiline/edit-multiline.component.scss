@@ -1,0 +1,32 @@
+textarea.mat-input-element.cdk-textarea-autosize {
+   box-sizing: content-box;
+ }
+
+:host {
+  display: flex;
+  align-items: center;
+
+  ::ng-deep .mat-form-field-appearance-outline .mat-form-field-suffix {
+    align-self: flex-start;
+    margin-top: 15px;
+  }
+}
+
+.mat-form-field {
+  flex-grow: 1;
+}
+
+.imx-spacer {
+  height: 30px;
+}
+
+.imx-suffix-container {
+  display: flex;
+  margin-bottom: 5px;
+  
+  > *{
+    justify-self: flex-start;
+    margin-right: 5px;
+    margin-top: 0;
+  }
+}

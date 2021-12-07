@@ -1,0 +1,36 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+.imx-request-detail {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.imx-button-bar {
+  display: flex;
+  justify-content: flex-end;
+  border-top: $black-c 1px solid;
+  padding: 0px 20px 20px 8px;
+  > * {
+    margin-left: 10px;
+    margin-top: 20px;
+  }
+
+  
+  ::ng-deep .mat-tab-body-wrapper {
+    flex: 1 1 auto;
+
+    .mat-tab-body {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+    }
+  }
+
+  ::ng-deep .mat-tab-body-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+}

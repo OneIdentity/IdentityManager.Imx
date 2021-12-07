@@ -1,0 +1,4 @@
+<imx-cdr-editor *ngIf="cdr"
+  [cdr]="cdr"
+  (controlCreated)="controlCreated.emit({ name: column.ColumnName, control: $event })">
+</imx-cdr-editor>

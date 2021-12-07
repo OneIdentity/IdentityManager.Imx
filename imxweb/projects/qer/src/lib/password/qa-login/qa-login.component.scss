@@ -1,0 +1,48 @@
+@import "../../../../../../shared/assets/variables.scss";
+
+.imx-loginInput {
+  margin: auto 12px;
+
+  ::ng-deep {
+    input {
+      box-sizing: content-box;
+      border: 1px solid $QBM_Primary_Gray;
+      margin-bottom: 9px;
+      height: 30px;
+      width: calc(40vw - 6px);
+    }
+  }
+
+  .alert-container {
+    width: calc(40vw - 6px);
+    margin-bottom: 1em;
+  }
+
+  eui-alert span {
+    color: $QBM_Primary_Black;
+  }
+}
+
+.buttonbar {
+  margin-top: 1.5em;
+  text-align: center;
+}
+
+.captcha-container {
+  display: flex;
+
+  input {
+    flex: 1 1 auto;
+    width: inherit;
+  }
+
+  imx-captcha {
+    padding-right: 1em;
+    height: 34px;
+  }
+}
+
+.pwd-answer {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}

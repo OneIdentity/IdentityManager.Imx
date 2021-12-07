@@ -1,0 +1,33 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+:host {
+
+  .imx-masthead-app-name {
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 5px;
+  }
+
+  .imx-masthead-space {
+    flex: 1 1 auto;
+  }
+
+  .imx-masthead--controls {
+
+    button[mat-button] {
+      &:not(.imx-masthead-user-button) {
+        padding: 0;
+        width: 40px;
+        min-width: 40px;
+      }
+    }
+
+    .imx-masthead--icon-button {
+      min-width: 40px;
+
+      span {
+        display: none;
+      }
+    }
+  }
+}

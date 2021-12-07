@@ -1,0 +1,35 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+:host {
+  display: flex;
+  align-items: center;
+  justify-items: center;
+  min-height: 40px;
+}
+
+.imx-user-icon {
+  color: $black-3;
+  background-color: $black-c;
+  opacity: 0.6;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 35px;
+  min-width: 35px;
+  min-height: 35px;
+  margin-right: 12px;
+}
+
+.imx-application-property {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow: hidden;
+
+  .imx-application-property-display {
+    font-size: 12px;
+    color: $black-b;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

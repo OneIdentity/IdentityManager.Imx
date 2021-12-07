@@ -1,0 +1,36 @@
+<li data-imx-identifier="decision-step-is-calculating" class="imx-event imx-pending"
+  *ngIf="approvers.current.length === 0">
+  <mat-card>
+    {{'#LDS#The next decision step is currently being calculated. The attestation might also be waiting on a pending decision of another attestation.' | translate}}
+  </mat-card>
+</li>
+<li data-imx-identifier="decision-step-current-approvers" class="imx-event imx-pending"
+  *ngIf="approvers.current.length > 0">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        {{'#LDS#The following identities are currently entitled to approve this attestation case.' | translate}}
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div *ngFor="let approver of approvers.current" class="imx-approver">
+        {{ approver.Columns.UID_PersonHead.DisplayValue }}
+      </div>
+    </mat-card-content>
+  </mat-card>
+</li>
+<li data-imx-identifier="decision-step-next-approvers" class="imx-event imx-pending"
+  *ngIf="approvers.future.length > 0">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        {{'#LDS#The following identities are entitled to approve this attestation case after the current workflow step.' | translate}}
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div *ngFor="let approver of approvers.future" class="imx-approver">
+        {{ approver.Columns.UID_PersonHead.DisplayValue }}
+      </div>
+    </mat-card-content>
+  </mat-card>
+</li>

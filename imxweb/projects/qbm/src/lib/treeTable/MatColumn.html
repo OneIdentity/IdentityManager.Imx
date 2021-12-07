@@ -1,0 +1,18 @@
+<ng-container matColumnDef>
+    <mat-header-cell class="imx_ColumnHeader" *matHeaderCellDef>
+        <!-- use header template, if available-->
+        <ng-container *ngIf="headerTemplate" [ngTemplateOutlet]="headerTemplate"></ng-container>
+
+        <!-- Write title or field, if no header template defined-->
+        <div *ngIf="!headerTemplate">{{title || field}}</div>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let data; let index = index"  class="imx_ColumnCell">
+        <a *ngIf="isFirstColumn" [style.margin-left]="getMargin(data)" [class]="ButtonClass(data)" (click)="buttonClicked(data)">
+            
+        </a>
+        <!-- Use cellTemplate, if available-->
+        <ng-container style="display: inline-block;" *ngIf="cellTemplate" [ngTemplateOutlet]="cellTemplate" [ngTemplateOutletContext]="{$implicit:data.data, rowIndex:index}"></ng-container>
+        <!-- Write value, if no cell template defined -->
+        <div *ngIf="!cellTemplate" [class]="getClass(data)" style="display: inline-block;">{{getData(data,index)}}</div>
+    </mat-cell>
+</ng-container>

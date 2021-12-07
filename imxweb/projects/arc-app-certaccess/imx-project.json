@@ -1,0 +1,17 @@
+{
+  "Name": "arc-app-certaccess",
+  "Path": "imxweb\\projects\\arc-app-certaccess",
+  "ProjectType": "ng-app",
+  "ProjectDependcies": [
+    "qbm",
+    "qer",
+    "rps",
+    "att",
+    "tsb",
+    "o3t"
+  ],
+  "ChangePatterns": [
+    "imxweb\\projects\\arc-app-certaccess",
+    "imxweb\\shared\\assets"
+  ]
+}

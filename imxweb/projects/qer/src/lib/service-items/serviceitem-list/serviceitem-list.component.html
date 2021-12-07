@@ -1,0 +1,110 @@
+<imx-data-source-toolbar
+  #dst
+  [settings]="dstSettings"
+  (search)="onSearch($event)"
+  [keywords]="keywords"
+  (viewSelectionChanged)="onViewSelectionChanged($event)"
+  [hiddenElements]="['groupBy', 'settings']"
+  (navigationStateChanged)="getData($event)"
+  data-imx-identifier="serviceitemlist-dst"
+  [initalView]="dataSourceView.selected"
+  [itemStatus]="status"
+  [alwaysVisible]="!referenceUserUid && !uidPersonPeerGroup"
+>
+  <imx-data-source-toolbar-custom *ngIf="!referenceUserUid && !uidPersonPeerGroup" [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
+</imx-data-source-toolbar>
+<div class="imx-table-container" *ngIf="!isLoading">
+  <imx-data-tiles
+    #dataTiles
+    *ngIf="dataSourceView.selected === 'cardlist'"
+    height="150px"
+    [dst]="dst"
+    (selectionChanged)="onSelectionChanged($event)"
+    (badgeClicked)="onBadgeClicked($event)"
+    [useActionMenu]="false"
+    fallbackIcon="request"
+    [selectable]="true"
+    [actions]="[{ name: 'edit', description: '#LDS#Add to cart' | translate }]"
+    [titleObject]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
+    [subtitleObject]="entitySchema?.Columns['ServiceCategoryFullPath']"
+    (actionSelected)="addTileItemToCart($event)"
+    [contentTemplate]="peerGroupDisplay"
+  >
+  </imx-data-tiles>
+  <imx-data-table
+    *ngIf="dataSourceView.selected === 'table'"
+    [dst]="dst"
+    [detailViewVisible]="false"
+    [selectable]="true"
+    mode="manual"
+    fallbackIcon="DefaultTypeNameImage"
+    (selectionChanged)="onSelectionChanged($event)"
+    data-imx-identifier="serviceitemlist-datatable"
+    [showSelectedItemsMenu]="false"
+  >
+    <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" [entitySchema]="entitySchema" 
+      columnLabel="{{ '#LDS#Product' | translate }}" data-imx-identifier="serviceitemlist-datatable-table">
+      <ng-template let-prod>
+        <div data-imx-identifier="serviceitemlist-datatable-display">{{ prod.GetEntity().GetDisplay() }}</div>
+        <div subtitle data-imx-identifier="serviceitemlist-datatable-fullpath">{{ prod.ServiceCategoryFullPath?.Column.GetDisplayValue() }}</div>
+        <p *ngIf="isValueContains(prod.OrderableStatus.value, ['PERSONHASOBJECT', 'PERSONHASASSIGNMENTORDER', 'ASSIGNED'])" class="imx-subtext">
+          <eui-icon icon="info"></eui-icon>
+          {{ '#LDS#This product has already been assigned to {0}.' | translate | ldsReplace: recipients.Column.GetDisplayValue() }}
+        </p>
+        <p *ngIf="isValueContains(prod.OrderableStatus.value, 'ORDER')" class="imx-subtext">
+          <eui-icon icon="request"></eui-icon>
+          {{ '#LDS#This product has already been requested.' | translate }}
+        </p>
+        <p *ngIf="isValueContains(prod.OrderableStatus.value, 'NOTORDERABLE')" class="imx-subtext">
+          <eui-icon icon="error"></eui-icon>
+          {{ '#LDS#This product cannot currently be requested.' | translate }}
+        </p>
+        <p *ngIf="isValueContains(prod.OrderableStatus.value, 'CART')" class="imx-subtext">
+          <eui-icon icon="error"></eui-icon>
+          {{ '#LDS#This product is already in your shopping cart.' | translate }}
+        </p>
+        <ng-container *ngTemplateOutlet="peerGroupDisplay; context: { $implicit: prod }"></ng-container>
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-generic-column columnName="addCartButton" [columnLabel]="'#LDS#Request' | translate">
+      <ng-template let-prod>
+        <button
+          [disabled]="!prod.IsRequestable.value"
+          mat-button
+          color="primary"
+          (click)="addItemToCart.emit(prod)"
+          data-imx-identifier="serviceitemlist-datatable-row-button-add-to-cart"
+        >
+          {{ '#LDS#Add to cart' | translate }}
+        </button>
+      </ng-template>
+    </imx-data-table-generic-column>
+  </imx-data-table>
+</div>
+<imx-data-source-paginator [dst]="dst" *ngIf="!isLoading"></imx-data-source-paginator>
+
+<ng-template #customToolbarTemplate>
+  <div class="imx-toolbar-template">
+    <button
+      *ngIf="selectedServiceCategory == null"
+      mat-raised-button
+      color="primary"
+      (click)="openCategoryTree.emit()"
+      data-imx-identifier="servicecategory-list-button-change-category"
+    >
+      {{ '#LDS#Show products from service category' | translate }}
+    </button>
+    <mat-chip-list *ngIf="selectedServiceCategory">
+      <mat-chip color="primary" selected removable (removed)="onRemoveChip()">
+        {{ selectedServiceCategory.GetEntity().GetDisplay() }}
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+    </mat-chip-list>
+  </div>
+</ng-template>
+
+<ng-template #peerGroupDisplay let-item>
+  <ng-container *ngIf="uidPersonPeerGroup && status?.enabled(item)">
+    <imx-peer-group [item]="item" [peerGroupSize]="peerGroupSize" [width]="dataSourceView.selected === 'cardlist' ? '140px' : '100%'"></imx-peer-group>
+  </ng-container>
+</ng-template>

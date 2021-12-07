@@ -1,0 +1,11 @@
+<button mat-button [ngClass]="{'imx-larger-font' : isTotal}" color="primary"
+    [attr.data-imx-identifier]="testId + '-selected-objects-show-matching-objects'" *ngIf="countMatching > 0"
+    (click)="showMatchingObjects($event)">
+    <span>(</span>
+    <span>{{countMatching}}</span>
+    <span>)</span>
+</button>
+
+<div class="like-button" [ngClass]="{'imx-larger-font' : isTotal}" color="primary" *ngIf="countMatching === 0">
+    <span>(0)</span>
+</div>

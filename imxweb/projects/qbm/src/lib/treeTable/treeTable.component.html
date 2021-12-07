@@ -1,0 +1,29 @@
+<div style="padding:0px">
+  
+<mat-table class="imx_TreeTable" [dataSource]="dataSource">
+    <ng-container matColumnDef="expandedDetail">  
+      <mat-cell *matCellDef> 
+          <a [class]="ButtonClass" (click)="buttonClicked()"></a>
+            <ng-template [ngIf]="titleNodeTemplate">
+              <ng-container [ngTemplateOutlet]="titleNodeTemplate"></ng-container>
+            </ng-template>
+            <ng-template [ngIf]="!titleNodeTemplate">
+              <ng-container [ngTemplateOutlet]="DefaultTemplate"></ng-container>
+            </ng-template>
+      </mat-cell>
+    </ng-container>
+  <ng-content></ng-content>
+  <mat-header-row class="imx_MatTableHeaderRow" *matHeaderRowDef="columnsToDisplay"></mat-header-row>
+  
+  <mat-row class="imx_MatTableRow" *matRowDef="let row; columns: ['expandedDetail']; when: isExpansionDetailRow"
+            style="overflow: hidden"  [hidden]="rootType === 'None'"></mat-row>
+  <mat-row  class="imx_MatTableRow" *matRowDef="let element;let row; columns: columnsToDisplay;" (click)="RowIsClicked(element)"></mat-row>
+
+
+</mat-table>
+
+<ng-template #DefaultTemplate>
+  <span class="imx-title">{{rootText}}</span>
+</ng-template>
+
+</div>

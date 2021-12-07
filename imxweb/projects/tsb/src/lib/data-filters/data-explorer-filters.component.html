@@ -1,0 +1,56 @@
+<eui-select
+  [label]="'#LDS#Select a domain' | translate"
+  (searchFieldChange)="onSearchChange(DataExplorerFilterTypes.TargetSystem, $event)"
+  [filterFunction]="paramListFilter"
+  (selectionChange)="targetSystemSelected($event)"
+  (optionsClear)="clearTargetSystemFilterSelection(false)"
+  [options]="targetSystemOptions"
+  [isPending]="pendingAsyncApiCall"
+  class="imx-de-targetsystem-filter"
+  #tsSelect>
+</eui-select>
+
+<div class="imx-de-container-tree-filter" *ngIf="treeDbWrapper"
+(click)="$event.stopPropagation()"
+[matTooltip]="containerFilterWrapperTooltip | translate">
+
+  <button *ngIf="!containerSearchMode" [disabled]="!treeDbWrapper.selectionEnabled || !treeDbWrapper.entityTreeDatabase.hasEntitiesAvailable"
+  mat-button [matMenuTriggerFor]="containerFilterMenu" data-imx-identifier="dst-button-filter">
+    <span translate>#LDS#Filter by</span>&nbsp;
+    <span *ngIf="selectedTreeNodeFilterDisplay.length; else noselection" [matTooltip]="selectedTreeNodeFilterDisplay" class="tree-filter-name">{{selectedTreeNodeFilterDisplay}}</span>
+    <ng-template #noselection><span class="tree-filter-name">{{DataExplorerFilterTypes.Container}}</span></ng-template>
+    <eui-icon icon="scrolldown" size="16px"></eui-icon>
+  </button>
+  <span [ngClass]="{'container-search--hidden': !containerSearchMode}">
+    <div imx-data-source-toolbar-custom-filter-search (click)="$event.stopPropagation()">
+      <eui-select
+        [disabled]="!treeDbWrapper.selectionEnabled || !treeDbWrapper.entityTreeDatabase.hasEntitiesAvailable"
+        [hideClearButton]="true"
+        [label]="'#LDS#Select a container' | translate"
+        (searchFieldChange)="onSearchChange(DataExplorerFilterTypes.Container, $event)"
+        [filterFunction]="paramListFilter"
+        (selectionChange)="setSelectedContainer($event)"
+        (optionsClear)="clearContainerFilterSelection(false)"
+        [options]="containerSelectOptions"
+        [isPending]="pendingAsyncApiCall"
+        class="container-search"
+        #containerSelect>
+      </eui-select>
+    </div>
+  </span>
+  <button [disabled]="!treeDbWrapper.selectionEnabled || !treeDbWrapper.entityTreeDatabase.hasEntitiesAvailable"
+  [matTooltip]="containerToggleTooltip | translate"
+  mat-button matSuffix mat-icon-button (click)="toggleContainerSearch()">
+    <eui-icon matSuffix [icon]="!containerSearchMode && !treeNodeSelected ? 'search' : 'close' " size="18px"></eui-icon>
+  </button>
+</div>
+
+ <mat-divider></mat-divider>
+
+
+<mat-menu #containerFilterMenu class="container-filter-menu" xPosition="before">
+  <div *ngIf="treeDbWrapper?.entityTreeDatabase">
+    <span *ngIf="!treeDbWrapper.entityTreeDatabase.hasEntitiesAvailable" translate>#LDS#No filters available</span>
+    <imx-data-tree [database]="treeDbWrapper.entityTreeDatabase" (nodeSelected)="onTreeNodeSelected($event)"></imx-data-tree>
+  </div>
+</mat-menu>

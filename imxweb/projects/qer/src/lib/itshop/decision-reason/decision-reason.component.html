@@ -1,0 +1,9 @@
+<imx-cdr-editor *ngIf="reasonStandard" [cdr]="reasonStandard"
+  (controlCreated)="addReasonStandard($event)"
+  (valueChange)="checkReason($event)"
+  data-imx-identifier="reason-decision-standard">
+</imx-cdr-editor>
+<imx-cdr-editor [cdr]="reasonFreetext"
+  (controlCreated)="addReasonFreetext($event)"
+  data-imx-identifier="reason-decision-freetext">
+</imx-cdr-editor>

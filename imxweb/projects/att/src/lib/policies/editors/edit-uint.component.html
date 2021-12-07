@@ -1,0 +1,6 @@
+<mat-form-field appearance="outline">
+    <mat-label>{{'#LDS#Number of days' | translate}}</mat-label>
+    <input matInput type="number" [formControl]="control" min="0" [attr.data-imx-identifier]="testId + '-edit-uint-input'">
+    <mat-error *ngIf="control.invalid">
+        {{'#LDS#The number of days must be positive.' | translate}}</mat-error>
+</mat-form-field>

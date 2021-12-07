@@ -1,0 +1,10 @@
+.imx-progress-bar-container {
+  display: flex;
+  align-items: center;
+  max-width: 200px;
+
+  > span {
+    margin-left: 5px;
+    min-width: 30px;
+  }
+}

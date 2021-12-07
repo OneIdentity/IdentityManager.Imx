@@ -1,0 +1,28 @@
+<div class="imx-system-header">
+  <div class="imx-system-title">{{systemName}}</div>
+  <div class="imx-system-actions">
+    <button type="button" mat-button color="primary" (click)="copy2Clipboard()">{{'#LDS#Copy to clipboard' | translate}}</button>
+    <button type="button" mat-button color="primary" (click)="export2CSV()">{{'#LDS#Export as CSV' | translate}}</button>
+  </div>
+</div>
+<div class="imx-system-subtitle">{{systemEmail}}</div>
+<div *ngIf="exceededTresholdsCounter> 0" class="imx-treshold-exceeded-label">
+  <eui-icon icon="warning" size="15px"></eui-icon>
+  <span>{{'#LDS#{0} thresholds exceeded' | translate | ldsReplace:exceededTresholdsCounter}}</span>
+</div>
+<mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+  <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding [ngClass]="qualityOfValueClass(node.item)">
+    <div class="imx-system-overview-name">{{ node.item.Element.value }}</div>
+    <div class="imx-system-overview-value">{{ node.item.Value.value }}</div>
+    <div class="imx-system-overview-value" *ngIf="node.item.RecommendedValue?.value">
+      &nbsp;({{ '#LDS#Recommended: {0}' | translate | ldsReplace:node.item.RecommendedValue.value }})
+    </div>
+  </mat-tree-node>
+  <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding [ngClass]="node.hasExceeededTresholds> 0 ? 'imx-treshold-exceeded':
+    ''">
+    <button mat-icon-button [attr.aria-label]="'toggle ' + node.filename" matTreeNodeToggle>
+      <eui-icon icon="{{treeControl.isExpanded(node) ? 'scrolldown' : 'cforward'}}" size="14px"></eui-icon>
+    </button>
+    {{node.display}}
+  </mat-tree-node>
+</mat-tree>

@@ -1,0 +1,32 @@
+:host {
+  flex: 1 1 auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  
+  ::ng-deep .mat-column-RunCategory,
+  ::ng-deep .mat-column-ClosedCases,
+  ::ng-deep .mat-column-PendingCases,
+  ::ng-deep .mat-column-PolicyProcessed,
+  ::ng-deep .mat-column-DueDate {
+    min-width: 70px;
+  }
+
+  ::ng-deep .mat-column-Progress {
+    min-width: 100px;
+  }
+}
+
+.imx-table-container {
+  flex-grow: 1;
+  overflow: auto;
+}
+
+
+.button-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin: 16px 0 0 40px;
+}
+

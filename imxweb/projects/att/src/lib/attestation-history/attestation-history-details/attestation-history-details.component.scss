@@ -1,0 +1,36 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  height:100%;
+}
+
+.imx-mat-tab-group {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.imx-tab-content{
+  padding: 30px;
+}
+
+.imx-property-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.imx-attestation-case-action {
+  display: flex;
+  justify-content: right;
+
+  > button {
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+}

@@ -1,0 +1,11 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+.imx-user-properties {
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  >span {
+    font-weight: 600;
+    color: $black-6;
+  }
+}

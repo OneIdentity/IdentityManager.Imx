@@ -1,0 +1,142 @@
+/*
+ * ONE IDENTITY LLC. PROPRIETARY INFORMATION
+ *
+ * This software is confidential.  One Identity, LLC. or one of its affiliates or
+ * subsidiaries, has supplied this software to you under terms of a
+ * license agreement, nondisclosure agreement or both.
+ *
+ * You may not copy, disclose, or use this software except in accordance with
+ * those terms.
+ *
+ *
+ * Copyright 2021 One Identity LLC.
+ * ALL RIGHTS RESERVED.
+ *
+ * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
+ * WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+ * TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR
+ * NON-INFRINGEMENT.  ONE IDENTITY LLC. SHALL NOT BE
+ * LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE
+ * AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
+ * THIS SOFTWARE OR ITS DERIVATIVES.
+ *
+ */
+
+import { Component, OnDestroy } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
+
+import { ColumnDependentReference } from '../column-dependent-reference.interface';
+import { CdrEditor } from '../cdr-editor.interface';
+import { EntityColumnContainer } from '../entity-column-container';
+import { ClassloggerService } from '../../classlogger/classlogger.service';
+import { Base64ImageService } from '../../images/base64-image.service';
+import { FileSelectorService } from '../../file-selector/file-selector.service';
+
+/**
+ * A component for viewing / editing binary columns with image data
+ */
+@Component({
+  selector: 'imx-edit-image',
+  templateUrl: './edit-image.component.html',
+  styleUrls: ['./edit-image.component.scss']
+})
+export class EditImageComponent implements CdrEditor, OnDestroy {
+  public get fileFormatHint(): string {
+    return this.fileFormatError ? '#LDS#Please select an image in PNG format.' : undefined;
+  }
+
+  public readonly control = new FormControl(undefined);
+
+  public readonly columnContainer = new EntityColumnContainer<string>();
+
+  public isLoading = false;
+
+  private fileFormatError = false;
+
+  private readonly subscriptions: Subscription[] = [];
+
+  constructor(
+    private readonly logger: ClassloggerService,
+    private readonly imageProvider: Base64ImageService,
+    private readonly fileSelector: FileSelectorService
+  ) {
+    this.subscriptions.push(
+      this.fileSelector.fileFormatError.subscribe(() =>
+        this.fileFormatError = true
+      ),
+      this.fileSelector.fileSelected.subscribe(filepath =>
+        this.writeValue(this.imageProvider.getImageData(filepath))
+      )
+    );
+  }
+
+  public ngOnDestroy(): void {
+    this.subscriptions.forEach(s => s.unsubscribe());
+  }
+
+  /**
+   * Binds a column dependent reference to the component
+   * @param cdref a column dependent reference
+   */
+  public bind(cdref: ColumnDependentReference): void {
+    if (cdref && cdref.column) {
+      this.columnContainer.init(cdref);
+      this.control.setValue(this.columnContainer.value, { emitEvent: false });
+      if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
+        this.control.setValidators(Validators.required);
+      }
+    }
+  }
+
+  public resetFileFormatErrorState(): void {
+    this.fileFormatError = false;
+  }
+
+  public emitFiles(files: FileList): void {
+    this.fileSelector.emitFiles(files, 'image/png');
+  }
+
+  /**
+   * removes the current image
+   */
+  public async remove(): Promise<void> {
+    this.fileFormatError = false;
+
+    this.logger.debug(this, 'Removing current image...');
+    await this.writeValue(undefined);
+  }
+
+  /**
+   * updates the value for the CDR
+   * @param value the new image url
+   */
+  private async writeValue(value: string): Promise<void> {
+    this.logger.debug(this, 'writeValue called with value', value);
+
+    if (!this.columnContainer.canEdit || this.columnContainer.value === value) {
+      return;
+    }
+
+    this.control.setValue(value, { emitEvent: false });
+
+    try {
+      this.isLoading = true;
+      this.logger.debug(this, 'writeValue - updateCdrValue...');
+      await this.columnContainer.updateValue(value);
+    } catch (e) {
+      this.logger.error(this, e);
+    } finally {
+      this.isLoading = false;
+
+      if (this.control.value !== this.columnContainer.value) {
+        this.control.setValue(this.columnContainer.value, { emitEvent: false });
+        this.logger.debug(this, 'form control value is set to', this.control.value);
+      }
+    }
+
+    this.control.markAsDirty();
+  }
+}

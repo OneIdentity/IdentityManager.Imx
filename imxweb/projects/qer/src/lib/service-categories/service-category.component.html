@@ -1,0 +1,26 @@
+<div class="imx-service-category-content">
+  <eui-alert *ngIf="editMode" class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" [dismissable]="true">
+    <span translate>
+      #LDS#Here you can change the properties of the service category.
+    </span>
+  </eui-alert>
+  <form [formGroup]="form" id="form" (ngSubmit)="save()">
+    <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"
+      (controlCreated)="addFormControl(cdr.column.ColumnName, $event)"
+      [attr.data-imx-identifier]="'edit-service-category-property-' + cdr.column.ColumnName">
+    </imx-cdr-editor>
+    <imx-service-item-select [data]="serviceItemData" (controlCreated)="addFormControl('serviceitems', $event)"></imx-service-item-select>
+  </form>
+</div>
+<div class="imx-action">
+  <span class="justify-start">
+    <button mat-button color="warn" *ngIf="canDelete" (click)="delete()"
+      data-imx-identifier="edit-service-category-button-delete">
+      {{ '#LDS#Delete service category' | translate }}
+    </button>
+  </span>
+  <button mat-raised-button [disabled]="form.pristine || form.invalid" type="submit" (click)="ieSave()" form="form"
+    color="primary" data-imx-identifier="edit-service-category-button-save">
+    {{ '#LDS#Save' | translate }}
+  </button>
+</div>

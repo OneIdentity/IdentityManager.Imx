@@ -1,0 +1,56 @@
+<ng-container *ngIf="dstSettings">
+  <imx-data-source-toolbar #dst [hiddenElements]="['groupBy', 'settings']" [settings]="dstSettings"
+    (search)="getData({ search: $event })" (viewSelectionChanged)="viewSelectionChanged($event)" [initalView]="dataSourceView.selected"
+    (navigationStateChanged)="getData($event)" data-imx-identifier="rolememberships-dst">
+  </imx-data-source-toolbar>
+  <div class="imx-data-view-container" *ngIf="!isLoading">
+    <imx-data-tiles
+      #dataTiles
+      *ngIf="dataSourceView.selected === 'cardlist'"
+      height="150px"
+      [dst]="dst"
+      (selectionChanged)="selectionChanged.emit($event)"
+      [useActionMenu]="false"
+      fallbackIcon="request"
+      [selectable]="true"
+      [actions]="[{ name: 'edit', description: '#LDS#Add to cart' | translate }]"
+      [titleObject]="dstWrapper?.propertyDisplay"
+      [subtitleObject]="dstSettings.entitySchema?.Columns.FullPath"
+      (actionSelected)="addItemToCart.emit($event.typedEntity)"
+      [contentTemplate]="peerGroupDisplay"
+    >
+    </imx-data-tiles>
+    <imx-data-table *ngIf="dataSourceView.selected === 'table'" mode="manual"
+      [dst]="dst" [detailViewVisible]="false" data-imx-identifier="rolememberships-datatable"
+      [selectable]="true" (selectionChanged)="selectionChanged.emit($event)" [showSelectedItemsMenu]="false">
+      <imx-data-table-column [entityColumn]="dstWrapper?.propertyDisplay" [entitySchema]="dstSettings.entitySchema">
+        <ng-template let-item>
+          <p>{{ item.GetEntity().GetDisplay() }}</p>
+          <ng-container *ngTemplateOutlet="peerGroupDisplay; context: { $implicit: item }"></ng-container>
+        </ng-template>
+      </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="dstSettings.entitySchema?.Columns.FullPath" [entitySchema]="dstSettings.entitySchema"></imx-data-table-column>
+      <imx-data-table-generic-column columnName="addCartButton" [columnLabel]="'#LDS#Request' | translate">
+        <ng-template let-item>
+          <button
+            mat-button
+            color="primary"
+            (click)="addItemToCart.emit(item)"
+            data-imx-identifier="rolememberships-datatable-row-button-add-to-cart"
+          >
+            {{ '#LDS#Add to cart' | translate }}
+          </button>
+        </ng-template>
+      </imx-data-table-generic-column>
+    </imx-data-table>
+  </div>
+  <imx-data-source-paginator data-imx-identifier="rolememberships-paginator" [dst]="dst" *ngIf="!isLoading">
+  </imx-data-source-paginator>
+</ng-container>
+
+<ng-template #peerGroupDisplay let-item>
+  <ng-container *ngIf="personPeerGroupUid">
+    <imx-peer-group [item]="item" [peerGroupSize]="dstWrapper?.extendedData?.PeerGroupSize" [width]="dataSourceView.selected === 'cardlist' ? '140px' : '100%'">
+    </imx-peer-group>
+  </ng-container>
+</ng-template>

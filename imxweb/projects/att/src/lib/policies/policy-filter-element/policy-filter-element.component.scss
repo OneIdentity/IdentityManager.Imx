@@ -1,0 +1,35 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+:host ::ng-deep .mat-expansion-panel-body {
+  display: flex;
+  flex-direction: column;
+  background-color: $asher-gray;
+  padding-top: 10px;
+}
+
+.imx-panel-title-with-number,
+.imx-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.imx-panel-title-with-number > :first-child {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.imx-small-error {
+  font-size: small;
+}
+
+.mat-expansion-panel-header-title {
+  align-items: center;
+  margin-right: 0;
+}
+
+.eui-icon {
+  color: $black-7;
+}

@@ -1,0 +1,7 @@
+<imx-hyperview-shape [shape]="shape">
+    <ul ShapeContent>
+        <li *ngFor="let elem of shape.Elements">
+            <a (click)="click(elem)" title="{{ elem.DisplayValue }}">{{ elem.DisplayValue }}</a>
+        </li>
+    </ul>
+</imx-hyperview-shape>

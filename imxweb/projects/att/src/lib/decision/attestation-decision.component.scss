@@ -1,0 +1,66 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.imx-table-container {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: inherit;
+  max-width: 1200px;
+}
+
+.imx-attestationcase-table {
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.imx-decision {
+  display: flex;
+  flex-direction: row;
+
+  > * {
+    margin-right: 5px;
+  }
+}
+
+.imx-button-bar {
+  display: flex;
+  flex-direction: row;
+  margin-top: 15px;
+
+  > button {
+    margin-left: 5px;
+  }
+
+  .imx-spacer {
+    flex: 1 1 auto;
+  }
+}
+
+.imx-badge-container {
+  > div {
+    display: table-cell;
+
+    > .eui-badge {
+      margin: 0 5px;
+
+      ::ng-deep .eui-badge-content {
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
+.toggle-wrapper {
+  margin-bottom: 1em;
+}
+
+@media only screen and (max-width: 1024px) {
+  ::ng-deep .mat-column-decision {
+    display: none;
+  }
+}

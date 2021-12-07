@@ -1,0 +1,37 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+imx-data-table {
+  flex-grow: 1;
+}
+
+.imx-button-bar {
+  display: flex;
+  margin: 20px 0 0 0;
+
+  ::ng-deep .imx-badge.eui-badge .eui-badge-content {
+    font-size: 14px;
+    line-height: 14px;
+  }
+
+  .imx-selected-items {
+    margin: 0;
+    line-height: 36px;
+  }
+
+  button {
+    margin-left: 10px;
+  }
+
+  .imx-menu-spacer {
+    flex-grow: 1;
+  }
+}
+
+.imx-badge {
+  background-color: inherit;
+}

@@ -1,0 +1,6 @@
+<div>
+  <ng-container *ngFor="let textToken of textTokens">
+    <span *ngIf="!textToken.isParameter">{{ textToken.value }}</span>
+    <strong *ngIf="textToken.isParameter">{{ textToken.value }}</strong>
+  </ng-container>
+</div>

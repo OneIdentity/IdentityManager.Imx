@@ -1,0 +1,64 @@
+<div class="snavigation">
+  <mat-sidenav-container>
+    <mat-sidenav mode="side" opened [ngClass]="{ 'snavigation-side--expanded': mobileSideNavExpanded }" *ngIf="!showSyncStatus">
+      <div class="snavigation-side">
+        <div class="snavigation-side-toggle">
+          <button mat-button color="primary" (click)="toggleMobileExpand()">
+            <mat-icon>menu</mat-icon>
+          </button>
+        </div>
+
+        <div class="snavigation-side-content">
+          <div *ngIf="hasDataIssues" class="snavigation-data-issues">
+            <button mat-stroked-button color="accent" (click)="selectPage('issues')" *ngIf="selectedPage !== 'issues'">
+              <eui-icon icon="warning"></eui-icon>
+              <span *ngIf="dataIssues?.count > 1">{{ '#LDS#{0} issues found' | translate | ldsReplace: dataIssues?.count }}</span>
+              <span *ngIf="dataIssues?.count === 1">{{ '#LDS#{0} issue found' | translate | ldsReplace: dataIssues?.count }}</span>
+            </button>
+            <button mat-flat-button color="accent" (click)="selectPage('issues')" *ngIf="selectedPage === 'issues'">
+              <eui-icon icon="warning"></eui-icon>
+              <span *ngIf="dataIssues?.count > 1">{{ '#LDS#{0} issues found' | translate | ldsReplace: dataIssues?.count }}</span>
+              <span *ngIf="dataIssues?.count === 1">{{ '#LDS#{0} issue found' | translate | ldsReplace: dataIssues?.count }}</span>
+            </button>
+          </div>
+
+          <div class="snavigation-side-heading" translate>#LDS#Heading Data Explorer</div>
+          <div
+            class="snavigation-item"
+            (click)="selectPage(item.name)"
+            *ngFor="let item of navigationItems"
+            [ngClass]="{
+              'snavigation-item--selected': selectedPage === item.name
+            }"
+          >
+            <eui-icon [icon]="item.icon"></eui-icon>
+            <span translate>{{ item.translationKey }}</span>
+          </div>
+        </div>
+
+        <div class="snavigation-side-footer">
+          <div class="snavigation-item" (click)="showDeleteModal()">
+            <eui-icon icon="delete"></eui-icon>
+            <span translate>#LDS#Delete data</span>
+          </div>
+        </div>
+      </div>
+    </mat-sidenav>
+    <mat-sidenav-content [ngStyle]="{ 'margin-left': showSyncStatus ? 0 : contentMargin }" [ngClass]="{ 'snavigation--backdrop-showing': showBackdrop }">
+      <div class="snavigation-backdrop" *ngIf="showBackdrop && !showSyncStatus" (click)="toggleMobileExpand()"></div>
+
+      <imx-data-explorer-identities [isAdmin]="true" [showFullscreen]="false" *ngIf="selectedPage === 'identities'" [applyIssuesFilter]="applyIssuesFilter">
+      </imx-data-explorer-identities>
+
+      <imx-data-explorer-accounts *ngIf="selectedPage === 'accounts'" [applyIssuesFilter]="applyIssuesFilter" [issuesFilterMode]="issuesFilterMode" [targetSystemData]="targetSystemData"></imx-data-explorer-accounts>
+
+      <imx-data-explorer-groups *ngIf="selectedPage === 'groups'" [applyIssuesFilter]="applyIssuesFilter" [issuesFilterMode]="issuesFilterMode" [targetSystemData]="targetSystemData" [isAdmin]="true"></imx-data-explorer-groups>
+
+      <imx-o3t-teams *ngIf="selectedPage === 'teams'"></imx-o3t-teams>
+
+      <imx-data-explorer-issues *ngIf="selectedPage === 'issues'" [issues]="dataIssues"></imx-data-explorer-issues>
+
+      <imx-data-explorer-no-data *ngIf="showSyncStatus" [mode]="selectedPage"></imx-data-explorer-no-data>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

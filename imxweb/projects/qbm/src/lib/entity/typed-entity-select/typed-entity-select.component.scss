@@ -1,0 +1,40 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+
+  >* {
+    margin-right: 10px;
+  }
+}
+
+input {
+  flex: 1;
+}
+
+.mat-form-field {
+  width: 100%;
+}
+
+.imx-spacer {
+  height: 30px;
+}
+
+.mat-button  {
+  min-width: initial;
+}
+
+.mat-error {
+  margin-top: 5px;
+  font-size: small;
+}
+
+.imx-suffix-container {
+  display: flex;
+  margin-bottom: 5px;
+
+  > *:not(:last-child) {
+    margin-right: 5px;
+    margin-top: 0;
+  }
+}

@@ -1,0 +1,63 @@
+<div eui-sidesheet-content>
+  <mat-card>
+    <form class="imx-form" [formGroup]="applicationForm">
+      <div class="imx-input-fields" *ngIf="application">
+        <imx-application-image-select [column]="application?.JPegPhoto?.Column" (controlCreated)="applicationForm.addControl(application.JPegPhoto.Column.ColumnName, $event)">
+        </imx-application-image-select>
+        <imx-entity-column-editor [column]="application?.Ident_AOBApplication?.Column" (controlCreated)="applicationForm.addControl($event.name, $event.control)">
+        </imx-entity-column-editor>
+        <imx-entity-column-editor [column]="application?.Description?.Column" (controlCreated)="applicationForm.addControl($event.name, $event.control)"> </imx-entity-column-editor>
+        <imx-entity-column-editor [column]="application?.UID_AccProductGroup?.Column" [readonly]="true" (controlCreated)="applicationForm.addControl($event.name, $event.control)">
+        </imx-entity-column-editor>
+        <imx-entity-column-editor [column]="application?.UID_PersonHead?.Column" (controlCreated)="applicationForm.addControl($event.name, $event.control)">
+        </imx-entity-column-editor>
+        <imx-entity-column-editor [column]="application?.UID_AERoleOwner?.Column" (controlCreated)="applicationForm.addControl($event.name, $event.control)">
+        </imx-entity-column-editor>
+        <imx-entity-column-editor [column]="application?.UID_AERoleApprover?.Column" (controlCreated)="applicationForm.addControl($event.name, $event.control)">
+        </imx-entity-column-editor>
+        <imx-typed-entity-select
+          *ngIf="shopsData"
+          [data]="shopsData"
+          (controlCreated)="applicationForm.addControl('shops', $event)"
+          (selectionChanged)="shopSelectionChanged($event)"
+        >
+        </imx-typed-entity-select>
+        <imx-typed-entity-select
+          *ngIf="accountsData"
+          [data]="accountsData"
+          (controlCreated)="applicationForm.addControl('accounts', $event)"
+          (selectionChanged)="accountSelectionChanged($event)"
+        >
+        </imx-typed-entity-select>
+        <imx-entity-column-editor [column]="application?.ApplicationEnvironment?.Column" (controlCreated)="applicationForm.addControl($event.name, $event.control)">
+        </imx-entity-column-editor>
+        <imx-entity-column-editor [column]="application?.ApplicationWebURL?.Column" (controlCreated)="applicationForm.addControl($event.name, $event.control)">
+        </imx-entity-column-editor>
+        <imx-authentication-root [application]="application" (controlCreated)="applicationForm.addControl('authRoot', $event)"> </imx-authentication-root>
+        <imx-entity-column-editor [column]="application?.IsFederationEnabled?.Column" (controlCreated)="applicationForm.addControl($event.name, $event.control)">
+        </imx-entity-column-editor>
+        <imx-entity-column-editor [column]="application?.IsMultiFactorEnabled?.Column" (controlCreated)="applicationForm.addControl($event.name, $event.control)">
+        </imx-entity-column-editor>
+        <imx-entity-column-editor [column]="application?.IsSSOEnabled?.Column" (controlCreated)="applicationForm.addControl($event.name, $event.control)"> </imx-entity-column-editor>
+        <imx-entity-column-editor [column]="application?.SSORedirectionUrl?.Column" (controlCreated)="applicationForm.addControl($event.name, $event.control)">
+        </imx-entity-column-editor>
+        <imx-entity-column-editor [column]="application?.PurchasedLicenses?.Column" (controlCreated)="applicationForm.addControl($event.name, $event.control)">
+        </imx-entity-column-editor>
+        <imx-entity-column-editor [column]="application?.RiskIndex?.Column" (controlCreated)="applicationForm.addControl($event.name, $event.control)"> </imx-entity-column-editor>
+        <imx-entity-column-editor [column]="application?.UID_FunctionalArea?.Column" (controlCreated)="applicationForm.addControl($event.name, $event.control)">
+        </imx-entity-column-editor>
+        <imx-entity-column-editor [column]="application?.NextRunDate?.Column" (controlCreated)="applicationForm.addControl($event.name, $event.control)">
+        </imx-entity-column-editor>
+      </div>
+    </form>
+  </mat-card>
+</div>
+
+<div eui-sidesheet-actions color="white">
+  <button data-imx-identifier="editApp-cancel" mat-stroked-button type="button" (click)="cancelProcess()">
+    {{ '#LDS#Cancel' | translate }}
+  </button>
+  <button data-imx-identifier="editApp-save" mat-raised-button type="button" (click)="submitData()" [disabled]="!canSubmit()" color="primary">
+    {{ '#LDS#Save' | translate }}
+  </button>
+</div>

@@ -1,0 +1,59 @@
+<mat-card class="data-explorer data-explorer--accounts">
+
+  <div  *ngIf="!dataExplorerFilters.showTsSyncStatus" class="data-explorer-card-header">
+    <div class="data-explorer-card-header-bg">
+      <eui-icon icon="contactinfo" size="28px"></eui-icon>
+      <span translate>#LDS#Heading User Accounts</span>
+    </div>
+  </div>
+
+  <imx-data-source-toolbar #dst
+    [settings]="dstSettings"
+    [hiddenElements]="['groupBy', 'settings', 'selectedViewGroup']"
+    [hiddenFilters]="['namespace']"
+    [searchBoxText]="'#LDS#Search' | translate"
+    (navigationStateChanged)="onNavigationStateChanged($event)"
+    (search)="onSearch($event)"
+    (customSelectedFilterRemoved)="dataExplorerFilters.onCustomFilterClearedExternally($event)">
+    <div imx-data-source-toolbar-custom-filter (click)="$event.stopPropagation()">
+      <imx-target-system-filter #dataExplorerFilters
+      [targetSystemData]="targetSystemData"
+      (selectedFiltersChanged)="onNavigationStateChanged()"
+      [dst]="dst"
+      [treeDbWrapper]="treeDbWrapper"></imx-target-system-filter>
+    </div>
+  </imx-data-source-toolbar>
+
+  <div *ngIf="dataExplorerFilters.showTsSyncStatus">
+      <imx-data-explorer-no-data [mode]="dataExplorerFilters.tsIssueMode"></imx-data-explorer-no-data>
+  </div>
+
+  <eui-alert class="sync-status-alert" type="info" condensed="true" [colored]="true" *ngIf="dataExplorerFilters.showTsSyncAlert">
+    <span translate>#LDS#There is currently no data synchronization configured for the selected domain.</span>
+  </eui-alert>
+
+  <div *ngIf="!dataExplorerFilters.showTsSyncStatus" class="imx-data-explorer-content">
+    <div class="data-explorer-table">
+      <imx-data-table [dst]="dst" (highlightedEntityChanged)="onAccountChanged($event)" detailViewVisible="false" mode="manual">
+        <imx-data-table-column [entityColumn]="entitySchemaUnsAccount?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
+          [entitySchema]="entitySchemaUnsAccount">
+        </imx-data-table-column>
+        <imx-data-table-column [entityColumn]="entitySchemaUnsAccount?.Columns.UID_Person" [entitySchema]="entitySchemaUnsAccount">
+        </imx-data-table-column>
+        <imx-data-table-column align="center"
+          [entityColumn]="entitySchemaUnsAccount?.Columns.AccountDisabled" [entitySchema]="entitySchemaUnsAccount">
+        </imx-data-table-column>
+        <imx-data-table-generic-column alignHeader="center" alignContent="center"
+          [columnName]="entitySchemaUnsAccount?.Columns.XMarkedForDeletion.ColumnName">
+          <ng-template let-item>
+            <div *ngIf="item.XMarkedForDeletion.value !== 0">
+              <eui-badge color="gray">{{ item.XMarkedForDeletion.Column.GetDisplayValue() }}</eui-badge>
+            </div>
+          </ng-template>
+        </imx-data-table-generic-column>
+      </imx-data-table>
+      <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+    </div>
+  </div>
+
+</mat-card>

@@ -1,0 +1,21 @@
+table.LayoutpPropItems {
+    width: 100%;
+  }
+
+  .LayoutpPropCol0 {
+    padding: 0;
+    width: 150px;
+    font-weight: lighter;
+  }
+
+  .LayoutpPropCol1 {
+    padding: 0;
+    width: 200px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .imx-hyperview-deleted {
+    text-decoration: line-through;
+  }

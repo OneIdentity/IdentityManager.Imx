@@ -1,0 +1,11 @@
+<h1 class="mat-headline">
+  {{'#LDS#Processes' | translate}}
+</h1>
+<div [hidden]="numberOfJobs === 0 && selectedFilter === ''" class="imx-filter-line">
+  <imx-filter-tile *ngFor="let filter of filters" (checkedChanged)="handleCheckClick($event)"
+    [isChecked]="selectedFilter === filter.value" [caption]="filter.caption" [value]="filter.value"
+    [groupName]="filter.groupname" class="imx-filter-item">
+  </imx-filter-tile>
+</div>
+<imx-jobs-gridview class="imx-job-grid" [filterSetting]="parameterForGrid" (refreshRequested)="refresh()">
+</imx-jobs-gridview>

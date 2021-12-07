@@ -1,0 +1,34 @@
+<div class="imx-starling">
+  <h2 translate>#LDS#Authenticate using Starling 2FA</h2>
+  <ng-container *ngIf="errorMessage">
+    <div class="imx-starling-error">
+      <p>{{errorMessage}}</p>
+    </div>
+    <div>
+      <button mat-stroked-button type="button" (click)="Logout()">{{ '#LDS#Log out' | translate }}</button>
+    </div>
+  </ng-container>
+  <div class="imx-starling-error" *ngIf="!errorMessage">
+    <p translate>#LDS#Request a token from the Starling 2FA app. If you do not have the app, request a token via SMS or phone call.</p>
+  </div>
+  <p *ngIf="!errorMessage">
+    <button mat-stroked-button type="button" (click)="SendSms()">{{ '#LDS#Send SMS' | translate }}</button>
+    &nbsp;
+    <button mat-stroked-button type="button" (click)="SendCall()">{{ '#LDS#Phone call' | translate }}</button>
+    &nbsp;
+    <button mat-stroked-button type="button" (click)="SendPush()">{{ '#LDS#Authenticate with Starling 2FA app' | translate }}</button>
+  </p>
+  <div class="imx-starling-login" *ngIf="!errorMessage">
+    <div class="imx-login-input">
+      <input
+        type="text"
+        placeholder="{{ '#LDS#Token response' | translate }}"
+        [(ngModel)]="code"
+        (keyup.enter)="Verify()"/>
+    </div>
+    <div>
+      <button mat-stroked-button type="button" (click)="Logout()">{{ '#LDS#Log out' | translate }}</button>
+      <button class="imx-starling-login-continue" mat-raised-button color="primary" type="button" (click)="Verify()">{{ '#LDS#Next' | translate }}</button>
+    </div>
+  </div>
+</div>

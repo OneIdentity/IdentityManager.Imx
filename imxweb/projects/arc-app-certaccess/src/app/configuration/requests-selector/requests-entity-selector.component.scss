@@ -1,0 +1,45 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.mat-dialog-content {
+  display: flex;
+  flex-direction: column;
+
+  ::ng-deep {
+    .mat-sidenav-content {
+      overflow-y: hidden;
+      overflow-x: auto;
+    }
+
+    .imx-data-table-row-highlighted {
+      background-color: inherit;
+    }
+  }
+}
+
+.mat-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    margin-left: 10px;
+
+    &:disabled:hover {
+      cursor: not-allowed;
+    }
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .mat-dialog-actions {
+    flex-direction: column-reverse;
+    button {
+      margin-left: 0;
+      margin-bottom: 10px;
+      width: 100%;
+    }
+  }
+}

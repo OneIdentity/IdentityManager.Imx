@@ -1,0 +1,36 @@
+<mat-expansion-panel hideToggle="false"  #panel data-imx-identifier="bulk-item-panel" [expanded]="expanded" (closed)="closed()">
+  <mat-expansion-panel-header>
+    <mat-panel-title data-imx-identifier="bulk-item-title" [ngClass]="{'imx-madatory-item': bulkItem?.mandatory && !bulkItem?.readonly}">
+      <eui-icon *ngIf="!hideButtons" class="imx-panel-icon"
+        [icon]="icon?.name"
+        [style.color]="icon?.color"
+        [ngStyle]="iconStyle"></eui-icon>
+      {{ bulkItem?.customTitle || bulkItem?.entity?.GetEntity()?.GetDisplay() }}
+    </mat-panel-title>
+    <mat-panel-description data-imx-identifier="bulk-item-description">
+      {{ bulkItem?.additionalInfo }}
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+  <div class="imx-description">{{ bulkItem?.description }}</div>
+  <form [formGroup]="formGroup">
+    <imx-cdr-editor *ngFor="let cdr of bulkItem?.properties; let i = index"
+      [cdr]="cdr"
+      (valueChange)="onValueChanged()"
+      (controlCreated)="addControl(cdr.column.ColumnName + '_' + i, $event)"
+      [attr.data-imx-identifier]="'bulk-item' + cdr.column.ColumnName  + '_' + i">
+    </imx-cdr-editor>
+    <imx-entity-select *ngFor="let option of bulkItem?.customSelectProperties; let i = index" class="imx-custom-property"
+      [title]="option.title"
+      [entities]="option.entities"
+      (controlCreated)="addControl('customSelect' + i, $event)" (selectionChange)="option.selectionChange($event); onValueChanged()"
+      [placeholder]="option.placeholder"
+      [attr.data-imx-identifier]="'bulk-item-custom-select-option-' + i">
+    </imx-entity-select>
+  </form>
+  <div *ngIf="!hideButtons" class="imx-action-container">
+    <button mat-button (click)="skip()" data-imx-identifier="bulk-item-button-skip">{{'#LDS#Skip' | translate}}</button>
+    <button mat-raised-button color="primary" [disabled]="!formGroup.valid" (click)="save()" data-imx-identifier="bulk-item-button-save">
+      {{ '#LDS#Apply' | translate }}
+    </button>
+  </div>
+</mat-expansion-panel>

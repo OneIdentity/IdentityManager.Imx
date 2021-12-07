@@ -1,0 +1,143 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.imx-step-button,
+.imx-step-button-save {
+  margin-top: 10px;
+  > *:not(:last-child) {
+    margin-right: 10px;
+  }
+}
+
+.imx-step-button-save {
+  align-self: flex-end;
+}
+
+.imx-delegatable-elements {
+  overflow: hidden;
+  margin-bottom: 10px;
+  max-height: 600px;
+}
+
+.imx-delegatable-elements mat-list-option .subtext {
+  font-size: 11px;
+  font-style: italic;
+  color: $black_9;
+  margin-bottom: 10px;
+}
+
+.imx-delegatable-elements mat-list-option {
+  font-size: smaller;
+}
+
+.imx-delegation-stepper {
+  flex: 1 1 auto;
+  width: 1200px;
+  max-width: 100%;
+  background-color: $white;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.imx-delegation-list {
+  height: 350px;
+  display: flex;
+  flex-direction: column;
+  margin: 20px 0;
+
+  > :nth-child(2) {
+    flex: 1 1 auto;
+    overflow: auto;
+  }
+
+  .imx-paginator-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    > :last-child {
+      flex: 1 1 auto;
+    }
+
+    ::ng-deep .mat-paginator {
+      box-shadow: none;
+    }
+  }
+
+  .multi-select-formcontrol-eui-search {
+    width: 100%;
+    display: flex;
+
+    .eui-search {
+      width: 100%;
+    }
+
+    ::ng-deep .eui-search.mat-form-field.mat-form-field-appearance-outline {
+      min-width: 280px;
+      flex: 1;
+      margin-bottom: 10px;
+    }
+  }
+
+  .imx-selected-entitlements {
+    margin: 0;
+    line-height: 36px;
+    font-size: 13.3px;
+    flex: auto;
+
+    ::ng-deep .imx-badge.eui-badge .eui-badge-content {
+      font-size: 13.3px;
+      line-height: 14px;
+    }
+  }
+
+  .imx-badge {
+    background-color: inherit;
+  }
+}
+
+.mat-vertical-content-container {
+  flex: 1 1 auto;
+}
+
+.imx-small-error {
+  font-size: small;
+  margin: -25px 0 20px 10px;
+}
+
+.imx-delegation-success {
+  margin: 20px;
+  flex: 1 1 auto;
+  width: max-content;
+}
+
+.imx-alert-content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.imx-global-elements {
+  padding-left: 1em;
+}
+
+.nr-roles {
+  font-style: italic;
+}
+
+.imx-delegation-type {
+  > * :not(last-child) {
+    margin-right: 15px;
+  }
+}
+
+.imx-class-title {
+  font-weight: 600;
+  margin: 30px 0 0 0;
+}

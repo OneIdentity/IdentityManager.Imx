@@ -1,0 +1,46 @@
+<div class="imx-content-header">
+  <h1 class="mat-headline">
+    {{ '#LDS#Database log' | translate }}
+  </h1>
+</div>
+<div class="imx-table-container">
+  <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings" (search)="onSearch($event)"
+    [hiddenElements]="['settings', 'selectedViewGroup']" (navigationStateChanged)="getData($event)">
+    <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
+  </imx-data-source-toolbar>
+  <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual">
+    <imx-data-table-column columnLabel="" [entityColumn]="entitySchemaJournal?.Columns.MessageType"
+      [entitySchema]="entitySchemaJournal">
+      <ng-template let-data>
+        <div class="imx-icon-column" [ngSwitch]="data.MessageType.value">
+          <eui-icon *ngSwitchCase="'I'" icon="info" size="18px" matTooltip="{{ '#LDS#Information' | translate }}">
+          </eui-icon>
+          <eui-icon *ngSwitchCase="'W'" icon="warning" size="18px" matTooltip="{{ '#LDS#Warning' | translate }}">
+          </eui-icon>
+          <eui-icon *ngSwitchCase="'E'" icon="error" size="18px" matTooltip="{{ '#LDS#Error' | translate }}"></eui-icon>
+        </div>
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchemaJournal?.Columns.MessageDate"
+      [entitySchema]="entitySchemaJournal">
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchemaJournal?.Columns.ApplicationName"
+      [entitySchema]="entitySchemaJournal">
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchemaJournal?.Columns.MessageString"
+      [entitySchema]="entitySchemaJournal">
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchemaJournal?.Columns.HostName" [entitySchema]="entitySchemaJournal">
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchemaJournal?.Columns.LogonUser" [entitySchema]="entitySchemaJournal">
+    </imx-data-table-column>
+  </imx-data-table>
+  <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+</div>
+
+<ng-template #customToolbarTemplate>
+  <button mat-stroked-button color="primary" class="imx-refresh-button" (click)="refresh()">
+    <eui-icon icon="sync"></eui-icon>
+    <span>{{ '#LDS#Refresh' | translate }}</span>
+  </button>
+</ng-template>

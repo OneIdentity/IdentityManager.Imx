@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>{{'#LDS#Heading Deactivate Attestation Policy' | translate}}</h2>
+    <mat-dialog-content class="imx-confirm-content">
+        <p>{{'#LDS#Do you want to deactivate this attestation policy?' | translate}}</p>
+        <p>{{'#LDS#This will cause automatic cancelation of pending attestation cases when saving your changes.' | translate}}
+        </p>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-raised-button [mat-dialog-close]="true" data-imx-identifier="revert-deactivation">
+            {{"#LDS#Cancel" | translate}}
+        </button>
+        <button mat-raised-button color="primary" mat-dialog-close
+            data-imx-identifier="confirm-deactivation">{{'#LDS#Deactivate attestation policy'|translate}}</button>
+    </mat-dialog-actions>

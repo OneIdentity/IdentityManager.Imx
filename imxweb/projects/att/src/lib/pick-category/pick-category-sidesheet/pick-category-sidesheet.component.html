@@ -1,0 +1,33 @@
+<div eui-sidesheet-content>
+  <mat-card>
+    <imx-cdr-editor [cdr]="displayNameReadonlyCdr"></imx-cdr-editor>
+  </mat-card>
+  <mat-card class="imx-table-container" *ngIf="dstWrapper && dstSettings">
+    <span>{{'#LDS#Assigned identities' | translate}}</span>
+    <imx-data-source-toolbar #dst [hiddenElements]="['filter', 'groupBy', 'settings', 'selectedViewGroup']"
+      [settings]="dstSettings" (search)="getData({ search: $event })" (navigationStateChanged)="getData($event)"
+      data-imx-identifier="pick-category-sidesheet-dst">
+    </imx-data-source-toolbar>
+    <imx-data-table [dst]="dst" [detailViewVisible]="false" mode="manual" [selectable]="data.pickCategory?.IsManual?.value"
+      [showSelectedItemsMenu]="false" (selectionChanged)="onSelectionChanged($event)"
+      data-imx-identifier="pick-category-sidesheet-datatable"
+      noDataText="{{(data.pickCategory?.IsManual?.value ? '#LDS#There are currently no identities assigned.' : '#LDS#The associated identities are calculated automatically.')}}"
+      noMatchingDataText="#LDS#There are no matching identities.">
+      <imx-data-table-column data-imx-identifier="pick-category-sidesheet-table-column-display"
+        [entityColumn]="dstWrapper.propertyDisplay" [entitySchema]="dstSettings.entitySchema">
+      </imx-data-table-column>
+    </imx-data-table>
+    <imx-data-source-paginator data-imx-identifier="pick-category-sidesheet-paginator" [dst]="dst">
+    </imx-data-source-paginator>
+  </mat-card>
+</div>
+<div eui-sidesheet-actions color="white" *ngIf="data.pickCategory?.IsManual?.value">
+  <button mat-raised-button data-imx-identifier="pick-category-sidesheet-details-button-remove-items"
+    class="justify-start" [disabled]="!selectedItemsCanBeDeleted()" (click)="removePickedItems()">
+    {{'#LDS#Remove identities'| translate}}
+  </button>
+  <button mat-raised-button data-imx-identifier="pick-category-sidesheet-details-button-add-items"
+    (click)="assignPickedItems()">
+    {{'#LDS#Assign identities'| translate}}
+  </button>
+</div>

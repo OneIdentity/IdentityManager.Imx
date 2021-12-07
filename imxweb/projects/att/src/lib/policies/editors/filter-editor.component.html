@@ -1,0 +1,23 @@
+<imx-edit-generic [identifier]="filterElementModel?.attestationSubType" *ngIf="filterElementModel?.hasFk()"
+    [filterElementModel]="filterElementModel" (valueChanged)="invokeFilterChangedElement($event)">
+</imx-edit-generic>
+
+<imx-edit-origin *ngIf="filterElementModel?.policyFilterRequiresParameterName('UID_ORIGIN')" [filterElementModel]="filterElementModel"
+    [testId]="testId" [identifier]="filterElementModel?.attestationSubType"
+    (valueChanged)="invokeFilterChangedElement( $event)">
+</imx-edit-origin>
+
+<imx-edit-threshold *ngIf="filterElementModel?.policyFilterRequiresParameterName('THRESHOLD')" [filterElementModel]="filterElementModel"
+    [testId]="testId" [identifier]="filterElementModel?.attestationSubType"
+    (valueChanged)="invokeFilterChangedElement($event)">
+</imx-edit-threshold>
+
+<imx-edit-name *ngIf="filterElementModel?.policyFilterRequiresParameterName('NAME')" [filterElementModel]="filterElementModel"
+    [testId]="testId" [identifier]="filterElementModel?.attestationSubType"
+    (valueChanged)="invokeFilterChangedElement($event)">
+</imx-edit-name>
+
+<imx-edit-uint *ngIf="filterElementModel?.policyFilterRequiresParameterName('UINT')" [filterElementModel]="filterElementModel"
+    [testId]="testId" [identifier]="filterElementModel?.attestationSubType"
+    (valueChanged)="invokeFilterChangedElement($event)">
+</imx-edit-uint>

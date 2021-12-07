@@ -1,0 +1,42 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+@import '../../../../../../shared/assets/variables.scss';
+@import '../../../../../qbm/src/lib/tile/tile-variables.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  height: 100%;
+}
+
+
+.imx-flexible-tile-row {
+  display: flex;
+  flex-wrap: wrap ;
+}
+
+.mat-card {
+  width: $tile-width;
+  height: 108px;
+  overflow: auto;
+  padding: 0;
+  cursor: pointer;
+}
+
+.imx-tilebar-columns {
+  display: flex;
+  column-gap: 20px;
+}
+
+.imx-tilebar-columns ::ng-deep .imx-generic-tile,
+.imx-tilebar-columns ::ng-deep .imx-tile {
+  display: flex;
+}
+
+.mat-button{
+  text-transform: uppercase;
+}
+
+.mat-button ::ng-deep eui-icon{
+  margin-left: 15px;
+}

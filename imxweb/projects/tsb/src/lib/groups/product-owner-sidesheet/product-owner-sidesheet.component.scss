@@ -1,0 +1,17 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+.governance-sidesheet__tab-content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  > .governance-sidesheet__tab-content-body {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    > :first-child {
+      overflow: auto;
+    }
+  }
+}

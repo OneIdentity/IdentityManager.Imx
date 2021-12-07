@@ -1,0 +1,29 @@
+<ng-container *ngIf="searchResults.length > 0; else noResultsContainer">
+  <mat-selection-list [multiple]="withMultiSelect" (selectionChange)="onSelectionChanged($event)"
+    [attr.data-imx-identifier]="'data-tree-search-result-list'" [(ngModel)]="selectedOptions"
+    [class]="withMultiSelect ? 'imx-search-results-multi' : 'imx-search-results'" [compareWith]="compareFunction">
+    <mat-list-option checkboxPosition="before" *ngFor="let result of searchResults; index as i" [value]="result"
+      [ngClass]="{'imx-candidate-option':true, 'imx-selected-candidate': isSelected(result)}"
+      [attr.data-imx-identifier]="'data-tree-search-result-list-result-' + result.GetKeys()[0]">
+      <div class="imx-candidate-content">
+        <div [class]="withMultiSelect ? 'imx-candidate-display-check' : 'imx-candidate-display'">
+          <span>{{ result.GetDisplayLong() }}</span>
+          <button mat-button color="primary" (click)="action.action(result)" *ngIf="action"
+            [attr.data-imx-identifier]="'data-tree-search-result-list-result-action-button-' + result.GetKeys()[0]">
+            {{action.caption || '#LDS#Details' | translate}}
+          </button>
+        </div>
+      </div>
+    </mat-list-option>
+  </mat-selection-list>
+  <mat-paginator [length]="paginatorLength" [pageSize]="paginatorPageSize" [pageSizeOptions]="[25, 50, 100]"
+    (page)="onPaginatorStateChanged($event)" data-imx-identifier="data-tree-search-result-paginator">
+  </mat-paginator>
+</ng-container>
+
+<ng-template #noResultsContainer>
+  <div class="imx-data-tree-no-results" *ngIf="!loading">
+    <eui-icon [icon]="noMatchingDataIcon"></eui-icon>
+    <p [translate]="noMatchingDataText"></p>
+  </div>
+</ng-template>

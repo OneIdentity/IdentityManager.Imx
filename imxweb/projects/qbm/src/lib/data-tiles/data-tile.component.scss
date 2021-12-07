@@ -1,0 +1,129 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+@mixin imx-data-tile-title-mixin {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:host {
+  margin: 10px 20px 10px 10px;
+}
+
+.cardContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.badgeContainer {
+  display: flex;
+  justify-content: flex-end;
+  margin-right: -7px;
+  margin-bottom: -13px;
+  margin-top: -8px;
+  z-index: 1;
+}
+
+.badgeContainer > .imx-badge {
+  margin-left: 10px;
+  padding-right: 0;
+  padding-left: 0;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.imx-selected-icon-container {
+  height: 25px;
+  width: 25px;
+  background-color: #618F3E;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: -13px;
+  margin-top: -8px;
+  margin-left: -10px;
+  z-index: 1;
+
+  .imx-selected-icon {
+    color: white;
+  }
+}
+
+.mat-card {
+  cursor: pointer;
+  width: 340px;
+  height: 140px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 50px auto 30px;
+  grid-template-rows: 30px 20px auto;
+}
+
+.mat-badge-content {
+  width: auto; // support for IE 11
+  width: fit-content;
+  text-align: center;
+  border-radius: 7px;
+  padding: 0 5px 0 5px;
+}
+
+.mat-mini-fab[disabled] {
+  cursor: pointer;
+}
+
+.imx-data-tile-icon {
+  grid-column-start: 1;
+  grid-column-end: 2;
+  grid-row-start: 1;
+  grid-row-end: 2;
+  padding: 3px;
+}
+
+.imx-data-tile-title {
+  @include imx-data-tile-title-mixin();
+  font-weight: bold;
+  margin: 0;
+  grid-column-start: 2;
+  grid-column-end: 4;
+  grid-row-start: 1;
+  grid-row-end: 2;
+}
+
+.imx-data-tile-subtitle {
+  @include imx-data-tile-title-mixin();
+  font-size: small;
+  color: $black-9;
+  margin: 0 0 10px 0;
+  grid-column-start: 2;
+  grid-column-end: 4;
+  grid-row-start: 2;
+  grid-row-end: 3;
+  align-self: end;
+}
+
+.imx-data-tile-custom-content {
+  overflow-y: auto;
+  overflow-x: hidden;
+  grid-column-start: 1;
+  grid-column-end: 3;
+  grid-row-start: 3;
+  grid-row-end: 4;
+}
+
+.imx-data-tile-custom-menu {
+  grid-column-start: 2;
+  grid-column-end: 4;
+  grid-row-start: 3;
+  grid-row-end: 4;
+  align-self: end;
+  justify-self: end;
+}
+
+.imx-fallbackicon {
+  background-repeat: no-repeat;
+  background-position: center;
+  color: #b2b2b2;
+}
+
+

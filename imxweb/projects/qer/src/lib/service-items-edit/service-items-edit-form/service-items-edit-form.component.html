@@ -1,0 +1,25 @@
+<mat-card>
+  <form [formGroup]="formGroup">
+    <div *ngIf="cdrList?.length > 0" class="imx-property-container">
+      <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"
+        [attr.data-imx-identifier]="'service-items-edit-form-cdr-' + cdr.column.ColumName"
+        (controlCreated)="cdr.column.ColumnName  === 'JPegPhoto' ? onFormControlCreated($event, cdr) : onFormControlCreated($event)">
+      </imx-cdr-editor>
+    </div>
+    <imx-service-item-tags *ngIf="productTagsSelected" [selection]="productTagsSelected" [loading]="loadingTags"
+      (controlCreated)="onFormControlCreated($event)" data-imx-identifier="service-items-edit-form-tags-editor">
+    </imx-service-item-tags>
+
+    <mat-slide-toggle #toggle class="imx-custom-toggle" [formControl]="isInActiveFormControl"
+      *ngIf="serviceItem && canEditProperty(serviceItem?.IsInActive?.Column?.ColumnName)"
+      (change)="onRequestableToggleChanged($event)" [disabled]="!serviceItem.IsInActive.GetMetadata().CanEdit()"
+      [attr.data-imx-identifier]="'service-items-edit-form-toggle-for-column-' + serviceItem?.IsInActive?.Column?.ColumnName">
+      <span [translate]="toggle.checked ? '#LDS#Requestable' : '#LDS#Not requestable'"></span>
+    </mat-slide-toggle>
+
+    <imx-owner-control #ownerControl [column]="serviceItem?.UID_OrgRuler?.Column"
+      *ngIf="canEditProperty(serviceItem?.UID_OrgRuler?.Column?.ColumnName)"
+      data-imx-identifier="service-items-edit-form-ownercontrol" (formControlCreated)="onFormControlCreated($event)">
+    </imx-owner-control>
+  </form>
+</mat-card>

@@ -1,0 +1,124 @@
+/*
+ * ONE IDENTITY LLC. PROPRIETARY INFORMATION
+ *
+ * This software is confidential.  One Identity, LLC. or one of its affiliates or
+ * subsidiaries, has supplied this software to you under terms of a
+ * license agreement, nondisclosure agreement or both.
+ *
+ * You may not copy, disclose, or use this software except in accordance with
+ * those terms.
+ *
+ *
+ * Copyright 2021 One Identity LLC.
+ * ALL RIGHTS RESERVED.
+ *
+ * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
+ * WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+ * TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR
+ * NON-INFRINGEMENT.  ONE IDENTITY LLC. SHALL NOT BE
+ * LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE
+ * AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
+ * THIS SOFTWARE OR ITS DERIVATIVES.
+ *
+ */
+import { OnDestroy, Component, EventEmitter } from '@angular/core';
+import { AbstractControl, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
+
+import { CdrEditor } from './cdr-editor.interface';
+import { ColumnDependentReference } from './column-dependent-reference.interface';
+import { ClassloggerService } from '../classlogger/classlogger.service';
+import { EntityColumnContainer } from './entity-column-container';
+
+@Component({ template: '' })
+export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
+  /**
+   * The form element, that is used in the template for the component
+   */
+  public abstract readonly control: AbstractControl;
+
+  public readonly columnContainer = new EntityColumnContainer<T>();
+
+  public readonly valueHasChanged = new EventEmitter<any>();
+
+  public isBusy = false;
+
+  private readonly subscribers: Subscription[] = [];
+
+  public constructor(protected readonly logger: ClassloggerService) { }
+
+  public ngOnDestroy(): void {
+    this.subscribers.forEach(s => s.unsubscribe());
+  }
+
+
+  /**
+   * Binds a column dependent reference to the component
+   * @param cdref a column dependent reference
+   */
+  public bind(cdref: ColumnDependentReference): void {
+    if (cdref && cdref.column) {
+      this.columnContainer.init(cdref);
+
+      this.setControlValue();
+
+      this.subscribers.push(this.control.valueChanges.subscribe(async value => this.writeValue(value)));
+
+      // bind to entity change event
+      this.subscribers.push(this.columnContainer.subscribe(() => {
+        if (this.control.value !== this.columnContainer.value) {
+          this.logger.trace(this, 'Control set to new value');
+          this.setControlValue();
+          this.valueHasChanged.emit(this.control.value);
+        }
+      }));
+
+      this.logger.trace(this, 'Control initialized');
+    } else {
+      this.logger.error(this, 'The Column Dependent Reference is undefined');
+    }
+  }
+
+  private setControlValue(): void {
+    this.control.setValue(this.columnContainer.value, { emitEvent: false });
+    if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
+      this.logger.debug(this, 'value is required');
+      this.control.setValidators(Validators.required);
+    }
+  }
+
+  /**
+   * updates the value for the CDR
+   * @param value the new value
+   */
+  private async writeValue(value: any): Promise<void> {
+    if (this.control.errors) {
+      this.logger.debug(this, 'writeValue - validation failed');
+      return;
+    }
+
+    this.logger.debug(this, 'writeValue called with value', value);
+
+    if (!this.columnContainer.canEdit || this.columnContainer.value === value) {
+      return;
+    }
+
+    this.isBusy = true;
+    try {
+      this.logger.debug(this, 'writeValue - PutValue...');
+      await this.columnContainer.updateValue(value);
+    } catch (e) {
+      this.logger.error(this, e);
+    } finally {
+      this.isBusy = false;
+      if (this.control.value !== this.columnContainer.value) {
+        this.control.setValue(this.columnContainer.value, { emitEvent: false });
+        this.logger.debug(this, 'form control value is set to', this.control.value);
+      }
+    }
+
+    this.valueHasChanged.emit(value);
+  }
+}

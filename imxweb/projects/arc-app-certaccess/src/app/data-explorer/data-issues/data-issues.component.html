@@ -1,0 +1,123 @@
+<div class="data-issues">
+  <mat-card class="data-issues-card" *ngIf="issues?.readinessCount > 0">
+    <h1 translate>#LDS#Heading Data Readiness</h1>
+    <p translate>#LDS#Here you can get an overview of issues with your data and fix them.</p>
+
+    <div class="data-issues-list">
+      <div class="data-issue" *ngIf="issues?.identities > 0">
+        <eui-icon icon="contactinfo"></eui-icon>
+        <span>
+          <div translate>#LDS#Identities</div>
+          <div class="data-issue-desc" *ngIf="issues?.identities > 1">
+            <span>{{ '#LDS#{0} identities' | translate | ldsReplace: issues?.identities }}</span
+            >&nbsp;
+            {{ '#LDS#need a manager' | translate }}
+          </div>
+          <div class="data-issue-desc" *ngIf="issues?.identities === 1">
+            <span>{{ '#LDS#{0} identity' | translate | ldsReplace: issues?.identities }}</span
+            >&nbsp;
+            {{ '#LDS#needs a manager' | translate }}
+          </div>
+        </span>
+        <span>
+          <button mat-flat-button color="primary" (click)="fixIdentities()" data-imx-identifier="data-issues-identities-fix">
+            <span translate>#LDS#Fix</span>
+          </button>
+          <button mat-stroked-button (click)="viewIdentities()" data-imx-identifier="data-issues-identities-view">
+            <span translate>#LDS#View</span>
+          </button>
+        </span>
+      </div>
+
+      <div class="data-issue" *ngIf="issues?.accounts > 0">
+        <eui-icon icon="account"></eui-icon>
+        <span>
+          <div translate>#LDS#User accounts</div>
+          <div class="data-issue-desc" *ngIf="issues?.accounts > 1">
+            <span>{{ '#LDS#{0} user accounts' | translate | ldsReplace: issues?.accounts }}</span
+            >&nbsp;
+            {{ '#LDS#need an identity' | translate }}
+          </div>
+          <div class="data-issue-desc" *ngIf="issues?.accounts === 1">
+            <span>{{ '#LDS#{0} user account' | translate | ldsReplace: issues?.accounts }}</span
+            >&nbsp;
+            {{ '#LDS#needs an identity' | translate }}
+          </div>
+        </span>
+        <span>
+          <button mat-stroked-button (click)="fixAccounts()" data-imx-identifier="data-issues-accounts-view">
+            <span translate>#LDS#View</span>
+          </button>
+        </span>
+      </div>
+
+      <div class="data-issue" *ngIf="issues?.groups > 0">
+        <eui-icon icon="usergroup"></eui-icon>
+        <span>
+          <div translate>#LDS#System entitlements</div>
+          <div class="data-issue-desc" *ngIf="issues?.groups > 1">
+            <span>{{ '#LDS#{0} system entitlements' | translate | ldsReplace: issues?.groups }}</span
+            >&nbsp;
+            {{ '#LDS#need a product owner' | translate }}
+          </div>
+          <div class="data-issue-desc" *ngIf="issues?.groups === 1">
+            <span>{{ '#LDS#{0} system entitlement' | translate | ldsReplace: issues?.groups }}</span
+            >&nbsp;
+            {{ '#LDS#needs a product owner' | translate }}
+          </div>
+        </span>
+        <span>
+          <button mat-stroked-button (click)="fixGroups()" data-imx-identifier="data-issues-groups-view">
+            <span translate>#LDS#View</span>
+          </button>
+        </span>
+      </div>
+
+      <div class="data-issue" *ngIf="issues?.noRequestableGroups">
+        <eui-icon icon="usergroup"></eui-icon>
+        <span>
+          <div translate>#LDS#System entitlements</div>
+          <div class="data-issue-desc">
+            {{ '#LDS#There are no requestable system entitlements' | translate }}
+          </div>
+        </span>
+        <span>
+          <button mat-stroked-button (click)="fixUnrequestableGroups()" data-imx-identifier="data-issues-requestable-groups-view">
+            <span translate>#LDS#View</span>
+          </button>
+        </span>
+      </div>
+
+    </div>
+
+  </mat-card>
+
+  <mat-card *ngIf="issues?.accountsManager > 0" class="data-issues-card data-discrepancies">
+    <h1 translate>#LDS#Heading Data Discrepancies</h1>
+    <p translate>#LDS#There are inconsistencies in your data you may need to resolve.</p>
+
+    <div class="data-issues-list">
+      <div class="data-issue" *ngIf="issues?.accountsManager > 0">
+        <eui-icon icon="account"></eui-icon>
+        <span>
+          <div translate>#LDS#User accounts</div>
+          <div class="data-issue-desc" *ngIf="issues?.accountsManager > 1">
+            <span>{{ '#LDS#{0} user accounts' | translate | ldsReplace: issues?.accountsManager }}</span
+            >&nbsp;
+            {{ "#LDS#have a manager that does not match their identity's manager" | translate }}
+          </div>
+          <div class="data-issue-desc" *ngIf="issues?.accountsManager === 1">
+            <span>{{ '#LDS#{0} user account' | translate | ldsReplace: issues?.accountsManager }}</span
+            >&nbsp;
+            {{ "#LDS#has a manager that does not match its identity's manager" | translate }}
+          </div>
+        </span>
+        <span>
+          <button mat-stroked-button (click)="fixAccountsManager()" data-imx-identifier="data-issues-accounts-manager-view">
+            <span translate>#LDS#View</span>
+          </button>
+        </span>
+      </div>
+    </div>
+  </mat-card>
+</div>

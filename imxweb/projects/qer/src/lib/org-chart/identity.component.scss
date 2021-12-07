@@ -1,0 +1,61 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import "./variables.scss";
+
+:host {
+  display: block;
+  width: auto;
+  height: $Imx_Identity_PhotoSize;
+  position: relative;
+  background-color: white;
+}
+
+.identity-name {
+  word-break: break-all;
+}
+
+.identity-photo {
+  width: $Imx_Identity_PhotoSize;
+  height: $Imx_Identity_PhotoSize;
+  border-radius: 50%;
+  border: solid 1px gray;
+  background-color: lightgray;
+  display: flex;
+  align-items: center;
+  align-content: center;
+
+  position: relative;
+
+  eui-icon {
+    /* to center the profile picture*/
+    text-align: center;
+    flex: 1 1;
+    color: gray;
+  }
+}
+
+.identity-photo-overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.identity-title {
+  font-style: italic;
+  font-size: small;
+}
+
+.identity-type {
+  color: calc(brigh);
+}
+
+.identity-info {
+  position: absolute;
+  left: 60px;
+  top: 0.5em;
+}

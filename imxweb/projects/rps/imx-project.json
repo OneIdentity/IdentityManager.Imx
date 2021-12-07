@@ -1,0 +1,13 @@
+{
+  "Name": "rps",
+  "Path": "imxweb\\projects\\rps",
+  "ProjectType": "ng-lib",
+  "ProjectDependcies": [
+    "qbm",
+    "qer"
+  ],
+  "ChangePatterns": [
+    "imxweb\\projects\\rps",
+    "imxweb\\shared\\assets"
+  ]
+}

@@ -1,0 +1,3 @@
+<img *ngIf="isBuiltIn()" [src]="appConfig.BaseUrl + '/' + builtInCaptchaUrl + captchaSvc.builtInUrlParameter">
+
+<p *ngIf="!isBuiltIn()" translate>The CAPTCHA configuration is unsupported.</p>

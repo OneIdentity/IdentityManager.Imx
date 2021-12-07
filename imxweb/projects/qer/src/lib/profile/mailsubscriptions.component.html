@@ -1,0 +1,17 @@
+<mat-card>
+  <p classs="mat-h3">{{'#LDS#Here you can specify on which events you want to be notified by email.' | translate}}</p>
+
+  <div class="imx-list">
+    <mat-selection-list #list [(ngModel)]="selectedOptions" (selectionChange)="onSelectionChanged()">
+        <mat-list>
+            <mat-list-option *ngFor="let m of mailInfo" [value]="m.UidMail">
+                <div>{{m.Display}}</div>
+                <div class="imx-list-item-subtitle">{{ m.Description }}</div>
+            </mat-list-option>
+        </mat-list>
+    </mat-selection-list>
+  </div>
+  <mat-card-actions>
+    <button mat-raised-button color="primary" (click)="saveChanges()" [disabled]="!selectionChanged">{{'#LDS#Save' | translate}}</button>
+  </mat-card-actions>
+</mat-card>

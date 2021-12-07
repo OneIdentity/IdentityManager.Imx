@@ -1,0 +1,24 @@
+<imx-data-tile *ngFor="let item of dst?.settings?.dataSource?.Data"
+  [typedEntity]="item"
+  [isSelected]="isSelected(item)"
+  [isSelectable]="selectable"
+  [status]="dst.itemStatus"
+  [image]="image"
+  [icon]="icon"
+  [fallbackIcon]="fallbackIcon"
+  [contentTemplate]="contentTemplate"
+  (selectionChanged)="onSelectionChanged($event)"
+  (badgeClicked)="onBadgeClicked($event)"
+  [titleObject]="titleObject"
+  [subtitleObject]="subtitleObject"
+  [actions]="actions"
+  (actionSelected)="onActionSelected($event)"
+  data-imx-identifier="datatiles-child"
+  [useActionMenu]="useActionMenu"
+  [width]="width"
+  [height]="height">
+</imx-data-tile>
+<span *ngIf="dst?.settings?.dataSource == null || dst?.settings?.dataSource.totalCount == 0">
+  {{ noItemsFoundText ? noItemsFoundText : '#LDS#No items found.' | translate }}
+</span>
+

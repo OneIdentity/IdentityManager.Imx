@@ -1,0 +1,8 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+.imx-hyperview-site {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: mat-color($asher-gray-palette, 100);
+}

@@ -1,0 +1,21 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="InstallBasePackages" ToolsVersion="15.0">
+
+    <Import Project="$(VI_PROJECTDIR)\Build\Includes\Common.targets"/>
+	
+	<PropertyGroup>
+		<ComponentDir>imxweb\project-build\base-packages</ComponentDir>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Workspace>$(VI_PROJECTDIR)\imxweb</Workspace>
+		<Npm>$(VI_PROJECTDIR)\bin\npm</Npm>
+		<NpmOptions>--scripts-prepend-node-path=true</NpmOptions>
+		<ImxwebAssemblies>$(VI_PROJECTDIR)\Assemblies\imxweb</ImxwebAssemblies>
+		<PackageNames>imx-qbm-dbts</PackageNames>
+	</PropertyGroup>
+
+	<Target Name="InstallBasePackages" Condition="'$(BUILD_WEB)' != 'no'">
+	    <Exec Command='$(Npm) install $(PackageNames) --no-audit --save=false --progress=false $(NpmOptions)' WorkingDirectory="$(Workspace)" />
+	</Target>
+
+</Project>

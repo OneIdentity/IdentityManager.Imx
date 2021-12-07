@@ -1,0 +1,13 @@
+<div class="imx-content">
+  <p>{{ "#LDS#Select additional employees below. The product {0} will be requested for these employees."
+      | translate | ldsReplace:[data.display] }}</p>
+  <imx-fk-selector #fkSelector [data]="data.fkData" (elementSelected)="closeDialog([$event])"></imx-fk-selector>
+</div>
+
+<div class="imx-actions">
+  <button *ngIf="fkSelector?.selectedCandidates?.length > 0" mat-stroked-button type="button" (click)="fkSelector.clearSelection()" data-imx-identifier="cdr-fkadvancedpicker-button-clear-selection">
+      {{ '#LDS#Clear selection' | translate }}
+    </button>
+  <button data-imx-identifier="order-additional-button-apply" mat-raised-button color="primary"
+      (click)="closeDialog(fkSelector?.selectedCandidates)">{{'#LDS#Apply' | translate}}</button>
+  </div>

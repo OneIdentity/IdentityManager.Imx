@@ -1,0 +1,45 @@
+<div class="imx-multi-select-formcontrol-container">
+  <eui-search class="multi-select-formcontrol-eui-search" data-imx-identifier="multi-select-formcontrol-eui-search"
+    [placeholder]="'#LDS#Search' | translate" [searchControl]="searchControl" size="small">
+  </eui-search>
+  <mat-form-field appearance="outline">
+    <mat-label>{{ entityColumn?.GetMetadata().GetDisplay() }}</mat-label>
+    <input value="_hidden" matInput hidden>
+
+    <cdk-virtual-scroll-viewport #viewport [itemSize]="50" minBufferPx="200" maxBufferPx="400" class="imx-viewport">
+      <mat-selection-list (selectionChange)="updateSelected($event)">
+        <mat-list-option *cdkVirtualFor="let candidate of candidates; index as i" [value]="candidate"
+          class="imx-candidate-option" [attr.data-imx-identifier]="'multi-select-formcontrol-list' + candidate.Keys[0]">
+          <div class="imx-candidate-content">
+            <div class="imx-candidate-display">{{ candidate.Display }}</div>
+          </div>
+        </mat-list-option>
+      </mat-selection-list>
+    </cdk-virtual-scroll-viewport>
+
+  </mat-form-field>
+</div>
+
+<div>
+  <mat-spinner diameter="16" *ngIf="loading"></mat-spinner>
+</div>
+
+<mat-form-field appearance="outline">
+  <mat-label>
+    {{ (selectedElementsCaption) + ' ('+ selectedCandidates?.length + ')' }}
+  </mat-label>
+  <input value="_hidden" matInput hidden>
+  <mat-list #selectedList role="list" class="imx-selected-candidates">
+    <mat-list-item role="listitem" *ngFor="let selectedCandidate of selectedCandidates; index as i"
+      checkboxPosition="before" class="imx-candidate-option"
+      [attr.data-imx-identifier]="'multi-select-formcontrol-selector-list' + selectedCandidate.Keys[0]">
+      <div class="imx-candidate-content">
+        <div class="imx-candidate-display">{{ selectedCandidate.Display }}</div>
+        <eui-icon icon="close" (click)="removeSelectedAtIndex(i)"
+          [attr.data-imx-identifier]="'multi-select-formcontrol-button-delete-selected-' + i"></eui-icon>
+      </div>
+    </mat-list-item>
+  </mat-list>
+  <button color="primary" mat-button (click)="clearSelection()"
+    data-imx-identifier="multi-select-form-control-remove-all-button">{{'#LDS#Remove all' |translate}}</button>
+</mat-form-field>

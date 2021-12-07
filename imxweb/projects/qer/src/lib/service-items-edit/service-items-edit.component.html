@@ -1,0 +1,42 @@
+<div class="imx-service-items-page">
+  <div class="heading-wrapper">
+    <h1 class="mat-headline">
+      {{ '#LDS#Heading Service Items' | translate }}
+    </h1>
+    <div class="alert-wrapper">
+      <eui-alert class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true">
+        <span>
+          {{'#LDS#Here you can get an overview of service items.' | translate }}
+        </span>
+      </eui-alert>
+    </div>
+  </div>
+  <div class="imx-table-container" *ngIf="dstWrapper && dstSettings">
+    <imx-data-source-toolbar #dst [hiddenElements]="['filter', 'groupBy', 'settings', 'selectedViewGroup']"
+      [settings]="dstSettings" (search)="getData({ search: $event })" (navigationStateChanged)="getData($event)"
+      data-imx-identifier="service-items-dst">
+    </imx-data-source-toolbar>
+    <imx-data-table #dataTable [dst]="dst" class="imx-pickcategory-table" [detailViewVisible]="false" mode="manual"
+      [showSelectedItemsMenu]="false" data-imx-identifier="service-items-datatable">
+      <imx-data-table-column data-imx-identifier="service-items-table-column-display"
+        [entityColumn]="dstWrapper.propertyDisplay" [entitySchema]="dstSettings.entitySchema">
+      </imx-data-table-column>
+      <imx-data-table-generic-column columnName="Requestable" [columnLabel]="'#LDS#Requestable' | translate"
+        data-imx-identifier="service-items-table-column-IsInActive">
+        <ng-template let-item>
+          {{ (item?.IsInActive?.Column?.GetValue() ? '#LDS#No' : '#LDS#Yes') | translate }}
+        </ng-template>
+      </imx-data-table-generic-column>
+      <imx-data-table-generic-column columnName="viewDetailsButton">
+        <ng-template let-item>
+          <button mat-button color="primary" (click)="viewDetails(item)"
+            data-imx-identifier="service-items-button-view-details">
+            {{'#LDS#Edit' | translate}}
+          </button>
+        </ng-template>
+      </imx-data-table-generic-column>
+    </imx-data-table>
+    <imx-data-source-paginator data-imx-identifier="service-items-paginator" [dst]="dst">
+    </imx-data-source-paginator>
+  </div>
+</div>

@@ -1,0 +1,5 @@
+<imx-application-property [display]="property?.Column.GetMetadata().GetDisplay()" [icon]="icon">
+  <div class="imx-user-properties">
+    <span>{{ property?.Column.GetDisplayValue() || ('-' + (placeholder || ('#LDS#Not set' | translate)) + '-') }}</span>
+  </div>
+</imx-application-property>

@@ -1,0 +1,47 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+li {
+  max-width: 460px;
+}
+
+li.imx-event {
+  list-style-type: none;
+  padding: 0 0 20px 48px;
+  min-height: 32px;
+}
+
+li.imx-event::before {
+  margin-left: -50px;
+  background-color: $white;
+  height: 24px;
+  width: 28px;
+  content: "";
+  float: left;
+  margin-top: -2px;
+}
+
+li.imx-event.imx-pending {
+  background: linear-gradient($black-b, $black-b) no-repeat scroll 9px 0 transparent;
+  background-size: 2px 1000px;
+}
+
+li.imx-event.imx-pending::before {
+  font-family: Cadence-Icon;
+  font-size: 24px;
+  color: $black-b;
+  content: "\e009";
+}
+
+.mat-card-header {
+  margin-left: -16px;
+  margin-bottom: 10px;
+}
+
+.mat-card-header .mat-card-title {
+  font-size: 1.05em;
+  margin-bottom: 0;
+}
+
+.imx-approver {
+  display: block;
+}

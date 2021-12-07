@@ -1,0 +1,155 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.imx-top-container {
+  display: grid;
+  grid-template-columns: 35% auto 1fr 1fr;
+  grid-template-rows: 70px 50px auto;
+  gap: 10px;
+  margin-bottom: 10px;
+
+  .imx-helper-alert {
+    margin: 0 0 20px auto;
+    grid-column: 2 / span 3;
+    grid-row: 1 / span 3;
+    max-width: max(500px, 50%);
+    justify-self: end;
+  }
+}
+
+.mat-tab-group {
+  overflow: hidden;
+  flex: 1 1 auto;
+
+  ::ng-deep .mat-tab-body-wrapper {
+    flex: 1 1 auto;
+  }
+
+  .imx-tab-body-content {
+    padding-top:10px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+}
+
+.imx-title {
+  font-size: 24px;
+  grid-column-start: 1;
+  grid-column-end: 1;
+  grid-row-start: 1;
+  grid-row-end: 1;
+}
+
+.imx-history {
+  grid-column-start: 4;
+  grid-column-end: 4;
+  grid-row-start: 1;
+  grid-row-end: 3;
+  height: 160px;
+  width:400px;
+  justify-self: end;
+  overflow: hidden;
+
+  .mat-card-content {
+    margin-bottom: 0px;
+    height: 60px;
+  }
+
+  .mat-card-actions {
+    padding-top: 2px;
+  }
+}
+
+.imx-peer {
+  grid-column-start: 3;
+  grid-column-end: 3;
+  grid-row-start: 1;
+  grid-row-end: 3;
+  height: 160px;
+  overflow: hidden;
+
+  .mat-card-content {
+    margin-bottom: 0px;
+    height: 60px;
+  }
+
+  .mat-card-actions {
+    padding-top: 2px;
+  }
+}
+
+.imx-recipients {
+  grid-column-start: 1;
+  grid-column-end: 1;
+  grid-row-start: 2;
+  grid-row-end: 2;
+}
+
+.imx-categories {
+  grid-column-start: 1;
+  grid-column-end: 4;
+  grid-row-start: 3;
+  grid-row-end: 3;
+}
+
+.imx-search-headline {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 10px;
+
+  h1 {
+    margin-right: 10px;
+  }
+}
+
+.imx-button-bar {
+  display: flex;
+  margin-top: 10px;
+
+  ::ng-deep .imx-badge.eui-badge .eui-badge-content {
+    font-size: 14px;
+    line-height: 14px;
+  }
+
+  .imx-selected-products {
+    margin: 0;
+    line-height: 36px;
+  }
+
+  button {
+    margin-left: 10px;
+  }
+
+  .imx-menu-spacer {
+    flex-grow: 1;
+  }
+}
+
+.imx-alert-button {
+  align-self: flex-end;
+}
+
+.imx-flex-alert {
+  display: flex;
+  flex-direction: column;
+}
+
+@media only screen and (max-width: 1024px) {
+  .imx-top-container {
+    grid-template-rows: 40px 70px 70px;
+  }
+
+  .imx-history {
+    grid-column-end: 5;
+    grid-row-end: 2;
+  }
+
+  .imx-categories {
+    grid-column-end: 5;
+  }
+}

@@ -1,0 +1,13 @@
+<!-- Notification Tile -->
+<imx-icon-tile *ngIf="showAskForNotifications" data-imx-identifier="start-tile-no-password-query-and-answer-set"
+   [caption]="'#LDS#Heading Notifications' | translate "   
+   [subtitle]="'#LDS#Allow this website to send you notifications.' | translate "
+   [identifier]="'no-password-query-and-answer-set'" >
+   <ng-template #ActionTemplate>
+      <button mat-button color="primary" [attr.data-imx-identifier]="'imx-start-button-turn-on-notifications'"
+        (click)="requestNotificationPermission()">
+        <span>{{'#LDS#Allow notifications' | translate}}</span>
+      </button>
+    </ng-template>
+   </imx-icon-tile>
+   

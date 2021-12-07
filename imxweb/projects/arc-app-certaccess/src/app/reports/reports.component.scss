@@ -1,0 +1,56 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+:host {
+  height: 100%;
+}
+
+.arc-gov-reports {
+  overflow: auto;
+  height: 100%;
+  padding: 32px;
+
+  .reports-card {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 24px;
+    padding-top: 16px;
+
+    & > h1 {
+      margin-bottom: 10px;
+    }
+
+    & > p {
+      margin-top: 5px;
+      margin-bottom: 30px;
+      color: $black-9;
+    }
+
+    .report-category {
+      margin-bottom: 25px;
+
+      & > label {
+        display: block;
+        color: rgba($black, 0.6);
+        font-size: 12px;
+      }
+
+      .mat-radio-button {
+        margin-right: 15px;
+
+        &:last-of-type {
+          margin-right: 0;
+        }
+      }
+    }
+
+    .report-type {
+      .mat-form-field {
+        width: 100%;
+      }
+    }
+
+    .report-params {
+      margin-bottom: 25px;
+    }
+  }
+}

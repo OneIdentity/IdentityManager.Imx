@@ -1,0 +1,17 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: inherit;
+  max-width: 1200px;
+}
+
+.imx-button-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+
+  > button {
+    margin-left: 5px;
+  }
+}

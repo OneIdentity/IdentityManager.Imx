@@ -1,0 +1,55 @@
+<mat-card class="data-explorer data-explorer--identities" [class.identities--fullscreen]="showFullscreen">
+  <div class="data-explorer-card-header">
+    <div class="data-explorer-card-header-bg">
+      <eui-icon icon="contactinfo" size="28px"></eui-icon>
+      <span translate>#LDS#Identities</span>
+    </div>
+  </div>
+  <imx-data-source-toolbar #dst [settings]="dstSettings" [hiddenElements]="['settings', 'selectedViewGroup']"
+    [searchBoxText]="'#LDS#Search' | translate" (navigationStateChanged)="onNavigationStateChanged($event)"
+    (search)="onSearch($event)"></imx-data-source-toolbar>
+  <div class="data-explorer-table">
+    <imx-data-table [dst]="dst" (highlightedEntityChanged)="onIdentityChanged($event)" detailViewVisible="false"
+      data-imx-identifier="identities-tabledata-table" mode="manual" [groupData]="groupData"
+      (groupDataChanged)="onGroupingChange($event)">
+      <imx-data-table-column [entityColumn]="entitySchemaPersonReports?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
+        [entitySchema]="entitySchemaPersonReports">
+        <ng-template let-item>
+          <div data-imx-identifier="identities-tabledata-display">{{ item.GetEntity().GetDisplay() }}</div>
+          <div subtitle data-imx-identifier="identities-tabledata-description">{{
+            item.DefaultEmailAddress.Column.GetDisplayValue() }}</div>
+        </ng-template>
+      </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchemaPersonReports?.Columns.IsSecurityIncident" columnLabel=""
+        [entitySchema]="entitySchemaPersonReports">
+        <ng-template let-item>
+          <div *ngIf="item.IsSecurityIncident.value">
+            <eui-badge color="red">{{ '#LDS#Security risk' | translate }}</eui-badge>
+          </div>
+        </ng-template>
+      </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchemaPersonReports?.Columns.UID_Department"
+        [entitySchema]="entitySchemaPersonReports">
+      </imx-data-table-column>
+      <imx-data-table-column *ngIf="!this.isAdmin" [entityColumn]="entitySchemaPersonReports?.Columns.IdentityType"
+        [entitySchema]="entitySchemaPersonReports">
+      </imx-data-table-column>
+      <imx-data-table-column *ngIf="!this.isAdmin" [entityColumn]="entitySchemaPersonReports?.Columns.EmployeeType"
+        [entitySchema]="entitySchemaPersonReports">
+      </imx-data-table-column>
+      <imx-data-table-column *ngIf="!this.isAdmin" [entityColumn]="entitySchemaPersonReports?.Columns.IsExternal"
+        [entitySchema]="entitySchemaPersonReports">
+      </imx-data-table-column>
+      <imx-data-table-generic-column alignHeader="center" alignContent="center"
+        [columnName]="entitySchemaPersonReports?.Columns.XMarkedForDeletion.ColumnName">
+        <ng-template let-item>
+          <div *ngIf="item.XMarkedForDeletion.value !== 0">
+            <eui-badge color="gray">{{ item.XMarkedForDeletion.Column.GetDisplayValue() }}</eui-badge>
+          </div>
+        </ng-template>
+      </imx-data-table-generic-column>
+    </imx-data-table>
+
+    <imx-data-source-paginator *ngIf="!dstSettings?.groupData?.currentGrouping" [dst]="dst"></imx-data-source-paginator>
+  </div>
+</mat-card>

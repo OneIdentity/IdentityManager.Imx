@@ -1,0 +1,71 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+:host {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.imx-search-results {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  ::ng-deep.mat-pseudo-checkbox {
+    display: none !important;
+  }
+}
+
+.imx-selected-candidate {
+  background-color: $asher-gray;
+}
+
+.imx-search-results-multi {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+.imx-candidate-option {
+  line-height: 1.5em;
+  display: flex;
+  width: 100%;
+  height: 50px;
+
+  .imx-candidate-content {
+    flex: 1;
+    width: calc(100% - 25px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+
+    .imx-candidate-display,
+    .imx-candidate-display-check {
+      color: $black-3;
+      font-size: 14px;
+      line-height: 17px;
+      flex: 1 1 auto;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      width: 100vw;
+    }
+
+    .imx-candidate-display-check {
+      width: 30vw;
+    }
+
+    .imx-candidate-display{
+       display: flex;
+       flex-direction: row;
+       :first-child {
+         flex: 1 1 auto;
+         align-self: center;
+       }
+    }
+
+    .imx-candidate-longdisplay {
+      color: $black-9;
+      font-size: 12px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+}

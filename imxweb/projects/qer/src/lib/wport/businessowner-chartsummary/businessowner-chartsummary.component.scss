@@ -1,0 +1,86 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+:host {
+  display: flex;
+  flex-wrap: wrap ;
+}
+
+.imx-valuelist {
+  padding: 0;
+  margin: 0;
+  text-align: left;
+}
+
+.imx-valuelist a {
+  font-size: 16px;
+  display: block;
+  padding: 0.2em 0;
+  transition-property: all;
+  transition-duration: 0.15s;
+  color: $black-6;
+  cursor: pointer;
+}
+
+.imx-valuelist > li {
+  margin: 0;
+  padding-right: 10px;
+}
+
+.imx-valuelist a:focus,
+.imx-valuelist a:hover {
+  text-decoration: none;
+  background-color: mat-color($asher-gray-palette, 900);
+}
+
+.imx-tile-content {
+  height: 100%;
+  margin-top: 10px;
+  overflow-y: auto;
+}
+
+.imx-flex-header {
+  display: flex;
+  padding: 6px 18px;
+}
+
+.imx-flex-header > H2 {
+  flex: 1 1 auto;
+}
+
+.imx-flex-header > div {
+  flex: 0 0 auto;
+  line-height: 40px;
+}
+
+.imx-flex-header .imx-generic-tile-caption {
+  flex: 1 1 auto;
+  text-align: left;
+  overflow: hidden;
+  line-height: 40px;
+}
+
+.imx-generic-tile-caption h1 {
+  font-size: 1.15em;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  flex: 1 1 auto;
+}
+
+.imx-generic-tile-caption h1 > :last-child {
+  color: $black-9;
+  margin-left: 1ex;
+}
+
+.mat-button {
+  text-transform: uppercase;
+  margin-right: -16px;
+}
+
+.imx-generic-tile-caption h4 {
+  font-size: small;
+  line-height: 1.2em;
+  margin-top: -8px;
+  color: $black-9;
+}

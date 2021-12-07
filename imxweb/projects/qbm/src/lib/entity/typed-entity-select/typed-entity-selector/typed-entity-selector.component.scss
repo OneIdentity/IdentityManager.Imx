@@ -1,0 +1,55 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+:host {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: $asher-gray;
+}
+
+.imx-content {
+  display: flex;
+  flex-direction: column;
+  margin: 30px;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  max-height: calc(100% - 60px);
+}
+
+.imx-button-bar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0;
+  padding: 16px 32px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  background-color: $white;
+
+  button {
+    margin-left: 10px;
+  }
+
+  .justify-start {
+    margin-right: auto;
+  }
+
+  .imx-selected-items {
+    margin: 0;
+    line-height: 36px;
+  }
+
+  ::ng-deep .eui-badge .eui-badge-content {
+    font-size: 14px;
+    line-height: 14px;
+  }
+
+  .imx-badge {
+    background-color: unset;
+  }
+}
+
+.imx-fk-selector{
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}

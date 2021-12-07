@@ -1,0 +1,13 @@
+<eui-icon class="imx-search-image" size="s" icon="search"></eui-icon>
+<input type="text" class="no-focus-outline" [placeholder]="placeholder" (keyup.enter)="EmitValueChangedEvent()" matInput
+  [matAutocomplete]="auto" [(ngModel)]="filterText" (ngModelChange)="filterOptions()">
+<button mat-icon-button (click)="clearText()" *ngIf="filterText !== ''">
+  <eui-icon size="s" icon="close"></eui-icon>
+</button>
+
+
+<mat-autocomplete #auto="matAutocomplete" (optionSelected)="EmitValueChangedEvent()">
+  <mat-option *ngFor="let option of filteredOptions" [value]="option">
+    {{option}}
+  </mat-option>
+</mat-autocomplete>

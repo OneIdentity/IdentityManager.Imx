@@ -1,0 +1,28 @@
+<div class="snavigation">
+  <mat-sidenav-container>
+    <mat-sidenav mode="side" opened [ngClass]="{ 'snavigation-side--expanded': mobileSideNavExpanded }">
+      <div class="snavigation-side">
+        <div class="snavigation-side-toggle">
+          <button mat-button color="primary" (click)="toggleMobileExpand()">
+            <mat-icon>menu</mat-icon>
+          </button>
+        </div>
+
+        <div class="snavigation-side-content">
+          <div class="snavigation-side-heading" translate>#LDS#Heading Data Explorer</div>
+          <div class="snavigation-item" (click)="selectPage(item.name)" *ngFor="let item of navigationItems"
+            [ngClass]="{'snavigation-item--selected': selectedPage === item.name}">
+            <span translate>{{ item.translationKey }}</span>
+          </div>
+        </div>
+      </div>
+    </mat-sidenav>
+    <mat-sidenav-content [ngStyle]="{ 'margin-left': contentMargin }"
+      [ngClass]="{ 'snavigation--backdrop-showing': showBackdrop }">
+      <div class="snavigation-backdrop" *ngIf="showBackdrop" (click)="toggleMobileExpand()"></div>
+
+      <ng-template #sideNavContent></ng-template>
+
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

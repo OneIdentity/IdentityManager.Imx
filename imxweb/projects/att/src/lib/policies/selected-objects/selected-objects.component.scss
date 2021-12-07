@@ -1,0 +1,27 @@
+:host {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  .mat-button {
+    padding-left: 5px;
+    padding-right: 5px;
+    min-width: auto;
+    margin-left: 5px;
+  }
+
+  .imx-larger-font {
+    font-size: large;
+  }
+
+  .like-button {
+    padding-left: 5px;
+    padding-right: 5px;
+    min-width: auto;
+    margin-left: 5px;
+  }
+}
+
+  
+  
+  

@@ -1,0 +1,31 @@
+<mat-card>
+  <mat-card-content class="imx-user-card">
+    <div class="imx-user-image-row">
+      <img *ngIf="imageUrl" [src]="imageUrl">
+      <mat-icon *ngIf="!imageUrl" class="imx-user-icon">account_circle</mat-icon>
+    </div>
+    <div *ngIf="name" class="imx-user-text-row">
+      <div>{{ '#LDS#Welcome'| translate }},&nbsp;</div>
+      <div class="imx-user-name">{{ name }}</div>
+    </div>
+  </mat-card-content>
+</mat-card>
+<mat-card>
+  <mat-card-title>{{ '#LDS#Applications' | translate }}</mat-card-title>
+  <mat-card-content *ngIf="numberOfApplications > 0; else noAppsAvailable">
+    {{ '#LDS#{0} Applications' | translate | ldsReplace:numberOfApplications }}
+  </mat-card-content>
+  <ng-template #noAppsAvailable>
+    <mat-card-content>
+      {{ '#LDS#No Applications Created' | translate }}
+    </mat-card-content>
+  </ng-template>
+  <mat-card-actions>
+    <button mat-button color="primary" *ngIf="numberOfApplications > 0"
+      [routerLink]="['/applications', {outlets: { primary: ['navigation'], content: ['detail']}}]">{{ '#LDS#Manage' | translate }}</button>
+    <button *ngIf="isAdmin" mat-button color="primary"
+      [routerLink]="['/applications', {outlets: { primary: ['navigation'], content: ['edit']}}]"
+      [queryParams]="{ create: true }">{{ '#LDS#Create' | translate }}</button>
+  </mat-card-actions>
+</mat-card>
+<imx-global-kpi *ngIf="isAdmin"></imx-global-kpi>

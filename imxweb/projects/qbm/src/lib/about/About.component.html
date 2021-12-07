@@ -1,0 +1,75 @@
+<mat-dialog-content class="imx-flex-child">
+  <mat-tab-group class="imx-about-tabs">
+    <mat-tab label="{{ '#LDS#About' | translate }}">
+      <ng-template matTabContent>
+        <a class="imx-productLink" href="{{ product['ProductPageUrl'] }}">
+          <eui-logo size="72"></eui-logo>
+        </a>
+        <div class="imx-productNameVersion" data-imx-identifier="ProductName and Version">
+          <div>{{ product['Name'] }}</div>
+          <div>{{ product['Version'] }}</div>
+        </div>
+        <div class="imx-productCopyright" data-imx-identifier="Patents, Trademark, Copyright">
+          <div>{{ '#LDS#{0} All rights reserved.' | translate | ldsReplace: product['Copyright'] }}</div>
+          <div>
+            {{ '#LDS#This product is protected by U.S. and international copyright and intellectual property laws.' | translate }}
+          </div>
+        </div>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="{{ '#LDS#Legal Notices' | translate }}">
+      <div class="imx-flex-child" class="imx-legalNotice">
+        <mat-card>
+          <div class="imx-legalNotice-Header" data-imx-identifier="Header">
+            <span>{{ '#LDS#Third-Party Contributions' | translate }}</span>
+          </div>
+          <div class="imx-legalNotice-Content" data-imx-identifier="Text">
+            <span>{{'#LDS#This product contains some third party components (listed below). Copies of their licenses may be found at' | translate }}
+            </span>
+            <a href="{{product['ThirdPartyLicencesUrl']}}">{{ product['ThirdPartyLicencesUrl'] }}</a>
+            <span>.</span>
+          </div>
+          <div class="paragraphLargeMargin imx-legalNotice-Content" data-imx-identifier="Text">
+            <span>{{ '#LDS#Source code for components marked with an asterisk (*) is available at' | translate }}</span>
+            <a href="{{ product['OpenSourceUrl'] }}">{{product['OpenSourceUrl']}}</a>
+            <span>.</span>
+          </div>
+        </mat-card>
+        <ng-container *ngIf="dstSettings?.dataSource">
+          <imx-data-source-toolbar #dst [settings]="dstSettings" (navigationStateChanged)="update($event)"
+            [hiddenElements]="['filter', 'groupBy', 'settings', 'selectedViewGroup','search']" ></imx-data-source-toolbar>
+          <imx-data-table [dst]="dst" [selectable]="false"  [detailViewVisible]="false" mode="auto"></imx-data-table>
+          <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+        </ng-container>
+      </div>
+    </mat-tab>
+    <mat-tab label="{{ '#LDS#Contact' | translate }}">
+      <ng-template matTabContent>
+        <div class="imx-contact imx-elementloadingouter ng-scope">
+          <div class="imx-contact-Header">
+            <span>{{ '#LDS#Contacting Us' | translate }}</span>
+
+          </div>
+          <div>
+            <span>{{ '#LDS#For sales or other inquiries, visit' | translate }} </span>
+            <a href="{{ product['ContactUrl'] }}">{{ product['ContactUrl'] }}</a>
+            <span>.</span>
+          </div>
+          <div>
+            <span>{{ '#LDS#To access the Support Portal, go to' | translate }} </span>
+            <a href="{{ product['ProductSupportPortalUrl'] }}">{{ product['ProductSupportPortalUrl'] }}</a>
+            <span>.</span>
+          </div>
+        </div>
+      </ng-template>
+    </mat-tab>
+    <mat-tab *ngIf="ShowSystemOverviewTab()">
+      <ng-template mat-tab-label>{{ '#LDS#System information' | translate }}</ng-template>
+      <imx-ext id="SystemOverview" [referrer]="this">
+      </imx-ext>
+    </mat-tab>
+  </mat-tab-group>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-raised-button color="primary" mat-dialog-close>{{ '#LDS#Close' | translate }}</button>
+</mat-dialog-actions>

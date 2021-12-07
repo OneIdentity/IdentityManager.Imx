@@ -1,0 +1,16 @@
+<ng-container [matColumnDef]="entityColumn.ColumnName">
+  <th mat-header-cell *matHeaderCellDef [style.text-align]="align" [style.width]="width">
+    <ng-container *ngIf="columnLabel">
+      {{ columnLabel }}
+    </ng-container>
+    <ng-container *ngIf="columnLabel == null">
+      {{ translateProvider.GetColumnDisplay(entityColumn.ColumnName, entitySchema) }}
+    </ng-container>
+  </th>
+  <td mat-cell *matCellDef="let entity" [style.text-align]="align">
+    <ng-content [ngIf]="templateRef" *ngTemplateOutlet="templateRef; context: { $implicit: entity }"></ng-content>
+    <ng-container *ngIf="!templateRef">
+      <imx-data-table-cell [entity]="entity" [property]="entityColumn"></imx-data-table-cell>
+    </ng-container>
+  </td>
+</ng-container>

@@ -1,0 +1,7 @@
+<imx-entitlement-edit
+  [entitlement]="data?.entitlement"
+  [serviceItem]="data?.serviceItem"
+  [isStarlingTwoFactorConfigured]="data?.isStarlingTwoFactorConfigured"
+  (controlCreated)="form.addControl('entitlementedit', $event)"
+  (saved)="afterSave($event)">
+</imx-entitlement-edit>

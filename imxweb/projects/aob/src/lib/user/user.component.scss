@@ -1,0 +1,79 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+.imx-user {
+  display: flex;
+  align-items: center;
+  justify-items: center;
+  margin: 5px;
+  min-height: 40px;
+}
+
+.imx-user-icon {
+  color: $white;
+  background-color: $black-c;
+  border-radius: 50%;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 30px;
+  width: 30px;
+  height: 30px;
+  margin-right: 5px;
+  flex-shrink: 0;
+}
+
+.imx-user-properties {
+  margin-left: 5px;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow: hidden;
+
+  >span {
+    font-weight: 600;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  >span:last-child {
+    font-size: 10px;
+    color: $black-b;
+  }
+}
+
+.imx-user.large {
+  .imx-user-icon {
+    font-size: 30px;
+    height: 30px;
+    width: 30px;
+  }
+
+  .imx-user-properties {
+    >span {
+      font-size: 16px;
+    }
+
+    >span:last-child {
+      font-size: 12px;
+    }
+  }
+}
+
+.imx-user.noUser {
+  .imx-user-icon {
+    color: $corbin-orange;
+    background-color: $corbin-pastel;
+  }
+
+  .imx-user-properties>span {
+    font-size: 12px;
+  }
+}
+
+.imx-user.large.noUser {
+  .imx-user-properties {
+    >span {
+      font-size: 14px;
+    }
+  }
+}

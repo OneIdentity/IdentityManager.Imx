@@ -1,0 +1,10 @@
+<imx-date
+  [control]="control"
+  [display]="columnContainer?.display"
+  [isReadonly]="!columnContainer?.canEdit"
+  [min]="columnContainer?.valueConstraint?.MinValue"
+  [max]="columnContainer?.valueConstraint?.MaxValue"
+  [isValueRequired]="columnContainer.isValueRequired"
+  [isLoading]="isBusy"
+  [imxIdentifierSuffix]="'-cdr-' + columnContainer?.name">
+</imx-date>

@@ -1,0 +1,14 @@
+<div class="governance-sidesheet">
+  <div class="governance-sidesheet__tab-content">
+    <div class="governance-sidesheet__tab-content-body">
+      <imx-owner-control #ownerControl [column]="column"
+                (formControlCreated)="onFormControlCreated($event)"></imx-owner-control>
+
+    </div>
+    <mat-card class="governance-sidesheet__action-buttons">
+      <button mat-raised-button color="primary" (click)="returnProductOwner()">
+        <span translate>#LDS#Apply</span>
+      </button>
+    </mat-card>
+  </div>
+</div>

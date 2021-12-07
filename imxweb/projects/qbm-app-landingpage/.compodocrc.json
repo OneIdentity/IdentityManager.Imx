@@ -1,0 +1,11 @@
+{
+  "name": "IMX Web - QBM Landing Page",
+  "output": "../../documentation/qbm-app-landingpage",
+  "theme": "material",
+  "assetsFolder": "../../compodoc/assets",
+  "customLogo": "../../compodoc/assets/images/oneidentity-logo.png",
+  "customFavicon": "../../compodoc/assets/images/favicon.ico",
+  "serve": true,
+  "watch": true,
+  "coverageTest": 0
+}

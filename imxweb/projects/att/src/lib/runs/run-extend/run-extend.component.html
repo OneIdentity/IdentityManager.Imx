@@ -1,0 +1,29 @@
+<div class="attestationRuns-extend-content">
+  <eui-alert *ngIf="showHelper" class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true"
+    (dismissed)="onHelperDismissed()">
+    <span translate>
+      #LDS#Here you can extend the attestation run and enter a reason for extending the run.
+    </span>
+  </eui-alert>
+  <form [formGroup]="form" class="attestationRuns-extend-form">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ '#LDS#New due date' | translate }}</mat-label>
+      <input matInput [matDatepicker]="datepicker" [formControl]="date" data-imx-identifier="run-edit-date-input"
+        [min]="tomorrow" required>
+      <mat-error *ngIf="date.errors">
+        {{ ( date?.value ? '#LDS#Specify a date that lies in the future.' : '#LDS#This field is mandatory.' ) | translate }}
+      </mat-error>
+      <mat-datepicker-toggle matSuffix [for]="datepicker" data-imx-identifier="run-edit-date-picker-toggle">
+      </mat-datepicker-toggle>
+      <mat-datepicker #datepicker></mat-datepicker>
+    </mat-form-field>
+    <imx-cdr-editor *ngIf="reason" [cdr]="reason" data-imx-identifier="run-edit-reason" (controlCreated)="addControl('reason', $event)">
+    </imx-cdr-editor>
+  </form>
+</div>
+<div class="imx-button-bar">
+  <button mat-raised-button color="primary" data-imx-identifier="run-extend-button-ok"
+    (click)="sideSheetRef.close(true)" [disabled]="form.invalid">
+    {{ '#LDS#Extend attestation run' | translate }}
+  </button>
+</div>

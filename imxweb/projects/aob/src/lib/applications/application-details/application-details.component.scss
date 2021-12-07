@@ -1,0 +1,249 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  min-height: 100%;
+  background-color: mat-color($asher-gray-palette, 100);
+}
+
+.imx-application-details-content {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 16px 24px;
+
+  > .mat-card {
+    background-color: transparent;
+  }
+
+  .mat-card-title {
+    font-size: 18px;
+    line-height: 36px;
+  }
+
+  .mat-button {
+    vertical-align: middle;
+
+    ::ng-deep .mat-button-wrapper {
+      vertical-align: text-bottom;
+    }
+  }
+
+  .mat-button[hidden] {
+    display: none;
+  }
+
+  .mat-divider-horizontal {
+    width: 50px;
+    margin-bottom: 12px;
+  }
+}
+
+.imx-application-properties {
+  flex: 0 0 33%;
+  min-width: 200px;
+  box-shadow: none;
+
+  .mat-card-content {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: -15px;
+
+    >* {
+      margin-bottom: 15px;
+    }
+  }
+}
+
+.imx-application-property-multi {
+  display: flex;
+  flex-direction: column;
+
+  >span {
+    font-weight: 600;
+    color: $black-6;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  > .mat-button {
+    width: auto;
+    padding: 0px;
+    line-height: 1.3rem;
+    align-self: flex-start;
+  }
+}
+
+li {
+  list-style-type: none;
+  margin: 10px;
+
+  .mat-card {
+    display: flex;
+    flex-direction: row;
+    height: 3.2rem;
+
+    > .imx-card-title {
+      font-size: 16px;
+      flex:1;
+      margin-left: 10px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+  }
+}
+
+.mat-dialog-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: inherit;
+}
+
+.imx-application-state {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 0 0 64%;
+  align-content: flex-start;
+  box-shadow: none;
+  padding: 0;
+
+  > .mat-card {
+    background-color: transparent;
+  }
+}
+
+.imx-application-publish {
+  flex: 0 0 51%;
+  min-width: 220px;
+  box-shadow: none;
+  padding-left: 5px;
+  padding-right: 0;
+
+  .mat-card-content {
+    display: flex;
+    align-items: center;
+  }
+
+  .mat-chip {
+    border-radius: 3px;
+    width: max-content;
+    user-select: none;
+  }
+
+
+  @mixin publish-state-style {
+    font-weight: 600;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+
+    .eui-icon,
+    .mat-icon {
+      margin-right: 6px;
+    }
+  }
+
+  .imx-application-unpublished-state,
+  .imx-application-willbepublished-state {
+    color: $corbin-orange;
+    @include publish-state-style;
+  }
+
+  .imx-application-published-state {
+    color: $aspen-green;
+    @include publish-state-style;
+
+    .mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  .imx-application-publish-date {
+    margin-left: 10px;
+    font-size: 14px;
+  }
+}
+
+.imx-application-progress {
+  flex: 0 0 48%;
+  box-shadow: none;
+  padding-left: 0;
+  padding-right: 0;
+
+  .mat-card-title {
+    line-height: 45px;
+  }
+
+  .imx-application-progress-step {
+    margin-bottom: 8px;
+  }
+
+  .mat-icon {
+    margin-right: 5px;
+    color: $aspen-green;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    visibility: hidden;
+  }
+
+  .checked .mat-icon {
+    visibility: visible;
+  }
+
+  span {
+    font-size: 14px;
+  }
+
+  .mat-card-content>div {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.imx-application-additionalDetails {
+  flex: 0 0 100%;
+  box-shadow: none;
+  overflow: hidden;
+
+  .mat-card-title {
+    line-height: 45px;
+  }
+
+  .mat-card-content {
+    display: flex;
+    flex-wrap: wrap;
+
+    imx-column-info,
+    imx-application-property {
+      flex: 0 0 33%;
+      min-width: 200px;
+      padding-right: 21px;
+    }
+
+  }
+
+}
+
+.imx-multivalue-item {
+  margin: 10px 0;
+}
+
+.mat-card-avatar {
+  background-color: $black-b;
+  color: $white;
+  padding: 5px;
+  height: 25px;
+  width: 25px;
+  user-select: none;
+}
+
+::ng-deep body .mat-dialog-container {
+  display: flex;
+  flex-direction: column;
+}

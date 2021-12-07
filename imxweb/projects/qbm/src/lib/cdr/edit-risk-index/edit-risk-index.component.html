@@ -1,0 +1,15 @@
+<mat-form-field appearance="outline" [ngClass]="{ 'mat-focused': sliderFocused }">
+  <mat-label class="slider-label__main">{{ columnContainer?.display | translate }}</mat-label>
+  <input matInput hidden value=" ">
+  <div class="slider-container">
+    <mat-label class="slider-label__prefix" translate>#LDS#No risk</mat-label>
+    <mat-slider (focus)="sliderFocused = true" (blur)="sliderFocused = false" thumbLabel min="0" max="1" step="0.1"
+      tickInterval="1" [formControl]="control" [imxDisableControl]="!columnContainer?.canEdit"
+      [attr.data-imx-identifier]="'cdr-risk-index-slider-' + columnContainer?.name" [displayWith]="formatLabel">
+    </mat-slider>
+    <mat-label class="slider-label__suffix" translate>#LDS#Maximum risk</mat-label>
+  </div>
+  <div matSuffix class="imx-suffix-container">
+    <mat-spinner diameter="30" *ngIf="isBusy"></mat-spinner>
+  </div>
+</mat-form-field>

@@ -1,0 +1,56 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+:host {
+    display: flex;
+    flex-direction: column;
+    padding-top: 10px;
+    background-color: mat-color($asher-gray-palette, 800);
+    padding-left: 30px;
+    padding-right: 30px;
+    overflow: auto;
+    margin-right: 5px;
+}
+
+h2 {
+    font-size: larger;
+    font-weight: 600;
+}
+
+.imx-edit-box {
+    align-self: flex-end;
+}
+
+.imx-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.mat-radio-button {
+    margin-top: -10px;
+}
+
+.mat-radio-group {
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.imx-radio-group-caption {
+    font-style: italic;
+}
+
+.imx-small-error {
+    font-size: small;
+}
+
+.mat-icon-button {
+    margin-right: 5px;
+}
+
+.mat-accordion {
+    margin-top: 20px;
+}
+
+.imx-no-filter-alert {
+    margin: 30px 0px;
+}

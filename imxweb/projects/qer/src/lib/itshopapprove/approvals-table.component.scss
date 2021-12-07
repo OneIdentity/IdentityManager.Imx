@@ -1,0 +1,61 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.escalation-approver-toggle {
+  margin: .5em;
+}
+
+.imx-table-container {
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.imx-button-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+
+  > * {
+    margin-left: 5px;
+  }
+}
+
+.imx-decision {
+  > * {
+    margin-right: 5px;
+  }
+}
+
+/* Priority=low */
+.imx-priority-100 {
+  color: $aspen-green;
+}
+
+/* Priority=medium */
+.imx-priority-200 {
+  color: $corbin-orange;
+}
+
+/* Priority=high */
+.imx-priority-300 {
+  color: $phoenix-red;
+}
+
+@media only screen and (max-width: 1024px) {
+  ::ng-deep .mat-column-OrderDate,
+  ::ng-deep .mat-column-decision {
+    display: none;
+  }
+}
+
+.toggle-wrapper {
+  /* so that the tooltip on the toggle is centered */
+  flex-grow: 0;
+  display: inline;
+}

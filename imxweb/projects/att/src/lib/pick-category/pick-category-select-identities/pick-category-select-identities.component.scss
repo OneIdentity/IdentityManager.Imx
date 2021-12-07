@@ -1,0 +1,31 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import '../pick-category-common.scss';
+
+:host {
+  background-color: $asher-gray;
+
+  ::ng-deep .cdk-column-select {
+    width: 50px;
+  }
+
+  .imx-selected-items {
+    margin: 0;
+    line-height: 36px;
+    display: flex;
+    flex: 1 0 auto;
+    margin: auto;
+    align-items: center;
+
+    .imx-badge {
+      background-color: transparent;
+      ::ng-deep .eui-badge-content {
+        font-size: 14px;
+        line-height: 14px;
+      }
+    }
+  }
+
+  button {
+    margin-left: 10px;
+  }
+}

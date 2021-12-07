@@ -1,0 +1,6 @@
+<span> 
+  {{ property.Type === ValType.Date 
+    ? (entity.GetEntity().GetColumn(property.ColumnName).GetValue() | shortDate )
+    : entity.GetEntity().GetColumn(property.ColumnName).GetDisplayValue() 
+  }}
+</span>

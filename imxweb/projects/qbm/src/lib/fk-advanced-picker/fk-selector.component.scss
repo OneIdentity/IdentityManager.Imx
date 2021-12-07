@@ -1,0 +1,43 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.imx-fk-selector {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.mat-radio-group {
+  display: flex;
+
+  .mat-radio-button {
+    margin-right: 5px;
+  }
+}
+
+.imx-table-container {
+  flex-grow: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+
+  > imx-data-table {
+    display: flex;
+    flex-direction: column;
+
+    ::ng-deep .mat-sidenav-container {
+      display: flex;
+      flex-direction: column;
+    }
+  }  
+}
+
+@media only screen and (max-width: 1024px) {
+  ::ng-deep .mat-column-Actions {
+    display: none;
+  }
+}

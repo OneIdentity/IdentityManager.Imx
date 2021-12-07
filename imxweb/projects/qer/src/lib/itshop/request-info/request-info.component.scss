@@ -1,0 +1,25 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+
+  .mat-tab-group{
+    height: 100%;
+  }
+}
+
+.imx-request-information {
+  margin: 20px;
+}
+
+.imx-request-properties {
+  margin: 0 20px 20px 20px;
+  overflow: auto;
+}
+
+.imx-request-history {
+  overflow: auto;
+  margin-left: 20px;
+  margin-right: 20px;
+}

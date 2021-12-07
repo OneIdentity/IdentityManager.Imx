@@ -1,0 +1,28 @@
+<div *ngIf="!isWaitingForLoad">
+  <div class="imx-report-table">
+    <imx-property-viewer [properties]="setProperties"></imx-property-viewer>
+  </div>
+  <div *ngIf="userIsMissingEMail" class="imx-overview-alert">
+    <eui-alert [dismissable]="true" type="warning" class="mat-elevation-z0"
+      data-imx-identifier="subscription-overview-alert-no-mail">
+      <eui-alert-header class="mat-elevation-z0">
+        {{'#LDS#You cannot receive the report. You have not specified an email address. Please add an email address to your user account.' |
+        translate}}
+      </eui-alert-header>
+    </eui-alert>
+  </div>
+  <div *ngIf="additionalRecipientWithoutEmail.length >0" class="imx-overview-alert">
+    <eui-alert [dismissable]="true" type="warning" class="mat-elevation-z0"
+      data-imx-identifier="subscription-overview-alert-no-mail-for-subscribers">
+    <eui-alert-header class="mat-elevation-z0">
+      {{'#LDS#The following subscribers cannot receive the report. No email addresses have been specified for the user accounts of these subscribers.' |translate}}
+    </eui-alert-header>
+    <eui-alert-content>
+      {{additionalRecipientWithoutEmail.join('; ')}}
+    </eui-alert-content>
+    </eui-alert>
+  </div>
+</div>
+<div *ngIf="isWaitingForLoad" class="imx-wait-for-overview-load">
+  {{'#LDS#The overview is calculated. Please wait.' | translate}}
+</div>

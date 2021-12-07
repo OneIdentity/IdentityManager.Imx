@@ -1,0 +1,56 @@
+<div class="request-config-sidesheet">
+  <mat-tab-group>
+    <mat-tab [label]="'#LDS#Heading Details' | translate">
+      <div class="request-config-sidesheet__tab-content">
+        <div class="request-config-sidesheet__tab-content-body">
+          <eui-alert *ngIf="showHelperAlert" class="helper-alert" type="info" condensed="true" [colored]="true"
+            [dismissable]="true" (dismissed)="onHelperDismissed()">
+            <span>
+              {{ requestsService.LdsShopDetails | translate }}              
+            </span>
+          </eui-alert>
+          <mat-card>
+            <form [formGroup]="detailsFormGroup">
+              <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="formArray.push($event)"></imx-cdr-editor>
+            </form>
+          </mat-card>
+        </div>
+        <mat-card class="request-config-sidesheet__action-buttons">
+          <span class="justify-start" [matTooltip]="deleteHelperTooltip | translate">
+            <button *ngIf="!data.isNew" [disabled]="requestConfigContainsShelves || requestConfigHasMembers" mat-button color="warn"
+              (click)="delete()">
+              <span>{{ requestsService.LdsDeleteShop | translate }}</span>
+              <eui-icon *ngIf="requestConfigContainsShelves || requestConfigHasMembers" class="help-icon" icon="help"></eui-icon>
+            </button>
+          </span>
+
+          <button mat-button (click)="cancel()">
+            <span translate>#LDS#Cancel</span>
+          </button>
+          <button mat-flat-button color="primary" (click)="saveRequestConfig()" [disabled]="detailsFormGroup.pristine || detailsFormGroup.invalid">
+            <span *ngIf="!data?.isNew" translate>#LDS#Save</span>
+            <span *ngIf="data?.isNew" translate>#LDS#Create</span>
+          </button>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <mat-tab *ngIf="!data?.isNew" [label]="'#LDS#Heading Shelves' | translate">
+      <div class="request-config-sidesheet__tab-content">
+        <div class="request-config-sidesheet__tab-content-body no-padding">
+            <imx-request-shelves [requestConfigId]="selectedRequestConfigKey" (shelfCountUpdated)="onShelfCountUpdated($event)"></imx-request-shelves>
+        </div>
+      </div>
+    </mat-tab>
+
+    <mat-tab *ngIf="!data?.isNew && data?.requestConfig?.UID_CustomerNode?.value" [label]="'#LDS#Heading Access' | translate">
+      <div class="request-config-sidesheet__tab-content">
+        <div class="request-config-sidesheet__tab-content-body no-padding">
+          <imx-request-config-members [customerNodeId]="data?.requestConfig?.UID_CustomerNode?.value"
+            [requestDynamicGroup]="data?.requestConfig?.UID_DynamicGroup?.value" (memberCountUpdated)="onMemberCountUpdated($event)"></imx-request-config-members>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+

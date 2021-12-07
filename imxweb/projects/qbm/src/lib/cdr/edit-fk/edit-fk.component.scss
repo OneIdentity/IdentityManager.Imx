@@ -1,0 +1,83 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+:host {
+  display: flex;
+  align-items: center;
+}
+
+.mat-form-field {
+  flex-grow: 1;
+}
+
+.imx-spacer {
+  height: 30px;
+}
+
+.imx-candidate-option {
+  line-height: 1.5em;
+  display: flex;
+  width: 100%;
+  height: 50px;
+
+  .imx-candidate-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    .imx-candidate-icon {
+      background-repeat: no-repeat;
+      min-width: 20px;
+      min-height: 20px;
+      margin-right: 10px;
+    }
+
+    .imx-candidate-content {
+      flex: 1;
+      width: calc(100% - 25px);
+      overflow: hidden;
+
+      .imx-candidate-display {
+        color: $black-3;
+        font-size: 14px;
+        line-height: 14px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        width: 100vw;
+      }
+
+      .imx-candidate-longdisplay {
+        color: $black-9;
+        font-size: 12px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+    }
+  }
+}
+
+.imx-viewport {
+  height: 200px;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.mat-option {
+  height: 50px;
+}
+
+.imx-suffix-container {
+  display: flex;
+  margin-bottom: 5px;
+
+  > *:not(:last-child) {
+    margin-right: 5px;
+    margin-top: 0;
+  }
+}
+
+.imx-icon-delete {
+  cursor: pointer;
+  margin-top: 0;
+  display: inline;
+  line-height: 35px;
+}

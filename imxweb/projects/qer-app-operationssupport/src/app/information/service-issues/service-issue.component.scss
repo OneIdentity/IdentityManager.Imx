@@ -1,0 +1,59 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+:host {
+  width: 350px;
+  height: 156px;
+}
+
+mat-card {
+  padding: 0px;
+}
+
+.imx-service-issue-icon {
+  display: flex;
+}
+
+.noIssuesIcon {
+  position: relative;
+  margin: 0 auto;
+  color: $black-3;
+  font-size: 71px;
+}
+
+.noIssuesOverlay {
+  position: absolute;
+  top: 27px;
+  left: 25px;
+  font-size: 24px;
+  color: $black-3;
+}
+
+.noIssuesText {
+  margin-bottom: 20px;
+  width: 100%;
+  text-align: center;
+  font-size: 16px;
+  color: $black-3;
+}
+
+.issueCard {
+  padding: 0;
+}
+
+.issueGridList {
+  .issueIconLine {
+    position: relative;
+    width: 88px;
+    height:156px;
+    font-size: 72px;
+    line-height:156px;
+    float: left;
+    background-color: $asher-gray;
+    color: $black-3;
+    border-radius: 4px 0 0 4px;
+  }
+
+  .issueIconLine::before {
+    font-size: 65px;
+  }
+}

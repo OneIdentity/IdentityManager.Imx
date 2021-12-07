@@ -1,0 +1,26 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+$inputWidth: calc(40vw + 2px);
+
+.imx-message-content {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.imx-message {
+  color: $black;  
+  position: fixed;
+  width: 100%;
+  top: 64px;
+  left: 0px;
+  z-index: 9999999;
+}
+
+.imx-small-message {
+  margin-top: 30px;
+  min-width: $inputWidth;
+  color : $black;
+  display: block;
+}

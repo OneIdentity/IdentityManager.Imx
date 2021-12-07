@@ -1,0 +1,12 @@
+<mat-form-field appearance="outline"  [class]="control.errors?.required ? 'mat-form-field-invalid' : ''">
+    <mat-label>{{ columnContainer?.display | translate }}</mat-label>
+    <input matInput value="_hidden" [hidden]="true" [required]="this.columnContainer?.isValueRequired"/>
+    <div [ngClass]="control.errors?.required ? 'mat-error' : ''" [formGroup]="control" class="imx-multi-value-container">
+        <mat-checkbox [ngClass]="control.errors?.required ? 'imx-red-checkbox' : ''" *ngFor="let item of columnContainer?.limitedValuesContainer?.values; let i=index" [formControlName]="i" [imxDisableControl]="!columnContainer?.canEdit" [attr.data-imx-identifier]="'cdr-edit-multi-limited-value-checkbox-' + columnContainer?.name">
+            {{ item.Description }}
+        </mat-checkbox>
+    </div>
+</mat-form-field>
+<mat-error class="imx-error-margin mat-form-field-subscript-wrapper" *ngIf="control.errors?.required">
+    {{ '#LDS#This field is mandatory.' | translate }}
+</mat-error>

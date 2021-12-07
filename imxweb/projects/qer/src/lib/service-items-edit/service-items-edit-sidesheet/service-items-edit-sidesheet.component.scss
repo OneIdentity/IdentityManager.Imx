@@ -1,0 +1,8 @@
+@mixin imx-flex-column-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.eui-sidesheet-content {
+  @include imx-flex-column-container();
+}

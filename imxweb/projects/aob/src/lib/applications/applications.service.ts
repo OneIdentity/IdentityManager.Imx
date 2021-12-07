@@ -1,0 +1,238 @@
+/*
+ * ONE IDENTITY LLC. PROPRIETARY INFORMATION
+ *
+ * This software is confidential.  One Identity, LLC. or one of its affiliates or
+ * subsidiaries, has supplied this software to you under terms of a
+ * license agreement, nondisclosure agreement or both.
+ *
+ * You may not copy, disclose, or use this software except in accordance with
+ * those terms.
+ *
+ *
+ * Copyright 2021 One Identity LLC.
+ * ALL RIGHTS RESERVED.
+ *
+ * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
+ * WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+ * TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR
+ * NON-INFRINGEMENT.  ONE IDENTITY LLC. SHALL NOT BE
+ * LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE
+ * AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
+ * THIS SOFTWARE OR ITS DERIVATIVES.
+ *
+ */
+
+import { OverlayRef } from '@angular/cdk/overlay';
+import { Injectable, ErrorHandler } from '@angular/core';
+import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
+import { TranslateService } from '@ngx-translate/core';
+
+import { PortalApplication, PortalApplicationInteractive, PortalApplicationNew } from 'imx-api-aob';
+import {
+  TypedEntityCollectionData, CollectionLoadParameters, EntitySchema
+} from 'imx-qbm-dbts';
+import { ApiClientService, ClassloggerService, DataTileBadge, isIE, SnackBarService } from 'qbm';
+import { Subject } from 'rxjs';
+import { AobApiService } from '../aob-api-client.service';
+import { ApplicationCreateComponent } from './application-create/application-create.component';
+
+/**
+ * This service provides methods for handling with {@link PortalApplication[]|applications}.
+ * {@link ApplicationCardComponent|ApplicationCardComponent}.
+ */
+@Injectable({
+  providedIn: 'root'
+})
+export class ApplicationsService {
+  public readonly onApplicationCreated = new Subject<string>();
+
+  private badgePublished: DataTileBadge;
+  private badgeKpiErrors: DataTileBadge;
+  private badgeNew: DataTileBadge;
+
+  private publishedText: string;
+  private kpiErrorsText: string;
+  private newBadgeText: string;
+
+  public get applicationSchema(): EntitySchema {
+    return this.aobClient.typedClient.PortalApplication.GetSchema();
+  }
+
+  constructor(
+    private readonly aobClient: AobApiService,
+    private readonly logger: ClassloggerService,
+    private readonly errorHandler: ErrorHandler,
+    private readonly apiProvider: ApiClientService,
+    private readonly translateService: TranslateService,
+    private readonly sidesheet: EuiSidesheetService,
+    private readonly snackbar: SnackBarService,
+    private readonly busyService: EuiLoadingService
+  ) {
+    this.translateService.get('#LDS#Published').subscribe((trans: string) => this.publishedText = trans);
+    this.translateService.get('#LDS#KPI issues').subscribe((trans: string) => this.kpiErrorsText = trans);
+    this.translateService.get('#LDS#New').subscribe((trans: string) => this.newBadgeText = trans);
+
+    this.badgePublished = {
+      content: this.publishedText,
+      color: '#618f3e'
+    };
+
+    this.badgeKpiErrors = {
+      content: this.kpiErrorsText,
+      color: '#f4770b'
+    };
+
+    this.badgeNew = {
+      content: this.newBadgeText,
+      color: '#02556d'
+    };
+  }
+
+  /**
+   * Encapsules the aob/applications GET endpoint and delivers a list of {@link PortalApplication[]|applications}.
+   */
+  public async get(parameters: CollectionLoadParameters = {}): Promise<TypedEntityCollectionData<PortalApplication>> {
+    if (this.aobClient.typedClient == null) {
+      return new Promise<TypedEntityCollectionData<PortalApplication>>((resolve) => resolve(null));
+    }
+    return this.apiProvider.request(() => this.aobClient.typedClient.PortalApplication.Get(parameters));
+  }
+
+  public async reload(uidApplication: string): Promise<PortalApplicationInteractive> {
+    return await this.apiProvider.request(
+      async () => (await this.aobClient.typedClient.PortalApplicationInteractive_byid.Get_byid(uidApplication)).Data[0]);
+  }
+
+  public createNew(): PortalApplicationNew {
+    return this.aobClient.typedClient.PortalApplicationNew.createEntity();
+  }
+
+  public async tryCommit(application: PortalApplication | PortalApplicationNew, reload?: boolean): Promise<boolean> {
+    try {
+      await application.GetEntity().Commit(reload);
+      if (application.AuthenticationRoot.value) {
+        application.AuthenticationRootHelper.value = application.AuthenticationRoot.value;
+      }
+      this.logger.debug(this, 'storedapp:', application);
+      return true;
+    } catch (error) {
+      this.errorHandler.handleError(error);
+    }
+
+    return false;
+  }
+
+  /**
+   * Publishs the given {@link PortalApplication[]|applications} by setting IsInactive to false or an ActivationDate to the given date.
+   */
+  public async publish(application: PortalApplication, publishData: { publishFuture: boolean, date: Date }): Promise<boolean> {
+    if (!publishData.publishFuture) {
+      await application.IsInActive.Column.PutValue(publishData.publishFuture);
+    } else {
+      await application.ActivationDate.Column.PutValue(publishData.date);
+    }
+    this.logger.debug(this, 'Commit change: publish application...', application.ActivationDate.value);
+
+    return this.tryCommit(application, true);
+  }
+
+  /**
+   * Unpublishs the given {@link PortalApplication[]|applications} by setting IsInactive to true and ActivationDate to the default.
+   */
+  public async unpublish(application: PortalApplication): Promise<boolean> {
+    await application.IsInActive.Column.PutValue(true);
+    await application.ActivationDate.Column.PutValue(null);
+
+    this.logger.debug(this, 'Commit change: unpublish application...');
+    return this.tryCommit(application, true);
+  }
+
+  /**
+   * Shows a badge on the given {@link PortalApplication[]|applications},
+   * if the application is published or has kpi issues.
+   */
+  public getApplicationBadges(application: PortalApplication | PortalApplicationNew): DataTileBadge[] {
+
+    if (application instanceof PortalApplicationNew) {
+      this.logger.trace(this, 'Add a new badge to the badgelist.');
+      return [this.badgeNew];
+    }
+
+    const badges: DataTileBadge[] = [];
+    if (this.hasKpiIssues(application as PortalApplication)) {
+      this.logger.trace(this, 'Add a kpi error badge to the badgelist.');
+      badges.push(this.badgeKpiErrors);
+    }
+
+    if (this.isPublished(application as PortalApplication)) {
+      this.logger.trace(this, 'Add a published badge to the badgelist.');
+      badges.push(this.badgePublished);
+    }
+
+    if (this.createdToday(application)) {
+      this.logger.trace(this, 'Add a new badge to the badgelist.');
+      badges.push(this.badgeNew);
+    }
+
+    if (badges.length === 0) {
+      this.logger.trace(this, 'Add no badge.');
+    }
+    return badges;
+  }
+
+  public async createApplication(): Promise<void> {
+    const application = this.createNew();
+
+    const result = await this.sidesheet.open(ApplicationCreateComponent, {
+      title: await this.translateService.get('#LDS#Heading Create Application').toPromise(),
+      headerColour: 'iris-blue',
+      padding: '0px',
+      width: isIE() ? '60%' : 'max(600px, 60%)',
+      disableClose: true,
+      data: {
+        application
+      }
+    }).afterClosed().toPromise();
+
+    if (result) {
+      let overlayRef: OverlayRef;
+      setTimeout(() => overlayRef = this.busyService.show());
+
+      try {
+        await application.GetEntity().Commit(true);
+        this.onApplicationCreated.next(application.UID_AOBApplication.value);
+        this.snackbar.open({ key: '#LDS#The application has been successfully created.' });
+      } catch (error) {
+        this.errorHandler.handleError(error);
+      } finally {
+        setTimeout(() => this.busyService.hide(overlayRef));
+      }
+    } else {
+      this.snackbar.open({ key: '#LDS#The creation of the application has been canceled.' });
+    }
+  }
+
+  private isPublished(application: PortalApplication): boolean {
+    if (application.IsInActive == null) {
+      return false;
+    }
+
+    return !application.IsInActive.value;
+  }
+
+  private hasKpiIssues(application: PortalApplication): boolean {
+    if (application.HasKpiIssues == null) {
+      return false;
+    }
+
+    return application.HasKpiIssues.value;
+  }
+
+  private createdToday(app: PortalApplication): boolean {
+    return app != null
+      && app.XDateInserted != null
+      && new Date(app.XDateInserted.value).toLocaleDateString() === new Date().toLocaleDateString();
+  }
+}

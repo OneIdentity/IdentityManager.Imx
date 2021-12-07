@@ -1,0 +1,27 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+.imx-background-highlight {
+  background-color: $asher-gray;
+}
+
+.imx-tree-display-button {
+  width: auto;
+  padding: 0 5px;
+  flex: 1 1 auto;
+  text-align: left;
+
+  > ::ng-deep .mat-button-wrapper {
+    color: $black;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+  }
+}
+
+.imx-tree-more-button {
+  width: auto;
+  padding: 0 5px;
+  flex: 0 0 auto;
+  text-align: left;
+}

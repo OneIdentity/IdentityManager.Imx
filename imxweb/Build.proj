@@ -1,0 +1,45 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="BuildWorkspace" ToolsVersion="15.0">
+	<PropertyGroup>
+		<ComponentDir>imxweb</ComponentDir>
+	</PropertyGroup>
+
+	<!--import global variables for this build-->
+	<Import Project="$(VI_PROJECTDIR)\Build\Includes\Common.targets"/>
+
+	<PropertyGroup>
+		<Workspace>$(VI_PROJECTDIR)\$(ComponentDir)</Workspace>
+		<Npm>$(VI_PROJECTDIR)\bin\npm</Npm>
+		<NpmOptions>--scripts-prepend-node-path=true</NpmOptions>
+		<ImxwebAssemblies>$(VI_PROJECTDIR)\Assemblies\imxweb</ImxwebAssemblies>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- only run if any of these files have changed -->
+		<InputFiles Include="$(Workspace)\imx-modules\imx-api-qbm.tgz" />
+		<InputFiles Include="$(Workspace)\imx-modules\imx-qbm-dbts.tgz" />
+		<InputFiles Include="$(Workspace)\projects\**\*.*" />
+		<InputFiles Include="$(Workspace)\*.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<OutputFiles Include="$(VI_PROJECTDIR)\imxweb\dist" />
+		<OutputFiles Include="$(VI_PROJECTDIR)\imxweb\dist\**\*.*" />
+	</ItemGroup>
+
+	<Target Name="BuildWorkspace" Inputs="@(InputFiles)" Outputs="@(OutputFiles)" DependsOnTargets="NpmInstall" Condition="'$(BUILD_WEB)' != 'no'">
+		<MakeDir Directories="$(ImxwebAssemblies)" Condition="!Exists('$(ImxwebAssemblies)')" />
+		<Exec Command='$(VI_PROJECTDIR)\assemblies\imxclient.exe compile-app -N /workspace $(Workspace) /copyto $(ImxwebAssemblies)' Condition="'$(VICFG)' != 'DEBUG'" />
+		<Exec Command='$(VI_PROJECTDIR)\assemblies\imxclient.exe compile-app -D -N /workspace $(Workspace) /copyto $(ImxwebAssemblies)' Condition="'$(VICFG)' == 'DEBUG'" />
+	</Target>
+
+	<Target Name="NpmInstall">
+		<!-- this is a workaround. currently file dependencies imx-api and imx-qbm-dbts need to be installed explicitely -->
+	    <Exec Command='$(Npm) install imx-api imx-qbm-dbts --save=false --progress=false $(NpmOptions)' WorkingDirectory="$(Workspace)" />
+	</Target>
+
+  <!-- Download external NPMs to allow check by Whitespace -->
+  <Target Name="DownloadExternals">
+      <Exec Command='$(Npm) install --save=false --progress=false $(NpmOptions)' WorkingDirectory="$(Workspace)" />
+  </Target>
+
+</Project>

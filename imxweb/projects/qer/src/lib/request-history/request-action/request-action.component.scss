@@ -1,0 +1,22 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  margin: 40px;
+  max-height: calc(100% - 80px);
+}
+
+.imx-requests-table {
+  overflow: auto;
+  margin-bottom: 20px;
+}
+
+.imx-request-actions {
+  display: flex;
+  justify-content: end;
+}
+
+.imx-action-validation {
+  margin-bottom: 20px;
+}

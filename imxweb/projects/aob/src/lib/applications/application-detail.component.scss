@@ -1,0 +1,128 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+$imx-component-height: calc(100vh - 180px);
+
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.imx-application-details {
+  display: flex;
+}
+
+.imx-application-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  background-color: $white;
+  height: $imx-component-height;
+  overflow: hidden;
+
+  ::ng-deep .mat-tab-body {
+    background-color: mat-color($asher-gray-palette, 100);
+    overflow-x: auto;
+  }
+}
+
+.imx-application-content-no-app {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  > .eui-icon {
+    color: $black-b;
+  }
+}
+
+.imx-application-content-no-app-description {
+  font-size: 18px;
+}
+
+.imx-application-content-create-app {
+  margin-top: 15px;
+}
+
+.imx-application-content-no-app-text {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.imx-application-info-row {
+  display: flex;
+  align-items: center;
+}
+
+.imx-application-details-header {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  grid-template-rows: 2fr 1fr;
+  grid-row-gap: 5px;
+  align-items: center;
+  padding: 30px 40px 35px;
+  flex-grow: 1;
+}
+
+.imx-application-details-icon {
+  grid-column-start: 1;
+  grid-column-end: 2;
+  grid-row-start: 1;
+  grid-row-end: 3;
+  width: 42px;
+  height: 42px;
+  align-self: center;
+  object-fit: cover;
+}
+
+@mixin textOverflowEllipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.imx-application-details-title {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 1;
+  grid-row-end: 1;
+  font-weight: 400;
+  font-size: 24px;
+  margin: 0 15px 0 10px;
+  @include textOverflowEllipsis;
+}
+
+.imx-application-details-subtitle {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 2;
+  font-size: 14px;
+  margin: 0 15px 0 10px;
+  color: $black-7;
+  @include textOverflowEllipsis;
+}
+
+.imx-info {
+  align-self: center;
+  max-width: 500px;
+  margin-right: 50px;
+}
+
+.mat-tab-group {
+  overflow: hidden;
+  height: 100%;
+}
+
+// TODO: .mat-tab-body-wrapper does not pass information of the height to its child nodes,
+// because it does not stretch to the height of its parent container (which is a mat-tab-group).
+// Right now the only fix is to use the ng-deep selector.
+::ng-deep .mat-tab-body-wrapper {
+  height: inherit;
+
+  .mat-tab-body-content {
+    overflow: visible;
+  }
+}

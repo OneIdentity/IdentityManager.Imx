@@ -1,0 +1,7 @@
+<imx-data-tree
+  [selectedEntities]="selectedServiceCategory == null  ? [] : [selectedServiceCategory]"
+  [database]="treeDatabase"
+  defaultIcon="partition"
+  (nodeSelected)="onServiceCategorySelected($event)"
+  data-imx-identifier="category-tree">
+</imx-data-tree>

@@ -1,0 +1,48 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+.imx-hyperview-shape-header {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.imx-hyperview-shape-header-image {
+  margin-right: 10px;
+  min-height: 32px;
+  min-width: 32px;
+  filter: grayscale(1) brightness(2);
+  -webkit-filter: grayscale(1) brightness(2);
+}
+
+.imx-shape-header-info {
+  overflow: hidden;
+  margin-right: 30px;
+}
+
+.imx-hyperview-shape-content {
+  max-height: 300px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.imx-hyperview-header {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  color: $asher-gray;
+  font-weight: bold;
+  font-size: 14px;
+  text-align: left;
+}
+
+.imx-hyperview-caption {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  color: $asher-gray;
+  font-style: italic;
+  font-size: 12px;
+  font-weight: 400;
+}

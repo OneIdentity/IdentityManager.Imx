@@ -1,0 +1,11 @@
+{
+  "name": "IMX Web - QBM Library",
+  "output": "../../documentation/qbm",
+  "assetsFolder": "../../compodoc/assets",
+  "theme": "material",
+  "customLogo": "../../compodoc/assets/images/oneidentity-logo.png",
+  "customFavicon": "../../compodoc/assets/images/favicon.ico",
+  "serve": true,
+  "watch": true,
+  "coverageTest": 0
+}

@@ -1,0 +1,13 @@
+{
+  "Name": "aad",
+  "Path": "imxweb\\projects\\aad",
+  "ProjectType": "ng-lib",
+  "ProjectDependcies": [
+    "qbm",
+    "qer"
+  ],
+  "ChangePatterns": [
+    "imxweb\\projects\\aad",
+    "imxweb\\shared\\assets"
+  ]
+}

@@ -1,0 +1,38 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.imx-table-container {
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.imx-margin-right {
+  margin-right: 10px;
+}
+
+.imx-subtext {
+  color: $black-6;
+  font-size: smaller;
+}
+
+.imx-tile-container {
+  overflow: auto;
+}
+
+.imx-tile-detail {
+  word-wrap: break-word;
+}
+
+.imx-toolbar-template {
+  margin-right: 10px;
+}
+
+eui-icon {
+  margin-right: 5px;
+}

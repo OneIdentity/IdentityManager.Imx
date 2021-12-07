@@ -1,0 +1,19 @@
+<div>
+  <mat-button-toggle-group #buttonToggle value="primary" (change)="onToggleChanged($event)">
+    <mat-button-toggle *ngIf="canHavePrimaryMemberships()" value="primary">{{ '#LDS#Primary memberships' | translate }}</mat-button-toggle>
+    <mat-button-toggle value="secondary">{{ '#LDS#Secondary memberships' | translate }}</mat-button-toggle>
+    <mat-button-toggle *ngIf="isDynamic" value="exclusions">{{ '#LDS#Excluded members' | translate }}</mat-button-toggle>
+  </mat-button-toggle-group>
+</div>
+
+<ng-container *ngIf="selectedView === 'primary'">
+  <imx-primary-memberships [entity]="entity" [ownershipInfo]="ownershipInfo"></imx-primary-memberships>
+</ng-container>
+
+<ng-container *ngIf="selectedView === 'secondary'">
+  <imx-secondary-memberships [entity]="entity" [ownershipInfo]="ownershipInfo"></imx-secondary-memberships>
+</ng-container>
+
+<ng-container *ngIf="selectedView === 'exclusions'">
+  <imx-excluded-memberships [entity]="entity"></imx-excluded-memberships>
+</ng-container>

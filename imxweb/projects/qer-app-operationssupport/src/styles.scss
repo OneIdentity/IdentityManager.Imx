@@ -1,0 +1,573 @@
+/* You can add global styles to this file, and also import other style files */
+$material_icons_font_path: "~@elemental-ui/core/assets/MaterialIcons";
+$cadence_font_path: "~@elemental-ui/cadence-icon/dist";
+$source_sans_pro_font_path: "~@elemental-ui/core/assets/Source_Sans_Pro";
+
+@import '~@elemental-ui/core/src/styles/core.scss';
+
+@import "./assets/variables";
+
+/* #region Grid styles*/
+
+.imx-underlined {
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.mat-row.imx_MatTableRow {
+  min-height: 60px;
+}
+
+.mat-header-row.imx_MatTableHeaderRow {
+  margin-top: 3px;
+  margin-bottom: 0;
+  padding-bottom: 12px;
+  padding-top: 12px;
+  min-height: 0;
+}
+
+.imx-ListViewItem,
+.mat-cell.imx_ColumnCell {
+  font-size: 15px;
+  text-overflow: ellipsis;
+  color: $VI_Common_Color_Gray;
+  margin: 0 10px;
+}
+
+.imx_ColumnHeader {
+  font-size: 13px;
+  color: $VI_Common_Color_Gray;
+  margin: -8px 10px;
+  padding: 10px 0;
+  line-height: 24px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mat-header-cell.imx_CheckableCell {
+  flex: 0 0 45px;
+}
+
+.mat-cell.imx_CheckableCell {
+  flex: 0 0 45px;
+}
+
+.mat-sort-header-button:disabled {
+  background-color: Transparent !important;
+  color: $VI_Common_Color_Gray !important;
+  cursor: default;
+}
+
+.mat-checkbox-checked.mat-accent .mat-checkbox-background,
+.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+  background-color: $Imx_Checkbox !important;
+}
+
+.mat-ripple-element {
+  background: transparent !important;
+}
+
+.mat-paginator-navigation-next.mat-icon-button,
+.mat-paginator-navigation-previous.mat-icon-button {
+  background: transparent !important;
+  width: 16px !important;
+  margin-right: 10px !important;
+}
+
+.imx-ListViewItem {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+/*#endregion*/
+
+/* #region MatCard styles */
+
+.mat-card {
+
+  .mat-card-title {
+    font-weight: 600;
+    font-size: 24px;
+    color: $Imx_Title_Color;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  mat-card-subtitle {
+    margin-top: 10px;
+    height: 50px;
+    font-weight: 400 !important;
+    font-size: 14px;
+    color: $Imx_Darker_Text_Color;
+  }
+
+  mat-card-actions {
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: .5px;
+    color: $QBM_Primary_Blue;
+    margin: 0 !important;
+
+    .mat-button {
+      text-align: center;
+      font-weight: 600 !important;
+      text-transform: uppercase;
+    }
+  }
+}
+
+
+/* #endregion */
+
+/* #region OpsWeb styles */
+
+.imx-ops-DatePosition {
+  margin: 10px;
+  position: relative;
+  text-align: right;
+  right: 0;
+  font-size: 12px;
+}
+
+.imx-ops-ElementStyle {
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+.tableHeader {
+  font-size: 24px;
+  font-weight: bold;
+  background-color: $VI_Common_Color_ColorBase3;
+  color: $VI_Common_Color_ColorBase1;
+}
+
+.imx-ops-tile {
+  display: inline-block;
+  margin-right: 2em;
+  width: 500px;
+  height: 400px;
+  border: solid 1px $VI_Common_Color_LightGray;
+  margin-bottom: 1em;
+  vertical-align: top;
+  display: inline-flex;
+  flex-direction: column;
+}
+
+.imx-ops-fillTile {
+  top: 5em;
+  left: 1em;
+  right: 1em;
+  bottom: 1em;
+  width: auto;
+  z-index: 50;
+  height: auto;
+  border: solid 1px $VI_Common_Color_LightGray;
+  display: block;
+  position: fixed;
+  flex-direction: none;
+  background-color: $VI_Common_Color_ColorBase1;
+}
+
+.imx-ops-tile-large {
+  display: inline-block;
+  margin-right: 2em;
+  width: 700px;
+  height: 400px;
+  border: solid 1px $VI_Common_Color_LightGray;
+  margin-bottom: 1em;
+  vertical-align: top;
+  display: inline-flex;
+  flex-direction: column;
+}
+
+.imx-ops-table-border {
+  margin-right: 2em;
+  width: 700px;
+  height: 600px;
+  border: solid 1px $VI_Common_Color_LightGray;
+  margin-bottom: 1em;
+  vertical-align: top;
+}
+
+.imx-ops-table-border h2 {
+  font-size: 2em;
+  background-color: #efefef;
+  margin: 0;
+  padding: .5rem;
+  color: $VI_Common_Color_ColorBase2;
+}
+
+.imx-ops-tile h2 {
+  font-size: 2em;
+  background-color: $VI_Common_Color_ColorBase1;
+  margin: 0;
+  padding: .5rem;
+  color: $VI_Common_Color_ColorBase3;
+}
+
+.imx-ops-tile-large h2 {
+  font-size: 2em;
+  background-color: $VI_Common_Color_ColorBase1;
+  margin: 0;
+  padding: .5rem;
+  color: $VI_Common_Color_ColorBase3;
+}
+
+.imx-ops-tile:hover {
+  border-color: $VI_Common_Color_Gray;
+}
+
+.imx-ops-tile-inner {
+  padding: 0 .5rem;
+  flex: 1 1 auto;
+  overflow: auto;
+}
+
+.imx-ops-tile-inner > div {
+  padding: 5px;
+}
+
+.imx-ops-tile-innerBottom {
+  padding: 0 .5rem;
+  flex-direction: row;
+}
+
+.imx-ops-tile-innerBottom > .ButtonBar > button {
+  margin: 5px;
+}
+
+
+a.imx-StartPageLink {
+  display: inline-block;
+  font-size: 24px;
+  margin-bottom: -10px;
+}
+
+a.imx-StartPageLink:hover {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+a.imx-StartPageLink > i {
+  color: $VI_Common_Color_ColorBase3;
+}
+
+.imx-ops-StatusCritical {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  display: inline-block;
+  /* background-image: url('res.axd?dojoFile=qui/qui/img/status/ic_status_error_20.png');*/
+}
+
+.imx-ops-StatusWarning {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  display: inline-block;
+  /*background-image: url('res.axd?dojoFile=qui/qui/img/status/ic_status_warning_20.png');*/
+}
+
+.imx-ops-StatusOK {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  display: inline-block;
+  /*background-image: url('res.axd?dojoFile=qui/qui/img/status/ic_status_check_green_20.png');*/
+}
+
+.imx-ops-PasscodeButtonBar {
+  clear: both;
+  width: auto;
+  padding-bottom: 8px;
+
+  .imx-button {
+    margin-top: 4px;
+    font-size: 16px;
+  }
+}
+
+.contentBounds {
+  max-height: 400px;
+}
+
+@media screen and (max-height:650px) {
+  .contentBounds {
+    max-height: 200px;
+  }
+}
+
+.imx-colorbase3 {
+  color: $VI_Common_Color_ColorBase3;
+}
+
+.imx-underlined {
+  text-decoration: underline;
+}
+
+.imx-ops-webstart {
+  margin-top: 15px;
+}
+
+.imx-ops-webstart > * {
+  display: block;
+  margin-bottom: 65px;
+}
+
+.imx-ops-webstart .imx-ops-category {
+  height: 20px;
+  font-size: 24px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: .83;
+  letter-spacing: normal;
+}
+
+.imx-loginPage .imx-loginFormcontainer h1 {
+  padding: 0;
+}
+
+.imx-content-header {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 5px;
+}
+
+
+
+imx-service-availability .mat-card {
+  width: 411px;
+  margin-bottom: 56px;
+
+  .mat-card-content {
+    display: flex;
+    padding: 24px;
+
+    button {
+      flex: 0 0 auto;
+      align-self: center;
+      font-size: 15px;
+      margin-right: 26px;
+    }
+
+    span:first-child {
+      text-transform: uppercase;
+      color: $Imx_Light_Text_Color;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    span {
+      display: block;
+      font-size: 20px;
+    }
+  }
+}
+
+/*#endregion*/
+
+/* #region SystemOverview styles */
+$tresholdExceededColor: #f4770b;
+
+imx-system-overview {
+  display: block;
+  margin-top: 25px;
+
+  button.mat-icon-button {
+    max-height: 30px;
+    line-height: 30px;
+    max-width: 35px;
+  }
+
+  .mat-icon-button .icon-scrolldown::before {
+    position: relative;
+    top: -5px;
+    left: -2px;
+  }
+
+  .mat-tree {
+    margin-left: -15px;
+  }
+
+  .mat-tree-node {
+    min-height: 23px;
+    margin-left: 5px;
+  }
+
+  .imx-system-overview-name {
+    min-width: 360px;
+    padding-left: 10px;
+  }
+
+  .imx-system-overview-value {
+    font-weight: 600;
+  }
+
+  .imx-system-header {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .imx-system-subtitle,
+  .imx-system-title {
+    display: block;
+  }
+
+  .imx-system-title {
+    font-size: 20px;
+    font-weight: 600;
+    flex: 1 1 auto;
+  }
+
+  .imx-system-subtitle {
+    font-size: 14px;
+    margin-bottom: 27px;
+  }
+
+  .imx-system-actions {
+    color: $QBM_Primary_Blue;
+    font-weight: 600;
+    font-size: 15px;
+    text-transform: uppercase;
+    flex: 1 1 auto;
+    text-align: right;
+
+    > span {
+      margin-left: 10px;
+      cursor: pointer;
+    }
+  }
+
+  .imx-treshold-exceeded {
+    color: $QBM_Primary_Red;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .imx-treshold-exceeded-label {
+    font-weight: 600;
+    font-size: 15px;
+
+    .eui-icon {
+      color: $Imx_Warning_Orange;
+      padding-right: 10px;
+    }
+  }
+
+  .imx-recommendedValue-exceeded {
+    color: $tresholdExceededColor;
+  }
+
+  .example-tooltip-red {
+    font-size: 9px;
+  }
+}
+
+.example-tooltip-red {
+  font-size: 32px;
+}
+
+/* #region special Grid styles */
+.imx_ColumnHeader.mat-column-DPRJournalSummary button,
+.imx_ColumnHeader.mat-column-UID_DPRShell button,
+.imx_ColumnHeader.mat-column-UID_Job button,
+.imx_ColumnHeader.mat-column-UID_Tree button {
+  margin-left: 5px;
+}
+/*#endregion*/
+
+/* #region ObjectHistory styles*/
+imx-object-history {
+  display: block;
+
+  .imx-viewmode-selector {
+    display: inline;
+    font-size: 14px;
+  }
+
+  .imx-viewmode-dropdown {
+    margin: auto 6px;
+
+    .mat-form-field-infix {
+      width: 98px;
+      color: $VI_Common_Color_Font;
+      border: 0;
+    }
+
+    .mat-form-field-flex {
+      background-color: $QBM_Primary_White;
+      padding-left: 6px;
+    }
+  }
+
+  .imx-loader-hidden {
+    visibility: hidden;
+  }
+
+  imx-object-history-timeline {
+    display: block;
+    margin: 2px;
+    padding: 30px 0;
+    border-radius: 3px;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+    background-color: $VI_Common_Color_ColorBase1;
+  }
+}
+
+.mat-option.mat-option-object-history {
+  height: unset !important;
+  padding: 4px 6px !important;
+  margin: 0 !important;
+}
+
+.grid-title-inline,
+.grid-title-inline > h1 {
+  display: inline;
+  margin-right: 10px;
+}
+
+.grid-title-inline-leftelem {
+  margin-top: 1.22em;
+}
+
+.mat-paginator {
+  margin-bottom: 20px;
+}
+/*#endregion ObjectHistory styles*/
+
+/* #region ObjectOverview styles*/
+
+.imx-object-overview-tab-header {
+  font-weight: 600;
+}
+
+.imx-object-overview-tab-text {
+  font-size: 18px;
+}
+
+/*#endregion ObjectOverview styles*/
+
+/* #region SystemStatus*/
+
+.greenCheck {
+  margin-right: .5em;
+  line-height: 20px;
+  color: $VI_Common_Color_Button_Success;
+}
+
+.warningSign {
+  line-height: 20px;
+  margin-right: .5em;
+  color: $QBM_Primary_Orange;
+}
+
+.errorSign {
+  line-height: 20px;
+  margin-right: .5em;
+  color: $VI_Common_Color_Button_Danger;
+}
+
+/*#endregion*/

@@ -1,0 +1,136 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.mat-tab-group {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+:host ::ng-deep .mat-tab-body-wrapper {
+  flex: 1 1 auto;
+
+  .mat-tab-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+  }
+}
+
+:host ::ng-deep .mat-tab-body-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.imx-progress-content {
+  overflow-y: auto;
+  flex: 1 1 auto;
+  padding: 20px;
+
+  .imx-progress-forecast {
+    display: flex;
+    flex-direction: column;
+  }
+
+  imx-progress {
+    width: 200px;
+  }
+
+  .imx-run-info-category {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+  }
+
+  .imx-property-display {
+    margin-bottom: 20px;
+
+    > span {
+      display: block;
+    }
+    > span:first-child {
+      font-size: 12px;
+      color: $black-9;
+      padding-bottom: 5px;
+    }
+
+    .help-icon {
+      color: $iris-blue;
+      font-size: 16px;
+      margin-left: 5px;
+      margin-top: -3px;
+    }
+  }
+
+  .imx-category-message {
+    font-weight: 600;
+  }
+}
+
+.helper-alert {
+  display: flex;
+  padding: 20px 20px 0 20px;
+  flex-direction: column;
+  span {
+    display: block;
+  }
+}
+
+.imx-button-bar {
+  display: flex;
+  justify-content: flex-end;
+  border-top: $black-c 1px solid;
+  padding: 0px 20px 20px 8px;
+  > * {
+    margin-left: 10px;
+    margin-top: 20px;
+  }
+}
+
+.imx-readonly-view {
+  margin-bottom: 20px;
+  span {
+    display: block;
+    word-wrap: break-word;
+    &.column-display {
+      font-size: 12px;
+      color: $black-9;
+      padding-bottom: 5px;
+    }
+  }
+}
+
+.imx-readonly-view-with-tip {
+  margin-bottom: 20px;
+ 
+  span {
+    display: block;
+    word-wrap: break-word;
+    &.column-display {
+      font-size: 12px;
+      color: $black-9;
+      padding-bottom: 5px;
+    }
+  }
+ 
+}
+
+eui-badge {
+  margin-left: 10px;
+}
+
+.imx-run-info-category-content {
+  display: grid;
+  grid-template-columns: auto 1fr;
+}
+
+.seperator {
+  border-bottom: 1px solid $black-9;
+  margin-bottom: 10px;
+  margin-top: -10px;
+}

@@ -1,0 +1,285 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "QER Ops Web (Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "port": 9230,
+      "sourceMaps": true,
+      "url": "http://localhost:4200/",
+      "webRoot": "${workspaceFolder}/projects/qer-app-operationssupport",
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/*",
+        "webpack:///src/*": "${webRoot}/*",
+        "webpack:///*": "*",
+        "webpack:///./~/*": "${webRoot}/node_modules/*",
+        "webpack:///ng://qbm/lib/*": "${workspaceFolder}/projects/qbm/src/lib/*"
+      }
+    },
+    {
+      "name": "QER Ops Web (Firefox)",
+      "type": "firefox",
+      "request": "launch",
+      "reAttach": true,
+      "url": "http://localhost:4200/",
+      "webRoot": "${workspaceFolder}/projects/qer-app-operationssupport",
+      "pathMappings": [
+        {
+          "url": "webpack:///projects",
+          "path": "${workspaceFolder}/projects"
+        },
+        {
+          "url": "webpack:///ng:/qbm",
+          "path": "${workspaceFolder}/projects/qbm/src"
+        },
+        {
+          "url": "webpack:///ng:/qer",
+          "path": "${workspaceFolder}/projects/qer/src"
+        }
+      ]
+    },
+    {
+      "name": "QER App Portal (Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "port": 9230,
+      "sourceMaps": true,
+      "url": "http://localhost:4200/",
+      "webRoot": "${workspaceFolder}/projects/qer-app-portal",
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/*",
+        "webpack:///src/*": "${webRoot}/*",
+        "webpack:///*": "*",
+        "webpack:///./~/*": "${webRoot}/node_modules/*",
+        "webpack:///ng://qbm/lib/*": "${workspaceFolder}/projects/qbm/src/lib/*",
+        "webpack:///ng://qer/lib/*": "${workspaceFolder}/projects/qer/src/lib/*",
+        "webpack:///ng://tsb/lib/*": "${workspaceFolder}/projects/tsb/src/lib/*",
+        "webpack:///ng://att/lib/*": "${workspaceFolder}/projects/att/src/lib/*"
+      }
+    },
+    {
+      "name": "QER App Portal (Chrome, API Server)",
+      "type": "chrome",
+      "request": "launch",
+      "port": 9230,
+      "sourceMaps": true,
+      "url": "http://localhost:8182/html/qer-app-portal/",
+      "webRoot": "${workspaceFolder}/projects/qer-app-portal",
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/*",
+        "webpack:///src/*": "${webRoot}/*",
+        "webpack:///*": "*",
+        "webpack:///./~/*": "${webRoot}/node_modules/*",
+        "webpack:///ng://qbm/lib/*": "${workspaceFolder}/projects/qbm/src/lib/*",
+        "webpack:///ng://qer/lib/*": "${workspaceFolder}/projects/qer/src/lib/*",
+        "webpack:///ng://tsb/lib/*": "${workspaceFolder}/projects/tsb/src/lib/*",
+        "webpack:///ng://att/lib/*": "${workspaceFolder}/projects/att/src/lib/*"
+      }
+    },
+    {
+      "name": "QER App Portal (Edge)",
+      "request": "launch",
+      "type": "pwa-msedge",
+      "url": "http://localhost:4200/",
+      "webRoot": "${workspaceFolder}/projects/qer-app-portal",
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/*",
+        "webpack:///src/*": "${webRoot}/*",
+        "webpack:///*": "*",
+        "webpack:///./~/*": "${webRoot}/node_modules/*",
+        "webpack:///ng://qbm/lib/*": "${workspaceFolder}/projects/qbm/src/lib/*",
+        "webpack:///ng://qer/lib/*": "${workspaceFolder}/projects/qer/src/lib/*",
+        "webpack:///ng://tsb/lib/*": "${workspaceFolder}/projects/tsb/src/lib/*",
+        "webpack:///ng://att/lib/*": "${workspaceFolder}/projects/att/src/lib/*"
+      }
+    },
+    {
+      "name": "QER App Portal  (Firefox)",
+      "type": "firefox",
+      "request": "launch",
+      "reAttach": true,
+      "url": "http://localhost:4200/",
+      "webRoot": "${workspaceFolder}/projects/qer-app-portal",
+      "pathMappings": [
+        {
+          "url": "webpack:///projects",
+          "path": "${workspaceFolder}/projects"
+        },
+        {
+          "url": "webpack:///ng:/aob/lib",
+          "path": "${workspaceFolder}/projects/aob/src/lib"
+        },
+        {
+          "url": "webpack:///ng:/qbm/lib",
+          "path": "${workspaceFolder}/projects/qbm/src/lib"
+        },
+        {
+          "url": "webpack:///ng:/att/lib",
+          "path": "${workspaceFolder}/projects/att/src/lib"
+        },
+        {
+          "url": "webpack:///ng:/qer/lib",
+          "path": "${workspaceFolder}/projects/qer/src/lib"
+        }
+      ]
+    },
+    {
+      "name": "ARC App Governance (Firefox)",
+      "type": "firefox",
+      "request": "launch",
+      "reAttach": true,
+      "url": "http://localhost:4200/",
+      "webRoot": "${workspaceFolder}/projects/arc-app-certaccess",
+      "pathMappings": [
+        {
+          "url": "webpack:///projects",
+          "path": "${workspaceFolder}/projects"
+        },
+        {
+          "url": "webpack:///ng:/att/lib",
+          "path": "${workspaceFolder}/projects/att/src/lib"
+        },
+        {
+          "url": "webpack:///ng:/qbm",
+          "path": "${workspaceFolder}/projects/qbm/src"
+        },
+        {
+          "url": "webpack:///ng:/qer",
+          "path": "${workspaceFolder}/projects/qer/src"
+        }
+      ]
+    },
+    {
+      "name": "QBM Landing Page (Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "port": 9230,
+      "sourceMaps": true,
+      "url": "http://localhost:4200/",
+      "webRoot": "${workspaceFolder}/projects/qbm-app-landingpage",
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/*",
+        "webpack:///src/*": "${webRoot}/*",
+        "webpack:///./~/*": "${webRoot}/node_modules/*",
+        "webpack:///ng://qbm/lib/*": "${workspaceFolder}/projects/qbm/src/lib/*"
+      }
+    },
+    {
+      "name": "QBM Samples (Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "port": 9230,
+      "sourceMaps": true,
+      "url": "http://localhost:4200/",
+      "webRoot": "${workspaceFolder}/projects/qbm-samples",
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/*",
+        "webpack:///src/*": "${webRoot}/*",
+        "webpack:///*": "*",
+        "webpack:///./~/*": "${webRoot}/node_modules/*",
+        "webpack:///ng://qbm/lib/*": "${workspaceFolder}/projects/qbm/src/lib/*"
+      }
+    },
+    {
+      "name": "QBM Unit Tests (Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:9876/debug.html",
+      "webRoot": "${workspaceFolder}/projects/qbm",
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/*",
+        "webpack:///src/*": "${webRoot}/*",
+        "webpack:///*": "*",
+        "webpack:///./~/*": "${workspaceFolder}/node_modules/*"
+      }
+    },
+    {
+      "name": "AOB Unit Tests (Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "address": "localhost",
+      "port": 9333,
+      "webRoot": "${workspaceFolder}/projects/aob",
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/*",
+        "webpack:///src/*": "${webRoot}/*",
+        "webpack:///*": "*",
+        "webpack:///./~/*": "${webRoot}/node_modules/*",
+        "webpack:///ng://qbm/lib/*": "${workspaceFolder}/projects/qbm/src/lib/*"
+      }
+    },
+    {
+      "name": "QER Ops Web Unit Tests (Chrome)",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9333,
+      "sourceMaps": true,
+      "webRoot": "${workspaceRoot}/projects/qer-app-operationssupport",
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/*",
+        "webpack:///src/*": "${webRoot}/*",
+        "webpack:///*": "*",
+        "webpack:///./~/*": "${webRoot}/node_modules/*",
+        "webpack:///ng://qbm/lib/*": "${workspaceFolder}/projects/qbm/src/lib/*"
+      }
+    },
+    {
+      "name": "QBM Landing Page Unit Tests (Chrome)",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9333,
+      "sourceMaps": true,
+      "webRoot": "${workspaceRoot}/projects/qbm-app-landingpage",
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/*",
+        "webpack:///src/*": "${webRoot}/*",
+        "webpack:///*": "*",
+        "webpack:///./~/*": "${webRoot}/node_modules/*",
+        "webpack:///ng://qbm/lib/*": "${workspaceFolder}/projects/qbm/src/lib/*"
+      }
+    },
+    {
+      "name": "Password Reset Portal (Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "port": 9230,
+      "sourceMaps": true,
+      "url": "http://localhost:4200/",
+      "webRoot": "${workspaceFolder}/projects/qer-app-pwdPortal",
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/*",
+        "webpack:///src/*": "${webRoot}/*",
+        "webpack:///*": "*",
+        "webpack:///./~/*": "${webRoot}/node_modules/*",
+        "webpack:///ng://qbm/lib/*": "${workspaceFolder}/projects/qbm/src/lib/*",
+        "webpack:///ng://qer/lib/*": "${workspaceFolder}/projects/qer/src/lib/*"
+      }
+    },
+    {
+      "name": "Password Reset Portal (Firefox)",
+      "type": "firefox",
+      "request": "launch",
+      "reAttach": true,
+      "url": "http://localhost:4200/",
+      "webRoot": "${workspaceFolder}/projects/qer-app-pwdPortal",
+      "pathMappings": [
+        {
+          "url": "webpack:///projects",
+          "path": "${workspaceFolder}/projects"
+        },
+        {
+          "url": "webpack:///ng:/qbm",
+          "path": "${workspaceFolder}/projects/qbm/src"
+        },
+        {
+          "url": "webpack:///ng:/qer",
+          "path": "${workspaceFolder}/projects/qer/src"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+<h2 mat-dialog-title [attr.data-imx-identifier]="data?.identifier + '-title'">{{data.Title}}</h2>
+<mat-dialog-content>
+    <div class="cmp-messagebox" [attr.data-imx-identifier]="data?.identifier + '-message'">{{ data.Message }}</div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button *ngIf="data.ShowYesNo" type="button" [attr.data-imx-identifier]="data?.identifier + '-button-yes'"
+        (click)="click(MessageDialogResult.YesResult)">{{'#LDS#Yes' | translate}}</button>
+    <button mat-button *ngIf="data.ShowYesNo" type="button" [attr.data-imx-identifier]="data?.identifier + '-button-no'"
+        (click)="click(MessageDialogResult.NoResult)">{{'#LDS#No' | translate}}</button>
+    <button mat-button *ngIf="data.ShowOk" type="submit" [attr.data-imx-identifier]="data?.identifier + '-button-ok'"
+        (click)="click(MessageDialogResult.OkResult)">{{'#LDS#OK' | translate}}</button>
+    <button mat-button *ngIf="data.ShowCancel" type="button" [attr.data-imx-identifier]="data?.identifier + '-button-cancel'"
+        (click)="click(MessageDialogResult.CancelResult)">{{'#LDS#Cancel' | translate}}</button>
+</mat-dialog-actions>

@@ -1,0 +1,55 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: inherit;
+}
+
+imx-data-table {
+  flex-grow: 2;
+}
+
+
+:host ::ng-deep imx-data-table .mat-header-row .mat-header-cell {
+  font-weight: 600;
+  font-size: 14px;
+  padding: 0 10px;
+}
+
+:host ::ng-deep imx-data-table .mat-row .mat-cell {
+  padding: 0 10px;
+}
+
+.imx-separate-menu-item {
+  border-top: 1px solid $black-c;
+}
+
+.imx-table-container {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: inherit;
+  max-width: 1200px;
+}
+
+:host ::ng-deep eui-sidesheet .eui-sidesheet__content {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  box-sizing: content-box;
+}
+
+.mat-card {
+  display: flex;
+  flex-direction: column;
+  height: inherit;
+  overflow: hidden;
+
+  .mat-card-content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1 1 auto;
+  }
+}

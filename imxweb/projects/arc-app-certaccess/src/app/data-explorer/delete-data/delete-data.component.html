@@ -1,0 +1,47 @@
+<div mat-dialog-content>
+  <div class="delete-data-dialog">
+    <h1 translate>#LDS#Heading Delete Data</h1>
+    <p translate>#LDS#Select the domain you want to delete data from.</p>
+    <eui-alert class="delete-data-alert" type="info" colored="true" *ngIf="!data.hasAuthorities || (selectedAuthority && selectedAuthority.hasSync)">
+      <eui-alert-header>
+        <span *ngIf="selectedAuthority && selectedAuthority.hasSync" translate>#LDS#Heading Synchronization Configured in Starling CertAccess Agent</span>
+        <span *ngIf="!data.hasAuthorities" translate>#LDS#Heading No Domain Configured</span>
+      </eui-alert-header>
+      <eui-alert-content>
+        <span *ngIf="selectedAuthority && selectedAuthority.hasSync" translate
+          >#LDS#You cannot delete data. Remove the synchronization configuration for the selected domain in the Starling CertAccess Agent.</span
+        >
+        <span *ngIf="!data.hasAuthorities" translate>#LDS#There is no data to delete. No domain has been configured yet.</span>
+      </eui-alert-content>
+    </eui-alert>
+
+    <eui-alert class="delete-data-alert" type="warning" colored="true" *ngIf="data.hasAuthorities && selectedAuthority && !selectedAuthority.hasSync">
+      <eui-alert-header>
+        <span translate>#LDS#This operation will delete all data within Starling CertAccess that is associated with the selected domain.</span>
+      </eui-alert-header>
+      <eui-alert-content>
+        <space translate>#LDS#Once the deletion process has started, it cannot be stopped and cannot be undone.</space>
+      </eui-alert-content>
+    </eui-alert>
+
+    <div class="delete-data-domains" *ngIf="data.hasAuthorities">
+      <eui-select
+        [label]="'#LDS#Select a domain' | translate"
+        (searchFieldChange)="domainSearch($event)"
+        [filterFunction]="domainSearchFilter"
+        (selectionChange)="domainSelected($event)"
+        [options]="authorities"
+        [isPending]="selectPending"
+      >
+      </eui-select>
+    </div>
+  </div>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close cdkFocusInitial>
+    <span translate>#LDS#Cancel</span>
+  </button>
+  <button mat-flat-button color="warn" (click)="delete()" [disabled]="!data.hasAuthorities || !selectedAuthority || selectedAuthority.hasSync">
+    <span translate>#LDS#Delete all data</span>
+  </button>
+</div>

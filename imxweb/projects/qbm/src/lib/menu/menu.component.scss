@@ -1,0 +1,16 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+button.mat-menu-item:hover,
+button.mat-menu-item:focus {
+  background-color: $white !important;
+}
+
+.mat-tab-nav-bar {
+  background-color: $white;
+
+  .mat-tab-link {
+    font-size: 16px;
+    color: $black-6;
+  }
+}
+

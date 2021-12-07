@@ -1,0 +1,17 @@
+<div class="FilterMatCardDiv">
+  <mat-card [class]="cardClass" (click)="cardSelected()">
+    <mat-card-content class="FilterMatContent">
+      <div [class]="contentClass">
+        <div class="FilterCheckBox">
+          <mat-checkbox [(ngModel)]="isChecked"></mat-checkbox>
+        </div>
+        <div class="FilterText">
+          <span>{{caption}}</span>
+        </div>
+        <div class="FilterIcon">
+          <eui-icon [icon]="icon" size="60px"></eui-icon>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

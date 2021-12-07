@@ -1,0 +1,38 @@
+<div class="imx-content">
+  <div data-imx-identifier="cartitem-edit-assignment-info" class="imx-information" *ngIf="shoppingCartItem.Assignment.value">
+      {{ cartItemSvc.getAssignmentText(shoppingCartItem) }}
+  </div>
+
+  <div data-imx-identifier="cartitem-edit-max-valid-days-info" *ngIf="shoppingCartItem.MaxValidDays.value > 0" class="imx-information">
+      {{'#LDS#This product can only be requested for {0} days.' | translate
+              | ldsReplace:[shoppingCartItem.MaxValidDays.value]}}
+  </div>
+
+  <form id="personalDataForm" [formGroup]="cartItemForm">
+    <imx-entity-column-editor *ngFor="let column of columns; let i = index"
+        [column]="column"
+        (controlCreated)="cartItemForm.addControl($event.name + '_' + i, $event.control)"
+        [attr.data-imx-identifier]="'cartitem-edit-' + column.ColumnName  + '_' + i">
+    </imx-entity-column-editor>
+  </form>
+</div>
+
+<div class="imx-actions">
+  <ng-container *ngIf="shoppingCartItem.UID_PersonWantsOrg.value || data.cloneItem">
+      <button mat-stroked-button data-imx-identifier="cartitem-edit-actions-dialog" [matMenuTriggerFor]="ToolbarButton1">
+          {{'#LDS#Actions' | translate}} <eui-icon icon="scrolldown"></eui-icon></button>
+      <mat-menu data-imx-identifier="cartitem-edit-actions-menu" #ToolbarButton1="matMenu">
+          <a *ngIf="shoppingCartItem.UID_PersonWantsOrg.value" data-imx-identifier="cartitem-edit-menu-button-view-original" mat-menu-item
+              [routerLink]="['objectsheet', 'PersonWantsOrg', shoppingCartItem.UID_PersonWantsOrg.value]">
+              {{'#LDS#View original request' | translate}}</a>
+          <button *ngIf="data.cloneItem" data-imx-identifier="cartitem-edit-menu-button-request-for-employees" mat-menu-item (click)="data.cloneItem()">
+              {{ '#LDS#Request for multiple employees' | translate }}
+          </button>
+      </mat-menu>
+  </ng-container>
+  <button data-imx-identifier="cartitem-edit-ok-dialog" mat-raised-button color="primary"
+      (click)="sideSheetRef.close(true)"
+      [disabled]="cartItemForm.invalid || (!cartItemForm.dirty)">
+      {{ '#LDS#Save' | translate }}
+  </button>
+</div>

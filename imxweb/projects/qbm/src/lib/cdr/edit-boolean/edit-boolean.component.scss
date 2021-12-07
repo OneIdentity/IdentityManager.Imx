@@ -1,0 +1,14 @@
+:host {
+  display: flex;
+  flex-direction:row ;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.mat-checkbox {
+  display: inline-block;
+}
+
+.imx-checkbox-spinner {
+  margin-left: 10px;
+}

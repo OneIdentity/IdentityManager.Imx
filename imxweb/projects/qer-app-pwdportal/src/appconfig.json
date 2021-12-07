@@ -1,0 +1,11 @@
+{
+  "Title": "Password Reset Portal",
+  "WebAppIndex": "passwordreset",
+  "Translation": {
+    "Langs": ["en-US", "de-DE", "de", "en"]
+  },
+  "routeConfig": {
+    "login": "",
+    "start": "dashboard"
+  }
+}

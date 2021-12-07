@@ -1,0 +1,127 @@
+<h1 class="mat-headline">{{'#LDS#Welcome' | translate}}</h1>
+
+<ng-container *ngIf="viewReady">
+  <div class="imx-flexible-tile-row">
+    <imx-badge-tile data-imx-identifier="start-tile-shopping-cart"
+      [caption]="'#LDS#Heading Products in Shopping Cart' | translate" *ngIf="userConfig?.IsITShopEnabled && GetCountProductsinShoppingCart() > 0"
+      [value]="GetCountProductsinShoppingCart()" [identifier]="'shopping-cart'" (actionClick)="GoToShoppingCart()">
+    </imx-badge-tile>
+
+    <imx-badge-tile data-imx-identifier="start-tile-it-shop-approvals"
+      [caption]="'#LDS#Heading Pending Requests' | translate" *ngIf="userConfig?.IsITShopEnabled && GetCountPendingRequests() > 0"
+      [value]="GetCountPendingRequests()" [identifier]="'it-shop-approvals'" (actionClick)="GoToItshopApprovals()">
+    </imx-badge-tile>
+
+    <imx-badge-tile data-imx-identifier="start-tile-it-shop-approval-inquiries"
+      [caption]="'#LDS#Heading Request Inquiries' | translate" *ngIf="userConfig?.IsITShopEnabled && GetCountRequestInquiries() > 0"
+      [value]="GetCountRequestInquiries()" [identifier]="'it-shop-approval-inquiries'"
+      (actionClick)="GoToItShopApprovalInquiries()">
+    </imx-badge-tile>
+
+    <imx-badge-tile data-imx-identifier="start-tile-my-processes" [caption]="'#LDS#Heading My Processes' | translate"
+      *ngIf="GetCountNewProcesses() > 0" [value]="GetCountNewProcesses()" [identifier]="'my-processes'"
+      (actionClick)="GoToMyProcesses()"></imx-badge-tile>
+
+    <imx-badge-tile data-imx-identifier="start-tile-request-ending-soon"
+      [caption]="'#LDS#Heading Products Expiring Soon' | translate" *ngIf="userConfig?.IsITShopEnabled && userConfig?.CountRequestsEndingSoon > 0"
+      [value]="userConfig?.CountRequestsEndingSoon" [identifier]="'requests ending soon'"
+      (actionClick)="router.navigate(['requesthistory'], { queryParams: { ShowEndingSoon: 1 } })"></imx-badge-tile>
+
+    <imx-ext id="Dashboard-SmallTiles" [referrer]="this"></imx-ext>
+
+  </div>
+  <div class="imx-flexible-tile-row">
+    <imx-icon-tile *ngIf="ShowPasswordTile()" data-imx-identifier="start-tile-no-password-query-and-answer-set"
+      [caption]="'#LDS#Heading Password Questions' | translate" [subtitle]="(this.userConfig.HasPasswordAnswer
+        ? '#LDS#Specify additional password questions to be able to unlock your user account.'
+        : '#LDS#Specify your password questions to be able to unlock your user account.')  | translate "
+      [identifier]="'no-password-query-and-answer-set'">
+      <ng-template #ActionTemplate>
+        <button mat-button color="primary" [attr.data-imx-identifier]="'imx-start-button-password-questions'"
+          (click)="GoToMyPassword()">
+          <span>{{'#LDS#Specify password questions'| translate}}</span>
+          <eui-icon size="m" icon="forward"></eui-icon>
+        </button>
+      </ng-template>
+    </imx-icon-tile>
+
+    <imx-notification-tile data-imx-identifier="start-noficationtile-enable-notifications"
+      *ngIf="projectConfig?.VI_Common_EnableNotifications">
+    </imx-notification-tile>
+
+    <imx-icon-tile data-imx-identifier="start-tile-password-manager" *ngIf="ShowQpmIntegration()"
+    [caption]="'#LDS#Heading Password Manager' | translate"
+    [subtitle]="'#LDS#Use Password Manager to manage passwords and your question and answer profile.' | translate"
+    [identifier]="'password-manager-link'" [image]="'key'">
+    <ng-template #ActionTemplate>
+      <button mat-button color="primary" [attr.data-imx-identifier]="'imx-start-button-password-manager'"
+        (click)="GoToQpm()">
+        <span>{{'#LDS#Open Password Manager'| translate}}</span>
+        <eui-icon size="m" icon="forward"></eui-icon>
+      </button>
+    </ng-template>
+    </imx-icon-tile>
+
+    <imx-icon-tile data-imx-identifier="start-tile-manage-passwords" *ngIf="ShowPasswordMgmtTile()"
+      [caption]="'#LDS#Heading Passwords' | translate"
+      [subtitle]="'#LDS#Create and manage passwords, password questions, and security keys.' | translate"
+      [identifier]="'reset-password-web-link'" [image]="'key'">
+      <ng-template #ActionTemplate>
+        <button mat-button color="primary" [attr.data-imx-identifier]="'imx-start-button-manage-password'"
+          (click)="GoToPasswordMgmtWeb()">
+          <span>{{'#LDS#Manage passwords'| translate}}</span>
+          <eui-icon size="m" icon="forward"></eui-icon>
+        </button>
+      </ng-template>
+    </imx-icon-tile>
+
+    <imx-icon-tile data-imx-identifier="start-tile-start-a-new-request"
+      [caption]="'#LDS#Heading New Request' | translate"
+      [subtitle]="'#LDS#Request products for yourself or for others.' |translate" [image]="'cart'"
+      [identifier]="'start-a-new-request'" *ngIf="ShowNewRequestLink()">
+      <ng-template #ActionTemplate>
+        <button mat-button color="primary" [attr.data-imx-identifier]="'imx-start-button-new-request'"
+          (click)="GoToProductSelection()">
+          <span>{{'#LDS#Request products' | translate}}</span>
+          <eui-icon size="m" icon="forward"></eui-icon>
+        </button>
+      </ng-template>
+    </imx-icon-tile>
+
+    <imx-tile data-imx-identifier="start-tile-it-shop-approval-inquiries"
+      [caption]="'#LDS#Heading Request Inquiries' | translate" *ngIf="userConfig?.IsITShopEnabled && GetCountRequestInquiries() > 0"
+      [value]="GetCountRequestInquiries()" [identifier]="'it-shop-approval-inquiries'"
+      (actionClick)="GoToItShopApprovalInquiries()">
+    </imx-tile>
+
+    <imx-ext id="KpiTileComponent" *ngIf="hasKpi"></imx-ext>
+
+  </div>
+  <div class="imx-flexible-tile-row">
+    <imx-businessowner-chartsummary></imx-businessowner-chartsummary>
+    <!-- TODO later
+    <QBM_Common_FavoritesView></QBM_Common_FavoritesView>
+    -->
+
+    <!-- Chart Tiles -->
+    <!-- TODO later: configure charts
+      <imx-chart-tile data-imx-identifier="start-charttile-dashboard-employeesByRiskIndex"
+      *ngIf="userConfig?.VI_Start_Governance_Risk_Condition"
+      [displayNameDialogDashboardDef]="'QAMEmployeesByRiskIndex10'" [chartType]="'ChartBar'"
+      [caption]="'#LDS#Employees by risk index' | translate" [identifier]="'dashboard-employeesByRiskIndex'"
+      [useHistogramStyle]="true" (actionClick)="GoToDashboardEmployeesByRiskIndex()">
+    </imx-chart-tile>
+
+    <imx-chart-tile data-imx-identifier="start-charttile-dashboard-organization"
+      [displayNameDialogDashboardDef]="'TotalNumberOfOrganizationalUnits'" [chartType]="'ChartBar'"
+      *ngIf="userConfig?.VI_Start_Governance_Organisation_Condition" [caption]="'#LDS#Organization' | translate"
+      [identifier]="'dashboard-organization'" (actionClick)="GoToDashboardOrganization()">
+    </imx-chart-tile>
+
+    <imx-chart-tile data-imx-identifier="start-charttile-dashboard-requests"
+      [displayNameDialogDashboardDef]="'ITShopOrdersByDate'" [chartType]="'ChartLine'"
+      *ngIf="userConfig?.VI_Start_Governance_ITShop_Condition" [caption]="'#LDS#Heading Request' | translate"
+      [identifier]="'dashboard-requests'" (actionClick)="GoToDashboardRequests()"></imx-chart-tile>
+    -->
+  </div>
+</ng-container>

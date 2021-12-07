@@ -1,0 +1,51 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+:host {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+
+.imx-memberships {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.imx-membership-table {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.imx-card-header {
+  margin-top: 10px;
+  background-color: $white;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  z-index: 100;
+  border: 1px solid rgba($aspen-green, 0.6);
+
+  .imx-card-header-bg {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    background-color: $aspen-pastel;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    .eui-icon {
+      color: rgba($aspen-green, 0.6);
+      margin-right: 10px;
+    }
+
+    & > span {
+      font-size: 20px;
+    }
+  }
+}

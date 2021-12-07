@@ -1,0 +1,49 @@
+<div class="request-config request-config--full-page">
+
+  <div>
+    <div class="heading-wrapper">
+      <h1 class="mat-headline">{{requestsService.LdsHeadingShops | translate}}</h1>
+
+      <div class="alert-wrapper">
+        <eui-alert *ngIf="showHelperAlert" class="helper-alert" type="info" condensed="true" [colored]="true" 
+          [dismissable]="true" (dismissed)="onHelperDismissed()">
+          <span>{{requestsService.LdsShopExplanation | translate}}</span>
+        </eui-alert>
+
+        <!-- Allow child modules to extend this component by adding alerts -->
+        <imx-extd id="Request-Config-Alert" [referrer]="this"></imx-extd>
+      </div>
+
+
+    </div>
+
+    <div class="imx-table-container">
+      <imx-data-source-toolbar #dst [settings]="dstSettings"
+        [hiddenElements]="['groupBy', 'settings', 'selectedViewGroup']" [hiddenFilters]="['namespace']"
+        [searchBoxText]="'#LDS#Search' | translate" (navigationStateChanged)="onNavigationStateChanged($event)"
+        (search)="onSearch($event)"></imx-data-source-toolbar>
+
+      <imx-data-table class="imx-requests-table" [dst]="dst" mode="manual" (highlightedEntityChanged)="onRequestShopSelected($event)" detailViewVisible="false"
+        [noDataText]="requestsService.LdsNoShops" [noMatchingDataText]="requestsService.LdsNoMatchingShops" 
+        data-imx-identifier="requests-tabledata-table">
+        <imx-data-table-column [entityColumn]="entitySchemaShopStructure?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
+        [entitySchema]="entitySchemaShopStructure">
+          <ng-template let-item>
+            <div data-imx-identifier="requests-tabledata-display">{{ item.GetEntity().GetDisplay() }}</div>
+            <div subtitle data-imx-identifier="requests-tabledata-description">{{ item.Description.Column.GetDisplayValue() }}</div>
+          </ng-template>
+        </imx-data-table-column>
+        <imx-data-table-column [entityColumn]="entitySchemaShopStructure?.Columns.UID_OrgAttestator"
+          [entitySchema]="entitySchemaShopStructure">
+        </imx-data-table-column>
+      </imx-data-table>
+      <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+    </div>
+
+    <div class="request-config__action-buttons">
+      <button mat-raised-button color="primary" data-imx-identifier="create-new-request-shop"
+        (click)="createRequestConfig()">{{requestsService.LdsCreateShop | translate}}</button>
+    </div>
+
+  </div>
+</div>

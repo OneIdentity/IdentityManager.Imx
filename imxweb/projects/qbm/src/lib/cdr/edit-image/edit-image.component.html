@@ -1,0 +1,14 @@
+<input [hidden]="true" #file type="file" multiple="false" accept="image/png" (change)="emitFiles($event.target.files)"/>
+
+<imx-image-select *ngIf="columnContainer?.canEdit; else imageView"
+  [valueWrapper]="columnContainer"
+  [control]="control"
+  [fileFormatHint]="fileFormatHint"
+  [isLoading]="isLoading"
+  (change)="resetFileFormatErrorState();file.click()"
+  (remove)="remove()">
+</imx-image-select>
+
+<ng-template #imageView>
+  <imx-image-view [valueWrapper]="columnContainer" defaultValue="#LDS#No data"></imx-image-view>
+</ng-template>

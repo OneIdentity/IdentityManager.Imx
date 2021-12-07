@@ -1,0 +1,72 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-grow: 1;
+  max-width: 1200px;
+}
+
+.imx-table-container {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  margin-bottom: -20px;
+
+  > :nth-child(2) {
+    flex: 1 1 auto;
+  }
+}
+
+.imx-journal-textbox {
+  max-height: 100px;
+  overflow: auto;
+}
+
+.imx-journal-message-icon {
+  font-size: large;
+}
+
+.imx-journal-filter-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.imx-journal-filter-item {
+  margin-right: 25px;
+  margin-bottom: 25px;
+}
+
+.imx-icon-column {
+  margin-right: 40px;
+}
+
+.mat-column-MessageType {
+  max-width: 50px;
+}
+
+.mat-column-MessageDate {
+  min-width: 100px;
+  max-width: 100px;
+}
+
+.mat-column-ApplicationName {
+  max-width: 200px;
+}
+
+.mat-column-MessageString {
+  max-width: 800px;
+  min-width: 200px;
+}
+
+.mat-column-HostName {
+  max-width: 300px;
+}
+
+
+.imx-refresh-button {
+  margin-right: 5px;
+  height: 50px;
+}

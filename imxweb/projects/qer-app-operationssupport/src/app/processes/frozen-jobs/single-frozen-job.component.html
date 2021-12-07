@@ -1,0 +1,68 @@
+<div class="imx-refresh-line">
+  <button mat-stroked-button color="primary" class="imx-refresh-button" (click)="loadView()">
+    <eui-icon icon="sync"></eui-icon> <span>{{ '#LDS#Refresh' | translate }}</span>
+  </button>
+</div>
+<div class="imx-ops-ElementStyle" *ngIf="queueService.data?.length === 0">
+  {{'#LDS#The process does not exist or it has already been completed.' | translate}}
+</div>
+<div eui-sidesheet-content class="imx-table-container" *ngIf="queueService.data?.length > 0">
+
+  <imx-tree-table #tree [dataSource]="queueService" [rootType]="'ColumnTemplate'">
+    <imx-column field="UID_JobOrigin" title="{{ getColumnDisplay('JobChainName') + ' / ' + getColumnDisplay('UID_Job') }}">
+      <ng-template #imxCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <div class="{{ rowIndex > 0 ? '' : 'imx-title' }}">{{ displayAccessor(dataItem, rowIndex) }}</div>
+      </ng-template>
+    </imx-column>
+    <imx-column field="XDateInserted" title="{{ getColumnDisplay('XDateInserted') }}">
+      <ng-template #imxCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <div class="imx-normalCell">{{ timeAccessor(dataItem, rowIndex) }}</div>
+      </ng-template>
+    </imx-column>
+    <imx-column field="Ready2EXE" title="{{ getColumnDisplay('Ready2EXE') }}">
+      <ng-template #imxCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <div style="width: 150px;" *ngIf="rowIndex === 0">
+          <imx-progressbar [caption]="('#LDS#Steps completed' | translate) + ': '" [value]="getCompletedSteps()"
+            [maxValue]="getTotalSteps()"></imx-progressbar>
+        </div>
+        <span class="imx-normalCell" *ngIf="rowIndex !== 0">{{
+          dataItem.Ready2EXE.Column.GetDisplayValue() }}</span>
+        <span *ngIf="rowIndex !== 0 && isFrozen(dataItem)">
+          <button mat-button color="primary" (click)="showMessage(dataItem)" class="showmessage"
+            data-imx-identifier="imx-job-showmessage" [matTooltip]="'#LDS#Show message' | translate">
+            <eui-icon icon="info"></eui-icon></button>
+        </span>
+      </ng-template>
+    </imx-column>
+  </imx-tree-table>
+
+
+  <mat-card class="reactivate-card" *ngIf="queueService.CanBeReactivated()">
+    <mat-card-header>
+      <div mat-card-title>{{'#LDS#Heading Further Actions' | translate}}</div>
+    </mat-card-header>
+    <mat-card-content>
+      <p translate>#LDS#Select how to proceed with the process.</p>
+      <mat-radio-group [(ngModel)]="mode">
+        <mat-radio-button class="reactivate-radio" [value]="ReactivateJobMode.Reactivate">
+          {{ '#LDS#Retry the frozen process step' | translate }}
+        </mat-radio-button>
+        <mat-radio-button class="reactivate-radio" [value]="ReactivateJobMode.ContinueSuccess">
+          <ng-container *ngIf="!queueService.getFrozenItem().UID_JobSuccess.value">{{ '#LDS#End with success' |
+            translate }}</ng-container>
+          <ng-container *ngIf="queueService.getFrozenItem().UID_JobSuccess.value">{{ '#LDS#Continue with the success process step' | translate }}</ng-container>
+        </mat-radio-button>
+        <mat-radio-button class="reactivate-radio" [value]="ReactivateJobMode.ContinueError">
+          <ng-container *ngIf="!queueService.getFrozenItem().UID_JobError.value">{{ '#LDS#End with error' | translate }}
+          </ng-container>
+          <ng-container *ngIf="queueService.getFrozenItem().UID_JobError.value">{{ '#LDS#Continue with the error process step' | translate }}</ng-container>
+        </mat-radio-button>
+      </mat-radio-group>
+    </mat-card-content>
+    <mat-card-actions color="white" *ngIf="queueService.CanBeReactivated()">
+      <button mat-flat-button color="primary" [disabled]="mode<0" (click)="reactivate()">
+        {{ '#LDS#Apply' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

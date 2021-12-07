@@ -1,0 +1,20 @@
+// add styles if necessary
+
+.imx-dialog-mat-card-content{
+  margin: 10px;
+  display: flex;
+  flex-direction: row;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.mat-dialog-content{
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.imx-table-container{
+  overflow-y: auto;
+  flex: 1 1 auto;
+}

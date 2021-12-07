@@ -1,0 +1,37 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+.data-explorer {
+  &.data-explorer--accounts {
+
+    .data-explorer-card-header {
+      border: 1px solid rgba($corbin-orange, 0.6);
+
+      .data-explorer-card-header-bg {
+        background-color:$corbin-pastel;
+
+        .eui-icon {
+          color: rgba($corbin-orange, 0.6);
+        }
+      }
+    }
+
+    > :nth-child(2) {
+      flex: 0 0 auto;
+    }
+    
+
+    .imx-data-explorer-content {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      flex: 1 1 auto;
+    }
+    
+
+    ::ng-deep .data-explorer-table {
+      .mat-row:hover {
+        background-color: rgba($corbin-pastel, 0.2) !important;
+      }
+    }
+  }
+}

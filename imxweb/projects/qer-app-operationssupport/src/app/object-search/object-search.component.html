@@ -1,0 +1,13 @@
+<h2 class="startSubTitle">{{ '#LDS#Search' | translate }}</h2>
+<imx-searchbar
+  [watermark]="'#LDS#Enter an object name' | translate"
+  [debounce]="true"
+  [searchService]="SearchService"
+  (selectionChange)="itemSelected($event)"
+>
+  <ng-template #imxResultTemplate let-dataItem>
+    <div class="imx-searchResultItem name" (mouseover)="setCurrentItem(dataItem)" matTooltip="{{ currentMetadataItem?.DisplaySingular }}">
+      {{ dataItem.Display }}
+    </div>
+  </ng-template>
+</imx-searchbar>

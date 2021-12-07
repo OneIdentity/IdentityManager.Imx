@@ -1,0 +1,13 @@
+<imx-objectsheet-header [caption]="'#LDS#Entitlements' | translate"></imx-objectsheet-header>
+<span class="imx-entitlements-description">
+    {{'#LDS#Select the entitlements of {0} you wish to edit.' 
+    | translate | ldsReplace: person?.GetEntity()?.GetDisplay()}}
+</span>
+<!-- TODO later
+<VI_Roles_Membership [AllObjects]="Person">
+    <ng-template HeadLineIfData>
+        <VI_Common_PageDescription [Text]="GetText() | async">
+        </VI_Common_PageDescription>
+    </ng-template>
+</VI_Roles_Membership>
+-->

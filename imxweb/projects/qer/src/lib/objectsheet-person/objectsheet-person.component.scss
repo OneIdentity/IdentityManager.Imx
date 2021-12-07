@@ -1,0 +1,15 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  height: 100%;
+  display: flex;
+}
+
+.mat-tab-group {
+  overflow-y: auto;
+}
+
+.LayoutpWideSplittedRow {
+  max-width: 1300px;
+}

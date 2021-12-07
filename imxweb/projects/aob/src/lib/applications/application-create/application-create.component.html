@@ -1,0 +1,32 @@
+<div class="imx-content">
+  <p translate>#LDS#Add an icon, name and description to the application and assign a manager to it.</p>
+
+  <form class="imx-form" id="form" [formGroup]="form">
+    <imx-application-image-select class="imx-select"
+      [column]="imageColumn"
+      (controlCreated)="form.addControl(imageColumn.ColumnName, $event)">
+    </imx-application-image-select>
+    <imx-cdr-editor class="imx-select" *ngIf="name" [cdr]="name"
+      (controlCreated)="form.addControl(name.column.ColumnName, $event)">
+    </imx-cdr-editor>
+    <imx-cdr-editor class="imx-select" *ngIf="description" [cdr]="description"
+      (controlCreated)="form.addControl(description.column.ColumnName, $event)">
+    </imx-cdr-editor>
+    <imx-cdr-editor class="imx-select" *ngIf="serviceCategory" [cdr]="serviceCategory" (valueChange)="updateName($event)"
+      (controlCreated)="form.addControl(serviceCategory.column.ColumnName, $event)">
+    </imx-cdr-editor>
+    <imx-cdr-editor class="imx-select" *ngIf="manager" [cdr]="manager"
+      (controlCreated)="form.addControl(manager.column.ColumnName, $event)">
+    </imx-cdr-editor>
+    <imx-cdr-editor class="imx-select" *ngIf="owner" [cdr]="owner"
+      (controlCreated)="form.addControl(owner.column.ColumnName, $event)">
+    </imx-cdr-editor>
+  </form>
+</div>
+
+<div class="imx-button-bar">
+  <button data-imx-identifier="createApp-save" mat-raised-button color="primary" type="button"
+    (click)="save()" form="form" [disabled]="!form.dirty || form.invalid">
+    <span translate>#LDS#Save</span>
+  </button>
+</div>

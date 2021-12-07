@@ -1,0 +1,22 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.appCards {
+  padding: 16px;
+  mat-card {
+    width: 350px;
+    min-height: 270px;
+    float: left;
+    margin: 10px;
+
+    mat-card-content {
+      padding: 0px 10px 10px 10px;
+      > p {
+        text-align: justify;
+      }
+    }
+  }
+}

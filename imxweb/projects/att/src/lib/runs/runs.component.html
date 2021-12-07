@@ -1,0 +1,13 @@
+<div class="heading-wrapper">
+  <h1 class="mat-headline" translate>#LDS#Heading Attestation Runs</h1>
+
+  <eui-alert *ngIf="showHelper" class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true"
+    (dismissed)="onHelperDismissed()">
+    <span translate>#LDS#Here you can get an overview of attestation runs. You can view current and predicted information of each attestation run, send reminders to attestors, and extend attestation runs.</span>
+  </eui-alert>
+</div>
+
+<div class="imx-runs-grid">
+<imx-runs-grid></imx-runs-grid>
+</div>
+

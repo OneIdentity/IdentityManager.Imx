@@ -1,0 +1,19 @@
+
+.imx-parameter-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 40px;
+}
+
+h4 {
+  font-size: medium;
+  font-weight: 600;
+  margin-bottom: 40px;
+}
+
+@media only screen and (max-width: 1024px) {  
+  .imx-parameter-grid > div {
+    grid-column-start: 1;
+    grid-column-end: 3;
+  }    
+}

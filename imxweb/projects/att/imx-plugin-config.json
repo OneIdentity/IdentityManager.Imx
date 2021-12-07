@@ -1,0 +1,14 @@
+{
+  "qer-app-portal": [
+      {
+          "Container": "att",
+          "Name": "AttConfigModule"
+      }
+  ],
+  "arc-app-certaccess": [
+    {
+        "Container": "att",
+        "Name": "AttConfigModule"
+    }
+]
+}

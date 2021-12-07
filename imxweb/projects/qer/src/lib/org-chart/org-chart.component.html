@@ -1,0 +1,29 @@
+<ng-container *ngIf="data">
+
+  <eui-alert *ngIf="isNotDisplayingAll()">{{'#LDS#Some identities are not being displayed.' | translate}}</eui-alert>
+
+  <div class="border-outside">
+    <div class="border-container" *ngIf="data.managers.length > 0" aria-hidden="true"></div>
+    <ol class="managers">
+      <li *ngFor="let manager of data.managers">
+        <imx-orgchart-identity [identity]="manager"></imx-orgchart-identity>
+      </li>
+      <li class="peers">
+        <imx-orgchart-identity [identity]="data.self"></imx-orgchart-identity>
+      </li>
+    </ol>
+  </div>
+  <ng-container *ngIf="data.reports && data.reports.length > 0">
+    <div class="border-outside">
+      <div class="border-container-reports" aria-hidden="true"></div>
+      <div class="connector-reports" aria-hidden="true"></div>
+      <ol>
+        <li *ngFor="let report of data.reports" class="reports">
+          <imx-orgchart-identity [identity]="report"></imx-orgchart-identity>
+        </li>
+      </ol>
+    </div>
+  </ng-container>
+
+
+</ng-container>

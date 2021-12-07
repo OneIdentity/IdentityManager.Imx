@@ -1,0 +1,11 @@
+<h1 mat-dialog-title>{{ '#LDS#Heading Selected Items' | translate }}</h1>
+<div mat-dialog-content>
+  <mat-list role="list">
+    <mat-list-item *ngFor="let item of data" role="listitem">{{item.GetEntity().GetDisplay()}}</mat-list-item>
+  </mat-list>
+</div>
+<div mat-dialog-actions>
+  <button mat-stroked-button mat-dialog-close cdkFocusInitial data-imx-identifier="selectionlist-button-close">
+    {{ '#LDS#Close' | translate }}
+  </button>
+</div>

@@ -1,0 +1,21 @@
+:host {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+imx-bulk-editor {
+  overflow: auto;
+}
+
+button {
+  align-self: flex-end;
+  margin-top: 10px;
+}
+
+.imx-information {
+  margin-bottom: 20px;
+}
+

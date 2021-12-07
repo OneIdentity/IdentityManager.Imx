@@ -1,0 +1,18 @@
+<div class="identity-photo" *ngIf="identity">
+  <div class="identity-photo-overlay"
+    [ngStyle]="{'background-image': 'url(\''+ orgChartService.BaseUrl + '/portal/person/image/' + identity.GetEntity().GetKeys()[0]+'\')'}">
+  </div>
+  <eui-icon icon="user"></eui-icon>
+</div>
+<div class="identity-info" *ngIf="identity">
+  <div class="identity-name">
+    {{ identity.GetEntity().GetDisplay() }}
+  </div>
+  <div class="identity-title">
+    <ng-container *ngIf="isExternal()"> {{'#LDS#External'|translate}}, </ng-container>
+    <ng-container *ngIf="isDelegated()">{{'#LDS#Delegated'|translate}}, </ng-container>
+    {{ identity.PersonalTitle.Column.GetDisplayValue() }}<ng-container
+      *ngIf="identity.PersonalTitle.Column.GetDisplayValue()">, </ng-container>
+    {{ identity.EmployeeType.Column.GetDisplayValue() }}
+  </div>
+</div>

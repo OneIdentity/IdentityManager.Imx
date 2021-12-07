@@ -1,0 +1,11 @@
+<header class="imx-hyperview-shape-header">
+  <div class="{{imageClass}} imx-hyperview-shape-header-image"></div>
+  <div class="imx-shape-header-info">
+    <div class="imx-hyperview-header" title="{{ shape.HeaderText }}">{{ shape.HeaderText }}</div>
+    <h1  class="imx-hyperview-caption" title="{{ shape.Caption }}">{{ shape.Caption }}</h1>
+  </div>
+  <div *ngIf="ObjectCount > -1"  matBadge="{{ObjectCount}}" matBadgePosition="above before" matBadgeOverlap="false"></div>
+</header>
+<section class="imx-hyperview-shape-content">
+  <ng-content select="[ShapeContent]"></ng-content>
+</section>

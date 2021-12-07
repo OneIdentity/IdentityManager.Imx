@@ -1,0 +1,28 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+.helper-alert {
+  display: flex;
+  margin-bottom: 20px;
+
+
+  span {
+    display: block;
+  }
+}
+
+.property {
+  margin-bottom: 20px;
+  span {
+    display: block;
+    word-wrap: break-word;
+    &.column-display {
+      font-size: 12px;
+      color: $black-9;
+      padding-bottom: 5px;
+    }
+  }
+}
+
+mat-card {
+  margin-bottom: 1em;
+}

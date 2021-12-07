@@ -1,0 +1,39 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+.imx-starling {
+  text-align: center;
+}
+
+.imx-starling-error {
+  display: inline-block;
+}
+
+.imx-starling-error > p {
+  border-style: solid;
+  border-width: 1px 0;
+  padding: 1em 0;
+}
+
+.imx-starling-login {
+  padding: 10px;
+}
+
+.imx-starling-login-continue {
+  margin-left: 5px;
+}
+
+.imx-login-input {
+  margin: auto 12px;
+
+  ::ng-deep {
+    input {
+      box-sizing: content-box;
+      border: 1px solid $black-9;
+      margin-bottom: 9px;
+      height: 30px;
+      padding-left: 6px;
+      width: calc(40vw - 6px);
+      max-width: 230px;
+    }
+  }
+}

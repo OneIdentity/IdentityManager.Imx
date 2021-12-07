@@ -1,0 +1,72 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+
+.mat-toolbar {
+  .mat-toolbar-row {
+    margin:  0 auto;
+  }
+}
+
+.imx-masthead--controls {
+  display: flex;
+  align-items: center;
+}
+
+.imx-masthead-app-name {
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.imx-masthead-space {
+  flex: 1 1 auto;
+}
+
+.mat-button .mat-icon + span,
+.mat-button .eui-icon + span {
+  margin-left: 4px;
+}
+
+.imx-masthead--icon-button {
+  min-width: 40px;
+
+  .mat-button-wrapper span {
+    display: none;
+  }
+}
+
+.imx-masthead--controls {
+
+  button[mat-button] {
+    &:not(.imx-masthead-user-button) {
+      padding: 0;
+      width: 40px;
+      min-width: 40px;
+    }
+  }
+}
+
+@media only screen and (max-width: 768px) {
+
+  .eui-masthead {
+    .mat-toolbar {
+      .mat-toolbar-row {
+        width: unset !important;
+        justify-content: center;
+      }
+    }
+  }
+
+  .eui-top-navigation-mobile {
+    .eui-top-navigation-mobile-footer {
+      .mat-button {
+        &.imx-masthead--icon-button {
+          width: 100%;
+
+          .mat-button-wrapper span {
+            display: inline-block;
+          }
+        }
+      }
+    }
+  }
+}

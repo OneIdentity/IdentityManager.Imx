@@ -1,0 +1,10 @@
+<div>
+  <h2 class="startSubTitle">{{'#LDS#Service issues' | translate}}</h2>
+  <div *ngIf="issues.length==0" class="no-issue-detected">
+    <imx-icon-stack class="imx-ops-icon" [icon1]="'setdefault'" [icon2]="'server'"
+      [text]="'#LDS#No service issues detected' | translate"></imx-icon-stack>
+  </div>
+  <div class="issueGridList" *ngIf="issues.length!=0">
+    <imx-service-issue *ngFor="let issue of issues" [issueItem]="issue"></imx-service-issue>
+  </div>
+</div>

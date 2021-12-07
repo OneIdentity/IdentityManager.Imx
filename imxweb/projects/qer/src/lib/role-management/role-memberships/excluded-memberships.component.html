@@ -1,0 +1,44 @@
+<div class="role-config__content">
+  <div class="role-config__content-main">
+
+    <eui-alert *ngIf="showHelperAlert" class="helper-alert" type="info" condensed="true" [colored]="true"
+      [dismissable]="true" (dismissed)="onHelperDismissed()">
+      <span>{{ LdsMembersByDynamicRole | translate }}</span>
+    </eui-alert>
+
+    <imx-data-source-toolbar #dstExcluded [settings]="dstSettingsExcludedMembers"
+      [hiddenElements]="['groupBy', 'settings', 'selectedViewGroup']" [hiddenFilters]="['namespace']"
+      [searchBoxText]="'#LDS#Search' | translate" (navigationStateChanged)="onNavigationStateExcludedChanged($event)"
+      (search)="onSearchExcluded($event)"></imx-data-source-toolbar>
+
+    <mat-card>
+      <imx-data-table class="no-row-selection" #dataTableExclusions [dst]="dstExcluded" detailViewVisible="false"
+        [selectable]="true" (selectionChanged)="onExclusionSelected($event)" mode="manual"
+        noDataText="#LDS#There are currently no excluded members." noDataIcon="usergroup"
+        noMatchingDataText="#LDS#There are no matching excluded members.">
+        <imx-data-table-column [entityColumn]="schema.Columns.UID_Person" [entitySchema]="schema"
+          data-imx-identifier="exclusions-table-column-identity">
+          <ng-template let-item>
+            {{ item.UID_Person.Column.GetDisplayValue() }}
+            <eui-badge class="not-matched-badge" *ngIf="item.IsNotMatched.value">{{ LdsNotIncludedInDynamicRole | translate }}</eui-badge>
+          </ng-template>
+        </imx-data-table-column>
+        <imx-data-table-column [entityColumn]="schema.Columns.Description" [entitySchema]="schema"
+          data-imx-identifier="exclusions-table-column-identity">
+          <ng-template let-item>
+            {{ item.Description.Column.GetDisplayValue() }}
+          </ng-template>
+        </imx-data-table-column>
+      </imx-data-table>
+      <imx-data-source-paginator [dst]="dstExcluded"></imx-data-source-paginator>
+    </mat-card>
+
+  </div>
+</div>
+
+<mat-card class="role-config__action-buttons">
+  <button mat-button color="warn" [disabled]="selectedExclusions.length === 0"
+    data-imx-identifier="remove-member-exclusion" (click)="removeExclusions()">
+    <span translate>#LDS#Remove exclusion</span>
+  </button>
+</mat-card>

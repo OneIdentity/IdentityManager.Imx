@@ -1,0 +1,293 @@
+/*
+ * ONE IDENTITY LLC. PROPRIETARY INFORMATION
+ *
+ * This software is confidential.  One Identity, LLC. or one of its affiliates or
+ * subsidiaries, has supplied this software to you under terms of a
+ * license agreement, nondisclosure agreement or both.
+ *
+ * You may not copy, disclose, or use this software except in accordance with
+ * those terms.
+ *
+ *
+ * Copyright 2021 One Identity LLC.
+ * ALL RIGHTS RESERVED.
+ *
+ * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
+ * WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+ * TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR
+ * NON-INFRINGEMENT.  ONE IDENTITY LLC. SHALL NOT BE
+ * LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE
+ * AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
+ * THIS SOFTWARE OR ITS DERIVATIVES.
+ *
+ */
+
+import { SelectionModel } from '@angular/cdk/collections';
+import { FlatTreeControl } from '@angular/cdk/tree';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
+import { MatCheckboxChange } from '@angular/material/checkbox';
+import { Subscription } from 'rxjs';
+
+import { IEntity } from 'imx-qbm-dbts';
+import { TreeDatabase } from '../tree-database';
+import { TreeDatasource } from '../tree-datasource';
+import { TreeNode } from '../tree-node';
+import { SnackBarService } from '../../snackbar/snack-bar.service';
+import { ClassloggerService } from '../../classlogger/classlogger.service';
+
+@Component({
+  selector: 'imx-checkable-tree',
+  templateUrl: './checkable-tree.component.html',
+  styleUrls: ['./checkable-tree.component.scss']
+})
+/**
+ * A tree component with a {@link FlatTreeControl| FlatTreeControl} of @angular/cdk.
+ */
+export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestroy {
+
+  /** the dataSource of the tree which provide the nodes and handling the tree-operations. */
+  public treeDataSource: TreeDatasource;
+
+  /** the {@link FlatTreeControl| FlatTreeControl} of @angular/cdk */
+  public treeControl: FlatTreeControl<TreeNode>;
+
+  /** currently selected entities */
+  @Input() public selectedEntities: IEntity[] = [];
+
+  /** the service providing the data for the {@link TreeDatasource| TreeDatasource} */
+  @Input() public database: TreeDatabase;
+
+  /** the caption displaying when an empty node is added at the top of the tree  */
+  @Input() public emptyNodeCaption: string;
+
+  /** determines whether the control allows multiselect or not  */
+  @Input() public withMultiSelect: boolean;
+
+  /**
+   * Event, that will fire when the a node was selected and emitting a list of
+   * {@link IEntity| Entities} of the selected node and it's parents.
+   */
+  @Output() public nodeSelected = new EventEmitter<IEntity>();
+
+  /** event, that fires, after the checked nodes list has been updated */
+  @Output() public checkedNodesChanged = new EventEmitter();
+
+  /**
+   * a single TreeNode, that is currenly selected
+   */
+  public selectedNode: TreeNode;
+  /**
+   * the checkListSelectionModel
+   */
+  public checklistSelection: SelectionModel<TreeNode>;
+
+  /** indicates if a emptyNode recently created */
+  private emptyNodeCreated = false;
+
+  private subscriptions: Subscription[] = [];
+
+  constructor(
+    private readonly snackBar: SnackBarService,
+    private readonly logger: ClassloggerService,
+  ) {
+    this.treeControl = new FlatTreeControl<TreeNode>(this.getLevel, this.isExpandable);
+  }
+
+  public async ngOnChanges(changes: SimpleChanges): Promise<void> {
+    this.checklistSelection = new SelectionModel<TreeNode>(this.withMultiSelect);
+    if (changes.database) {
+      this.logger.debug(this, `initialize the treeDatasource`);
+      this.treeDataSource = new TreeDatasource(this.treeControl, this.database);
+      this.treeDataSource.emptyNodeCaption = this.emptyNodeCaption;
+      this.treeDataSource.init(await this.database.initialize());
+      this.subscriptions.push(this.treeDataSource.dataChange.subscribe((elem) => this.updateCheckedTreeNodes(elem)));
+
+      this.logger.debug(this, `toggle Node of the selected entity to load its children`);
+    }
+
+    if (changes.selectedEntities && changes.selectedEntities.currentValue && changes.selectedEntities.currentValue.length === 1) {
+      const key = TreeDatabase.getId(changes.selectedEntities.currentValue[0]);
+
+      if (key !== '') {
+        if (this.treeControl.dataNodes != null) {
+
+          const node = this.treeControl.dataNodes.filter(treeNode => treeNode.name === key)?.[0];
+          if (node) {
+            this.selectedNode = node;
+          }
+          if (this.emptyNodeCreated) {
+            this.emptyNodeCreated = false;
+            if (this.treeDataSource.removeNodeFromTop()) {
+              this.snackBar.open({ key: '#LDS#Your changes have been discarded.' });
+            }
+          }
+        }
+      } else {
+        this.selectedNode = this.treeDataSource.addEmpyNodeToTop();
+        this.emptyNodeCreated = true;
+      }
+    }
+
+    this.updateCheckedTreeNodes(this.treeDataSource?.data, true);
+  }
+
+  public ngAfterViewInit(): void {
+    if (this.database) {
+      this.subscriptions.push(this.database.dataReloaded$.subscribe((data) => {
+        if (data) {
+          this.initializeTreeData();
+        }
+      }));
+    }
+  }
+
+  /** forces the tree to reload everything */
+  public async reload(): Promise<void> {
+    this.treeDataSource.init(await this.database.initialize());
+  }
+
+  public ngOnDestroy(): void {
+    for (const subscription of this.subscriptions) {
+      subscription.unsubscribe();
+    }
+  }
+
+  /** @ignore gets the level of a tree node */
+  public getLevel = (node: TreeNode): number => node.level;
+
+  /** returns true, if the node has childnodes */
+  public isExpandable(node: TreeNode): boolean {
+    return node.expandable;
+  }
+
+  /** returns true, if the node has childnodes */
+  public hasChild(index: number, node: TreeNode): boolean {
+    return node.expandable;
+  }
+
+  /** Emits the selected treenode. */
+  public selectNode(node: TreeNode): void {
+    if (this.withMultiSelect) {
+      this.checklistSelection.toggle(node);
+      this.emitNodeCheckedEvent(node, this.checklistSelection.isSelected(node));
+    } else {
+      this.selectedNode = node;
+      this.nodeSelected.emit(this.selectedNode.item);
+    }
+  }
+
+  /** @ignore loads more elements */
+  public async loadMore(node: TreeNode): Promise<void> {
+    const parent = this.getParentNode(node);
+    let startindex = this.treeControl.dataNodes.filter(elem => elem.level === 0 && !elem.isLoadMoreNode).length;
+    if (parent != null) {
+      const des = this.treeControl.getDescendants(parent);
+      startindex = des.filter(elem => elem.level === parent.level + 1 && !elem.isLoadMoreNode).length;
+    }
+    this.treeDataSource.loadMore(node, parent?.name || '' /* first level */, startindex);
+  }
+
+  /** Toggle the item selection. */
+  public async itemSelectionToggle(node: TreeNode, evt: MatCheckboxChange): Promise<void> {
+    this.checklistSelection.toggle(node);
+    await this.emitNodeCheckedEvent(node, evt.checked);
+  }
+
+  /** clears all selected nodes for the tree */
+  public clearSelection(): void {
+    this.checklistSelection.clear();
+  }
+
+  /** mark nodes as selected, if its entity is in the selected entities list */
+  public updateCheckedTreeNodes(nodes?: TreeNode[], openSelectedNode?: boolean): void {
+    const data = nodes || this.treeDataSource?.data;
+    if (this.withMultiSelect) {
+      const selected = this.getSelectedItems();
+      if (selected) {
+        this.updatePreselectedEntities(data, selected);
+      }
+    } else if (openSelectedNode) {
+      const selected = this.getSelectedItem();
+      if (selected) {
+        this.selectTreeNode(selected);
+      }
+    }
+  }
+
+  private async initializeTreeData(): Promise<void> {
+    this.treeDataSource.init(await this.database.initialize());
+  }
+
+  private getSelectedItem(): string {
+    return this.selectedEntities.length > 0
+      && this.selectedEntities[0] != null ? TreeDatabase.getId(this.selectedEntities[0]) : null;
+  }
+
+  /* Get the parent node of a node */
+  private getParentNode(node: TreeNode): TreeNode | null {
+    const currentLevel = this.getLevel(node);
+
+    if (currentLevel < 1) {
+      return null;
+    }
+
+    const startIndex = this.treeControl.dataNodes.indexOf(node) - 1;
+
+    for (let i = startIndex; i >= 0; i--) {
+      const currentNode = this.treeControl.dataNodes[i];
+
+      if (this.getLevel(currentNode) < currentLevel) {
+        return currentNode;
+      }
+    }
+    return null;
+  }
+
+  /** Gets the identifier for all selected entities */
+  private getSelectedItems(): string[] {
+    this.logger.log(this, 'selected', this.selectedEntities);
+    return this.selectedEntities.length > 0 ?
+      this.selectedEntities.map(elem => TreeDatabase.getId(elem))
+        .filter(elem => elem != null)
+      : [];
+  }
+
+  /** emitts the nodeChecked event, if mode is 'singleSelect' */
+  private emitNodeCheckedEvent(node: TreeNode, checked: boolean): void {
+    this.updateSelectedEntities(node.item, checked);
+    this.checkedNodesChanged.emit();
+  }
+
+  /** selects a single tree node */
+  private selectTreeNode(ident: string): void {
+    if (!this.treeControl.dataNodes) { return; }
+
+    const selectedTreeNodes = this.treeControl.dataNodes.filter(treeNode => treeNode.name === ident);
+    if (selectedTreeNodes.length > 0) {
+      this.treeControl.expand(selectedTreeNodes[0]);
+      this.selectedNode = selectedTreeNodes[0];
+    }
+  }
+
+  /** selects all nodes, that are currently in the selected List */
+  private updatePreselectedEntities(nodes: TreeNode[], ident: string[]): void {
+    if (nodes == null) { return; }
+    const nodesToCheck = nodes.filter(node => !this.checklistSelection.isSelected(node)
+      && ident.some(name => name === node.name));
+
+    for (const node of nodesToCheck) {
+      this.checklistSelection.select(node);
+    }
+  }
+
+  private updateSelectedEntities(current: IEntity, checked: boolean): void {
+    if (checked) {
+      this.selectedEntities.push(current);
+    } else {
+      const index = this.selectedEntities.findIndex(elem => TreeDatabase.getId(elem) === TreeDatabase.getId(current));
+      this.selectedEntities.splice(index, 1);
+    }
+  }
+}

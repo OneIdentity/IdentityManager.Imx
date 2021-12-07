@@ -1,0 +1,24 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+:host {
+  display: flex;
+  margin: 0;
+  flex: 1 1 auto;
+  height: calc(100% - 120px);
+}
+
+.imx-application-navigation {
+  display: flex;
+  margin-right: 30px;
+}
+
+.imx-application-content {
+  flex: 1 1 auto;
+  background-color: $white;
+  overflow: hidden;
+}
+
+.mat-raised-button {
+  justify-self: center;
+  margin-top: 30px;
+}

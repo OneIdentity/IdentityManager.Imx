@@ -1,0 +1,41 @@
+<h1 class="mat-headline">
+    {{ '#LDS#Heading Saved for Later' | translate }}
+</h1>
+
+<p class="imx-itshop-info">
+    {{ '#LDS#The following requests are currently in your saved for later list. Please use the actions menu to move the requests to the shopping cart.' | translate }}
+</p>
+<div class="imx-itshop-content">
+    <mat-card>
+        <imx-cart-items #cartItems [shoppingCart]="shoppingCart" (dataChange)="getData()" (selectionChange)="selectionChanged($event)" [forLater]="true">
+        </imx-cart-items>
+    </mat-card>
+    <div class="imx-toolbar">
+      <button mat-stroked-button
+        data-imx-identifier="for-later-button-actions-menu-trigger"
+        title="{{ '#LDS#Actions' | translate }}"
+        [matMenuTriggerFor]="ToolbarButton1">
+        <eui-icon icon="ellipsisvertical"></eui-icon>
+      </button>
+      <mat-menu data-imx-identifier="for-later-actions-menu" #ToolbarButton1="matMenu">
+        <button data-imx-identifier="for-later-menu-go-to-shopping-cart" title="{{ '#LDS#Shows your shopping cart' | translate }}" mat-menu-item
+              [routerLink]="['..']">
+              {{ '#LDS#View shopping cart' | translate}}
+        </button>
+        <mat-divider></mat-divider>
+        <button  mat-menu-item data-imx-identifier="imx-table-actions-move-menu"
+        title="{{ '#LDS#Moves the selected products to your shopping cart' | translate }}" (click)="cartItems?.moveSelectedToCart()">
+        {{ '#LDS#Move to shopping cart' | translate }}
+        </button>
+        <button data-imx-identifier="imx-table-actions-remove-menu" [disabled]="!cartItems?.itemsCanBeDeleted()"
+          title="{{'#LDS#Removes the selected products from your Saved for Later list'| translate }}" mat-menu-item (click)="cartItems?.removeSelectedItems()">
+            {{'#LDS#Remove selected' | translate  }}
+        </button>
+      </mat-menu>
+      <button mat-raised-button color="primary" title="{{'#LDS#Deletes all products from your Saved for Later list.' | translate }}"
+          data-imx-identifier="for-later-button-delete-all" [disabled]="shoppingCart?.totalCount === 0"
+          (click)="clearForLaterList()">
+          {{ '#LDS#Delete Saved for Later list' | translate }}
+      </button>
+    </div>
+</div>

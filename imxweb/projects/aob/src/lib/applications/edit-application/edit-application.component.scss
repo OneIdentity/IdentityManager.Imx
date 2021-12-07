@@ -1,0 +1,22 @@
+.imx-form {
+  display: flex;
+  justify-content: space-between;
+  margin-right: 10px;
+}
+
+.imx-input-fields {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  max-width: 600px;
+}
+
+.imx-checkbox-error {
+  margin-left: 24px;
+}
+
+div {
+  button {
+    margin-left: 10px;
+  }
+}

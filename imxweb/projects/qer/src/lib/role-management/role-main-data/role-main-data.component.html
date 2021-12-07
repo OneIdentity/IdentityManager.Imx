@@ -1,0 +1,17 @@
+<div class="imx-tab-content">
+  <div class="imx-tab-content-body">  
+    <mat-card>
+      <form [formGroup]="formGroup">
+        <ng-container *ngFor="let cdr of properties">
+          <imx-cdr-editor [cdr]="cdr" (valueChange)="onValueChanged()"
+            (controlCreated)="addControl(cdr.column.ColumnName, $event)">
+          </imx-cdr-editor>
+        </ng-container>
+      </form>
+    </mat-card>
+  </div>
+  <mat-card class="imx-action-buttons">
+    <button data-imx-identifier="roles-main-save-button" mat-raised-button color="primary"
+    [disabled]="!formGroup.dirty || formGroup.invalid" (click)="onSave()"> {{ "#LDS#Save" | translate }}</button>
+  </mat-card>
+</div>

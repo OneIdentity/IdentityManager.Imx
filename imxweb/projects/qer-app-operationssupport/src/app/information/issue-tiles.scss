@@ -1,0 +1,88 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+.issueIconLine {
+  position: relative;
+  width: 88px;
+  height: 156px;
+  font-size: 72px;
+  line-height: 156px;
+  float: left;
+  background-color: $asher-gray;
+  color: $black-6;
+  border-radius: 4px 0 0 4px;
+}
+
+.issueIconLine::before {
+  font-size: 65px;
+}
+
+.issueContentPane {
+  width: 350px;
+  height: 156px;
+}
+
+.issueContent,
+.issueTitle {
+  overflow: hidden;
+  padding-left: 15px;
+  padding-right: 15px;
+  font-style: normal;
+}
+
+.issueTitle {
+  padding-top: 20px;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 24px;
+  color: $black-3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.issueContent {
+  padding-top: 10px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: $black-6;
+  display: block;
+
+  eui-icon {
+    min-width: 28px;
+    display: inline-block;
+  }
+}
+
+.issueAction {
+  text-transform: uppercase;
+  font-size: 14px;
+  text-overflow: ellipsis;
+}
+
+.issueBubble {
+  left: 55px;
+  z-index: 1;
+}
+
+.warningBubble {
+  background-color: $corbin-orange
+}
+
+.errorBubble {
+  background-color: $phoenix-red;
+}
+
+.successBubble {
+  background-color: $aspen-green;
+}
+
+.issueGridList {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: -20px;
+
+  > * {
+    margin-top: 20px;
+    margin-right: 20px;
+  }
+}

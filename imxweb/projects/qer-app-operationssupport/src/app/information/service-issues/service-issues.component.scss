@@ -1,0 +1,40 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+:host {
+  max-width: 1200px;
+}
+
+.startSubTitle {
+  font-size: larger;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.imx-ops-icon {
+  display: flex;
+  flex-direction: column;
+  > :first-child {
+    flex: 1 1 auto;
+  }
+
+  ::ng-deep .imx-iconStack-text {
+    flex: 0 0;
+    text-align: center;
+    margin-top: -25px;
+    margin-bottom: -25px;
+  }
+}
+
+.imx-iconStack-1x .icon-setdefault {
+  color: $black-c;
+  font-size: 30px;
+}
+
+.no-issue-detected {
+  max-width: 350px;
+}
+
+.mat-button {
+  color: $iris-blue;
+  font-weight: 600;
+}
+

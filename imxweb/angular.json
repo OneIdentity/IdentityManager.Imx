@@ -1,0 +1,1157 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "qbm": {
+      "root": "projects/qbm",
+      "sourceRoot": "projects/qbm/src",
+      "projectType": "library",
+      "prefix": "imx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/qbm/tsconfig.lib.json",
+            "project": "projects/qbm/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/qbm/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/qbm/src/test.ts",
+            "tsConfig": "projects/qbm/tsconfig.spec.json",
+            "karmaConfig": "projects/qbm/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/qbm/tsconfig.lib.json", "projects/qbm/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+          }
+        }
+      }
+    },
+    "qer": {
+      "root": "projects/qer",
+      "sourceRoot": "projects/qer/src",
+      "projectType": "library",
+      "prefix": "imx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/qer/tsconfig.lib.json",
+            "project": "projects/qer/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/qer/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/qer/src/test.ts",
+            "tsConfig": "projects/qer/tsconfig.spec.json",
+            "karmaConfig": "projects/qer/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/qer/tsconfig.lib.json", "projects/qer/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+          }
+        }
+      }
+    },
+    "att": {
+      "root": "projects/att",
+      "sourceRoot": "projects/att/src",
+      "projectType": "library",
+      "prefix": "imx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/att/tsconfig.lib.json",
+            "project": "projects/att/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/att/tsconfig.lib.prod.json"
+            },
+            "dynamic": {
+              "project": "projects/att/ng-package.dynamic.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/att/src/test.ts",
+            "tsConfig": "projects/att/tsconfig.spec.json",
+            "karmaConfig": "projects/att/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/att/tsconfig.lib.json", "projects/att/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+          }
+        }
+      }
+    },
+    "aad": {
+      "root": "projects/aad",
+      "sourceRoot": "projects/aad/src",
+      "projectType": "library",
+      "prefix": "imx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/aad/tsconfig.lib.json",
+            "project": "projects/aad/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/aad/tsconfig.lib.prod.json"
+            },
+            "dynamic": {
+              "project": "projects/aad/ng-package.dynamic.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/aad/src/test.ts",
+            "tsConfig": "projects/aad/tsconfig.spec.json",
+            "karmaConfig": "projects/aad/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/aad/tsconfig.lib.json", "projects/aad/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+          }
+        }
+      }
+    },
+    "cpl": {
+      "root": "projects/cpl",
+      "sourceRoot": "projects/cpl/src",
+      "projectType": "library",
+      "prefix": "imx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/cpl/tsconfig.lib.json",
+            "project": "projects/cpl/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/cpl/tsconfig.lib.prod.json"
+            },
+            "dynamic": {
+              "project": "projects/cpl/ng-package.dynamic.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/cpl/src/test.ts",
+            "tsConfig": "projects/cpl/tsconfig.spec.json",
+            "karmaConfig": "projects/cpl/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/cpl/tsconfig.lib.json", "projects/cpl/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+          }
+        }
+      }
+    },
+    "dpr": {
+      "root": "projects/dpr",
+      "sourceRoot": "projects/dpr/src",
+      "projectType": "library",
+      "prefix": "imx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/dpr/tsconfig.lib.json",
+            "project": "projects/dpr/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/dpr/tsconfig.lib.prod.json"
+            },
+            "dynamic": {
+              "project": "projects/dpr/ng-package.dynamic.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/dpr/src/test.ts",
+            "tsConfig": "projects/dpr/tsconfig.spec.json",
+            "karmaConfig": "projects/dpr/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/dpr/tsconfig.lib.json",
+              "projects/dpr/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "**/*.spec.ts",
+              "**/*.json"
+            ]
+          }
+        }
+      }
+    },
+    "o3t": {
+      "root": "projects/o3t",
+      "sourceRoot": "projects/o3t/src",
+      "projectType": "library",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "prefix": "imx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/o3t/tsconfig.lib.json",
+            "project": "projects/o3t/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/o3t/tsconfig.lib.prod.json"
+            },
+            "dynamic": {
+              "project": "projects/o3t/ng-package.dynamic.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/o3t/src/test.ts",
+            "tsConfig": "projects/o3t/tsconfig.spec.json",
+            "karmaConfig": "projects/o3t/karma.conf.js",
+            "codeCoverageExclude": ["projects/o3t/src/**/test/*"]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/o3t/tsconfig.lib.json", "projects/o3t/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+          }
+        }
+      }
+    },
+    "pol": {
+      "root": "projects/pol",
+      "sourceRoot": "projects/pol/src",
+      "projectType": "library",
+      "prefix": "imx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/pol/tsconfig.lib.json",
+            "project": "projects/pol/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/pol/tsconfig.lib.prod.json"
+            },
+            "dynamic": {
+              "project": "projects/pol/ng-package.dynamic.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/pol/src/test.ts",
+            "tsConfig": "projects/pol/tsconfig.spec.json",
+            "karmaConfig": "projects/pol/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/pol/tsconfig.lib.json", "projects/pol/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+          }
+        }
+      }
+    },
+    "rmb": {
+      "root": "projects/rmb",
+      "sourceRoot": "projects/rmb/src",
+      "projectType": "library",
+      "prefix": "imx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/rmb/tsconfig.lib.json",
+            "project": "projects/rmb/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/rmb/tsconfig.lib.prod.json"
+            },
+            "dynamic": {
+              "project": "projects/rmb/ng-package.dynamic.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/rmb/src/test.ts",
+            "tsConfig": "projects/rmb/tsconfig.spec.json",
+            "karmaConfig": "projects/rmb/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/rmb/tsconfig.lib.json", "projects/rmb/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+          }
+        }
+      }
+    },
+    "rms": {
+      "root": "projects/rms",
+      "sourceRoot": "projects/rms/src",
+      "projectType": "library",
+      "prefix": "imx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/rms/tsconfig.lib.json",
+            "project": "projects/rms/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/rms/tsconfig.lib.prod.json"
+            },
+            "dynamic": {
+              "project": "projects/rms/ng-package.dynamic.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/rms/src/test.ts",
+            "tsConfig": "projects/rms/tsconfig.spec.json",
+            "karmaConfig": "projects/rms/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/rms/tsconfig.lib.json", "projects/rms/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+          }
+        }
+      }
+    },
+    "rps": {
+      "root": "projects/rps",
+      "sourceRoot": "projects/rps/src",
+      "projectType": "library",
+      "prefix": "imx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/rps/tsconfig.lib.json",
+            "project": "projects/rps/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/rps/tsconfig.lib.prod.json"
+            },
+            "dynamic": {
+              "project": "projects/rps/ng-package.dynamic.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/rps/src/test.ts",
+            "tsConfig": "projects/rps/tsconfig.spec.json",
+            "karmaConfig": "projects/rps/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/rps/tsconfig.lib.json", "projects/rps/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+          }
+        }
+      }
+    },
+    "tsb": {
+      "root": "projects/tsb",
+      "sourceRoot": "projects/tsb/src",
+      "projectType": "library",
+      "prefix": "imx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/tsb/tsconfig.lib.json",
+            "project": "projects/tsb/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/tsb/tsconfig.lib.prod.json"
+            },
+            "dynamic": {
+              "project": "projects/tsb/ng-package.dynamic.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/tsb/src/test.ts",
+            "tsConfig": "projects/tsb/tsconfig.spec.json",
+            "karmaConfig": "projects/tsb/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/tsb/tsconfig.lib.json", "projects/tsb/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+          }
+        }
+      }
+    },
+    "qbm-app-landingpage": {
+      "root": "projects/qbm-app-landingpage/",
+      "sourceRoot": "projects/qbm-app-landingpage/src",
+      "projectType": "application",
+      "prefix": "imx",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "aot": true,
+            "outputPath": "dist/qbm-app-landingpage",
+            "index": "projects/qbm-app-landingpage/src/index.html",
+            "main": "projects/qbm-app-landingpage/src/main.ts",
+            "polyfills": "projects/qbm-app-landingpage/src/polyfills.ts",
+            "tsConfig": "projects/qbm-app-landingpage/tsconfig.app.json",
+            "assets": [
+              "projects/qbm-app-landingpage/src/assets",
+              "projects/qbm-app-landingpage/src/appconfig.json",
+              {
+                "glob": "**/*",
+                "input": "./shared/assets/",
+                "output": "./assets"
+              },
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@elemental-ui/core/assets",
+                "output": "./assets/"
+              }
+            ],
+            "styles": [
+              "projects/qbm-app-landingpage/src/styles.scss",
+              "shared/assets/styles.scss",
+              "shared/assets/variables.scss",
+              "node_modules/swagger-ui-dist/swagger-ui.css"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": ["./shared", "./node_modules/@elemental-ui/cadence-icon", "./node_modules/@elemental-ui/core"]
+            },
+            "scripts": ["node_modules/swagger-ui-dist/swagger-ui-bundle.js", "node_modules/swagger-ui-dist/swagger-ui-standalone-preset.js"]
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/qbm-app-landingpage/src/environments/environment.ts",
+                  "with": "projects/qbm-app-landingpage/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "20mb",
+                  "maximumError": "40mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ]
+            },
+            "es5": {
+              "tsConfig": "./projects/qbm-app-landingpage/tsconfig-es5.app.json"
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "qbm-app-landingpage:build",
+            "disableHostCheck": true,
+            "sourceMap": {
+              "scripts": true,
+              "styles": true,
+              "vendor": true
+            }
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "qbm-app-landingpage:build:production"
+            },
+            "es5": {
+              "browserTarget": "qbm-app-landingpage:build:es5"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "qbm-app-landingpage:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/qbm-app-landingpage/src/test.ts",
+            "polyfills": "projects/qbm-app-landingpage/src/polyfills.ts",
+            "tsConfig": "projects/qbm-app-landingpage/tsconfig.spec.json",
+            "karmaConfig": "projects/qbm-app-landingpage/karma.conf.js",
+            "scripts": [],
+            "assets": [
+              "projects/qbm-app-landingpage/src/assets",
+              "projects/qbm-app-landingpage/src/appconfig.json",
+              {
+                "glob": "**/*",
+                "input": "./shared/assets/",
+                "output": "./assets"
+              }
+            ],
+            "styles": ["projects/qbm-app-landingpage/src/styles.scss", "shared/assets/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["./shared"]
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/qbm-app-landingpage/tsconfig.app.json", "projects/qbm-app-landingpage/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+          }
+        }
+      }
+    },
+    "qer-app-operationssupport": {
+      "root": "projects/qer-app-operationssupport/",
+      "sourceRoot": "projects/qer-app-operationssupport/src",
+      "projectType": "application",
+      "prefix": "imx",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "aot": true,
+            "outputPath": "dist/qer-app-operationssupport",
+            "index": "projects/qer-app-operationssupport/src/index.html",
+            "main": "projects/qer-app-operationssupport/src/main.ts",
+            "polyfills": "projects/qer-app-operationssupport/src/polyfills.ts",
+            "tsConfig": "projects/qer-app-operationssupport/tsconfig.app.json",
+            "assets": [
+              "projects/qer-app-operationssupport/src/assets",
+              "projects/qer-app-operationssupport/src/appconfig.json",
+              {
+                "glob": "**/*",
+                "input": "./shared/assets/",
+                "output": "./assets"
+              },
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@elemental-ui/core/assets",
+                "output": "./assets"
+              }
+            ],
+            "styles": [
+              "projects/qer-app-operationssupport/src/styles.scss",
+              "shared/assets/styles.scss",
+              "projects/qbm/src/lib/styles/imx-page-title.scss",
+              "shared/assets/variables.scss"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": ["./shared", "./node_modules/@elemental-ui/cadence-icon", "./node_modules/@elemental-ui/core"]
+            },
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/qer-app-operationssupport/src/environments/environment.ts",
+                  "with": "projects/qer-app-operationssupport/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "20mb",
+                  "maximumError": "40mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ]
+            },
+            "es5": {
+              "tsConfig": "./projects/qer-app-operationssupport/tsconfig-es5.app.json"
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "qer-app-operationssupport:build",
+            "disableHostCheck": true,
+            "sourceMap": {
+              "scripts": true,
+              "styles": true,
+              "vendor": true
+            }
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "qer-app-operationssupport:build:production"
+            },
+            "es5": {
+              "browserTarget": "qer-app-operationssupport:build:es5"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "qer-app-operationssupport:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/qer-app-operationssupport/src/test.ts",
+            "polyfills": "projects/qer-app-operationssupport/src/polyfills.ts",
+            "tsConfig": "projects/qer-app-operationssupport/tsconfig.spec.json",
+            "karmaConfig": "projects/qer-app-operationssupport/karma.conf.js",
+            "styles": ["projects/qer-app-operationssupport/src/styles.scss", "shared/assets/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["./shared"]
+            },
+            "scripts": [],
+            "assets": [
+              "projects/qer-app-operationssupport/src/assets",
+              "projects/qer-app-operationssupport/src/appconfig.json",
+              {
+                "glob": "**/*",
+                "input": "./shared/assets/",
+                "output": "./assets"
+              }
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/qer-app-operationssupport/tsconfig.app.json", "projects/qer-app-operationssupport/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+          }
+        }
+      }
+    },
+    "qer-app-portal": {
+      "root": "projects/qer-app-portal/",
+      "sourceRoot": "projects/qer-app-portal/src",
+      "projectType": "application",
+      "prefix": "imx",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "aot": true,
+            "outputPath": "dist/qer-app-portal",
+            "index": "projects/qer-app-portal/src/index.html",
+            "main": "projects/qer-app-portal/src/main.ts",
+            "polyfills": "projects/qer-app-portal/src/polyfills.ts",
+            "tsConfig": "projects/qer-app-portal/tsconfig.app.json",
+            "assets": [
+              "projects/qer-app-portal/src/assets",
+              "projects/qer-app-portal/src/appconfig.json",
+              {
+                "glob": "**/*",
+                "input": "./html",
+                "output": "./html"
+              },
+              {
+                "glob": "**/*",
+                "input": "./shared/assets/",
+                "output": "./assets"
+              },
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@elemental-ui/core/assets",
+                "output": "./assets"
+              }
+            ],
+            "styles": [
+              "projects/qer-app-portal/src/styles.scss",
+              "projects/qbm/src/lib/styles/imx-page-title.scss",
+              "projects/qbm/src/lib/styles/data-explorer-common.scss",
+              "projects/qbm/src/lib/styles/data-explorer-details-common.scss",
+              "shared/assets/styles.scss",
+              "shared/assets/variables.scss"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": ["./shared", "./node_modules/@elemental-ui/cadence-icon", "./node_modules/@elemental-ui/core"]
+            },
+            "scripts": ["node_modules/systemjs/dist/system.src.js"]
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/qer-app-portal/src/environments/environment.ts",
+                  "with": "projects/qer-app-portal/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "20mb",
+                  "maximumError": "40mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ]
+            },
+            "es5": {
+              "tsConfig": "./projects/qer-app-portal/tsconfig-es5.app.json"
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "qer-app-portal:build",
+            "disableHostCheck": true,
+            "sourceMap": {
+              "scripts": true,
+              "styles": true,
+              "vendor": true
+            }
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "qer-app-portal:build:production"
+            },
+            "es5": {
+              "browserTarget": "qer-app-portal:build:es5"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "qer-app-portal:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/qer-app-portal/src/test.ts",
+            "polyfills": "projects/qer-app-portal/src/polyfills.ts",
+            "tsConfig": "projects/qer-app-portal/tsconfig.spec.json",
+            "karmaConfig": "projects/qer-app-portal/karma.conf.js",
+            "styles": ["projects/qer-app-portal/src/styles.scss"],
+            "scripts": [],
+            "assets": ["projects/qer-app-portal/src/appconfig.json", "projects/qer-app-portal/src/assets"]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/qer-app-portal/tsconfig.app.json", "projects/qer-app-portal/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+          }
+        }
+      }
+    },
+    "arc-app-certaccess": {
+      "root": "projects/arc-app-certaccess/",
+      "sourceRoot": "projects/arc-app-certaccess/src",
+      "projectType": "application",
+      "prefix": "imx",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "aot": true,
+            "outputPath": "dist/arc-app-certaccess",
+            "index": "projects/arc-app-certaccess/src/index.html",
+            "main": "projects/arc-app-certaccess/src/main.ts",
+            "polyfills": "projects/arc-app-certaccess/src/polyfills.ts",
+            "tsConfig": "projects/arc-app-certaccess/tsconfig.app.json",
+            "assets": [
+              "projects/arc-app-certaccess/src/assets",
+              "projects/arc-app-certaccess/src/appconfig.json",
+              {
+                "glob": "**/*",
+                "input": "./shared/assets/",
+                "output": "./assets"
+              },
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@elemental-ui/core/assets",
+                "output": "./assets"
+              }
+            ],
+            "styles": [
+              "projects/arc-app-certaccess/src/styles.scss",
+              "projects/qbm/src/lib/styles/imx-page-title.scss",
+              "shared/assets/styles.scss",
+              "shared/assets/variables.scss"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": ["./shared", "./node_modules/@elemental-ui/cadence-icon", "./node_modules/@elemental-ui/core"]
+            },
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/arc-app-certaccess/src/environments/environment.ts",
+                  "with": "projects/arc-app-certaccess/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "20mb",
+                  "maximumError": "40mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ]
+            },
+            "es5": {
+              "tsConfig": "./projects/arc-app-certaccess/tsconfig-es5.app.json"
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "arc-app-certaccess:build",
+            "disableHostCheck": true,
+            "sourceMap": {
+              "scripts": true,
+              "styles": true,
+              "vendor": true
+            }
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "arc-app-certaccess:build:production"
+            },
+            "es5": {
+              "browserTarget": "arc-app-certaccess:build:es5"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "arc-app-certaccess:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/arc-app-certaccess/src/test.ts",
+            "polyfills": "projects/arc-app-certaccess/src/polyfills.ts",
+            "tsConfig": "projects/arc-app-certaccess/tsconfig.spec.json",
+            "karmaConfig": "projects/arc-app-certaccess/karma.conf.js",
+            "codeCoverageExclude": ["projects/arc-app-certaccess/src/**/test/*", "projects/arc-app-certaccess/src/**/*.models.ts"],
+            "styles": ["projects/arc-app-certaccess/src/styles.scss"],
+            "scripts": [],
+            "assets": ["projects/arc-app-certaccess/src/appconfig.json", "projects/arc-app-certaccess/src/assets"]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/arc-app-certaccess/tsconfig.app.json", "projects/arc-app-certaccess/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+          }
+        }
+      }
+    },
+    "aob": {
+      "root": "projects/aob",
+      "sourceRoot": "projects/aob/src",
+      "projectType": "library",
+      "prefix": "imx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/aob/tsconfig.lib.json",
+            "project": "projects/aob/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/aob/tsconfig.lib.prod.json"
+            },
+            "dynamic": {
+              "project": "projects/aob/ng-package.dynamic.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/aob/src/test.ts",
+            "tsConfig": "projects/aob/tsconfig.spec.json",
+            "karmaConfig": "projects/aob/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/aob/tsconfig.lib.json", "projects/aob/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+          }
+        }
+      }
+    },
+    "qer-app-pwdPortal": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/qer-app-pwdPortal",
+      "sourceRoot": "projects/qer-app-pwdPortal/src",
+      "prefix": "imx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/qer-app-pwdPortal",
+            "index": "projects/qer-app-pwdPortal/src/index.html",
+            "main": "projects/qer-app-pwdPortal/src/main.ts",
+            "polyfills": "projects/qer-app-pwdPortal/src/polyfills.ts",
+            "tsConfig": "projects/qer-app-pwdPortal/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "projects/qer-app-pwdPortal/src/appconfig.json",
+              "projects/qer-app-pwdPortal/src/assets",
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@elemental-ui/core/assets",
+                "output": "./assets"
+              }
+            ],
+            "styles": [
+              "projects/qer-app-pwdPortal/src/styles.scss",
+              "projects/qbm/src/lib/styles/imx-page-title.scss",
+              "shared/assets/styles.scss",
+              "shared/assets/variables.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/qer-app-pwdPortal/src/environments/environment.ts",
+                  "with": "projects/qer-app-pwdPortal/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "20mb",
+                  "maximumError": "40mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ]
+            },
+            "es5": {
+              "tsConfig": "./projects/qer-app-pwdPortal/tsconfig-es5.app.json"
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "qer-app-pwdPortal:build",
+            "sourceMap": {
+              "scripts": true,
+              "styles": true,
+              "vendor": true
+            }
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "qer-app-pwdPortal:build:production"
+            },
+            "es5": {
+              "browserTarget": "qer-app-pwdPortal:build:es5"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "qer-app-pwdPortal:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/qer-app-pwdPortal/src/test.ts",
+            "polyfills": "projects/qer-app-pwdPortal/src/polyfills.ts",
+            "tsConfig": "projects/qer-app-pwdPortal/tsconfig.spec.json",
+            "karmaConfig": "projects/qer-app-pwdPortal/karma.conf.js",
+            "assets": ["projects/qer-app-pwdPortal/src/appconfig.json", "projects/qer-app-pwdPortal/src/assets"],
+            "styles": ["projects/qer-app-pwdPortal/src/styles.scss"],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/qer-app-pwdPortal/tsconfig.app.json", "projects/qer-app-pwdPortal/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
+          }
+        }
+      }
+    }
+  },
+  "defaultProject": "qer-app-portal",
+  "cli": {
+    "analytics": "406eb5c5-3afb-4dab-b878-0cb0ade8d2aa"
+  }
+}

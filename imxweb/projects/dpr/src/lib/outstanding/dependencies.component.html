@@ -1,0 +1,19 @@
+<eui-alert class="helper-alert" type="info" condensed="true" [colored]="true" *ngIf="isPublish()">
+  <span translate>#LDS#The following objects must also be added to the target system, as they depend on the objects to be added.</span>
+</eui-alert>
+
+<eui-alert class="helper-alert" type="warning" condensed="true" [colored]="true" *ngIf="isDelete()">
+  <span translate>#LDS#The following objects must also be deleted, as they depend on the objects to be deleted.</span>
+</eui-alert>
+
+<mat-list class="helper-list" role="list">
+  <mat-list-item role="listitem" *ngFor="let u of data.dependencies">{{ u.Display }} -&nbsp;<span class="object-type">{{ u.ObjectType }}</span>
+  </mat-list-item>
+</mat-list>
+
+<div class="imx-button-bar">
+  <button data-imx-identifier="dependencies-proceed" mat-raised-button color="primary" type="button" (click)="save()"
+    form="form">
+    <span translate>#LDS#Proceed</span>
+  </button>
+</div>

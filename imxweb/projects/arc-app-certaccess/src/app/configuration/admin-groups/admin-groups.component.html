@@ -1,0 +1,20 @@
+<div class="imx-heading-wrapper">
+  <h1 class="mat-headline" translate>#LDS#Heading Application Roles</h1>
+
+  <eui-alert *ngIf="showHelperAlert" class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" 
+    [dismissable]="true" (dismissed)="onHelperDismissed()">
+    <span translate>
+      #LDS#Here you can get an overview of application roles and edit their memberships. Application roles let you quickly and easily assign permission profiles to identities based on their tasks and functions.
+    </span>
+  </eui-alert>
+</div>
+
+<div class="imx-admin-groups" *ngIf="dstSettings">
+  <imx-data-source-toolbar #dst [hidden]="true" [settings]="dstSettings"
+    (navigationStateChanged)="getData($event)" data-imx-identifier="admin-groups-dst">
+  </imx-data-source-toolbar>
+  <imx-data-table [dst]="dst" [detailViewVisible]="false"
+    (highlightedEntityChanged)="editRoleMembership($event)" data-imx-identifier="admin-groups-datatable">
+  </imx-data-table>
+  <imx-data-source-paginator data-imx-identifier="admin-groups-paginator" [dst]="dst"></imx-data-source-paginator>
+</div>

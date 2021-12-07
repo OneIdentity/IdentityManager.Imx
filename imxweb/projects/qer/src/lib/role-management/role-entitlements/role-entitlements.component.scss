@@ -1,0 +1,15 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+.imx-sidesheet-content {
+  height: inherit;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.imx-subtext {
+  color: $black-6;
+  font-size: smaller;
+}
+
+

@@ -1,0 +1,27 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+.membership-view-toggle {
+  margin: 32px 32px 0;
+
+  .mat-button-toggle-group {
+    .mat-button-toggle-checked {
+      background-color: $corbin-pastel;
+    }
+  }
+}
+
+.request-config {
+  .request-config__content {
+    .request-config__content-main {
+      &.no-top-padding {
+        padding-top: 16px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .mat-button-toggle-group {
+    width: 100%;
+  }
+}

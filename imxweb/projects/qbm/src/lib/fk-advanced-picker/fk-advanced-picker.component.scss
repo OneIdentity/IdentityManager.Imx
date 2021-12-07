@@ -1,0 +1,49 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+:host {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: $asher-gray;
+}
+
+.imx-sidesheet-content {
+  flex: 1 1 auto;
+  overflow:auto;
+}
+
+.imx-dialog-content {
+  display: flex;
+  flex-direction: column;
+  margin: 30px;
+  overflow-y: auto;
+  max-height: calc(100% - 60px);
+}
+
+.imx-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0;
+  padding: 16px 32px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  background-color: $white;
+
+  button {
+    margin-left: 10px;
+  }
+
+  .justify-start {
+    margin-right: auto;
+  }
+  
+  .imx-badge {
+    background-color: unset;
+  }
+}
+
+.imx-icon-large {
+  background-repeat: no-repeat;
+  padding-left: 35px;
+  min-width: 32px;
+  min-height: 32px;
+}

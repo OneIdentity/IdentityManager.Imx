@@ -1,0 +1,13 @@
+{
+  "name": "qbm",
+  "version": "0.0.1",
+  "dependencies": {
+
+  },
+  "peerDependencies": {
+
+  },
+  "bundledDependencies": [
+    "imx-api-qbm"
+  ]
+}

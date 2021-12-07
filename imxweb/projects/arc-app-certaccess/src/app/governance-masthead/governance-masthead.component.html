@@ -1,0 +1,21 @@
+<eui-masthead icon="governance" (logoClicked)="goHome()">
+  <mat-toolbar color="primary" data-imx-identifier="masthead-toolbar">
+    <mat-toolbar-row>
+      <h1 class="imx-masthead-app-name" (click)="goHome()">{{ appConfig?.Config?.Title }}</h1>
+      <span class="imx-masthead-space"></span>
+      <span class="imx-masthead--controls">
+        <ng-template *ngIf="isAuthenticated && !isMobile" [ngTemplateOutlet]="controlContent"></ng-template>
+      </span>
+    </mat-toolbar-row>
+  </mat-toolbar>
+</eui-masthead>
+
+<eui-top-navigation [items]="navigationItems">
+  <div eui-top-navigation-mobile-footer *ngIf="isMobile">
+    <ng-template *ngIf="isAuthenticated" [ngTemplateOutlet]="controlContent"></ng-template>
+  </div>
+</eui-top-navigation>
+
+<ng-template #controlContent>
+  <ng-content select="[imx-controls]"></ng-content>
+</ng-template>

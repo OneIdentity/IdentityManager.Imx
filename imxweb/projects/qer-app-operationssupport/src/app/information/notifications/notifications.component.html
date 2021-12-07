@@ -1,0 +1,23 @@
+<div>
+  <h2 class="startSubTitle" translate>{{'#LDS#Notifications' | translate}}</h2>
+  <div  class="no-issue-detected" *ngIf="Notifications.length == 0">
+    <imx-icon-stack class="imx-ops-icon"  [icon1]="'setdefault'" [icon2]="'clipboard'"
+      [text]="'#LDS#No process notifications' | translate">
+    </imx-icon-stack>
+  </div>
+  <mat-grid-list *ngIf="Notifications.length != 0" cols="1" rowHeight="58px" [style.width]="listWidth">
+    <mat-grid-tile *ngFor="let item of Notifications">
+      <mat-card>
+        <mat-card-content>
+          <div class="notificationContentPane">
+            <eui-icon icon="{{ item.icon }}" size="30px"></eui-icon>
+            <span class="notificationTitle">{{ item.title }}</span>
+            <span class="notificationContent">{{ item.text }}</span>
+            <button mat-button *ngIf="item.action" (click)="item.action.action()"
+              class="issueAction">{{item.action.caption }}</button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>

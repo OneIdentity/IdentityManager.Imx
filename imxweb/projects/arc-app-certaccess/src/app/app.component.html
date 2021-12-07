@@ -1,0 +1,36 @@
+<div class="page">
+  <ng-container *ngIf="isLoggedIn">
+    <imx-governance-masthead [navigationItems]="navigationItems" [isBootstrapUser]="isBootstrapUser">
+      <span imx-controls>
+        <button mat-button class="imx-masthead-user-button" #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="imxUserMenu" data-imx-identifier="user-menu">
+          <eui-icon icon="user"></eui-icon>
+          <span>{{ session?.SessionState?.Username }}</span>
+        </button>
+        <button *ngIf="hasDocumentationConfig" mat-button class="imx-masthead--icon-button" [matMenuTriggerFor]="helpMenu" data-imx-identifier="help-menu-button">
+          <eui-icon icon="help"></eui-icon>
+          <span translate>#LDS#Menu Entry Help</span>
+        </button>
+        <mat-menu #helpMenu="matMenu">
+          <button mat-menu-item data-imx-identifier="help-menu-documentation" (click)="navigateToDocumentation()">
+            <span translate>#LDS#Menu Entry Documentation</span>
+          </button>
+        </mat-menu>
+        <mat-menu #imxUserMenu="matMenu">
+          <button *ngIf="!isBootstrapUser" mat-menu-item data-imx-identifier="user-menu-profile" (click)="gotoprofile()">
+            <span translate>#LDS#Profile</span>
+          </button>
+          <button *ngIf="!isBootstrapUser" mat-menu-item data-imx-identifier="user-menu-report-subscriptions" (click)="gotoReportSubscriptions()">
+            <span translate>#LDS#Menu Entry My report subscriptions</span>
+          </button>
+          <button mat-menu-item data-imx-identifier="user-menu-signout" (click)="logout()">
+            <span translate>#LDS#Sign out</span>
+          </button>
+        </mat-menu>
+      </span>
+    </imx-governance-masthead>
+  </ng-container>
+  <div class="pageContent" [ngClass]="{ 'pageContent--full-page': isContentFullScreen }">
+    <imx-usermessage [hidden]="hideUserMessage" [panelClass]="isLoggedIn ? 'imx-message' : 'imx-small-message'"> </imx-usermessage>
+    <router-outlet></router-outlet>
+  </div>
+</div>

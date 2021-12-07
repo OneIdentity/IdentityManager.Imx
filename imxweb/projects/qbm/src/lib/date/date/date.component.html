@@ -1,0 +1,16 @@
+<mat-form-field appearance="outline">
+  <mat-label>{{ display | translate }}</mat-label>
+  <input matInput [readonly]="isReadonly" [matDatepicker]="datepicker" [formControl]="control"
+    [min]="min || dbValMinDate" [max]="max || '9999-12-31'"
+    [attr.data-imx-identifier]="'date-input-' + imxIdentifierSuffix" [required]="isValueRequired">
+  <div matSuffix class="imx-suffix-container">
+    <mat-spinner diameter="30" *ngIf="isLoading" class="imx-spinner"></mat-spinner>
+    <div class="imx-spacer"></div>
+    <mat-datepicker-toggle matSuffix [for]="datepicker" [disabled]="isReadonly"
+      [attr.data-imx-identifier]="'date-picker-toggle-' + imxIdentifierSuffix"></mat-datepicker-toggle>
+    <mat-datepicker #datepicker></mat-datepicker>
+  </div>
+  <mat-error>
+    {{ validationErrorText | translate }}
+  </mat-error>
+</mat-form-field>

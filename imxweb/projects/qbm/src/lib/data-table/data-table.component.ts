@@ -1,0 +1,651 @@
+/*
+ * ONE IDENTITY LLC. PROPRIETARY INFORMATION
+ *
+ * This software is confidential.  One Identity, LLC. or one of its affiliates or
+ * subsidiaries, has supplied this software to you under terms of a
+ * license agreement, nondisclosure agreement or both.
+ *
+ * You may not copy, disclose, or use this software except in accordance with
+ * those terms.
+ *
+ *
+ * Copyright 2021 One Identity LLC.
+ * ALL RIGHTS RESERVED.
+ *
+ * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
+ * WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+ * TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR
+ * NON-INFRINGEMENT.  ONE IDENTITY LLC. SHALL NOT BE
+ * LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE
+ * AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
+ * THIS SOFTWARE OR ITS DERIVATIVES.
+ *
+ */
+
+import { animate, state, style, transition, trigger } from '@angular/animations';
+import { SelectionChange } from '@angular/cdk/collections';
+import { OverlayRef } from '@angular/cdk/overlay';
+import {
+  Component,
+  ViewChild,
+  Input,
+  Output,
+  OnChanges,
+  SimpleChanges,
+  EventEmitter,
+  ContentChildren,
+  QueryList,
+  OnDestroy,
+  AfterViewInit
+} from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatTable, MatColumnDef, MatTableDataSource } from '@angular/material/table';
+import { EuiLoadingService } from '@elemental-ui/core';
+import { Subscription } from 'rxjs';
+
+import {
+  TypedEntity,
+  IClientProperty,
+  EntitySchema,
+  CollectionLoadParameters,
+  GroupInfo
+} from 'imx-qbm-dbts';
+import { ImxTranslationProviderService } from '../translation/imx-translation-provider.service';
+import { DataTableColumnComponent } from './data-table-column.component';
+import { DataTableGenericColumnComponent } from './data-table-generic-column.component';
+import { DataSourceToolbarComponent } from '../data-source-toolbar/data-source-toolbar.component';
+import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
+import { DataTableGroupedData } from './data-table-groups.interface';
+
+/**
+ * A data table component with a detail view specialized on typed entities.
+ * Collaborates with a DST (datasource toolbar).
+ *
+ * TODO: We don't us the 'T' in DataTableComponent<T>. Remove it.
+ *
+ * @example
+ * A simple example of a data table, a DST and a paginator.
+ * Checkout other components in this module and the datasource toolbar module for further examples.
+ *
+ * <imx-data-source-toolbar #dst [settings]="mySettings"></imx-data-source-toolbar>
+ * <imx-data-table
+ *              [dst]="myDst"
+ *              [detailViewTitle]="detailViewTitle"
+ *              (highlightedEntityChanged)="onHighlightedEntityChanged($event)"
+ *              [selectable]="true">
+ * </imx-data-table>
+ * <imx-data-source-paginator [dst]="myDst"></imx-data-source-paginator>
+ */
+@Component({
+  selector: 'imx-data-table',
+  templateUrl: './data-table.component.html',
+  styleUrls: ['./data-table.component.scss'],
+  animations: [
+    trigger('groupExpand', [
+      state('collapsed', style({ height: '0px', minHeight: '0' })),
+      state('expanded', style({ height: '*' })),
+      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ]
+})
+export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestroy {
+  public get numOfSelectedItems(): number { return this.dst.numOfSelectedItems; }
+
+  public get numOfSelectableRows(): number { return this.dst.numOfSelectableItems; }
+
+  /**
+   * @ignore Used internally in components template.
+   * Represents the typed entity that is selected when the users clicks on a row.
+   * Not to be confused with the 'selection' property.
+   */
+  public highlightedEntity: TypedEntity;
+
+  /**
+   * @ignore Used internally in components template.
+   * Indicates if the detail view is expanded or not.
+   */
+  public detailViewOpen = false;
+
+  /**
+   * @ignore Used internally in components template.
+   * The internal mat table datasource bound to the mat table.
+   */
+  public dataSource: MatTableDataSource<TypedEntity> = new MatTableDataSource<TypedEntity>([]);
+
+  /**
+   * @ignore Used internally in components template.
+   * The internal mat table datasource bound to the mat table.
+   */
+  public groupedDataSource: MatTableDataSource<GroupInfo> = new MatTableDataSource<GroupInfo>([]);
+
+  /**
+   * @ignore Used internally in components template.
+   * The display column for the grouped by table
+   */
+  public groupDisplayedColumns: string[] = ['Display'];
+
+  /**
+   * @ignore Used internally in components template.
+   * List that indicates which typed entity properties should be shown.
+   */
+  @ContentChildren(DataTableColumnComponent) public manualColumns: QueryList<DataTableColumnComponent<T>>;
+
+  /**
+   * @ignore Used internally in components template.
+   * List of generic columns.
+   */
+  @ContentChildren(DataTableGenericColumnComponent) public manualGenericColumns: QueryList<DataTableGenericColumnComponent>;
+
+  /**
+   * @ignore Used internally in components template.
+   * The internaly used mat table.
+   */
+  @ViewChild(MatTable, { static: true }) public table: MatTable<T>;
+
+  /**
+   * The datasource toolbar component.
+   */
+  @Input() public dst: DataSourceToolbarComponent;
+
+  /**
+   * List that indicates, which entity typed properties should be shown.
+   */
+  @Input() public displayedColumns: IClientProperty[] = [];
+
+  /**
+   * The entity schema of the typed entity.
+   */
+  @Input() public entitySchema: EntitySchema;
+
+  /**
+   * If set to 'auto' (= default) the data table will check the 'displayedColumns' input field and build a visual presentation.
+   * If set to 'manual' the data table will check the 'displayedColumns' input field, then read the
+   * column templates (DataTableColumnComponent or DataTableGenericColumnComponent) and render those.
+   */
+  @Input() public mode: 'auto' | 'manual' = 'auto';
+
+  /**
+   * Optional input
+   * Used to pass manual columns through to nested data-tables for group by functionality
+   */
+  @Input() public parentManualColumns?: QueryList<DataTableColumnComponent<T>>;
+
+  /**
+   * Optional input
+   * Used to pass manual generic columns through to nested data-tables for group by functionality
+   */
+  @Input() public parentManualGenericColumns?: QueryList<DataTableGenericColumnComponent>;
+
+  /**
+   * Indicates, if multiselect is enabled.
+   */
+  @Input() public selectable = false;
+
+  @Input() public showSelectionInfo = true;
+
+  /**
+   * Shows/hides header for selecting all items on the page.
+   */
+  @Input() public showSelectAllOption = true;
+
+  /**
+   * The title of the detail view.
+   */
+  @Input() public detailViewTitle: string;
+
+  /**
+   * Indicates if the detail view should be visible.
+   */
+  @Input() public detailViewVisible = true;
+
+  /**
+   * Group by data used to work with the GroupBy options from the data source toolbar
+   */
+  @Input() public groupData: { [key: string]: DataTableGroupedData } = {};
+
+  /**
+   * This text will be displayed when there is no data on the datasource (and a search/filter is not applied)
+   * Defaults to a generic message when not supplied
+   */
+  @Input() public noDataText = '#LDS#No data';
+
+  /**
+   * This icon will be displayed when there is no data on the datasource (and a search is not applied)
+   * Defaults to the 'table' icon when not supplied
+   */
+  @Input() public noDataIcon = 'table';
+
+  /**
+   * This text will be displayed when a search or filter is applied but there is no data as a result
+   * Defaults to a generic message when not supplied
+   */
+  @Input() public noMatchingDataText = '#LDS#No matching data';
+
+  /**
+   * This icon will be displayed along with the 'noMatchingDataTranslationKey' text when a search or filter
+   * is applied but there is no data as a result
+   * Defaults to the 'search' icon when not supplied
+   */
+  @Input() public noMatchingDataIcon = 'search';
+
+  /**
+   * Determines if the selected items menu is visible or not.
+   */
+  @Input() public showSelectedItemsMenu = true;
+
+  /**
+   * Allows any nested groupedBy tables to know if there are filters applied
+   * so they can display the correct no-data state
+   */
+  @Input() public groupedTableHasFiltersApplied?: boolean;
+
+  /**
+   * An emitted event that contains information on the group that was selected/interacted with
+   */
+  @Output() public groupDataChanged = new EventEmitter<string>();
+
+  /**
+   * An emitted event indicating, if the detail view is open or not.
+   */
+  @Output() public detailViewOpenChanged = new EventEmitter<boolean>();
+
+  /**
+   * An emitted event that contains the highlighted typed entity after a user has selected a row in the table.
+   */
+  @Output() public highlightedEntityChanged = new EventEmitter<TypedEntity>();
+
+  /**
+   * An emitted event that contains a list of selected typed entities.
+   */
+  @Output() public selectionChanged = new EventEmitter<TypedEntity[]>();
+
+  /**
+   * Data  source toolbar settings.
+   *
+   * TODO: Check why this is public.
+   */
+  public settings: DataSourceToolbarSettings;
+
+  /**
+   * @ignore Used internally.
+   * Definitions of internally used mat columns.
+   */
+  private columnDefs: MatColumnDef[];
+
+  /**
+   * @ignore
+   * List of subscriptions.
+   */
+  private subscriptions: Subscription[] = [];
+
+  /**
+   * @ignore
+   * Keeps track of any previous applied grouping selection (groupBy)
+   */
+  private previousGroupingDisplay?: string;
+
+  constructor(
+    public translateProvider: ImxTranslationProviderService,
+    public dialog: MatDialog,
+    private readonly busyService: EuiLoadingService
+  ) { }
+
+  public get isGroupingApplied(): boolean {
+    let result = false;
+    if (this.settings && this.settings.groupData && this.settings.groupData.currentGrouping) {
+      result = true;
+    }
+    return result;
+  }
+
+  /**
+   * @ignore Used internally.
+   * Does most of the initializing stuff.
+   */
+  public ngAfterViewInit(): void {
+
+    setTimeout(async () => {
+      if (this.dst && this.dst.settings) {
+        this.settings = this.dst.settings;
+        await this.dstHasChanged();
+      }
+    });
+  }
+
+  /**
+   * @ignore Used internally.
+   *
+   * Listens for changes of data table inputs e.g. checks it the datasource has changed.
+   */
+  public ngOnChanges(changes: SimpleChanges): void {
+
+    if (changes.mode && changes.mode.currentValue) {
+      if (this.mode === 'auto') {
+        if (this.dst.dataSourceChanged && this.columnDefs) {
+          this.columnDefs.forEach(colDef => this.table.removeColumnDef(colDef));
+        }
+      }
+    }
+
+    if (changes.dst && changes.dst.currentValue) {
+      this.subscriptions.push(this.dst.settingsChanged.subscribe(async (value: DataSourceToolbarSettings) => {
+        if (this.dst.dataSourceHasChanged) {
+          this.settings = value;
+          await this.dstHasChanged();
+        }
+      }));
+
+      this.subscriptions.push(this.dst.selectionChanged.subscribe((event: SelectionChange<TypedEntity>) =>
+        this.selectionChanged.emit(event.source.selected)
+      ));
+    }
+  }
+
+  /**
+   * @ignore Used internally.
+   * Unsubscribes all listeners.
+   */
+  public ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  }
+
+  public isSelectable(item: TypedEntity): boolean {
+    return this.dst?.itemStatus?.enabled(item);
+  }
+
+  /**
+   * Clears selection.
+   */
+  public clearSelection(): void {
+    this.dst.clearSelection();
+  }
+
+  /**
+   * @ignore Used internally in components template.
+   * Open the selection dialog
+   */
+  public onOpenSelectionDialog(): void {
+    this.dst.showSelectedItems();
+  }
+
+  /**
+   * @ignore Used internally in components template.
+   * Listens if the detail view is expandend or closed and emitts an event.
+   */
+  public onDetailOpenedChanged(newState: boolean): void {
+    this.detailViewOpen = newState;
+    this.detailViewOpenChanged.emit(this.detailViewOpen);
+  }
+
+  public numOfSelectedItemsOnPage(): number {
+    return this.dst.numOfSelectedItemsOnPage();
+  }
+
+  /**
+   * @ignore Used internally in components template.
+   * Indicates if all rows on the current page are selected.
+   */
+  public allSelected(): boolean {
+    return this.dst.allSelected();
+  }
+
+  /**
+   * @ignore Used internally in components template.
+   * Toggles the selection.
+   */
+  public toggleSelection(): void {
+    this.dst.toggleSelection();
+  }
+
+  /**
+   * @ignore Used internally in components template.
+   * Gets the display values of displayed columns
+   */
+  public getNamesOfDisplayedColumns(): string[] {
+    let displayedColumnNames = [];
+
+    if (this.displayedColumns && this.displayedColumns.length > 0) {
+      displayedColumnNames = this.displayedColumns.map(item => item.ColumnName);
+    }
+
+    if (this.selectable) {
+      displayedColumnNames.splice(0, 0, 'select');
+    }
+
+    return displayedColumnNames;
+  }
+
+  /**
+   * @ignore Used internally in components template.
+   * Highlights (selects) the current row and emits an event.
+   */
+  public highlightRow(entity: TypedEntity): void {
+    if (entity !== this.highlightedEntity) {
+      this.highlightedEntity = entity;
+    }
+
+    // Always emit a changed event (even if the same row was selected), to allow any listners to decide whether to act or not
+    this.highlightedEntityChanged.emit(this.highlightedEntity);
+  }
+
+  /**
+   * @ignore Used internally in components template.
+   * Gets the display value for a specific column.
+   */
+  public getDisplayValue(entity: TypedEntity, column: IClientProperty): string {
+    return entity.GetEntity().GetColumn(column.ColumnName).GetDisplayValue();
+  }
+
+  /**
+   * @ignore Used internally in components template.
+   * Selects a row.
+   */
+  public checked(row: TypedEntity): void {
+    this.dst.checked(row);
+  }
+
+  /**
+   * @ignore Used internally in components template.
+   * Deselects a row.
+   */
+  public unChecked(row: TypedEntity): void {
+    this.dst.unChecked(row);
+  }
+
+  /**
+   * @ignore Used internally in components template.
+   * Checks if a row is selected.
+   */
+  public isChecked(row: TypedEntity): boolean {
+    return this.dst.isChecked(row);
+  }
+
+  /**
+   * @ignore Used internally in components template
+   * Manages state of group information whether expanded or not
+   * Emits an event to allow data to be retrieved from calling code if no data is present
+   */
+  public onGroupExpanded(group: GroupInfo): void {
+    if (group && group.Count > 0) {
+      const groupingDisplay = group.Display[0].Display;
+      if (!this.groupData[groupingDisplay]) {
+        this.groupData[groupingDisplay] = {
+          data: undefined,
+          settings: undefined,
+          navigationState: undefined
+        };
+      }
+      const groupData = this.groupData[groupingDisplay];
+      if (!groupData.navigationState) {
+        groupData.navigationState = { PageSize: 25, StartIndex: 0, filter: group.Filters };
+      }
+      this.propagateNavigationSettingsToGroups(true);
+      if (!groupData.data) {
+        this.groupDataChanged.emit(groupingDisplay);
+      }
+      // Toggle if group is expanded in view or not
+      groupData.isExpanded = !groupData.isExpanded;
+    }
+  }
+
+  /**
+   * @ignore Used internally in components template
+   * Manages selections within groups
+   */
+  public selectionInGroupChanged(items: TypedEntity[], groupKey: string): void {
+    const groupingData = this.groupData[groupKey];
+
+    setTimeout(() => {
+      if (groupingData.selected) {
+        groupingData.selected.forEach(selectedItem => {
+          if (!items.find(item => this.getId(item) === this.getId(selectedItem))) {
+            this.unChecked(selectedItem);
+          }
+        });
+      }
+
+      groupingData.selected = [];
+
+      items.forEach(item => {
+        groupingData.selected.push(item);
+        this.checked(item);
+      });
+    });
+  }
+
+  /**
+   * @ignore Used internally in components template
+   * Occurs when the navigation state has changes on one of the nested grouped by tables
+   * e.g. users clicks on the next page button.
+   *
+   */
+  public onNavigationStateChanged(groupKey: string, newState: CollectionLoadParameters): void {
+    // Raise event to allow group data to be updated
+    this.groupData[groupKey].navigationState = newState;
+    this.groupDataChanged.emit(groupKey);
+  }
+
+  /**
+   * @ignore Used internally.
+   * Some settings of DST has changed. Check changes.
+   */
+  private async dstHasChanged(): Promise<void> {
+    if (this.settings && this.settings.entitySchema) {
+      this.entitySchema = this.settings.entitySchema;
+    }
+
+    if (this.settings && this.settings.dataSource) {
+      this.dataSource = new MatTableDataSource<TypedEntity>(this.settings.dataSource.Data);
+    }
+
+    const currentGrouping = this.settings?.groupData?.currentGrouping;
+
+    // Detect if the currentGrouping has changed since last selection
+    const groupByChanged = currentGrouping?.display !== this.previousGroupingDisplay;
+    if (groupByChanged) {
+      this.clearSelection();
+    }
+
+    // Keep a reference of what the current grouping is for next time
+    this.previousGroupingDisplay = currentGrouping?.display;
+
+    if (currentGrouping) {
+      // Apply any search/filters from group container table to the inner grouped by data states
+      this.propagateNavigationSettingsToGroups(false, groupByChanged);
+
+      let busyIndicator: OverlayRef;
+      setTimeout(() => busyIndicator = this.busyService.show());
+
+      try {
+        this.groupedDataSource = new MatTableDataSource<GroupInfo>(await currentGrouping.getData());
+      } finally {
+        setTimeout(() => this.busyService.hide(busyIndicator));
+      }
+    }
+
+    this.highlightedEntity = null;
+
+    if (this.columnDefs) {
+      this.columnDefs.forEach(colDef => this.table.removeColumnDef(colDef));
+    }
+
+    if (this.dst.dataSourceChanged && this.mode === 'manual') {
+      if (this.manualColumns == null && this.manualGenericColumns == null) {
+        return;
+      }
+      this.columnDefs = [];
+
+      if (this.manualColumns && this.table) {
+        let mcolumns = this.manualColumns;
+        if (mcolumns.length === 0 && this.parentManualColumns) {
+          mcolumns = this.parentManualColumns;
+        }
+        mcolumns.forEach(column => {
+          this.table.addColumnDef(column.columnDef);
+          this.columnDefs.push(column.columnDef);
+        });
+      }
+
+      if (this.manualGenericColumns && this.table) {
+        let gcolumns = this.manualGenericColumns;
+        if (gcolumns.length === 0 && this.parentManualGenericColumns) {
+          gcolumns = this.parentManualGenericColumns;
+        }
+        gcolumns.forEach(column => {
+          this.table.addColumnDef(column.columnDef);
+          this.columnDefs.push(column.columnDef);
+        });
+      }
+    }
+
+    if (this.settings && this.settings.displayedColumns) {
+      this.displayedColumns = this.settings.displayedColumns;
+    }
+
+    if ((this.displayedColumns == null || this.displayedColumns.length === 0) && this.entitySchema) {
+      this.displayedColumns = [];
+      for (const key in this.entitySchema.Columns) {
+        if (this.entitySchema.Columns.hasOwnProperty(key)) {
+          const element = this.entitySchema.Columns[key];
+          this.displayedColumns.push(element);
+        }
+      }
+    }
+  }
+
+  private getId(typedEntity: TypedEntity): string {
+    return typedEntity.GetEntity().GetKeys().join(',');
+  }
+
+  /**
+   * @ignore Used internally.
+   * Propagates the navigation settings from the grouped by table container down to any
+   * nested group data tables
+   * e.g The search and filter queries
+   * Ensures that a search or filter at the top level is applied to all grouped data tables
+   */
+  private propagateNavigationSettingsToGroups(skipNavigationChange: boolean = false, groupByChanged: boolean = false): void {
+    if (this.groupData) {
+      Object.keys(this.groupData).forEach((key) => {
+        const grouping = this.groupData[key];
+
+        // If the currentGrouping has changed, then reset expanded state on all data entries
+        if (groupByChanged) {
+          grouping.isExpanded = false;
+        }
+
+        if (grouping.isExpanded || skipNavigationChange) {
+          const preservedGroupingFilter = grouping.navigationState.filter;
+          grouping.navigationState = JSON.parse(JSON.stringify(this.settings.navigationState));
+          grouping.navigationState.filter = preservedGroupingFilter;
+          grouping.navigationState.StartIndex = 0;
+          if (!skipNavigationChange) {
+            this.onNavigationStateChanged(key, grouping.navigationState);
+          }
+        }
+      });
+    }
+  }
+}

@@ -1,0 +1,251 @@
+/*
+ * ONE IDENTITY LLC. PROPRIETARY INFORMATION
+ *
+ * This software is confidential.  One Identity, LLC. or one of its affiliates or
+ * subsidiaries, has supplied this software to you under terms of a
+ * license agreement, nondisclosure agreement or both.
+ *
+ * You may not copy, disclose, or use this software except in accordance with
+ * those terms.
+ *
+ *
+ * Copyright 2021 One Identity LLC.
+ * ALL RIGHTS RESERVED.
+ *
+ * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
+ * WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+ * TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR
+ * NON-INFRINGEMENT.  ONE IDENTITY LLC. SHALL NOT BE
+ * LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE
+ * AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
+ * THIS SOFTWARE OR ITS DERIVATIVES.
+ *
+ */
+
+import { OverlayRef } from '@angular/cdk/overlay';
+import { Component, OnInit, Inject, ViewChild } from '@angular/core';
+import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
+import { EuiDownloadOptions, EuiLoadingService, EuiSidesheetRef, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+
+import {
+  ColumnDependentReference,
+  BaseCdr, ClassloggerService,
+  SystemInfoService,
+  TabControlHelper,
+  SnackBarService,
+  ElementalUiConfigService,
+  ConfirmationService,
+} from 'qbm';
+import {
+  HelperAlertContent,
+  ProjectConfigurationService,
+  ServiceItemsEditFormComponent
+} from 'qer';
+import { PortalTargetsystemUnsGroupServiceitem } from 'imx-api-tsb';
+import { TypedEntity } from 'imx-qbm-dbts';
+import { GroupsService } from '../groups.service';
+import { GroupSidesheetData } from '../groups.models';
+import { GroupsReportsService } from '../groups-reports.service';
+import { GroupMembersComponent } from './group-members/group-members.component';
+import { DbObjectKeyBase } from '../../target-system/db-object-key-wrapper.interface';
+
+@Component({
+  selector: 'imx-group-sidesheet',
+  templateUrl: './group-sidesheet.component.html',
+  styleUrls: ['./group-sidesheet.component.scss'],
+})
+export class GroupSidesheetComponent implements OnInit {
+  public get groupId(): string {
+    return this.sidesheetData.group.GetEntity().GetKeys().join('');
+  }
+
+  public get isAdmin(): boolean {
+    return this.sidesheetData.isAdmin;
+  }
+
+  public readonly serviceItemFormGroup: FormGroup;
+  public readonly detailsFormGroup: FormGroup;
+  public cdrList: ColumnDependentReference[] = [];
+  public isRequestable: boolean;
+  public parameters: { objecttable: string; objectuid: string; };
+  public unsGroupDbObjectKey: DbObjectKeyBase;
+  public hideAttestationTab = false;
+  public reportDownload: EuiDownloadOptions;
+  public readonly pendingAttestations: HelperAlertContent = { loading: false };
+
+  @ViewChild('groupMembers') public groupMembersComponent: GroupMembersComponent;
+  @ViewChild('serviceItemsEditForm') public serviceItemsEditForm: ServiceItemsEditFormComponent;
+
+  constructor(
+    formBuilder: FormBuilder,
+    public groups: GroupsService,
+    @Inject(EUI_SIDESHEET_DATA) private readonly sidesheetData: GroupSidesheetData,
+    private readonly logger: ClassloggerService,
+    private readonly busyService: EuiLoadingService,
+    private readonly snackbar: SnackBarService,
+    private readonly sidesheet: EuiSidesheetService,
+    private readonly elementalUiConfigService: ElementalUiConfigService,
+    private readonly systemInfoService: SystemInfoService,
+    private readonly reports: GroupsReportsService,
+    private readonly configService: ProjectConfigurationService,
+    private readonly sidesheetRef: EuiSidesheetRef,
+    private readonly confirmation: ConfirmationService,
+  ) {
+
+    this.sidesheetRef.closeClicked().subscribe(async () => {
+      if (!this.detailsFormGroup.dirty && !this.serviceItemFormGroup.dirty) {
+        this.sidesheetRef.close();
+        return;
+      }
+
+      if (await this.confirmation.confirmLeaveWithUnsavedChanges()) {
+        await this.cancelProcess();
+      }
+    });
+
+    this.detailsFormGroup = new FormGroup({ formArray: formBuilder.array([]) });
+    this.serviceItemFormGroup = new FormGroup({ formArray: formBuilder.array([]) });
+
+    this.isRequestable = sidesheetData.groupServiceItem != null && !sidesheetData.groupServiceItem.IsInActive.value;
+
+    this.reportDownload = {
+      ... this.elementalUiConfigService.Config.downloadOptions,
+      url: this.reports.groupsByGroupReport(30, this.groupId),
+    };
+
+    this.unsGroupDbObjectKey = this.sidesheetData.unsGroupDbObjectKey;
+
+    if (this.sidesheetData.unsGroupDbObjectKey) {
+      this.parameters = {
+        objecttable: this.unsGroupDbObjectKey.TableName,
+        objectuid: this.unsGroupDbObjectKey.Keys[0]
+      };
+    }
+  }
+
+  public async ngOnInit(): Promise<void> {
+    this.setup();
+  }
+
+  get groupServiceItem(): PortalTargetsystemUnsGroupServiceitem {
+    return this.sidesheetData.groupServiceItem;
+  }
+
+  get formArray(): FormArray {
+    return this.detailsFormGroup.get('formArray') as FormArray;
+  }
+
+  get siFormArray(): FormArray {
+    return this.serviceItemFormGroup.get('formArray') as FormArray;
+  }
+
+  public attestationControlCreated(attestationServiceAvailable: boolean): void {
+    this.hideAttestationTab = !attestationServiceAvailable;
+  }
+
+  public cancel(): void {
+    this.sidesheet.close();
+  }
+
+  public async createServiceItem(): Promise<void> {
+    this.sidesheetData.group.extendedData = {
+      CreateServiceItem: true
+    };
+    await this.saveChanges(this.detailsFormGroup, this.sidesheetData.group, '#LDS#The service item has been successfully created.', true);
+  }
+
+  public async saveGroup(): Promise<void> {
+    this.saveChanges(this.detailsFormGroup, this.sidesheetData.group, '#LDS#The system entitlement has been successfully saved.');
+  }
+
+  public async saveGroupServiceItem(): Promise<void> {
+    this.serviceItemsEditForm?.saveTags();
+    const uidPerson = this.serviceItemsEditForm?.getSelectedUidPerson;
+    let confirmMessage = '#LDS#The service item has been successfully saved.';
+    if (uidPerson) {
+      this.groupServiceItem.extendedData = {
+        UidPerson: uidPerson,
+        CopyAllMembers: true,
+      };
+      confirmMessage += ' It may take some time for the changes to take effect.';
+    } else {
+      this.groupServiceItem.extendedData = undefined;
+    }
+    this.saveChanges(this.serviceItemFormGroup, this.groupServiceItem, confirmMessage);
+  }
+
+  public canUnsubscribeSelected(): boolean {
+    return this.groupMembersComponent?.canUnsubscribeSelected();
+  }
+
+  public canDeleteSelected(): boolean {
+    return this.groupMembersComponent?.canDeleteSelected();
+  }
+
+  public async onDeleteGroupMembers(mode: 'delete' | 'unsubscribe'): Promise<void> {
+    return mode === 'delete' ? this.groupMembersComponent.deleteMembers() : this.groupMembersComponent.unsubscribeMembership();
+  }
+
+  public async requestMembership(): Promise<void> {
+    return this.groupMembersComponent.requestMembership(this.groupServiceItem);
+  }
+
+  public async cancelProcess(): Promise<void> {
+    if (!this.detailsFormGroup.pristine) {
+      this.snackbar.open({ key: '#LDS#The changes were discarded.' }, '#LDS#Close');
+    }
+
+    this.sidesheetRef.close();
+  }
+
+  private async setup(): Promise<void> {
+    /**
+     * Resolve an issue where the mat-tab navigation arrows could appear on first load
+     */
+    setTimeout(() => {
+      TabControlHelper.triggerResizeEvent();
+    });
+
+    let overlayRef: OverlayRef;
+    setTimeout(() => overlayRef = this.busyService.show());
+    try {
+      const systemInfo = await this.systemInfoService.get();
+      const config = (await this.configService.getConfig()).OwnershipConfig;
+      const type = this.parameters?.objecttable;
+
+      const cols = this.sidesheetData.group
+        .getColumns(systemInfo.PreProps.includes('RISKINDEX'), type == null ? [] : config.EditableFields[type]);
+
+      this.cdrList = cols
+        .map(column => new BaseCdr(column));
+    } finally {
+      setTimeout(() => this.busyService.hide(overlayRef));
+    }
+  }
+
+  private async saveChanges(
+    formGroup: FormGroup,
+    objectToSave: TypedEntity,
+    confirmationText: string,
+    reloadServiceItem: boolean = false
+  ): Promise<void> {
+    if (formGroup.valid) {
+      this.logger.debug(this, `Saving group changes`);
+      const overlayRef = this.busyService.show();
+      try {
+        await objectToSave.GetEntity().Commit(true);
+        if (reloadServiceItem) {
+          this.sidesheetData.uidAccProduct = this.sidesheetData.group.GetEntity().GetColumn('UID_AccProduct').GetValue();
+          this.sidesheetData.groupServiceItem = await this.groups.getGroupServiceItem(this.sidesheetData.uidAccProduct);
+        }
+        this.isRequestable = !this.groupServiceItem.IsInActive.value;
+        formGroup.markAsPristine();
+        this.snackbar.open({ key: confirmationText }, '#LDS#Close');
+      } finally {
+        this.busyService.hide(overlayRef);
+      }
+    }
+  }
+}

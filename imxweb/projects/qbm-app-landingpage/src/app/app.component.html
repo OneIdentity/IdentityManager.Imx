@@ -1,0 +1,8 @@
+<div class="page">
+  <imx-mast-head></imx-mast-head>
+  <div class="pageContent">
+    <imx-usermessage [hidden]="hideUserMessage" [panelClass]="isLoggedIn ? 'imx-message' : 'imx-small-message'">
+    </imx-usermessage>
+    <router-outlet></router-outlet>
+  </div>
+</div>

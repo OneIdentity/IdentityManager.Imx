@@ -1,0 +1,52 @@
+<div class="imx-loginPage">
+  <div class="imx-loginFormcontainer">
+    <div>
+      <eui-logo size="72"></eui-logo>
+    </div>
+    <h1 data-imx-identifier="product-name-title">{{ product.name }}
+      <br>{{ title }}
+    </h1>
+    <imx-usermessage panelClass="imx-small-message"></imx-usermessage>
+    <div *ngIf="sessionState?.isOAuth;else loginMask" class="imx-loginButtonpanel">
+      <button data-imx-identifier="logout-oauth-button" mat-button type="button" class="imx-button"
+        (click)="logoutOAuth()">{{'#LDS#OAuth logout' | translate }}</button>
+    </div>
+
+    <ng-template imxExtd></ng-template>
+
+    <ng-template #loginMask>
+      <div class="imx-loginMask">
+        <div *ngIf="sessionState?.IsLoggedOut" class="imx-loginData">
+          <div *ngIf="configurationProviders" class="imx-loginInput">
+            <mat-form-field>
+              <mat-select data-imx-identifier="login-select-auth-provider"
+                placeholder="{{'#LDS#Authentication' | translate}}" [(ngModel)]="selectedConfigProvider"
+                (selectionChange)="onSelectAuthConfig()">
+                <mat-option *ngFor="let authConfig of configurationProviders" [value]="authConfig"
+                  [attr.data-imx-identifier]="'login-option-auth-provider' + authConfig.name">
+                  {{ authConfig.display | translate }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div [hidden]="selectedConfigProvider?.isOAuth2" *ngFor="let authProp of selectedConfigProvider?.authProps"
+            class="imx-loginInput">
+            <input attr.data-imx-identifier="login-input-{{ authProp.name.toLowerCase() }}" [type]="authProp.inputType"
+              [placeholder]="authProp.display" [(ngModel)]="loginData[authProp.name]" (keyup.enter)="login()"
+              class="imx-login-input" />
+          </div>
+          <div class="imx-loginButtonpanel" *ngIf="!selectedConfigProvider?.customAuthFlow">
+            <button data-imx-identifier="login-button-submit" mat-button type="button" class="imx-button"
+              (click)="login()">{{'#LDS#Log in' | translate }}</button>
+          </div>
+        </div>
+        <div *ngIf="sessionState?.IsAwaitingSecondaryAuth">
+          <imx-2fahost></imx-2fahost>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>
+<div class="imx-loginFooter">{{ product.name }}
+  <br>{{ product.copyright }}
+</div>

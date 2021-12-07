@@ -1,0 +1,25 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+:host {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+}
+
+.mat-button-toggle-group {
+  margin-bottom: 10px;
+
+  .mat-button-toggle-checked {
+    background-color: $corbin-pastel;
+  }
+}
+
+::ng-deep .mat-checkbox-disabled {
+  cursor: not-allowed;
+}
+
+@media screen and (max-width: 768px) {
+  .mat-button-toggle-group {
+    width: 100%;
+  }
+}

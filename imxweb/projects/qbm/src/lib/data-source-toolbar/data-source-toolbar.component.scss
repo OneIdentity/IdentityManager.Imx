@@ -1,0 +1,157 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+.imx-data-source-toolbar-container {
+  .imx-data-source-toolbar {
+    display: flex;
+    overflow: hidden;
+    justify-content: space-between;
+
+    &.no-toolbar-options-visible {
+      height: 0;
+    }
+  }
+
+  .imx-data-source-toolbar-left {
+    display: flex;
+    align-items: center;
+  }
+
+  .imx-data-source-toolbar-middle {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    font-size: smaller;
+  }
+
+  .imx-data-source-toolbar-right {
+    display: flex;
+    align-items: center;
+  }
+
+  .imx-data-source-toolbar-search {
+    width: 100%;
+
+    .eui-search {
+      width: 100%;
+    }
+  }
+
+  .imx-data-source-selected-filters {
+    display: block;
+    margin: 10px 5px;    
+
+    .mat-chip-list-wrapper > span {
+      margin-right: 5px;
+    }
+
+    .mat-chip {
+      cursor: pointer;
+
+      .eui-icon {
+        &.remove {
+          color: $black-6;
+          opacity: 0.3;
+          font-size: 18px;
+          margin-right: -10px;
+        }
+      }
+
+      span.tag-name {
+        color: $black-3;
+        font-size: 13px;
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
+.mat-menu-panel {
+
+
+  &.imx-filters-menu {
+    padding: 0 8px;
+  }
+}
+
+.mat-menu-content {
+  max-width: none;
+  .imx-data-source-filter-menu {
+    margin: 2px 15px 20px;
+
+    p {
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .mat-checkbox {
+      display: block;
+    }
+
+    .mat-radio-button {
+      display: block;
+      margin-right: 5px;
+
+      label.mat-radio-label {
+        white-space: normal;
+      }
+    }
+
+    .mat-select .mat-select-trigger {
+      margin-top: 5px;
+    }
+
+    .mat-select .mat-select-value {
+      max-width: none;
+      white-space: normal;
+      .mat-select-value-text {
+        white-space: normal;
+      }
+    }
+    
+    .mat-checkbox-layout {
+      white-space: normal;
+    }
+  }
+
+  .link-button {
+    color: $iris-blue;
+  }
+
+  .mat-menu-item:disabled > .link-button {
+    color: inherit;
+  }
+
+  button.mat-menu-item {  
+    white-space: break-spaces;
+    min-height: 48px;
+    height: auto;
+  }
+}
+
+.cdk-overlay-pane .mat-select-panel .mat-option {
+  line-height: normal;
+  height: 100%;
+
+  .mat-option-text {
+    white-space: normal;
+    margin: 5px 16px;
+  }
+}
+
+.imx-data-source-filter-select {
+  background-color: $asher-gray;
+}
+
+.imx-warning-icon {
+  color: $corbin-orange;
+}
+
+@media only screen and (max-width: 768px) {
+  .imx-data-source-toolbar-container {
+    .imx-data-source-toolbar-middle {
+      .eui-search.mat-form-field.mat-form-field-appearance-outline {
+        min-width: unset;
+      }
+    }
+  }
+}

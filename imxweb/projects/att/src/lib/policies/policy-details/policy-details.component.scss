@@ -1,0 +1,27 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: calc(100% - 60px);
+  margin: 30px;
+}
+
+.imx-runs-grid {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mat-card-content {
+  display: flex;
+}
+
+.imx-info-grid-view {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 0 10px;
+}
+
+.mat-card {
+  margin-bottom: 30px;
+}

@@ -1,0 +1,69 @@
+<h1 class="mat-headline">{{'#LDS#Heading Assign an Owner for a System Entitlement' | translate}}</h1>
+
+<mat-vertical-stepper *ngIf="canClaimGroup; else policyDeactivated" [linear]="true"
+  (selectionChange)="stepChange($event)" #stepper>
+  <mat-step [stepControl]="entitlementForm" label="{{'#LDS#Select a system entitlement' | translate}}"
+    [editable]="!ownerAssigned">
+    <form [formGroup]="entitlementForm">
+      <imx-cdr-editor [cdr]="entitlementCdr"
+        (controlCreated)="entitlementForm.addControl(entitlementCdr.column.ColumnName, $event)"></imx-cdr-editor>
+    </form>
+
+    <button *ngIf="entitlementForm" [disabled]="entitlementForm.invalid" mat-stroked-button matStepperNext
+      (click)="loadSuggestedOwners()">{{ '#LDS#Next' | translate }}</button>
+  </mat-step>
+
+  <mat-step [stepControl]="ownerForm" [editable]="!ownerAssigned">
+    <ng-template matStepLabel>
+      <ng-container *ngIf="entitlementCdr.column.GetDisplayValue(); else disabledDisplay">
+        {{ '#LDS#Specify the owner for the system entitlement "{0}".' | translate |
+        ldsReplace:entitlementCdr.column.GetDisplayValue() }}
+      </ng-container>
+      <ng-template #disabledDisplay>
+        {{ '#LDS#Specify the owner' | translate }}
+      </ng-template>
+    </ng-template>
+
+    <p>
+      {{ '#LDS#Here you can claim ownership of the system entitlement. If you are not the owner of the system entitlement, you can specify the actual owner (who will be notified and must confirm the ownership).' | translate }}
+    </p>
+
+    <mat-radio-group *ngIf="ownershipOptions?.length > 1" (change)="ownerCandidateListChange($event)">
+      <mat-radio-button *ngFor="let option of ownershipOptions; let i = index" [value]="option" [checked]="i === 0">
+        {{ option.title | translate }}
+      </mat-radio-button>
+    </mat-radio-group>
+
+    <form [formGroup]="ownerForm">
+      <imx-cdr-editor *ngIf="ownerCdr" [cdr]="ownerCdr"
+        (controlCreated)="ownerForm.addControl(ownerCdr.column.ColumnName, $event)"></imx-cdr-editor>
+    </form>
+
+    <button class="imx-button-previous" mat-stroked-button matStepperPrevious>{{'#LDS#Previous' | translate}}</button>
+    <button *ngIf="ownerForm" [disabled]="ownerForm.invalid" mat-stroked-button (click)="assignOwner()"
+      matStepperNext>{{'#LDS#Next' | translate}}</button>
+  </mat-step>
+
+  <mat-step [editable]="!ownerAssigned">
+    <ng-template matStepLabel>
+      <ng-container *ngIf="entitlementCdr.column.GetDisplayValue() && ownerDisplay; else disabledDisplay">
+        {{ '#LDS#Assign ownership for the system entitlement "{0}" to "{1}".' | translate |
+        ldsReplace:entitlementCdr.column.GetDisplayValue():ownerDisplay }}
+      </ng-container>
+      <ng-template #disabledDisplay>
+        {{ '#LDS#Assign ownership' | translate }}
+      </ng-template>
+    </ng-template>
+
+    <div *ngIf="ownerAssigned" class="imx-owner-assigned">
+      <p>
+        {{ '#LDS#Your changes have been successfully saved. It may take some time for the changes to take effect.' | translate }}
+      </p>
+      <button mat-stroked-button (click)="resetForms();stepper.reset()">{{ '#LDS#Assign another system entitlement' | translate }}</button>
+    </div>
+  </mat-step>
+</mat-vertical-stepper>
+
+<ng-template #policyDeactivated>
+  <p>{{ '#LDS#You cannot currently assign owners for system entitlements. The system entitlement ownership attestation policy is deactivated.' | translate}}</p>
+</ng-template>

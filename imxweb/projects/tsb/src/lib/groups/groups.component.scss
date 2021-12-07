@@ -1,0 +1,32 @@
+:host {
+  overflow: auto;
+}
+
+.data-explorer--groups > :nth-child(2) {
+  flex: 0 0 auto;
+}
+
+.imx-data-explorer-content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1 1 auto;
+}
+
+.data-explorer-table {
+  display: flex;
+  flex-direction: column;
+  > :first-child {
+    flex: 1 1 auto;
+  }
+
+}
+
+.data-explorer__action-buttons {
+  display: flex;
+  flex-direction: row;
+}
+
+.imx-spacer {
+  flex: 1 1 auto;
+}

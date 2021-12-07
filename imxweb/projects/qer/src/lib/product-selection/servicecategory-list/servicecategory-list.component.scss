@@ -1,0 +1,25 @@
+:host {
+  display: flex;
+  align-items: center;
+  min-height: 80px;
+}
+
+div {
+  margin-right: 10px;
+}
+
+button.imx-button {
+  margin-right: 10px;
+}
+
+.mat-dialog-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: inherit;
+}
+
+.imx-select-category {
+  padding: 12px 10px 0 10px;
+  width: 300px;
+}

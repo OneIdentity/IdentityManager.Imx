@@ -1,0 +1,47 @@
+<h1 *ngIf="objectEntity" class="mat-headline">
+  {{objectEntity?.GetDisplay()}}
+</h1>
+<div class="LayoutpWideSplittedItems">
+  <div class="LayoutpWideSplittedRow">
+    <div class="imx-layoutpanel-cell LayoutpWideSplittedCol0">
+      <imx-tile [size]="'Large-Overview'" [identifier]="'overview'">
+        <ng-template #CaptionTemplate></ng-template>
+        <ng-template #ValueTemplate>
+          <imx-property-viewer [properties]="detailProperties"></imx-property-viewer>
+        </ng-template>
+      </imx-tile>
+    </div>
+    <div class="imx-layoutpanel-cell LayoutpWideSplittedCol1">
+      <imx-businessowner-addon-tile data-imx-identifier="objectsheet-person-addontile-overview"
+        [squareText]="'#LDS#Overview' | translate"
+        [description]="'#LDS#Shows the overview for the selected employee with assignments, entitlements and requests.' | translate"
+        (squareAction)="goToHyperview()"></imx-businessowner-addon-tile>
+
+      <imx-businessowner-addon-tile *ngIf="isManagerOrAdmin()"
+        data-imx-identifier="objectsheet-person-addontile-main-data" [squareText]="'#LDS#Main data' | translate"
+        [description]="'#LDS#Shows the main data for this employee.' | translate" (squareAction)="goToMainData()">
+      </imx-businessowner-addon-tile>
+
+      <imx-businessowner-addon-tile *ngIf="showShop()" data-imx-identifier="objectsheet-person-addontile-requests"
+        [squareText]="'#LDS#Requests' | translate"
+        [description]="'#LDS#Shows the requests submitted by this identity.' | translate "
+        (squareAction)="goToRequests()">
+      </imx-businessowner-addon-tile>
+
+      <imx-businessowner-addon-tile *ngIf="isManagerOrAdmin()"
+        data-imx-identifier="objectsheet-person-addontile-entitlements" [squareText]="'#LDS#Entitlements' | translate"
+        [description]="'#LDS#Shows the entitlements assigned to this employee.' | translate"
+        (squareAction)="goToEntitlements()"></imx-businessowner-addon-tile>
+
+      <imx-businessowner-addon-tile *ngIf="showRisk()" data-imx-identifier="objectsheet-person-addontile-riskindex"
+        [squareText]="'#LDS#Risk' | translate" [description]="'#LDS#The calculated risk index is {0}. Click to analyze the risk index.' 
+        | translate | ldsReplace: object?.RiskIndexCalculated?.Column?.GetDisplayValue()"
+        (squareAction)="goToRiskAnalysis()"></imx-businessowner-addon-tile>
+
+      <imx-businessowner-addon-tile *ngIf="showHistory()" data-imx-identifier="objectsheet-person-addontile-history"
+        [squareText]="'#LDS#History' | translate"
+        [description]="'#LDS#Shows historical data for the selected employee.' | translate"
+        (squareAction)="goToHistory()"></imx-businessowner-addon-tile>
+    </div>
+  </div>
+</div>

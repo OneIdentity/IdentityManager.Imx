@@ -1,0 +1,9 @@
+<mat-form-field appearance="outline">
+    <mat-label>{{'#LDS#Origins' | translate}}</mat-label>
+    <input matInput value="_hidden" [hidden]="true"/>
+    <div [formGroup]="control" class="imx-multi-value-container">
+        <mat-checkbox *ngFor="let candidate of candidates; let i=index" [formControlName]="i" [attr.data-imx-identifier]="testId + 'edit-origin-checkbox-' + i">
+            {{candidate?.Display}}
+        </mat-checkbox>
+    </div>
+</mat-form-field>

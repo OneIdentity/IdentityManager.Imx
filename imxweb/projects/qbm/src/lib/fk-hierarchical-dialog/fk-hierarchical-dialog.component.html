@@ -1,0 +1,40 @@
+<div class="imx-sidesheet-content">
+  <mat-card class="imx-dialog-content">
+    <mat-form-field *ngIf="data.fkRelations.length > 3" appearance="outline">
+      <mat-label>{{'#LDS#Selected table' | translate}}</mat-label>
+      <mat-select [(ngModel)]="hierarchyService.fkTable" disableOptionCentering panelClass="imx-under"
+        (selectionChange)="tableChanged()" data-imx-identifier="cdr-fkadvancedpicker-select-tables">
+        <mat-option *ngFor="let item of data.fkRelations" [value]="item">
+          {{ metadataProvider.tables[item.TableName]?.DisplaySingular || item.TableName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- if more than 1 candidate table -> show radio buttons -->
+    <mat-radio-group class="imx-fk-table-radio" *ngIf="data.fkRelations.length <= 3 && data.fkRelations.length > 1"
+      [(ngModel)]="hierarchyService.fkTable" (change)="tableChanged()"
+      data-imx-identifier="cdr-fkadvancedpicker-radiogroup-tables">
+      <mat-radio-button *ngFor="let item of data.fkRelations" [value]="item"
+        data-imx-identifier="cdr-fkadvancedpicker-radiogroup-tables">
+        {{ metadataProvider.tables[item.TableName]?.DisplaySingular || item.TableName }}
+      </mat-radio-button>
+    </mat-radio-group>
+
+    <imx-data-tree #fkTree [withMultiSelect]="data.isMultiValue" [selectedEntities]="selectedEntities"
+      [database]="hierarchyService" (checkedNodesChanged)="selectedNodesChanged()"
+      (nodeSelected)="onNodeSelected($event)">
+    </imx-data-tree>
+  </mat-card>
+</div>
+
+<div *ngIf="data.isMultiValue" class="imx-dialog-actions">
+  <button class="justify-start" mat-stroked-button color="primary" type="button"
+    [disabled]="selectedEntities.length === 0" (click)="clearSelection()"
+    data-imx-identifier="cdr-fk-hierarchical-dialog-button-clear-selection">
+    {{ '#LDS#Clear selection' | translate }}
+  </button>
+  <button [disabled]="data?.isRequired && selectedEntities.length < 1" mat-raised-button color="primary"
+    (click)="applySelection()" data-imx-identifier="cdr-fk-hierarchical-dialog-button-apply-selection">
+    {{ '#LDS#Apply' | translate }}
+  </button>
+</div>

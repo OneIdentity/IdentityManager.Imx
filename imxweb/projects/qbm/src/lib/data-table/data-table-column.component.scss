@@ -1,0 +1,25 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+td.mat-cell,
+th.mat-header-cell {
+  padding-right: 15px;
+}
+
+td.mat-cell ::ng-deep div[subtitle] {
+  font-size: smaller;
+  color: $black-9;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 500px;
+}
+
+::ng-deep .eui-sidesheet__content td.mat-cell ::ng-deep div[subtitle] {
+  max-width: 250px;
+}
+
+@media screen and (max-width: 768px) {
+  td.mat-cell ::ng-deep div[subtitle] {
+    max-width: 250px;
+  }
+}

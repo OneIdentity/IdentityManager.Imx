@@ -1,0 +1,45 @@
+<mat-expansion-panel [attr.data-imx-identifier]="'policy-editor-accordion-panel-' + idForTest">
+  <mat-expansion-panel-header>
+
+      <mat-panel-title class="imx-panel-title-with-number" *ngIf="filterElementModel?.attestationSubType">
+          <div>{{filterElementModel?.getParameterData(filterElementModel.attestationSubType)?.Display}}</div>
+          <imx-selected-objects [isTotal]="false" [testId]="'objects-for-filter-' + idForTest"
+              [popupTitle]="'#LDS#Heading Objects Matching the Condition' | translate"
+              [filterSubject]="filterElementModel?.selectedObjectsSubject"
+              [popupSubtitle]="filterElementModel?.getParameterData(filterElementModel?.attestationSubType)?.Display">
+          </imx-selected-objects>
+
+      </mat-panel-title>
+      <mat-panel-title *ngIf="!filterElementModel?.attestationSubType">
+          {{'#LDS#New condition' | translate}}
+      </mat-panel-title>
+      <button mat-icon-button (click)="deleteFilter.emit(this.formGroup)" 
+        matTooltip="{{'#LDS#Delete condition' | translate}}"
+          attr.data-imx-identifier="policy-editor-button-delete-condition">
+          <eui-icon icon="delete"></eui-icon>
+      </button>
+  </mat-expansion-panel-header>
+
+  <ng-container>
+      <mat-form-field>
+          <mat-label>{{'#LDS#Condition type' | translate}}</mat-label>
+          <mat-select [formControl]="formGroup?.get('type')" [attr.data-imx-identifier]="'policy-editor-select-condition-type-' + idForTest"
+              (selectionChange)="selectedConditionTypeChanged($event)">
+              <mat-option *ngFor="let elem of filterElementModel?.parameterConfig;" [value]="elem.Uid"
+              [attr.data-imx-identifier]="'policy-editor-select-condition-type-option-' + idForTest">
+                  {{elem.Display}}
+              </mat-option>
+          </mat-select>
+      </mat-form-field>
+
+      <ng-container>
+          <imx-filter-editor
+              [testId]="'filter-editor-' + idForTest"
+              [filterElementModel]="filterElementModel"
+              [formControl]="formGroup?.get('filterParameter')" [attr.data-imx-identifier]="'policy-editor-filter-editor-' + idForTest"
+              (filterChanged)="filterParameterChanged($event)"> </imx-filter-editor>
+          <mat-error class="imx-small-error" *ngIf="formGroup?.errors?.noTypeSelected">
+              {{'#LDS#Please select a condition type.' | translate}}</mat-error>
+      </ng-container>
+  </ng-container>
+</mat-expansion-panel>

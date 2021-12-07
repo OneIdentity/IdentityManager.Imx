@@ -1,0 +1,41 @@
+<div class="imx-content">
+  <form class="imx-form" id="entitlementForm" [formGroup]="form">
+    <imx-entity-column-editor [column]="entitlement.Ident_AOBEntitlement.Column"
+      (controlCreated)="form.addControl($event.name, $event.control)">
+    </imx-entity-column-editor>
+    <imx-entity-column-editor [column]="entitlement.Description.Column"
+      (controlCreated)="form.addControl($event.name, $event.control)">
+    </imx-entity-column-editor>
+    <imx-entity-column-editor [column]="entitlement.UID_AERoleOwner.Column"
+      (controlCreated)="form.addControl($event.name, $event.control)">
+    </imx-entity-column-editor>
+    <imx-entity-column-editor [column]="entitlement.ObjectKeyAdditionalApprover.Column"
+      (controlCreated)="form.addControl($event.name, $event.control)">
+    </imx-entity-column-editor>
+    <ng-container *ngIf="serviceItem">
+      <imx-service-item-tags *ngIf="productTagsSelected"
+        [selection]="productTagsSelected"
+        [loading]="loadingTags"
+        (controlCreated)="form.addControl('tags', $event)">
+      </imx-service-item-tags>
+      <imx-entity-column-editor [column]="serviceItem.UID_PWODecisionMethod.Column"
+        (controlCreated)="form.addControl($event.name, $event.control)">
+      </imx-entity-column-editor>
+      <imx-entity-column-editor [column]="serviceItem.UID_QERTermsOfUse.Column"
+        (controlCreated)="form.addControl($event.name, $event.control)">
+      </imx-entity-column-editor>
+      <imx-entity-column-editor [column]="serviceItem.UID_AccProductParamCategory.Column"
+        (controlCreated)="form.addControl($event.name, $event.control)">
+      </imx-entity-column-editor>
+      <imx-entity-column-editor [column]="serviceItem.ProductURL.Column"
+        (controlCreated)="form.addControl($event.name, $event.control)">
+      </imx-entity-column-editor>
+      <imx-entity-column-editor *ngIf="isStarlingTwoFactorConfigured" [column]="serviceItem.IsApproveRequiresMfa.Column"
+        (controlCreated)="form.addControl($event.name, $event.control)">
+      </imx-entity-column-editor>
+    </ng-container>
+  </form>
+</div>
+<div class="imx-button-bar">
+  <button mat-raised-button [disabled]="!form.dirty" type="button" (click)="save()" color="primary">{{ '#LDS#Save' | translate }}</button>
+</div>

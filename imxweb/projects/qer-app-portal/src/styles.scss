@@ -1,0 +1,71 @@
+/* You can add global styles to this file, and also import other style files */
+$material_icons_font_path: "~@elemental-ui/core/assets/MaterialIcons";
+$cadence_font_path: "~@elemental-ui/cadence-icon/dist";
+$source_sans_pro_font_path: "~@elemental-ui/core/assets/Source_Sans_Pro";
+
+@import '~@elemental-ui/core/src/styles/core.scss';
+
+.imx-dialog-panel-class > .mat-dialog-container {
+    background-color: mat-color($asher-gray-palette, 200);
+}
+
+.mat-snack-bar-container.mat-snack-bar-center.eui-alert-banner-panel {
+    position: fixed;
+    left: 0;
+}
+// ToDo (als Teil von 254128): später wieder einbinden, wenn wir den Styleguide soweit haben
+// .pageContent > :last-child > h1 {
+//   font-size: 24px;
+//   margin: 20px 0 15px 45px;
+//   font-weight: 600;
+// }
+
+imx-data-explorer-groups,
+imx-data-explorer-identities,
+imx-data-explorer-accounts {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    max-width: 1200px;
+    > .data-explorer--groups,
+    .data-explorer--accounts {
+        flex: 1 1 auto;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+
+        > :nth-child(2) {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+        }
+    }
+
+    .data-explorer--accounts {
+        > :nth-child(2) {
+            overflow: hidden;
+        }
+    }
+
+    .data-explorer-table {
+        flex: 1 1 auto;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .data-explorer-table .mat-sidenav-content {
+        overflow-y: auto !important;
+    }
+}
+
+.data-explorer.data-explorer--identities.identities--fullscreen
+{
+    display: flex !important;  // TODO: Task 268556 : Styling direkt in der Komponente umsetzen
+    flex-direction: column;
+}
+
+.governance-sidesheet__tab-content {
+    height: calc(100% - 120px);
+}

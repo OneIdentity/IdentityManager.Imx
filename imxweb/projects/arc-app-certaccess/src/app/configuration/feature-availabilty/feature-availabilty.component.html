@@ -1,0 +1,43 @@
+<div class="imx-heading-wrapper">
+  <h1 class="mat-headline" translate>#LDS#Heading Feature Availability</h1>
+
+  <eui-alert *ngIf="showHelperAlert" class="imx-helper-alert" type="info" [condensed]="true" [colored]="true"
+    [dismissable]="true" (dismissed)="onHelperDismissed()">
+    <span translate>#LDS#Here you can specify which features are enabled for the Web Portal. You may need to log off and back in for the changes to take effect.</span>
+  </eui-alert>
+</div>
+
+  <form [formGroup]="settingsFormGroup">
+    <div formArrayName="formArray" *ngIf="featureSettings?.length">
+      <ng-container *ngFor="let item of formArray.controls; let i = index">
+        <mat-card class="availability-setting">
+          <div class="availability-setting__header" *ngIf="featureSettings[i].Key === REQUESTS_FEATURE_KEY">
+            <h3 translate>#LDS#Heading Requests</h3>
+            <div translate>#LDS#Activate this option to show the "Requests" feature in the Starling CertAccess Web Portal.</div>
+          </div>
+          <div class="availability-setting__header" *ngIf="featureSettings[i].Key === ATTESTATION_FEATURE_KEY">
+            <h3 translate>#LDS#Heading Attestation</h3>
+            <div translate>#LDS#Activate this option to show the "Attestation" feature in the Starling CertAccess Web Portal.</div>
+          </div>
+          <div class="availability-setting__header" *ngIf="featureSettings[i].Key !== ATTESTATION_FEATURE_KEY && featureSettings[i].Key !== REQUESTS_FEATURE_KEY">
+            <h3>{{ getFeatureDisplayName(featureSettings[i].Key) }}</h3>
+            <div>{{ featureSettings[i].Description }}</div>
+          </div>
+          <div class="availability-setting__toggle">
+              <mat-slide-toggle #toggle [formControlName]="i"
+                [checked]="featureSettings[i]?.Value">
+                <span [translate]="toggle.checked ? '#LDS#On' : '#LDS#Off'"></span>
+              </mat-slide-toggle>
+          </div>
+        </mat-card>
+
+      </ng-container>
+    </div>
+
+  </form>
+
+  <div class="availability-action-buttons">
+    <button mat-raised-button color="primary" data-imx-identifier="save-feature-availability"
+      [disabled]="settingsFormGroup.pristine || settingsFormGroup.invalid"
+      (click)="save()">{{'#LDS#Save' | translate}}</button>
+  </div>

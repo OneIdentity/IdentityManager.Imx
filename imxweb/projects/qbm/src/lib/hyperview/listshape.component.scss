@@ -1,0 +1,20 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+li {
+  list-style-type: none;
+  margin-bottom: 5px;
+  margin-left: 0;
+  padding-left: 0;
+  > a,a:active,a:focus,a:hover,a:link,visited {
+    color: $white;
+  }
+}
+
+a {
+  display: block;
+  word-break: break-all;
+}
+
+a:hover, a:focus {
+  background-color: rgba(255,255,255,.2);
+  text-decoration: none;
+}

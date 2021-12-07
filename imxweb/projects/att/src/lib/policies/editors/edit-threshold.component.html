@@ -1,0 +1,16 @@
+<h4>{{'#LDS#Heading Risk Index' | translate}}</h4>
+
+<div>
+    <mat-form-field appearance="outline">
+        <mat-label>{{'#LDS#Lower limit' | translate}}</mat-label>
+        <input matInput type="number" [formControl]="lowerControl" min="0" max="1" step="0.01" [attr.data-imx-identifier]="testId + '-edit-threshold-lower-bounds-input'">
+        <mat-error *ngIf="lowerControl.invalid">
+            {{'#LDS#Specify a value between 0 and 1 for the lower limit.' |translate}}</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+        <mat-label>{{'#LDS#Upper limit' | translate}}</mat-label>
+        <input matInput type="number" [formControl]="upperControl" min="0" max="1" step="0.01" [attr.data-imx-identifier]="testId + '-edit-threshold-upper-bounds-input'">
+        <mat-error *ngIf="upperControl.invalid">
+            {{'#LDS#Specify a value between 0 and 1 for the upper limit.' |translate}}</mat-error>
+    </mat-form-field>
+</div>

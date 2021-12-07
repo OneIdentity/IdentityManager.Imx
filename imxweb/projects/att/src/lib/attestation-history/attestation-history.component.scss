@@ -1,0 +1,29 @@
+:host {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.imx-badge-container {
+  > div {
+    display: table-cell;
+
+    > .eui-badge {
+      margin: 0 5px;
+
+      ::ng-deep .eui-badge-content {
+        white-space: nowrap;
+      }
+    }
+  }
+}
+imx-data-table {
+  flex-grow: 2;
+}
+
+.imx-display-column {
+  display: flex;
+  :last-child {
+    flex-grow: 1;
+  }
+}

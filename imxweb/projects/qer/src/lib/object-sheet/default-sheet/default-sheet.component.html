@@ -1,0 +1,40 @@
+<h1 class="mat-headline" data-imx-identifier="default-objectsheet-heading"
+  *ngIf="!hideDisplay && display && metaTableData">
+  {{ display }} ({{metaTableData?.DisplaySingular}})
+</h1>
+<mat-card>
+  <div *ngIf="isMNTable">
+    <imx-hyperview [layout]="'Vertical'" [fontSize]="'small'"
+      data-imx-identifier="default-objectsheet-hyperview-mntable">
+      <div imx-layout="MiddleCenter">
+        <div class="imx-centered">
+          {{'#LDS#Relation' | translate}}
+        </div>
+        <div class="imx-centered">
+          {{metaTableData?.DisplaySingular}}
+        </div>
+      </div>
+      <ng-container *ngFor="let currentObjMN of objMN">
+        <div imx-layout="BottomCenter">
+          <!-- TODO later how to get a table name from an entity?-->
+          <a [routerLink]="['/objectsheet', 'Person', currentObjMN.GetKeys()[0]]">
+            {{ currentObjMN.GetDisplay() }}
+            <!-- TODO later
+                <VI_Common_HyperView_Shape
+                    [Caption]="{{DataCaptionSingle(from objmn select current getobjectkeytable(xobjectkey))}}"
+                    [ImageURL]="{{variable(format("%permanentlink%dialogImgTbl={0}", from objmn select current getobjectkeytable(xobjectkey)))}}"
+                    [ColorKey]="BottomCenter"
+                    [HeaderText]="{{cobjmn.GetDisplay()}}"
+                    [SizeType]="Wide">
+                </VI_Common_HyperView_Shape>
+            -->
+          </a>
+        </div>
+      </ng-container>
+    </imx-hyperview>
+  </div>
+  <div *ngIf="!isMNTable">
+    <imx-hyperview [shapes]="shapeData" [fontSize]="'small'" (selected)="select($event)"
+      data-imx-identifier="default-objectsheet-hyperview-not-mntable"></imx-hyperview>
+  </div>
+</mat-card>

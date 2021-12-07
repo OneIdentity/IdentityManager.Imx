@@ -1,0 +1,40 @@
+<imx-icon-tile data-imx-identifier="imx-password-reset-card" [caption]="'#LDS#Heading Passwords' | translate"
+  [subtitle]="'#LDS#Create and manage passwords.' | translate"
+  [identifier]="'imx-password-reset-card'" [image]="'key'">
+  <ng-template #ActionTemplate>
+    <button mat-button color="primary" [attr.data-imx-identifier]="'imx-password-reset-card-button-to-reset'"
+      [routerLink]="['/resetpassword']">
+      <span>{{'#LDS#Manage passwords'| translate}}</span>
+      <eui-icon size="m" icon="forward"></eui-icon>
+    </button>
+  </ng-template>
+</imx-icon-tile>
+
+
+<imx-tile *ngIf="qaProfileVisible" size="Custom-Tile" [attr.data-imx-identifier]="'imx-qa-profile-card'"
+  identifier="imx-qa-profile-card">
+  <ng-template #CustomTemplate>
+    <mat-card-header>
+      <eui-icon mat-card-avatar size="32px" icon="profile"></eui-icon>
+      <mat-card-title translate>#LDS#Heading Q&A Profile</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p>{{(hasAnyUnlockedQuestion
+        ? '#LDS#Set your secret password answer now to unlock your account in the future.'
+        : '#LDS#Specify additional password questions to be able to unlock your account.') | translate}}</p>
+    </mat-card-content>
+  </ng-template>
+</imx-tile>
+
+<imx-tile *ngIf="securityKeysVisible" size="Custom-Tile" [attr.data-imx-identifier]="'imx-security-keys-card'"
+  identifier="imx-qa-profile-card">
+  <ng-template #CustomTemplate>
+    <mat-card-header>
+      <eui-icon mat-card-avatar size="32px" icon="key"></eui-icon>
+      <mat-card-title translate>#LDS#Heading Security Keys</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p>{{'#LDS#Manage your security keys.' | translate}}</p>
+    </mat-card-content>
+  </ng-template>
+</imx-tile>

@@ -1,0 +1,97 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+:host {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: inherit;
+  }
+  
+  imx-data-table {
+    flex-grow: 2;
+  }
+
+  :host ::ng-deep imx-data-table .mat-header-row .mat-header-cell {
+    font-weight: 600;
+    font-size: 14px;
+    padding: 0 10px;
+  }
+  
+  :host ::ng-deep imx-data-table .mat-row .mat-cell {
+    padding: 0 10px;
+  }
+
+  .imx-separate-menu-item {
+    border-top: 1px solid $black-c;
+  }
+  
+  .imx-table-container {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: inherit;
+    max-width: 1200px;
+  }
+
+  .imx-policy-footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px; 
+    border: 1px solid $black-c;
+    min-height: 50px;
+  }
+
+  :host ::ng-deep eui-sidesheet .eui-sidesheet__content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mat-raised-button {
+    align-self: flex-end;
+  }
+
+.mat-toolbar {
+  background-color: inherit;
+  max-width: 1200px;
+  margin-left: 25px;
+  margin-right: 0;
+  margin-bottom: 40px;
+  padding-right: 0;
+}
+
+.mat-toolbar > button {
+  margin-left: 5px;
+}
+
+.mat-toolbar > mat-button {
+  color: $black;
+}
+
+ .imx-toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.mat-slide-toggle {
+  font-size: 16px;
+}
+
+.button-row {
+  border-top-style: solid;
+  border-top-width: 0px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin: 10px 0 0 0;
+  max-width: 1200px;
+}
+
+.imx-button-column {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+
+  > *:not(:last-child) {
+    margin-right: 5px;
+  }
+}

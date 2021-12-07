@@ -1,0 +1,4 @@
+<div *ngIf="peerGroupSize && this.item?.CountInPeerGroup" class="imx-peer-group-info" [style.width]="width">
+  {{ '#LDS#Assigned to {0} of {1} other identities of the peer group ({2}%)'
+  | translate | ldsReplace:item.CountInPeerGroup.value:peerGroupSize:getPeerGroupPercentage() }}
+</div>

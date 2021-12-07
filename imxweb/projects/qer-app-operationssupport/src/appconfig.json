@@ -1,0 +1,17 @@
+{
+  "Title": "Operations Support Web Portal",
+  "WebAppIndex": "opsupport",
+  "LocalDocPath": {
+    "en-US": "imx/doc/OneIM_QER_OperationsSupportWebPortal_en-us.html5/OneIM_QER_OperationsSupportWebPortal.html",
+    "de-DE": "imx/doc/OneIM_QER_OperationsSupportWebPortal_de-de.html5/OneIM_QER_OperationsSupportWebPortal.html"
+  },
+  "NotificationUpdateInterval": 10000,
+  "DatastoreIssueTreshold": 0,
+  "Translation": {
+    "Langs": ["en-US", "de-DE", "de", "en"]
+  },
+  "routeConfig": {
+    "login": "",
+    "start": "start"
+  }
+}

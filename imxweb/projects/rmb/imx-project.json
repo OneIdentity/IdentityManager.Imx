@@ -1,0 +1,13 @@
+{
+  "Name": "rmb",
+  "Path": "imxweb\\projects\\rmb",
+  "ProjectType": "ng-lib",
+  "ProjectDependcies": [
+    "qbm",
+    "qer"
+  ],
+  "ChangePatterns": [
+    "imxweb\\projects\\rmb",
+    "imxweb\\shared\\assets"
+  ]
+}

@@ -1,0 +1,78 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+:host {
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.mat-tab-group {
+  height: 100%;
+  overflow: hidden;
+
+  ::ng-deep .mat-tab-body-wrapper {
+    flex: 1 1 auto;
+  }
+
+  .mat-card {
+    display: flex;
+    flex-direction: column;
+    height: inherit;
+    overflow: hidden;
+
+    .mat-card-content {
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .mat-card-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+}
+
+.imx-top-container {
+  display: grid;
+  grid-template-columns: auto 450px;
+  grid-template-rows: auto 50%;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+h1 {
+  grid-column-start: 1;
+  grid-column-end: 1;
+  grid-row-start: 1;
+  grid-row-end: 1;
+}
+
+.imx-helper-alert {
+  grid-column-start: 2;
+  grid-column-end: 2;
+  grid-row-start: 1;
+  grid-row-end: 2;
+}
+
+imx-identity-select {
+  grid-column-start: 1;
+  grid-column-end: 1;
+  grid-row-start: 2;
+  grid-row-end: 2;
+}
+
+.imx-mail-description {
+  font-size: smaller;
+  font-style: italic;
+  color: $black_9;
+}
+
+.imx-mail-info {
+  margin-top: 20px;
+}
+
+imx-ext {
+  height: 100%;
+}

@@ -1,0 +1,22 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
+
+	<PropertyGroup>
+		<ComponentDir>imxweb\project-setup\qbm-app-landingpage</ComponentDir>
+		<PathPrefix>projects\qbm-app-landingpage\</PathPrefix>
+		<SyncFilesInModuleInfo>true</SyncFilesInModuleInfo>
+		<ModuleDir>$(VI_PROJECTDIR)\Common</ModuleDir>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<SetupFiles Include="..\..\projects\qbm-app-landingpage\.browserslistrc"/>
+		<SetupFiles Include="..\..\projects\qbm-app-landingpage\karma.conf.js"/>
+		<SetupFiles Include="..\..\projects\qbm-app-landingpage\package.json"/>
+		<SetupFiles Include="..\..\projects\qbm-app-landingpage\tsconfig.app.json"/>
+		<SetupFiles Include="..\..\projects\qbm-app-landingpage\tsconfig.spec.json"/>
+		<SetupFiles Include="..\..\projects\qbm-app-landingpage\src\**\*.*"/>
+	</ItemGroup>
+
+	<!-- getting default part of build file -->
+	<Import Project="$(VI_PROJECTDIR)\Build\Includes\Build_Folder.targets"/>
+
+</Project>

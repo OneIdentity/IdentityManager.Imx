@@ -1,0 +1,48 @@
+<div class="roleremove-sidesheet">
+  <form [formGroup]="dynamicExclusionForm">
+
+    <mat-card *ngIf="countDirect > 0">
+      <mat-checkbox formControlName="deleteDirect" data-imx-identifier="remove-direct">
+        {{'#LDS#Delete {0} direct assignments' | translate | ldsReplace:countDirect }}
+      </mat-checkbox>
+    </mat-card>
+
+    <mat-card *ngIf="countRequested > 0">
+      <mat-checkbox formControlName="abortRequested" data-imx-identifier="remove-requested">
+        {{'#LDS#Unsubscribe {0} memberships' | translate | ldsReplace:countRequested}}
+      </mat-checkbox>
+
+      <div class="beneath-checkbox" *ngIf="formAbortRequested.value">
+        <mat-form-field appearance="outline">
+          <input matInput formControlName="descriptionRequests">
+          <mat-label translate>#LDS#Reason for unsubscribing the membership</mat-label>
+        </mat-form-field>
+      </div>
+
+    </mat-card>
+
+    <mat-card *ngIf="countDynamic > 0">
+
+      <mat-checkbox formControlName="excludeDynamic" data-imx-identifier="remove-dynamic">
+        {{'#LDS#Exclude {0} members assigned by a dynamic role' | translate | ldsReplace: countDynamic}}
+      </mat-checkbox>
+
+      <div class="beneath-checkbox" *ngIf="formExcludeDynamic.value">
+        <mat-form-field appearance="outline">
+          <input matInput formControlName="description">
+          <mat-label translate>#LDS#Reason for excluding members assigned by a dynamic role</mat-label>
+        </mat-form-field>
+      </div>
+    </mat-card>
+  </form>
+
+  <mat-card class="action-buttons">
+    <button mat-button (click)="cancel()" data-imx-identifier="remove-membership-dialog-cancel">
+      <span translate>#LDS#Cancel</span>
+    </button>
+    <button mat-button color="primary" [disabled]="noneSelected" (click)="save()"
+      data-imx-identifier="remove-membership-dialog-save">
+      <span translate>#LDS#Remove memberships</span>
+    </button>
+  </mat-card>
+</div>

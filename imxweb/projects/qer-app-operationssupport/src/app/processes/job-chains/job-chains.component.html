@@ -1,0 +1,29 @@
+<h1  class="mat-headline">
+  {{'#LDS#Process steps per queue' | translate}}
+</h1>
+<div class="imx-table-container">
+  <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings" [hiddenElements]="['search', 'settings', 'selectedViewGroup']">
+    <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
+  </imx-data-source-toolbar>
+  <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual">
+    <imx-data-table-column [entityColumn]="entitySchemaJobChains?.Columns.JobChainName"
+      [entitySchema]="entitySchemaJobChains">
+      <ng-template let-data>
+        {{ data.JobChainName.Column.GetDisplayValue() }}
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchemaJobChains?.Columns.Count"
+    [entitySchema]="entitySchemaJobChains">
+    <ng-template let-data>
+      {{ data.Count.Column.GetDisplayValue() }}
+    </ng-template>
+  </imx-data-table-column>
+  </imx-data-table>
+</div>
+
+<ng-template #customToolbarTemplate>
+  <button mat-stroked-button color="primary" class="imx-refresh-button" (click)="refresh()">
+    <eui-icon icon="sync"></eui-icon>
+    <span>{{ '#LDS#Refresh' | translate }}</span>
+  </button>
+</ng-template>

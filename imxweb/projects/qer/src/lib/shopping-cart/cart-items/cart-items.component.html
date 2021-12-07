@@ -1,0 +1,69 @@
+<imx-data-source-toolbar #dst
+  [hiddenElements]="['filter', 'search', 'groupBy', 'settings', 'selectedViewGroup']"
+  [settings]="dstSettings" [itemStatus]="itemStatus"
+  data-imx-identifier="cart-items-dst" hidden>
+</imx-data-source-toolbar>
+<div class="imx-table-container">
+    <imx-data-table [dst]="dst" [detailViewVisible]="false" [selectable]="true" mode="manual"
+        (selectionChanged)="onSelectionChanged($event)" data-imx-identifier="cart-items-data-table">
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
+            [entitySchema]="entitySchema" columnLabel="{{'#LDS#Product' | translate}}" data-imx-identifier="cart-items-data-table-column-default">
+            <ng-template let-cartItem>
+                <div class="imx-display-column">
+                    <div class="imx-placeholder" *ngIf="cartItem.UID_ShoppingCartItemParent.value"></div>
+                    <div>
+                        <imx-cart-item-display [cartItem]="cartItem"></imx-cart-item-display>
+
+                        <div class="imx-subtext" *ngIf="cartItem.RequestType.value === 'Prolongate'">
+                            {{'#LDS#Renewal' | translate}}
+                        </div>
+                        <div class="imx-subtext"
+                            *ngIf="['Unsubscribe', 'UnsubscribeWithDate'].includes(cartItem.RequestType.value)">
+                            {{'#LDS#Request cancelation' | translate}}
+                        </div>
+
+                        <div class="imx-subtext" *ngIf="cartItem.UID_ShoppingCartItemParent.value">
+                            {{ (cartItem.IsOptionalChild.value ?
+                                '#LDS#Optional product' :
+                                '#LDS#Mandatory product') | translate
+                            }}
+                        </div>
+                    </div>
+                </div>
+
+            </ng-template>
+        </imx-data-table-column>
+        <imx-data-table-column *ngIf="!forLater" [entityColumn]="entitySchema?.Columns.CheckResult" [entitySchema]="entitySchema" [align]="'center'" [width]="'150px'">
+          <ng-template let-cartItem>
+            <button mat-flat-button *ngIf="cartItem.CheckResult.value !== CartItemCheckStatus.notChecked"
+              class="imx-validation-button"
+              (click)="showValidationOverview(cartItem)"
+              [color]="setValidationOverviewButtonColor(cartItem)"
+              data-imx-identifier="cartitem-button-checkResult">
+              <div [attr.data-imx-identifier]="'cartitem-button-checkResult-' + CartItemCheckStatus[cartItem.CheckResult.value]">{{cartItem.CheckResult.Column.GetDisplayValue()}}</div>
+            </button>
+            <div *ngIf="cartItem.CheckResult.value === CartItemCheckStatus.notChecked"
+              [attr.data-imx-identifier]="'cartitem-button-checkResult-' + CartItemCheckStatus[cartItem.CheckResult.value]">{{cartItem.CheckResult.Column.GetDisplayValue()}}</div>
+          </ng-template>
+        </imx-data-table-column>
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_LONG_PROPERTYNAME]"
+            [entitySchema]="entitySchema" columnLabel="{{'#LDS#Actions' | translate}}" [align]="'center'">
+            <ng-template let-cartItem>
+                <button mat-flat-button
+                  [attr.data-imx-identifier]="'cartitem-button-edit-' + cartItem.UID_AccProduct.Column.GetDisplayValue()"
+                  (click)="editCartItem(cartItem)">
+                  {{'#LDS#Edit' | translate }}</button>
+            </ng-template>
+        </imx-data-table-column>
+        <imx-data-table-generic-column columnName="removeItemButton" [columnLabel]="''">
+          <ng-template let-cartItem>
+            <button mat-flat-button *ngIf="cartItem.UID_ShoppingCartItemParent.value == null || cartItem.UID_ShoppingCartItemParent.value === ''"
+              class="imx-remove-button"
+              [attr.data-imx-identifier]="'cartitem-button-remove-' + cartItem.UID_AccProduct.Column.GetDisplayValue()"
+              (click)="removeHighlightedItem(cartItem)">
+              {{ removeButtonLabel }}</button>
+          </ng-template>
+        </imx-data-table-generic-column>
+    </imx-data-table>
+</div>
+

@@ -1,0 +1,50 @@
+<mat-accordion>
+  <mat-expansion-panel *ngFor="let item of rules">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        {{ item?.rule?.GetEntity().GetDisplay() }}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <div class="imx-label">{{ schema.Columns['Description'].Display }}</div>
+    <p class="imx-description imx-value">
+      {{ item?.rule?.GetEntity().GetColumn('Description').GetDisplayValue() }}
+    </p>
+
+    <ng-container *ngIf="item?.violationDetail?.DisplayPerson">
+      <div class="imx-label">{{ '#LDS#Identity' | translate }}</div>
+      <p class="imx-value">
+        {{ item?.violationDetail?.DisplayPerson }}
+      </p>
+    </ng-container>
+
+    <div class="imx-horizontal-container">
+      <div>
+        <div class="imx-label">{{ schema.Columns['RuleNumber'].Display }}</div>
+        <p class="imx-value">
+          {{ item?.rule?.GetEntity().GetColumn('RuleNumber').GetDisplayValue() }}
+        </p>
+      </div>
+      <div>
+        <div class="imx-label">{{ schema.Columns['RiskIndex'].Display }}</div>
+        <p class="imx-value">
+          {{ item?.rule?.GetEntity().GetColumn('RiskIndex').GetDisplayValue() }}
+        </p>
+      </div>
+      <div *ngIf="item?.rule?.GetEntity().GetColumn('RiskIndex').GetValue() !== item?.rule?.GetEntity().GetColumn('RiskIndexReduced').GetValue()">
+        <div class="imx-label">{{ schema.Columns['RiskIndexReduced'].Display }}</div>
+        <p class="imx-value">
+          {{ item?.rule?.GetEntity().GetColumn('RiskIndexReduced').GetDisplayValue() }}
+        </p>
+      </div>
+    </div>
+
+    <ng-container *ngIf="item?.violationDetail?.ContributingEntitlements">
+      <mat-divider></mat-divider>
+      <div class="imx-label imx-first-section-item">{{ '#LDS#Contributing entitlements' | translate }}</div>
+      <div class="imx-list-container">
+        <div *ngFor="let ceItem of item.violationDetail.ContributingEntitlements" class="imx-list-value">{{ ceItem.Display }}</div>
+      </div>
+    </ng-container>
+  </mat-expansion-panel>
+</mat-accordion>

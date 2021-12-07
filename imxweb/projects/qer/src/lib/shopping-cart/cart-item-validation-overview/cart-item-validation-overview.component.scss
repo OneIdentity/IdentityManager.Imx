@@ -1,0 +1,14 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+.mat-list .mat-list-item .mat-line {
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.imx-validation-errors {
+  color: $phoenix-red;
+}
+
+.imx-validation-warnings {
+  color: $corbin-orange;
+}

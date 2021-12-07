@@ -1,0 +1,8 @@
+<form [formGroup]="formGroup">
+  <imx-subscription-properties [formGroup]="formGroup" [subscription]="subscription"></imx-subscription-properties>
+</form>
+
+<div class="button-row">
+  <button mat-raised-button color="primary" [disabled]="!formGroup.dirty || formGroup.invalid"
+    data-imx-identifier="subscription-details-button-save" (click)="submit()">{{'#LDS#Save' | translate}}</button>
+</div>

@@ -1,0 +1,64 @@
+<mat-form-field appearance="outline">
+  <mat-label>{{ label }}</mat-label>
+  <mat-icon matPrefix>search</mat-icon>
+  <input #inputCtrl matInput type="search"
+    #trigger="matAutocompleteTrigger"
+    [formControl]="autocompleteCtrl"
+    [matAutocomplete]="auto"
+    (keydown.esc)="onCancel()"
+    (focusout)="onFocusout($event)">
+  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectSingleItem($event)" (closed)="panelClosing()">
+    <ng-container *ngIf="!isLocalDatasource">
+        <mat-option *ngFor="let item of dataSource.rawData" class="imx-candidate-option" [value]="item">
+          <mat-checkbox *ngIf="multi" (change)="onChecked($event, item)" (click)="onCheckboxClicked($event)" [checked]="itemSelected(item)">
+            <div class="imx-candidate-item">
+              <div *ngIf="itemIcon" class="imx-candidate-icon">
+                <eui-icon size="14px" [icon]="itemIcon"></eui-icon>
+              </div>
+              <div class="imx-candidate-content">
+                <div class="imx-candidate-display">{{ contentProvider.display(item) }}</div>
+                <div *ngIf="contentProvider.displayLong" class="imx-candidate-longdisplay">{{ contentProvider.displayLong(item) }}</div>
+              </div>
+            </div>
+          </mat-checkbox>
+          <div *ngIf="!multi" class="imx-candidate-item">
+            <div *ngIf="itemIcon" class="imx-candidate-icon">
+              <eui-icon size="14px" [icon]="itemIcon"></eui-icon>
+            </div>
+            <div class="imx-candidate-content">
+              <div class="imx-candidate-display">{{ contentProvider.display(item) }}</div>
+              <div *ngIf="contentProvider.displayLong" class="imx-candidate-longdisplay">{{ contentProvider.displayLong(item) }}</div>
+            </div>
+          </div>
+        </mat-option>
+      </ng-container>
+      <ng-container *ngIf="isLocalDatasource">
+        <mat-option *ngFor="let item of filteredDatasource | async" class="imx-candidate-option" [value]="item">
+          <mat-checkbox *ngIf="multi" (change)="onChecked($event, item)" (click)="onCheckboxClicked($event)" [checked]="itemSelected(item)">
+            <div class="imx-candidate-item">
+              <div *ngIf="itemIcon" class="imx-candidate-icon">
+                <eui-icon size="14px" [icon]="itemIcon"></eui-icon>
+              </div>
+              <div class="imx-candidate-content">
+                <div class="imx-candidate-display">{{ contentProvider.display(item) }}</div>
+                <div *ngIf="contentProvider.displayLong" class="imx-candidate-longdisplay">{{ contentProvider.displayLong(item) }}</div>
+              </div>
+            </div>
+          </mat-checkbox>
+          <div *ngIf="!multi" class="imx-candidate-item">
+            <div *ngIf="itemIcon" class="imx-candidate-icon">
+              <eui-icon size="14px" [icon]="itemIcon"></eui-icon>
+            </div>
+            <div class="imx-candidate-content">
+              <div class="imx-candidate-display">{{ contentProvider.display(item) }}</div>
+              <div *ngIf="contentProvider.displayLong" class="imx-candidate-longdisplay">{{ contentProvider.displayLong(item) }}</div>
+            </div>
+          </div>
+        </mat-option>
+    </ng-container>
+    <mat-paginator *ngIf="!isLocalDatasource" [pageSize]="pageSize" [length]="totalCount" (page)="onPage($event)"></mat-paginator>
+  </mat-autocomplete>
+  <mat-error *ngIf="errorMessage && autocompleteCtrl.errors?.checkAutocomplete">
+    {{ errorMessage }}
+  </mat-error>
+</mat-form-field>

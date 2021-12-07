@@ -1,0 +1,32 @@
+<ng-container *ngIf="types">
+  <h1 mat-dialog-title>{{ '#LDS#Heading Add Products' | translate }}</h1>
+  <div mat-dialog-content>
+
+    <mat-form-field class="request-entitlement-type-selector">
+      <mat-label>{{'#LDS#Select the type of product to add' | translate}}</mat-label>
+      <mat-select (selectionChange)="optionSelected($event.value)"
+        [(ngModel)]="requestsService.selectedEntitlementType">
+        <mat-option *ngFor="let pr of types" [value]="pr">
+          {{getDisplay(pr.getTableName())}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <imx-fk-candidates #fkSelector [data]="data" (itemPicked)="applySelection($event)"
+      (selectionChanged)="selectionChanged($event)"></imx-fk-candidates>
+  </div>
+
+  <div mat-dialog-actions>
+    <button *ngIf="selectedItems?.length > 0" mat-stroked-button type="button" (click)="fkSelector.clearSelection()"
+      data-imx-identifier="requests-selector-clear-selection">
+      <span translate>#LDS#Clear selection</span>
+    </button>
+    <button mat-stroked-button mat-dialog-close data-imx-identifier="requests-selector-cancel-action">
+      <span translate>#LDS#Cancel</span>
+    </button>
+    <button *ngIf="data?.isMultiValue" mat-raised-button color="primary" [disabled]="selectedItems?.length === 0"
+      (click)="applySelection()" data-imx-identifier="requests-selector-apply-selection">
+      <span translate>#LDS#Apply</span>
+    </button>
+  </div>
+</ng-container>

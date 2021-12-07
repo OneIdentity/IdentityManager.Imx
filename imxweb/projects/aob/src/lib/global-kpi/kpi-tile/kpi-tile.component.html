@@ -1,0 +1,12 @@
+<imx-icon-tile data-imx-identifier="kpi-tile"
+[caption]="'#LDS#Heading Application KPI Overview' | translate" 
+[subtitle]="'#LDS#Get an overview of the KPIs for your applications.' |translate"
+[identifier]="'global-kpi'">
+<ng-template #ActionTemplate>
+  <button mat-button color="primary" [attr.data-imx-identifier]="'kpi-tile-button-view'"
+    (click)="goToGlobalKpi()">
+    <span>{{'#LDS#View KPI overview'| translate}}</span>
+    <eui-icon size="m" icon="forward"></eui-icon>
+  </button>
+</ng-template>
+</imx-icon-tile>

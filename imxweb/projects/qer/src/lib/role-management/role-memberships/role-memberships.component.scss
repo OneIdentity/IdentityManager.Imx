@@ -1,0 +1,14 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+:host {
+  margin: 32px;
+}
+
+.mat-button-toggle-group {
+  margin-bottom: 10px;
+  font-size: small;
+
+  .mat-button-toggle-checked {
+    background-color: $iris-pastel;
+  }
+}

@@ -1,0 +1,163 @@
+<div class="governance-sidesheet">
+  <mat-tab-group>
+    <mat-tab [label]="'#LDS#Details' | translate">
+      <div class="governance-sidesheet__tab-content">
+        <div class="governance-sidesheet__tab-content-body">
+          <ng-container *ngIf="data.isAdmin; else managerProperties">
+            <mat-card>
+              <eui-badge color="red" class="imx-security-badge" *ngIf="data.selectedIdentity.IsSecurityIncident.value === true">
+                {{ '#LDS#Security risk' | translate }}
+              </eui-badge>
+              <form [formGroup]="detailsFormGroup" *ngIf="detailsFormGroup">
+                <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="formArray.push($event)"> </imx-cdr-editor>
+                <mat-slide-toggle
+                  class="custom-toggle"
+                  #toggle
+                  [formControl]="isActiveFormControl"
+                  (change)="onIsActiveToggleChanged($event)"
+                  [attr.data-imx-identifier]="'custom-toggle-for-column-' + data.selectedIdentity.IsInActive.Column.ColumnName"
+                >
+                  <span [translate]="toggle.checked ? '#LDS#Activated' : '#LDS#Deactivated'"></span>
+                </mat-slide-toggle>
+
+                <mat-slide-toggle
+                  class="custom-toggle"
+                  #incidentToggle
+                  [formControl]="isSecurityIncidentFormControl"
+                  *ngIf="canMarkedAsIncident"
+                  (change)="onIsSecurityIncidentToggleChanged($event)"
+                  [attr.data-imx-identifier]="'custom-toggle-for-column-' + data.selectedIdentity.IsSecurityIncident.Column.ColumnName"
+                >
+                  <span [translate]="incidentToggle.checked ? '#LDS#Identity poses a security risk' : '#LDS#Identity does not pose a security risk'"></span>
+                </mat-slide-toggle>
+              </form>
+            </mat-card>
+          </ng-container>
+        </div>
+        <mat-card class="governance-sidesheet-action-buttons-container">
+          <div class="governance-sidesheet-action-buttons">
+            <span class="justify-start">
+              <button mat-stroked-button color="primary" [euiDownload]="reportDownload" data-imx-identifier="identity-sidesheet-Load-report">
+                <span translate>#LDS#Download report</span>
+              </button>
+              <button mat-stroked-button *ngIf="canGeneratePasscode" (click)="generatePasscode()" data-imx-identifier="identity-sidesheet-create-passcode">
+                <span translate>#LDS#Create passcode</span>
+              </button>
+              <button mat-stroked-button data-imx-identifier="identity-sidesheet-assign-manager">
+                <span translate (click)="onAssignManager()">#LDS#Assign to new manager</span>
+              </button>
+              <button mat-button color="warn" *ngIf="!isIdentityMarkedForDelete && data.isAdmin" (click)="initiateDelete()" data-imx-identifier="identity-sidesheet-delete">
+                <span translate>#LDS#Delete</span>
+              </button>
+
+              <span *ngIf="isIdentityMarkedForDelete" class="marked-for-delete">
+                {{ data.selectedIdentity.XMarkedForDeletion.Column.GetDisplayValue() }}
+              </span>
+            </span>
+            <button mat-button (click)="cancel()" data-imx-identifier="identity-sidesheet-cancel">
+              <span translate>#LDS#Cancel</span>
+            </button>
+            <button
+              mat-flat-button
+              color="primary"
+              (click)="save()"
+              data-imx-identifier="identity-sidesheet-save"
+              [disabled]="detailsFormGroup?.pristine || detailsFormGroup?.invalid"
+            >
+              <span translate>#LDS#Save</span>
+            </button>
+          </div>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <span translate>#LDS#Heading Application Roles</span>
+      </ng-template>
+      <ng-template matTabContent>
+        <div class="governance-sidesheet__tab-content">
+          <imx-identity-memberships [membershipParameters]="roleParameter" class="imx-membership-tab"></imx-identity-memberships>
+        </div>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab *ngIf="!hideGroupsTab">
+      <ng-template mat-tab-label>
+        <span translate>#LDS#Heading System Entitlements</span>
+      </ng-template>
+      <ng-template matTabContent>
+        <div class="governance-sidesheet__tab-content">
+          <imx-identity-memberships [membershipParameters]="groupParameter" class="imx-membership-tab"></imx-identity-memberships>
+        </div>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab *ngIf="!hideAccountsTab">
+      <ng-template mat-tab-label>
+        <span translate>#LDS#Heading User Accounts</span>
+      </ng-template>
+      <ng-template matTabContent>
+        <div class="governance-sidesheet__tab-content imx-account-ext">
+          <imx-ext id="AccountsExtComponent" [referrer]="this" class="imx-accounts-tab"></imx-ext>
+        </div>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab *ngIf="parameters && !hideAttestationTab">
+      <ng-template mat-tab-label>
+        <span translate>#LDS#Attestation</span>
+      </ng-template>
+      <ng-template matTabContent>
+        <div class="governance-sidesheet__tab-content">
+          <imx-object-attestation class="imx-object-attestation" [parameters]="parameters" (created)="attestationControlCreated($event)" (closed)="cancel()">
+          </imx-object-attestation>
+        </div>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+<ng-template #managerProperties>
+  <eui-badge color="red" class="imx-security-badge" *ngIf="data.selectedIdentity.IsSecurityIncident.value === true">
+    {{ '#LDS#Security risk' | translate }}
+  </eui-badge>
+  <form [formGroup]="detailsFormGroup">
+    <mat-accordion>
+      <mat-expansion-panel [expanded]="true" *ngIf="cdrListPersonal.length > 0">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{ '#LDS#Personal data' | translate }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <imx-cdr-editor *ngFor="let cdr of cdrListPersonal" [cdr]="cdr" (controlCreated)="formArray.push($event)"> </imx-cdr-editor>
+        <mat-slide-toggle
+          class="custom-toggle"
+          #incidentToggle
+          [formControl]="isSecurityIncidentFormControl"
+          *ngIf="canMarkedAsIncident"
+          (change)="onIsSecurityIncidentToggleChanged($event)"
+          [attr.data-imx-identifier]="'custom-toggle-for-column-' + data.selectedIdentity.IsSecurityIncident.Column.ColumnName"
+        >
+          <span [translate]="incidentToggle.checked ? '#LDS#Identity poses a security risk' : '#LDS#Identity does not pose a security risk'"></span>
+        </mat-slide-toggle>
+      </mat-expansion-panel>
+      <mat-expansion-panel *ngIf="cdrListOrganizational.length > 0">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{ '#LDS#Organizational information' | translate }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <imx-cdr-editor *ngFor="let cdr of cdrListOrganizational" [cdr]="cdr" (controlCreated)="formArray.push($event)"> </imx-cdr-editor>
+      </mat-expansion-panel>
+      <mat-expansion-panel *ngIf="cdrListLocality.length > 0">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{ '#LDS#Location information' | translate }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <imx-cdr-editor *ngFor="let cdr of cdrListLocality" [cdr]="cdr" (controlCreated)="formArray.push($event)"> </imx-cdr-editor>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </form>
+</ng-template>

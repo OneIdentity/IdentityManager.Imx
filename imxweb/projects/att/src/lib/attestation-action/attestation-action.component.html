@@ -1,0 +1,25 @@
+<p *ngIf="data.description">{{ data.description | translate }}</p>
+<form [formGroup]="formGroup" class="imx-attestation-case-form">
+  <imx-bulk-editor data-imx-identifier="attestation-param-editor" class="imx-bulk-editor"
+    [entities]="attestationCases"
+    [hideButtons]="true"
+    (validationStateChanged)="validateItem($event)"
+    (controlCreated)="formGroup.addControl('attestation-parameters', $event)">
+  </imx-bulk-editor>
+  <imx-cdr-editor *ngIf="data.actionParameters.person" [cdr]="data.actionParameters.person"
+    (controlCreated)="formGroup.addControl('person', $event)"
+    data-imx-identifier="attestation-action-parameter-person">
+  </imx-cdr-editor>
+  <imx-decision-reason class="imx-decision-reason"
+    [reasonStandard]="data.actionParameters.justification"
+    [reasonFreetext]="data.actionParameters.reason"
+    (controlCreated)="formGroup.addControl('reason', $event)"
+    data-imx-identifier="attestation-action-parameter-reason">
+  </imx-decision-reason>
+</form>
+<div class="imx-button-bar">
+  <button data-imx-identifier="attestation-action-button-save" mat-raised-button color="primary"
+    (click)="sideSheetRef.close(true)" *ngIf="formGroup" [disabled]="formGroup.invalid">
+    {{ '#LDS#Save' | translate }}
+  </button>
+</div>

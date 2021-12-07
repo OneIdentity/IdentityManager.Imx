@@ -1,0 +1,22 @@
+<mat-form-field appearance="outline">
+  <mat-label>{{ columnContainer?.display | translate }}</mat-label>
+  <input matInput hidden value=" ">
+  <div>
+    <imx-date
+      display="#LDS#Date from"
+      [isReadonly]="!columnContainer?.canEdit"
+      [max]="dateUntil.value"
+      [control]="dateFrom"
+      [isLoading]="isLoading"
+      [imxIdentifierSuffix]="'-from-' + columnContainer?.name">
+    </imx-date>
+    <imx-date
+      display="#LDS#Date until"
+      [isReadonly]="!columnContainer?.canEdit"
+      [min]="dateFrom.value"
+      [control]="dateUntil"
+      [isLoading]="isLoading"
+      [imxIdentifierSuffix]="'-until-' + columnContainer?.name">
+    </imx-date>
+  </div>
+</mat-form-field>

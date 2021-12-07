@@ -1,0 +1,36 @@
+<div class="data-explorer data-explorer--accounts">
+  <imx-data-source-toolbar #dst [settings]="dstSettings"
+    [hiddenElements]="['filter','groupBy', 'settings', 'selectedViewGroup']"
+    (navigationStateChanged)="onNavigationStateChanged($event)" (search)="onSearch($event)">
+  </imx-data-source-toolbar>
+
+  <div class="imx-table-margin">
+    <div class="data-explorer-card-header">
+      <div class="data-explorer-card-header-bg">
+        <eui-icon icon="contactinfo" size="28px"></eui-icon>
+        <span translate>#LDS#Heading User Accounts</span>
+      </div>
+    </div>
+    <div class="data-explorer-table">
+      <imx-data-table [dst]="dst" detailViewVisible="false" data-imx-identifier="identity-memberships-table"
+        mode="manual">
+        <imx-data-table-column [entityColumn]="this.entitySchemaAccount.Columns.AccountName"
+          [entitySchema]="entitySchemaAccount">
+          <ng-template let-item>
+            <div data-imx-identifier="account-ext-tabledata-display">
+              {{ item.AccountName.Column.GetDisplayValue() }}
+            </div>
+            <div subtitle data-imx-identifier="groups-tabledata-description">
+              {{ item.CanonicalName.Column.GetDisplayValue() }}</div>
+          </ng-template>
+        </imx-data-table-column>
+        <imx-data-table-column [entityColumn]="this.entitySchemaAccount.Columns.UID_DPRNameSpace"
+          [entitySchema]="entitySchemaAccount"></imx-data-table-column>
+        <imx-data-table-column [entityColumn]="this.entitySchemaAccount.Columns.UID_UNSRoot"
+          [entitySchema]="entitySchemaAccount"></imx-data-table-column>
+      </imx-data-table>
+      <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+    </div>
+  </div>
+
+</div>

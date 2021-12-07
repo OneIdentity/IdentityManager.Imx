@@ -1,0 +1,29 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+mat-chip {
+  font-size: smaller;
+}
+
+.imx-main-container {
+  display: flex;
+  align-items: center;
+}
+
+.imx-product {
+  margin-right: 5px;
+}
+
+.imx-product-priority {
+  font-size: smaller;
+  font-weight: bold;
+  font-style: italic;
+}
+
+.imx-product-detail {
+  font-size: smaller;
+  color: $black-9;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 450px;
+}

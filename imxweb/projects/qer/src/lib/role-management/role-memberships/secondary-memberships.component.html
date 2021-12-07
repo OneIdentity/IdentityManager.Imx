@@ -1,0 +1,62 @@
+<imx-data-source-toolbar #dst
+  data-imx-identifier="roles-secondary-memberships-dst"
+  [settings]="dstSettings"
+  [searchBoxText]="'#LDS#Search' | translate"
+  (navigationStateChanged)="onNavigationStateChanged($event)"
+  (search)="onSearch($event)"
+  [itemStatus]="selectableStatus"
+  [hiddenElements]="['settings', 'selectedViewGroup']">
+</imx-data-source-toolbar>
+<imx-data-table #dataTable
+  data-imx-identifier="roles-secondary-memberships-table"
+  [dst]="dst"
+  detailViewVisible="false"
+  mode="manual"
+  [selectable]="true"
+  [showSelectionInfo]="false"
+  (selectionChanged)="onSelectionChanged($event)">
+  <imx-data-table-column
+    [entityColumn]="entitySchema?.Columns.UID_Person"
+    [entitySchema]="entitySchema">
+  </imx-data-table-column>
+  <imx-data-table-column
+    [entityColumn]="entitySchema?.Columns.XDateInserted"
+    [entitySchema]="entitySchema">
+  </imx-data-table-column>
+  <imx-data-table-column
+    [entityColumn]="entitySchema?.Columns.OrderState"
+    [entitySchema]="entitySchema">
+  </imx-data-table-column>
+  <imx-data-table-column width="200px" [entityColumn]="entitySchema?.Columns.XOrigin" [entitySchema]="entitySchema">
+    <ng-template let-item>
+      <div>{{ item.GetEntity().GetColumn('XOrigin').GetDisplayValue() }}</div>
+      <eui-badge *ngIf="item.GetEntity().GetColumn('XMarkedForDeletion').GetValue() > 0" class="spaced-badge">
+        {{item.GetEntity().GetColumn('XMarkedForDeletion').GetDisplayValue()}}
+      </eui-badge>
+      <eui-badge color="gray" *ngIf="isNotEffective(item)">{{'#LDS#Not effective' | translate}}
+      </eui-badge>
+    </ng-template>
+  </imx-data-table-column>
+  <imx-data-table-column [entityColumn]="entitySchema?.Columns.ValidUntil" [entitySchema]="entitySchema">
+    <ng-template let-item>
+      <eui-badge *ngIf="item.GetEntity().GetColumn('ValidUntil').GetValue()" color="blue" textColor="white">{{
+        getValidUntil(item) }}</eui-badge>
+    </ng-template>
+  </imx-data-table-column>
+</imx-data-table>
+<imx-data-source-paginator data-imx-identifier="roles-secondary-memberships-paginator" [dst]="dst"></imx-data-source-paginator>
+
+<div class="imx-button-bar">
+  <p class="imx-selected-items">
+    <span>
+      {{'#LDS#Selected memberships' | translate}}
+    </span>
+    <eui-badge data-imx-identifier="roles-secondary-memberships-selection-badge" class="imx-badge" color="orange">{{dataTable.numOfSelectedItems}}</eui-badge>
+  </p>
+  <div class="imx-menu-spacer"></div>
+  <button data-imx-identifier="roles-secondary-memberships-details-button" mat-raised-button
+    [disabled]="dataTable.numOfSelectedItems !== 1" matTooltip="{{'#LDS#Opens the assignment analysis for the selected membership' | translate }}"
+    (click)="onShowDetails()">{{'#LDS#View assignment analysis' | translate }}</button>
+  <button data-imx-identifier="roles-secondary-memberships-request-button" mat-stroked-button (click)="onSelectIdentities()">{{"#LDS#Request memberships" | translate }}</button>
+  <button data-imx-identifier="roles-secondary-memberships-remove-button" mat-raised-button color="primary" [disabled]="!canDeleteAllSelected()" (click)="onDeleteMemberships()">{{"#LDS#Remove" | translate }}</button>
+</div>

@@ -1,0 +1,95 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+.startSubTitle {
+  font-size: larger;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.imx-ops-icon {
+  display: flex;
+  flex-direction: column;
+  > :first-child {
+    flex: 1 1 auto;
+  }
+
+  ::ng-deep .imx-iconStack-text {
+    flex: 0 0;
+    text-align: center;
+    margin-top: -25px;
+    margin-bottom: -25px;
+  }
+}
+
+.imx-iconStack-1x .icon-setdefault {
+  color: $black-c;
+  font-size: 30px;
+}
+
+.no-issue-detected {
+  max-width: 350px;
+}
+
+.imx-iconStack,
+imx-iconstack {
+  margin-top: 10px;
+}
+
+.imx-iconStack-0x {
+  line-height: 3em;
+}
+
+.mat-button {
+  height: 100%;
+  color: $iris-blue;
+  font-weight: 600;
+}
+
+
+
+.notificationContentPane {
+  width: 726px;
+  height: 50px;
+  display: flex;
+
+  eui-icon {
+    margin: 12px 15px;
+    color: $corbin-orange;
+  }
+
+  > * {
+    margin: 15px 0;
+    text-align: left;
+  }
+
+  .notificationTitle {
+    width: 96px;
+    height: 21px;
+    font-size: 16px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: $black-3;
+    flex: 0 0 184px;
+  }
+
+  .notificationContent {
+    width: 198px;
+    height: 21px;
+    font-size: 16px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: $black-3;
+    flex: 1 1 auto;
+  }
+
+  .issueAction {
+    flex: 0 0 100px;
+    align-self: center;
+  }
+}

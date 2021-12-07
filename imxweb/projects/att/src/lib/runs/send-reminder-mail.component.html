@@ -1,0 +1,17 @@
+<div class="imx-sendremindermail-content">
+  <eui-alert *ngIf="showHelper" class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true"
+    (dismissed)="onHelperDismissed()">
+    <span translate>#LDS#Here you can optionally add a custom message to the reminder.</span>
+    <span translate>#LDS#Each attestor will receive a reminder.</span>
+  </eui-alert>
+  <mat-form-field appearance="outline">
+    <mat-label>{{ '#LDS#Message' | translate }}</mat-label>
+    <textarea matInput cdkTextareaAutosize cdkAutosizeMaxRows="5" [formControl]="message"
+      data-imx-identifier="reminder-edit-message"></textarea>
+  </mat-form-field>
+</div>
+<div class="imx-button-bar">
+  <button data-imx-identifier="reminder-button-ok" mat-raised-button color="primary" (click)="sideSheetRef.close(true)">
+    {{'#LDS#Send reminder' | translate}}
+  </button>
+</div>

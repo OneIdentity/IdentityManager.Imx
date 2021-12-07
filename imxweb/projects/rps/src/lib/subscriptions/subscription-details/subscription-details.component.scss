@@ -1,0 +1,18 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+}
+
+
+.button-row {
+  border-top-style: solid;
+  border-top-width: 0px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding: 16px 8px 16px 24px;  
+}
+.button-row > * {
+  margin-left: 10px;
+}

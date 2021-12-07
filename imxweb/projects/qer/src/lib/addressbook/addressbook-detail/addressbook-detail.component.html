@@ -1,0 +1,19 @@
+<div eui-sidesheet-content>
+  <mat-card *ngIf="isShowOrgChart">
+    <div mat-card-title>{{'#LDS#Heading Organizational Overview' | translate}}</div>
+    <imx-orgchart [uidPerson]="data.personUid"></imx-orgchart>
+  </mat-card>
+  <mat-card class="imx-content-card">
+    <imx-property-viewer [properties]="data.columns"></imx-property-viewer>
+  </mat-card>
+</div>
+  <!--<div eui-sidesheet-actions color="white">
+
+    TODO Later (293639): Button wieder einbauen, wenn FD genauer definiert
+         <button mat-raised-button color="primary"
+    (click)="sidesheetRef.close(); router.navigate(['objectsheet', 'Person', data.personUid])"
+    data-imx-identifier="addressbook-detail-button-overview">
+    {{ '#LDS#View overview' | translate }}
+  </button> 
+</div>
+-->

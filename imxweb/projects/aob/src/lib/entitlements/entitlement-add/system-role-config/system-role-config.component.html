@@ -1,0 +1,55 @@
+<div eui-sidesheet-content>
+  <eui-alert *ngIf="showHelperAlert" class="imx-helper-alert" type="info" [condensed]="true" [colored]="true"
+    [dismissable]="true" (dismissed)="onHelperDismissed()">
+    {{
+    '#LDS#Here you can merge the application entitlements into a new system role or add the application entitlements to an existing system role. The system role will then be assigned to the application as an application entitlement.' | translate
+    }}
+  </eui-alert>
+  <mat-card class="imx-content-card">
+
+    <mat-radio-group [(ngModel)]="type" (change)="typeChanged($event)">
+      <mat-radio-button [value]="'new'" data-imx-identifier="add-to-role-new">
+        {{'#LDS#Create new system role' | translate}}
+      </mat-radio-button>
+      <mat-radio-button [value]="'existing'" data-imx-identifier="add-to-role-existing">
+        {{'#LDS#Add to existing system role' | translate}}
+      </mat-radio-button>
+    </mat-radio-group>
+    <form [formGroup]="form" *ngIf="type === 'new'">
+      <mat-form-field appearance="outline">
+        <mat-label translate>#LDS#Name</mat-label>
+        <input matInput formControlName="name" data-imx-identifier="system-role-config-new-system-role-input">
+      </mat-form-field>
+    </form>
+    <ng-container *ngIf="type === 'existing' ">
+      <cdk-virtual-scroll-viewport *ngIf="candidates?.length > 0" #viewport [itemSize]="50" minBufferPx="300"
+        maxBufferPx="800" class="imx-viewport">
+        <mat-selection-list [multiple]="false" (selectionChange)="updateSelected($event)">
+          <mat-list-option *cdkVirtualFor="let candidate of candidates; index as i" [value]="candidate"
+            class="imx-candidate-option"
+            [attr.data-imx-identifier]="'multi-select-formcontrol-list' + candidate.GetEntity().GetKeys()[0]">
+            <div class="imx-candidate-content">
+              <div class="imx-candidate-display">{{ candidate.GetEntity().GetDisplay() }}</div>
+            </div>
+          </mat-list-option>
+        </mat-selection-list>
+      </cdk-virtual-scroll-viewport>
+      <div class="imx-no-results" *ngIf="candidates == null || candidates.length === 0">
+        <eui-icon [icon]="'table'"></eui-icon>
+        <p translate>#LDS#There are currently no system roles.</p>
+      </div>
+    </ng-container>
+
+  </mat-card>
+</div>
+
+<div eui-sidesheet-actions color="white">
+  <button *ngIf="type === 'new'" mat-raised-button color="primary" [disabled]="form.invalid || !form.dirty"
+    (click)="close(true)" data-imx-identifier="system-role-config-create-new-system-role-button">
+    {{'#LDS#Create new system role' | translate}}
+  </button>
+  <button [disabled]="selectedRole == null" *ngIf="type !== 'new'" mat-raised-button color="primary"
+    (click)="close(false)" data-imx-identifier="system-role-config-add-to-existing-system-role-button">
+    {{'#LDS#Add to system role' | translate}}
+  </button>
+</div>

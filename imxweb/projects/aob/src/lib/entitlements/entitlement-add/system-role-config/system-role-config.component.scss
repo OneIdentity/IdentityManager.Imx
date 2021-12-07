@@ -1,0 +1,49 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+.imx-viewport {
+  height: 300px;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.imx-helper-alert {
+  margin: 10px 0 20px auto;
+  width: 100%;
+}
+
+.mat-radio-button {
+  margin-right: 20px;
+}
+
+.mat-radio-group {
+  padding: 10px 10px 30px 10px;
+  display: flex;
+  flex-direction: row;
+}
+
+.eui-sidesheet-content {
+  height: inherit;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+
+  .imx-content-card {
+    flex: 1 1 auto;
+  }
+}
+
+.imx-no-results {
+  text-align: center;
+  margin: 20px 0;
+
+  .eui-icon {
+    font-size: 100px;
+    color: rgba($black-c, 0.55);
+  }
+
+  p {
+    margin: 0;
+    font-size: 18px;
+    color: $black-9;
+  }
+}

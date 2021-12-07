@@ -1,0 +1,14 @@
+{
+  "Name": "qer-app-operationssupport",
+  "Path": "imxweb\\projects\\qer-app-operationssupport",
+  "ProjectType": "ng-app",
+  "ProjectDependcies": [
+    "qbm",
+    "dpr",
+    "qer"
+  ],
+  "ChangePatterns": [
+    "imxweb\\projects\\qer-app-operationssupport",
+    "imxweb\\shared\\assets"
+  ]
+}

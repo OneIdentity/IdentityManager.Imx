@@ -1,0 +1,134 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+:host {
+  margin: 10px;
+  display: flex;
+}
+
+li {
+  list-style-type: none;
+  margin: 0 15px 0 32px;
+  display: table-row;
+  align-items: center;
+
+  > .imx-kpi-display {
+    display: table-cell;
+    width: 100%
+  }
+
+  :nth-child(3n) {
+    display: table-cell;
+  }
+
+  > .imx-kpi-number {
+    display: table-cell;
+    color: $black-9;
+    text-align: right;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 0 16px 0 0px;
+  }
+}
+
+.mat-card {
+  width: 771px;
+  height: auto;
+  margin: 40px 10px 0px;
+  display: flex;
+  flex-direction: column;
+}
+
+.mat-card-content {
+  padding: 0 10px 0 35px;
+  overflow: auto;
+
+  > :last-child {
+    margin-bottom: 10px;
+  }
+}
+
+.mat-card-title {
+  padding: 20px 33px 0px;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+.mat-card-subtitle {
+  font-size: 16px;
+  color: $black-3;
+  font-weight: 400;
+  padding: 5px 33px 20px;
+  margin-bottom: 0;
+  flex-grow: 1;
+}
+
+p {
+  font-size: 14px;
+  color: $black-9;
+  margin-top: 0;
+}
+
+h1 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 30px 0 15px 0;
+  text-align: center;
+}
+
+.imx-kpi-list {
+  overflow: auto;
+  margin-bottom: 5px;
+  display: table;
+}
+
+.imx-chart {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+}
+
+.mat-dialog-title {
+  display: flex;
+  margin: 0;
+}
+
+.mat-dialog-content {
+  max-height: 100%;
+}
+
+.imx-title-text {
+  text-align: center;
+  margin: 0 0 0 45px;
+  flex: 1;
+}
+
+.imx-subtitle-text {
+  text-align: center;
+  margin: 0;
+}
+
+.imx-close-dialog-button {
+  right: -15px;
+  top: -15px;
+}
+
+.imx-aob-kpi-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+  margin-top: 10px;
+
+  span {
+    margin-left: 24px;
+  }
+
+  > .eui-icon {
+    color: $black-b;
+  }
+}
+
+::ng-deep .bb-chart-arc text {
+  fill: $black-3;
+}

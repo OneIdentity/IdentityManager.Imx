@@ -1,0 +1,41 @@
+<ng-container *ngIf="dataReady">
+    <eui-alert class="helper-alert" type="info" condensed="true" [colored]="true">
+        <span *ngIf="dataSource.data.length > 1">
+            {{ (Type == SourceDetectiveType.MembershipOfRole
+            ? '#LDS#There are {0} origins for the role membership.'
+            : '#LDS#There are {0} origins for the assignment.') | translate |
+            ldsReplace:dataSource.data.length}}
+        </span>
+        <span translate *ngIf="dataSource.data.length == 1">#LDS#Here you can see how the assignment originated.</span>
+        <span translate *ngIf="dataSource.data.length === 0">#LDS#There is no information available for this assignment.</span>
+    </eui-alert>
+
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+        <mat-tree-node class="imx-source-treenode" *matTreeNodeDef="let node" matTreeNodePadding>
+            <button *ngIf="!hasChild(node)" mat-icon-button disabled></button>
+            <button *ngIf="hasChild(node)" mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
+                <mat-icon class="mat-icon-rtl-mirror">
+                    {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                </mat-icon>
+            </button>
+
+            <imx-parameterized-text [parameterizedText]="node.Description"></imx-parameterized-text>
+
+            <ng-container *ngIf="node.IsPrimaryAssignment && node.LastPrimaryAssignmentChange">,
+                {{ '#LDS#Last modified by {0} on {1}'
+                | translate | ldsReplace:
+                node.LastPrimaryAssignmentChange.UserUpdated:node.LastPrimaryAssignmentChange.DateUpdated }}
+            </ng-container>
+
+            <div *ngIf="node.ObjectType == 'PersonWantsOrg'">
+                <button mat-stroked-button color="primary" (click)="openRequestDetail(node)" class="showmessage"
+                    data-imx-identifier="imx-source-detective-request"
+                    [matTooltip]="'#LDS#View request information' | translate">
+                    <eui-icon icon="info"></eui-icon>
+                </button>
+
+            </div>
+
+        </mat-tree-node>
+    </mat-tree>
+</ng-container>

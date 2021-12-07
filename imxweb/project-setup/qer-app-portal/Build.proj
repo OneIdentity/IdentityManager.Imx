@@ -1,0 +1,22 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
+
+	<PropertyGroup>
+		<ComponentDir>imxweb\project-setup\qer-app-portal</ComponentDir>
+		<PathPrefix>projects\qer-app-portal\</PathPrefix>
+		<SyncFilesInModuleInfo>true</SyncFilesInModuleInfo>
+		<ModuleDir>$(VI_PROJECTDIR)\AE</ModuleDir>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<SetupFiles Include="..\..\projects\qer-app-portal\.browserslistrc"/>
+		<SetupFiles Include="..\..\projects\qer-app-portal\karma.conf.js"/>
+		<SetupFiles Include="..\..\projects\qer-app-portal\package.json"/>
+		<SetupFiles Include="..\..\projects\qer-app-portal\tsconfig.app.json"/>
+		<SetupFiles Include="..\..\projects\qer-app-portal\tsconfig.spec.json"/>
+		<SetupFiles Include="..\..\projects\qer-app-portal\src\**\*.*"/>
+	</ItemGroup>
+
+	<!-- getting default part of build file -->
+	<Import Project="$(VI_PROJECTDIR)\Build\Includes\Build_Folder.targets"/>
+
+</Project>

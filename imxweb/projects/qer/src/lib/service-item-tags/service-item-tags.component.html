@@ -1,0 +1,16 @@
+<mat-form-field appearance="outline">
+  <mat-label>{{ label | translate }}</mat-label>
+  <mat-chip-list #chipList>
+    <mat-chip *ngFor="let tag of selection" [selectable]="false"
+      [removable]="true" (removed)="removeTag(tag)">
+      <span class="imx-chip-value">{{ tag }}</span>
+      <mat-icon class="imx-chip-icon" matChipRemove>cancel</mat-icon>
+    </mat-chip>
+    <input [placeholder]="(loading ? label : '#LDS#Add tag') | translate" [disabled]="loading"
+      [matChipInputFor]="chipList"
+      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+      [matChipInputAddOnBlur]="true"
+      (matChipInputTokenEnd)="addTag($event)">
+  </mat-chip-list>
+  <mat-spinner matSuffix diameter="30" *ngIf="loading"></mat-spinner>
+</mat-form-field>

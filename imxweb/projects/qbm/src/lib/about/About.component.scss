@@ -1,0 +1,89 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+@import '../../../../../shared/assets/variables.scss';
+
+.imx-productLink {
+  outline: none !important;
+  text-decoration: none !important;
+  font-size: 6em;
+  text-align: center;
+  display: block;
+}
+@media #{$IMX_Mediaquery_Smartphone} {
+  .imx-productLink {
+    font-size: 9vw;
+  }
+}
+
+.imx-productNameVersion {
+  padding: 15px 0;
+  margin: 30px 20px;
+  border: solid $VI_Common_Color_Gray;
+  border-width: 1px 0;
+  text-align: center;
+}
+
+.imx-productNameVersion > div {
+  font-size: 1.5em;
+  padding: 8px 0;
+}
+
+.imx-productCopyright {
+  padding-top: 10px;
+  margin: 0 30px;
+}
+
+
+
+.imx-legalNotice-Header {
+  margin-top: 10px;
+  margin-bottom: 6px;
+  font-family: $baseFontFamily;
+}
+
+.imx-legalNotice {
+  height: 100%;
+  display:flex;
+  overflow: hidden;
+  flex-direction: column;
+}
+
+.imx-legalNotice-Header > span {
+  font-size: 1.0em;
+  font-weight: bolder;
+}
+
+.imx-legalNotice-Content > span {
+  font-size: 1.0em;
+  font-family: $baseFontFamily;
+  margin-right: 4px;
+}
+
+.imx-contact > div > div {
+  padding-top: 5px;
+}
+
+.imx-contact-Header {
+  margin-top: 10px;
+  padding-top: 15px;
+  padding-bottom: 20px;
+  font-family: $baseFontFamily;
+}
+
+.imx-contact-Header > span {
+  font-size: 1.6em;
+}
+
+button {
+  margin-bottom:20px;
+  margin-right: 10px;
+}
+
+.mat-card {
+  box-shadow: none;
+}
+
+imx-data-source-toolbar {
+  display:none;
+}
+
+.imx-about-tabs {height:100%}

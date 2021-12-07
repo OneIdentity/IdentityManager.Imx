@@ -1,0 +1,31 @@
+<imx-tile data-imx-identifier="DashboardTile" [caption]="caption" [identifier]="identifier" [contentType]="'Container'"
+    [size]="'Dashboard'" (actionClick)="openChart()">
+    <ng-template Container>
+        <div data-imx-identifier="Dashboard">
+            <!--
+    <CodeLiteral ScriptItemUID="CodeLiteral1" Code="var myInfo = new ChartControlInfo { AutoSize = true, IconSize = true, Second = true };
+
+    myInfo.DisplayName= _DisplayNameDialogDashboardDef;
+
+    if (! string.IsNullOrEmpty(_ChartType))
+    {
+        myInfo.ControlType = _ChartType;
+    }
+
+    if (_UseHistogramStyle != null)
+    {
+        myInfo.HistogramStyle = _UseHistogramStyle();
+    }
+
+    if (! string.IsNullOrEmpty(_AdditionalWhereClause))
+    {
+        myInfo.AdditionalWhereClause = _AdditionalWhereClause;
+    }
+
+    var myChart = new System.Collections.Generic.List<object> { myInfo};
+    CustomizableView.CreateDashboardControl(myChart, Dashboard, true);">
+    -->
+        </div>
+    </ng-template>
+
+</imx-tile>

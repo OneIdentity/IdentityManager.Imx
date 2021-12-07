@@ -1,0 +1,121 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+.request-config {
+  background-color: $asher-gray;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  
+  &.request-config--no-margin {
+    margin: 0;
+  }
+
+  .helper-alert {
+    display: flex;
+    margin-bottom: 20px;
+  }
+
+  .request-config__content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .request-config__content-main {
+    flex: 1;
+    flex-basis: 100px;
+    padding: 32px;
+    overflow: auto;
+
+    ::ng-deep imx-data-table.no-row-selection {
+
+      .mat-row:hover {
+        cursor: default;
+        background-color: inherit !important;
+      }
+
+    }
+
+    ::ng-deep .mat-sidenav-container {
+      height: unset;
+    }
+
+    ::ng-deep {
+      .mat-sidenav-content {
+        overflow: hidden;
+      }
+
+      .imx-data-table-row-highlighted {
+        background-color: inherit;
+      }
+
+      .mat-row:hover {
+        cursor: pointer;
+        background-color: rgba($black-c, 0.2) !important;
+      }
+
+      .mat-checkbox-disabled {
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .request-config__action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    background-color: $white;
+    padding: 16px 32px;
+    margin: 16px 32px;
+
+    .justify-start {
+      margin-right: auto;
+    }
+
+    button:not(:last-of-type):not(.justify-start) {
+      margin-right: 10px;
+    }
+
+    button:disabled:hover {
+      cursor: not-allowed;
+    }
+
+    .help-icon {
+      color: $iris-blue;
+      font-size: 16px;
+      margin-left: 5px;
+      cursor: auto;
+    }
+
+  }
+
+}
+
+.imx-subtext {
+  color: $black-6;
+  font-size: smaller;
+}
+
+@media screen and (max-width: 480px) {
+  .request-config {
+    .request-config__content {
+      display: block;
+    }
+
+    .request-config__action-buttons {
+      flex-direction: column-reverse;
+
+      button {
+        width: 100%;
+        margin-bottom: 10px;
+        margin-right: 0;
+      }
+
+      .justify-start {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+

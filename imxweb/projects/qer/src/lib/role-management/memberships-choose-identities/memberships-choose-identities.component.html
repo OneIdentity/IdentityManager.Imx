@@ -1,0 +1,35 @@
+<imx-data-source-toolbar #dst
+data-imx-identifier="role-select-identities-dst"
+[settings]="dstSettings"
+[hiddenElements]="['settings', 'selectedViewGroup']"
+[searchBoxText]="'#LDS#Search' | translate"
+(navigationStateChanged)="onNavigationStateChanged($event)"
+(search)="onSearch($event)"></imx-data-source-toolbar>
+
+<imx-data-table #dataTable
+  data-imx-identifier="role-select-identities-table"
+  [dst]="dst"
+  detailViewVisible="false"
+  mode="manual"
+  [selectable]="true"
+  [showSelectionInfo]="false"
+  (selectionChanged)="onSelectionChanged($event)">
+  <imx-data-table-column
+    width="70%"
+    [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
+    [entitySchema]="entitySchema">
+  </imx-data-table-column>
+</imx-data-table>
+<imx-data-source-paginator data-imx-identifier="role-select-identities-paginator" [dst]="dst"></imx-data-source-paginator>
+<div class="imx-button-bar">
+  <p class="imx-selected-items">
+    <span>
+      {{'#LDS#Selected identites' | translate}}
+    </span>
+    <eui-badge data-imx-identifier="role-select-identities-selection-badge" class="imx-badge" color="orange">{{dataTable.numOfSelectedItems}}</eui-badge>
+  </p>
+  <div class="imx-menu-spacer"></div>
+  <button data-imx-identifier="role-select-identities-request-button" mat-raised-button color="primary" [disabled]="dataTable.numOfSelectedItems === 0" (click)="onRequestMemberships()">{{"#LDS#Request memberships" | translate }}</button>
+</div>
+
+

@@ -1,0 +1,51 @@
+<div class="imx-content-header">
+  <h1 class="mat-headline"> 
+    {{'#LDS#Web applications' | translate}}
+  </h1>
+</div>
+<div class="imx-table-container">
+  <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings" (search)="onSearch($event)" [hiddenElements]="['settings', 'selectedViewGroup']"
+    (navigationStateChanged)="getData($event)">
+    <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
+  </imx-data-source-toolbar>
+  <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual">
+    <imx-data-table-column [entityColumn]="entitySchemaWebApplications?.Columns.BaseURL"
+      [entitySchema]="entitySchemaWebApplications">
+      <ng-template let-data>
+        {{ data.BaseURL.Column.GetDisplayValue() }}
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchemaWebApplications?.Columns.UID_DialogProduct"
+      [entitySchema]="entitySchemaWebApplications">
+      <ng-template let-data>
+        {{ data.UID_DialogProduct.Column.GetDisplayValue() }}
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchemaWebApplications?.Columns.IsDebug"
+      [entitySchema]="entitySchemaWebApplications">
+      <ng-template let-data>
+        {{ data.IsDebug.Column.GetDisplayValue() }}
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchemaWebApplications?.Columns.IsPrivate"
+      [entitySchema]="entitySchemaWebApplications">
+      <ng-template let-data>
+        {{ data.IsPrivate.Column.GetDisplayValue() }}
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchemaWebApplications?.Columns.AutoUpdateLevel"
+      [entitySchema]="entitySchemaWebApplications">
+      <ng-template let-data>
+        {{ data.AutoUpdateLevel.Column.GetDisplayValue() }}
+      </ng-template>
+    </imx-data-table-column>
+  </imx-data-table>
+  <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+</div>
+
+<ng-template #customToolbarTemplate>
+  <button mat-stroked-button color="primary" class="imx-refresh-button" (click)="refresh()">
+    <eui-icon icon="sync"></eui-icon>
+    <span>{{ '#LDS#Refresh' | translate }}</span>
+  </button>
+</ng-template>

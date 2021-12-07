@@ -1,0 +1,114 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: inherit;
+}
+
+h1 {
+  font-size: 24px;
+  font-weight: 600;
+
+}
+
+.mat-checkbox {
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+imx-data-tiles {
+  flex-grow: 1;
+}
+
+imx-data-source-paginator {
+  margin-top: 10px;
+  min-width: 377px;
+}
+
+.imx-main-container {
+  display: flex;
+  height: inherit;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.imx-overlay {
+  background-color: $asher-gray;
+  opacity: 0.5;
+  width: 100%;
+  height: 100%;
+}
+
+.imx-title-area {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.mat-icon-button {
+  line-height: 27px;
+  background-color: $white;
+  margin-left: 15px;
+}
+
+.imx-application-list {
+  display: block;
+  padding-right: 20px;
+}
+
+::ng-deep .mat-badge-warn .mat-badge-content {
+  background-color: $black-6;
+}
+
+:host ::ng-deep .badgeContainer {
+  width:355px; 
+}
+
+:host ::ng-deep imx-data-tile > .cardContainer > .imx-selected-icon-container {
+  margin-left: 0px;
+}
+
+:host ::ng-deep .mat-card.imx-data-tile-container {
+  padding: 35px 50px 0 25px;
+  
+  .imx-data-tile-subtitle.mat-subheading-1 {
+    align-self: baseline;
+    top: 10px;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: inherit;
+    position: relative;
+    height: 2.4em;
+    line-height: 18px;
+  }
+
+  .imx-data-tile-subtitle.mat-subheading-1:after {
+    content: "";
+    text-align: right;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 30px;
+    height: 1.2em;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 60%);
+  }
+
+
+ 
+
+  // If line-clamp is supported, use it instead (Firefox 68+, Chrome 14+, Edge 17+)
+  @supports (-webkit-line-clamp: 3) {
+    .imx-data-tile-subtitle.mat-subheading-1 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;  
+        height: auto;
+        top: 0px;
+    }
+    .imx-data-tile-subtitle.mat-subheading-1:after {
+      display: none;
+    }
+  }
+}

@@ -1,0 +1,14 @@
+<section [class.imx-hyperview-deleted]="shape.IsDeleted">
+    <imx-hyperview-shape [shape]="shape">
+        <div class="LayoutpPropItems" ShapeContent (click)="click()">
+            <div *ngFor="let property of shape.Properties" class="LayoutpPropRow">
+                <div class="imx-layoutpanel-cell LayoutpPropCol LayoutpPropCol0" title="{{ property.Property }}">
+                    {{ property.Property }}
+                </div>
+                <div class="imx-layoutpanel-cell LayoutpPropCol LayoutpPropCol1" title="{{ GetPropertyDisplayValue(property.Value) }}">
+                    {{ GetPropertyDisplayValue(property.Value) }}
+                </div>
+            </div>
+        </div>
+    </imx-hyperview-shape>
+  </section>

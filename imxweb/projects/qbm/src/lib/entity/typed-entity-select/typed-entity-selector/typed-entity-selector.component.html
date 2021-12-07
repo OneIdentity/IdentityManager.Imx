@@ -1,0 +1,31 @@
+<div class="imx-content">
+  <imx-fk-table-select *ngIf="fkRelationData?.fkTables?.length > 0"
+    [fkTables]="fkRelationData.fkTables"
+    [preselectedTableName]="fkRelationData.preselectedTableName"
+    (selectionChanged)="tableSelectionChanged($event)">
+  </imx-fk-table-select>
+
+  <imx-fk-candidates class="imx-fk-selector" #fkSelector [data]="fkRelationData" [selectedFkTable]="selectedFkTable"
+    (itemPicked)="applySelection($event)" (selectionChanged)="selectionChanged($event)" [showLongdisplay]="true"
+    [showSelectedItemsMenu]="false">
+  </imx-fk-candidates>
+</div>
+
+<div class="imx-button-bar">
+  <div class="imx-selected-items">
+    <span>
+      <button mat-button color="primary" (click)="showSelected()">
+        {{ '#LDS#Selected items' | translate }}
+        <eui-badge class="imx-badge" color="orange">{{ selectedItems?.length }}</eui-badge>
+      </button>
+    </span>
+  </div>
+  <div>
+    <button *ngIf="selectedItems?.length > 0" mat-stroked-button type="button" (click)="fkSelector.clearSelection()" data-imx-identifier="selector-clear-selection">
+      <span translate>#LDS#Clear selection</span>
+    </button>
+    <button *ngIf="fkRelationData.isMultiValue" mat-raised-button color="primary" (click)="applySelection()" data-imx-identifier="selector-apply-selection">
+      <span translate>#LDS#Apply</span>
+    </button>
+  </div>
+</div>

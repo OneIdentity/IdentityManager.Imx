@@ -1,0 +1,11 @@
+<div eui-sidesheet-content>
+  <imx-service-items-edit-form #serviceItemsEditForm [serviceItem]="serviceItem"
+    (formControlCreated)="this.formArray.push($event)">
+  </imx-service-items-edit-form>
+</div>
+<div eui-sidesheet-actions color="white">
+  <button mat-flat-button color="primary" data-imx-identifier="service-items-edit-sidesheet-button-save"
+    (click)="saveChanges()" [disabled]="formGroup.pristine || formGroup.invalid">
+    {{'#LDS#Save'| translate}}
+  </button>
+</div>

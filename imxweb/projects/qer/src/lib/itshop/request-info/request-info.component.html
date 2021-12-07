@@ -1,0 +1,30 @@
+<mat-tab-group>
+  <mat-tab [label]="'#LDS#Information' | translate">
+    <div class="imx-request-information">
+      <ng-content select="[info]"></ng-content>
+    </div>
+    <mat-card class="imx-request-properties">
+      <imx-cdr-editor *ngFor="let cdr of propertyInfo" [cdr]="cdr"></imx-cdr-editor>
+      <imx-cdr-editor *ngFor="let cdr of parameters" [cdr]="cdr"></imx-cdr-editor>
+    </mat-card>
+  </mat-tab>
+  <mat-tab [label]="'#LDS#Workflow' | translate">
+    <div class="imx-request-history">
+      <imx-decision-history [approverContainer]="approverContainer" [workflow]="workflow">
+      </imx-decision-history>
+    </div>
+  </mat-tab>
+
+  <!-- TODO later
+  <ObjectSwitchContainer [ActionType]="ObjectView" [EnableNavigation]="true"
+      [SourceObject]="PersonWantsOrg"></ObjectSwitchContainer>
+-->
+
+  <!-- TODO later
+<mat-tab *ngIf="PersonWantsOrg.UID_OrgRequested.value" [label]="'#LDS#Entitlements' | translate">
+    <ng-template matTabContent>
+        <QER_EntitlementList [UidOrg]="PersonWantsOrg.UID_OrgRequested.value"></QER_EntitlementList>
+    </ng-template>
+</mat-tab>
+-->
+</mat-tab-group>

@@ -1,0 +1,19 @@
+<ng-container *ngIf="snapshot">
+
+  <eui-alert class="helper-alert" type="info" condensed="true" [colored]="true">
+    <span> {{ LdsHelperText | translate | ldsReplace: attestationDate}} </span>
+  </eui-alert>
+
+  <mat-card *ngFor="let obj of snapshot.Objects">
+    <div mat-card-title> {{ obj.Data.Display }}</div>
+    <div mat-card-subtitle> {{ obj.TableDisplay }}</div>
+    <ul>
+      <li *ngFor="let col of obj.Data.Columns | keyvalue">
+        <div class="property" readonly>
+          <span class="column-display">{{col.value.Caption}}</span>
+          <span class="column-value">{{col.value.DisplayValue}}</span>
+        </div>
+      </li>
+    </ul>
+  </mat-card>
+</ng-container>

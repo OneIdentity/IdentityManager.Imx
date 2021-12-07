@@ -1,0 +1,36 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.imx-table-container {
+  flex: 1 1 auto;
+  overflow-y: auto;
+
+  > :nth-child(2) {
+    flex: 1 1 auto;
+  }
+}
+
+.imx-refresh-line {
+  margin-bottom: 10px;
+}
+
+.reactivate-radio {
+  display: block;
+  margin-bottom: 1em;
+}
+
+.reactivate-card {
+  margin-top: 1em;
+
+  mat-card-content {
+    padding: 0 1em;
+  }
+}
+
+.showmessage {
+  margin-left: 1em;
+}

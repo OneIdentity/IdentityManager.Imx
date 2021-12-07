@@ -1,0 +1,22 @@
+<div>
+  {{((selectedServiceCategory != null) ? '#LDS#Showing service items in category' : '#LDS#Showing service items in all categories') | translate}}
+</div>
+
+<div *ngIf="selectedServiceCategory">
+  <mat-form-field class="imx-select-category">
+    <mat-select [(ngModel)]="selectedServiceCategory" (ngModelChange)="onServiceCategoryChanged($event)"
+      data-imx-identifier="servicecategory-list-mat-select-select-category">
+      <mat-option *ngFor="let category of selectedServiceCategoryTree" [value]="category"
+        matTooltip="{{category?.FullPath?.Column?.GetDisplayValue()}}"
+        data-imx-identifier="servicecategory-list-mat-option-select-category">
+        {{category?.FullPath?.Column?.GetDisplayValue()}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<div *ngIf="selectedServiceCategory && selectedServiceCategoryTree.length > 1">
+  <mat-checkbox (change)="onIncludeChilds($event.checked)">
+    {{'#LDS#Include child categories' | translate}}
+  </mat-checkbox>
+</div>

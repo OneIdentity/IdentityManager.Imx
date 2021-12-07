@@ -1,0 +1,28 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+  max-width: 1200px;
+}
+
+.heading-wrapper {
+  display: flex;
+
+  .helper-alert {
+    display: flex;
+    margin: 0 0 20px auto;
+    align-self: flex-end;
+    width: 50%;
+
+    span {
+      display: block;
+    }
+  }
+}
+
+.imx-runs-grid {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}

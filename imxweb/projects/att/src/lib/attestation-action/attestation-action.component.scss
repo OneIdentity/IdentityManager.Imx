@@ -1,0 +1,31 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  margin: 20px 40px;
+  max-height: calc(100% - 50px);
+}
+
+.imx-button-bar {
+  display: flex;
+  flex-direction: row;
+  margin-top: 5px;
+  justify-content: flex-end;
+}
+
+.imx-attestation-case-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;  
+  overflow: hidden;
+
+  .imx-bulk-editor {
+    flex: 1 1 auto;
+    overflow: auto;
+    padding: 2px;
+    margin-bottom: 30px;
+  }
+
+  .imx-decision-reason {
+    flex: 0 0 auto;
+  }
+}

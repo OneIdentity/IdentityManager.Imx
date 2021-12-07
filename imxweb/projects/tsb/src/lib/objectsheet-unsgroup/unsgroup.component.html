@@ -1,0 +1,46 @@
+<ng-container *ngIf="object">
+  <h1 class="mat-headline">{{ object.GetDisplay() }}</h1>
+
+  <div class="LayoutpWideSplittedItems">
+    <div class="LayoutpWideSplittedRow">
+      <div class="imx-layoutpanel-cell LayoutpWideSplittedCol0">
+        <imx-tile [caption]="object.GetDisplay()" [size]="'Large-Overview'" [identifier]="'overview'">
+          <ng-template #ValueTemplate>
+            <imx-property-viewer [properties]="detailProperties"></imx-property-viewer>
+          </ng-template>
+        </imx-tile>
+      </div>
+      <div class="imx-layoutpanel-cell LayoutpWideSplittedCol1">
+        <imx-businessowner-addon-tile data-imx-identifier="ControlRef7" [squareText]="'#LDS#Overview' | translate"
+          [description]="'#LDS#Shows the overview for the selected organizational unit with assignments, entitlements and memberships.' | translate"
+          (squareAction)="Action12()"></imx-businessowner-addon-tile>
+
+        <imx-businessowner-addon-tile [squareText]="'#LDS#Main data' | translate" *ngIf="IsEditEffective"
+          [description]="'#LDS#Shows the main data for this object.' | translate" (SquareAction)="Action13()">
+        </imx-businessowner-addon-tile>
+
+        <imx-businessowner-addon-tile [squareText]="'#LDS#Memberships' | translate" *ngIf="IsEditEffective"
+          [description]="'#LDS#Shows the employees who are members of this entitlement.' | translate"
+          (squareAction)="Action14()"></imx-businessowner-addon-tile>
+
+        <!-- TODO
+        <imx-businessowner-addon-tile [squareText]="'#LDS#Owners' | translate" *ngIf="IsEditEffective"
+          [description]="'#LDS#Assign owners of this entitlement.' | translate" (SquareAction)="AssignOwners()">
+        </imx-businessowner-addon-tile>
+-->
+        <!-- TODO
+        <imx-businessowner-addon-tile [squareText]="'#LDS#History' | translate"
+          *ngIf="IsEditEffective && IsHistoryActive"
+          [description]="'#LDS#Shows historical data for this system entitlement.' | translate"
+          (squareAction)="GoToHistory()">
+        </imx-businessowner-addon-tile>
+-->
+        <!-- TODO
+        <imx-businessowner-addon-tile [squareText]="'#LDS#Usage' | translate" *ngIf="IsEditEffective"
+          [description]="'#LDS#Shows the roles that the employees assigned to this entitlement belong to.' | translate"
+          (squareAction)="Action18()"></imx-businessowner-addon-tile>
+          -->
+      </div>
+    </div>
+  </div>
+</ng-container>

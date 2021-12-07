@@ -1,0 +1,49 @@
+<div class="snavigation">
+    <mat-sidenav-container>
+        <mat-sidenav mode="side" opened>
+            <div class="snavigation-side">
+
+                <div class="snavigation-side-content">
+
+                    <div class="snavigation-item" (click)="selectPage('')"
+                        [ngClass]="{'snavigation-item--selected': selectedPage === ''}">
+                        {{'#LDS#Dashboard' | translate }}
+                    </div>
+
+                    <!-- for later
+
+                    <div class="snavigation-item" (click)="selectPage('caches')"
+                        [ngClass]="{'snavigation-item--selected': selectedPage === 'caches'}">
+                        <span>Caches</span>
+                    </div>
+
+                    <div class="snavigation-item" (click)="selectPage('perf')"
+                        [ngClass]="{'snavigation-item--selected': selectedPage === 'perf'}">
+                        <span>Performance</span>
+                    </div>
+
+                    -->
+
+                    <div class="snavigation-item" (click)="selectPage('config')"
+                        [ngClass]="{'snavigation-item--selected': selectedPage === 'config'}">
+                        {{'#LDS#Configuration'|translate}}
+                    </div>
+                </div>
+            </div>
+        </mat-sidenav>
+        <mat-sidenav-content>
+
+            <ng-container *ngIf="selectedPage === ''">
+                <imx-status></imx-status>
+            </ng-container>
+
+            <imx-config *ngIf="selectedPage === 'config'"></imx-config>
+
+            <!-- for later 
+            <imx-cache [appId]="'portal'" *ngIf="selectedPage === 'caches'"></imx-cache>
+
+            <imx-performance *ngIf="selectedPage === 'perf'"></imx-performance>
+            -->
+        </mat-sidenav-content>
+    </mat-sidenav-container>
+</div>

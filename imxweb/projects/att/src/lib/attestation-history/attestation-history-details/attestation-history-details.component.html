@@ -1,0 +1,63 @@
+<div class="imx-mat-tab-group">
+  <mat-tab-group mat-align-tabs="start">
+    <mat-tab label="{{'#LDS#Properties' | translate}}" data-imx-identifier="attestation-history-detail-tab-properties">
+      <ng-template matTabContent>
+        <div class="imx-tab-content">
+          <div *ngIf="parameters.length > 0" class="imx-property-container">
+            <imx-cdr-editor *ngFor="let cdr of parameters" [cdr]="cdr"></imx-cdr-editor>
+          </div>
+          <div *ngIf="propertyInfo.length > 0" class="imx-property-container">
+            <imx-cdr-editor *ngFor="let cdr of propertyInfo" [cdr]="cdr"></imx-cdr-editor>
+          </div>
+        </div>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="{{'#LDS#Workflow' | translate}}" data-imx-identifier="attestation-history-detail-tab-workflow">
+      <ng-template matTabContent>
+        <div class="imx-tab-content">
+          <imx-decision-history-item *ngFor="let workflowHistoryEntity of workflowHistoryData"
+            [workflowHistoryEntity]="workflowHistoryEntity">
+          </imx-decision-history-item>
+          <imx-approvers *ngIf="approvers" [approvers]="approvers"></imx-approvers>
+        </div>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+<ng-container *ngIf="showApprovalActions; else historyActions">
+  <mat-card class="imx-attestation-case-action">
+    <button *ngIf="reportType === 'PDF'" mat-stroked-button [euiDownload]="reportDownload">
+      {{ '#LDS#Download report' | translate }}
+    </button>
+    <button *ngIf="reportType !== 'PDF'" mat-stroked-button data-imx-identifier="attestation-case-button-snapshot"
+      (click)="viewSnapshot()">{{ '#LDS#View more details' | translate }}
+    </button>
+    <button  *ngIf="canDecide" mat-stroked-button data-imx-identifier="attestation-history-detail-approve"
+      (click)="attestationAction.approve([case])">
+      {{ '#LDS#Approve' | translate }}
+    </button>
+    <button  *ngIf="canDecide" mat-stroked-button data-imx-identifier="attestation-history-detail-deny"
+      (click)="attestationAction.deny([case])">
+      {{ '#LDS#Deny' | translate }}
+    </button>
+  </mat-card>
+</ng-container>
+<ng-template #historyActions>
+  <mat-card class="imx-attestation-case-action">
+    <button mat-stroked-button *ngIf="case.canWithdrawDelegation(userUid)"
+      (click)="attestationAction.revokeDelegation([case])"
+      data-imx-identifier="attestation-history-detail-withdraw-delegation">
+      {{ '#LDS#Withdraw additional attestor' | translate }}
+    </button>
+    <button mat-stroked-button *ngIf="case.canRecallDecision" (click)="attestationAction.recallDecision([case])"
+      data-imx-identifier="attestation-history-detail-recall-decision">
+      {{ '#LDS#Undo approval decision' | translate }}
+    </button>
+    <button *ngIf="reportType === 'PDF'" mat-stroked-button [euiDownload]="reportDownload">
+      {{ '#LDS#Download report' | translate }}
+    </button>
+    <button *ngIf="reportType !== 'PDF'" mat-stroked-button data-imx-identifier="attestation-case-button-snapshot"
+      (click)="viewSnapshot()">{{ '#LDS#Show details' | translate }}
+    </button>
+  </mat-card>
+</ng-template>

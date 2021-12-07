@@ -1,0 +1,19 @@
+<mat-list>
+  <ng-container *ngFor="let checkGroup of checks">
+    <ng-container *ngIf="checkGroup.length > 0">
+      <mat-list-item *ngFor="let check of checkGroup" [attr.data-imx-identifier]="'cart-item-validation-detail-' + check.Id">
+        <mat-icon mat-list-icon
+          [ngClass]="{  'imx-validation-errors' : isError(check),
+                        'imx-validation-warnings' : isWarning(check)}">{{getStatus(check).icon}}</mat-icon>
+        <div mat-line data-imx-identifier="cart-item-validation-detail-title">{{ '#LDS#' + check.Title | translate }}</div>
+        <div mat-line data-imx-identifier="cart-item-validation-detail-status">{{ '#LDS#' + getStatus(check).status | translate }}</div>
+        <div mat-line *ngIf="check.ResultText" data-imx-identifier="cart-item-validation-detail-result-text">
+          {{  '#LDS#' + check.ResultText | translate | ldsReplace:data.cartItemDisplay:data.personOrderedDisplay }}
+        </div>
+        <div mat-line *ngIf="check?.Detail" data-imx-identifier="cart-item-validation-detail-additional">
+          <imx-detail-viewer [check]="check" [cartItemDisplay]="data?.cartItemDisplay" data-imx-identifier="cart-item-validation-detail-viewer"></imx-detail-viewer>
+        </div>
+      </mat-list-item>
+    </ng-container>
+  </ng-container>
+</mat-list>

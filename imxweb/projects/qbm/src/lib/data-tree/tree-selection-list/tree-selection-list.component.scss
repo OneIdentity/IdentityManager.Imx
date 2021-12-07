@@ -1,0 +1,28 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: $asher-gray;
+}
+
+h2 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.imx-category-part {
+  > *:not(:first-child) {
+    margin-top: 25px;
+  }
+}
+
+.imx-dialog-content {
+  margin: 30px;
+  overflow: auto;
+}
+
+.mat-list {
+  height: 100%;
+  overflow: auto;
+}

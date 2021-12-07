@@ -1,0 +1,40 @@
+<div class="imx-table-container" *ngIf="dstSettings">
+  <imx-data-source-toolbar [alwaysVisible]="withRefresh" #dst [settings]="dstSettings" (search)="onSearch($event)"  [hiddenElements]="['settings', 'selectedViewGroup']"
+    (navigationStateChanged)="navigationStateChanged($event)">
+    <imx-data-source-toolbar-custom *ngIf="withRefresh" [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
+  </imx-data-source-toolbar>
+  <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual">
+    <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.Ident_Server"
+      [entitySchema]="dstSettings.entitySchema">
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.Connection"
+      [entitySchema]="dstSettings.entitySchema">
+      <ng-template let-data>
+        {{ data.Connection.Column.GetDisplayValue() + ' ms' }}
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.LastJobFetchTime"
+      [entitySchema]="dstSettings.entitySchema">
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.ServerWebUrl"
+      [entitySchema]="dstSettings.entitySchema">
+      <ng-template let-data>
+        <a [href]="data.ServerWebUrl.value">{{ data.ServerWebUrl.Column.GetDisplayValue() }}</a>
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.PhysicalServerName"
+      [entitySchema]="dstSettings.entitySchema">
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.IPV4"
+      [entitySchema]="dstSettings.entitySchema">
+    </imx-data-table-column>
+  </imx-data-table>
+  <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+</div>
+
+<ng-template #customToolbarTemplate>
+  <button mat-stroked-button color="primary" class="imx-refresh-button" (click)="refresh()">
+    <eui-icon icon="sync"></eui-icon>
+    <span>{{ '#LDS#Refresh' | translate }}</span>
+  </button>
+</ng-template>

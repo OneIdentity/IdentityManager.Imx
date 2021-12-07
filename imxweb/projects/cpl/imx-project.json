@@ -1,0 +1,13 @@
+{
+  "Name": "cpl",
+  "Path": "imxweb\\projects\\cpl",
+  "ProjectType": "ng-lib",
+  "ProjectDependcies": [
+    "qbm",
+    "qer"
+  ],
+  "ChangePatterns": [
+    "imxweb\\projects\\cpl",
+    "imxweb\\shared\\assets"
+  ]
+}

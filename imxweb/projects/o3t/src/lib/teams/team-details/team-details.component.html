@@ -1,0 +1,60 @@
+<div class="governance-sidesheet">
+  <mat-tab-group>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <div [matTooltip]="(formGroup.dirty ? '#LDS#You have unsaved changes' : '') | translate">
+          <span translate>#LDS#Heading Details</span>
+          <span *ngIf="formGroup.dirty"
+            matBadge="*" matBadgePosition="above after" matBadgeSize="small"
+            [matBadgeDescription]="'#LDS#You have unsaved changes.' | translate">
+          </span>
+        </div>
+      </ng-template>
+      <div class="governance-sidesheet__tab-content">
+        <div class="governance-sidesheet__tab-content-body">
+          <mat-card>
+            <form [formGroup]="formGroup">
+              <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="formArray.push($event)"></imx-cdr-editor>
+            </form>
+          </mat-card>
+        </div>
+        <mat-card class="governance-sidesheet__action-buttons">
+
+          <button *ngIf="team?.UID_O3EUnifiedGroup?.value?.length" mat-button class="justify-start"
+            (click)="viewGroup()" data-imx-identifier="group-sidesheet-button-cancel">
+            <span translate>#LDS#View Office 365 group</span>
+          </button>
+
+          <button mat-button (click)="cancel()" data-imx-identifier="group-sidesheet-button-cancel">
+            <span translate>#LDS#Cancel</span>
+          </button>
+
+          <button mat-flat-button color="primary" data-imx-identifier="group-sidesheet-button-save-group"
+            (click)="saveChanges()"
+            [disabled]="formGroup.pristine || formGroup.invalid">
+            <span translate>#LDS#Save</span>
+          </button>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <mat-tab [label]="'#LDS#Heading Channels' | translate">
+      <ng-template matTabContent>
+        <div class="governance-sidesheet__tab-content">
+          <div class="governance-sidesheet__tab-content-body">
+              <imx-team-channels [uidO3t]="teamId"></imx-team-channels>
+          </div>
+          <mat-card class="governance-sidesheet__action-buttons">
+
+            <button mat-button (click)="cancel()" data-imx-identifier="group-sidesheet-button-cancel">
+              <span translate>#LDS#Cancel</span>
+            </button>
+
+          </mat-card>
+        </div>
+      </ng-template>
+    </mat-tab>
+
+  </mat-tab-group>
+
+</div>

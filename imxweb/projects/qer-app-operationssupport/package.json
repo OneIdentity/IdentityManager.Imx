@@ -1,0 +1,8 @@
+{
+  "name": "qer-app-operationssupport",
+  "version": "1.0.0",
+  "description": "One Identity Manager Operations Support Web Portal",
+  "peerDependencies": {
+
+  }
+}

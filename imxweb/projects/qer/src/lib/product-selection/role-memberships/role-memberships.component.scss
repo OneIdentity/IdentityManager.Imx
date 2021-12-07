@@ -1,0 +1,25 @@
+:host {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.imx-button-bar {
+  display: flex;
+  margin-top: 10px;
+  justify-content: right;
+
+  button {
+    margin-left: 10px;
+  }
+}
+
+eui-icon {
+  margin-right: 5px;
+}
+
+.imx-data-view-container {
+  flex-grow: 1;
+  overflow: auto;
+}

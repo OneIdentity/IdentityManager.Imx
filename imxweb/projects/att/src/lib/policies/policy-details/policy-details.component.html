@@ -1,0 +1,19 @@
+<h1 class="mat-headline" translate>{{policy?.GetEntity().GetDisplay()}}</h1>
+<mat-card>
+  <mat-card-content>
+    <div class="imx-info-grid-view">
+      <ng-container *ngIf="policy?.CountCases.value > 0">
+        <div>{{'#LDS#Total number of attestation cases of all attestation runs' | translate}}:</div>
+        <div>{{policy?.CountCases.value}}</div>
+        <div *ngIf="policy?.CountOpenCases.value >0">{{'#LDS#Total number of pending attestation cases of all attestation runs' | translate}}:</div>
+        <div *ngIf="policy?.CountOpenCases.value >0">{{policy?.CountOpenCases.value}}</div>
+      </ng-container>
+     
+      <div>{{'#LDS#Status' |translate}}:</div>
+      <div>{{status | translate}}</div>
+    </div>
+  </mat-card-content>
+</mat-card>
+<div class="imx-runs-grid">
+  <imx-runs-grid [uidAttestationPolicy]="uidAttestationPolicy"></imx-runs-grid>
+</div>

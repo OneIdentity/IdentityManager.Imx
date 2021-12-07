@@ -1,0 +1,16 @@
+<h1 class="mat-headline">{{ '#LDS#Heading Address Book' | translate }}</h1>
+<imx-data-source-toolbar
+  #dst
+  data-imx-identifier="addressbook-dst"
+  [settings]="dstSettings"
+  [hiddenElements]="['settings', 'selectedViewGroup']"
+  (navigationStateChanged)="onNavigationStateChanged($event)"
+  (search)="onSearch($event)"
+  data-imx-identifier="addressbook-data-source-toolbar">
+</imx-data-source-toolbar>
+<div class="imx-addressbook-table">
+  <imx-data-table data-imx-identifier="addressbook-table" [dst]="dst" (highlightedEntityChanged)="onHighlightedEntityChanged($event)" [detailViewVisible]="false"
+    [groupData]="groupData" (groupDataChanged)="onGroupingChange($event)" data-imx-identifier="addressbook-table">
+  </imx-data-table>
+</div>
+<imx-data-source-paginator data-imx-identifier="addressbook-paginator" [dst]="dst"></imx-data-source-paginator>

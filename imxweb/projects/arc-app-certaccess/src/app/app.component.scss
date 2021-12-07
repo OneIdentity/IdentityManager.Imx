@@ -1,0 +1,29 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100vh;
+}
+
+.pageContent {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: inherit;
+  margin: 32px;
+
+  &--full-page {
+    margin: 0;
+    overflow: auto;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .pageContent {
+    margin: 16px;
+
+    &--full-page {
+      margin: 0;
+    }
+  }
+}

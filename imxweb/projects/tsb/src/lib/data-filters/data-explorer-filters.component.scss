@@ -1,0 +1,41 @@
+
+.imx-de-targetsystem-filter {
+  margin-bottom: 15px;
+}
+
+.imx-de-container-tree-filter {
+
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+
+  .eui-icon {
+    margin-left: 4px;
+  }
+
+  .tree-filter-name {
+    text-transform: capitalize;
+    max-width: 140px;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .container-search {
+    &--hidden {
+      display: none;
+    }
+  }
+
+}
+
+::ng-deep .mat-menu-panel {
+  &.container-filter-menu {
+    min-width: 250px;
+    max-width: 400px;
+    max-height: 600px;
+    padding: 0 10px;
+  }
+}
+
+

@@ -1,0 +1,4 @@
+<ng-container *ngFor="let elem of path; let last = last">
+  {{ elem }}
+  <span *ngIf="!last" class="key-path-separator"> / </span>
+</ng-container>

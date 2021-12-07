@@ -1,0 +1,5 @@
+<div class="imx-readonly-view" readonly>
+  <span class="column-display">{{ valueWrapper?.display | translate }}</span>
+  <img *ngIf="valueWrapper?.value?.length" [src]="imageProvider.addBase64Prefix(valueWrapper.value)">
+  <span *ngIf="valueWrapper?.value?.length === 0" class="column-value">{{ defaultValue | translate }}</span>
+</div>

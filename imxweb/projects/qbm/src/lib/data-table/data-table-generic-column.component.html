@@ -1,0 +1,8 @@
+<ng-container [matColumnDef]="columnName" >
+  <th mat-header-cell *matHeaderCellDef [ngStyle]="{'text-align': alignHeader}">
+      <ng-container>{{ columnLabel }}</ng-container>
+  </th>
+  <td mat-cell *matCellDef="let entity" [ngStyle]="{'text-align': alignContent}">
+    <ng-content *ngTemplateOutlet="templateRef; context: { $implicit: entity }"></ng-content>
+  </td>
+</ng-container>

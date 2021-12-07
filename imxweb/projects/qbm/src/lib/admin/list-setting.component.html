@@ -1,0 +1,26 @@
+<div *ngIf="setting.Value.length > 0" cdkDropList class="setting-value-list" (cdkDropListDropped)="drop($event)">
+  <div class="setting-value-box" *ngFor="let elem of setting.Value; let idx = index; trackBy:trackByFn" cdkDrag>
+    <mat-form-field appearance="outline" class="setting-value-formfield">
+
+      <!-- free text -->
+      <input matInput type="text" [(ngModel)]="setting.Value[idx]" *ngIf="!hasLimitedValues">
+
+      <!-- or select box-->
+      <mat-select *ngIf="hasLimitedValues" (selectionChange)="optionSelected()" class="setting-value-select"
+        [(ngModel)]="setting.Value[idx]">
+        <mat-option *ngFor="let pr of validvalues" [value]="pr.Value">
+          {{pr.Display}} <span class="setting-tech-value">({{pr.Value}})</span>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button mat-icon-button [attr.aria-label]="'#LDS#Delete' | translate"
+      data-imx-identifier="config-delete-setting-element" (click)="delete(idx)">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+</div>
+
+<div class="buttonbar">
+  <button data-imx-identifier="config-add-setting-element" mat-raised-button color="primary"
+    (click)="addNew()">{{'#LDS#Add new' | translate }}</button>
+</div>

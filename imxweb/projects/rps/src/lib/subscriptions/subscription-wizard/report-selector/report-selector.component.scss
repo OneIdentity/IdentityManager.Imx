@@ -1,0 +1,65 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+:host {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.imx-viewport {
+  height: 200px;
+  overflow-x: hidden;
+}
+
+.report-selector-eui-search {
+  display: flex;
+
+  .eui-search {
+    width: 100%;
+  }
+
+  ::ng-deep .eui-search.mat-form-field.mat-form-field-appearance-outline {
+    min-width: 280px;
+    flex: 1;
+    margin-bottom: 10px;
+  }
+}
+
+.imx-candidate-option {
+  display: flex;
+  height: auto;
+  margin: 10px 0;
+
+  .imx-candidate-content {
+    flex: 1;
+    overflow: hidden;
+
+    .imx-candidate-display {
+      color: $black-3;
+      font-size: 14px;
+      line-height: 17px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .imx-candidate-longdisplay {
+      color: $black-9;
+      font-size: 12px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      line-height: 17px;
+    }
+  }
+}
+
+.imx-report-listing {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 21px;
+  margin-right: -21px;
+}
+
+.mat-spinner {
+  margin-top: 15px;
+  margin-left: 5px;
+}

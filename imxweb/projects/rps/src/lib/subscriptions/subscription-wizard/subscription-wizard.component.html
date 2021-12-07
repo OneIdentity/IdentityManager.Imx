@@ -1,0 +1,64 @@
+<mat-vertical-stepper [linear]="true" #stepper (selectionChange)="selectedStepChanged($event)">
+  <mat-step [stepControl]="reportFormGroup" data-imx-identifier="subscription-wizard-step-1-choose-report">
+    <form [formGroup]="reportFormGroup">
+      <ng-template matStepLabel>{{'#LDS#Select report' | translate}}</ng-template>
+      <div class="imx-report-table">
+        <imx-report-selector formControlName="reportTable"></imx-report-selector>
+      </div>
+      <div class="imx-step-button">
+        <button [disabled]="!reportFormGroup.dirty" mat-stroked-button matStepperNext
+          data-imx-identifier="subscription-wizard-nextTo-step-2">{{'#LDS#Next' | translate}}</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="reportParameterFormGroup" data-imx-identifier="subscription-wizard-step-2-edit-parameter">
+    <form [formGroup]="reportParameterFormGroup">
+      <ng-template matStepLabel>{{'#LDS#Configure subscription' | translate}}</ng-template>
+      <div class="imx-subscription-properties">
+        <imx-subscription-properties [displayedColumns]="columnsForEdit" [withTitles]="false"
+          [formGroup]="reportParameterFormGroup" [subscription]="newSubscription"></imx-subscription-properties>
+      </div>
+      <div class="imx-step-button">
+        <button mat-stroked-button matStepperPrevious data-imx-identifier="subscription-wizard-backtTo-step-1">
+          {{'#LDS#Back' | translate}}
+        </button>
+        <button [disabled]="reportParameterFormGroup.invalid" mat-stroked-button matStepperNext
+          data-imx-identifier="subscription-wizard-nextTo-step-3">
+          {{'#LDS#Next' | translate}}
+        </button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="additionalSubscribersFormGroup"
+    data-imx-identifier="subscription-wizard-step-3-add-subscribers">
+    <form [formGroup]="additionalSubscribersFormGroup">
+      <ng-template matStepLabel>{{'#LDS#Add additional subscribers' | translate}}</ng-template>
+      <div class="imx-wizard-info">
+        {{'#LDS#Here you can select identities that should also receive these reports.' | translate}}
+      </div>
+      <imx-multi-select-formcontrol #additionalApprover [pushMethod]="'manual'"
+        [selectedElementsCaption]="'#LDS#Selected subscribers' |translate" formControlName="additionalSubscribers">
+      </imx-multi-select-formcontrol>
+      <div class="imx-step-button">
+        <button mat-stroked-button matStepperPrevious data-imx-identifier="subscription-wizard-backTo-step-2">
+          {{'#LDS#Back' | translate}}
+        </button>
+        <button mat-stroked-button matStepperNext data-imx-identifier="subscription-wizard-nextTo-step-4">
+          {{'#LDS#Next' | translate}}
+        </button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step data-imx-identifier="subscription-wizard-step-4-overview">
+    <ng-template matStepLabel>{{'#LDS#Check and create subscription' | translate}}</ng-template>
+    <imx-subscription-overview [isWaitingForLoad]="isLoadingOverview" [subscription]="newSubscription"
+      [subscribersChanged]="subscribersChangedSubject"></imx-subscription-overview>
+    <div class="imx-step-button">
+      <button mat-stroked-button matStepperPrevious data-imx-identifier="subscription-wizard-backTo-step-3">
+        {{'#LDS#Back' | translate}}
+      </button>
+      <button color="primary" mat-raised-button (click)="submit()"
+        data-imx-identifier="subscription-wizard-create-subscription">{{'#LDS#Create' |translate}}</button>
+    </div>
+  </mat-step>
+</mat-vertical-stepper>

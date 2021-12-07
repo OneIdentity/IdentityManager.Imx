@@ -1,0 +1,157 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.chief-approval-badge {
+  margin-bottom: .5em;
+}
+
+.imx-reason {
+  margin-bottom: 20px;
+  span {
+    display: block;
+    &.column-display {
+      font-size: 12px;
+      color: $black-9;
+      padding-bottom: 5px;
+    }
+  }
+}
+.imx-spacing {
+  letter-spacing: 0.1em;
+}
+
+.mat-card-title {
+  margin-bottom: 15px;
+  :first-child {
+    font-weight: bold;
+  }
+  :nth-child(2) {
+    font-style: italic;
+    font-size: 0.9em;
+  }
+}
+
+ul.imx-eventbar {
+  margin: 0 0 0 -25px;
+  padding: 0;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+li {
+  max-width: 460px;
+}
+
+li.imx-event {
+  list-style-type: none;
+  padding: 0 0 20px 48px;
+  min-height: 32px;
+}
+
+li.imx-event::before {
+  margin-left: -50px;
+  background-color: $white;
+  height: 24px;
+  width: 28px;
+  content: "";
+  float: left;
+  margin-top: -2px;
+}
+
+li.imx-event.imx-positive {
+  background: linear-gradient($aspen-green, $aspen-green) no-repeat scroll 9px 0 transparent;
+  background-size: 2px 1000px;
+}
+
+li.imx-event.imx-positive::before {
+  font-family: Cadence-Icon;
+  font-size: 24px;
+  color: $aspen-green;
+  content: "\e049";
+}
+
+li.imx-event.imx-negative {
+  background: linear-gradient($phoenix-red, $phoenix-red) no-repeat scroll 9px 0 transparent;
+  background-size: 2px 1000px;
+}
+
+li.imx-event.imx-negative::before {
+  font-family: Cadence-Icon;
+  font-size: 24px;
+  color: $phoenix-red;
+  content: "\e05c";
+}
+
+li.imx-event.imx-question {
+  background: linear-gradient($iris-blue, $iris-blue) no-repeat scroll 9px 0 transparent;
+  background-size: 2px 1000px;
+}
+
+li.imx-event.imx-question::before {
+  font-family: Cadence-Icon;
+  font-size: 24px;
+  color: $iris-blue;
+  content: "\e009";
+}
+
+li.imx-event.imx-info {
+  background: linear-gradient($iris-blue, $iris-blue) no-repeat scroll 9px 0 transparent;
+  background-size: 2px 1000px;
+}
+
+li.imx-event.imx-info::before {
+  font-family: Cadence-Icon;
+  font-size: 24px;
+  color: $iris-blue;
+  content: "\e010";
+}
+
+li.imx-event.imx-pending {
+  background: linear-gradient($black-b, $black-b) no-repeat scroll 9px 0 transparent;
+  background-size: 2px 1000px;
+}
+
+li.imx-event.imx-pending::before {
+  font-family: Cadence-Icon;
+  font-size: 24px;
+  color: $black-b;
+  content: "\e009";
+}
+
+.mat-card-header {
+  margin-left: -16px;
+  margin-bottom: 10px;
+
+  .mat-card-title {
+    font-size: 1.05em;
+    margin-bottom: 0;
+  }
+
+  .mat-card-subtitle.imx-approveHistory-pwodecisionstep {
+    margin: 5px 0;
+  }
+}
+
+li.imx-event {
+  > imx-cdr-editor {
+    ::ng-deep .imx-readonly-view {
+      margin-bottom: 15px;
+    }
+  }
+
+  imx-cdr-editor:last-child {
+    ::ng-deep .imx-readonly-view {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.imx-approver {
+  display: block;
+}

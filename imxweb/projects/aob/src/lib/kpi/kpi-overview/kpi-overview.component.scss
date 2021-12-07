@@ -1,0 +1,152 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+.imx-kpi-site {
+  padding: 16px 40px;
+  background-color: mat-color($asher-gray-palette, 100);
+  height: auto;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+li {
+  list-style-type: none;
+  margin: 0 10px 10px 0;
+
+  .mat-card {
+    background-color: $white;
+    width: 340px;
+    height: 68px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+
+    :nth-child(1n) {
+      align-self: center;
+    }
+  }
+}
+
+.mat-card {
+  padding: 5px 10px;
+}
+
+h2 {
+  font-size: 20px;
+  color: $black-3;
+  margin-bottom: 8px;
+}
+
+p {
+  font-size: 14px;
+  color: $black-9;
+  margin-top: 0;
+}
+
+eui-billboard {
+  width: 500px;
+}
+
+h3 {
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: normal;
+}
+
+h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 30px 0 15px 0;
+}
+
+.imx-card-clickable {
+  cursor: pointer;
+}
+
+.imx-kpi-text {
+  margin: 0;
+  vertical-align: middle;
+  word-break: break-word;
+}
+
+.imx-kpi-content {
+  grid-column: 2;
+  margin-bottom: 0px;
+}
+
+.imx-kpi-tile-actions {
+  margin: 0;
+  margin-top: -5px;
+  padding: 0;
+  grid-column: 3;
+}
+
+.imx-pass,
+.imx-fail {
+  text-transform: uppercase;
+  font-size: 24px;
+  line-height: 38px;
+  font-weight: 900;
+  margin: 0 20px 0 0px;
+  color: $aspen-green;
+  grid-column: 1;
+}
+
+.imx-kpi-list {
+  display: flex;
+  flex-wrap: wrap;
+
+  > li > .mat-card {
+    display: flex;
+    height: 100%;
+  }
+}
+
+.imx-kpi-view {
+  padding: 20px 0 0 20px;
+}
+
+.imx-chart {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.mat-dialog-title {
+  display: flex;
+  margin: 0px 0 10px;
+}
+
+.imx-fail {
+  color: $phoenix-red;
+}
+
+.imx-title-text {
+  text-align: center;
+  margin: 0 24px 0 60px;
+  flex: 1;
+}
+
+.imx-close-dialog-button {
+  right: -15px;
+  top: -15px;
+}
+
+.imx-aob-kpi-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  background-color: mat-color($asher-gray-palette, 100);
+  height: auto;
+  min-height: calc(100% - 20px);
+
+  h2 {
+    font-weight: 600;
+    margin-top: 30px;
+  }
+
+  >.eui-icon {
+    color: $black-b;
+  }
+}

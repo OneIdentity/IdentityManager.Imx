@@ -1,0 +1,7 @@
+<div class="imx-user {{size}}" [class.noUser]="!hasUser">
+  <mat-icon class='imx-user-icon'>person</mat-icon>
+  <div class="imx-user-properties">
+    <span *ngIf="hasUser">{{ primaryValue }}</span>
+    <span>{{ secondaryValue }}</span>
+  </div>
+</div>

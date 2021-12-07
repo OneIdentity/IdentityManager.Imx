@@ -1,0 +1,59 @@
+:host
+{
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.namespace-selector
+{
+  min-width: 400px;
+  margin-right: 1em;
+}
+
+.table-selector
+{
+  min-width: 400px;
+}
+
+.scroll-container {
+  flex: 1 1 auto;
+  overflow: auto;
+}
+
+.helper-alert {
+  margin-bottom: 1em;
+  display: flex;
+  flex-direction: column;
+  span {
+    display: block;
+  }
+}
+
+.imx-button-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+
+  > *:not(:first-child) {
+    margin-left: 5px;
+  }
+}
+
+.object-type
+{
+  font-style: italic;
+  font-size: smaller;
+}
+
+.bulkmodecheckbox
+{
+  margin-right: 1em;
+  line-height: 36px;
+}
+
+.imx-justify-start {
+  align-self: flex-start;
+  flex: 1 1 auto;
+}

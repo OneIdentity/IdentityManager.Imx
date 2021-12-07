@@ -1,0 +1,4 @@
+<imx-badge-tile data-imx-identifier="start-tile-frozen-jobs" [caption]="'#LDS#Heading Frozen Processes' | translate"
+  *ngIf="0 < pendingItems?.FrozenJobs" [value]="pendingItems?.FrozenJobs"
+  (actionClick)="goToOperations()">
+</imx-badge-tile>

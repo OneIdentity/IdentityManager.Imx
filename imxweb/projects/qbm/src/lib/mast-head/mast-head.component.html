@@ -1,0 +1,50 @@
+<eui-masthead data-imx-identifier="masthead" (logoClicked)="goHome()">
+  <mat-toolbar color="primary" data-imx-identifier="masthead-toolbar">
+    <mat-toolbar-row>
+      <h1 class="imx-masthead-app-name" data-imx-identifier="masthead-button-goHome" (click)="goHome()">
+        {{ appConfig?.Config?.Title }}
+      </h1>
+      <span class="imx-masthead-space"></span>
+      <span class="imx-masthead--controls">
+        <!-- TODO #289551 hide User-Menü in MastHead on smaller screens
+          <ng-template *ngIf="isAuthenticated && !isMobile" [ngTemplateOutlet]="mastHeadMenu"></ng-template> -->
+        <ng-template *ngIf="isAuthenticated" [ngTemplateOutlet]="mastHeadMenu"></ng-template>
+      </span>
+    </mat-toolbar-row>
+  </mat-toolbar>
+</eui-masthead>
+
+<!-- TODO #289551 show User-Menü in TopNavigation-SideNav on smaller screens
+  <eui-top-navigation [items]="navigationItems">
+  <div eui-top-navigation-mobile-footer *ngIf="isMobile">
+    <ng-template *ngIf="isAuthenticated" [ngTemplateOutlet]="mastHeadMenu"></ng-template>
+  </div>
+</eui-top-navigation> -->
+
+<ng-template #mastHeadMenu>
+  <button mat-button class="imx-masthead-user-button" #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="imxUserMenu"
+    data-imx-identifier="user-menu">
+    <eui-icon icon="user"></eui-icon>
+    <span>{{ sessionState?.Username }}</span>
+  </button>
+  <mat-menu #imxUserMenu="matMenu">
+    <ng-content select="[imx-profile-menu-items]"></ng-content>
+    <button mat-menu-item data-imx-identifier="user-menu-signout" (click)="logout()">
+      <span translate>#LDS#Log off</span>
+    </button>
+  </mat-menu>
+  <button mat-button class="imx-masthead--icon-button" [matMenuTriggerFor]="helpMenu"
+    data-imx-identifier="help-menu-button">
+    <eui-icon icon="help"></eui-icon>
+    <span translate>#LDS#Menu Entry Help</span>
+  </button>
+  <mat-menu #helpMenu="matMenu">
+    <button mat-menu-item data-imx-identifier="help-menu-documentation" *ngIf="hasDocumentationConfig"
+      (click)="navigateToDocumentation()">
+      <span translate>#LDS#Menu Entry Documentation</span>
+    </button>
+    <button mat-menu-item data-imx-identifier="help-menu-about" (click)="openAboutDialog()">
+      <span translate>#LDS#About</span>
+    </button>
+  </mat-menu>
+</ng-template>

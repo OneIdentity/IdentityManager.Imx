@@ -1,0 +1,20 @@
+<mat-card>
+  <mat-card-content>
+    <div class="imx-service-issue-icon">
+      <div>
+        <div [class]="issueItem.severityClass"></div>
+        <eui-icon class="issueIconLine imx-db-icon" [icon]="issueItem.icon" size="65px">
+        </eui-icon>
+      </div>
+      <div class="issueContentPane">
+        <div class="issueTitlePane">
+          <div class="issueTitle">{{ issueItem.title }}</div>
+          <div class="issueContent">{{ issueItem.text }}</div>
+          <button mat-button *ngIf="issueItem.action" (click)="issueItem.action.action()" class="issueAction">
+            {{ issueItem.action.caption }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

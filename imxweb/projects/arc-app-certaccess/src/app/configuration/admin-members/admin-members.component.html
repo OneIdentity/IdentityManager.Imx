@@ -1,0 +1,31 @@
+<div *ngIf="dstSettings" class="imx-admin-members">
+  <div class="imx-admin-members-content">
+    <div class="imx-admin-members-content-main">
+      <div class="imx-heading-wrapper">
+        <h3>{{ role?.displayLong }}</h3>
+
+        <eui-alert *ngIf="showHelperAlert" class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" 
+          [dismissable]="true" (dismissed)="onHelperDismissed()">
+          <span>
+            {{ role?.description }}
+          </span>
+        </eui-alert>
+      </div>
+
+      <imx-data-source-toolbar #dst [settings]="dstSettings" [hiddenElements]="['groupBy', 'settings', 'selectedViewGroup']"
+        (navigationStateChanged)="getData($event)" [itemStatus]="status" (search)="search($event)">
+      </imx-data-source-toolbar>
+      <imx-data-table class="no-row-selection" [dst]="dst" [detailViewVisible]="false" [selectable]="true" (selectionChanged)="selectionChanged($event)"></imx-data-table>
+      <imx-data-source-paginator *ngIf="!dstSettings.groupData?.currentGrouping" [dst]="dst"></imx-data-source-paginator>
+    </div>
+  </div>
+  <mat-card class="imx-button-bar">
+    <button class="justify-start" mat-button color="warn" data-imx-identifier="admin-members-delete-button" (click)="delete()"
+      [disabled]="!userIsMember || !selectedMembers?.length">
+      {{ '#LDS#Remove' | translate }}
+    </button>
+    <button data-imx-identifier="admin-members-add-button" mat-raised-button color="primary" (click)="add()" [disabled]="!userIsMember">
+      {{ '#LDS#Add members' | translate }}
+    </button>
+  </mat-card>
+</div>

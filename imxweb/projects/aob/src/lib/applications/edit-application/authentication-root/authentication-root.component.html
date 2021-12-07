@@ -1,0 +1,11 @@
+<imx-entity-column-editor *ngIf="application" [column]="application.IsAuthenticationIntegrated.Column"
+(controlCreated)="form.addControl($event.name, $event.control)">
+</imx-entity-column-editor>
+<mat-error *ngIf="form?.errors?.relationInvalid">
+  {{ '#LDS#Please specify a value for {0}.' | translate | ldsReplace:application.AuthenticationRoot.GetMetadata().GetDisplay() }}
+</mat-error>
+<imx-cdr-editor *ngIf="authenticationRootWrapper"
+  [cdr]="authenticationRootWrapper"
+  (controlCreated)="form.addControl('authenticationRoot', $event)"
+  (valueChange)="form.updateValueAndValidity()">
+</imx-cdr-editor>

@@ -1,0 +1,22 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+.mat-form-field {
+  width: 100%;
+}
+
+.imx-error-margin {
+   margin-top: -15px;
+   margin-left: 10px;
+}
+
+.imx-multi-value-container {
+  display: flex;
+  flex-flow: column;
+}
+
+
+.imx-red-checkbox {
+  ::ng-deep .mat-checkbox-frame {
+    border-color: $phoenix-red;
+  }
+}

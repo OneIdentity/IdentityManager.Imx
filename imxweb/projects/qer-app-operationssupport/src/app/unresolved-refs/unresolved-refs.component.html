@@ -1,0 +1,44 @@
+<div class="imx-content-header">
+  <h1 class="mat-headline">
+    {{ '#LDS#Unresolved references' | translate }}
+  </h1>
+</div>
+<div class="imx-table-container">
+  <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings" [hiddenElements]="['search', 'settings', 'selectedViewGroup']">
+    <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
+  </imx-data-source-toolbar>
+  <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual">
+    <imx-data-table-column [entityColumn]="entitySchemaRefs?.Columns.DisplayName" [entitySchema]="entitySchemaRefs">
+      <ng-template let-data>
+        <div class="imx-unresolved-refs-data">{{ data?.DisplayName?.Column.GetDisplayValue() }}</div>
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchemaRefs?.Columns.OwnerObject" [entitySchema]="entitySchemaRefs">
+      <ng-template let-data>
+        <div class="imx-unresolved-refs-data">{{ data?.OwnerObject?.Column.GetDisplayValue() }}</div>
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchemaRefs?.Columns.ShellDisplay" [entitySchema]="entitySchemaRefs">
+      <ng-template let-data>
+        <div class="imx-unresolved-refs-data">{{ data?.ShellDisplay?.Column.GetDisplayValue() }}</div>
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchemaRefs?.Columns.SystemDisplay" [entitySchema]="entitySchemaRefs">
+      <ng-template let-data>
+        <div class="imx-unresolved-refs-data">{{ data?.SystemDisplay?.Column.GetDisplayValue() }}</div>
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchemaRefs?.Columns.Data" [entitySchema]="entitySchemaRefs">
+      <ng-template let-data>
+        <div class="imx-unresolved-refs-data">{{ data?.Data?.Column.GetDisplayValue() }}</div>
+      </ng-template>
+    </imx-data-table-column>
+  </imx-data-table>
+</div>
+
+<ng-template #customToolbarTemplate>
+  <button mat-stroked-button color="primary" class="imx-refresh-button" (click)="refresh()">
+    <eui-icon icon="sync"></eui-icon>
+    <span>{{ '#LDS#Refresh' | translate }}</span>
+  </button>
+</ng-template>

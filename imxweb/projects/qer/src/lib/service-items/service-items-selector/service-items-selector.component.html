@@ -1,0 +1,12 @@
+<div class="imx-content">
+  <imx-fk-candidates #fkSelector [data]="data" (itemPicked)="applySelection($event)" (selectionChanged)="selectionChanged($event)"></imx-fk-candidates>
+</div>
+
+<div class="imx-button-bar">
+  <button *ngIf="selectedItems?.length > 0" mat-stroked-button type="button" (click)="fkSelector.clearSelection()" data-imx-identifier="selector-clear-selection">
+    <span translate>#LDS#Clear selection</span>
+  </button>
+  <button *ngIf="data?.isMultiValue" mat-raised-button color="primary" (click)="applySelection()" data-imx-identifier="selector-apply-selection">
+    <span translate>#LDS#Apply</span>
+  </button>
+</div>

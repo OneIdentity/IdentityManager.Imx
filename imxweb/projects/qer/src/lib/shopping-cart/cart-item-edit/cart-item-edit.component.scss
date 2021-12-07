@@ -1,0 +1,30 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  flex: 1;
+}
+
+.imx-content {
+  overflow-x: hidden;
+  overflow-y: auto;
+  flex-direction: column;
+  padding-right: 10px;
+}
+
+.imx-actions {
+  display: flex;
+  flex-direction: row;
+  margin-top: 15px;
+  justify-content: end;
+
+  button {
+    margin-left: 10px;
+  }
+
+}
+
+.imx-information {
+  margin-bottom: 15px;
+}
+

@@ -1,0 +1,56 @@
+<div class ="imx-table-container">
+  <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings" [hiddenElements]="['settings', 'selectedViewGroup']"
+    (navigationStateChanged)="getData($event)" (search)="onSearch($event)"  [itemStatus]="itemStatus">
+    <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
+  </imx-data-source-toolbar>
+  <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual" [selectable]="true"
+    (selectionChanged)="onSelectionChanged($event)">
+    <imx-data-table-column columnLabel="" [entityColumn]="entitySchemaJobs?.Columns.CombinedStatus" [entitySchema]="entitySchemaJobs">
+      <ng-template let-dataItem>
+        <eui-icon icon="bug" size="21px" *ngIf="isFrozen(dataItem)"></eui-icon>
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchemaJobs?.Columns.JobChainName"
+      [entitySchema]="entitySchemaJobs">
+      <ng-template let-dataItem>
+        <div>{{ dataItem.JobChainName.Column.GetDisplayValue() }}</div>
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchemaJobs?.Columns.TaskName" [entitySchema]="entitySchemaJobs">
+      <ng-template let-dataItem>
+        {{ dataItem.TaskName.Column.GetDisplayValue() }}
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-generic-column columnName="actions">
+      <ng-template let-dataItem>
+        <button [disabled]="!isFrozen(dataItem)" mat-button color="primary" (click)="retryJob(dataItem)">{{'#LDS#Retry' |translate}}</button>
+        <button mat-button color="primary" (click)="viewDetails(dataItem)">{{'#LDS#Details' |translate}}</button>
+      </ng-template>
+    </imx-data-table-generic-column>
+  </imx-data-table>
+  <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+</div>
+
+<ng-template #customToolbarTemplate>
+  <button mat-stroked-button color="primary" class="imx-refresh-button" (click)="refresh()">
+    <eui-icon icon="sync"></eui-icon>
+    <span>{{ '#LDS#Refresh' | translate }}</span>
+  </button>
+</ng-template>
+
+<div class="imx-button-bar">
+  <mat-menu #ActionMenu="matMenu" yPosition="below">
+    <button mat-menu-item (click)="retrySelectedJobs()">
+      {{'#LDS#Retry'| translate}}
+    </button>
+    <button mat-menu-item (click)="continueSelectedJobs(true)">
+      {{'#LDS#Continue with the success process step'| translate}}
+    </button>
+    <button mat-menu-item (click)="continueSelectedJobs(false)">
+      {{'#LDS#Continue with the error process step'| translate}}
+    </button>
+  </mat-menu>
+  <button mat-raised-button class="rightButtonFloat" [disabled]="!itemsAreSelected()" [matMenuTriggerFor]="ActionMenu">
+    {{'#LDS#Actions'| translate}}
+  </button>
+</div>
