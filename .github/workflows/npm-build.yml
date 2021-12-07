@@ -41,5 +41,5 @@ jobs:
         npm run build qer-app-portal
         npm run build qbm-app-landingpage
         npm run build qer-app-operationssupport
-        npm run build qer-app-pwdportal
+        npm run build qer-app-pwdPortal
 
