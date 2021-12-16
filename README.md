@@ -6,9 +6,9 @@
 
 This repository contains the source code for the HTML5 applications contained in Identity Manager.
 
-It is a monorepo containing the Angular [workspace](https://angular.io/guide/workspace-config).
+It is a monorepo containing the Angular [workspace](https://angular.io/guide/workspace-config), which consists of apps and [libraries](https://angular.io/guide/libraries).
 
-By forking this repository, you may create customized versions of the applications or one of its libraries and add them to your Identity Manager deployment.
+By forking this repository, you may create customized versions of the projects and add them to your Identity Manager deployment.
 
 ## Workspace overview
 
@@ -60,33 +60,67 @@ To build any library or app, run `npm build <name>`. Note that you must build ea
 
 When changing the code of a _library_, you will need to build and deploy customized versions of all the apps that should use the customized versions. For example, changing `qer` will require that you also compile `qer-app-portal`, `qer-app-operationssupport` and `qer-app-pwdportal` because all of these apps include `qbm`.
 
-When changing the code of a _plugin library_, you will need to build and deploy customized versions of the plugin library itself, and all plugin libraries depending on it.
+When changing the code of a _plugin library_, you will need to build and deploy customized versions of the plugin library itself, and all plugin libraries depending on it. For example, changing `tsb` will require that you also compile `aad` and `o3t` because these plugins include `tsb`.
 
 _Note_: Starling CertAccess currently does not support hosting custom HTML5 apps.
-
-_coming soon_
 
 ### Debugging
 
 Running and debugging web applications is possible using the default tools of the Angular CLI toolchain. For example, you can use `ng serve qer-app-portal` to debug the Portal app.
 
-The web apps will connect to the API Server using the URL defined in the application's `environment.ts` file. The default setting is `http://localhost:8182`.
+You will need an API Server instance that the web applications will connect to. You can host an API Server locally for development purposes. Run the following command on the command line:
 
-<!-- TODO add information to run imxclient locally -->
+```
+imxclient.exe run-apiserver -B
+```
 
-### Hosting in Identity Manager
+The web apps will connect to the API Server using the URL defined in the application's `environment.ts` file. The default setting is `http://localhost:8182` which is the default URL that a local API Server will run on.
 
-_coming soon_
+## Hosting in Identity Manager
 
-## Branches
+Follow these steps to host a package (such as `Html_qer-app-portal.zip`) in Identity Manager:
 
-The following table shows the branches corresponding to each product version.
+- Download the build artefact package(s).
+- Start Software Loader.
+- Move the package into a subdirectory named `custom`.
+- Connect to the Identity Manager database.
+- Select "Upload files".
+- Select the `custom\Html_qer-app-portal.zip` file.
+- Assign the file to the API Server machine role.
+
+When a client makes a request for the URL `/html/qer-app-portal`, the API Server will look the following files in this order, using the first file which exists.
+1. `imxweb/custom/Html_qer-app-portal.zip`
+1. `imxweb/Html_qer-app-portal.zip`
+
+
+_Note_: The API Server adds support for customized packages with the 8.2.1 release.
+
+## Adding a plugin library
+
+Plugins are Angular libraries that are loaded dynamically at runtime. The set of plugins is managed by the API Server. Plugins are discovered by looking for files named `imx-plugin-config.json` in the program directory.
+
+This sample file declares that the plugin library `ccc` should be loaded in the `qer-app-portal` app. The name of the Angular module to instantiate is `CustomConfigModule`.
+
+``` json
+{
+  "qer-app-portal": [
+      {
+          "Container": "ccc",
+          "Name": "CustomConfigModule"
+      }
+  ]
+}
+```
+
+## Branches and Update Policy
+
+The following table shows the branches in this repository corresponding to each product version.
 
 |Branch|Product version|
 |-|-|
 |`v82`|Identity Manager 8.2.x|
 
-We will push updates for each minor and major product release, allowing developers to track source code changes from one version to the next. Occasionally we may also publish important bug fixes.
+We plan to push updates for each minor and major product release, allowing developers to track source code changes from one version to the next. Occasionally we may also publish important bug fixes.
 
 ## Contributing
 
