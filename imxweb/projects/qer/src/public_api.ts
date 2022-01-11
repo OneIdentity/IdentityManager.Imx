@@ -89,6 +89,7 @@ export { RequestsComponent } from './lib/itshop-config/requests/requests.compone
 export { RequestConfigModule } from './lib/itshop-config/request-config.module';
 export { RiskanalysisModule } from './lib/riskanalysis/riskanalysis.module';
 export { HistoryModule } from './lib/history/history.module';
+export { RequestableEntitlementType } from './lib/itshop-config/requestable-entl-type';
 export { RequestDisplayComponent } from './lib/request-history/request-display/request-display.component';
 export { RequestHistoryModule } from './lib/request-history/request-history.module';
 export { RequestsService } from './lib/itshop-config/requests.service';

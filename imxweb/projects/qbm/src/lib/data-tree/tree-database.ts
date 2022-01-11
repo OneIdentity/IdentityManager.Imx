@@ -63,9 +63,9 @@ export abstract class TreeDatabase {
   protected rootNodes: TreeNode[];
 
   /** Initial data from database */
-  public async initialize(): Promise<TreeNode[]> {
+  public async initialize(navigationState: CollectionLoadParameters = {}): Promise<TreeNode[]> {
     // load the root entities
-    const entities = await this.getData(true);
+    const entities = await this.getData(true, navigationState);
 
     if (entities.totalCount === 0 || entities.entities.length === 0) {
       return [];
@@ -84,9 +84,9 @@ export abstract class TreeDatabase {
   }
 
   public updateNodeItem(item: IEntity): void {
-    const node = this.rootNodes?.find(node => TreeDatabase.getId(node.item) === TreeDatabase.getId(item));
-    if (node) {
-      node.item = item;
+    const roots = this.rootNodes?.find(node => TreeDatabase.getId(node.item) === TreeDatabase.getId(item));
+    if (roots) {
+      roots.item = item;
     }
   }
 

@@ -1,8 +1,4 @@
 <ng-container *ngIf="hasTreeData; else noDataContainer">
-  <eui-search *ngIf="database?.canSearch" class="multi-select-formcontrol-eui-search"
-    data-imx-identifier="date-tree-eui-search" [placeholder]="'#LDS#Search' | translate" [searchControl]="searchControl"
-    size="small">
-  </eui-search>
   <div class="imx-selected-items-button-containter">
     <button *ngIf="withMultiSelect" [disabled]="selectedEntities.length === 0" mat-flat-button
       class="imx-data-table-selection-info mat-caption" (click)="onOpenSelectionDialog()"
@@ -11,15 +7,18 @@
     </button>
   </div>
   <div class="imx-data-tree-content">
-    <imx-checkable-tree *ngIf="searchString ===''" [database]="database" [selectedEntities]="selectedEntities"
-      [withMultiSelect]="withMultiSelect" [emptyNodeCaption]="emptyNodeCaption"
+    <imx-checkable-tree *ngIf="!hasSearchResults()" [database]="database" [selectedEntities]="selectedEntities"
+      [withMultiSelect]="withMultiSelect" [emptyNodeCaption]="emptyNodeCaption" [navigationState]="navigationState"
       (checkedNodesChanged)="selectedNodesChanged()" (nodeSelected)="onNodeSelected($event)">
     </imx-checkable-tree>
 
     <div class="imx-search-selection">
-      <imx-data-tree-search-results #treeSearchResults [withMultiSelect]="withMultiSelect"
+     
+      <imx-data-tree-search-results #treeSearchResults 
+      *ngIf="hasSearchResults()"
+      [withMultiSelect]="withMultiSelect"
         [selectedEntities]="selectedEntities" [action]="searchResultAction" (checkedNodesChanged)="selectedNodesChanged()"
-        (nodeSelected)="onNodeSelected($event)" [database]="database" [searchString]="searchString">
+        (nodeSelected)="onNodeSelected($event)" [database]="database" [navigationState]="navigationState">
       </imx-data-tree-search-results>
     </div>
   </div>

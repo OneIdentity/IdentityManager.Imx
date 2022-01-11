@@ -30,11 +30,22 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { RouterModule, Routes } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { DataSourceToolbarModule, DataTableModule, QbmModule } from 'qbm';
+import { DataSourceToolbarModule, DataTableModule, QbmModule, RouteGuardService } from 'qbm';
 import { UnsgroupsComponent } from './unsgroups.component';
 import { UnsgroupsService } from './unsgroups.service';
+
+
+const routes: Routes = [
+  {
+    path: 'resp/unsgroup',
+    component: UnsgroupsComponent,
+    canActivate: [RouteGuardService],
+    resolve: [RouteGuardService]
+  }
+];
 
 @NgModule({
   declarations: [
@@ -49,6 +60,7 @@ import { UnsgroupsService } from './unsgroups.service';
     MatInputModule,
     QbmModule,
     ReactiveFormsModule,
+    RouterModule.forChild(routes),
     TranslateModule
   ],
   providers: [

@@ -30,7 +30,7 @@ import { configureTestSuite } from 'ng-bullet';
 
 import { WebApplicationsComponent } from './web-applications.component';
 import { WebApplicationsService } from './web-applications.service';
-import { clearStylesFromDOM } from 'qbm';
+import { clearStylesFromDOM, SettingsService } from 'qbm';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { OpsupportWebapplications } from 'imx-api-qbm';
 
@@ -57,6 +57,10 @@ describe('WebApplicationsComponent', () => {
             hide: jasmine.createSpy('hide'),
             show: jasmine.createSpy('show')
           }
+        },
+        {
+          provide: SettingsService,
+          useValue:{DefaultPageSize: 25}
         }
       ],
       schemas: [

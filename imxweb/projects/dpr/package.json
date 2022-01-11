@@ -1,6 +1,7 @@
 {
   "name": "dpr",
-  "version": "0.0.1",
+  "version": "8.2.0",
+  "private": true,
   "peerDependencies": {
     "@angular/animations": "^9.1.13",
     "@angular/cdk": "^8.2.3",

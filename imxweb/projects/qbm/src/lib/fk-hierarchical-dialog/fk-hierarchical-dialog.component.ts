@@ -36,6 +36,7 @@ import { ConfirmationService } from '../confirmation/confirmation.service';
 import { DataTreeComponent } from '../data-tree/data-tree.component';
 import { ForeignKeyPickerData } from '../fk-advanced-picker/foreign-key-picker-data.interface';
 import { HierarchicalFkDatabase } from './hierarchical-fk-database';
+import { HierarchicalCandidate } from './hierarchical-candidate';
 
 @Component({
   selector: 'imx-fk-hierarchical-dialog',
@@ -50,6 +51,7 @@ export class FkHierarchicalDialogComponent implements OnInit, OnDestroy {
 
   public selectedEntities: IEntity[] = [];
 
+  public entitySchema = HierarchicalCandidate.GetEntitySchema();
 
   private isChanged = false;
   private closeClickSubscription: Subscription;

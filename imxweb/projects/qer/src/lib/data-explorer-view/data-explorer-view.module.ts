@@ -33,18 +33,19 @@ import { TranslateModule } from '@ngx-translate/core';
 import { DataExplorerViewComponent } from './data-explorer-view.component';
 import { DataExplorerRegistryService } from './data-explorer-registry.service';
 import { RouteGuardService } from 'qbm';
+import { ApplicationGuardService } from '../guards/application-guard.service';
 
 const routes: Routes = [
   {
     path: 'admin/dataexplorer',
     component: DataExplorerViewComponent,
-    canActivate: [RouteGuardService],
+    canActivate: [RouteGuardService, ApplicationGuardService],
     resolve: [RouteGuardService],
   },
   {
     path: 'admin/dataexplorer/:tab',
     component: DataExplorerViewComponent,
-    canActivate: [RouteGuardService],
+    canActivate: [RouteGuardService, ApplicationGuardService],
     resolve: [RouteGuardService],
   },
 ];

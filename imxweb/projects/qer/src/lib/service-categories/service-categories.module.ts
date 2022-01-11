@@ -34,7 +34,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import {
   CdrModule,
   ClassloggerService,
-  DataTreeModule,
+  DataTreeWrapperModule,
   MenuItem,
   MenuService,
   RouteGuardService
@@ -63,7 +63,7 @@ const routes: Routes = [
   imports: [
     CdrModule,
     CommonModule,
-    DataTreeModule,
+    DataTreeWrapperModule,
     EuiCoreModule,
     EuiMaterialModule,
     ReactiveFormsModule,
@@ -92,7 +92,7 @@ export class ServiceCategoriesModule {
             {
               id: 'QER_Setup_Servicecategories',
               route: 'configuration/servicecategories',
-              title: '#LDS#Heading Service Categories',
+              title: '#LDS#Menu Entry Service categories',
               sorting: '50-30'
             }
           );

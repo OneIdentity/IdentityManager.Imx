@@ -60,8 +60,6 @@ export class AppService {
   public async init(): Promise<void> {
     this.showSplash();
     try {
-      await this.config.init(environment.clientUrl);
-
       const title = `${'One Identity Starling -'} ${this.config.Config.Title}`;
       this.logger.debug(this, `Set page title to ${title}`);
       this.title.setTitle(title);

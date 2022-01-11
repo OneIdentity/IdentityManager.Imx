@@ -1,7 +1,7 @@
 {
   "name": "qer-app-portal",
-  "version": "0.0.0",
-  "license": "MIT",
+  "version": "8.2.0",
+  "private": true,
   "peerDependencies": {
   }
 }

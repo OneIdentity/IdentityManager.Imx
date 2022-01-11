@@ -30,7 +30,7 @@ import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnDestroy, Ou
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { Subscription } from 'rxjs';
 
-import { IEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, IEntity } from 'imx-qbm-dbts';
 import { TreeDatabase } from '../tree-database';
 import { TreeDatasource } from '../tree-datasource';
 import { TreeNode } from '../tree-node';
@@ -65,6 +65,9 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
   /** determines whether the control allows multiselect or not  */
   @Input() public withMultiSelect: boolean;
 
+  /** determines whether the control allows multiselect or not  */
+  @Input() public navigationState: CollectionLoadParameters;
+
   /**
    * Event, that will fire when the a node was selected and emitting a list of
    * {@link IEntity| Entities} of the selected node and it's parents.
@@ -97,11 +100,14 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
 
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
     this.checklistSelection = new SelectionModel<TreeNode>(this.withMultiSelect);
+    if (changes.navigationState) {
+      this.reload();
+    }
     if (changes.database) {
       this.logger.debug(this, `initialize the treeDatasource`);
       this.treeDataSource = new TreeDatasource(this.treeControl, this.database);
       this.treeDataSource.emptyNodeCaption = this.emptyNodeCaption;
-      this.treeDataSource.init(await this.database.initialize());
+      this.treeDataSource.init(await this.database?.initialize(this.navigationState));
       this.subscriptions.push(this.treeDataSource.dataChange.subscribe((elem) => this.updateCheckedTreeNodes(elem)));
 
       this.logger.debug(this, `toggle Node of the selected entity to load its children`);
@@ -145,7 +151,7 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
 
   /** forces the tree to reload everything */
   public async reload(): Promise<void> {
-    this.treeDataSource.init(await this.database.initialize());
+    this.treeDataSource?.init(await this.database?.initialize(this.navigationState));
   }
 
   public ngOnDestroy(): void {
@@ -217,7 +223,7 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
   }
 
   private async initializeTreeData(): Promise<void> {
-    this.treeDataSource.init(await this.database.initialize());
+    this.treeDataSource?.init(await this.database.initialize(this.navigationState));
   }
 
   private getSelectedItem(): string {

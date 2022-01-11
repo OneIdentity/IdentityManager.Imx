@@ -24,7 +24,7 @@
  *
  */
 
-import { Type } from '@angular/core';
+import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { OwnershipInformation } from 'imx-api-qer';
 import { CollectionLoadParameters, EntityData, EntitySchema, HierarchyData, IEntity, TypedEntityBuilder, ValType } from 'imx-qbm-dbts';
@@ -39,26 +39,34 @@ export class TreeDatabaseAdaptorService extends TreeDatabase {
     private readonly roleService: RoleService,
     private readonly settingsService: SettingsService,
     private readonly busyService: EuiLoadingService,
-    private readonly ownershipInfo: OwnershipInformation) {
+    private readonly ownershipInfo: OwnershipInformation,
+    type: any) {
     super();
     this.canSearch = true;
+    this.builder = new TypedEntityBuilder(type);
   }
 
-  public async getData(showLoading: boolean,
-                       parameter: CollectionLoadParameters = { parentKey: '' /* first level */ })
+  public async getData(
+    showLoading: boolean,
+    parameter: CollectionLoadParameters = { parentKey: '' /* first level */ })
     : Promise<TreeNodeResultParameter> {
     if (this.ownershipInfo == null) {
       return { entities: [], canLoadMore: false, totalCount: 0 };
     }
 
-    this.busyService.show();
+    let overlay: OverlayRef;
+
+    if (showLoading) {
+      setTimeout(() => { overlay = this.busyService.show(); });
+    }
 
     try {
       const navigationState = {
-        StartIndex: parameter.StartIndex ? parameter.StartIndex : 0,
-        PageSize: this.settingsService.DefaultPageSize,
-        parentKey: parameter.parentKey,
-        search: parameter.search,
+        ...parameter,
+        ...{
+          PageSize: this.settingsService.DefaultPageSize,
+          StartIndex: parameter.StartIndex ? parameter.StartIndex : 0
+        }
       };
 
       const data = await this.roleService.getEntitiesForTree(this.ownershipInfo, navigationState);
@@ -76,16 +84,16 @@ export class TreeDatabaseAdaptorService extends TreeDatabase {
       }
       return { entities: [], canLoadMore: false, totalCount: 0 };
     } finally {
-      this.busyService.hide();
+
+      if (showLoading) {
+        setTimeout(() => { this.busyService.hide(overlay); });
+      }
     }
   }
 
-  public async prepare(entitySchema: EntitySchema,
-                       type: Type<any>,
-                       navigationState: CollectionLoadParameters): Promise<void> {
+  public async prepare(
+    entitySchema: EntitySchema): Promise<void> {
     this.entitySchema = entitySchema;
-    this.builder = new TypedEntityBuilder(type);
-    await this.getData(true, navigationState);
     this.reloadData();
   }
 

@@ -68,7 +68,7 @@ export class AppService {
 
     this.authentication.onSessionResponse.subscribe(sessionState => this.translationProvider.init(sessionState?.culture));
 
-    this.session.TypedClient = new TypedClient(this.config.client, this.translationProvider);
+    this.session.TypedClient = new TypedClient(this.config.v2client, this.translationProvider);
 
     await this.pluginLoader.loadModules(environment.appName);
   }

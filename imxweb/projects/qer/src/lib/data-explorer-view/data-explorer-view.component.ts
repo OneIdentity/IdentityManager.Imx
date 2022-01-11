@@ -161,6 +161,7 @@ export class DataExplorerViewComponent implements OnInit, OnDestroy {
     const component =
       this.sideNavContentRef.createComponent(this.componentFactoryResolver.resolveComponentFactory(selectedPageItem.instance));
     component.instance.data = selectedPageItem.data;
+    component.instance.isAdmin = true;
   }
 
 

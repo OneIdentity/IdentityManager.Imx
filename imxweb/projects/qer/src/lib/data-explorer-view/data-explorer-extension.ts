@@ -25,9 +25,9 @@
  */
 
 import { Type } from '@angular/core';
-import { IExtension } from 'qbm';
+import { AdminComponent, IExtension } from 'qbm';
 
-export interface IDataExplorerComponent {
+export interface IDataExplorerComponent extends AdminComponent {
   data?: any;
 }
 

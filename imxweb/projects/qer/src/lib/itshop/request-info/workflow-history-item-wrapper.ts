@@ -35,7 +35,7 @@ export class WorkflowHistoryItemWrapper {
 
   constructor(public readonly approveHistory: PortalItshopApproveHistory, public readonly decisionHistory: DecisionHistoryService) {
     this.approver = this.createApproverCdr(this.approveHistory),
-    this.columns = this.createCdrList(this.approveHistory);
+      this.columns = this.createCdrList(this.approveHistory);
   }
 
   public getReasonDisplay(): string {
@@ -73,7 +73,8 @@ export class WorkflowHistoryItemWrapper {
     ];
 
     const customDisplays = {
-      UID_PersonRelated: ['Query', 'AddInsteadOf', 'AddAdditional'].includes(historyItem.DecisionType.value) ? '#LDS#Recipient' : undefined
+      UID_PersonRelated: historyItem.DecisionType.value === 'AddInsteadOf' ? '#LDS#Delegated Approver' :
+        ['Query', 'AddAdditional'].includes(historyItem.DecisionType.value) ? '#LDS#Recipient' : undefined
     };
 
     return properties.filter(property => this.isToView(property)).map(property =>

@@ -129,7 +129,6 @@ export class ReportsComponent {
     this.paramSelectPending = true;
     this.accountTableName = undefined;
     let getReportData: Promise<any>;
-
     switch (this.reportParam) {
       case 'person':
         getReportData = this.identitiesReports.personData(search);
@@ -157,14 +156,14 @@ export class ReportsComponent {
     let url = '';
 
     switch (this.reportCategory) {
-      case 'persons':
-        url = this.identitiesReports[`${this.reportType}Report`](this.historyDays, this.param)
+      case 'identities':
+        url = this.identitiesReports[`${this.reportType}Report`](this.historyDays, this.param);
         break;
       case 'accounts':
-        url = this.accountsReports[`${this.reportType}Report`](this.historyDays, this.param, this.accountTableName)
+        url = this.accountsReports[`${this.reportType}Report`](this.historyDays, this.param, this.accountTableName);
         break;
       case 'groups':
-        url = this.groupsReports[`${this.reportType}Report`](this.historyDays, this.param)
+        url = this.groupsReports[`${this.reportType}Report`](this.historyDays, this.param);
         break;
     }
 

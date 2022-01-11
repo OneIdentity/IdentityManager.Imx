@@ -47,6 +47,7 @@ export class JobsComponent implements OnInit {
 
   public selectedFilter = '';
   public filters: FilterDescription[];
+  public isShowGraph = false;
 
   private lastChecked: FilterTileComponent;
 

@@ -5,6 +5,23 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "ARC CertAccess",
+      "request": "launch",
+      "type": "pwa-chrome",
+      "url": "http://localhost:4200/",
+      "webRoot": "${workspaceFolder}",
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/*",
+        "webpack:///src/*": "${webRoot}/*",
+        "webpack:///*": "*",
+        "webpack:///./~/*": "${webRoot}/node_modules/*",
+        "webpack:///ng://qbm/lib/*": "${workspaceFolder}/projects/att/src/lib/*",
+        "webpack:///ng://qer/lib/*": "${workspaceFolder}/projects/o3t/src/lib/*",
+        "webpack:///ng://tsb/lib/*": "${workspaceFolder}/projects/rps/src/lib/*",
+        "webpack:///ng://att/lib/*": "${workspaceFolder}/projects/tsb/src/lib/*"
+      }
+    },
+    {
       "name": "QER Ops Web (Chrome)",
       "type": "chrome",
       "request": "launch",

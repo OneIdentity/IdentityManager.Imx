@@ -39,11 +39,12 @@ export class EntityPropertyEditorComponent implements OnChanges {
 
   @Input() public property: EntityValue<any>;
   @Input() public hideIfEmpty = true;
+  @Input() public caption: string;
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes.property) {
       this.cdr = this.property && (!this.hideIfEmpty || (this.property.value != null && this.property.value !== '')) ?
-        new BaseCdr(this.property.Column) : undefined;
+        new BaseCdr(this.property.Column, this.caption) : undefined;
     }
   }
 }

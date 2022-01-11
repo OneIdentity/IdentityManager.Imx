@@ -907,6 +907,8 @@
             "styles": [
               "projects/arc-app-certaccess/src/styles.scss",
               "projects/qbm/src/lib/styles/imx-page-title.scss",
+              "projects/qbm/src/lib/styles/data-explorer-common.scss",
+              "projects/qbm/src/lib/styles/data-explorer-details-common.scss",
               "shared/assets/styles.scss",
               "shared/assets/variables.scss"
             ],

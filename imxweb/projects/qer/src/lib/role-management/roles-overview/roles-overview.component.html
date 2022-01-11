@@ -3,15 +3,9 @@
 </h1>
 
 <ng-container *ngIf="!useTree">
-  <imx-data-source-toolbar
-    #dst
-    data-imx-identifier="roles-overview-data-source-toolbar"
-    [settings]="dstSettings"
-    [hiddenElements]="['settings', 'selectedViewGroup']"
-    [searchBoxText]="'#LDS#Search' | translate"
-    (navigationStateChanged)="onNavigationStateChanged($event)"
-    (search)="onSearch($event)"
-  >
+  <imx-data-source-toolbar #dst data-imx-identifier="roles-overview-data-source-toolbar" [settings]="dstSettings"
+    [hiddenElements]="['settings', 'selectedViewGroup']" [searchBoxText]="'#LDS#Search' | translate"
+    (navigationStateChanged)="onNavigationStateChanged($event)" (search)="onSearch($event)">
   </imx-data-source-toolbar>
   <imx-data-table #dataTable data-imx-identifier="roles-overview-data-table" [dst]="dst" detailViewVisible="false"
     mode="manual">
@@ -44,6 +38,10 @@
       <span>{{ ownershipInfo?.TableNameDisplay }}</span>
     </div>
   </div>
-  <imx-data-tree data-imx-identifier="roles-overview-data-tree" [database]="treeDatabase"
-    (nodeSelected)="onNodeSelected($event)" [searchResultAction]="searchResultAction"></imx-data-tree>
+  <div class="imx-card-content">
+    <imx-data-tree-wrapper data-imx-identifier="roles-overview-data-tree" [database]="treeDatabase"
+      [filters]="filterOptions" [entitySchema]="entitySchema" (nodeSelected)="onNodeSelected($event)"
+      [searchResultAction]="searchResultAction">
+    </imx-data-tree-wrapper>
+  </div>
 </mat-card>

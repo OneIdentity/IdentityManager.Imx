@@ -45,21 +45,24 @@ imx-data-table {
   }
 }
 
-
 .imx-data-tree-container {
-  overflow: auto;
+  overflow: hidden;
   max-width: 1200px;
   background-color: $white;
   display: flex;
   flex-direction: column;
-
-  >:first-child {
-    flex: 1 1 auto;
-  }
+  height: 100%;
 
   .imx-create-button {
     margin-top: 20px;
     display: flex;
     justify-content: end;
   }
+}
+
+.imx-card-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow: hidden;
 }

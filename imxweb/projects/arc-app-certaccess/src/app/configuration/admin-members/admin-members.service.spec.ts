@@ -30,7 +30,8 @@ import { configureTestSuite } from 'ng-bullet';
 
 import { PortalAdminApplicationroleMembers } from 'imx-api-qer';
 import { AdminMembersService } from './admin-members.service';
-import { QerApiService } from 'qer';
+import { ArcApiService } from '../../services/arc-api-client.service';
+
 
 describe('AdminMembersService', () => {
   let service: AdminMembersService;
@@ -57,7 +58,7 @@ describe('AdminMembersService', () => {
       providers: [
         AdminMembersService,
         {
-          provide: QerApiService,
+          provide: ArcApiService,
           useValue: {
             typedClient: {
               PortalAdminApplicationroleMembers: roleMembersStub

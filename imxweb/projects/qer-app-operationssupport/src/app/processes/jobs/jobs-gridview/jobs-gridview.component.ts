@@ -30,7 +30,7 @@ import { EuiLoadingService, EuiSidesheetConfig, EuiSidesheetService } from '@ele
 
 import { OpsupportQueueJobs, ReactivateJobMode } from 'imx-api-qbm';
 import { OpsupportQueueJobsParameters, QueueJobsService } from '../queue-jobs.service';
-import { SnackBarService, TextContainer, DataSourceToolbarSettings } from 'qbm';
+import { SnackBarService, TextContainer, DataSourceToolbarSettings, SettingsService } from 'qbm';
 import { CollectionLoadParameters, EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
 import { SingleFrozenJobComponent } from '../../frozen-jobs/single-frozen-job.component';
 import { TranslateService } from '@ngx-translate/core';
@@ -64,6 +64,7 @@ export class JobsGridviewComponent implements OnChanges {
     private readonly sideSheet: EuiSidesheetService,
     private busyService: EuiLoadingService,
     private readonly translator: TranslateService,
+    private readonly settings: SettingsService,
     private jobService: QueueJobsService
   ) {
     this.entitySchemaJobs = jobService.EntitySchema;
@@ -79,7 +80,7 @@ export class JobsGridviewComponent implements OnChanges {
   }
 
   public async ngOnChanges(): Promise<void> {
-    this.getData({ ...this.filterSetting, ...{ StartIndex: 0, PageSize: 25 } });
+    this.getData({ ...this.filterSetting, ...{ StartIndex: 0, PageSize: this.settings.DefaultPageSize } });
   }
 
   public onSearch(keywords: string): Promise<void> {

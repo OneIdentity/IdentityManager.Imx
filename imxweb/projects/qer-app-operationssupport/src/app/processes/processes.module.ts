@@ -37,8 +37,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatMenuModule } from '@angular/material/menu';
 import { FormsModule } from '@angular/forms';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
-import { DataSourceToolbarModule, DataTableModule, LdsReplaceModule, QbmModule } from 'qbm';
+
+import { DataSourceToolbarModule, DataTableModule, JobQueueOverviewModule, LdsReplaceModule, QbmModule } from 'qbm';
 import { FrozenJobsComponent } from './frozen-jobs/frozen-jobs.component';
 import { SingleFrozenJobComponent } from './frozen-jobs/single-frozen-job.component';
 import { JobChainsComponent } from './job-chains/job-chains.component';
@@ -82,7 +84,9 @@ import { MatRadioModule } from '@angular/material/radio';
     MatGridListModule,
     MatCardModule,
     MatMenuModule,
-    FormsModule
+    FormsModule,
+    MatSlideToggleModule,
+    JobQueueOverviewModule
   ],
   providers: [
     QueueTreeService,

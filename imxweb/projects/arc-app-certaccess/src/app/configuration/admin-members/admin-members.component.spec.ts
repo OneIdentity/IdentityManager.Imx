@@ -28,15 +28,16 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { configureTestSuite } from 'ng-bullet';
+import { TranslateModule } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 
-import { AuthenticationService, clearStylesFromDOM, HELPER_ALERT_KEY_PREFIX, StorageService } from 'qbm';
+import { AuthenticationService, clearStylesFromDOM, HELPER_ALERT_KEY_PREFIX, SnackBarService, StorageService } from 'qbm';
 import { AdminMembersService } from './admin-members.service';
 import { AdminMembersComponent } from './admin-members.component';
 import { PortalAdminApplicationroleMembers } from 'imx-api-qer';
 import { RequestsConfigurationCommonMocks } from '../test/requests-configuration-mocks';
-import { QerApiService } from 'qer';
 import { EntitySchema, ValType } from 'imx-qbm-dbts';
+import { ArcApiService } from '../../services/arc-api-client.service';
 
 describe('AdminMembersComponent', () => {
   let component: AdminMembersComponent;
@@ -87,16 +88,25 @@ describe('AdminMembersComponent', () => {
       declarations: [
         AdminMembersComponent
       ],
-      imports: [MatDialogModule],
+      imports: [
+        MatDialogModule,        
+        TranslateModule.forRoot()
+      ],
       providers: [
         {
-          provide: QerApiService,
+          provide: ArcApiService,
           useValue: {
             typedClient: {
               PortalAdminApplicationroleMembers: {
                 GetSchema: () => schema
               }
             }
+          }
+        },
+        {
+          provide: SnackBarService,
+          useValue: {
+            open: jasmine.createSpy('open')
           }
         },
         {

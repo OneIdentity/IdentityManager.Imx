@@ -25,7 +25,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Client, TypedClient } from 'imx-api-aob';
+import { V2Client, Client, TypedClient } from 'imx-api-aob';
 import { ApiClient } from 'imx-qbm-dbts';
 import { AppConfigService, ClassloggerService, ImxTranslationProviderService } from 'qbm';
 
@@ -57,7 +57,7 @@ export class AobApiService {
       // Use schema loaded by QBM client
       const schemaProvider = config.client;
       this.c = new Client(config.apiClient, schemaProvider);
-      this.tc = new TypedClient(this.c, this.translationProvider);
+      this.tc = new TypedClient(new V2Client(config.apiClient, schemaProvider), this.translationProvider);
     } catch (e) {
       this.logger.error(this, e);
     }

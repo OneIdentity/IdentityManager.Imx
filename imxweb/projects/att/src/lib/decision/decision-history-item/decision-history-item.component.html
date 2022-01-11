@@ -50,8 +50,9 @@
       <imx-entity-property-editor *ngIf="workflowHistoryEntity.RulerLevel?.value !== 0"
         [property]="workflowHistoryEntity.RulerLevel"></imx-entity-property-editor>
       <imx-entity-property-editor [property]="workflowHistoryEntity.UID_PWODecisionRule"></imx-entity-property-editor>
-      <imx-entity-property-editor
-        *ngIf="['AddInsteadOf', 'AddAdditional'].includes(workflowHistoryEntity.DecisionType?.value)"
+      <imx-entity-property-editor 
+      [caption]="workflowHistoryEntity.DecisionType?.value === 'AddInsteadOf' ? ('#LDS#Delegated approver' | translate): undefined"
+           *ngIf="['AddInsteadOf', 'AddAdditional'].includes(workflowHistoryEntity.DecisionType?.value)"
         [property]="workflowHistoryEntity.UID_PersonRelated"></imx-entity-property-editor>
 
       <div *ngIf="workflowHistoryEntity.DecisionType?.value == 'Query'">

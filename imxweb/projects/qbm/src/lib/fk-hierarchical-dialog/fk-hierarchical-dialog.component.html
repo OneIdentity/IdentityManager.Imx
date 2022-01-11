@@ -20,10 +20,10 @@
       </mat-radio-button>
     </mat-radio-group>
 
-    <imx-data-tree #fkTree [withMultiSelect]="data.isMultiValue" [selectedEntities]="selectedEntities"
-      [database]="hierarchyService" (checkedNodesChanged)="selectedNodesChanged()"
+    <imx-data-tree-wrapper #fkTree [withMultiSelect]="data.isMultiValue" [selectedEntities]="selectedEntities"
+      [database]="hierarchyService" (checkedNodesChanged)="selectedNodesChanged()" [entitySchema]="entitySchema"
       (nodeSelected)="onNodeSelected($event)">
-    </imx-data-tree>
+    </imx-data-tree-wrapper>
   </mat-card>
 </div>
 

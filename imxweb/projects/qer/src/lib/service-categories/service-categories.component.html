@@ -17,12 +17,12 @@
 </div>
 
 <mat-card *ngIf="hasData; else nonExisting" class="imx-data-tree">
-  <imx-data-tree [selectedEntities]="selectedEntities"
+  <imx-data-tree-wrapper [selectedEntities]="selectedEntities"
     [database]="treeDatabase" (nodeSelected)="onServiceCategorySelected($event)"
     [searchResultAction]="searchResultAction"
     [emptyNodeCaption]="'#LDS#New service category' | translate"
     data-imx-identifier="servicecategory-list-data-tree-categorytree">
-  </imx-data-tree>
+  </imx-data-tree-wrapper>
   <div class="imx-create-button">
     <button mat-stroked-button color="primary" (click)="addServiceCategory()"
       data-imx-identifier="service-categories-button-create-new">
