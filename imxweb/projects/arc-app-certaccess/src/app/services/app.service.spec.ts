@@ -62,7 +62,6 @@ describe('AppService', () => {
     };
 
     appConfigService = {
-      init: jasmine.createSpy('init'),
       Config: { Translation: {} }
     };
 
@@ -73,7 +72,6 @@ describe('AppService', () => {
       this.translate.use.calls.reset();
       this.translationProvider.init.calls.reset();
       this.title.setTitle.calls.reset();
-      this.appConfigService.init.calls.reset();
     }
 
     check(): void {
@@ -83,7 +81,6 @@ describe('AppService', () => {
       expect(this.translate.use).toHaveBeenCalled();
       expect(this.translationProvider.init).toHaveBeenCalled();
       expect(this.title.setTitle).toHaveBeenCalled();
-      expect(this.appConfigService.init).toHaveBeenCalled();
     }
   }
 

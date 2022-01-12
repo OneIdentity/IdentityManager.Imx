@@ -25,7 +25,7 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { NgModule, APP_INITIALIZER, Inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   CdrModule,
@@ -39,6 +39,7 @@ import {
   TileModule,
   DataTreeModule,
   FkAdvancedPickerModule,
+  AppConfigService,
 } from 'qbm';
 import { RouterModule, Routes } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
@@ -81,11 +82,7 @@ const routes: Routes = [
 
 // @dynamic
 @NgModule({
-  declarations: [
-    StarlingComponent,
-    StartComponent,
-    BusinessOwnerChartSummaryComponent,
-  ],
+  declarations: [StarlingComponent, StartComponent, BusinessOwnerChartSummaryComponent],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
@@ -110,7 +107,7 @@ const routes: Routes = [
     ShoppingCartValidationDetailModule,
     FkAdvancedPickerModule,
     OpsModule,
-    DataExplorerViewModule
+    DataExplorerViewModule,
   ],
   exports: [StarlingComponent, PasscodeViewerComponent, ObjectOverviewPersonComponent],
   providers: [
@@ -124,7 +121,16 @@ const routes: Routes = [
   ],
 })
 export class QerModule {
-  constructor(logger: ClassloggerService) {
+  constructor(
+    logger: ClassloggerService,
+    private readonly config: AppConfigService,
+    @Inject('environment') private readonly environment,
+    @Inject('appConfigJson') private readonly appConfigJson) {
     logger.info(this, '▶️ QerModule loaded');
+
+    this.config.init2(this.environment.clientUrl, this.appConfigJson);
+    (async () => {
+      await this.config.loadSchema2();
+    })();
   }
 }

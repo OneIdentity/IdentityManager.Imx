@@ -39,7 +39,7 @@ import { DataExplorerAccountsComponent } from './accounts/accounts.component';
 import { isTsbNameSpaceAdminBase } from './admin/tsb-permissions-helper';
 import { DataExplorerGroupsComponent } from './groups/groups.component';
 import { IdentityGroupMembershipService } from './groups/identity-group-membership/identity-group-membership.service';
-import { RequestableSystemEntitlementType } from './itshop/requestable-sysentl-type';
+import { RequestableEntitlementType } from 'qer';
 import { UnsGroupObjectSheetComponent } from './objectsheet-unsgroup/unsgroup.component';
 import { TsbApiService } from './tsb-api-client.service';
 
@@ -95,6 +95,13 @@ export class InitService {
         };
       },
     );
+
+    this.entlTypeService.Register(async () => [
+      new RequestableEntitlementType("TSBAccountDef",
+        this.tsbApiService.apiClient,
+        "UID_TSBAccountDef",
+        this.dynamicMethodService)
+    ]);
   }
 
   private async loadUnsTypes(): Promise<IRequestableEntitlementType[]> {
@@ -105,8 +112,8 @@ export class InitService {
     const config = await this.cachedUnsConfig;
     const types: IRequestableEntitlementType[] = [];
     for (const key of Object.keys(config.ShopAssign)) {
-      types.push(new RequestableSystemEntitlementType(key,
-        this.tsbApiService,
+      types.push(new RequestableEntitlementType(key,
+        this.tsbApiService.apiClient,
         config.ShopAssign[key].GroupColumnName,
         this.dynamicMethodService));
     }

@@ -33,7 +33,7 @@ import { configureTestSuite } from 'ng-bullet';
 
 import { JobsGridviewComponent } from './jobs-gridview.component';
 import { QueueJobsService } from '../queue-jobs.service';
-import { SnackBarService, clearStylesFromDOM } from 'qbm';
+import { SnackBarService, clearStylesFromDOM, SettingsService } from 'qbm';
 import { DummyJobData } from '../../../test-utilities/imx-api-mock.spec';
 import { TranslationProviderServiceSpy } from '../../../test-utilities/imx-translation-provider.service.spy.spec';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
@@ -92,6 +92,10 @@ describe('JobsGridviewComponent', () => {
             public open = jasmine.createSpy('open');
             public dismiss = jasmine.createSpy('dismiss');
           }
+        },
+        {
+          provide: SettingsService,
+          useValue:{DefaultPageSize: 25}
         }
       ],
       schemas: [

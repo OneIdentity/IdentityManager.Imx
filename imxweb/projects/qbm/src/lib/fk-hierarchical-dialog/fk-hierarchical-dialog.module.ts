@@ -36,8 +36,8 @@ import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 
 import { FkHierarchicalDialogComponent } from './fk-hierarchical-dialog.component';
-import { DataTreeModule } from '../data-tree/data-tree.module';
 import { ConfirmationModule } from '../confirmation/confirmation.module';
+import { DataTreeWrapperModule } from '../data-tree-wrapper/data-tree-wrapper.module';
 
 @NgModule({
 
@@ -52,7 +52,7 @@ import { ConfirmationModule } from '../confirmation/confirmation.module';
     MatCardModule,
     MatRadioModule,
     MatSelectModule,
-    DataTreeModule,
+    DataTreeWrapperModule,
     ConfirmationModule
   ],
   exports: [FkHierarchicalDialogComponent]

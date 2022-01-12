@@ -24,19 +24,43 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReportsComponent } from './reports.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterModule, Routes } from '@angular/router';
 import { EuiMaterialModule, EuiCoreModule } from '@elemental-ui/core';
-import { ReportsService } from './reports.service';
+import { TranslateModule } from '@ngx-translate/core';
+
+import { RouteGuardService } from 'qbm';
 import { IdentitiesReportsService } from 'qer';
 import { AccountsReportsService, GroupsReportsService } from 'tsb';
+import { ReportsComponent } from './reports.component';
+import { ReportsService } from './reports.service';
+import { AdminGuardService } from '../services/admin-guard.service';
+
+const routes: Routes = [
+  {
+    path: 'data/reports',
+    component: ReportsComponent,
+    canActivate: [RouteGuardService, AdminGuardService],
+    resolve: [RouteGuardService],
+  }
+];
 
 @NgModule({
   declarations: [ReportsComponent],
-  imports: [CommonModule, EuiMaterialModule, EuiCoreModule, FormsModule, TranslateModule],
-  providers: [ReportsService, IdentitiesReportsService, AccountsReportsService, GroupsReportsService],
+  imports: [
+    CommonModule,
+    EuiCoreModule,
+    EuiMaterialModule,
+    FormsModule,
+    RouterModule.forChild(routes),
+    TranslateModule
+  ],
+  providers: [
+    ReportsService, 
+    IdentitiesReportsService, 
+    AccountsReportsService, 
+    GroupsReportsService],
 })
 export class ReportsModule { }

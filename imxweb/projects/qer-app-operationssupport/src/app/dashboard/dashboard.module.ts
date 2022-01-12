@@ -34,8 +34,6 @@ import { ObjectSearchModule } from '../object-search/object-search.module';
 import { ServiceIssuesModule } from '../information/service-issues/service-issues.module';
 import { ServiceReportModule } from '../service-report/service-report.module';
 
-
-
 @NgModule({
   declarations: [DashboardComponent],
   imports: [

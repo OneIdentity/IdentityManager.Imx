@@ -27,15 +27,15 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataExplorerComponent } from './data-explorer.component';
-import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { TranslateModule } from '@ngx-translate/core';
-import { DataSourceToolbarModule, DataTableModule, CdrModule, LdsReplaceModule, DataTreeModule } from 'qbm';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
 
+import { DataSourceToolbarModule, DataTableModule, CdrModule, LdsReplaceModule, DataTreeModule, RouteGuardService } from 'qbm';
 import { DeleteDataComponent } from './delete-data/delete-data.component';
 import { DataIssuesComponent } from './data-issues/data-issues.component';
 import { DataIssuesService } from './data-issues/data-issues.service';
@@ -48,6 +48,34 @@ import {
   GroupsModule
 } from 'tsb';
 import { TeamsModule } from 'o3t';
+import { AdminGuardService } from '../services/admin-guard.service';
+
+const routes: Routes = [
+  {
+    path: 'data/explorer',
+    component: DataExplorerComponent,
+    canActivate: [RouteGuardService, AdminGuardService],
+    resolve: [RouteGuardService],
+  },
+  {
+    path: 'data/explorer/:tab',
+    component: DataExplorerComponent,
+    canActivate: [RouteGuardService, AdminGuardService],
+    resolve: [RouteGuardService],
+  },
+  {
+    path: 'data/explorer/:tab/:issues',
+    component: DataExplorerComponent,
+    canActivate: [RouteGuardService, AdminGuardService],
+    resolve: [RouteGuardService],
+  },
+  {
+    path: 'data/explorer/:tab/:issues/:mode',
+    component: DataExplorerComponent,
+    canActivate: [RouteGuardService, AdminGuardService],
+    resolve: [RouteGuardService],
+  }
+];
 
 @NgModule({
   declarations: [
@@ -68,7 +96,7 @@ import { TeamsModule } from 'o3t';
     EuiCoreModule,
     EuiMaterialModule,
     CdrModule,
-    RouterModule,
+    RouterModule.forChild(routes),
     MatExpansionModule,
     MatIconModule,
     MatSidenavModule,

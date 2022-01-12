@@ -72,7 +72,7 @@ export class RolesOverviewComponent implements OnInit, IDataExplorerComponent {
   public ValType = ValType;
   public treeDatabase: TreeDatabaseAdaptorService;
   public searchResultAction: SearchResultAction;
-  private filterOptions: DataSourceToolbarFilter[] = [];
+  public filterOptions: DataSourceToolbarFilter[] = [];
 
   constructor(
     private readonly sidesheet: EuiSidesheetService,
@@ -116,18 +116,20 @@ export class RolesOverviewComponent implements OnInit, IDataExplorerComponent {
 
     this.ownershipInfo.TableNameDisplay = table.Display;
 
-    this.treeDatabase = new TreeDatabaseAdaptorService(this.roleService, this.settings, this.busyService, this.ownershipInfo);
+    const type  = this.roleService.getType(this.ownershipInfo, true);
+
+    this.treeDatabase = new TreeDatabaseAdaptorService(this.roleService, this.settings, this.busyService, this.ownershipInfo, type);
 
     if (!this.roleService.exists(this.ownershipInfo)) {
       return;
     }
     this.isAdmin = this.route.snapshot?.url[0]?.path === 'admin';
-    // TODO later: useTree unabhängig vom Tabellennamen bestimmen (z.B. Hierarchy != null,
-    // derzeit geht diese Information leider verloren)
-    this.useTree = this.isAdmin && this.ownershipInfo.TableName !== 'ESet';
-
-    this.isAdmin = this.route.snapshot?.url[0]?.path === 'admin';
-
+    setTimeout(() => { this.busyService.show(); });
+    try {
+      this.useTree = this.isAdmin && (await this.roleService.getEntitiesForTree(this.ownershipInfo, { PageSize: 1 })).Hierarchy != null;
+    } finally {
+      setTimeout(() => { this.busyService.hide(); });
+    }
     this.navigationState = {
       // empty string: load first level
       parentKey: ''
@@ -140,7 +142,14 @@ export class RolesOverviewComponent implements OnInit, IDataExplorerComponent {
         Type: ValType.String,
       },
     ];
-    await this.navigate(true);
+
+    setTimeout(() => { this.busyService.show(); });
+    try {
+      this.filterOptions = (await this.roleService.getDataModel(this.ownershipInfo, this.isAdmin))?.Filters;
+    } finally {
+      setTimeout(() => { this.busyService.hide(); });
+    }
+    await this.navigate();
 
   }
 
@@ -148,14 +157,14 @@ export class RolesOverviewComponent implements OnInit, IDataExplorerComponent {
     if (newState) {
       this.navigationState = newState;
     }
-    await this.navigate(false);
+    await this.navigate();
   }
 
   public async onSearch(keywords: string): Promise<void> {
     this.logger.debug(this, `Searching for: ${keywords}`);
     this.navigationState.StartIndex = 0;
     this.navigationState.search = keywords;
-    await this.navigate(true);
+    await this.navigate();
   }
 
   public async showDetails(item: TypedEntity): Promise<void> {
@@ -191,16 +200,13 @@ export class RolesOverviewComponent implements OnInit, IDataExplorerComponent {
     });
 
     sidesheetRef.afterClosed().subscribe(async (result) => {
-      await this.navigate(true);
+      await this.navigate();
     });
   }
 
-  private async navigate(withFilter: boolean): Promise<void> {
+  private async navigate(): Promise<void> {
     this.busyService.show();
     try {
-      if (withFilter) {
-        this.filterOptions = (await this.roleService.getDataModel(this.ownershipInfo, this.isAdmin))?.Filters;
-      }
       this.useTree ? await this.navigateInTree() : await this.navigateWithTable();
     } finally {
       this.busyService.hide();
@@ -209,9 +215,7 @@ export class RolesOverviewComponent implements OnInit, IDataExplorerComponent {
 
   private async navigateInTree(): Promise<void> {
     await this.treeDatabase.prepare(
-      this.roleService.getRoleEntitySchema(this.ownershipInfo),
-      this.roleService.getType(this.ownershipInfo, true),
-      { StartIndex: 0, PageSize: this.settings.DefaultPageSize });
+      this.roleService.getRoleEntitySchema(this.ownershipInfo));
   }
 
   private async navigateWithTable(): Promise<void> {

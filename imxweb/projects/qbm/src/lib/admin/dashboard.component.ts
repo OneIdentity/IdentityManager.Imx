@@ -52,16 +52,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     async ngOnInit() {
-
-        /* not used for now
-        this.src = new EventSource(this.appConfigService.BaseUrl + "/admin/status", {
-            withCredentials: true
-        });
-
-        this.src.onmessage = evt => {
-            this.statusData = JSON.parse(evt.data);
-        };
-        */
     }
 
     ngOnDestroy() {

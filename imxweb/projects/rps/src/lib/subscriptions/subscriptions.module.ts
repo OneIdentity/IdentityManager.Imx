@@ -24,11 +24,12 @@
  *
  */
 
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
-import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ScrollingModule } from '@angular/cdk/scrolling';
+import { RouterModule, Routes } from '@angular/router';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
 import {
@@ -37,7 +38,8 @@ import {
   DataSourceToolbarModule,
   DataTableModule,
   LdsReplaceModule,
-  MultiSelectFormcontrolModule
+  MultiSelectFormcontrolModule,
+  RouteGuardService
 } from 'qbm';
 import { ReportSelectorComponent } from './subscription-wizard/report-selector/report-selector.component';
 import { ReportSubscriptionService } from './report-subscription/report-subscription.service';
@@ -47,6 +49,16 @@ import { SubscriptionPropertiesComponent } from './subscription-properties/subsc
 import { SubscriptionsComponent } from './subscriptions.component';
 import { SubscriptionsService } from './subscriptions.service';
 import { SubscriptionWizardComponent } from './subscription-wizard/subscription-wizard.component';
+
+
+const routes: Routes = [
+  {
+    path: 'reportsubscriptions',
+    component: SubscriptionsComponent,
+    canActivate: [RouteGuardService],
+    resolve: [RouteGuardService]
+  }
+];
 
 @NgModule({
   declarations: [
@@ -68,6 +80,7 @@ import { SubscriptionWizardComponent } from './subscription-wizard/subscription-
     LdsReplaceModule,
     MultiSelectFormcontrolModule,
     ReactiveFormsModule,
+    RouterModule.forChild(routes),
     ScrollingModule,
     TranslateModule
   ],

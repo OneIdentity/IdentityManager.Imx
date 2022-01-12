@@ -36,13 +36,13 @@ import {
 } from 'imx-qbm-dbts';
 import { PortalAdminApplicationrole, PortalAdminApplicationroleMembers } from 'imx-api-qer';
 import { ISessionState } from 'qbm';
-import { QerApiService } from 'qer';
+import { ArcApiService } from '../../services/arc-api-client.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminMembersService {
-  constructor(private readonly apiClient: QerApiService, private readonly loader: EuiLoadingService) { }
+  constructor(private readonly apiClient: ArcApiService, private readonly loader: EuiLoadingService) { }
 
   public get adminApplicationRoleMembersSchema(): EntitySchema {
     return this.apiClient.typedClient.PortalAdminApplicationroleMembers.GetSchema();
@@ -99,7 +99,7 @@ export class AdminMembersService {
   public async add(uidAeRole: string, uidPersons: string[]): Promise<TypedEntityCollectionData<PortalAdminApplicationroleMembers>[]> {
     return this.handlePromiseLoader(
       Promise.all(uidPersons.map(async uidPerson => {
-        const member = this.createNew();
+        const member = this.createNew(uidAeRole);
         await member.UID_Person.Column.PutValue(uidPerson);
         return this.apiClient.typedClient.PortalAdminApplicationroleMembers.Post(uidAeRole, member);
       }))
@@ -114,8 +114,14 @@ export class AdminMembersService {
     );
   }
 
-  public createNew(): PortalAdminApplicationroleMembers {
-    return this.apiClient.typedClient.PortalAdminApplicationroleMembers.createEntity();
+  public createNew(uidAeRole: string): PortalAdminApplicationroleMembers {
+    return this.apiClient.typedClient.PortalAdminApplicationroleMembers.createEntity({
+      Columns: {
+        UID_AERole: {
+          Value: uidAeRole
+        }
+      }
+    });
   }
 
   private async handlePromiseLoader<T>(promise: Promise<T>): Promise<T> {

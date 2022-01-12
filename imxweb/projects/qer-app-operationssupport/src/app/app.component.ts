@@ -30,7 +30,7 @@ import { Router, RouterEvent, NavigationStart, NavigationEnd, NavigationError, N
 import { EuiLoadingService } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
-import { MenuItem, AuthenticationService, ISessionState, MenuService } from 'qbm';
+import { MenuItem, AuthenticationService, ISessionState, MenuService, SettingsService, imx_SessionService } from 'qbm';
 import { UserService } from './user/user.service';
 
 @Component({
@@ -51,7 +51,9 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly busyService: EuiLoadingService,
     private readonly router: Router,
     private readonly menuService: MenuService,
-    private readonly userModelService: UserService
+    private readonly userModelService: UserService,
+    sessionService: imx_SessionService,
+    settings: SettingsService
   ) {
 
     this.setupMenu();
@@ -60,6 +62,9 @@ export class AppComponent implements OnInit, OnDestroy {
       this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
         this.isLoggedIn = sessionState.IsLoggedIn;
         if (this.isLoggedIn) {
+          const conf = await sessionService.Client.opsupport_config_get();
+          settings.DefaultPageSize = conf.DefaultPageSize;
+
           const groupInfo = await this.userModelService.getGroups();
           this.menuItems = this.menuService.getMenuItems([], groupInfo.map(group => group.Name), true);
         }
@@ -106,7 +111,7 @@ export class AppComponent implements OnInit, OnDestroy {
       () => {
         return {
           id: 'OpsWeb_ROOT_Dashboard',
-          title: '#LDS#Dashboard',
+          title: '#LDS#Home',
           route: 'start'
         };
       },

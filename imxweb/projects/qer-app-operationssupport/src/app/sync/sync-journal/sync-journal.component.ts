@@ -31,7 +31,7 @@ import { EuiDownloadDirective, EuiLoadingService } from '@elemental-ui/core';
 
 import { OpsupportSyncJournal } from 'imx-api-dpr';
 import { EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings, ElementalUiConfigService } from 'qbm';
+import { DataSourceToolbarSettings, ElementalUiConfigService, SettingsService } from 'qbm';
 import { OpsupportSyncShellParameters, SyncService } from '../sync.service';
 import { SyncSummaryService } from './sync-summary.service';
 
@@ -56,6 +56,7 @@ export class SyncJournalComponent implements OnInit {
     private syncShellService: SyncService,
     private syncSummaryService: SyncSummaryService,
     private readonly elementalUiConfigService: ElementalUiConfigService,
+    private readonly settings: SettingsService,
     private busyService: EuiLoadingService) {
 
     this.entitySchemaSyncInfo = syncShellService.syncJournalSchema;
@@ -91,7 +92,7 @@ export class SyncJournalComponent implements OnInit {
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
-    await this.getData({ StartIndex: 0, PageSize: 25 });
+    await this.getData({ StartIndex: 0, PageSize: this.settings.DefaultPageSize });
   }
 
   public async getData(navigationState: OpsupportSyncShellParameters): Promise<void> {
@@ -142,6 +143,6 @@ export class SyncJournalComponent implements OnInit {
   }
 
   public refresh(): void {
-    this.getData({ StartIndex: 0, PageSize: 25 });
+    this.getData({ StartIndex: 0, PageSize: this.settings.DefaultPageSize });
   }
 }

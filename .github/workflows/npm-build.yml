@@ -1,0 +1,45 @@
+name: Build Angular applications
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+    
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Build Angular projects
+      run: |
+        cd imxweb
+        npm install
+        npm run build qbm
+        npm run build qer
+        npm run build tsb
+        npm run build att
+        npm run build rms
+        npm run build aad
+        npm run build aob
+        npm run build uci
+        npm run build cpl
+        npm run build dpr
+        npm run build o3t
+        npm run build pol
+        npm run build qer-app-portal
+        npm run build qbm-app-landingpage
+        npm run build qer-app-operationssupport
+        npm run build qer-app-pwdPortal
+

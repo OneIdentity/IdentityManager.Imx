@@ -71,7 +71,7 @@ export class AppService {
     this.logger.debug(this, `Set page title to ${title}`);
     this.title.setTitle(title);
 
-    this.session.TypedClient = new TypedClient(this.config.client, this.translationProvider);
+    this.session.TypedClient = new TypedClient(this.config.v2client, this.translationProvider);
   }
 
   public static init(app: AppService): () => Promise<any> {

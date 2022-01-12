@@ -29,7 +29,7 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiLoadingService } from '@elemental-ui/core';
 
 import { JobServersParameters, JobServersService } from './job-servers.service';
-import { DataSourceToolbarSettings } from 'qbm';
+import { DataSourceToolbarSettings, SettingsService } from 'qbm';
 
 @Component({
   selector: 'imx-job-servers-gridview',
@@ -47,7 +47,8 @@ export class JobServersGridviewComponent implements OnInit {
 
   constructor(
     private gridDataService: JobServersService,
-    private busyService: EuiLoadingService
+    private busyService: EuiLoadingService,
+    private readonly settingsService: SettingsService
   ) { }
 
   public async ngOnInit(): Promise<void> {
@@ -55,7 +56,7 @@ export class JobServersGridviewComponent implements OnInit {
   }
 
   public onSearch(keywords: string): Promise<void> {
-    return this.getData({ StartIndex: 0, search: keywords });
+    return this.getData({PageSize: this.settingsService.DefaultPageSize, StartIndex: 0, search: keywords });
   }
 
   public navigationStateChanged(navigationState: JobServersParameters): Promise<void> {
@@ -63,7 +64,7 @@ export class JobServersGridviewComponent implements OnInit {
   }
 
   public async refresh(withconnection: boolean = false): Promise<void> {
-    await this.getData({ StartIndex: 0, withconnection });
+    await this.getData({PageSize: this.settingsService.DefaultPageSize, StartIndex: 0, withconnection });
   }
 
   private async getData(navigationState: JobServersParameters): Promise<void> {

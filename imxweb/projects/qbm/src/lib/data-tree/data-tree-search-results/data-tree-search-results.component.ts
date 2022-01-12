@@ -28,7 +28,7 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 import { MatSelectionListChange } from '@angular/material/list';
 import { PageEvent } from '@angular/material/paginator';
 
-import { IEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, IEntity } from 'imx-qbm-dbts';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
 import { TreeDatabase } from '../tree-database';
 import { SearchResultAction } from './search-result-action.interface';
@@ -66,8 +66,7 @@ export class DataTreeSearchResultsComponent implements OnChanges {
   /** the service providing the data for the {@link TreeDatasource| TreeDatasource} */
   @Input() public database: TreeDatabase;
 
-  /** the string, that should be searched */
-  @Input() public searchString = '';
+  @Input() public navigationState: CollectionLoadParameters;
 
   @Input() public action: SearchResultAction;
 
@@ -94,8 +93,8 @@ export class DataTreeSearchResultsComponent implements OnChanges {
   constructor(private readonly logger: ClassloggerService) { }
 
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
-    if (changes.searchString) {
-      return this.reload();
+    if (changes.navigationState) {
+      await this.reload();
     }
   }
 
@@ -112,21 +111,15 @@ export class DataTreeSearchResultsComponent implements OnChanges {
     this.selectedOptions = [];
   }
 
-  /**
-   * reloads the search results from the server
-   */
   public async reload(): Promise<void> {
-    if (this.searchString !== '') {
-      this.loading = true;
-      const data = (await this.database.getData(true, { StartIndex: 0, search: this.searchString }));
-      this.loading = false;
-      this.searchResults = data.entities;
-      this.paginatorLength = data.totalCount;
-      this.selectedOptions = this.searchResults.filter(elem => this.entityIsChecked(elem));
-    } else {
-      this.searchResults = [];
-    }
+    this.loading = true;
+    const data = await this.database.getData(true, this.navigationState);
+    this.loading = false;
+    this.paginatorLength = data.totalCount;
+    this.searchResults = data.entities;
+    this.selectedOptions = this.searchResults.filter(elem => this.entityIsChecked(elem));
   }
+
 
   /** @ignore updates the selection list an emits the according events */
   public onSelectionChanged(selection: MatSelectionListChange): void {
@@ -146,11 +139,15 @@ export class DataTreeSearchResultsComponent implements OnChanges {
   public async onPaginatorStateChanged(newState: PageEvent): Promise<void> {
     this.paginatorPageSize = newState.pageSize;
     this.loading = true;
-    const data = await this.database.getData(true, {
-      StartIndex: newState.pageIndex * newState.pageSize,
-      PageSize: newState.pageSize,
-      search: this.searchString,
-    });
+
+    const state = {
+      ...this.navigationState,
+      ...{
+        StartIndex: newState.pageIndex * newState.pageSize,
+        PageSize: newState.pageSize,
+      }
+    };
+    const data = await this.database.getData(true, state);
     this.loading = false;
     this.searchResults = data.entities;
     this.selectedOptions = this.searchResults.filter(elem => this.entityIsChecked(elem));

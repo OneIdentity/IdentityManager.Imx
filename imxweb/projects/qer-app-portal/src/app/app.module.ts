@@ -74,6 +74,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AppService } from './app.service';
 import { PortalStarlingService } from './portal-starling.service';
+import { environment } from '../environments/environment';
+import appConfigJson from '../appconfig.json';
 
 @NgModule({
   declarations: [
@@ -124,6 +126,8 @@ import { PortalStarlingService } from './portal-starling.service';
     ServiceItemsEditModule,
   ],
   providers: [
+    { provide: 'environment', useValue: environment },
+    { provide: 'appConfigJson', useValue: appConfigJson },
     {
       provide: APP_INITIALIZER,
       useFactory: AppService.init,

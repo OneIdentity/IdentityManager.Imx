@@ -33,7 +33,7 @@ import { configureTestSuite } from 'ng-bullet';
 import { Subject } from 'rxjs';
 
 import { AppComponent } from './app.component';
-import { AppConfigService, clearStylesFromDOM, ISessionState, AuthenticationService, MenuService, MenuFactory } from 'qbm';
+import { AppConfigService, clearStylesFromDOM, ISessionState, AuthenticationService, MenuService, MenuFactory, imx_SessionService } from 'qbm';
 import { UserService } from './user/user.service';
 import { ProjectConfigurationService } from 'qer';
 
@@ -147,9 +147,9 @@ describe('AppComponent', () => {
           }
         },
         {
-          provide: ProjectConfigurationService,
+          provide: imx_SessionService,
           useValue: {
-            getConfig: __ => Promise.resolve({})
+            Client: { opsupport_config_get: jasmine.createSpy('opsupport_config_get').and.returnValue({DefaultPageSize:20}) }
           }
         }
       ]

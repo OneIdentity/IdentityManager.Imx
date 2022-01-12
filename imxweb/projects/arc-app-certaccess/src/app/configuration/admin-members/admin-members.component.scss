@@ -1,117 +1,55 @@
 @import '~@elemental-ui/core/src/styles/_palette.scss';
 
-.imx-admin-members {
-  background-color: $asher-gray;
-  height: 100%;
+.eui-sidesheet-content {
+  flex: 1 1 auto;
+  overflow: auto;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 
-  .imx-admin-members-content {
+  .imx-heading-wrapper {
     display: flex;
     flex-direction: column;
-    height: 100%;
-  }
-
-  .imx-admin-members-content-main {
-    flex: 1;
-    flex-basis: 500px;
-    padding: 32px;
-    overflow: auto;
-
-    .imx-heading-wrapper {
-      display: flex;
-      flex-direction: column;
-
-      h3 {
-        margin-bottom: 10px;
-      }
-
-      .imx-helper-alert {
-        width: 100%;
-
-        ::ng-deep .eui-alert {
-          margin-bottom: 20px;        
-        }
-      }
-    }
-
-    ::ng-deep imx-data-table.no-row-selection {
-
-      .mat-row:hover {
-        cursor: default;
-        background-color: inherit !important;
-      }
-
-    }
-
-    ::ng-deep .mat-sidenav-container {
-      height: unset;
-    }
-
-    ::ng-deep {
-      .mat-sidenav-content {
-        overflow: hidden;
-      }
-
-      .imx-data-table-row-highlighted {
-        background-color: inherit;
-      }
+  
+    .imx-helper-alert {
+      margin: 20px 0px;
+      width: 100%;
     }
   }
 
-  .imx-button-bar {
+  .imx-content-card {
+    flex: 1 1 auto;
     display: flex;
-    justify-content: flex-end;
-    background-color: $white;
-    padding: 16px 32px;
-    margin: 16px 32px;
-
-    .justify-start {
-      margin-right: auto;
-    }
-
-    button:not(:last-of-type):not(.justify-start) {
-      margin-right: 10px;
-    }
-
-    button:disabled:hover {
-      cursor: not-allowed;
-    }
-
-    .help-icon {
-      color: $iris-blue;
-      font-size: 16px;
-      margin-left: 5px;
-      cursor: auto;
-    }
-
-  }
-
+    flex-direction: column;
+    margin: 0px;
+    overflow-y: auto;
+  }  
 }
 
-@media screen and (max-width: 480px) {
-  .imx-admin-members {
-    .imx-admin-members-content {
-      display: block;
-    }
+.eui-sidesheet-actions {
 
-    .imx-admin-members-content-main {
-      flex-basis: 300px
-    }
+  .imx-selected-items {
+    margin: 0;
+    line-height: 36px;
+    display: flex;
+    flex: 1 0 auto;
+    margin: auto;
+    align-items: center;
 
-    .imx-button-bar {
-      flex-direction: column-reverse;
-
-      button {
-        width: 100%;
-        margin-bottom: 10px;
-        margin-right: 0;
-      }
-
-      .justify-start {
-        margin-right: 0;
+    .imx-badge {
+      background-color: transparent;
+      ::ng-deep .eui-badge-content {
+        font-size: 14px;
+        line-height: 14px;
       }
     }
   }
+
+  .imx-menu-spacer {
+    flex-grow: 1;
+  }
+
+  .justify-start {
+    margin-right: auto;
+  }
 }
+

@@ -28,7 +28,6 @@ import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { EuiSidesheetService, EuiLoadingService } from '@elemental-ui/core';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { Subscription } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
 
 import {
   ClassloggerService,
@@ -113,7 +112,6 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
     private readonly sideSheet: EuiSidesheetService,
     private readonly busyService: EuiLoadingService,
     private readonly logger: ClassloggerService,
-    private readonly activatedRoute: ActivatedRoute,
     private readonly configService: ProjectConfigurationService,
     private readonly identitiesService: IdentitiesService,
     private readonly translate: TranslateService,
@@ -131,14 +129,6 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
   }
 
   public async ngOnInit(): Promise<void> {
-
-    const isAdminOldValue = this.isAdmin;
-    this.isAdmin = this.activatedRoute.snapshot.url[0].path === 'admin';
-
-    if (isAdminOldValue !== this.isAdmin) {
-      await this.init();
-    }
-
     await this.init();
   }
 
@@ -249,11 +239,10 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
     }
 
     if (this.applyIssuesFilter) {
-      const ownerFilter = this.filterOptions.find((f) => {
-        return f.Name === 'withmanager';
-      });
-
-      ownerFilter.InitialValue = '0';
+      const indexWithManagerFilter = this.filterOptions.findIndex(elem => elem.Name === 'withmanager');
+      if (indexWithManagerFilter > -1) {
+        this.filterOptions[indexWithManagerFilter].InitialValue = '0';
+      }
     }
     await this.navigate();
   }

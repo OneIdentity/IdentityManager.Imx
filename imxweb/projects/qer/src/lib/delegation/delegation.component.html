@@ -114,8 +114,9 @@
                             <mat-list-option [checkboxPosition]="'before'"
                                 *ngFor="let delegateable of delegateableItems" [value]="delegateable"
                                 [attr.data-imx-identifier]="'imx-delegation-step-2-role'+ delegateable.GetEntity().GetKeys().join(',')">
-                                <div class="{{'imx-icon imx-table-' + delegateable.TargetType.value}}">
-                                    {{delegateable.GetEntity().GetDisplay()}} / {{delegateable.TargetType.value}}
+                                <div>
+                                    <span *ngIf="delegateable.TargetType.value != 'Person'">{{delegateable.GetEntity().GetDisplay()}}</span>
+                                    <span *ngIf="delegateable.TargetType.value == 'Person'">{{delegateable.TargetObjectKey.Column.GetDisplayValue()}}</span> / {{delegateable.TargetType.Column.GetDisplayValue()}}
                                 </div>
                                 <div class="subtext">
                                     ({{delegateable.Criteria.Column.GetDisplayValue()}})

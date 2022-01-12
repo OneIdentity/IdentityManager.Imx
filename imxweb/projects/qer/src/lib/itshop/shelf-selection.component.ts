@@ -38,6 +38,7 @@ export class ShelfSelectionComponent {
 
   public showHelperAlert = true;
 
+
   public shelfSelectionObjects: ShelfSelectionObject[] = [];
   public formGroup: FormGroup;
 
@@ -65,6 +66,11 @@ export class ShelfSelectionComponent {
   public onHelperDismissed(): void {
     this.showHelperAlert = false;
   }
+
+  public needsDefaultShelf(product: ShelfSelectionObject): boolean {
+    return product.personsForProduct.filter(person => person.shelfsObjects.length > 1).length > 1;
+  }
+
 
   public getFormControl(shelfSelectionObject: ShelfSelectionObject, personForProduct: PersonForProduct): FormControl {
     return (this.formGroup.get(shelfSelectionObject.uidAccproduct) as FormGroup).get(personForProduct.uidPerson) as FormControl;

@@ -26,16 +26,14 @@
 
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Location } from '@angular/common';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { configureTestSuite } from 'ng-bullet';
 
 import { SyncJournalComponent } from './sync-journal.component';
-import { clearStylesFromDOM, ElementalUiConfigService } from 'qbm';
+import { clearStylesFromDOM, ElementalUiConfigService, SettingsService } from 'qbm';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { OpsupportSyncJournal, OpsupportSyncShell } from 'imx-api-dpr';
 import { SyncSummaryService } from './sync-summary.service';
-import { RoutingMock } from '../../test-utilities/router-mock.spec';
 import { SyncService } from '../sync.service';
 
 describe('SyncJournalComponent', () => {
@@ -102,6 +100,10 @@ describe('SyncJournalComponent', () => {
           useValue: {
             Config: jasmine.createSpy('Config').and.returnValue({ downloadOptions: {} })
           }
+        },
+        {
+          provide: SettingsService,
+          useValue:{DefaultPageSize: 25}
         }
       ],
       schemas: [

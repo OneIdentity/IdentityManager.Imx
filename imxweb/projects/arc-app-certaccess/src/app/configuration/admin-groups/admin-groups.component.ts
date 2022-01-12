@@ -30,7 +30,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { PortalAdminApplicationrole } from 'imx-api-qer';
 import { CollectionLoadParameters, DisplayColumns, EntitySchema } from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings, HELPER_ALERT_KEY_PREFIX, StorageService, isIE } from 'qbm';
+import { DataSourceToolbarSettings, HELPER_ALERT_KEY_PREFIX, StorageService } from 'qbm';
 import { AdminMembersComponent } from '../admin-members/admin-members.component';
 import { AdminMembersService } from '../admin-members/admin-members.service';
 
@@ -99,8 +99,9 @@ export class AdminGroupsComponent implements OnInit {
       {
         title: await this.translate.get('#LDS#Heading Edit Application Role').toPromise(),
         headerColour: 'blue',
+        bodyColour: 'asher-gray',
         padding: '0px',
-        width:  isIE() ? '60%' : 'max(600px, 60%)',
+        width: 'max(600px, 60%)',
         data: { role }
       }
     );

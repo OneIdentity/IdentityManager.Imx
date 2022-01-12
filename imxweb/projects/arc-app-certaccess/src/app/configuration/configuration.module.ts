@@ -26,17 +26,40 @@
 
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CdrModule, DataSourceToolbarModule, DataTableModule, FkAdvancedPickerModule, LdsReplaceModule } from 'qbm';
+import { CdrModule, DataSourceToolbarModule, DataTableModule, FkAdvancedPickerModule, LdsReplaceModule, RouteGuardService } from 'qbm';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { AdminGroupsComponent } from './admin-groups/admin-groups.component';
 import { AdminMembersComponent } from './admin-members/admin-members.component';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { FeatureAvailabiltyComponent } from './feature-availabilty/feature-availabilty.component';
 import { AttestationSchedulesComponent } from './attestation-schedules/attestation-schedules.component';
 import { AttestationScheduleSidesheetComponent } from './attestation-schedules/attestation-schedule-sidesheet/attestation-schedule-sidesheet.component';
 import { RequestsEntitySelectorComponent } from './requests-selector/requests-entity-selector.component';
+import { AdminGuardService } from '../services/admin-guard.service';
+
+const routes: Routes = [
+  {
+    path: 'configuration/administratorgroups',
+    component: AdminGroupsComponent,
+    canActivate: [RouteGuardService, AdminGuardService],
+    resolve: [RouteGuardService]
+  },
+  {
+    path: 'configuration/features',
+    component: FeatureAvailabiltyComponent,
+    canActivate: [RouteGuardService, AdminGuardService],
+    resolve: [RouteGuardService]
+  },
+  {
+    path: 'configuration/schedules',
+    component: AttestationSchedulesComponent,
+    canActivate: [RouteGuardService, AdminGuardService],
+    resolve: [RouteGuardService]
+  }
+];
+
 
 @NgModule({
   declarations: [
@@ -59,7 +82,7 @@ import { RequestsEntitySelectorComponent } from './requests-selector/requests-en
     DataTableModule,
     LdsReplaceModule,
     FkAdvancedPickerModule,
-    RouterModule,
+    RouterModule.forChild(routes),
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

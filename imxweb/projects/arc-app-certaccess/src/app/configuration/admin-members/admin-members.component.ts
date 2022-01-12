@@ -24,14 +24,14 @@
  *
  */
 
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
 import { PortalAdminApplicationrole, PortalAdminApplicationroleMembers } from 'imx-api-qer';
-import { CollectionLoadParameters, DisplayColumns, EntitySchema } from 'imx-qbm-dbts';
-import { AuthenticationService, DataSourceToolbarSettings, HELPER_ALERT_KEY_PREFIX, ISessionState, StorageService } from 'qbm';
+import { CollectionLoadParameters, DisplayColumns, EntitySchema, TypedEntity } from 'imx-qbm-dbts';
+import { AuthenticationService, DataSourceToolbarSettings, DataTableComponent, HELPER_ALERT_KEY_PREFIX, ISessionState, SnackBarService, StorageService } from 'qbm';
 import { AdminMembersService } from './admin-members.service';
 import { RequestsEntitySelectorComponent } from '../requests-selector/requests-entity-selector.component';
 
@@ -66,6 +66,8 @@ export class AdminMembersComponent implements OnInit, OnDestroy {
     }
   };
 
+  @ViewChild(DataTableComponent) private table: DataTableComponent<TypedEntity>;
+
   private readonly entitySchema: EntitySchema;
   private readonly subscriptions: Subscription[] = [];
 
@@ -73,6 +75,7 @@ export class AdminMembersComponent implements OnInit, OnDestroy {
     @Inject(EUI_SIDESHEET_DATA) data: { role: PortalAdminApplicationrole; },
     private readonly admins: AdminMembersService,
     private readonly storageService: StorageService,
+    private readonly snackbar: SnackBarService,
     private readonly dialog: MatDialog,
     authentication: AuthenticationService
   ) {
@@ -110,8 +113,8 @@ export class AdminMembersComponent implements OnInit, OnDestroy {
 
   public async add(): Promise<void> {
     const property = this.entitySchema.Columns.UID_Person;
-    const fk = this.admins.createNew().GetEntity()
-      .GetFkCandidateProvider().getProviderItem(property.FkRelation.ParentColumnName, property.FkRelation.ParentTableName);
+    const entity = this.admins.createNew(this.role.uid).GetEntity();
+    const fk = entity.GetFkCandidateProvider().getProviderItem(property.FkRelation.ParentColumnName, property.FkRelation.ParentTableName);
 
     const isMobile = document.body.offsetWidth <= 768;
 
@@ -120,7 +123,7 @@ export class AdminMembersComponent implements OnInit, OnDestroy {
       maxWidth: isMobile ? '90vw' : '80vw',
       minHeight: '60vh',
       data: {
-        get: parameters => fk.load(undefined, { ...parameters, ...{ UID_AERole: this.role.uid } }),
+        get: (parameters: CollectionLoadParameters) => fk.load(entity, parameters),
         hasSearchParameter: fk.parameterNames.includes('search'),
         isMultiValue: true
       }
@@ -129,12 +132,15 @@ export class AdminMembersComponent implements OnInit, OnDestroy {
     if (selection) {
       await this.admins.add(this.role.uid, selection);
       await this.getData();
+      this.snackbar.open({ key: '#LDS#The members have been successfully added.' });
     }
   }
 
   public async delete(): Promise<void> {
     await this.admins.delete(this.role.uid, this.selectedMembers);
     await this.getData();
+    this.table?.clearSelection();
+    this.snackbar.open({ key: '#LDS#The members have been successfully removed.' });
   }
 
   public async getData(newState?: CollectionLoadParameters): Promise<void> {

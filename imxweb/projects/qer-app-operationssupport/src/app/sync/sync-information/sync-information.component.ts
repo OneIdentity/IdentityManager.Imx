@@ -31,7 +31,7 @@ import { EuiLoadingService } from '@elemental-ui/core';
 
 import { OpsupportSyncShell } from 'imx-api-dpr';
 import { EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings } from 'qbm';
+import { DataSourceToolbarSettings, SettingsService } from 'qbm';
 import { OpsupportSyncShellParameters, SyncService } from '../sync.service';
 
 @Component({
@@ -49,7 +49,10 @@ export class SyncInformationComponent implements OnInit {
   constructor(
     private dataSource: SyncService,
     private router: Router,
-    private busyService: EuiLoadingService) {
+    private busyService: EuiLoadingService,
+    private readonly settings: SettingsService
+  ) {
+    this.navigationState = { StartIndex: 0, PageSize: settings.DefaultPageSize };
     this.entitySchemaSyncInfo = dataSource.syncShellSchema;
     this.displayedColumns = [
       this.entitySchemaSyncInfo.Columns.DisplayName,
@@ -77,7 +80,7 @@ export class SyncInformationComponent implements OnInit {
   }
 
   public async getData(navigationState: OpsupportSyncShellParameters): Promise<void> {
-    this.navigationState = navigationState;
+    this.navigationState = { ...this.navigationState, ...navigationState };
 
     let overlayRef: OverlayRef;
     setTimeout(() => overlayRef = this.busyService.show());

@@ -1,9 +1,7 @@
 <div eui-sidesheet-content>
   <eui-alert *ngIf="showHelperAlert" class="imx-helper-alert" type="info" [condensed]="true" [colored]="true"
     [dismissable]="true" (dismissed)="onHelperDismissed()">
-    {{'#LDS#You can add application entitlements to your application. Once assigned, the application entitlements can
-    be
-    published to the IT Shop as a service item.' | translate}}
+    {{LdsInfoAlert | translate}}
   </eui-alert>
   <mat-card class="imx-sidesheet-content">
     <div class="imx-type-selection">

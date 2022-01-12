@@ -83,7 +83,7 @@ export class AppService {
       instance: SystemOverviewComponent
     });
 
-    this.session.TypedClient = new TypedClient(this.config.client, this.translationProvider);
+    this.session.TypedClient = new TypedClient(this.config.v2client, this.translationProvider);
   }
 
   public static init(app: AppService): () => Promise<any> {

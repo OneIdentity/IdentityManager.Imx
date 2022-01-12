@@ -31,6 +31,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { TranslateService } from '@ngx-translate/core';
 
 import { ObjectHistoryEvent } from 'imx-api-qbm';
+import { SettingsService } from 'qbm';
 import { TypedEntityCollectionData } from 'imx-qbm-dbts';
 import { ObjectHistoryParameters } from '../object-history.service';
 
@@ -69,10 +70,10 @@ export class ObjectHistoryGridviewComponent implements OnInit, OnChanges {
 
   public dataCollection: TypedEntityCollectionData<ObjectHistoryEvent>;
   public columnDefs: Column[] = [];
-  public readonly paginatorConfig = {
+  public paginatorConfig = {
     index: 0,
     size: 5,
-    sizeOptions: [5, 10, 20, 50, 100, 200, 500],
+    sizeOptions: [20, 50, 100],
     showFirstLastButtons: false,
     hidden: false
   };
@@ -85,8 +86,11 @@ export class ObjectHistoryGridviewComponent implements OnInit, OnChanges {
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private translationProvider: TranslateService
-  ) { }
+    private translationProvider: TranslateService,
+    settings: SettingsService
+  ) {
+    this.paginatorConfig.size = settings.DefaultPageSize;
+  }
 
   public async ngOnInit(): Promise<void> {
     await this.addColumnDef({

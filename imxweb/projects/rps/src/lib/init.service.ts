@@ -26,7 +26,9 @@
 
 import { Injectable } from '@angular/core';
 import { Router, Route } from '@angular/router';
-import { ExtService } from 'qbm';
+import { DynamicMethodService, ExtService } from 'qbm';
+import { RequestableEntitlementType, RequestableEntitlementTypeService } from 'qer';
+import { RpsApiService } from './rps-api-client.service';
 import { SubscriptionsComponent } from './subscriptions/subscriptions.component';
 
 
@@ -34,6 +36,9 @@ import { SubscriptionsComponent } from './subscriptions/subscriptions.component'
 export class InitService {
   constructor(
     private readonly router: Router,
+    private readonly entlTypeService: RequestableEntitlementTypeService,
+    private readonly apiService: RpsApiService,
+    private readonly dynamicMethodService: DynamicMethodService,
     private readonly extService: ExtService
   ) {
   }
@@ -42,6 +47,13 @@ export class InitService {
     this.addRoutes(routes);
 
     this.extService.register('SubscriptionsComponent', { instance: SubscriptionsComponent });
+
+    this.entlTypeService.Register(async () => [
+      new RequestableEntitlementType("RPSReport",
+        this.apiService.apiClient,
+        "UID_RPSReport",
+        this.dynamicMethodService)
+    ]);
   }
 
   private addRoutes(routes: Route[]): void {

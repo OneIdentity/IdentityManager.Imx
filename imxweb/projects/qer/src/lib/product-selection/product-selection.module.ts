@@ -45,7 +45,8 @@ import {
   RouteGuardService,
   ClassloggerService,
   MenuService,
-  MenuItem
+  MenuItem,
+  DataTreeWrapperModule
 } from 'qbm';
 import { ProductSelectionComponent } from './product-selection.component';
 import { ServiceCategoryListComponent } from './servicecategory-list/servicecategory-list.component';
@@ -75,7 +76,7 @@ const routes: Routes = [
     DataSourceToolbarModule,
     DataTableModule,
     DataTilesModule,
-    DataTreeModule,
+    DataTreeWrapperModule,
     DisableControlModule,
     EuiCoreModule,
     EuiMaterialModule,

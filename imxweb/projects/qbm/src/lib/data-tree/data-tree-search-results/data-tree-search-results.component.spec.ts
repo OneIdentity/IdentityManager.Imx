@@ -98,8 +98,7 @@ describe('DataTreeSearchResultsComponent', () => {
         { GetDisplay: () => 'not a dummy', GetKeys: () => ['k2'] } as IEntity
       ]);
       component.database = data;
-      component.searchString = testcase.value;
-
+      component.navigationState= {StartIndex:0, search:testcase.value};
       await component.reload();
 
       expect(component.searchResults.length).toEqual(testcase.expectedLength);

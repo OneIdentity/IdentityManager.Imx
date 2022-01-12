@@ -25,89 +25,15 @@
  */
 
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { Routes, RouterModule, Router } from '@angular/router';
 import { RouteGuardService } from 'qbm';
-import { DataExplorerComponent } from './data-explorer/data-explorer.component';
-import { UnsgroupsComponent } from './responsibilities/unsgroups/unsgroups.component';
-import { ReportsComponent } from './reports/reports.component';
 import { AdminGuardService } from './services/admin-guard.service';
-import { DataExplorerIdentitiesComponent, RequestsFeatureGuardService } from 'qer';
-import { SubscriptionsComponent } from 'rps';
 import { RequestsComponent } from 'qer';
-import { AdminGroupsComponent } from './configuration/admin-groups/admin-groups.component';
-import { FeatureAvailabiltyComponent } from './configuration/feature-availabilty/feature-availabilty.component';
-import { AttestationSchedulesComponent } from './configuration/attestation-schedules/attestation-schedules.component';
 
 const routes: Routes = [
   {
-    path: 'data/explorer',
-    component: DataExplorerComponent,
-    canActivate: [RouteGuardService, AdminGuardService],
-    resolve: [RouteGuardService],
-  },
-  {
-    path: 'data/explorer/:tab',
-    component: DataExplorerComponent,
-    canActivate: [RouteGuardService, AdminGuardService],
-    resolve: [RouteGuardService],
-  },
-  {
-    path: 'data/explorer/:tab/:issues',
-    component: DataExplorerComponent,
-    canActivate: [RouteGuardService, AdminGuardService],
-    resolve: [RouteGuardService],
-  },
-  {
-    path: 'data/explorer/:tab/:issues/:mode',
-    component: DataExplorerComponent,
-    canActivate: [RouteGuardService, AdminGuardService],
-    resolve: [RouteGuardService],
-  },
-  {
-    path: 'resp/unsgroup',
-    component: UnsgroupsComponent,
-    canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
-  },
-  {
-    path: 'reportsubscriptions',
-    component: SubscriptionsComponent,
-    canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
-  },
-  {
-    path: 'data/reports',
-    component: ReportsComponent,
-    canActivate: [RouteGuardService, AdminGuardService],
-    resolve: [RouteGuardService],
-  },
-  {
-    path: 'identities',
-    component: DataExplorerIdentitiesComponent,
-    canActivate: [RouteGuardService],
-    resolve: [RouteGuardService],
-  },
-  {
-    path: 'configuration/administratorgroups',
-    component: AdminGroupsComponent,
-    canActivate: [RouteGuardService, AdminGuardService],
-    resolve: [RouteGuardService]
-  },
-  {
     path: 'configuration/requests',
     component: RequestsComponent,
-    canActivate: [RouteGuardService, AdminGuardService],
-    resolve: [RouteGuardService]
-  },
-  {
-    path: 'configuration/features',
-    component: FeatureAvailabiltyComponent,
-    canActivate: [RouteGuardService, AdminGuardService],
-    resolve: [RouteGuardService]
-  },
-  {
-    path: 'configuration/schedules',
-    component: AttestationSchedulesComponent,
     canActivate: [RouteGuardService, AdminGuardService],
     resolve: [RouteGuardService]
   },
@@ -115,7 +41,18 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy' })],
+  imports: [RouterModule.forRoot([], { useHash: true, relativeLinkResolution: 'legacy', enableTracing: true  })],
   exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+  constructor(
+    router: Router
+  ) {
+
+    const config = router.config;
+    routes.forEach(route => {
+      config.push(route);
+    });
+    router.resetConfig(config);
+  }
+}

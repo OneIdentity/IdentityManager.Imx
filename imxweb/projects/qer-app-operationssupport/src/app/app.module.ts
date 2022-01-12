@@ -60,6 +60,9 @@ import { ProcessesModule } from './processes/processes.module';
 import { AppComponent } from './app.component';
 import { AppService } from './app.service';
 import { OpsupportStarlingService } from './opsupport-starling.service';
+import { environment } from '../environments/environment';
+import appConfigJson from '../appconfig.json';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -98,6 +101,8 @@ import { OpsupportStarlingService } from './opsupport-starling.service';
     OutstandingModule,
   ],
   providers: [
+    { provide: 'environment', useValue: environment },
+    { provide: 'appConfigJson', useValue: appConfigJson },
     {
       provide: APP_INITIALIZER,
       useFactory: AppService.init,

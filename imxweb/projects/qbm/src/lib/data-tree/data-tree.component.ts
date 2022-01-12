@@ -28,10 +28,8 @@ import { Component, Output, EventEmitter, Input, OnDestroy, ViewChild, OnChanges
 import { Subscription } from 'rxjs';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { FormControl } from '@angular/forms';
 
-import { IEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, IEntity } from 'imx-qbm-dbts';
 import { TreeDatabase } from './tree-database';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 import { TreeSelectionListComponent } from './tree-selection-list/tree-selection-list.component';
@@ -78,6 +76,8 @@ export class DataTreeComponent implements OnChanges, OnDestroy {
 
   @Input() public searchResultAction: SearchResultAction;
 
+  @Input() public navigationState: CollectionLoadParameters;
+
   /**
    * Event, that will fire when the a node was selected and emitting a list of
    * {@link IEntity| Entities} of the selected node and it's parents.
@@ -87,11 +87,7 @@ export class DataTreeComponent implements OnChanges, OnDestroy {
   /** Ebvent, that will fire, if the checked nodes ware updated */
   @Output() public checkedNodesChanged = new EventEmitter();
 
-  public searchControl = new FormControl();
-  public searchString = '';
-
   public hasTreeData = true;
-
 
   /** @ignore The actual tree control */
   @ViewChild(CheckableTreeComponent) public simpleTree: CheckableTreeComponent;
@@ -106,13 +102,11 @@ export class DataTreeComponent implements OnChanges, OnDestroy {
     private readonly logger: ClassloggerService,
     private readonly translator: TranslateService
   ) {
-    this.initSearchControl();
   }
 
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
     if (changes.database) {
       this.hasTreeData = (await this.database.getData(true, { PageSize: -1 })).totalCount > 0;
-      this.searchResults?.reload();
     }
   }
 
@@ -161,17 +155,7 @@ export class DataTreeComponent implements OnChanges, OnDestroy {
     }));
   }
 
-  private initSearchControl(): void {
-    this.searchControl.setValue('');
-    this.subscriptions.push(this.searchControl.valueChanges
-      .pipe(distinctUntilChanged(), debounceTime(300)).subscribe(async (value) => {
-        this.searchString = value;
-        this.logger.log('searchString:', this.searchString === '' ? 'empty' : this.searchString);
-        if (this.searchString === '') {
-          if (this.withMultiSelect) {
-            this.simpleTree?.updateCheckedTreeNodes();
-          }
-        }
-      }));
+  public hasSearchResults(): boolean {
+    return this.navigationState?.search && this.navigationState?.search !== null && this.navigationState?.search !== '';
   }
 }

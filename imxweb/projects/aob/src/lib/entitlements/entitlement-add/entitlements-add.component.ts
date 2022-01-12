@@ -233,4 +233,6 @@ export class EntitlementsAddComponent implements OnInit {
         return [entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]];
     }
   }
+
+  public LdsInfoAlert = '#LDS#Here you can assign application entitlements to the application. Once assigned, you can publish these application entitlements so that they can be requested.';
 }

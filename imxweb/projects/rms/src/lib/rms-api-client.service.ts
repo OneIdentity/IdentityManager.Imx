@@ -25,7 +25,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Client, TypedClient } from 'imx-api-rms';
+import { V2Client, Client, TypedClient } from 'imx-api-rms';
 import { ApiClient } from 'imx-qbm-dbts';
 import { AppConfigService, ClassloggerService, DynamicMethodService, ImxTranslationProviderService } from 'qbm';
 import { IRequestableEntitlementType, RequestableEntitlementTypeService } from 'qer';
@@ -61,7 +61,7 @@ export class RmsApiService {
       // Use schema loaded by QBM client
       const schemaProvider = config.client;
       this.c = new Client(this.config.apiClient, schemaProvider);
-      this.tc = new TypedClient(this.c, this.translationProvider);
+      this.tc = new TypedClient(new V2Client(this.config.apiClient, schemaProvider), this.translationProvider);
 
       this.entlTypeService.Register(() => this.GetSystemRoleType())
     } catch (e) {

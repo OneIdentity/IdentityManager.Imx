@@ -51,6 +51,8 @@ import {
 import { AppService } from './app.service';
 import { StartComponent } from './start/start.component';
 import { SwaggerComponent } from './swagger/swagger.component';
+import { environment } from '../environments/environment';
+import appConfigJson from '../appconfig.json';
 
 @NgModule({
   declarations: [
@@ -83,6 +85,8 @@ import { SwaggerComponent } from './swagger/swagger.component';
     LoggerModule.forRoot({ level: NgxLoggerLevel.DEBUG, serverLogLevel: NgxLoggerLevel.OFF }),
   ],
   providers: [
+    { provide: 'environment', useValue: environment },
+    { provide: 'appConfigJson', useValue: appConfigJson },
     {
       provide: APP_INITIALIZER,
       useFactory: AppService.init,

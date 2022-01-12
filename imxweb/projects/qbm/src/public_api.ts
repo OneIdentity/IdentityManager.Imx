@@ -24,12 +24,12 @@
  *
  */
 
-
 /*
  * Public API Surface of qbm
  */
 
 export { AboutComponent } from './lib/about/About.component';
+export { AdminComponent } from './lib/admin/admin-component.interface';
 export { AdminModule } from './lib/admin/admin.module';
 export { AdminRoutes } from './lib/admin/admin-routes';
 export { ApiClientAngularService } from './lib/api-client/api-client-angular.service';
@@ -91,6 +91,8 @@ export { DataTilesModule } from './lib/data-tiles/data-tiles.module';
 export { DataTreeComponent } from './lib/data-tree/data-tree.component';
 export { SearchResultAction } from './lib/data-tree/data-tree-search-results/search-result-action.interface';
 export { DataTreeModule } from './lib/data-tree/data-tree.module';
+export { DataTreeWrapperModule } from './lib/data-tree-wrapper/data-tree-wrapper.module';
+export { DataTreeWrapperComponent } from './lib/data-tree-wrapper/data-tree-wrapper.component';
 export { DateModule } from './lib/date/date.module';
 export { DateComponent } from './lib/date/date/date.component';
 export { DbObjectInfo } from './lib/search/db-object-info';
@@ -148,6 +150,8 @@ export { ImxTranslationProviderService } from './lib/translation/imx-translation
 export { ImxTreeTableComponent } from './lib/treeTable/treeTable.component';
 export { ISessionState } from './lib/session/session-state';
 export { isIE } from './lib/base/user-agent-helper';
+export {JobQueueOverviewComponent} from './lib/jobqueue-overview/jobqueue-overview.component';
+export { JobQueueOverviewModule } from './lib/jobqueue-overview/jobqueue-overview.module';
 export { LdsReplacePipe } from './lib/lds-replace/lds-replace.pipe';
 export { LdsReplaceModule } from './lib/lds-replace/lds-replace.module';
 export { LineChartOptions } from './lib/chart-options/line-chart-options';

@@ -53,6 +53,8 @@ import {
   QaLoginModule,
   PasscodeLoginModule,
 } from 'qer';
+import { environment } from '../environments/environment';
+import appConfigJson from '../appconfig.json';
 
 @NgModule({
   declarations: [
@@ -86,6 +88,8 @@ import {
     UserMessageModule
   ],
   providers: [
+    { provide: 'environment', useValue: environment },
+    { provide: 'appConfigJson', useValue: appConfigJson },
     {
       provide: APP_INITIALIZER,
       useFactory: AppService.init,

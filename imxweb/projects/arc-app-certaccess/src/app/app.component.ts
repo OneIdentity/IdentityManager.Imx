@@ -106,7 +106,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.extService.register('Request-Config-Alert', { instance: RequestShopAlertComponent });
 
     // configure request shop terminology
-    requestsService.LdsSpecifyMembers = '#LDS#Here you can specify who can request the system entitlements assigned to the request shop.';
+    requestsService.LdsSpecifyMembers = '#LDS#Here you can specify who can request the products assigned to the request shop.';
     requestsService.LdsMembersByDynamicRole = '#LDS#Here you can see the members that are originally assigned to the request shop by a dynamic role but have been excluded. Additionally, you can add these excluded members back to the request shop by removing the exclusion.';
     requestsService.LdsMembersRemoved = '#LDS#The members have been successfully removed from the request shop. It may take some time for the changes to take effect.';  
     requestsService.LdsMembersAdded = '#LDS#The members have been successfully added to the request shop. It may take some time for the changes to take effect.';  
@@ -116,14 +116,14 @@ export class AppComponent implements OnInit, OnDestroy {
     requestsService.LdsShopHasBeenDeleted = '#LDS#The request shop has been successfully deleted.';
     requestsService.LdsShopHasBeenCreated = '#LDS#The request shop has been successfully created.';  
     requestsService.LdsShopHasBeenSaved = '#LDS#The request shop has been successfully saved.';  
-    requestsService.LdsShopEntitlements = '#LDS#Here you can specify which system entitlements can be requested. Attestors and approval policies specified for individual system entitlements are used instead of any that are defined on either the shelf or the request shop.';  
+    requestsService.LdsShopEntitlements = '#LDS#Here you can specify which products can be requested. Attestors and approval policies specified for individual products are used instead of any that are defined on either the shelf or the request shop.';  
     requestsService.LdsNoShops = '#LDS#There are currently no request shops.';
     requestsService.LdsNoMatchingShops = '#LDS#There are no matching request shops.';
     requestsService.LdsHeadingCreateShop = '#LDS#Heading Create Request Shop';
     requestsService.LdsHeadingEditShop = '#LDS#Heading Edit Request Shop';
     requestsService.LdsHeadingShops = '#LDS#Heading Request Shops';
-    requestsService.LdsShopExplanation = '#LDS#A request shop is the top element in the hierarchical structure required for requesting system entitlements. Here you can setup and manage request shops. For each request shop you can specify which system entitlements can be requested (through shelves) and who can request them.';  
-    requestsService.LdsShelfExplanation = '#LDS#Here you can manage shelves assigned to the request shop. For each shelf you can edit the details and specify which system entitlements can be requested.';
+    requestsService.LdsShopExplanation = '#LDS#A request shop is the top element in the hierarchical structure required for requesting products. Here you can setup and manage request shops. For each request shop you can specify which products can be requested (through shelves) and who can request them.';  
+    requestsService.LdsShelfExplanation = '#LDS#Here you can manage shelves assigned to the request shop. For each shelf you can edit the details and specify which products can be requested.';
     requestsService.LdsCreateShop = '#LDS#Create request shop';
 
     this.onSessionResponse = this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
@@ -176,9 +176,7 @@ export class AppComponent implements OnInit, OnDestroy {
     return (
       this.router.url.includes('data/explorer') ||
       this.router.url.includes('data/reports') ||
-      this.router.url.includes('configuration/requests') ||
-      this.router.url.startsWith('/identities') ||
-      this.router.url.startsWith('/resp/unsgroup')
+      this.router.url.includes('configuration/requests')
     );
   }
 
@@ -400,7 +398,7 @@ export class AppComponent implements OnInit, OnDestroy {
       }
 
       if (userIsAdmin || userIsShopAdmin) {
-        setupItems.push({ text: '#LDS#Menu Entry Service categories', url: '/servicecategories' });
+        setupItems.push({ text: '#LDS#Menu Entry Service categories', url: '/configuration/servicecategories' });
       }
 
       if (userIsAdmin) {

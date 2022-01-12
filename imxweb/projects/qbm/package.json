@@ -1,6 +1,7 @@
 {
   "name": "qbm",
-  "version": "0.0.1",
+  "version": "8.2.0",
+  "private": true,
   "dependencies": {
 
   },

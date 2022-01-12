@@ -103,6 +103,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { RouteGuardService } from './route-guard/route-guard.service';
 import { ClassloggerService } from './classlogger/classlogger.service';
 import { AuthenticationGuardService } from './authentication/authentication-guard.service';
+import { JobQueueOverviewModule } from './jobqueue-overview/jobqueue-overview.module';
 
 export function initApp(registry: CdrRegistryService, resolver: ComponentFactoryResolver, logger: NGXLogger): () => Promise<any> {
   logger.debug('init qbm');
@@ -136,7 +137,7 @@ const routes: Routes = [
     ImxTreeTableComponent,
     ImxMatColumnComponent,
     MessageDialogComponent
-  ],
+    ],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
@@ -177,8 +178,9 @@ const routes: Routes = [
     SelectModule,
     UserMessageModule,
     LdsReplaceModule,
-    TileModule
-  ],
+    TileModule,
+    JobQueueOverviewModule
+    ],
   providers: [
     GlobalErrorHandler,
     AppConfigService,

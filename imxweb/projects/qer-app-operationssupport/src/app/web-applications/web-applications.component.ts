@@ -28,7 +28,7 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { CollectionLoadParameters, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings } from 'qbm';
+import { DataSourceToolbarSettings, SettingsService } from 'qbm';
 import { WebApplicationsService } from './web-applications.service';
 
 @Component({
@@ -46,8 +46,9 @@ export class WebApplicationsComponent implements OnInit {
 
   constructor(
     private webApplicationsService: WebApplicationsService,
-    private busyService: EuiLoadingService
-    ) {
+    private busyService: EuiLoadingService,
+    private readonly settings: SettingsService
+  ) {
     this.entitySchemaWebApplications = webApplicationsService.schema;
     this.displayedColumns = [
       this.entitySchemaWebApplications.Columns.BaseURL,
@@ -59,11 +60,11 @@ export class WebApplicationsComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.getData({ StartIndex: 0, PageSize: 25 });
+    this.getData({ StartIndex: 0, PageSize: this.settings.DefaultPageSize });
   }
 
   public onSearch(keywords: string): Promise<void> {
-    return this.getData({ StartIndex: 0, search: keywords});
+    return this.getData({ StartIndex: 0, search: keywords });
   }
 
   public async refresh(): Promise<void> {

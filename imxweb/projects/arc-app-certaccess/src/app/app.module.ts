@@ -42,6 +42,7 @@ import {
   UserMessageModule,
   QbmModule,
   AuthenticationModule,
+  ClassloggerService,
 } from 'qbm';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -58,12 +59,12 @@ import {
   ApprovalsModule,
   RequestHistoryModule,
   TilesModule,
-  IdentitiesModule
+  IdentitiesModule,
 } from 'qer';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { CommonModule } from '@angular/common';
 import { DataExplorerModule } from './data-explorer/data-explorer.module';
-import { UnsgroupsModule} from './responsibilities/unsgroups/unsgroups.module';
+import { UnsgroupsModule } from './responsibilities/unsgroups/unsgroups.module';
 import { GovernanceMastheadModule } from './governance-masthead/governance-masthead.module';
 import { ReportsModule } from './reports/reports.module';
 import { AdminGuardService } from './services/admin-guard.service';
@@ -74,13 +75,11 @@ import { ConfigurationModule } from './configuration/configuration.module';
 import { TeamsModule } from 'o3t';
 import { DashboardPluginComponent } from './dashboard-plugin/dashboard-plugin.component';
 import { RequestShopAlertComponent } from './configuration/request-shop-alert/request-shop-alert.component';
+import { environment } from '../environments/environment';
+import appConfigJson from '../appconfig.json';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    DashboardPluginComponent,
-    RequestShopAlertComponent,
-  ],
+  declarations: [AppComponent, DashboardPluginComponent, RequestShopAlertComponent],
   imports: [
     CommonModule,
     QbmModule,
@@ -125,9 +124,11 @@ import { RequestShopAlertComponent } from './configuration/request-shop-alert/re
     SubscriptionsModule,
     TsbConfigModule,
     TilesModule,
-    TeamsModule
+    TeamsModule,
   ],
   providers: [
+    { provide: 'environment', useValue: environment },
+    { provide: 'appConfigJson', useValue: appConfigJson },
     {
       provide: APP_INITIALIZER,
       useFactory: AppService.init,
@@ -144,9 +145,15 @@ import { RequestShopAlertComponent } from './configuration/request-shop-alert/re
       deps: [TranslateService, LdsReplacePipe],
     },
     CdrRegistryService,
-    AdminGuardService
+    AdminGuardService,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private readonly logger: ClassloggerService) {
+    this.logger.info(this, '🔥 Cert Access loaded');
+
+    this.logger.info(this, '▶️ Cert Access initialized');
+  }
+}
