@@ -20,27 +20,26 @@
 
     <ng-container *ngIf="settings?.dataSource">
       <imx-data-source-toolbar #dst [settings]="settings" (navigationStateChanged)="onNavigationStateChanged($event)"
-        [hiddenElements]="['groupBy', 'settings', 'selectedViewGroup']" (search)="onSearch($event)">
+        [options]="['search', 'filter']"
+        (search)="onSearch($event)">
       </imx-data-source-toolbar>
       <imx-data-table [dst]="dst" [selectable]="true" (selectionChanged)="onSelectionChanged($event)"
         (highlightedEntityChanged)="onHighlightedEntityChanged($event)" [detailViewVisible]="false" mode="manual">
         <ng-container *ngIf="selectedSourceType !== EntitlementsType.UnsGroup">
-          <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-            [entitySchema]="entitySchema"></imx-data-table-column>
+          <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"></imx-data-table-column>
         </ng-container>
         <ng-container *ngIf="selectedSourceType === EntitlementsType.UnsGroup">
-          <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-            [entitySchema]="entitySchema">
+          <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
             <ng-template let-data>
               <div>{{ data?.GetEntity().GetDisplay() }}</div>
               <div subtitle>{{ data?.Description.Column.GetDisplayValue()}}</div>
             </ng-template>
           </imx-data-table-column>
-          <imx-data-table-column [entityColumn]="entitySchema?.Columns['CanonicalName']" [entitySchema]="entitySchema">
+          <imx-data-table-column [entityColumn]="entitySchema?.Columns['CanonicalName']">
           </imx-data-table-column>
-          <imx-data-table-column [entityColumn]="entitySchema?.Columns['Description']" [entitySchema]="entitySchema">
+          <imx-data-table-column [entityColumn]="entitySchema?.Columns['Description']">
           </imx-data-table-column>
-          <imx-data-table-column [entityColumn]="entitySchema?.Columns['UID_UNSRoot']" [entitySchema]="entitySchema">
+          <imx-data-table-column [entityColumn]="entitySchema?.Columns['UID_UNSRoot']">
           </imx-data-table-column>
         </ng-container>
       </imx-data-table>

@@ -27,6 +27,6 @@
 export const environment = {
   production: true,
   clientUrl: '',
-  appName: 'qer-app-pwdPortal',
+  appName: 'qer-app-pwdportal',
   appVersion: '1.0.0'
 };

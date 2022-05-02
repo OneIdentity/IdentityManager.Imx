@@ -26,13 +26,22 @@
 
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
+import { DateAdapter } from '@angular/material/core';
 import { EuiSelectOption, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { PortalAttestationSchedules } from 'imx-api-arc';
-import { BaseCdr, ClassloggerService, ColumnDependentReference, HELPER_ALERT_KEY_PREFIX, StorageService, TabControlHelper } from 'qbm';
-import { ACTION_DISMISS, RequestsService } from '../../requests.service';
-import { AppDateAdapter, APP_DATE_FORMATS, weeklyFrequencyOptions } from '../attestation-schedules.models';
 import * as moment from 'moment-timezone';
+
+import { PortalAttestationSchedules } from 'imx-api-arc';
+import {
+  BaseCdr,
+  ClassloggerService,
+  ColumnDependentReference,
+  HELPER_ALERT_KEY_PREFIX,
+  ImxTranslationProviderService,
+  StorageService,
+  TabControlHelper
+} from 'qbm';
+import { ACTION_DISMISS, RequestsService } from '../../requests.service';
+import { weeklyFrequencyOptions } from '../attestation-schedules.models';
 
 const helperAlertKey = `${HELPER_ALERT_KEY_PREFIX}_attestationScheduleDetails`;
 
@@ -40,10 +49,6 @@ const helperAlertKey = `${HELPER_ALERT_KEY_PREFIX}_attestationScheduleDetails`;
   selector: 'imx-attestation-schedule-sidesheet',
   templateUrl: './attestation-schedule-sidesheet.component.html',
   styleUrls: ['./attestation-schedule-sidesheet.component.scss'],
-  providers: [
-    { provide: DateAdapter, useClass: AppDateAdapter},
-    { provide: MAT_DATE_FORMATS, useValue: APP_DATE_FORMATS}
-  ]
 })
 export class AttestationScheduleSidesheetComponent implements OnInit {
 
@@ -53,6 +58,7 @@ export class AttestationScheduleSidesheetComponent implements OnInit {
   public frequencySubTypeControl = new FormControl();
   public freqDayOfYear = new FormControl();
   public frequencySelectOptions: EuiSelectOption[] = [];
+  public showInfoIcon = false;
 
   constructor(
     formBuilder: FormBuilder,
@@ -60,9 +66,13 @@ export class AttestationScheduleSidesheetComponent implements OnInit {
     @Inject(EUI_SIDESHEET_DATA) public data: PortalAttestationSchedules,
     private readonly storageService: StorageService,
     private readonly logger: ClassloggerService,
-    private readonly sidesheet: EuiSidesheetService
+    private readonly sidesheet: EuiSidesheetService,
+    dateAdapter: DateAdapter<any>,
+    translate: ImxTranslationProviderService
   ) {
     this.detailsFormGroup = new FormGroup({ formArray: formBuilder.array([]) });
+    dateAdapter.setLocale(translate.Culture);
+    moment.locale(translate.Culture);
   }
 
   get showHelperAlert(): boolean {
@@ -117,6 +127,7 @@ export class AttestationScheduleSidesheetComponent implements OnInit {
     const time = value.format('HH:mm');
     this.startTimeControl.markAsDirty();
     this.data.StartTime.value = time;
+    this.showInfoIcon = false;
   }
 
   public frequencySelected(selected?: EuiSelectOption): void {
@@ -163,10 +174,13 @@ export class AttestationScheduleSidesheetComponent implements OnInit {
     const hourPart = this.data.StartTime.value.split(':').shift();
     const minPart = this.data.StartTime.value.split(':').pop();
     // Time with these values are not set
-    if (hourPart !== 'LB' &&  minPart !== 'ST') {
+    if (hourPart !== 'LB' && minPart !== 'ST') {
       // Only initialise timeControl if there is an actual value set
       const time = moment().hour(hourPart).minute(minPart).second(0).milliseconds(0);
       this.startTimeControl.setValue(time);
+    }
+    else {
+      this.showInfoIcon = true;
     }
   }
 

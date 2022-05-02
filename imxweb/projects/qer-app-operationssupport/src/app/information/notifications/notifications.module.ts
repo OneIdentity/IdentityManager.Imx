@@ -26,7 +26,6 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatGridListModule } from '@angular/material/grid-list';
 import { MatCardModule } from '@angular/material/card';
 import { TranslateModule } from '@ngx-translate/core';
 import { EuiCoreModule } from '@elemental-ui/core';
@@ -40,7 +39,6 @@ import { NotificationsService } from './notifications.service';
   declarations: [NotificationsComponent],
   imports: [
     CommonModule,
-    MatGridListModule,
     MatCardModule,
     MatButtonModule,
     QbmModule,

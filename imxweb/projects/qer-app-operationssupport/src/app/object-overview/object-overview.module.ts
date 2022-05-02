@@ -38,25 +38,27 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 
-import { DataSourceToolbarModule, DataTableModule, HyperViewModule, QbmModule } from 'qbm';
+import {
+  DataSourceToolbarModule,
+  DataTableModule,
+  HyperViewModule,
+  ObjectHistoryModule,
+  ObjectHistoryApiService,
+  QbmModule,
+} from 'qbm';
 import { OpsModule } from 'qer';
-import { ObjectHistoryGridviewComponent } from './object-history/object-history-gridview/object-history-gridview.component';
-import { ObjectHistoryTimelineComponent } from './object-history/object-history-timeline/object-history-timeline.component';
-import { ObjectHistoryComponent } from './object-history/object-history.component';
 import { ObjectOverviewComponent } from './object-overview.component';
 import { ObjectOverviewService } from './object-overview.service';
-import { ObjectHistoryService } from './object-history/object-history.service';
+import { OpSupportHistoryApiService } from './opsupport-history-api.service';
 
 
 @NgModule({
   declarations: [
-    ObjectHistoryGridviewComponent,
-    ObjectHistoryTimelineComponent,
-    ObjectHistoryComponent,
     ObjectOverviewComponent,
   ],
   imports: [
     CommonModule,
+    ObjectHistoryModule,
     HyperViewModule,
     DataTableModule,
     DataSourceToolbarModule,
@@ -75,7 +77,10 @@ import { ObjectHistoryService } from './object-history/object-history.service';
     QbmModule
   ],
   providers: [
-    ObjectHistoryService,
+    {
+      provide: ObjectHistoryApiService,
+      useClass: OpSupportHistoryApiService
+    },
     ObjectOverviewService
   ]
 })

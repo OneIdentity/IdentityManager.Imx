@@ -1,6 +1,9 @@
-<eui-masthead data-imx-identifier="masthead" (logoClicked)="goHome()">
+<eui-masthead [ngClass]="logoUrl ? 'no-logo' : ''" data-imx-identifier="masthead" (logoClicked)="goHome()">
   <mat-toolbar color="primary" data-imx-identifier="masthead-toolbar">
     <mat-toolbar-row>
+      <!-- custom logo-->
+      <img class="custom-logo" *ngIf="logoUrl" [src]="logoUrl">
+
       <h1 class="imx-masthead-app-name" data-imx-identifier="masthead-button-goHome" (click)="goHome()">
         {{ appConfig?.Config?.Title }}
       </h1>

@@ -7,18 +7,42 @@
   height: 100%;
 }
 
-.roleremove-sidesheet {
-  background-color: $asher-gray;
-  padding: 1em;
-  height: 100%;
+.imx-form {
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
+.imx-helper-alert {
+  display: flex;
+  margin-bottom: 20px;
+  max-height: max(50%, 200px);
+
+  ::ng-deep .eui-alert-header{
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .imx-nondeletable-hint {
+    margin-top: 0px;
+  }
+
+  .imx-nondeletable-memberships {
+    overflow: auto;
+
+    > div {
+      font-weight: normal;
+    }
+
+  }
+  
+  
+}
+
 .beneath-checkbox {
   margin-left: 2em;
-  margin-top: .5em;
+  margin-top: 0.5em;
 }
 
 mat-card {
@@ -29,18 +53,3 @@ mat-card {
   width: 100%;
 }
 
-.action-buttons {
-  display: flex;
-  justify-content: flex-end;
-  background-color: $white;
-  padding: 16px 32px;
-  margin: 16px 0;
-
-  button:not(:last-of-type):not(.justify-start) {
-    margin-right: 10px;
-  }
-
-  button:disabled:hover {
-    cursor: not-allowed;
-  }
-}

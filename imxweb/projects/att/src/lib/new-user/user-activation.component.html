@@ -1,0 +1,33 @@
+<imx-mast-head></imx-mast-head>
+
+<div class="pagecontent">
+
+	<h1 class="mat-headline">{{ '#LDS#Heading Confirm Email Address' | translate }}</h1>
+
+	<imx-usermessage></imx-usermessage>
+
+	<mat-spinner *ngIf="busy"></mat-spinner>
+
+	<ng-container *ngIf="!busy">
+		<ng-container *ngIf="data">
+
+			<!-- ApprovalState meanings: 0=Certified, 1=New, 3=Denied-->
+			<eui-alert *ngIf="data.ApprovalState == 0">{{LdsAlreadyCompleted| translate}}</eui-alert>
+			<eui-alert *ngIf="data.ApprovalState == 1">{{LdsConfirmationText| translate}}</eui-alert>
+			<eui-alert *ngIf="data.ApprovalState == 3">{{LdsRegistrationDenied| translate}}</eui-alert>
+		</ng-container>
+
+		<eui-alert *ngIf="!data && missingCase">{{LdsCompletionFailed| translate}}</eui-alert>
+		<eui-alert *ngIf="!data && !missingCase">{{LdsResendEmail| translate}}</eui-alert>
+
+		<div class="button-bar">
+			<button mat-raised-button *ngIf="!missingCase" (click)="ReSendMail()">{{LdsSendAgain |
+				translate}}
+			</button>
+
+			<button mat-raised-button color="primary" *ngIf="data?.ApprovalState == 1" (click)="ConfirmEMail()">
+				{{'#LDS#Confirm email address' | translate}}
+			</button>
+		</div>
+	</ng-container>
+</div>

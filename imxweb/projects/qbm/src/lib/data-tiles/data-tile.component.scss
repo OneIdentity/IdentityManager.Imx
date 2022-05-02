@@ -7,7 +7,7 @@
 }
 
 :host {
-  margin: 10px 20px 10px 10px;
+  margin: 10px 20px 10px 0;
 }
 
 .cardContainer {
@@ -35,7 +35,7 @@
 .imx-selected-icon-container {
   height: 25px;
   width: 25px;
-  background-color: #618F3E;
+  background-color: $aspen-green;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -57,7 +57,7 @@
   overflow: hidden;
   display: grid;
   grid-template-columns: 50px auto 30px;
-  grid-template-rows: 30px 20px auto;
+  grid-template-rows: 30px 55px auto;
 }
 
 .mat-badge-content {
@@ -100,6 +100,8 @@
   grid-row-start: 2;
   grid-row-end: 3;
   align-self: end;
+  display:flex;
+  flex-direction: column;
 }
 
 .imx-data-tile-custom-content {
@@ -123,7 +125,7 @@
 .imx-fallbackicon {
   background-repeat: no-repeat;
   background-position: center;
-  color: #b2b2b2;
+  color: $black-b;
 }
 
 

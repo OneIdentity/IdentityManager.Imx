@@ -26,7 +26,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { ChartOptions } from 'billboard.js';
+import { ChartOptions, pie } from 'billboard.js';
 import { PortalAttestationRun } from 'imx-api-att';
 
 @Component({
@@ -75,7 +75,7 @@ export class CaseChartComponent implements OnInit {
           denied: '#B42126',
           abort: '#F4770B'
         },
-        type: 'pie',
+        type: pie(),
       }, pie: {
         padAngle: 0.01,
         label: {

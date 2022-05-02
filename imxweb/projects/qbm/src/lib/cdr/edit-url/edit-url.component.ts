@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, OnDestroy } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -42,8 +42,10 @@ export class EditUrlComponent implements CdrEditor, OnDestroy {
   public readonly control = new FormControl('', { updateOn: 'blur' });
 
   public readonly columnContainer = new EntityColumnContainer<string>();
+  public readonly valueHasChanged = new EventEmitter<any>();
 
   private readonly subscribers: Subscription[] = [];
+  private isWriting = false;
 
   constructor(private readonly urlValidator: UrlValidatorService) { }
 
@@ -62,6 +64,14 @@ export class EditUrlComponent implements CdrEditor, OnDestroy {
         validators.push(Validators.required);
       }
 
+      this.subscribers.push(this.columnContainer.subscribe(() => {
+        if (this.isWriting) { return; }
+        if (this.control.value !== this.columnContainer.value) {
+          this.control.setValue(this.columnContainer.value, { emitEvent: false });
+        }
+        this.valueHasChanged.emit(this.control.value);
+      }));
+
       this.control.setValidators(validators);
 
       this.subscribers.push(this.control.valueChanges.subscribe(async value => this.writeValue(value)));
@@ -77,8 +87,10 @@ export class EditUrlComponent implements CdrEditor, OnDestroy {
       return;
     }
     try {
+      this.isWriting = true;
       await this.columnContainer.updateValue(value);
     } finally {
+      this.isWriting = false;
       if (this.control.value !== this.columnContainer.value) {
         this.control.setValue(this.columnContainer.value, { emitEvent: false });
       }

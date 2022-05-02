@@ -65,7 +65,7 @@ export class StatusComponent {
     this.apiProjects = await client.admin_projects_get();
     this.plugins = await client.admin_systeminfo_plugins_get();
     const s = await client.admin_systeminfo_software_status_get();
-    this.config = await client.imx_config_get();
+    this.config = await this.appConfigService.getImxConfig();
 
     this.updaterState = s.Status;
     this.dataReady = true;

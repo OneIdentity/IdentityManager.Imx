@@ -29,7 +29,7 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewC
 import { EuiLoadingService } from '@elemental-ui/core';
 
 import {
-  CollectionLoadParameters, DisplayColumns, IForeignKeyInfo, TypedEntity, ValType
+  CollectionLoadParameters, DisplayColumns, FilterData, IForeignKeyInfo, TypedEntity, ValType
 } from 'imx-qbm-dbts';
 import { DataSourceToolbarSettings } from '../../data-source-toolbar/data-source-toolbar-settings';
 import { DataTableComponent } from '../../data-table/data-table.component';
@@ -68,7 +68,8 @@ export class FkCandidatesComponent implements OnChanges {
 
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
     if ((changes.data && this.data) || changes.selectedFkTable) {
-      await this.getData();
+      await this.getData({ StartIndex: 0, PageSize: this.settingsService.DefaultPageSize, filter: undefined, search: '' },
+      );
     }
   }
 
@@ -81,6 +82,14 @@ export class FkCandidatesComponent implements OnChanges {
    */
   public clearSelection(): void {
     this.table.clearSelection();
+  }
+
+  public get showToolbar(): boolean {
+    return this.settings.navigationState.filter?.length > 0;
+  }
+
+  public async filterByTree(filters: FilterData[]): Promise<void> {
+    return this.getData({ StartIndex: 0, filter: filters });
   }
 
   /**
@@ -118,7 +127,14 @@ export class FkCandidatesComponent implements OnChanges {
         dataSource,
         displayedColumns,
         entitySchema: this.candidateBuilder.entitySchema,
-        navigationState
+        navigationState,
+        filterTree: {
+          filterMethode: async (parentKey) => {
+            return this.selectedFkTable ? this.selectedFkTable.GetFilterTree(parentKey)
+              : this.data.GetFilterTree ? this.data.GetFilterTree(parentKey) : { Elements: [] };
+          },
+          multiSelect: false
+        }
       };
     } finally {
       setTimeout(() => {

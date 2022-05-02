@@ -41,7 +41,7 @@ describe('DeleteDataComponent', () => {
 
   const mockAuthorities = [
     {
-      UID_UNSRoot: { value: 'test' },
+      XObjectKey: { value: 'test' },
       HasSync: { value: true },
       GetEntity: () => {
         return {
@@ -52,7 +52,7 @@ describe('DeleteDataComponent', () => {
       },
     },
     {
-      UID_UNSRoot: { value: 'test2' },
+      XObjectKey: { value: 'test2' },
       HasSync: { value: false },
       GetEntity: () => {
         return {
@@ -116,7 +116,7 @@ describe('DeleteDataComponent', () => {
 
   it('domainSearch() should call dataHelper.getAuthorityData() and set authorities', fakeAsync(() => {
     const filteredAuthorities = mockAuthorities.filter((val) => {
-      return val.UID_UNSRoot.value === 'test';
+      return val.XObjectKey.value === 'test';
     });
 
     spyOn(component['dataHelper'], 'getAuthorityData').and.returnValue(
@@ -134,7 +134,7 @@ describe('DeleteDataComponent', () => {
   it('delete() should call dataHelper.deleteData() and close dialog', fakeAsync(() => {
     deleteDataSpy.calls.reset();
 
-    component.selectedAuthority = { value: 'test', display: 'test' };
+    component.selectedAuthority = { value: '<Key><T>AADOrganization</T><P>someuid</P></Key>', display: 'testorganization' };
     const closeSpy = spyOn(component.dialogRef, 'close');
 
     component.delete();

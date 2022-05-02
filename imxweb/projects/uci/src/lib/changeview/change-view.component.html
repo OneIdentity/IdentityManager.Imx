@@ -1,0 +1,45 @@
+<div class="imx-content-header">
+    <h1 class="mat-headline">
+        {{'#LDS#Heading Pending Provisioning Processes' | translate}}
+    </h1>
+</div>
+
+<div class="imx-table-container" *ngIf="dstWrapper && dstSettings">
+    <imx-data-source-toolbar #dst [options]="['search', 'filter']" [settings]="dstSettings"
+        (search)="getData({ search: $event })" (navigationStateChanged)="getData($event)"
+        data-imx-identifier="changeview-dst">
+    </imx-data-source-toolbar>
+    <imx-data-table #dataTable [dst]="dst" class="imx-changeview-table" [detailViewVisible]="false" mode="manual"
+        noDataText="#LDS#There are no pending provisioning processes in the current view."
+        data-imx-identifier="changeview-datatable">
+        <imx-data-table-generic-column columnName="ObjectKeyElement"
+            [columnLabel]="dstSettings.entitySchema.Columns.ObjectKeyElement.Display">
+            <ng-template let-prod>
+                <div>
+                    {{ prod.ObjectKeyElement.Column.GetDisplayValue() }}
+                    <eui-badge class="state-badge" *ngIf="prod.IsProcessed.value == 1" color="green">{{'#LDS#Completed'
+                        | translate }}</eui-badge>
+                    <eui-badge class="state-badge" *ngIf="prod.IsProcessed.value == 0" color="orange">{{'#LDS#Pending' |
+                        translate }}</eui-badge>
+                    <eui-badge class="state-badge" *ngIf="prod.IsProcessed.value == 2" color="red">{{'#LDS#Error' |
+                        translate }}</eui-badge>
+                </div>
+                <div class="subtitle">{{ getTableDisplay(prod) }}</div>
+            </ng-template>
+        </imx-data-table-generic-column>
+        <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.UID_UCIRoot">
+        </imx-data-table-column>
+        <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.XDateInserted">
+        </imx-data-table-column>
+        <imx-data-table-generic-column columnName="viewDetailsButton">
+            <ng-template let-prod>
+                <button mat-button color="primary" (click)="viewDetails(prod)"
+                    data-imx-identifier="pending-change-button-view-details">
+                    {{'#LDS#Details' | translate}}
+                </button>
+            </ng-template>
+        </imx-data-table-generic-column>
+    </imx-data-table>
+    <imx-data-source-paginator data-imx-identifier="changeview-paginator" [dst]="dst">
+    </imx-data-source-paginator>
+</div>

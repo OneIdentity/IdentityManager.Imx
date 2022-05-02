@@ -8,11 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<SetupFiles Include="..\..\projects\qbm-app-landingpage\.browserslistrc"/>
-		<SetupFiles Include="..\..\projects\qbm-app-landingpage\karma.conf.js"/>
-		<SetupFiles Include="..\..\projects\qbm-app-landingpage\package.json"/>
-		<SetupFiles Include="..\..\projects\qbm-app-landingpage\tsconfig.app.json"/>
-		<SetupFiles Include="..\..\projects\qbm-app-landingpage\tsconfig.spec.json"/>
+		<SetupFiles Include="..\..\projects\qbm-app-landingpage\*.*" Exclude="..\..\projects\qbm-app-landingpage\Build.proj"/>
 		<SetupFiles Include="..\..\projects\qbm-app-landingpage\src\**\*.*"/>
 	</ItemGroup>
 

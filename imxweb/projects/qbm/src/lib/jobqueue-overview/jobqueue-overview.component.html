@@ -1,13 +1,21 @@
-<mat-form-field appearance="fill">
-  <mat-label>
-    {{ '#LDS#Choose a Queue to visualize' | translate }}
-  </mat-label>
-  <mat-select [(value)]="queue" (selectionChange)="updatePlot()" data-imx-identifier="jobqueue-overview-select-queue">
-    <mat-option *ngFor="let queue of queueNames" [value]="queue">
-      {{ queue }}
-    </mat-option>
-  </mat-select>
-</mat-form-field>
-<mat-card>
-  <eui-billboard [options]="chartOptions"></eui-billboard>
-</mat-card>
+<div class="imx-jobqueue-container">
+  <mat-form-field appearance="fill">
+    <mat-label>
+      {{ '#LDS#Select queue' | translate }}
+    </mat-label>
+    <mat-select [(value)]="queue" (selectionChange)="updatePlot()" data-imx-identifier="jobqueue-overview-select-queue">
+      <mat-option *ngFor="let queue of queueNames" [value]="queue">
+        {{ queue }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-card *ngIf="chartOptions" class="imx-billboard-card">
+    <eui-billboard [options]="chartOptions"></eui-billboard>
+  </mat-card>
+  <mat-card *ngIf="!chartOptions" class="imx-empty-card">
+    <div class="imx-jobqueue-no-data">
+      <eui-icon [icon]="'job-queue'"></eui-icon>
+      <p>{{'#LDS#Currently, there is no data in any queues.' |translate}}</p>
+    </div>
+  </mat-card>
+</div>

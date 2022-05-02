@@ -1,0 +1,80 @@
+<div eui-sidesheet-content>
+  <mat-tab-group (selectedTabChange)="onSelectedTabChanged($event)">
+    <mat-tab [label]="'#LDS#Details' | translate" data-imx-identifier="itshop-pattern-sidesheet-tab-details">
+      <ng-template matTabContent>
+        <div class="imx-tab-content">
+          <eui-alert class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" [dismissable]="true">
+            {{ detailsInfoText | translate}}
+          </eui-alert>
+          <mat-card>
+            <eui-badge *ngIf="!data.pattern.IsPublicPattern.value">
+              {{ '#LDS#Private request template' | translate}}
+            </eui-badge>
+            <eui-badge color="green" *ngIf="data?.pattern?.IsPublicPattern?.value">
+              {{'#LDS#Public request template' | translate}}
+            </eui-badge>
+            <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="formArray.push($event)">
+            </imx-cdr-editor>
+          </mat-card>
+        </div>
+      </ng-template>
+    </mat-tab>
+    <mat-tab [label]="'#LDS#Heading Products' | translate" data-imx-identifier="itshop-pattern-sidesheet-tab-products">
+      <ng-template matTabContent>
+        <div class="imx-tab-content">
+          <eui-alert class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" [dismissable]="true">
+            {{ productsInfoText | translate}}
+          </eui-alert>
+          <mat-card>
+            <div class="imx-table-container" *ngIf="dstWrapper && dstSettings">
+              <imx-data-source-toolbar #dst [options]="['search']" [settings]="dstSettings"
+                (search)="getData({ search: $event })" (navigationStateChanged)="getData($event)"
+                data-imx-identifier="itshop-pattern-sidesheet-dst">
+              </imx-data-source-toolbar>
+              <imx-data-table #dataTable [dst]="dst" class="imx-patterns-table" [detailViewVisible]="false"
+                mode="manual" [selectable]="data.isMyPattern" [showSelectedItemsMenu]="false"
+                (selectionChanged)="onSelectionChanged($event)"
+                data-imx-identifier="itshop-pattern-sidesheet-datatable">
+                <imx-data-table-column [entityColumn]="dstWrapper?.propertyDisplay"
+                  data-imx-identifier="itshop-pattern-sidesheet-table-column-display">
+                </imx-data-table-column>
+              </imx-data-table>
+              <imx-data-source-paginator data-imx-identifier="itshop-pattern-paginator" [dst]="dst">
+              </imx-data-source-paginator>
+            </div>
+          </mat-card>
+        </div>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+<ng-container *ngIf="selectedTabIndex === 0; else productsActions">
+  <div eui-sidesheet-actions color="white"
+    *ngIf="!data.isMyPattern && !data.pattern.IsPublicPattern.value || data.isMyPattern">
+    <button mat-stroked-button data-imx-identifier="itshop-pattern-sidesheet-button-delete-pattern" color="warn"
+      class="justify-start" *ngIf="data.isMyPattern && !data.adminMode" (click)="delete()">
+      {{ '#LDS#Delete' | translate }}
+    </button>
+    <button mat-raised-button data-imx-identifier="itshop-pattern-sidesheet-button-toggle-public"
+      *ngIf="data.isMyPattern" (click)="togglePublic()">
+      {{ (data.pattern.IsPublicPattern.value ? '#LDS#Unshare' : '#LDS#Share') | translate }}
+    </button>
+    <button mat-raised-button color="primary" data-imx-identifier="itshop-pattern-sidesheet-button-toggle-public"
+      [disabled]="!detailsFormGroup.dirty || detailsFormGroup.invalid" *ngIf="data.isMyPattern" (click)="save()">
+      {{ '#LDS#Save' | translate }}
+    </button>
+    <button mat-raised-button color="primary" data-imx-identifier="itshop-pattern-sidesheet-button-toggle-create-copy"
+      *ngIf="!data.isMyPattern && !data.pattern.IsPublicPattern.value" (click)="createPrivateCopy()">
+      {{'#LDS#Copy request template'| translate }}
+    </button>
+  </div>
+</ng-container>
+
+<ng-template #productsActions>
+  <div eui-sidesheet-actions color="white" *ngIf="data.isMyPattern">
+    <button mat-stroked-button data-imx-identifier="itshop-pattern-sidesheet-button-delete-products" color="warn"
+      class="justify-start" [disabled]="!selectedItemsCanBeDeleted()" (click)="deleteProducts()">
+      {{ '#LDS#Remove' | translate }}
+    </button>
+  </div>
+</ng-template>

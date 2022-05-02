@@ -26,8 +26,9 @@
 
 import { Component, Inject } from '@angular/core';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { TranslateService } from '@ngx-translate/core';
 
-import { BulkItem } from 'qbm';
+import { BulkItem, BulkItemStatus, ConfirmationService, LdsReplacePipe } from 'qbm';
 
 @Component({
   selector: 'imx-service-item-edit',
@@ -35,14 +36,44 @@ import { BulkItem } from 'qbm';
   styleUrls: ['./service-item-edit.component.scss']
 })
 export class ServiceItemEditComponent {
+  public infoText = '#LDS#Specify additional information for the following products. For all other products, you do not have to specify any additional information.';
+
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public readonly data: BulkItem[],
+    @Inject(EUI_SIDESHEET_DATA) public readonly bulkItems: BulkItem[],
+    private readonly confirmationService: ConfirmationService,
+    private readonly ldsReplace: LdsReplacePipe,
+    private readonly translate: TranslateService,
     private readonly sideSheetRef: EuiSidesheetRef
   ) {
-    this.sideSheetRef.closeClicked().subscribe(__ => this.close());
+    this.sideSheetRef.closeClicked().subscribe(__ => this.close(false));
   }
 
-  public close(): void {
-    this.sideSheetRef.close(true);
+  public async close(submit: boolean = true): Promise<void> {
+    const bulkItemsWithNoDecision = this.bulkItems.filter(bulkItem => bulkItem.status === BulkItemStatus.unknown);
+    if (!submit && await this.confirmationService.confirm({
+      Title: '#LDS#Heading Cancel Request Process',
+      Message: '#LDS#Are you sure you want to cancel the request process and not add the products to your shopping cart?'
+    })) {
+      this.bulkItems.forEach(item => item.status = BulkItemStatus.skipped);
+      return this.sideSheetRef.close(false);
+    } else if (submit && bulkItemsWithNoDecision && bulkItemsWithNoDecision.length > 0) {
+      const skipProductMessage = '#LDS#You have not specified additional information for one product. This is equivalent to skipping. Are you sure you do not want to add the product to your shopping cart?';
+      const skipProductsMessage = this.ldsReplace.transform(
+        await this.translate.get(
+          '#LDS#You have not specified additional information for {0} products. This is equivalent to skipping. Are you sure you do not want to add the products to your shopping cart?'
+        ).toPromise(), bulkItemsWithNoDecision.length);
+
+      if (await this.confirmationService.confirm({
+        Title: bulkItemsWithNoDecision.length > 1 ? '#LDS#Heading Skip Products' : '#LDS#Heading Skip Product',
+        Message: bulkItemsWithNoDecision.length > 1 ? skipProductsMessage : skipProductMessage
+      })) {
+        return this.sideSheetRef.close(true);
+      }
+    }
+    return this.sideSheetRef.close(true);
+  }
+
+  public hasBulkItemsWithDecision(): boolean {
+    return this.bulkItems.filter(bulkItem => bulkItem.status !== BulkItemStatus.unknown).length > 0;
   }
 }

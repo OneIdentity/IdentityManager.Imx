@@ -46,6 +46,7 @@ import { AttestationFeatureGuardService } from './attestation-feature-guard.serv
 import { PickCategoryComponent } from './pick-category/pick-category.component';
 import { AttestionAdminGuardService } from './guards/attestation-admin-guard.service';
 import { AttestationPoliciesGuardService } from './guards/attestation-policies-guard.service';
+import { ClaimDeviceComponent } from './claim-device/claim-device.component';
 
 const routes: Routes = [
   {
@@ -76,6 +77,12 @@ const routes: Routes = [
     path: 'attestation/preselection',
     component: PickCategoryComponent,
     canActivate: [RouteGuardService, AttestationFeatureGuardService, AttestionAdminGuardService],
+    resolve: [RouteGuardService]
+  },
+  {
+    path: 'claimdevice',
+    component: ClaimDeviceComponent,
+    canActivate: [RouteGuardService],
     resolve: [RouteGuardService]
   }
 ];

@@ -36,8 +36,8 @@ import { ValType } from 'imx-qbm-dbts';
 import { BaseCdr, ClassloggerService, EntityService, SnackBarService } from 'qbm';
 import { RequestActionComponent } from './request-action.component';
 import { RequestHistoryService } from '../request-history.service';
-import { JustificationService } from '../../itshop/justification.service';
-import { JustificationType } from '../../itshop/justification-type.enum';
+import { JustificationService } from '../../justification/justification.service';
+import { JustificationType } from '../../justification/justification-type.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -93,6 +93,28 @@ export class RequestActionService {
         this.logger.debug(this, 'renewing request');
         this.logger.trace(this, 'renewing request, reason', reason.column.GetValue());
         this.logger.trace(this, 'renewing request, date', prolongation.column.GetValue());
+      }
+    });
+  }
+
+  public async escalateDecisions(requests: PortalItshopRequests[]): Promise<void> {
+    const reason = this.createCdrReason('#LDS#Reason for escalation', true);
+
+    return this.editAction({
+      title: '#LDS#Heading Escalate Approval',
+      message: '#LDS#{0} approvals have been successfully escalated.',
+      data: {
+        description: '#LDS#Escalate the request of the following products.',
+        reason,
+        requests
+      },
+      apply: async () => {
+        for (const request of requests) {
+          await this.requestHistoryService.escalateDecision(request, reason.column.GetValue());
+        }
+
+        this.logger.debug(this, 'escalating request');
+        this.logger.trace(this, 'escalation request, reason', reason.column.GetValue());
       }
     });
   }
@@ -295,11 +317,12 @@ export class RequestActionService {
     }
   }
 
-  private createCdrReason(display: string = '#LDS#Reason for your decision'): BaseCdr {
+  private createCdrReason(display: string = '#LDS#Reason for your decision', required: boolean = false): BaseCdr {
     const column = this.entityService.createLocalEntityColumn({
       ColumnName: 'ReasonHead',
       Type: ValType.Text,
-      IsMultiLine: true
+      IsMultiLine: true,
+      MinLen: required ? 0 : 1
     });
 
     return new BaseCdr(column, display);

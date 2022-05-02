@@ -26,9 +26,9 @@
 
 import { Injectable } from '@angular/core';
 
-import { ParameterData, PortalReports, PortalSubscriptionInteractive } from 'imx-api-rps';
-import { CollectionLoadParameters, EntitySchema, FkProviderItem, TypedEntityCollectionData } from 'imx-qbm-dbts';
-import { EntityService } from 'qbm';
+import { PortalReports, PortalSubscriptionInteractive } from 'imx-api-rps';
+import { CollectionLoadParameters, EntitySchema, FkProviderItem, ParameterData, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { ParameterDataService } from 'qer';
 import { RpsApiService } from '../../rps-api-client.service';
 import { ReportSubscription } from './report-subscription';
 
@@ -39,7 +39,7 @@ export class ReportSubscriptionService {
 
   constructor(
     private readonly api: RpsApiService,
-    private readonly entityService: EntityService) { }
+    private readonly parameterDataService: ParameterDataService) { }
 
   public get PortalSubscriptionInteractiveSchema(): EntitySchema {
     return this.api.typedClient.PortalSubscriptionInteractive.GetSchema();
@@ -50,12 +50,10 @@ export class ReportSubscriptionService {
     return this.api.typedClient.PortalReports.Get(parameter);
   }
 
-  public buildRpsSubscription(
-    subscription: PortalSubscriptionInteractive): ReportSubscription {
-    return new ReportSubscription(
-      subscription,
+  public buildRpsSubscription(subscription: PortalSubscriptionInteractive): ReportSubscription {
+    return new ReportSubscription(subscription,
       (entity, data) => this.getFkProviderItems(entity, data),
-      (property, providerItems, data) => this.entityService.createLocalEntityColumn(property, providerItems, data));
+      this.parameterDataService);
   }
 
   public async createNewSubscription(uidReport: string): Promise<ReportSubscription> {
@@ -101,14 +99,14 @@ export class ReportSubscriptionService {
         return this.api.client.portal_subscription_interactive_parameter_candidates_post(
           columnName,
           fkTableName,
-          parameters.OrderBy,
-          parameters.StartIndex,
-          parameters.PageSize,
-          parameters.filter,
-          parameters.withProperties,
-          parameters.search,
-          parameters.parentKey,
-          subscription.InteractiveEntityWriteData
+          subscription.InteractiveEntityWriteData,
+          parameters
+        );
+      },
+      getDataModel: async () => ({}),
+      getFilterTree: async (__entity, parentkey) => {
+        return this.api.client.portal_subscription_interactive_parameter_candidates_filtertree_post(
+          columnName, fkTableName, parentkey,  subscription.InteractiveEntityWriteData
         );
       }
     };

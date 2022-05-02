@@ -31,7 +31,7 @@ import * as elementResizeDetector from 'element-resize-detector';
 @Component({
   selector: 'imx-master-detail',
   templateUrl: './master-detail.component.html',
-  styles: [],
+  styleUrls: ['./master-detail.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class MasterDetailComponent implements OnInit {

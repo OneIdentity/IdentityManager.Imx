@@ -39,7 +39,7 @@ import { ApplicationGuardService } from "./application-guard.service";
 class DummyComponent {
 }
 
-fdescribe('ApplicationGuardService', () => {
+describe('ApplicationGuardService', () => {
   let service: ApplicationGuardService;
 
   const authenticationServiceStub = {

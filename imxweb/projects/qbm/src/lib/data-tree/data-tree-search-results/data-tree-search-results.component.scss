@@ -7,11 +7,22 @@
   flex-direction: column;
 }
 
+.imx-background-highlight {
+  background-color: $asher-gray;
+}
+
 .imx-search-results {
   flex: 1 1 auto;
   overflow-y: auto;
   ::ng-deep.mat-pseudo-checkbox {
     display: none !important;
+  }
+  ::ng-deep.mat-list-option {
+    height: auto;
+  }
+
+  ::ng-deep.mat-list-item {
+    height: auto;
   }
 }
 
@@ -22,6 +33,12 @@
 .imx-search-results-multi {
   flex: 1 1 auto;
   overflow-y: auto;
+  ::ng-deep.mat-list-option {
+    background-color: transparent;
+  }
+  ::ng-deep.mat-list-option:hover {
+    background-color: $asher-gray;
+  }
 }
 
 .imx-candidate-option {
@@ -32,7 +49,6 @@
 
   .imx-candidate-content {
     flex: 1;
-    width: calc(100% - 25px);
     overflow: hidden;
     display: flex;
     flex-direction: row;
@@ -52,13 +68,23 @@
       width: 30vw;
     }
 
-    .imx-candidate-display{
-       display: flex;
-       flex-direction: row;
-       :first-child {
-         flex: 1 1 auto;
-         align-self: center;
-       }
+    .imx-candidate-display {
+      display: flex;
+      flex-direction: row;
+      min-width: 0;
+    }
+
+    .imx-result-text {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      min-width: 0;
+
+      p {
+        overflow: hidden;
+        word-break: break-all;
+        font-size: 14px;
+      }
     }
 
     .imx-candidate-longdisplay {
@@ -68,4 +94,38 @@
       overflow: hidden;
     }
   }
+}
+
+.imx-search-result-item {
+  display: flex;
+  flex-direction: row;
+  padding: 0 5px;
+  flex: 1 1 auto;
+  text-align: left;
+  min-width: 0;
+
+  > ::ng-deep .mat-button-wrapper {
+    color: $black;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+  }
+}
+
+.imx-result-text {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+
+  p {
+    overflow: hidden;
+    word-break: break-all;
+    font-size: 14px;
+  }
+}
+
+.imx-search-result-item:hover {
+  background-color: $asher-gray;
 }

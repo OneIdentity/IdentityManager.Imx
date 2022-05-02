@@ -57,6 +57,7 @@ import { RequestHistoryService } from './request-history.service';
 import { RequestTableComponent } from './request-table.component';
 import { ItshopModule } from '../itshop/itshop.module';
 import { RequestsFeatureGuardService } from '../requests-feature-guard.service';
+import { JustificationModule } from '../justification/justification.module';
 
 const routes: Routes = [
   {
@@ -78,6 +79,7 @@ const routes: Routes = [
     EuiCoreModule,
     EuiMaterialModule,
     ItshopModule,
+    JustificationModule,
     QbmModule,
     ParameterizedTextModule,
     ReactiveFormsModule,

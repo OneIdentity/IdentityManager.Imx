@@ -25,7 +25,7 @@
  */
 
 import { SeriesInformation } from './series-information';
-import { YTickConfiguration, YAxisConfiguration } from 'billboard.js';
+import { YTickConfiguration, yAxisConfiguration } from 'billboard.js';
 
 export class YAxisInformation {
 
@@ -56,7 +56,7 @@ export class YAxisInformation {
   /**
    * Gets YAxisConfiguration object using 'min' 'may' and 'tickConfiguration'
    */
-  public getAxisConfiguration(): YAxisConfiguration {
+  public getAxisConfiguration(): yAxisConfiguration {
     return {
       max: this.max,
       min: this.min,

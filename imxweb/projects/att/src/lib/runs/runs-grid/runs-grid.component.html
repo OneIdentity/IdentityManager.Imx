@@ -1,11 +1,11 @@
-<imx-data-source-toolbar #dst [settings]="dstSettings" [hiddenElements]="['settings', 'selectedViewGroup']"
+<imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['search', 'filter', 'groupBy', 'settings']"
   (search)="onSearch($event)" (navigationStateChanged)="getData($event)">
 </imx-data-source-toolbar>
 <div class="imx-table-container" *ngIf="dstSettings">
   <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual" data-imx-identifier="runs-table"
     [groupData]="groupedData" (groupDataChanged)="onGroupingChange($event)">
     <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.UID_AttestationPolicy"
-      [entitySchema]="dstSettings.entitySchema" data-imx-identifier="runs-table-column-UID_AttestationPolicy">
+      data-imx-identifier="runs-table-column-UID_AttestationPolicy">
     </imx-data-table-column>
     <imx-data-table-generic-column columnName="RunCategory" data-imx-identifier="runs-table-column-RunCategory">
       <ng-template let-item>
@@ -16,21 +16,21 @@
       </ng-template>
     </imx-data-table-generic-column>
     <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.PolicyProcessed"
-      [entitySchema]="dstSettings.entitySchema" data-imx-identifier="runs-table-column-PolicyProcessed">
+      data-imx-identifier="runs-table-column-PolicyProcessed">
     </imx-data-table-column>
     <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.DueDate"
-      [entitySchema]="dstSettings.entitySchema" data-imx-identifier="runs-table-column-DueDate">
+      data-imx-identifier="runs-table-column-DueDate">
     </imx-data-table-column>
     <imx-data-table-column columnLabel="{{'#LDS#Pending' | translate}}" align='center'
-      [entityColumn]="dstSettings.entitySchema.Columns.PendingCases" [entitySchema]="dstSettings.entitySchema"
+      [entityColumn]="dstSettings.entitySchema.Columns.PendingCases"
       data-imx-identifier="runs-table-column-PendingCases">
     </imx-data-table-column>
     <imx-data-table-column columnLabel="{{'#LDS#Closed' | translate}}" align='center'
-      [entityColumn]="dstSettings.entitySchema.Columns.ClosedCases" [entitySchema]="dstSettings.entitySchema"
+      [entityColumn]="dstSettings.entitySchema.Columns.ClosedCases"
       data-imx-identifier="runs-table-column-ClosedCases">
     </imx-data-table-column>
     <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.Progress"
-      [columnLabel]="'#LDS#Progress' | translate" [entitySchema]="dstSettings.entitySchema"
+      [columnLabel]="'#LDS#Progress' | translate"
       data-imx-identifier="runs-table-column-Progress">
       <ng-template let-item>
         <imx-progress [attestationRun]="item" [limit]="attestationRunConfig?.LimitGood"></imx-progress>

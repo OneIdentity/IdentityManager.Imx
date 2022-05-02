@@ -26,19 +26,26 @@
 
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { RouteGuardService } from 'qbm';
 
 import { InitService } from './init.service';
-import { ReportsComponent } from './reports/reports.component';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { EditReportComponent } from './reports/edit-report.component';
+import { EditReportModule } from './reports/edit-report.module';
 
 const routes: Routes = [
   {
     path: 'reports',
-    component: ReportsComponent
+    component: EditReportComponent,
+    canActivate: [RouteGuardService],
+    resolve: [RouteGuardService]
   }
 ];
 
 @NgModule({
   imports: [
+    EditReportModule,
+    SubscriptionsModule,
     RouterModule.forChild(routes)
   ]
 })

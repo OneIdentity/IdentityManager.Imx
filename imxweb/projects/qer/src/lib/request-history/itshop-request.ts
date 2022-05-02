@@ -43,13 +43,16 @@ export class ItshopRequest extends PortalItshopRequests implements RequestParame
   public readonly canWithdrawDelegation: boolean;
   public readonly canWithdrawAdditionalApprover: boolean;
   public readonly canRecallDecision: boolean;
+  public complianceRuleViolation = false;
   public readonly pwoData: PwoData;
+  public readonly canEscalateDecision: boolean;
 
   constructor(entity: IEntity, pwoData: PwoData, parameterColumns: IEntityColumn[], userUid: string) {
     super(entity);
 
-    this.canProlongate = this.UiOrderState.value === 'Assigned'
-      && (this.UID_PersonInserted.value == userUid || this.UID_PersonOrdered.value == userUid);
+    const isAffectedEmployee = this.UID_PersonInserted.value === userUid || this.UID_PersonOrdered.value === userUid;
+
+    this.canProlongate = this.UiOrderState.value === 'Assigned' && isAffectedEmployee;
 
     if (pwoData) {
       this.pwoData = pwoData;
@@ -59,6 +62,8 @@ export class ItshopRequest extends PortalItshopRequests implements RequestParame
 
         this.canWithdrawAdditionalApprover = workflowWrapper.canRevokeAdditionalApprover(userUid, this.DecisionLevel.value);
         this.canWithdrawDelegation = workflowWrapper.canRevokeDelegatedApprover(userUid, this.DecisionLevel.value);
+
+        this.canEscalateDecision = workflowWrapper.canEscalateDecision(this.DecisionLevel.value) && isAffectedEmployee;
 
         if (this.UID_PersonHead.value === userUid) {
           this.canRecallDecision = this.pwoData.CanRecallDecision;

@@ -55,6 +55,7 @@ describe('ChildSystemEntitlementsComponent', () => {
       {
         provide: GroupsService,
         useValue: {
+          getDataModel:jasmine.createSpy('getDataModel').and.returnValue(Promise.resolve({})),
           getGroupsGroupMembers: jasmine.createSpy('getGroupsGroupMembers').and.returnValue(Promise.resolve(mockGetGroups())),
           UnsGroupMembersSchema: {
             Columns: {

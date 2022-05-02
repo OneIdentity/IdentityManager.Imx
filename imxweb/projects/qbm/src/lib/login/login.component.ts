@@ -56,6 +56,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   public selectedConfigProvider: AuthConfigProvider;
   public sessionState: ISessionState;
   public configurationProviders: AuthConfigProvider[];
+  public logoUrl: string;
 
   private readonly authProviderStorageKey = 'selectedAuthProvider';
   private readonly subscriptions: Subscription[] = [];
@@ -137,7 +138,12 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   public async ngOnInit(): Promise<void> {
-    const name = (await this.appConfigService.client.imx_config_get()).ProductName;
+    const config = await this.appConfigService.getImxConfig();
+    if (config.CompanyLogoUrl) {
+      // make relative URL absolute if needed
+      this.logoUrl = new URL(config.CompanyLogoUrl, this.appConfigService.BaseUrl).href;
+    }
+    const name = config.ProductName;
     if (name) {
       this.product.name = name;
     }

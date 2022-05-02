@@ -47,10 +47,15 @@ export class CdrEditorComponent implements OnChanges {
    */
   @Input() public cdr: ColumnDependentReference;
 
+
   @Output() public controlCreated = new EventEmitter<AbstractControl>();
   @Output() public readonly valueChange = new EventEmitter<any>();
+  @Output() public readonly readOnlyChanged = new EventEmitter<boolean>();
 
   @ViewChild('viewcontainer', { read: ViewContainerRef, static: true }) private viewContainerRef: ViewContainerRef;
+
+  // stores if the cdr is readonly, because otherwise you're unable to check if the value has changed
+  private isReadonly: boolean;
 
   constructor(private registry: CdrRegistryService, private logger: ClassloggerService, private readonly elementRef: ElementRef) {
   }
@@ -60,9 +65,16 @@ export class CdrEditorComponent implements OnChanges {
       this.viewContainerRef.clear();
       try {
         const ref = this.registry.createEditor(this.viewContainerRef, this.cdr);
+        this.isReadonly = this.cdr.isReadOnly();
         if (ref.instance.valueHasChanged) {
-          ref.instance.valueHasChanged.subscribe( value => {
-            this.valueChange.emit(value);
+          ref.instance.valueHasChanged.subscribe(value => {
+            if ((value || '') !== (this.cdr.column.GetValue() || '')) {
+              this.valueChange.emit(value);
+            }
+            if (this.cdr.isReadOnly() !== this.isReadonly) {
+              this.isReadonly = this.cdr.isReadOnly();
+              this.readOnlyChanged.emit(this.isReadonly);
+            }
           });
         }
         this.controlCreated.emit(ref.instance.control);

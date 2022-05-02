@@ -24,9 +24,9 @@
  *
  */
 
-import { IEntityColumn, TypedEntity } from 'imx-qbm-dbts';
+import { IEntityColumn, WriteExtTypedEntity } from 'imx-qbm-dbts';
 
-export class GroupTypedEntity<TExtendedData = any> extends TypedEntity<TExtendedData> {
+export class GroupTypedEntity extends WriteExtTypedEntity<any> {
   public getColumns(showRiskIndex: boolean, propertyList: string[]): ReadonlyArray<IEntityColumn> {
     const columns = [];
 

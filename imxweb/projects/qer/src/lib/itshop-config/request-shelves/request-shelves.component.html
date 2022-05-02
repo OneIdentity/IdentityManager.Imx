@@ -11,7 +11,7 @@
       <imx-data-source-toolbar
         #dst
         [settings]="dstSettings"
-        [hiddenElements]="['groupBy', 'settings', 'selectedViewGroup']"
+        [options]="['search', 'filter']"
         [hiddenFilters]="['namespace']"
         [searchBoxText]="'#LDS#Search' | translate"
         (navigationStateChanged)="onNavigationStateChanged($event)"
@@ -22,15 +22,13 @@
         <imx-data-table [dst]="dst" mode="manual" (highlightedEntityChanged)="onRequestShelfChanged($event)" detailViewVisible="false"
           noDataText="#LDS#There are currently no shelves configured." noMatchingDataText="#LDS#There are no matching shelves."
           data-imx-identifier="request-shelves-tabledata-table">
-          <imx-data-table-column [entityColumn]="entitySchemaShopStructure?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-          [entitySchema]="entitySchemaShopStructure">
+          <imx-data-table-column [entityColumn]="entitySchemaShopStructure?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
             <ng-template let-item>
               <div data-imx-identifier="request-shelves-tabledata-display">{{ item.GetEntity().GetDisplay() }}</div>
               <div subtitle data-imx-identifier="request-shelves-tabledata-description">{{ item.Description.Column.GetDisplayValue() }}</div>
             </ng-template>
           </imx-data-table-column>
-          <imx-data-table-column [entityColumn]="entitySchemaShopStructure?.Columns.UID_OrgAttestator"
-            [entitySchema]="entitySchemaShopStructure">
+          <imx-data-table-column [entityColumn]="entitySchemaShopStructure?.Columns.UID_OrgAttestator">
           </imx-data-table-column>
         </imx-data-table>
         <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>

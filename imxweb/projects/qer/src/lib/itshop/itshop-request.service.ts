@@ -26,8 +26,8 @@
 
 import { Injectable } from '@angular/core';
 
-import { ParameterData, PwoData } from 'imx-api-qer';
-import { IEntity, IEntityColumn, TypedEntity } from 'imx-qbm-dbts';
+import { PwoData } from 'imx-api-qer';
+import { IEntity, IEntityColumn, ParameterData, WriteExtTypedEntity } from 'imx-qbm-dbts';
 import { Approval } from '../itshopapprove/approval';
 import { ExtendedCollectionData } from '../parameter-data/extended-collection-data.interface';
 import { ParameterDataService } from '../parameter-data/parameter-data.service';
@@ -46,14 +46,15 @@ export class ItshopRequestService {
     return this.parameterDataService.createParameterColumns(
       entity,
       parameters,
-      loadParameters => this.itshopService.getRequestParameterCandidates(loadParameters)
+      loadParameters => this.itshopService.getRequestParameterCandidates(loadParameters),
+      treeParameters => this.itshopService.getRequestParameterFilterTree(treeParameters)
     );
   }
 
   public isChiefApproval: boolean = false;
   
   public createRequestApprovalItem(
-    typedEntity: TypedEntity,
+    typedEntity: WriteExtTypedEntity<any>,
     extendedCollectionData: ExtendedCollectionData<PwoData>
   ): Approval {
     const entity = typedEntity.GetEntity();
@@ -61,7 +62,8 @@ export class ItshopRequestService {
     const extendedDataWrapper = this.parameterDataService.createExtendedDataWrapper(
       entity,
       extendedCollectionData,
-      loadParameters => this.itshopService.getRequestParameterCandidates(loadParameters)
+      loadParameters => this.itshopService.getRequestParameterCandidates(loadParameters),
+      treeParameters => this.itshopService.getRequestParameterFilterTree(treeParameters)
     );
 
     return new Approval({

@@ -51,30 +51,20 @@ export class NotificationsService extends SubscriptionService<NotificationIssueI
   }
 
   private async checkFrozenJobsLast24Hours(): Promise<void> {
-    const frozenJobsFilterData = [
-      {
-        ColumnName: 'StartAt',
-        Type: FilterType.Compare,
-        CompareOp: CompareOperator.GreaterOrEqual,
-        Value1: new Date(Date.now() - 24 * 60 * 60 * 1000)
-      }
-    ];
-
 
     const frozenJobs = await this.session.TypedClient.OpsupportQueueFrozenjobs.Get({
-      PageSize: -1,
-      filter: frozenJobsFilterData
+      PageSize: -1
     });
     const type = NotificationIssueType.FrozenJobsSinceYesterday;
     if (frozenJobs && frozenJobs.totalCount > 0) {
       await this.update(
         type,
-        '#LDS#Last 24 hours',
-        { key: '#LDS#{0} processes frozen since yesterday', parameters: [frozenJobs.totalCount] },
+        '#LDS#Failed processes',
+        { key: '#LDS#{0} processes failed', parameters: [frozenJobs.totalCount] },
         'reboot',
         {
           caption: '#LDS#View',
-          action: () => this.router.navigate(['/Jobs'], { queryParams: { filter: JSON.stringify(frozenJobsFilterData) } })
+          action: () => this.router.navigate(['/Jobs'], {queryParams: { failed: true }})
         }
       );
     } else {

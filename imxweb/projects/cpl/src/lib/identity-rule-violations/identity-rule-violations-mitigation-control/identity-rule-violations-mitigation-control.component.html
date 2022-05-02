@@ -1,0 +1,9 @@
+<div eui-sidesheet-content>
+  <mat-card>
+    <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['search']"
+      (navigationStateChanged)="getData($event)" (search)="onSearch($event)"></imx-data-source-toolbar>
+    <imx-data-table [dst]="dst" data-imx-identifier="identity-rule-violations-mitigation-table" mode="auto">
+    </imx-data-table>
+    <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+  </mat-card>
+</div>

@@ -39,8 +39,8 @@ export class DeleteDataService {
     private readonly arcClient: ArcApiService
   ) { }
 
-  public async deleteData(authorityId: string): Promise<void> {
-    return this.handlePromiseLoader(this.arcClient.client.portal_targetsystem_adsdomain_delete(authorityId));
+  public async deleteData(domaintype: string, authorityId: string): Promise<void> {
+    return this.handlePromiseLoader(this.arcClient.client.portal_targetsystem_delete(domaintype, authorityId));
   }
 
   private handlePromiseLoader(promise: Promise<any>): Promise<any> {

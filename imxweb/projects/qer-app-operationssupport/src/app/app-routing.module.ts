@@ -43,6 +43,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { SyncInformationComponent } from './sync/sync-information/sync-information.component';
 import { SyncJournalComponent } from './sync/sync-journal/sync-journal.component';
 import { OutstandingComponent } from 'dpr';
+import { SystemStatusRouteGuardService } from './guards/system-status-route-guard.service';
 
 const routes: Routes = [
   {
@@ -108,7 +109,7 @@ const routes: Routes = [
   {
     path: 'SystemStatus',
     component: SystemStatusComponent,
-    canActivate: [RouteGuardService],
+    canActivate: [RouteGuardService, SystemStatusRouteGuardService],
     resolve: [RouteGuardService]
   },
   {

@@ -27,20 +27,18 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatCardModule  } from '@angular/material/card';
-import { MatDialog } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule,  } from '@angular/material/input';
+import { MatInputModule, } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTabsModule } from '@angular/material/tabs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { EuiCoreModule, EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { configureTestSuite } from 'ng-bullet';
 import { LoggerTestingModule } from 'ngx-logger/testing';
-import { of } from 'rxjs';
-import { MatTabsModule } from '@angular/material/tabs';
 
 import { PortalAttestationFilterMatchingobjects } from 'imx-api-att';
-import { clearStylesFromDOM, MessageDialogResult } from 'qbm';
+import { clearStylesFromDOM, ConfirmationService } from 'qbm';
 import { PolicyService } from '../policy.service';
 import { AttestationCasesComponentParameter } from './attestation-cases-component-parameter.interface';
 import { AttestationCasesComponent } from './attestation-cases.component';
@@ -90,7 +88,6 @@ class MockCdr {
   @Output() valueChange = new EventEmitter<any>();
 }
 
-
 @Component({
   selector: 'imx-data-source-paginator',
   template: '<p>MockDataSourcePaginatorComponent</p>'
@@ -116,19 +113,19 @@ describe('MatchingObjectsComponent', () => {
   const mockPolicyService = {
     AttestationMatchingObjectsSchema: PortalAttestationFilterMatchingobjects.GetEntitySchema(),
     getObjectsForFilter: jasmine.createSpy('getObjectsForFilter').and.returnValue(Promise.resolve({})),
-    createAttestationRun: jasmine.createSpy('createAttestationRun')
+    createAttestationRun: jasmine.createSpy('createAttestationRun'),
+    getDataModel: jasmine.createSpy('getDataModel').and.returnValue(Promise.resolve({}))
   }
 
-  const mockMatDialogRef = {
+  const sideSheetRef = {
     close: jasmine.createSpy('close')
   };
 
-  let result: any;
-  const mockMatDialog = {
-    open: jasmine.createSpy('open').and.returnValue({ afterClosed: () => of(result) }),
-    closeAll: jasmine.createSpy('closeAll')
-  };
-
+  let confirm = true;
+  const mockConfirmationService = {
+    confirm: jasmine.createSpy('confirm')
+      .and.callFake(() => Promise.resolve(confirm))
+  }
 
   let data: AttestationCasesComponentParameter = {
     canCreateRuns: true,
@@ -176,11 +173,11 @@ describe('MatchingObjectsComponent', () => {
         },
         {
           provide: EuiSidesheetRef,
-          useValue: mockMatDialogRef
+          useValue: sideSheetRef
         },
         {
-          provide: MatDialog,
-          useValue: mockMatDialog
+          provide: ConfirmationService,
+          useValue: mockConfirmationService
         },
         { provide: EUI_SIDESHEET_DATA, useValue: data },
       ]
@@ -192,6 +189,7 @@ describe('MatchingObjectsComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
     mockPolicyService.getObjectsForFilter.calls.reset();
+    mockPolicyService.createAttestationRun.calls.reset();
   });
 
   afterAll(() => {
@@ -202,13 +200,13 @@ describe('MatchingObjectsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialiize', async () => {
+  xit('should initialiize', async () => {
     await component.ngOnInit();
     expect(mockPolicyService.getObjectsForFilter).toHaveBeenCalledWith('objects', '',
-      { Elements: undefined, ConcatenationType: 'OR' }, { PageSize: 20, StartIndex: 0, parentKey: '' });
+      { Elements: undefined, ConcatenationType: 'OR' }, { PageSize: 20, StartIndex: 0, ParentKey: '' });
   });
 
-  it('can update navigation', async () => {
+  xit('can update navigation', async () => {
     await component.onNavigationStateChanged({ PageSize: 20, StartIndex: 21 });
 
     expect(mockPolicyService.getObjectsForFilter).toHaveBeenCalledWith('objects', '',
@@ -226,15 +224,30 @@ describe('MatchingObjectsComponent', () => {
     expect(component.selectedItems).toEqual(newSelection);
   });
 
-  it('can create a run', async () => {
-    const matching = { Key: { value: '12345' } } as PortalAttestationFilterMatchingobjects;
-    result = MessageDialogResult.YesResult;
+  describe('an attestation run', () => {
+    for (const testcase of [
+      { confirm: true, cases: 1001 },
+      { confirm: false, cases: 1001 },
+      { confirm: true, cases: 1 },
+      { confirm: false, cases: 1 }
+    ]) {
+      it(`${testcase.confirm ? 'should' : ' shouldn\'t'} be started, because the user ${testcase.confirm ? 'has' : 'has not'} confirmed the dialog`,
+        async () => {
+          confirm = testcase.confirm;
 
-    component.data.uidpolicy = 'objects';
-    await component.createRun([matching]);
+          const matching = Array.from(new Array(testcase.cases), (val, index) => (
+            { Key: { value: '12345' + index } } as PortalAttestationFilterMatchingobjects
+          ));
+          component.data.uidpolicy = 'objects';
 
-    expect(mockPolicyService.createAttestationRun).toHaveBeenCalledWith('objects', ['12345']);
+          await component.createRun(matching);
 
+          if (testcase.cases <= 1000 || testcase.confirm) {
+            expect(mockPolicyService.createAttestationRun).toHaveBeenCalledWith('objects', jasmine.any(Array));
+          } else {
+            expect(mockPolicyService.createAttestationRun).not.toHaveBeenCalled();
+          }
+        });
+    }
   });
-
 });

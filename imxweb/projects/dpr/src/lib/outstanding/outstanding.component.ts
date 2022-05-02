@@ -26,7 +26,6 @@
 
 import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -40,7 +39,7 @@ import {
   TypedEntityCollectionData,
   ValType
 } from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings, isIE, MessageDialogComponent, MessageDialogResult, SnackBarService, TypedEntityCandidateSidesheetComponent } from 'qbm';
+import { ConfirmationService, DataSourceToolbarSettings, SnackBarService } from 'qbm';
 import { DependenciesComponent } from './dependencies.component';
 import { OutstandingObjectEntity } from './outstanding-object-entity';
 import { OutstandingService } from './outstanding.service';
@@ -71,7 +70,7 @@ export class OutstandingComponent implements OnInit {
     private readonly apiService: OutstandingService,
     private readonly translator: TranslateService,
     private readonly sidesheet: EuiSidesheetService,
-    private readonly dialog: MatDialog,
+    private readonly confirmationService: ConfirmationService,
     private readonly snackbar: SnackBarService,
     private readonly translate: TranslateService,
     private readonly busyService: EuiLoadingService) {
@@ -163,7 +162,7 @@ export class OutstandingComponent implements OnInit {
       title: await this.translator.get('#LDS#Heading View Dependencies').toPromise(),
       headerColour: 'iris-tint',
       padding: '0px',
-      width: isIE() ? '60%' : 'max(600px, 55%)',
+      width: 'max(600px, 55%)',
       data: {
         dependencies,
         action
@@ -258,7 +257,11 @@ export class OutstandingComponent implements OnInit {
   }
 
   private async processWithConfirmation(action: OutstandingAction): Promise<void> {
-    let canProceed = await this.confirmAction(action);
+    let canProceed = await this.confirmationService.confirm({
+      Title: this.getConfirmationTitle(action),
+      Message: this.getConfirmationText(action),
+      identifier: 'shoppingcart-for-later-delete'
+    });
 
     if (!canProceed) {
       return;
@@ -269,21 +272,6 @@ export class OutstandingComponent implements OnInit {
       return;
     }
     return this.process(action);
-  }
-
-  private async confirmAction(action: OutstandingAction): Promise<boolean> {
-    const dialogRef = this.dialog.open(MessageDialogComponent, {
-      data: {
-        ShowOk: true,
-        ShowCancel: true,
-        Title: await this.translator.get(this.getConfirmationTitle(action)).toPromise(),
-        Message: await this.translator.get(this.getConfirmationText(action)).toPromise()
-      },
-      panelClass: 'imx-messageDialog'
-    });
-
-    const result = await dialogRef.afterClosed().toPromise();
-    return result === MessageDialogResult.OkResult;
   }
 
   private async process(action: OutstandingAction): Promise<void> {

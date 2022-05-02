@@ -49,4 +49,20 @@ export class StorageService {
   public storeHelperAlertDismissal(key: string): void {
     sessionStorage.setItem(key, 'true');
   }
+
+  public storeAdditionalProperties(key: string, values: string[]): void {
+    if (values.length === 0) {
+      sessionStorage.setItem(key, '');
+    } else {
+      sessionStorage.setItem(key, values.join('|'));
+    }
+  }
+
+  public getAdditionalProperties(key: string): string[] {
+    const text = sessionStorage.getItem(key);
+    if (text == null || text === '') {
+      return [];
+    }
+    return text.split('|') ;
+  }
 }

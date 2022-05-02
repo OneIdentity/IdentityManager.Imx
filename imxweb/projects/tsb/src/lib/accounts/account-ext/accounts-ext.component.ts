@@ -25,12 +25,11 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 
 import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings, SettingsService } from 'qbm';
-import { AccountReferrer } from 'qer';
+import { DataSourceToolbarSettings, DynamicTabDataProviderDirective, SettingsService } from 'qbm';
 import { AccountsExtService } from './account-ext.service';
 
 @Component({
@@ -40,7 +39,12 @@ import { AccountsExtService } from './account-ext.service';
     './accounts-ext.component.scss'],
 })
 export class AccountsExtComponent implements OnInit {
-  public referrer: AccountReferrer;
+
+  @Input() public referrer: {
+    objecttable?: string;
+    objectuid?: string;
+    tablename?: string;
+  };
 
   public dstSettings: DataSourceToolbarSettings;
   public readonly DisplayColumns = DisplayColumns;
@@ -53,8 +57,10 @@ export class AccountsExtComponent implements OnInit {
   constructor(
     private readonly busyService: EuiLoadingService,
     private readonly settingService: SettingsService,
-    private readonly accountsService: AccountsExtService) {
-
+    private readonly accountsService: AccountsExtService,
+    dataProvider: DynamicTabDataProviderDirective
+  ) {
+    this.referrer = dataProvider?.data;
     this.navigationState = { PageSize: this.settingService.DefaultPageSize };
     this.entitySchemaAccount = accountsService.portalPersonAccountsSchema;
     this.displayColumns = [
@@ -86,7 +92,7 @@ export class AccountsExtComponent implements OnInit {
     let overlayRef: OverlayRef;
     setTimeout(() => overlayRef = this.busyService.show());
     try {
-      const groupsPerIdentity = await this.accountsService.getAccounts(this.referrer.uidPerson);
+      const groupsPerIdentity = await this.accountsService.getAccounts(this.referrer.objectuid);
       this.dstSettings = {
         displayedColumns: this.displayColumns,
         dataSource: groupsPerIdentity,

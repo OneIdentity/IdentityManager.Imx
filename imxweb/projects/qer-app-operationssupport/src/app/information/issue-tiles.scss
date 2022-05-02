@@ -32,9 +32,10 @@
 .issueTitle {
   padding-top: 20px;
   font-weight: 600;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 24px;
   color: $black-3;
+  max-width: 275px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

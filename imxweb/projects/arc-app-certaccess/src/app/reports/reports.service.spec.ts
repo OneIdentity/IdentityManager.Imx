@@ -67,7 +67,7 @@ describe('ReportsService', () => {
 
     service.authorityData();
 
-    expect(mockArcApiService.typedClient.PortalTargetsystemUnsSystem.Get).toHaveBeenCalledWith({ PageSize: 20, StartIndex: 0, parentKey: '' });
+    expect(mockArcApiService.typedClient.PortalTargetsystemUnsSystem.Get).toHaveBeenCalledWith({ PageSize: 20, StartIndex: 0, ParentKey: '' });
   });
 
   it('authorityData(search) should call client method with correct parameters', () => {
@@ -78,7 +78,7 @@ describe('ReportsService', () => {
     expect(mockArcApiService.typedClient.PortalTargetsystemUnsSystem.Get).toHaveBeenCalledWith({
       PageSize: 20,
       StartIndex: 0,
-      parentKey: '',
+      ParentKey: '',
       search: 'test',
     });
   });
@@ -88,7 +88,7 @@ describe('ReportsService', () => {
 
     service.containerData();
 
-    expect(mockArcApiService.typedClient.PortalTargetsystemUnsContainer.Get).toHaveBeenCalledWith({ PageSize: 20, StartIndex: 0, parentKey: '' });
+    expect(mockArcApiService.typedClient.PortalTargetsystemUnsContainer.Get).toHaveBeenCalledWith({ PageSize: 20, StartIndex: 0, ParentKey: '' });
   });
 
   it('containerData(search) should call client method with correct parameters', () => {
@@ -99,7 +99,7 @@ describe('ReportsService', () => {
     expect(mockArcApiService.typedClient.PortalTargetsystemUnsContainer.Get).toHaveBeenCalledWith({
       PageSize: 20,
       StartIndex: 0,
-      parentKey: '',
+      ParentKey: '',
       search: 'test',
     });
   });

@@ -1,0 +1,12 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
+
+  <!--#to customize# project specific variables-->
+  <PropertyGroup>
+    <ComponentDir>imxweb\projects</ComponentDir>
+  </PropertyGroup>
+
+
+  <!--Get the default part of build file-->
+  <Import Project="$(VI_PROJECTDIR)\Build\Includes\Build_Meta.targets"/>
+  
+</Project>

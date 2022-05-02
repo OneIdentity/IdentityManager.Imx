@@ -1,0 +1,36 @@
+<ng-container *ngIf="isRoleAssignment; else otherServiceItem">
+  <div class="governance-sidesheet">
+    <mat-tab-group >
+      <mat-tab data-imx-identifier="product-details-tab-main" [label]="'#LDS#Heading Details' | translate" >
+        <ng-template matTabContent>
+          <div class="governance-sidesheet__tab-content">
+            <div class="governance-sidesheet__tab-content-body">
+              <mat-card>
+                <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"></imx-cdr-editor>
+              </mat-card>
+            </div>
+          </div>
+        </ng-template>
+      </mat-tab>
+      <mat-tab data-imx-identifier="product-details-tab-main" [label]="'#LDS#Heading Entitlements' | translate" >
+        <ng-template matTabContent>
+          <div class="governance-sidesheet__tab-content">
+            <div class="governance-sidesheet__tab-content-body">
+              <mat-card>
+                  <imx-product-entitlements [uidAccProduct]="data.item.GetEntity().GetKeys()[0]"></imx-product-entitlements>
+              </mat-card>
+            </div>
+          </div>
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</ng-container>
+
+<ng-template #otherServiceItem>
+  <div eui-sidesheet-content>
+    <mat-card>
+      <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"></imx-cdr-editor>
+    </mat-card>
+  </div>
+</ng-template>

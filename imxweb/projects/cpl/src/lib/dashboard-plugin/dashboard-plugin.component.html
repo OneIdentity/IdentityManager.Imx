@@ -1,0 +1,5 @@
+<imx-badge-tile data-imx-identifier="cpl-dashboard--plugin-badge-tile-violations-approvals"
+  [caption]="'#LDS#Heading Pending Rule Violations' | translate" *ngIf="0 < pendingItems?.OpenNonCompliance"
+  [value]="pendingItems?.OpenNonCompliance" [identifier]="'cpl-rule-violation-approvals'"
+  (actionClick)="router.navigate(['compliance', 'rulesviolations', 'approve'])">
+</imx-badge-tile>

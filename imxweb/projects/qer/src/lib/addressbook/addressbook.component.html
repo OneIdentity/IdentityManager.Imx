@@ -3,7 +3,7 @@
   #dst
   data-imx-identifier="addressbook-dst"
   [settings]="dstSettings"
-  [hiddenElements]="['settings', 'selectedViewGroup']"
+  [options]="['search', 'filter', 'groupBy','settings']"
   (navigationStateChanged)="onNavigationStateChanged($event)"
   (search)="onSearch($event)"
   data-imx-identifier="addressbook-data-source-toolbar">

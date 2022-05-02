@@ -31,6 +31,7 @@
 export { PolicyModule } from './lib/policies/policy.module';
 export { AttConfigModule } from './lib/att-config.module';
 export { AttestationRunsModule } from './lib/runs/attestation-runs.module';
+export { AttestationWrapperComponent } from './lib/runs/attestation/attestation-wrapper/attestation-wrapper.component';
 export { RunsComponent } from './lib/runs/runs.component';
 export { RunsGridComponent } from './lib/runs/runs-grid/runs-grid.component';
 export { PolicyListComponent} from './lib/policies/policy-list/policy-list.component';
@@ -43,9 +44,10 @@ export { AttestationHistoryComponent } from './lib/attestation-history/attestati
 export { AttestationHistoryService } from './lib/attestation-history/attestation-history.service';
 export { AttestationHistoryCase } from './lib/attestation-history/attestation-history-case';
 export { AttestationHistoryActionService } from './lib/attestation-history/attestation-history-action.service';
-export { AttestationExtComponent } from './lib/runs/attestation/attestation-ext/attestation-ext.component';
 export { PolicyService} from './lib/policies/policy.service';
 export { ApiService } from './lib/api.service';
 export { canSeeAttestationPolicies } from './lib/admin/permissions-helper';
 export { AttestationFeatureGuardService } from './lib/attestation-feature-guard.service';
 export { IdentityAttestationService } from './lib/identity-attestation.service';
+export { NewUserModule } from './lib/new-user/new-user.module';
+export { ClaimDeviceModule } from './lib/claim-device/claim-device.module';

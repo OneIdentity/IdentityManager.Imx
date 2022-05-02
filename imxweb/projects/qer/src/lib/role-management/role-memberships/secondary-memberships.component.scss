@@ -1,3 +1,11 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1 1 auto;
+}
+
 .spaced-badge {
   margin-right: 1em;
 }

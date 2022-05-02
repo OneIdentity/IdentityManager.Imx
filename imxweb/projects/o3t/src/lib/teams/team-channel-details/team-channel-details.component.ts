@@ -63,7 +63,7 @@ export class TeamChannelDetailsComponent implements OnInit {
     try {
       await this.teamChannel.GetEntity().Commit(true);
       this.formGroup.markAsPristine();
-      this.snackbar.openAtTheBottom({ key: '#LDS#Your changes have been successfully saved.' });
+      this.snackbar.open({ key: '#LDS#Your changes have been successfully saved.' });
     } finally {
       this.teamsService.handleCloseLoader();
     }

@@ -26,11 +26,13 @@
 
 import { Injectable } from '@angular/core';
 
-import { ParameterData } from 'imx-api-qer';
-import { FkProviderItem, TypedEntity } from 'imx-qbm-dbts';
+import { EntityWriteDataColumn, ParameterData } from 'imx-qbm-dbts';
+import { FkProviderItem, WriteExtTypedEntity } from 'imx-qbm-dbts';
 import { ParameterDataWrapper } from '../../parameter-data/parameter-data-wrapper.interface';
 import { ParameterCategoryColumn } from '../../parameter-data/parameter-category-column.interface';
 import { ParameterDataService } from '../../parameter-data/parameter-data.service';
+
+type CategoryParameterWrite = { [id: string]: EntityWriteDataColumn[][] };
 
 @Injectable({
   providedIn: 'root'
@@ -41,7 +43,7 @@ export class RequestParametersService {
   public createInteractiveParameterCategoryColumns(
     parameterDataWrapper: ParameterDataWrapper,
     getFkProviderItems: (parameter: ParameterData) => FkProviderItem[],
-    typedEntity: TypedEntity
+    typedEntity: WriteExtTypedEntity<CategoryParameterWrite>
   ): ParameterCategoryColumn[] {
     if (parameterDataWrapper?.Parameters == null) {
       return undefined;

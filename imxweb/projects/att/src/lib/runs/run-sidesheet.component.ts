@@ -25,7 +25,7 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, Inject } from '@angular/core';
+import { AfterContentInit, Component, Inject } from '@angular/core';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { EuiLoadingService, EuiSidesheetRef, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
@@ -34,7 +34,7 @@ import { Subscription } from 'rxjs';
 
 import { CompareOperator, FilterType, TypedEntityCollectionData } from 'imx-qbm-dbts';
 import { PortalAttestationRun, PortalAttestationRunApprovers, RunStatisticsConfig } from 'imx-api-att';
-import { SnackBarService } from 'qbm';
+import { SnackBarService, TabControlHelper } from 'qbm';
 
 import { RunsService } from './runs.service';
 import { percentage } from './helpers';
@@ -48,7 +48,7 @@ import { HelperAlertContent } from 'qer';
   templateUrl: './run-sidesheet.component.html',
   styleUrls: ['./run-sidesheet.component.scss']
 })
-export class RunSidesheetComponent {
+export class RunSidesheetComponent implements AfterContentInit {
   public readonly run: PortalAttestationRun;
   public readonly attestationRunConfig: RunStatisticsConfig;
   public readonly reportDownload: EuiDownloadOptions;
@@ -127,6 +127,15 @@ export class RunSidesheetComponent {
         Value1: this.run.GetEntity().GetKeys()[0]
       }]
     };
+  }
+
+  /**
+   * Resolve an issue where the mat-tab navigation arrows could appear on first load
+   */
+  public ngAfterContentInit(): void {
+    setTimeout(() => {
+      TabControlHelper.triggerResizeEvent();
+    });
   }
 
   public async extendAttestationRun(): Promise<void> {

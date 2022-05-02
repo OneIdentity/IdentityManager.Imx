@@ -89,7 +89,6 @@ describe('SubscriptionPropertiesComponent', () => {
     null,
     {
       getCdrs: jasmine.createSpy('getCdrs'),//() => [],
-      calculateParameterColumns: jasmine.createSpy('calculateParameterColumns'),//() => [],
       getParameterCdr: jasmine.createSpy('getParameterCdr'),//() => []
     } as unknown as ReportSubscription
   ]) {
@@ -101,7 +100,6 @@ describe('SubscriptionPropertiesComponent', () => {
 
       if (testcase != null) {
         expect(testcase.getCdrs).toHaveBeenCalled();
-        expect(testcase.calculateParameterColumns).toHaveBeenCalled();
         expect(testcase.getParameterCdr).toHaveBeenCalled();
       }
 
@@ -127,7 +125,6 @@ describe('SubscriptionPropertiesComponent', () => {
 
       if (testcase  === 'test reload') {
         expect(component.subscriptionParameterFormArray.length).toEqual(0);
-        expect(component.subscription.calculateParameterColumns).toHaveBeenCalled();
         expect(component.subscription.getParameterCdr).toHaveBeenCalled();
       }
 

@@ -26,7 +26,7 @@
 
 import { DisplayColumns, IEntityColumn, TypedEntity } from 'imx-qbm-dbts';
 
-export class AccountTypedEntity<TExtendedData = any> extends TypedEntity<TExtendedData> {
+export class AccountTypedEntity extends TypedEntity {
 
   // TODO fix this: we are in TSB, not ADS
   public readonly displayColumn = this.GetEntity().GetColumn(DisplayColumns.DISPLAY_PROPERTYNAME);

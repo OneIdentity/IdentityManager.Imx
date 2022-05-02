@@ -30,5 +30,20 @@
         background-color: rgba($iris-pastel, 0.2) !important;
       }
     }
+
+    ::ng-deep .data-explorer__action-buttons-wrapper {
+      background: $white;
+      .data-explorer__action-buttons {
+        padding: inherit;
+      }
+    }
   }
+}
+
+.data-explorer-bottom-button-row {
+  display: flex;
+  flex-direction: row;
+  align-items: end;
+  margin-top: 15px;
+  align-self: end;
 }

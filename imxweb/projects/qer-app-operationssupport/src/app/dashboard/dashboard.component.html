@@ -2,8 +2,10 @@
     {{'#LDS#Welcome' | translate}}
 </h1>
 <div class="imx-ops-webstart">
-    <imx-object-search></imx-object-search>
-    <imx-notifications></imx-notifications>
-    <imx-service-issues></imx-service-issues>
-    <imx-service-report></imx-service-report>
+    <ng-container *ngIf="isOperationsSupporter">
+        <imx-object-search></imx-object-search>
+        <imx-notifications></imx-notifications>
+        <imx-service-issues></imx-service-issues>
+        <imx-service-report></imx-service-report>
+    </ng-container>
 </div>

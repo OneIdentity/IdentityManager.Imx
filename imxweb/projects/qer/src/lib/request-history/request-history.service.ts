@@ -26,9 +26,9 @@
 
 import { Injectable } from '@angular/core';
 
-import { EntitySchema, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { DataModel, EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
 import { RequestHistoryLoadParameters } from './request-history-load-parameters.interface';
-import { PortalItshopRequests, ProlongationInput, PwoUnsubscribeInput, PwoUnsubscribeResult } from 'imx-api-qer';
+import { PortalItshopRequests, ProlongationInput, PwoExtendedData, PwoUnsubscribeInput, PwoUnsubscribeResult } from 'imx-api-qer';
 import { ItshopRequest } from './itshop-request';
 import { ItshopRequestData } from '../itshop/request-info/itshop-request-data';
 import { QerApiService } from '../qer-api-client.service';
@@ -43,11 +43,13 @@ export class RequestHistoryService {
     return this.qerClient.typedClient.PortalItshopRequests.GetSchema();
   }
 
-  public async getRequests(userUid: string, parameters: RequestHistoryLoadParameters): Promise<TypedEntityCollectionData<ItshopRequest>> {
+  public async getRequests(userUid: string, parameters: RequestHistoryLoadParameters): Promise<ExtendedTypedEntityCollection<ItshopRequest, PwoExtendedData>> {
     const collection = await this.qerClient.typedClient.PortalItshopRequests.Get(parameters);
+
     return {
       tableName: collection.tableName,
       totalCount: collection.totalCount,
+      extendedData: collection.extendedData,
       Data: collection.Data.map((element, index) => {
         const requestData = new ItshopRequestData({ ...collection.extendedData, ...{ index } });
         const parameterColumns = this.itshopRequest.createParameterColumns(
@@ -60,10 +62,14 @@ export class RequestHistoryService {
   }
 
   public async getFilterOptions(userUid: string, filterPresets: { [name: string]: string } = {}): Promise<DataSourceToolbarFilter[]> {
-    return (await this.qerClient.client.portal_itshop_requests_datamodel_get(userUid, undefined)).Filters.map((option: DataSourceToolbarFilter) => {
+    return (await this.getDataModel(userUid)).Filters.map((option: DataSourceToolbarFilter) => {
       option.InitialValue = filterPresets[option.Name];
       return option;
     });
+  }
+
+  public async getDataModel(userUid: string): Promise<DataModel> {
+    return this.qerClient.client.portal_itshop_requests_datamodel_get(userUid, undefined);
   }
 
   public async prolongate(pwo: PortalItshopRequests, input: ProlongationInput): Promise<void> {
@@ -97,6 +103,10 @@ export class RequestHistoryService {
   public async revokeDelegation(pwo: PortalItshopRequests, reason: string): Promise<void> {
     return this.qerClient.client.portal_itshop_revokedelegation_post(this.getUidPwo(pwo),
       { Reason: reason });
+  }
+
+  public async escalateDecision(pwo: PortalItshopRequests, reason: string): Promise<void> {
+    return this.qerClient.client.portal_itshop_escalate_post(this.getUidPwo(pwo), { Reason: reason });
   }
 
   private getUidPwo(pwo: PortalItshopRequests): string {

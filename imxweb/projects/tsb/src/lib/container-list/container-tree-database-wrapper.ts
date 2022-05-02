@@ -62,8 +62,8 @@ export class ContainerTreeDatabaseWrapper {
 
   private async getEntities(parameters: CollectionLoadParameters = {}, system: string = ''): Promise<IEntity[]> {
     const navigationState: any = { PageSize: 1000, StartIndex: 0, ParentKey: '' };
-    if (parameters.parentKey) {
-      navigationState.ParentKey = parameters.parentKey;
+    if (parameters.ParentKey) {
+      navigationState.ParentKey = parameters.ParentKey;
     }
     if (system) {
       navigationState.system = system;

@@ -7,7 +7,7 @@
     </div>
   </div>
 
-  <imx-data-source-toolbar #dst [settings]="dstSettings" [hiddenElements]="['groupBy', 'settings', 'selectedViewGroup']"
+  <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['search', 'filter', 'filterTree']"
     [hiddenFilters]="['namespace']" [searchBoxText]="'#LDS#Search' | translate" [itemStatus]="itemStatus"
     (navigationStateChanged)="onNavigationStateChanged($event)" (search)="onSearch($event)"
     (customSelectedFilterRemoved)="dataExplorerFilters.onCustomFilterClearedExternally($event)">
@@ -35,16 +35,14 @@
       <imx-data-table #dataTable [dst]="dst" (highlightedEntityChanged)="onGroupChanged($event)"
         detailViewVisible="false" [selectable]="unsAccountIdFilter ? false : true"
         (selectionChanged)="onGroupSelected($event)" mode="manual" data-imx-identifier="groups-tabledata-table">
-        <imx-data-table-column [entityColumn]="entitySchemaUnsGroup?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-          [entitySchema]="entitySchemaUnsGroup">
+        <imx-data-table-column [entityColumn]="entitySchemaUnsGroup?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
           <ng-template let-item>
             <div data-imx-identifier="groups-tabledata-display">{{ item.GetEntity().GetDisplay() }}</div>
             <div subtitle data-imx-identifier="groups-tabledata-description">{{
               item.Description.Column.GetDisplayValue() }}</div>
           </ng-template>
         </imx-data-table-column>
-        <imx-data-table-column align="center" [entityColumn]="entitySchemaUnsGroup?.Columns.Requestable"
-          [entitySchema]="entitySchemaUnsGroup">
+        <imx-data-table-column align="center" [entityColumn]="entitySchemaUnsGroup?.Columns.Requestable">
         </imx-data-table-column>
         <imx-data-table-generic-column *ngIf="entitySchemaUnsGroup?.Columns.XMarkedForDeletion" alignHeader="center"
           alignContent="center" [columnName]="entitySchemaUnsGroup?.Columns.XMarkedForDeletion.ColumnName">

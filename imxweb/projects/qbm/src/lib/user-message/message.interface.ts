@@ -26,5 +26,6 @@
 
 export interface Message {
   type?: 'error' | 'warning' | 'success' | 'info';
+  target?: string;
   text: string;
 }

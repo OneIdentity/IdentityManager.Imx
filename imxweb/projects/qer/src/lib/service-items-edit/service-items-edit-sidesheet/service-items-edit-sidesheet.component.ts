@@ -27,7 +27,7 @@
 import { Component, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { PortalServiceitemsInteractive } from 'imx-api-qer';
+import { PortalServiceitemsInteractive_byid } from 'imx-api-qer';
 
 import { ClassloggerService, ColumnDependentReference, ConfirmationService, SnackBarService } from 'qbm';
 import { Subscription } from 'rxjs';
@@ -51,7 +51,7 @@ export class ServiceItemsEditSidesheetComponent implements OnDestroy {
 
   constructor(
     formBuilder: FormBuilder,
-    @Inject(EUI_SIDESHEET_DATA) public serviceItem: PortalServiceitemsInteractive,
+    @Inject(EUI_SIDESHEET_DATA) public serviceItem: PortalServiceitemsInteractive_byid,
     private serviceItemsEditService: ServiceItemsEditService,
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly logger: ClassloggerService,
@@ -81,13 +81,15 @@ export class ServiceItemsEditSidesheetComponent implements OnDestroy {
       const uidPerson = this.serviceItemsEditForm?.getSelectedUidPerson;
       let confirmMessage = '#LDS#The service item has been successfully saved.';
       if (uidPerson) {
-        this.serviceItem.extendedData = {
+        // PortalServiceitemsInteractive_byid cannot write extendedData,
+        // but this code was here and should not break with strong typing
+        (<any>this.serviceItem).extendedData = {
           UidPerson: uidPerson,
           CopyAllMembers: true,
         };
-        confirmMessage += ' It may take some time for the changes to take effect.';
+        confirmMessage = '#LDS#The service item has been successfully saved. It may take some time for the changes to take effect.';
       } else {
-        this.serviceItem.extendedData = undefined;
+        (<any>this.serviceItem).extendedData = undefined;
       }
 
       this.logger.debug(this, `Saving group changes`);

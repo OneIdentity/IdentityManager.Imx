@@ -55,14 +55,14 @@ import { Candidate } from '../../fk-advanced-picker/candidate.interface';
 import { MetadataService } from '../../base/metadata.service';
 import { FkHierarchicalDialogComponent } from '../../fk-hierarchical-dialog/fk-hierarchical-dialog.component';
 import { LdsReplacePipe } from '../../lds-replace/lds-replace.pipe';
-
+import { I } from '@angular/cdk/keycodes';
 
 /**
  * A component for viewing / editing foreign key relations
  */
 // tslint:disable-next-line: max-classes-per-file
 @Component({
-  selector: '<imx-edit-fk>',
+  selector: 'imx-edit-fk',
   templateUrl: './edit-fk.component.html',
   styleUrls: ['./edit-fk.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -72,6 +72,11 @@ import { LdsReplacePipe } from '../../lds-replace/lds-replace.pipe';
  */
 export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnInit {
   public get hasCandidatesOrIsLoading(): boolean {
+
+    return true;
+
+    // because of 298890
+    /*
     return this.candidatesTotalCount > 0
       // make sure the user can change selectedTable even if there are no available candidates
       // in the first candidate table
@@ -79,6 +84,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
       || this.parameters?.search?.length > 0
       || this.parameters?.filter != null
       || this.loading;
+      */
   }
 
   public readonly control = new FormControl(undefined);
@@ -89,11 +95,13 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
   public selectedTable: IForeignKeyInfo;
   public isHierarchical: boolean;
 
+
   public readonly valueHasChanged = new EventEmitter<any>();
 
-  private candidatesTotalCount: number;
   private parameters: CollectionLoadParameters = { PageSize: this.pageSize, StartIndex: 0 };
   private readonly subscribers: Subscription[] = [];
+  private isWriting = false;
+
   @ViewChild('viewport') private viewport: CdkVirtualScrollViewport;
 
   /**
@@ -153,7 +161,8 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
     }
   }
 
-  public onOpened(): void {
+  public async onOpened(): Promise<void> {
+    await this.updateCandidates();
     if (this.viewport) {
       this.viewport.scrollToIndex(0);
       this.viewport.checkViewportSize();
@@ -177,9 +186,11 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
     this.control.setValue(value, { emitEvent: false });
     await this.writeValue(value);
 
+    /* 298890
     if (this.candidatesTotalCount === 0) {
       return this.updateCandidates();
     }
+    */
   }
 
   public close(event?: any): void {
@@ -197,9 +208,10 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
     if (event) {
       event.stopPropagation();
     }
+
     const dialogRef = this.sidesheet.open(this.isHierarchical ? FkHierarchicalDialogComponent : FkAdvancedPickerComponent, {
-      title: this.ldsReplace.transform(await this.translator.get('#LDS#Heading Edit {0}').toPromise(),
-      await this.translator.get(this.columnContainer?.display).toPromise()),
+      title: this.ldsReplace.transform(await this.translator.get('#LDS#Heading {0}').toPromise(),
+        await this.translator.get(this.columnContainer?.display).toPromise()),
       headerColour: 'iris-blue',
       panelClass: 'imx-sidesheet',
       padding: '0',
@@ -240,24 +252,50 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
   public bind(cdref: ColumnDependentReference): void {
     if (cdref && cdref.column) {
       this.columnContainer.init(cdref);
-      if (this.columnContainer.fkRelations && this.columnContainer.fkRelations.length > 0) {
-        let table: IForeignKeyInfo;
-        if (this.columnContainer.fkRelations.length > 1 && this.columnContainer.value) {
-          this.logger.trace(this, 'the column already has a value, and it is a dynamic foreign key');
-          const dbObjectKey = DbObjectKey.FromXml(this.columnContainer.value);
-          table = this.columnContainer.fkRelations.find(fkr => fkr.TableName === dbObjectKey.TableName);
-        }
-        this.selectedTable = table || this.columnContainer.fkRelations[0];
+      this.setControlValue();
 
-        this.metadataProvider.update(this.columnContainer.fkRelations.map(fkr => fkr.TableName));
-      }
-      this.control.setValue(this.getValueStruct(), { emitEvent: false });
-      if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
-        this.control.setValidators(control => control.value == null || control.value.length === 0 ? { required: true } : null);
-      }
+      // bind to entity change event
+      this.subscribers.push(this.columnContainer.subscribe(async () => {
+        if (this.isWriting) {
+          return;
+        }
+
+        if (this.control.value?.DataValue !== this.columnContainer.value) {
+          this.loading = true;
+          try {
+            this.logger.trace(this, `Control (${this.columnContainer.name}) set to new value:`,
+              this.columnContainer.value, this.control.value);
+            this.candidates = [];
+            this.setControlValue();
+
+          } finally {
+            this.loading = false;
+            this.changeDetectorRef.detectChanges();
+          }
+        }
+        this.valueHasChanged.emit(this.control.value);
+      }));
       this.logger.trace(this, 'Control initialized', this.control.value);
     } else {
       this.logger.error(this, 'The Column Dependent Reference is undefined');
+    }
+  }
+
+  private setControlValue(): void {
+    if (this.columnContainer.fkRelations && this.columnContainer.fkRelations.length > 0) {
+      let table: IForeignKeyInfo;
+      if (this.columnContainer.fkRelations.length > 1 && this.columnContainer.value) {
+        this.logger.trace(this, 'the column already has a value, and it is a dynamic foreign key');
+        const dbObjectKey = DbObjectKey.FromXml(this.columnContainer.value);
+        table = this.columnContainer.fkRelations.find(fkr => fkr.TableName === dbObjectKey.TableName);
+      }
+      this.selectedTable = table || this.columnContainer.fkRelations[0];
+
+      this.metadataProvider.update(this.columnContainer.fkRelations.map(fkr => fkr.TableName));
+    }
+    this.control.setValue(this.getValueStruct(), { emitEvent: false });
+    if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
+      this.control.setValidators(control => control.value == null || control.value.length === 0 ? { required: true } : null);
     }
   }
 
@@ -280,20 +318,26 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
    * @param value the new value
    */
   private async writeValue(value: ValueStruct<string>): Promise<void> {
+
     this.logger.debug(this, 'writeValue called with value', value);
 
     if (!this.columnContainer.canEdit || this.equal(this.getValueStruct(), value)) {
       return;
     }
 
+    this.isWriting = true;
     this.loading = true;
     try {
 
       this.logger.debug(this, 'writeValue - updateCdrValue...');
       await this.columnContainer.updateValueStruct(value);
+
       const valueAfterWrite = this.getValueStruct();
+
       if (!this.equal(this.control.value, valueAfterWrite)) {
+
         this.control.setValue(valueAfterWrite, { emitEvent: false });
+
         this.logger.debug(
           this,
           'writeValue - value has changed after interaction with the Entity. Value:',
@@ -302,12 +346,12 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
       }
 
       this.control.markAsDirty();
-
       this.valueHasChanged.emit(value);
     } catch (error) {
       this.errorHandler.handleError(error);
     } finally {
       this.loading = false;
+      this.isWriting = false;
       this.changeDetectorRef.detectChanges();
     }
   }
@@ -316,9 +360,9 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
     if (this.selectedTable) {
       try {
         this.loading = true;
-        this.parameters = { ...this.parameters, ...newState };
+        this.parameters = { ...{ StartIndex: 0, PageSize: this.pageSize }, ...newState };
         const candidateCollection = await this.selectedTable.Get(this.parameters);
-        this.candidatesTotalCount = candidateCollection.TotalCount;
+        // this.candidatesTotalCount = candidateCollection.TotalCount;
 
         this.isHierarchical = candidateCollection.Hierarchy != null;
 
@@ -361,13 +405,14 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
         });
       } finally {
         this.loading = false;
+        this.changeDetectorRef.detectChanges();
       }
     }
   }
 
   private getValueStruct(): ValueStruct<string> {
-    if (this.columnContainer.displayValue) {
-      return { DataValue: this.columnContainer.value, DisplayValue: this.columnContainer.displayValue };
+    if (this.columnContainer.value) {
+      return { DataValue: this.columnContainer.value, DisplayValue: this.columnContainer.displayValue || '' };
     }
 
     return undefined;

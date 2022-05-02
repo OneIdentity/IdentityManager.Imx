@@ -50,8 +50,9 @@ export class EditMultiValueComponent implements CdrEditor, OnDestroy {
   public readonly valueHasChanged = new EventEmitter<any>();
 
   private readonly subscribers: Subscription[] = [];
+  private isWriting = false;
 
-  constructor(private readonly logger: ClassloggerService, private readonly multiValueProvider: MultiValueService) {}
+  constructor(private readonly logger: ClassloggerService, private readonly multiValueProvider: MultiValueService) { }
 
   public ngOnDestroy(): void {
     this.subscribers.forEach(subscriber => subscriber.unsubscribe());
@@ -69,6 +70,13 @@ export class EditMultiValueComponent implements CdrEditor, OnDestroy {
         this.logger.debug(this, 'value is required');
         this.control.setValidators(Validators.required);
       }
+      this.subscribers.push(this.columnContainer.subscribe(() => {
+        if (!this.isWriting) { return; }
+        if (this.control.value !== this.columnContainer.value) {
+          this.control.setValue(this.columnContainer.value);
+        }
+        this.valueHasChanged.emit(this.control.value);
+      }));
       this.subscribers.push(this.control.valueChanges.subscribe(async value => this.writeValue(this.fromTextArea(value))));
       this.logger.trace(this, 'Control initialized');
     } else {
@@ -88,11 +96,13 @@ export class EditMultiValueComponent implements CdrEditor, OnDestroy {
     }
 
     try {
+      this.isWriting = true;
       this.logger.debug(this, 'writeValue - PutValue...');
       await this.columnContainer.updateValue(value);
     } catch (e) {
       this.logger.error(this, e);
     } finally {
+      this.isWriting = false;
       const valueAfterWrite = this.toTextArea(this.columnContainer.value);
       if (this.control.value !== valueAfterWrite) {
         this.control.setValue(valueAfterWrite, { emitEvent: false });

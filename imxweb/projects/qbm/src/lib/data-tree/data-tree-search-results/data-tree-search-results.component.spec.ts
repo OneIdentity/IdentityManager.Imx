@@ -120,7 +120,6 @@ describe('DataTreeSearchResultsComponent', () => {
   }
 
   for (const testcase of [
-    { selected: [], isMulti: false, element: { GetKeys: () => ['element1'] }, isSelected: true },
     { selected: [], isMulti: true, element: { GetKeys: () => ['element2'] }, isSelected: true },
     { selected: [{ GetKeys: () => ['element3'] }], isMulti: true, element: { GetKeys: () => ['element3'] }, isSelected: false },
   ]) {

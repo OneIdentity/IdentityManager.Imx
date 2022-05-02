@@ -1,0 +1,21 @@
+<div class="imx-tab-content">
+  <div class="imx-tab-body">
+    <eui-alert *ngIf="showHelperAlert" class="imx-helper-alert" type="info" [condensed]="true" [colored]="true"
+    [dismissable]="true" (dismissed)="onHelperDismissed()">
+    {{ keyDescription | translate }}
+  </eui-alert>
+    <mat-card>
+      <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="[]">
+      </imx-data-source-toolbar>
+      <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual" data-imx-identifier="rules-table">
+        <imx-data-table-column [columnLabel]="'#LDS#Compliance rule' | translate"
+          [entityColumn]="entitySchema.Columns.RuleName" data-imx-identifier="violations-table-column-RuleName">
+        </imx-data-table-column>
+        <imx-data-table-column [columnLabel]="'#LDS#Entitlement' | translate"
+          [entityColumn]="entitySchema.Columns.ObjectDisplay"
+          data-imx-identifier="violations-table-column-ObjectDisplay">
+        </imx-data-table-column>
+      </imx-data-table>
+    </mat-card>
+  </div>
+</div>

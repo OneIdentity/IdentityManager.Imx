@@ -124,6 +124,7 @@ export class AdminMembersComponent implements OnInit, OnDestroy {
       minHeight: '60vh',
       data: {
         get: (parameters: CollectionLoadParameters) => fk.load(entity, parameters),
+        GetFilterTree: parentKey => fk.getFilterTree(entity, parentKey),
         hasSearchParameter: fk.parameterNames.includes('search'),
         isMultiValue: true
       }

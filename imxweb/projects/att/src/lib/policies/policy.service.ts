@@ -123,7 +123,7 @@ export class PolicyService {
       parameters.filter,
       null,
       parameters.search,
-      parameters.parentKey
+      parameters.ParentKey
     );
   }
 

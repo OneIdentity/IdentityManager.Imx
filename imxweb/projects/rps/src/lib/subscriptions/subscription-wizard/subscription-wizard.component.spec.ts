@@ -39,7 +39,6 @@ import { ReportSubscriptionService } from '../report-subscription/report-subscri
 import { SubscriptionWizardComponent } from './subscription-wizard.component';
 import { ReportSubscription } from '../report-subscription/report-subscription';
 import { PortalSubscriptionInteractive } from 'imx-api-rps';
-import { IEntityColumn } from 'imx-qbm-dbts';
 
 @Component({
   selector: 'imx-report-selector',
@@ -118,7 +117,7 @@ describe('SubscriptionWizardComponent', () => {
           })
         } as unknown as PortalSubscriptionInteractive,
         () => [],
-        () => ({} as IEntityColumn))))
+        <any>{})))
   };
 
   let confirm = true;

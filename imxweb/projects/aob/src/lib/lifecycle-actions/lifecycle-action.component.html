@@ -1,16 +1,16 @@
 <h1 mat-dialog-title>{{ dialogTitle }}</h1>
 <div mat-dialog-content>
   <div imxtable>
-    <imx-data-source-toolbar #dataSourceToolbar [settings]="dstSettings" [hiddenElements]="['search', 'filter', 'groupBy', 'settings','selectedViewGroup']">
+    <imx-data-source-toolbar #dataSourceToolbar [settings]="dstSettings">
     </imx-data-source-toolbar>
     <imx-data-table [dst]="dataSourceToolbar" mode="manual" detailViewVisible="false">
-      <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" [entitySchema]="entitySchema" columnLabel="{{tableDisplay}}">
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" columnLabel="{{tableDisplay}}">
         <ng-template let-data>
           <div imxTitle>{{ data?.GetEntity().GetDisplay() }}</div>
           <div imxSubtitle>{{ data?.Description.Column.GetDisplayValue()}}</div>
         </ng-template>
       </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema?.Columns['UID_AERoleOwner']" [entitySchema]="entitySchema">
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns['UID_AERoleOwner']">
       </imx-data-table-column>
     </imx-data-table>
   </div>

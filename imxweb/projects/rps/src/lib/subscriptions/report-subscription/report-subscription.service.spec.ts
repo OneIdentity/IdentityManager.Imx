@@ -28,7 +28,7 @@ import { TestBed } from '@angular/core/testing';
 import { PortalSubscriptionInteractive } from 'imx-api-rps';
 import { configureTestSuite } from 'ng-bullet';
 
-import { EntityService } from 'qbm';
+import { ParameterDataService } from 'qer';
 import { RpsApiService } from '../../rps-api-client.service';
 import { ReportSubscriptionService } from './report-subscription.service';
 
@@ -63,10 +63,6 @@ function buildEmptySubscription(): PortalSubscriptionInteractive {
 describe('ReportSubscriptionService', () => {
   let service: ReportSubscriptionService;
 
-  const entityServiceStub = {
-    createLocalEntityColumn: jasmine.createSpy('createLocalEntityColumn')
-  }
-
   const apiServiceStub = {
     client: {
       portal_subscription_interactive_parameter_candidates_post: jasmine.createSpy('portal_subscription_interactive_parameter_candidates_post')
@@ -89,8 +85,10 @@ describe('ReportSubscriptionService', () => {
           useValue: apiServiceStub
         },
         {
-          provide: EntityService,
-          useValue: entityServiceStub
+          provide: ParameterDataService,
+          useValue: {
+            createInteractiveParameterColumns: (parameters) => parameters.map(p => { })
+          }
         }
       ]
     });
@@ -143,8 +141,6 @@ describe('ReportSubscriptionService', () => {
         ...empty,
         ...extended
       } as PortalSubscriptionInteractive)
-
-      sub.calculateParameterColumns();
 
       expect(sub.getParameterCdr().length).toEqual(1);
     });

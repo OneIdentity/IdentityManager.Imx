@@ -1,4 +1,4 @@
-@import '~@elemental-ui/core/src/styles/_palette.scss';
+@import "~@elemental-ui/core/src/styles/_palette.scss";
 
 :host {
   max-width: 1200px;
@@ -34,35 +34,6 @@
   }
 }
 
-.imx-top-container {
-  display: grid;
-  grid-template-columns: auto 450px;
-  grid-template-rows: auto 50%;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-h1 {
-  grid-column-start: 1;
-  grid-column-end: 1;
-  grid-row-start: 1;
-  grid-row-end: 1;
-}
-
-.imx-helper-alert {
-  grid-column-start: 2;
-  grid-column-end: 2;
-  grid-row-start: 1;
-  grid-row-end: 2;
-}
-
-imx-identity-select {
-  grid-column-start: 1;
-  grid-column-end: 1;
-  grid-row-start: 2;
-  grid-row-end: 2;
-}
-
 .imx-mail-description {
   font-size: smaller;
   font-style: italic;
@@ -71,6 +42,11 @@ imx-identity-select {
 
 .imx-mail-info {
   margin-top: 20px;
+}
+
+.imx-helper-alert {
+  display: block;
+  margin-bottom: 1em;
 }
 
 imx-ext {

@@ -31,9 +31,7 @@ import { ExtDirective } from './ext.directive';
 
 @Component({
   selector: 'imx-ext',
-  template: `
-    <ng-template imxExtd></ng-template>
-  `
+  template: ` <ng-template imxExtd></ng-template> `,
 })
 export class ExtComponent implements OnInit {
   @ViewChild(ExtDirective, { static: true }) public directive: ExtDirective;
@@ -41,6 +39,8 @@ export class ExtComponent implements OnInit {
   @Input() public id: string;
 
   @Input() public referrer: any;
+
+  @Input() public properties: { [property: string]: any };
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver, private extService: ExtService) {}
 
@@ -59,9 +59,15 @@ export class ExtComponent implements OnInit {
     const viewContainerRef = this.directive.viewContainerRef;
     viewContainerRef.clear();
 
-    extensions.forEach(element => {
+    extensions.forEach((element) => {
       const c = viewContainerRef.createComponent(this.componentFactoryResolver.resolveComponentFactory(element.instance));
       c.instance.referrer = this.referrer;
+
+      if (this.properties) {
+        for (let key in this.properties) {
+          Reflect.set(c.instance, key, this.properties[key]);
+        }
+      }
     });
   }
 }

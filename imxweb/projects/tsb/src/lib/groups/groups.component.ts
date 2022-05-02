@@ -34,7 +34,7 @@ import {
   SnackBarService
 } from 'qbm';
 import { IDataExplorerComponent } from 'qer';
-import { CollectionLoadParameters, IClientProperty, DisplayColumns, DbObjectKey, EntitySchema } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, IClientProperty, DisplayColumns, DbObjectKey, EntitySchema, DataModel } from 'imx-qbm-dbts';
 import {
   PortalTargetsystemUnsGroup,
   PortalTargetsystemUnsGroupServiceitem,
@@ -98,6 +98,8 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, IDataExpl
   private authorityDataDeleted$: Subscription;
   private busyIndicator: OverlayRef;
 
+  private dataModel: DataModel;
+
   constructor(
     private readonly route: ActivatedRoute,
     private readonly sideSheet: EuiSidesheetService,
@@ -128,8 +130,16 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, IDataExpl
       this.displayedColumns.push(this.entitySchemaUnsGroup.Columns.XMarkedForDeletion);
     }
 
+    let overlayRef: OverlayRef;
+    setTimeout(() => (overlayRef = this.busyService.show()));
+
+    try {
     this.filterOptions = await this.groupsService.getFilterOptions(this.isAdmin);
 
+    this.dataModel = await this.groupsService.getDataModel(this.isAdmin);
+    }finally {
+      setTimeout(() => this.busyService.hide(overlayRef));
+    }
     if (this.applyIssuesFilter && !this.issuesFilterMode) {
       const ownerFilter = this.filterOptions.find((f) => {
         return f.Name === 'withowner';
@@ -184,7 +194,7 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, IDataExpl
       data = {
         uidAccProduct,
         unsGroupDbObjectKey: objKey,
-        group: await this.groupsService.getGroupDetails(objKey),
+        group: await this.groupsService.getGroupDetailsInteractive(objKey, 'UID_AccProduct'),
         groupServiceItem: await this.groupsService.getGroupServiceItem(uidAccProduct),
         isAdmin: this.isAdmin
       };
@@ -285,7 +295,9 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, IDataExpl
       const cUid = this.dataExplorerFilters.selectedContainerUid;
       getParams.system = tsUid ? tsUid : undefined;
       getParams.container = cUid ? cUid : undefined;
-      const data = this.isAdmin ? await this.groupsService.getGroups(getParams) : await this.groupsService.getGroupsResp(getParams);
+
+      const data = this.isAdmin || this.unsAccountIdFilter ? // Wenn wir filtern, muss auch der Admin-Endpoint genutzt werden
+        await this.groupsService.getGroups(getParams) : await this.groupsService.getGroupsResp(getParams);
 
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
@@ -293,6 +305,19 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, IDataExpl
         entitySchema: this.entitySchemaUnsGroup,
         navigationState: this.navigationState,
         filters: this.filterOptions,
+        filterTree: {
+          filterMethode: async (parentkey) => {
+            return this.groupsService.getFilterTree( {
+              parentkey,
+              container: getParams.container,
+              system: getParams.system,
+              uid_unsaccount: getParams.uid_unsaccount
+            }
+            );
+          },
+          multiSelect: true
+        },
+        dataModel: this.dataModel
       };
       this.logger.debug(this, `Head at ${data.Data.length + this.navigationState.StartIndex} of ${data.totalCount} item(s)`);
     } finally {
@@ -302,7 +327,7 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, IDataExpl
 
   private async viewGroup(data: GroupSidesheetData): Promise<void> {
     const sidesheetRef = this.sideSheet.open(GroupSidesheetComponent, {
-      title: await this.translate.get('#LDS#Heading View System Entitlement Details').toPromise(),
+      title: await this.translate.get('#LDS#Heading Edit System Entitlement').toPromise(),
       headerColour: 'green',
       padding: '0px',
       width: `max(650px, ${this.sidesheetWidth})`,

@@ -24,10 +24,11 @@
  *
  */
 
-import { IEntity } from 'imx-qbm-dbts';
+import { IEntity, TypedEntity } from 'imx-qbm-dbts';
 
-export interface DynamicMethodTypeWrapper<TEntity> {
+export interface DynamicMethodTypeWrapper<TEntity extends TypedEntity> {
   type: new (e: IEntity) => TEntity;
+  key?: string;
   path: string;
   schemaPath?: string;
 }

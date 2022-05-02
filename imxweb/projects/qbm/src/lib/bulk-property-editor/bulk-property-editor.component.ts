@@ -46,7 +46,7 @@ export class BulkPropertyEditorComponent implements OnInit {
   @Output() public validationStateChanged = new EventEmitter<BulkItem>();
   @Output() public controlCreated: EventEmitter<AbstractControl> = new EventEmitter();
 
-  @ViewChildren(BulkItemComponent) panels!: QueryList<BulkItemComponent>;
+  @ViewChildren(BulkItemComponent) private panels: QueryList<BulkItemComponent>;
 
   public ngOnInit(): void {
     this.entities.sort((a, b) => {

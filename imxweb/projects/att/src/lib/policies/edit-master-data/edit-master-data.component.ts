@@ -26,13 +26,12 @@
 
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { FormGroup, FormArray, FormControl, ValidatorFn, AbstractControl } from '@angular/forms';
+import { FormGroup, FormArray, FormControl } from '@angular/forms';
 import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { TranslateService } from '@ngx-translate/core';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
-import { ColumnDependentReference, BaseCdr, MessageDialogComponent, MessageDialogResult, SnackBarService, ClassloggerService } from 'qbm';
+import { ColumnDependentReference, BaseCdr, SnackBarService, ClassloggerService } from 'qbm';
 import { UserModelService } from 'qer';
 import { FilterModel } from '../policy-editor/filter-model';
 import { Policy } from '../policy.interface';
@@ -40,7 +39,7 @@ import { PolicyService } from '../policy.service';
 import { FilterElementColumnService } from '../editors/filter-element-column.service';
 import { ConfirmDeactivationComponent } from '../confirm-deactivation/confirm-deactivation.component';
 import { ConfirmationService } from 'qbm';
-import { EntitySchema, IReadValue } from 'imx-qbm-dbts';
+import { EntitySchema } from 'imx-qbm-dbts';
 
 @Component({
   templateUrl: './edit-master-data.component.html',
@@ -69,10 +68,9 @@ export class EditMasterDataComponent implements OnInit, OnDestroy {
     private readonly dialog: MatDialog,
     private readonly policyService: PolicyService,
     private readonly columnService: FilterElementColumnService,
-    private readonly translate: TranslateService,
     private readonly logger: ClassloggerService,
     private readonly userService: UserModelService,
-    private readonly confirmation: ConfirmationService
+    private readonly confirmationService: ConfirmationService
   ) {
 
     this.schema = policyService.AttestationPolicyEditSchema;
@@ -84,7 +82,7 @@ export class EditMasterDataComponent implements OnInit, OnDestroy {
     this.formArray = this.formGroup.get('formArray') as FormArray;
     this.closeSubscription = this.sidesheetRef.closeClicked().subscribe(async () => {
       if (!this.formGroup.dirty
-        || await confirmation.confirmLeaveWithUnsavedChanges()) {
+        || await confirmationService.confirmLeaveWithUnsavedChanges()) {
         this.sidesheetRef.close(this.reload);
       }
     });
@@ -158,19 +156,18 @@ export class EditMasterDataComponent implements OnInit, OnDestroy {
 
 
   public async updatePickCategory(): Promise<void> {
-    const showConformation =
+    const showConfirmation =
       this.isPoliyEditorEnabled
       && this.filterModel.policyFilterData?.Filter.Elements.length
-      && (this.policy.policy.UID_QERPickCategory.value != null || this.policy.policy.UID_QERPickCategory.value !== '');
+      && (this.policy.policy.UID_QERPickCategory.value?.length > 0);
 
-    this.logger.debug(this, 'Checked for existing filters if sample data was changed from null to value', showConformation);
+    this.logger.debug(this, 'Checked for existing filters if sample data was changed from null to value', showConfirmation);
 
-    if (showConformation) {
-      const confirmed = await this.confirmation.confirmLeaveWithUnsavedChanges(
-        await this.translate.get('#LDS#Heading Use Sample Data').toPromise(),
-        await this.translate.get('#LDS#Do you want to use the selected sample data instead of the specified conditions?')
-          .toPromise()
-      );
+    if (showConfirmation) {
+      const confirmed = await this.confirmationService.confirm({
+        Title: '#LDS#Heading Use Sample Data',
+        Message: '#LDS#Do you want to use the selected sample data instead of the specified conditions?'
+      });
       if (confirmed) {
         this.policy.filterData = {
           IsReadOnly: this.policy.filterData.IsReadOnly,
@@ -223,19 +220,10 @@ export class EditMasterDataComponent implements OnInit, OnDestroy {
   }
 
   public async delete(): Promise<void> {
-    const dialogRef = this.dialog.open(MessageDialogComponent, {
-      data: {
-        ShowOk: true,
-        ShowCancel: true,
-        Title: await this.translate.get('#LDS#Heading Delete Attestation Policy').toPromise(),
-        Message: await this.translate.get('#LDS#Are you sure you want to delete the attestation policy?').toPromise()
-      },
-      panelClass: 'imx-messageDialog'
-    });
-
-    const result = await dialogRef.afterClosed().toPromise();
-    if (result === MessageDialogResult.OkResult) {
-
+    if (await this.confirmationService.confirm({
+      Title: '#LDS#Heading Delete Attestation Policy',
+      Message: '#LDS#Are you sure you want to delete the attestation policy?'
+    })) {
       await this.policyService.deleteAttestationPolicy(this.policy.policy.GetEntity().GetKeys()[0]);
       this.logger.debug(this, 'policy is deleted');
 
@@ -297,6 +285,9 @@ export class EditMasterDataComponent implements OnInit, OnDestroy {
     ];
 
     for (const column of columns) {
+      if (!column.GetMetadata().CanSee()) {
+        continue;
+      }
       if (refresh) {
         this.objectProperties[column.ColumnName].cdr = new BaseCdr(column);
       } else {

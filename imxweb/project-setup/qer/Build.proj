@@ -8,12 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<SetupFiles Include="..\..\projects\qer\karma.conf.js"/>
-		<SetupFiles Include="..\..\projects\qer\ng-package.json"/>
-		<SetupFiles Include="..\..\projects\qer\package.json"/>
-		<SetupFiles Include="..\..\projects\qer\README.md"/>
-		<SetupFiles Include="..\..\projects\qer\tsconfig.lib.json"/>
-		<SetupFiles Include="..\..\projects\qer\tsconfig.spec.json"/>
+		<SetupFiles Include="..\..\projects\qer\*.*" Exclude="..\..\projects\qer\Build.proj"/>
 		<SetupFiles Include="..\..\projects\qer\src\**\*.*"/>
 	</ItemGroup>
 

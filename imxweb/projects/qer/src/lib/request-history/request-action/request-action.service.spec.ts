@@ -42,7 +42,7 @@ import { LoggerTestingModule } from 'ngx-logger/testing';
 import { RequestHistoryService } from '../request-history.service';
 import { QerApiService } from '../../qer-api-client.service';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
-import { JustificationService } from '../../itshop/justification.service';
+import { JustificationService } from '../../justification/justification.service';
 
 describe('RequestActionService', () => {
   let service: RequestActionService;

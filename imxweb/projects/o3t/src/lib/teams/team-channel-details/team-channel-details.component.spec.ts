@@ -70,7 +70,7 @@ describe('TeamChannelDetailsComponent', () => {
 
   describe('saveGroup() tests', () => {
     it('should call saveChanges with the correct parameters', async () => {
-      const snackBarOpenSpy = spyOn<any>(component['snackbar'], 'openAtTheBottom');
+      const snackBarOpenSpy = spyOn<any>(component['snackbar'], 'open');
       const commitSpy = spyOn(teamChannel.GetEntity(), 'Commit');
       await component.saveChanges();
       expect(snackBarOpenSpy).toHaveBeenCalledTimes(1);

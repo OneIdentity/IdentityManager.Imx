@@ -3,12 +3,26 @@
   flex-direction: column;
   overflow: hidden;
   height: 100%;
+
+  // Wrap deep selectors under host to quarantine them
+  // Add some padding to data-tiles
+  ::ng-deep imx-data-tiles {
+    padding-left: 10px;
+  }
 }
 
-.imx-top-container {
+h1 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 16px;
+}
+
+.imx-top-container,
+.imx-top-container-auto {
   display: grid;
-  grid-template-columns: 35% auto 1fr 1fr;
-  grid-template-rows: 70px 50px auto;
+  grid-template-columns: auto auto 1fr 1fr;
+  grid-template-rows: 50px 50px auto;
   gap: 10px;
   margin-bottom: 10px;
 
@@ -21,6 +35,10 @@
   }
 }
 
+.imx-top-container-auto {
+  grid-template-columns: auto auto auto auto;
+}
+
 .mat-tab-group {
   overflow: hidden;
   flex: 1 1 auto;
@@ -30,7 +48,7 @@
   }
 
   .imx-tab-body-content {
-    padding-top:10px;
+    padding-top: 10px;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -51,7 +69,7 @@
   grid-row-start: 1;
   grid-row-end: 3;
   height: 160px;
-  width:400px;
+  width: 400px;
   justify-self: end;
   overflow: hidden;
 
@@ -88,6 +106,21 @@
   grid-column-end: 1;
   grid-row-start: 2;
   grid-row-end: 2;
+  margin-top: -25px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.imx-align-self-base {
+  margin-right: 10px;
+  align-self: baseline;
+}
+
+.imx-actions-button {
+  margin-left: 20px;
+  padding: 0;
+  min-width: 0px;
 }
 
 .imx-categories {
@@ -95,6 +128,10 @@
   grid-column-end: 4;
   grid-row-start: 3;
   grid-row-end: 3;
+}
+
+.mat-radio-button {
+  margin-right: 20px;
 }
 
 .imx-search-headline {
@@ -107,6 +144,8 @@
   }
 }
 
+
+
 .imx-button-bar {
   display: flex;
   margin-top: 10px;
@@ -114,6 +153,7 @@
   ::ng-deep .imx-badge.eui-badge .eui-badge-content {
     font-size: 14px;
     line-height: 14px;
+    margin-left: 10px;
   }
 
   .imx-selected-products {
@@ -123,6 +163,14 @@
 
   button {
     margin-left: 10px;
+    align-self: center;
+
+    ::ng-deep .mat-button-wrapper {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: block;
+    }
   }
 
   .imx-menu-spacer {
@@ -140,8 +188,15 @@
 }
 
 @media only screen and (max-width: 1024px) {
-  .imx-top-container {
-    grid-template-rows: 40px 70px 70px;
+  .imx-top-container,
+  .imx-top-container-auto {
+    .imx-helper-alert {
+      grid-column: 1 / span 3;
+      grid-row: 3 / span 3;
+      justify-self: start;
+      max-width: 100%;
+      margin-top: -20px;
+    }
   }
 
   .imx-history {

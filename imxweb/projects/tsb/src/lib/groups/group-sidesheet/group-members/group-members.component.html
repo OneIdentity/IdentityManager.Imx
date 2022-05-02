@@ -11,7 +11,7 @@
   <eui-alert *ngIf="showUnsubscribeWarning" type="warning" [condensed]="true" [colored]="true" [dismissable]="true"
     (dismissed)="onWarningDismissed()">{{LdsNotUnsubscribableHint | translate}}</eui-alert>
   <imx-data-source-toolbar #dstDirect [settings]="dstSettings"
-    [hiddenElements]="['search', 'filter', 'groupBy', 'settings', 'selectedViewGroup']" [hiddenFilters]="['namespace']"
+    [hiddenFilters]="['namespace']"
     [itemStatus]="itemStatus" (navigationStateChanged)="onDirectNavigationStateChanged($event)"
     [searchBoxText]="'#LDS#Search' | translate">
   </imx-data-source-toolbar>
@@ -19,23 +19,17 @@
   <imx-data-table #membersTable [dst]="dstDirect" mode="manual" detailViewVisible="false"
     noDataText="#LDS#There are currently no direct memberships." [selectable]="true"
     (selectionChanged)="onSelectionChanged($event)">
-    <imx-data-table-column [entityColumn]="entitySchemaGroupDirectMemberships?.Columns.UID_Person"
-      [entitySchema]="entitySchemaGroupDirectMemberships">
+    <imx-data-table-column [entityColumn]="entitySchemaGroupDirectMemberships?.Columns.UID_Person">
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaGroupDirectMemberships?.Columns.UID_UNSAccount"
-      [entitySchema]="entitySchemaGroupDirectMemberships">
+    <imx-data-table-column [entityColumn]="entitySchemaGroupDirectMemberships?.Columns.UID_UNSAccount">
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaGroupDirectMemberships?.Columns.XOrigin"
-      [entitySchema]="entitySchemaGroupDirectMemberships">
+    <imx-data-table-column [entityColumn]="entitySchemaGroupDirectMemberships?.Columns.XOrigin">
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaGroupDirectMemberships?.Columns.XDateInserted"
-      [entitySchema]="entitySchemaGroupDirectMemberships">
+    <imx-data-table-column [entityColumn]="entitySchemaGroupDirectMemberships?.Columns.XDateInserted">
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaGroupDirectMemberships?.Columns.OrderState"
-      [entitySchema]="entitySchemaGroupDirectMemberships">
+    <imx-data-table-column [entityColumn]="entitySchemaGroupDirectMemberships?.Columns.OrderState">
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaGroupDirectMemberships?.Columns.ValidUntil"
-      [entitySchema]="entitySchemaGroupDirectMemberships">
+    <imx-data-table-column [entityColumn]="entitySchemaGroupDirectMemberships?.Columns.ValidUntil">
     </imx-data-table-column>
     <imx-data-table-generic-column alignHeader="center" alignContent="center"
       [columnName]="entitySchemaGroupDirectMemberships?.Columns.XMarkedForDeletion.ColumnName">
@@ -54,24 +48,22 @@
       </ng-template>
     </imx-data-table-generic-column>
   </imx-data-table>
-  
+
 
   <imx-data-source-paginator [dst]="dstDirect"></imx-data-source-paginator>
 </ng-container>
 
 <ng-container *ngIf="membershipView === 'nested'">
   <imx-data-source-toolbar #dstNested [settings]="dstNestedGroupSettings"
-    [hiddenElements]="['search', 'filter', 'groupBy', 'settings', 'selectedViewGroup']" [hiddenFilters]="['namespace']"
+    [hiddenFilters]="['namespace']"
     (navigationStateChanged)="onNestedNavigationStateChanged($event)" [searchBoxText]="'#LDS#Search' | translate">
   </imx-data-source-toolbar>
 
   <imx-data-table #membersTable [dst]="dstNested" mode="manual" detailViewVisible="false"
     noDataText="#LDS#There are currently no inherited memberships.">
-    <imx-data-table-column [entityColumn]="entitySchemaGroupNestedMemberships?.Columns.UID_Person"
-      [entitySchema]="entitySchemaGroupNestedMemberships">
+    <imx-data-table-column [entityColumn]="entitySchemaGroupNestedMemberships?.Columns.UID_Person">
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaGroupNestedMemberships?.Columns.UID_UNSGroupChild"
-      [entitySchema]="entitySchemaGroupNestedMemberships">
+    <imx-data-table-column [entityColumn]="entitySchemaGroupNestedMemberships?.Columns.UID_UNSGroupChild">
     </imx-data-table-column>
     <imx-data-table-generic-column alignHeader="center" alignContent="center"
       [columnName]="entitySchemaGroupNestedMemberships?.Columns.XMarkedForDeletion.ColumnName">

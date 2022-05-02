@@ -24,7 +24,7 @@
  *
  */
 
-import { ParameterData } from 'imx-api-qer';
+import { ParameterData } from 'imx-qbm-dbts';
 
 export interface ParameterDataWrapper {
   Parameters: { [key: string]: ParameterData[][]; };

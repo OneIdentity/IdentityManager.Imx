@@ -1,0 +1,21 @@
+@import "variables.scss";
+
+$propertyeditortextboxwidth: 370;
+
+.imx-textbox {
+  font-family: $baseFontFamily;
+  font-size: inherit !important;
+  width: $propertyeditortextboxwidth + px;
+  padding: 2px 4px !important;
+  outline: none;
+  color: $VI_Common_Color_Font !important;
+}
+
+textarea.imx-textbox {
+  overflow: auto;
+  height: auto;
+}
+
+.imx-textbox:focus {
+  border-color: $iris-blue;
+}

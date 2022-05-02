@@ -24,6 +24,7 @@
  *
  */
 
+import { OverlayRef } from '@angular/cdk/overlay';
 import {
   Component,
   OnInit, Input, ContentChild, TemplateRef, ElementRef, ViewChild, Output, EventEmitter, OnDestroy
@@ -31,13 +32,12 @@ import {
 import { FormControl } from '@angular/forms';
 import { MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatSelect } from '@angular/material/select';
+import { EuiLoadingService } from '@elemental-ui/core';
 import { distinctUntilChanged, debounceTime } from 'rxjs/operators';
 
 import { TypedEntity } from 'imx-qbm-dbts';
 import { imx_ISearchService } from './iSearchService';
 import { Subscription } from 'rxjs';
-import { EuiLoadingService } from '@elemental-ui/core';
-import { OverlayRef } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'imx-searchbar',
@@ -81,7 +81,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   }
 
   public async ngOnInit(): Promise<void> {
-    let result: TypedEntity<any>[];
+    let result: TypedEntity[];
     let overlayRef: OverlayRef;
     setTimeout(() => overlayRef = this.busyService.show());
 
@@ -141,7 +141,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   public async searchInternal(item: string): Promise<void> {
     const selectedtables = this.selectedTables !== undefined && this.selectedTables.length > 0 ? this.selectedTables.join(',') : '';
 
-    let result: TypedEntity<any>[];
+    let result: TypedEntity[];
     let overlayRef: OverlayRef;
     setTimeout(() => overlayRef = this.busyService.show());
 
@@ -183,23 +183,12 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   public onSelectFocus(): void {
     setTimeout(() => {
       this.filterFocus = true;
-      if (!this.autoCompleteTrigger.panelOpen) {
-        this.autoCompleteTrigger.openPanel();
-      }
     });
   }
 
   public onSelectLostFocus(): void {
     setTimeout(() => {
       this.filterFocus = false;
-    });
-  }
-
-  public onAutocompleteClosed(): void {
-    setTimeout(() => {
-      if (this.filterFocus) {
-        this.autoCompleteTrigger.openPanel();
-      }
     });
   }
 

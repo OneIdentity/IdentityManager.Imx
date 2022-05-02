@@ -52,7 +52,9 @@ export class AdminGuardService implements CanActivate, OnDestroy {
             return groupName === 'SIM_4_OPAADMIN' ||
             groupName === 'SIM_BASEDATA_USERINTERFACE' ||
             groupName === 'VI_4_NAMESPACEADMIN_ADS' ||
-            groupName === 'VI_4_ITSHOPADMIN_ADMIN';
+            groupName === 'VI_4_ITSHOPADMIN_ADMIN' ||
+            groupName === 'AAD_4_NAMESPACEADMIN_AZUREAD'
+            ;
           });
 
           if (!userIsAdmin) {

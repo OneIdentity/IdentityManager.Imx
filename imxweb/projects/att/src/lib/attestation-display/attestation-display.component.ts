@@ -24,20 +24,22 @@
  *
  */
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 
-import { IEntity, IReadValue } from 'imx-qbm-dbts';
-import { ParameterizedText } from 'qbm';
+import { IClientProperty, IEntity, IReadValue } from 'imx-qbm-dbts';
+import { buildAdditionalElementsString, ParameterizedText } from 'qbm';
 
 @Component({
   selector: 'imx-attestation-display',
   templateUrl: './attestation-display.component.html',
   styleUrls: ['./attestation-display.component.scss']
 })
-export class AttestationDisplayComponent implements OnInit {
+export class AttestationDisplayComponent implements OnInit, OnChanges {
   public parameterizedText: ParameterizedText;
+  public additionalText: string;
 
   @Input() public attestation: { UiText: IReadValue<string>, GetEntity: () => IEntity };
+  @Input() public additionalColumns: IClientProperty[];
 
   public ngOnInit(): void {
     const entity = this.attestation.GetEntity();
@@ -47,5 +49,14 @@ export class AttestationDisplayComponent implements OnInit {
       marker: { start: '"%', end: '%"' },
       getParameterValue: columnName => entity.GetColumn(columnName).GetDisplayValue()
     };
+
+
+  }
+
+  public ngOnChanges(simple: SimpleChanges): void {
+    if (simple.additionalColumns) {
+      const entity = this.attestation.GetEntity();
+      this.additionalText = buildAdditionalElementsString(entity, this.additionalColumns);
+    }
   }
 }

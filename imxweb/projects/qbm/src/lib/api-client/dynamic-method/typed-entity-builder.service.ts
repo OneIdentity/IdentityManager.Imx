@@ -27,8 +27,8 @@
 import { Injectable } from '@angular/core';
 
 import {
-  ApiClient, EntityCollectionData, EntityData, EntityState, ExtendedTypedEntityCollection,
-  FkCandidateBuilder, TypedEntity, TypedEntityBuilder
+  ApiClient, EntityCollectionData, EntityData, EntityState, ExtendedTypedEntityCollection, ExtendedInteractiveEntityData,
+  FkCandidateBuilder, InteractiveTypedEntityBuilder, TypedEntity, TypedEntityBuilder
 } from 'imx-qbm-dbts';
 import { AppConfigService } from '../../appConfig/appConfig.service';
 import { ImxTranslationProviderService } from '../../translation/imx-translation-provider.service';
@@ -45,7 +45,7 @@ export class TypedEntityBuilderService {
     private readonly translationProvider: ImxTranslationProviderService
   ) { }
 
-  public buildReadWriteEntities<TEntity extends TypedEntity<TExtendedDataWrite>, TExtendedData = any, TExtendedDataWrite = any>(
+  public buildReadWriteEntities<TEntity extends TypedEntity, TExtendedData = any>(
     apiClient: ApiClient,
     typeWrapper: DynamicMethodTypeWrapper<TEntity>,
     data: EntityCollectionData
@@ -54,26 +54,41 @@ export class TypedEntityBuilderService {
       (typeWrapper.path.startsWith('/') ? typeWrapper.path.substring(1) : typeWrapper.path).toLowerCase();
 
     const entitySchema = this.appConfig.client.getSchema(schemaPath);
-    const fkProviderItems = new FkCandidateBuilder(entitySchema, apiClient).build();
+    const fkProviderItems = new FkCandidateBuilder(entitySchema?.FkCandidateRoutes, apiClient).build();
     const commitMethod = (__, writeData) => apiClient.processRequest(this.methodDescriptor.put(typeWrapper.path, writeData));
 
     const builder = new TypedEntityBuilder(typeWrapper.type, fkProviderItems, commitMethod, this.translationProvider);
-
     return builder.buildReadWriteEntities<TExtendedData>(data, entitySchema);
   }
 
-  public createEntity<TEntity extends TypedEntity<TExtendedDataWrite>, TExtendedDataWrite = any>(
+  public buildInteractiveEntities<TEntity extends TypedEntity, TExtendedData = any>(
+    apiClient: ApiClient,
+    typeWrapper: DynamicMethodTypeWrapper<TypedEntity>,
+    data: ExtendedInteractiveEntityData<TExtendedData>
+  ): ExtendedTypedEntityCollection<TypedEntity, TExtendedData> {
+    const schemaPath = typeWrapper.schemaPath ||
+      (typeWrapper.path.startsWith('/') ? typeWrapper.path.substring(1) : typeWrapper.path).toLowerCase();
+
+    const entitySchema = this.appConfig.client.getSchema(schemaPath);
+    const fkProviderItems = new FkCandidateBuilder(entitySchema?.FkCandidateRoutes, apiClient).build();
+    const commitMethod = (__, writeData) => apiClient.processRequest(this.methodDescriptor.putInteractive(typeWrapper.path, writeData));
+
+    const builder = new InteractiveTypedEntityBuilder(typeWrapper.type, fkProviderItems, commitMethod, this.translationProvider);
+    return builder.buildReadWriteEntities<TExtendedData>(data, entitySchema);
+  }
+
+  public createEntity<TEntity extends TypedEntity>(
     apiClient: ApiClient,
     typeWrapper: DynamicMethodTypeWrapper<TEntity>,
     initialData?: EntityData
-    ) {
+  ): TEntity {
     const schemaPath = typeWrapper.schemaPath ||
       (typeWrapper.path.startsWith('/') ? typeWrapper.path.substring(1) : typeWrapper.path).toLowerCase();
     const entitySchema = this.appConfig.client.getSchema(schemaPath);
-    const fkProviderItems = new FkCandidateBuilder(entitySchema, apiClient).build();
+    const fkProviderItems = new FkCandidateBuilder(entitySchema?.FkCandidateRoutes, apiClient).build();
     const commitMethod = (__, writeData) => apiClient.processRequest(this.methodDescriptor.post(typeWrapper.path, writeData));
 
     const builder = new TypedEntityBuilder(typeWrapper.type, fkProviderItems, commitMethod, this.translationProvider);
-    return builder.buildReadWriteEntity({ entitySchema: entitySchema, entityData: initialData }, EntityState.Created);
+    return builder.buildReadWriteEntity({ entitySchema, entityData: initialData }, EntityState.Created);
   }
 }

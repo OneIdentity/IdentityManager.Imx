@@ -1,0 +1,27 @@
+<div class="imx-content-header">
+  <div class="grid-title-inline-leftelem">
+    <div *ngIf="showTitle">
+      <h1 class="mat-headline">
+        <span class="imx-object-overview-tab-header">{{ '#LDS#History' | translate }}</span>
+      </h1>
+    </div>
+    <div class="imx-viewmode-selector imx-viewmode-dropdown" *ngIf="!viewMode">
+      <mat-form-field>
+        <mat-select [(ngModel)]="viewModeValue">
+          <mat-option *ngFor="let mode of viewModes" [value]="mode.value" class="mat-option-object-history">{{
+            mode.display }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+  <button mat-icon-button color="primary" [attr.data-imx-identifier]="'history-button-refresh'" (click)="refresh()"
+    matTooltip="{{ '#LDS#Refresh' | translate }}">
+    <eui-icon icon="sync"></eui-icon>
+  </button>
+</div>
+<div *ngIf="effectiveViewMode === viewModeTimeline" class="imx-viewmode-content-timeline">
+  <imx-object-history-timeline [historyData]="historyData"></imx-object-history-timeline>
+</div>
+<div class="imx-viewmode-content" *ngIf="effectiveViewMode === viewModeGrid">
+  <imx-object-history-gridview [historyData]="historyData"></imx-object-history-gridview>
+</div>

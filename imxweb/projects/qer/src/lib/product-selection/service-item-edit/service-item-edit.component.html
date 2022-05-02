@@ -1,9 +1,14 @@
-  <div data-imx-identifier="cart-item-edit-description" class="imx-information mat-subheading-1">
-      {{'#LDS#Enter additional information about your request.' | translate}}
-  </div>
-
-  <imx-bulk-editor data-imx-identifier="cart-item-param-editor" [entities]="data"></imx-bulk-editor>
-
-  <button class="mat-stroked-button" (click)="close()">{{'#LDS#Submit' | translate}}</button>
-
-
+<div eui-sidesheet-content>
+  <eui-alert class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" [dismissable]="true">
+    <div>{{ infoText | translate }}</div>
+    <div>{{'#LDS#If you do not want to add a product to your shopping cart, you can skip it.' | translate }}</div>
+  </eui-alert>
+  <imx-bulk-editor data-imx-identifier="cart-item-param-editor" [entities]="bulkItems">
+  </imx-bulk-editor>
+</div>
+<div eui-sidesheet-actions color="white">
+  <button mat-raised-button color="primary" [disabled]="!hasBulkItemsWithDecision()" (click)="close()"
+    data-imx-identifier="service-item-edit-button-submit">
+    {{'#LDS#Submit' | translate}}
+  </button>
+</div>

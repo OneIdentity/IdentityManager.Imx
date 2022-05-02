@@ -32,6 +32,7 @@ import { DataIssuesService } from './data-issues.service';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ArcGovernanceTestBed } from 'projects/arc-app-certaccess/src/test/arc-governance-test-bed';
 import { DataIssuesComponent } from './data-issues.component';
+import { UserModelService } from 'qer';
 
 describe('DataIssuesComponent', () => {
   let component: DataIssuesComponent;
@@ -39,7 +40,7 @@ describe('DataIssuesComponent', () => {
 
   ArcGovernanceTestBed.configureTestingModule({
     declarations: [DataIssuesComponent, IdentitiesWorkflowComponent],
-    providers: [DataIssuesService],
+    providers: [DataIssuesService,UserModelService],
     imports: [NoopAnimationsModule],
   });
 

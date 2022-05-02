@@ -4,7 +4,7 @@
   (search)="onSearch($event)"
   [keywords]="keywords"
   (viewSelectionChanged)="onViewSelectionChanged($event)"
-  [hiddenElements]="['groupBy', 'settings']"
+  [options]="['search', 'filter', 'selectedViewGroup','settings']"
   (navigationStateChanged)="getData($event)"
   data-imx-identifier="serviceitemlist-dst"
   [initalView]="dataSourceView.selected"
@@ -22,12 +22,13 @@
     (selectionChanged)="onSelectionChanged($event)"
     (badgeClicked)="onBadgeClicked($event)"
     [useActionMenu]="false"
+    [noItemsFoundText]="'#LDS#No data'"
     fallbackIcon="request"
     [selectable]="true"
-    [actions]="[{ name: 'edit', description: '#LDS#Add to cart' | translate }]"
+    [actions]="[{ name: 'details', description: '#LDS#Details' | translate }, { name: 'edit', description: '#LDS#Add to cart' | translate }]"
     [titleObject]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
     [subtitleObject]="entitySchema?.Columns['ServiceCategoryFullPath']"
-    (actionSelected)="addTileItemToCart($event)"
+    (actionSelected)="handleAction($event)"
     [contentTemplate]="peerGroupDisplay"
   >
   </imx-data-tiles>
@@ -36,17 +37,20 @@
     [dst]="dst"
     [detailViewVisible]="false"
     [selectable]="true"
+    [noDataText]="'#LDS#No data'"
     mode="manual"
     fallbackIcon="DefaultTypeNameImage"
     (selectionChanged)="onSelectionChanged($event)"
     data-imx-identifier="serviceitemlist-datatable"
     [showSelectedItemsMenu]="false"
   >
-    <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" [entitySchema]="entitySchema" 
+    <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
       columnLabel="{{ '#LDS#Product' | translate }}" data-imx-identifier="serviceitemlist-datatable-table">
       <ng-template let-prod>
         <div data-imx-identifier="serviceitemlist-datatable-display">{{ prod.GetEntity().GetDisplay() }}</div>
-        <div subtitle data-imx-identifier="serviceitemlist-datatable-fullpath">{{ prod.ServiceCategoryFullPath?.Column.GetDisplayValue() }}</div>
+        <div subtitle data-imx-identifier="serviceitemlist-datatable-fullpath">
+          {{ getSubtitle(prod,dst.additionalListElements) }}
+        </div>
         <p *ngIf="isValueContains(prod.OrderableStatus.value, ['PERSONHASOBJECT', 'PERSONHASASSIGNMENTORDER', 'ASSIGNED'])" class="imx-subtext">
           <eui-icon icon="info"></eui-icon>
           {{ '#LDS#This product has already been assigned to {0}.' | translate | ldsReplace: recipients.Column.GetDisplayValue() }}
@@ -66,8 +70,16 @@
         <ng-container *ngTemplateOutlet="peerGroupDisplay; context: { $implicit: prod }"></ng-container>
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-generic-column columnName="addCartButton" [columnLabel]="'#LDS#Request' | translate">
+    <imx-data-table-generic-column columnName="addCartButton" [columnLabel]="''">
       <ng-template let-prod>
+        <button
+        mat-button
+        color="primary"
+        (click)="showDetails.emit(prod)"
+        data-imx-identifier="serviceitemlist-datatable-row-button-show-details"
+      >
+        {{ '#LDS#Details' | translate }}
+      </button>
         <button
           [disabled]="!prod.IsRequestable.value"
           mat-button
@@ -105,6 +117,6 @@
 
 <ng-template #peerGroupDisplay let-item>
   <ng-container *ngIf="uidPersonPeerGroup && status?.enabled(item)">
-    <imx-peer-group [item]="item" [peerGroupSize]="peerGroupSize" [width]="dataSourceView.selected === 'cardlist' ? '140px' : '100%'"></imx-peer-group>
+    <imx-peer-group [item]="item" [peerGroupSize]="peerGroupSize" [width]="dataSourceView.selected === 'cardlist' ? 'inherit' : '100%'"></imx-peer-group>
   </ng-container>
 </ng-template>

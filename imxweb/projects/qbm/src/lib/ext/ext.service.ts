@@ -41,6 +41,18 @@ export class ExtService {
     }
     this.registry[key].push(obj);
   }
-}
 
+  public async getFittingComponents<T extends IExtension>(key: string, filter: (ext: T) => Promise<boolean>): Promise<T[]> {
+    const ret: T[] = [];
+    const ext = this.registry[key];
+    if (!ext) { return []; }
+    for (const part of ext) {
+      const t = part as T;
+      if (t && await filter(t)) {
+        ret.push(t);
+      }
+    }
+    return ret;
+  }
+}
 

@@ -28,64 +28,48 @@ import { Component, Inject } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 
-import { BaseCdr, BaseReadonlyCdr, BulkItem, BulkItemStatus } from 'qbm';
 import { WorkflowActionEdit } from './workflow-action-edit.interface';
 
+/**
+ * Component displayed in a sidesheet to make a decision for one or more requests.
+ *
+ * Uses two alternate views
+ * <ul>
+ * <li>a) a simple view for a single request</li>
+ * <li>b) a complex view using bulk items for multiple requests.</li>
+ * </ul>
+ *
+ * Currently depends on pre-calculation of important view-model properties
+ * into a {@link WorkflowActionEdit} object.
+ *
+ * Therefore this component is not meant to be used directly but rather be called
+ * from a service that does the pre-calculation and opens this component in a
+ * sidesheet passing the pre-calculated values.
+ *
+ * An implementation of such a service is {@link WorkflowActionService}.
+ */
 @Component({
   selector: 'imx-workflow-action',
-  templateUrl: './workflow-action.component.html',
-  styleUrls: ['./workflow-action.component.scss']
+  templateUrl: './workflow-action.component.html'
 })
 export class WorkflowActionComponent {
+  /**
+   * The form group to which the created form controls will be added.
+   */
   public readonly formGroup = new FormGroup({});
-  public readonly requests: BulkItem[];
 
+  /**
+   * Creates a new WorkflowActionComponent
+   * @param data The pre-calculated data object.
+   * @param sideSheetRef A reference to the sidesheet containing this component.
+   */
   constructor(
     @Inject(EUI_SIDESHEET_DATA) public readonly data: WorkflowActionEdit,
     public readonly sideSheetRef: EuiSidesheetRef
   ) {
-    this.requests = this.data.requests.map(item => {
-      const bulkItem: BulkItem = {
-        entity: item,
-        properties: [],
-        status: BulkItemStatus.valid
-      };
-
-      if (this.data.showValidDate) {
-        if (this.data.showValidDate.validFrom) {
-          bulkItem.properties.push(new BaseReadonlyCdr(item.ValidFrom.Column));
-        }
-        if (this.data.showValidDate.validUntil) {
-          bulkItem.properties.push(new BaseReadonlyCdr(item.ValidUntil.Column));
-        }
-      }
-
-      item.parameterColumns.forEach(column =>
-        bulkItem.properties.push(this.data.approve ? new BaseCdr(column) : new BaseReadonlyCdr(column))
-      );
-
-      if (this.data.workflow) {
-        bulkItem.customSelectProperties = [{
-          title: this.data.workflow.title,
-          placeholder: this.data.workflow.placeholder,
-          entities: this.data.workflow.data[item.key],
-          selectionChange: entity => {
-            if (item.updateDirectDecisionTarget) {
-              item.updateDirectDecisionTarget(entity);
-            }
-          }
-        }];
-      }
-
-      return bulkItem;
-    });
 
     if (this.data.customValidation) {
       this.formGroup.setValidators(_ => this.data.customValidation.validate() ? null : ({ required: true }));
     }
-  }
-
-  public validateItem(bulkItem: BulkItem): void {
-    bulkItem.status = bulkItem.valid ? BulkItemStatus.valid : BulkItemStatus.unknown;
   }
 }

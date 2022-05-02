@@ -42,12 +42,12 @@ import { ImxTranslationProviderService } from '../translation/imx-translation-pr
  * @example
  * Simple use of a data table column
  *
- * <imx-data-table-column [entityColumn]="entitySchema?.Columns['ApplicationName']" [entitySchema]="entitySchema"></imx-data-table-column>
+ * <imx-data-table-column [entityColumn]="entitySchema?.Columns['ApplicationName']"></imx-data-table-column>
  *
  * @example
  * A data table column with a template
  *
- *  <imx-data-table-column [entityColumn]="entitySchema?.Columns['HostName']" [entitySchema]="entitySchema">
+ *  <imx-data-table-column [entityColumn]="entitySchema?.Columns['HostName']">
  *           <ng-template let-data>
  *             <mat-accordion>
  *                 <mat-form-field>
@@ -94,6 +94,9 @@ export class DataTableColumnComponent<T> implements OnInit {
    */
   @Input() public alignContent: 'left' | 'center' | 'right' = 'left';
 
+
+  public columnIndex: number;
+
   /**
    * Describes a typed entity property.
    */
@@ -106,11 +109,6 @@ export class DataTableColumnComponent<T> implements OnInit {
   }
 
   /**
-   * The schema of a typed entity
-   */
-  @Input() public entitySchema: EntitySchema;
-
-  /**
    * If not set the default template will be used.
    */
   @ContentChild(TemplateRef, /* TODO: add static flag */ {}) public templateRef: TemplateRef<any>;
@@ -120,6 +118,11 @@ export class DataTableColumnComponent<T> implements OnInit {
    * The mat column definition.
    */
   @ViewChild(MatColumnDef, { static: true }) public columnDef: MatColumnDef;
+
+   /**
+   * The schema of a typed entity
+   */
+    public entitySchema: EntitySchema;
 
   /**
    * @ignore Used internally.

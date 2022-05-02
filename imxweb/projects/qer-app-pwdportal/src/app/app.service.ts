@@ -31,10 +31,17 @@ import { TranslateService } from '@ngx-translate/core';
 import { Globals } from 'imx-qbm-dbts';
 import {
   AppConfigService, AuthenticationService, imx_SessionService,
-  CdrRegistryService, ImxTranslationProviderService, ClassloggerService
+  CdrRegistryService, ImxTranslationProviderService, ClassloggerService,
+  PluginLoaderService
 } from 'qbm';
 import { environment } from '../environments/environment';
 import { TypedClient } from 'imx-api-qbm';
+
+import * as QBM from 'qbm';
+import * as QER from 'qer';
+
+declare var SystemJS: any;
+
 
 @Injectable({
   providedIn: 'root'
@@ -49,14 +56,12 @@ export class AppService {
     private readonly title: Title,
     public readonly registry: CdrRegistryService,
     public readonly resolver: ComponentFactoryResolver,
+    private readonly pluginLoader: PluginLoaderService,
     private readonly authentication: AuthenticationService
   ) { }
 
   public async init(): Promise<void> {
     await this.config.init(environment.clientUrl);
-
-    const imxConfig = await this.config.client.imx_config_get();
-    const name = imxConfig.ProductName  || Globals.QIM_ProductNameFull;
 
     this.translateService.addLangs(this.config.Config.Translation.Langs);
     const browserCulture = this.translateService.getBrowserCultureLang();
@@ -66,12 +71,25 @@ export class AppService {
 
     this.authentication.onSessionResponse.subscribe(sessionState => this.translationProvider.init(sessionState?.culture));
 
-    const translatedTitle = await this.translateService.get('#LDS#Heading Password Reset Portal').toPromise();
-    const title = `${name} ${translatedTitle}`;
-    this.logger.debug(this, `Set page title to ${title}`);
-    this.title.setTitle(title);
+    this.translateService.onLangChange.subscribe(() => {
+      this.setTitle();
+    });
+
+    this.setTitle();
 
     this.session.TypedClient = new TypedClient(this.config.v2client, this.translationProvider);
+    SystemJS.set('qbm', SystemJS.newModule(QBM));
+    SystemJS.set('qer', SystemJS.newModule(QER));
+
+    await this.pluginLoader.loadModules(environment.appName);
+  }
+
+  private async setTitle(): Promise<void> {
+    const imxConfig = await this.config.getImxConfig();
+    const name = imxConfig.ProductName || Globals.QIM_ProductNameFull;
+    this.config.Config.Title = await this.translateService.get('#LDS#Heading Password Reset Portal').toPromise();
+    const title = `${name} ${this.config.Config.Title}`;
+    this.title.setTitle(title);
   }
 
   public static init(app: AppService): () => Promise<any> {

@@ -1,21 +1,42 @@
+@import "variables.scss";
+
 table.LayoutpPropItems {
-    width: 100%;
-  }
+  width: 100%;
+}
 
-  .LayoutpPropCol0 {
-    padding: 0;
-    width: 150px;
-    font-weight: lighter;
-  }
+.LayoutpPropRow {
+  display: flex;
+  min-height: $propcellminheight;
+}
 
-  .LayoutpPropCol1 {
-    padding: 0;
-    width: 200px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-  }
+.LayoutpPropCol {
+  min-height: $propcellminheight;
+  padding: 2px 4px 3px 0;
+  vertical-align: top;
+}
 
-  .imx-hyperview-deleted {
-    text-decoration: line-through;
-  }
+.LayoutpPropCol:nth-child(1) {
+  width: $propertylabelwidth;
+}
+
+.LayoutpPropCol0 {
+  padding: 0;
+  width: 150px;
+  font-weight: lighter;
+}
+
+.LayoutpPropCol1 {
+  padding: 0;
+  width: 200px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.imx-hyperview-deleted {
+  text-decoration: line-through;
+}
+
+.imx-layoutpanel-cell {
+  display: table-cell;
+}

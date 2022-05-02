@@ -24,12 +24,19 @@
  *
  */
 
+import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { OwnershipInformation } from 'imx-api-qer';
-import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, IEntity, TypedEntity, XOrigin } from 'imx-qbm-dbts';
-import { AuthenticationService, DataSourceToolbarFilter, DataSourceToolbarSettings, ISessionState, SnackBarService } from 'qbm';
+
+import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, IEntity, TypedEntity, XOrigin } from 'imx-qbm-dbts';
+import {
+  AuthenticationService,
+  buildAdditionalElementsString,
+  DataSourceToolbarSettings,
+  ISessionState,
+  SnackBarService
+} from 'qbm';
 import { UserModelService } from '../../user/user-model.service';
 import { RoleService } from '../role.service';
 import { IdentitiesService } from './identities.service';
@@ -46,17 +53,18 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
   public entitySchema: EntitySchema;
   public DisplayColumns = DisplayColumns;
   public displayColumns: IClientProperty[];
-  public filterOptions: DataSourceToolbarFilter[] = [];
   public sessionState: ISessionState;
 
   private selection: TypedEntity[];
+  private dataModel: DataModel;
+  private candidatesEntitySchema: EntitySchema;
 
   constructor(
     @Inject(EUI_SIDESHEET_DATA)
     public data: {
       id: string;
       entity: IEntity;
-      ownershipInfo: OwnershipInformation;
+      ownershipInfo: string;
     },
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly identityService: IdentitiesService,
@@ -73,11 +81,18 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.filterOptions = await this.identityService.getFilterOptions();
+    let overlayRef: OverlayRef;
+    setTimeout(() => (overlayRef = this.busyService.show()));
+
+    try {
+      this.dataModel = await this.membershipService.getCandidatesDataModel(this.data.ownershipInfo, this.data.entity.GetKeys()[0]);
+      this.candidatesEntitySchema = this.membershipService.getMembershipEntitySchema(this.data.ownershipInfo, 'candidates');
+    }
+    finally {
+      setTimeout(() => this.busyService.hide(overlayRef));
+    }
     await this.navigate();
   }
-
-
 
   public onSelectionChanged(selection: TypedEntity[]): void {
     this.selection = selection;
@@ -104,16 +119,16 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
     this.busyService.show();
 
     try {
-      const inactiveIdentities = await this.identityService.addMemberships(
+      const notRequestableMemberships = await this.identityService.addMemberships(
         this.data.ownershipInfo,
         this.selection,
         this.data.entity.GetColumn('XObjectKey').GetValue()
       );
 
-      if (inactiveIdentities.length > 0) {
+      if (notRequestableMemberships.length > 0) {
         const dialogRef = this.dialogService.open(NotRequestableMembershipsComponent, {
           data: {
-            inactiveIdentities,
+            notRequestableMemberships,
             entitySchema: this.entitySchema,
             membershipName: this.data.entity.GetDisplay()
           }
@@ -122,11 +137,11 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
         await dialogRef.beforeClosed().toPromise();
       }
 
-      if (inactiveIdentities.length < this.selection.length) { // there is at least one membership added
+      if (notRequestableMemberships.length < this.selection.length) { // there is at least one membership added
         await this.userService.reloadPendingItems();
         this.snackbar.open({
           key: '#LDS#The membership for "{0}" has been successfully added to the shopping cart.',
-          parameters: [this.data.entity.GetColumn('DepartmentName').GetDisplayValue()],
+          parameters: [this.data.entity.GetDisplay()],
         });
       }
       this.sidesheetRef.close();
@@ -135,8 +150,17 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
     }
   }
 
+  public getSubtitle(entity: any, properties: IClientProperty[]): string {
+    return buildAdditionalElementsString(entity.GetEntity(), properties);
+  }
+
   private async navigate(): Promise<void> {
     this.busyService.show();
+    const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
+      .map(elem => elem.Property.ColumnName).join(',');
+    if (withProperties != null && withProperties !== '') {
+      this.navigationState.withProperties = withProperties;
+    }
     try {
       this.dstSettings = {
         dataSource: await this.membershipService.getCandidates(
@@ -149,10 +173,11 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
             xorigin: XOrigin.Ordered
           }
         ),
-        entitySchema: this.entitySchema,
+        entitySchema: this.candidatesEntitySchema,
         navigationState: this.navigationState,
         displayedColumns: this.displayColumns,
-        filters: this.filterOptions,
+        filters: this.dataModel.Filters,
+        dataModel: this.dataModel
       };
     } finally {
       this.busyService.hide();

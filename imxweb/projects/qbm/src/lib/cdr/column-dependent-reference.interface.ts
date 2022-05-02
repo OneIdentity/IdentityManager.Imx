@@ -56,4 +56,9 @@ export interface ColumnDependentReference {
      * or also allow editing (false).
      */
     isReadOnly(): boolean;
+
+    /**
+     * Optional title
+     */
+    title?: string;
 }

@@ -1,6 +1,6 @@
 <div eui-sidesheet-content>
   <mat-vertical-stepper [linear]="true" (selectionChange)="stepChange($event)" #stepper>
-    <mat-step [stepControl]="displayNameForm" label="{{'#LDS#Enter a name for the new sample data' | translate}}">
+    <mat-step [stepControl]="displayNameForm" label="{{'#LDS#Enter a name for the new sample' | translate}}">
       <form [formGroup]="displayNameForm">
         <imx-cdr-editor [cdr]="displayNameCdr" data-imx-identifier="pick-category-create-step1-cdr-displayName"
           (controlCreated)="displayNameForm.addControl(displayNameCdr.column.ColumnName, $event)">
@@ -29,7 +29,7 @@
     </mat-step>
 
     <mat-step label="{{'#LDS#Summary' | translate}}">
-      <span class="imx-summary-intro">{{'#LDS#The following sample data will be created:' | translate }}</span>
+      <span class="imx-summary-intro">{{'#LDS#The following sample will be created:' | translate }}</span>
       <imx-cdr-editor [cdr]="displayNameReadonlyCdr"></imx-cdr-editor>
 
       <ng-container *ngIf="dstWrapper && dstSettings?.dataSource?.Data?.length > 0">
@@ -38,13 +38,13 @@
         <div class="imx-table-container">
           <imx-data-source-toolbar #dst class="imx-dst-selected-identities"
             data-imx-identifier="pick-category-create--step3-dst-selected-identities" [settings]="dstSettings"
-            [hiddenElements]="['settings', 'selectedViewGroup']" [searchBoxText]="'#LDS#Search' | translate">
+            [options]="['search', 'filter', 'groupBy']"
+            [searchBoxText]="'#LDS#Search' | translate">
           </imx-data-source-toolbar>
 
           <imx-data-table #dataTable data-imx-identifier="pick-category-create--step3-table" [dst]="dst"
             detailViewVisible="false" mode="manual" [showSelectedItemsMenu]="false">
-            <imx-data-table-column [entityColumn]="dstWrapper.propertyDisplay"
-              [entitySchema]="dstSettings.entitySchema">
+            <imx-data-table-column [entityColumn]="dstWrapper.propertyDisplay">
             </imx-data-table-column>
           </imx-data-table>
         </div>

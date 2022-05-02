@@ -1,0 +1,74 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+
+.imx-content-container {
+  margin-top: 20px;
+}
+
+.imx-label {
+  color: $black-7;
+  margin-bottom: -10px;
+}
+
+.imx-value {
+  margin-bottom: 20px;
+}
+
+.imx-list-value {
+  margin-left: 20px;
+}
+
+.imx-first-section-item {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.imx-last-section-item {
+  margin-bottom: 20px;
+}
+
+.imx-horizontal-container {
+  display: flex;
+  width: 100%;
+  div {
+    margin-right: 20px;
+  }
+}
+
+.imx-list-container {
+  max-height: 200px;
+  overflow: auto;
+}
+
+.imx-description {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+
+.imx-accordion .mat-expansion-panel-header-title,
+.imx-accordion .mat-expansion-panel-header-description {
+  flex-basis: 0;
+}
+
+.imx-accordion .mat-expansion-panel-header-description {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.imx-no-data {
+  text-align: center;
+  margin: 20px 0;
+
+  .eui-icon {
+    font-size: 100px;
+    color: rgba($black-c, 0.55);
+  }
+
+  p {
+    margin: 0;
+    font-size: 18px;
+    color: $black-9;
+  }
+}

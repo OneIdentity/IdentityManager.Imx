@@ -28,26 +28,69 @@ import { Injectable } from '@angular/core';
 import { Router, Route } from '@angular/router';
 import { ShoppingCartValidationDetailService } from 'qer';
 
-import { ExtService } from 'qbm';
+import { ExtService, MenuItem, MenuService, TabItem } from 'qbm';
 
 import { DashboardPluginComponent } from './dashboard-plugin/dashboard-plugin.component';
 import { CartItemComplianceCheckComponent } from './item-validator/cart-item-compliance-check/cart-item-compliance-check.component';
+import { isCiso, isRuleOwner } from './rules/admin/permissions-helper';
+import { RoleComplianceViolationsService } from './role-compliance-violations/role-compliance-violations.service';
+import { RoleComplianceViolationsComponent } from './role-compliance-violations/role-compliance-violations.component';
+import { RequestRuleViolation } from './request/request-rule-violation';
+import { RequestRuleViolationDetail } from './request/request-rule-violation-detail';
+import { IdentityRuleViolationsComponent } from './identity-rule-violations/identity-rule-violations.component';
 
 @Injectable({ providedIn: 'root' })
 export class InitService {
   constructor(
     private readonly extService: ExtService,
     private readonly router: Router,
+    private readonly menuService: MenuService,
+    private readonly cplService: RoleComplianceViolationsService,
     private readonly validationDetailService: ShoppingCartValidationDetailService
   ) {
+    this.setupMenu();
   }
 
   public onInit(routes: Route[]): void {
     this.addRoutes(routes);
 
     this.extService.register('Dashboard-SmallTiles', { instance: DashboardPluginComponent });
+    this.extService.register('roleOverview', {
+      instance: RoleComplianceViolationsComponent, inputData: {
+        id: 'roleCompliance',
+        label: '#LDS#Heading Rule Violations',
+        checkVisibility: async ref => this.checkCompliances(ref)
+      },
+      sortOrder: 0
+    } as TabItem);
+    this.extService.register(RequestRuleViolation.id, new RequestRuleViolation());
+    this.extService.register(RequestRuleViolationDetail.id, new RequestRuleViolationDetail());
 
+    this.extService.register('identitySidesheet', {
+      instance: IdentityRuleViolationsComponent,
+      inputData:
+      {
+        id: 'NonCompliance',
+        label: '#LDS#Heading Rule Violations',
+        checkVisibility: async _ => true
+      }, sortOrder: 20
+    } as TabItem);
     this.validationDetailService.register(CartItemComplianceCheckComponent, 'CartItemComplianceCheck');
+  }
+
+
+  private async checkCompliances(referrer: any): Promise<boolean> {
+    this.cplService.handleOpenLoader();
+    let violationCount = 0;
+    try {
+      violationCount = (await this.cplService.getRoleComplianceViolations(
+        referrer.tablename, referrer.entity.GetKeys()[0])
+      ).Violations?.length || 0;
+    } finally {
+      this.cplService.handleCloseLoader();
+    }
+
+    return violationCount > 0;
   }
 
   private addRoutes(routes: Route[]): void {
@@ -56,5 +99,38 @@ export class InitService {
       config.unshift(route);
     });
     this.router.resetConfig(config);
+  }
+
+  private setupMenu(): void {
+    this.menuService.addMenuFactories((preProps: string[], groups: string[]) => {
+
+      if (
+        !preProps.includes('COMPLIANCE')
+        || (!isCiso(groups) && !isRuleOwner(groups))
+      ) {
+        return null;
+      }
+
+      const items = [];
+
+      if (isCiso(groups) || isRuleOwner(groups)) {
+        items.push({
+          id: 'CPL_Compliance_Rules',
+          route: 'compliance/rules',
+          title: '#LDS#Menu Entry Compliance rules',
+          description: '#LDS#Shows an overview of compliance rules.',
+          sorting: '25-10',
+        });
+      }
+
+      const menu: MenuItem = {
+        id: 'ROOT_Compliance',
+        title: '#LDS#Compliance',
+        sorting: '25',
+        items
+      };
+      return menu;
+    });
+
   }
 }

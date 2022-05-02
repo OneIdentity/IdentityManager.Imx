@@ -84,3 +84,24 @@
   margin-top: -8px;
   color: $black-9;
 }
+
+.imx-col {
+  display: inline-block;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.imx-col80 {
+  width: 80%;
+}
+
+.imx-col20 {
+  width: 20%;
+}
+
+.imx-colright {
+  text-align: right;
+}

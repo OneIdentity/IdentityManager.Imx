@@ -26,12 +26,11 @@
 
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { IClientProperty } from 'imx-qbm-dbts';
 
-import { ClassloggerService, UserMessageService } from 'qbm';
-import { of, Subject } from 'rxjs';
+import { ClassloggerService, ConfirmationService, UserMessageService } from 'qbm';
+import { Subject } from 'rxjs';
 
 import { PickCategoryComponent } from './pick-category.component';
 import { PickCategoryService } from './pick-category.service';
@@ -44,12 +43,14 @@ describe('PickCategoryComponent', () => {
   const sidesheetServiceStub = {
     open: jasmine.createSpy('open')
   };
-  
-  let result: any;
-  const matDialogStub = {
-    open: jasmine.createSpy('open').and.returnValue({ afterClosed: () => of(result) }),
-    closeAll: jasmine.createSpy('closeAll')
-  };
+
+  let confirm = true;
+  const mockConfirmationService = {
+    confirm: jasmine.createSpy('confirm')
+      .and.callFake(() => Promise.resolve(confirm))
+  }
+
+  const deletePickCategoriesSpy = jasmine.createSpy('deletePickCategories').and.returnValue(Promise.resolve({}));
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -60,13 +61,12 @@ describe('PickCategoryComponent', () => {
         CUSTOM_ELEMENTS_SCHEMA
       ],
       providers: [
-
         {
           provide: PickCategoryService,
           useValue: {
             pickcategorySchema: { Columns: { __Display: { ColumnName: '__Display' } as IClientProperty } },
             getPickCategories: jasmine.createSpy('getPickCategories').and.returnValue({}),
-            deletePickCategories: jasmine.createSpy('deletePickCategories').and.returnValue({}),            
+            deletePickCategories: deletePickCategoriesSpy,           
             createPickCategory: jasmine.createSpy('createPickCategory').and.returnValue({}),
             handleOpenLoader: jasmine.createSpy('handleOpenLoader').and.callThrough(),
             handleCloseLoader: jasmine.createSpy('handleCloseLoader').and.callThrough(),
@@ -77,8 +77,8 @@ describe('PickCategoryComponent', () => {
           useValue: sidesheetServiceStub
         },
         {
-          provide: MatDialog,
-          useValue: matDialogStub
+          provide: ConfirmationService,
+          useValue: mockConfirmationService
         },
         {
           provide: UserMessageService,
@@ -102,9 +102,28 @@ describe('PickCategoryComponent', () => {
     fixture = TestBed.createComponent(PickCategoryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    deletePickCategoriesSpy.calls.reset();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  describe('delete() tests', () => {
+    for (const testcase of [
+      { confirm: true },
+      { confirm: false }
+    ]) {
+      it('should make a call to delete the PickCategories, if the user confirm the dialog', async () => {
+        confirm = testcase.confirm;
+        await component.delete();
+
+        if(testcase.confirm) {
+          expect(deletePickCategoriesSpy).toHaveBeenCalled();
+        } else {
+          expect(deletePickCategoriesSpy).not.toHaveBeenCalled();
+        }  
+      });
+    }
   });
 });

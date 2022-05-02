@@ -1,84 +1,113 @@
-<mat-tab-group>
+<mat-tab-group (selectedTabChange)="updateButtonInformation($event)">
   <mat-tab [label]="'#LDS#Information' | translate">
-    <mat-card class="imx-attestation-case-information">
-      <eui-alert *ngIf="showRecommendation" class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true">
-        <span *ngIf="case.PeerGroupFactor.value >= approvalThreshold" translate>#LDS#Based on the peer group analysis, it is recommended that you approve this attestation case.</span>
-        <span *ngIf="case.PeerGroupFactor.value < approvalThreshold" translate>#LDS#Based on the peer group analysis, it is recommended that you deny this attestation case.</span>
-      </eui-alert>
+    <div class="imx-mat-tab-container">
+      <mat-card class="imx-attestation-case-information">
+        <eui-alert *ngIf="showRecommendation" class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true">
+          <span *ngIf="case.PeerGroupFactor.value >= approvalThreshold" translate
+            >#LDS#Based on the peer group analysis, it is recommended that you approve this attestation case.</span
+          >
+          <span *ngIf="case.PeerGroupFactor.value < approvalThreshold" translate
+            >#LDS#Based on the peer group analysis, it is recommended that you deny this attestation case.</span
+          >
+        </eui-alert>
 
-      <div *ngIf="parameters.length > 0" class="imx-property-container">
-        <!-- TODO 255463: Bearbeiten der Attestierungsparameter - save -->
-        <imx-cdr-editor *ngFor="let cdr of parameters" [cdr]="cdr"></imx-cdr-editor>
-      </div>
+        <div *ngIf="parameters.length > 0" class="imx-property-container">
+          <!-- TODO 255463: Bearbeiten der Attestierungsparameter - save -->
+          <imx-cdr-editor *ngFor="let cdr of parameters" [cdr]="cdr"></imx-cdr-editor>
+        </div>
 
-      <!-- TODO later: Show Question -->
+        <!-- TODO later: Show Question -->
 
-      <div *ngIf="propertyInfo.length > 0" class="imx-property-container">
-        <imx-cdr-editor *ngFor="let cdr of propertyInfo" [cdr]="cdr"></imx-cdr-editor>
-      </div>
-    </mat-card>
+        <div *ngIf="propertyInfo.length > 0" class="imx-property-container">
+          <imx-cdr-editor *ngFor="let cdr of propertyInfo" [cdr]="cdr"></imx-cdr-editor>
+        </div>
+      </mat-card>
+    </div>
   </mat-tab>
   <mat-tab [label]="'#LDS#Workflow' | translate">
-    <mat-card class="imx-attestation-case-workflow">
-      <ul class="imx-eventbar">
-        <imx-decision-history-item *ngFor="let workflowHistoryEntity of workflowHistoryData"
-          [workflowHistoryEntity]="workflowHistoryEntity">
-        </imx-decision-history-item>
-        <imx-approvers *ngIf="approvers" [approvers]="approvers"></imx-approvers>
-      </ul>
-    </mat-card>
+    <div class="imx-mat-tab-container">
+      <mat-card class="imx-attestation-case-workflow">
+        <ul class="imx-eventbar">
+          <imx-decision-history-item *ngFor="let workflowHistoryEntity of workflowHistoryData" [workflowHistoryEntity]="workflowHistoryEntity"> </imx-decision-history-item>
+          <imx-approvers *ngIf="approvers" [approvers]="approvers"></imx-approvers>
+        </ul>
+      </mat-card>
+    </div>
+  </mat-tab>
+
+  <mat-tab *ngIf="showLosses" [label]="'#LDS#Heading Entitlement Loss' | translate">
+    <div class="imx-mat-tab-container">
+      <div class="imx-attestation-case-loss-preview">
+        <imx-loss-preview-table [lossPreview]="lossPreview"></imx-loss-preview-table>
+      </div>
+    </div>
+  </mat-tab>
+  <mat-tab *ngIf="case.data?.CanSeeComplianceViolations && case.data?.ComplianceViolations.length > 0" 
+    [label]="complianceTabTitle">
+    <div class="imx-mat-tab-container">
+      <div class="imx-attestation-case-compliance-violation">
+        <imx-decision-compliance-violation [mitigatingControlsPerViolation]="mitigatingControlsPerViolation" [complianceViolations]="case.data.ComplianceViolations">
+        </imx-decision-compliance-violation>
+      </div>
+    </div>
   </mat-tab>
 </mat-tab-group>
 <div class="imx-button-bar">
   <button *ngIf="reportType === 'PDF'" mat-stroked-button [euiDownload]="reportDownload">
     {{ '#LDS#Download report' | translate }}
   </button>
-  <button *ngIf="reportType != 'PDF'" mat-stroked-button data-imx-identifier="attestation-case-button-snapshot"
-    (click)="viewSnapshot()">{{ '#LDS#Show details' | translate }}
+  <button *ngIf="canEditMitigationControl"
+   mat-stroked-button data-imx-identifier="attestation-case-button-edit-mitigation-controls" (click)="editMitigatingControls()">
+    {{ '#LDS#Edit mitigating controls' | translate }}
   </button>
-  <button mat-stroked-button data-imx-identifier="attestation-case-button-approve"
-    (click)="attestationAction.approve([case])">
+  <button *ngIf="reportType != 'PDF'" mat-stroked-button data-imx-identifier="attestation-case-button-snapshot" (click)="viewSnapshot()">
+    {{ '#LDS#Show details' | translate }}
+  </button>
+  <button mat-stroked-button data-imx-identifier="attestation-case-button-approve" (click)="attestationAction.checkForViolations([case])">
     {{ '#LDS#Approve' | translate }}
   </button>
-  <button mat-stroked-button data-imx-identifier="attestation-case-button-deny"
-    (click)="attestationAction.deny([case])">
+  <button mat-stroked-button data-imx-identifier="attestation-case-button-deny" (click)="attestationAction.deny([case])">
     {{ '#LDS#Deny' | translate }}
   </button>
-  <button mat-stroked-button *ngIf="case.canRerouteDecision(userUid)"
+  <button
+    mat-stroked-button
+    *ngIf="case.canRerouteDecision(userUid)"
     (click)="attestationAction.directDecision([case], userUid)"
-    data-imx-identifier="attestation-case-direct-decision-button">
+    data-imx-identifier="attestation-case-direct-decision-button"
+  >
     {{ '#LDS#Reroute approval' | translate }}
   </button>
-  <button mat-stroked-button *ngIf="case.canAddApprover(userUid)"
+  <button
+    mat-stroked-button
+    *ngIf="case.canAddApprover(userUid)"
     (click)="attestationAction.addAdditionalAttestor([case])"
-    data-imx-identifier="attestation-case-add-additional-attestor-button">
+    data-imx-identifier="attestation-case-add-additional-attestor-button"
+  >
     {{ '#LDS#Add attestor' | translate }}
   </button>
-  <button mat-stroked-button *ngIf="case.canDelegateDecision(userUid)"
+  <button
+    mat-stroked-button
+    *ngIf="case.canDelegateDecision(userUid)"
     (click)="attestationAction.delegateDecision([case])"
-    data-imx-identifier="attestation-case-delegate-decision-button">
+    data-imx-identifier="attestation-case-delegate-decision-button"
+  >
     {{ '#LDS#Delegate approval' | translate }}
   </button>
-  <button mat-stroked-button *ngIf="case.canWithdrawAddApprover(userUid)"
+  <button
+    mat-stroked-button
+    *ngIf="case.canWithdrawAddApprover(userUid)"
     (click)="attestationAction.revokeDelegation([case])"
-    data-imx-identifier="attestation-case-revoke-delegation-button">
+    data-imx-identifier="attestation-case-revoke-delegation-button"
+  >
     {{ '#LDS#Withdraw additional attestor' | translate }}
   </button>
-  <button mat-stroked-button *ngIf="case.canDenyApproval(userUid)" (click)="attestationAction.denyDecisions([case])"
-    data-imx-identifier="attestation-case-deny-decision-button">
+  <button mat-stroked-button *ngIf="case.canDenyApproval(userUid)" (click)="attestationAction.denyDecisions([case])" data-imx-identifier="attestation-case-deny-decision-button">
     {{ '#LDS#Reject approval' | translate }}
   </button>
-
 </div>
 
-
-
-
-
-
-
 <!-- TODO Later:
-         
+
          <LoadTable DataTable="AttestationCaseSameObject" ScriptItemUID="LoadTable1" LoadNew="true" RemoveDeleted="true" RevertExisting="true" Type="DbObject"
          WhereClause="from attestationcase select current
 format("objectkeybase = {0} and {1} and {2} and {3}",

@@ -30,7 +30,7 @@ import { Subscription } from 'rxjs';
 
 import { EuiLoadingService } from '@elemental-ui/core';
 import { PortalApplication } from 'imx-api-aob';
-import { ClassloggerService } from 'qbm';
+import { ClassloggerService, SnackBarService } from 'qbm';
 import { TypedEntityCollectionData } from 'imx-qbm-dbts';
 
 import { ApplicationsService } from './applications.service';
@@ -55,7 +55,8 @@ export class ApplicationsComponent implements OnDestroy, OnInit {
     private readonly applicationsProvider: ApplicationsService,
     private readonly busyService: EuiLoadingService,
     private readonly router: Router,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private readonly snackbar: SnackBarService
   ) {
     this.subscriptions.push(
       this.applicationsProvider.onApplicationCreated.subscribe(async (uidApplication: string) => {
@@ -75,6 +76,17 @@ export class ApplicationsComponent implements OnDestroy, OnInit {
         return this.redirectToAppDetails(this.selectedApplication.UID_AOBApplication.value);
       })
     );
+    this.subscriptions.push(
+      this.applicationsProvider.onApplicationDeleted.subscribe(async (uidApplication: string) => {
+        const index = this.dataSource.Data.findIndex(elem => elem.UID_AOBApplication.value === uidApplication);
+        if (index < 0) {
+          return this.redirectToAppDetails(null);
+        }
+        const removed = this.dataSource.Data.splice(index, 1);
+        this.applicationContent.application = null;
+        this.snackbar.open({ key: '#LDS#The application "{0}" has been successfully deleted.', parameters: [removed[0].GetEntity().GetDisplay()] });
+        return this.redirectToAppDetails(null);
+      }));
   }
 
   public ngOnInit(): void {
@@ -119,7 +131,7 @@ export class ApplicationsComponent implements OnDestroy, OnInit {
 
     this.subscriptions.push(
       this.applicationNavigation.dataSourceChanged.subscribe((changeSet:
-          { keywords: string; dataSource: TypedEntityCollectionData<PortalApplication> }) => {
+        { keywords: string; dataSource: TypedEntityCollectionData<PortalApplication> }) => {
         this.dataSource = changeSet?.dataSource;
         this.applicationContent.totalCount = this.dataSource?.totalCount ?? 0;
         this.applicationContent.keywords = changeSet?.keywords;

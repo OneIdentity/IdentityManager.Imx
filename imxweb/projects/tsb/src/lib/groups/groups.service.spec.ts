@@ -74,7 +74,10 @@ describe('GroupsService', () => {
         .and.returnValue({ Filters: [] }),
       portal_targetsystem_uns_group_serviceitem_bulk_put: jasmine
         .createSpy('portal_targetsystem_uns_group_serviceitem_bulk_put')
-        .and.returnValue(Promise.resolve())
+        .and.returnValue(Promise.resolve()),
+      portal_targetsystem_uns_group_filtertree_get: jasmine
+        .createSpy('portal_targetsystem_uns_group_filtertree_get')
+        .and.returnValue({ Elements: [] })
     },
     apiClient: {
       processRequest: jasmine.createSpy('processRequest').and.returnValue(Promise.resolve({ TotalCount: 0, Entities: [{ Name: '111' }] }))

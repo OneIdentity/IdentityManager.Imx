@@ -170,7 +170,7 @@ export class ShelfService {
   }
 
   private hasMultipleShelfs(shelfSelectionObject: ShelfSelectionObject): boolean {
-    return shelfSelectionObject.personsForProduct.some(person => person.shelfsObjects.length > 1);
+    return shelfSelectionObject.personsForProduct.some(person => person.shelfsObjects.length !== 1);
   }
 
   private build(requested: RequestableProductForPerson[], productsWithShops: RequestableProductForPerson[]): ShelfSelectionObject[] {

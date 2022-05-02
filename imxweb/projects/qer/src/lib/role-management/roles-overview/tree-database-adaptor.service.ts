@@ -48,7 +48,7 @@ export class TreeDatabaseAdaptorService extends TreeDatabase {
 
   public async getData(
     showLoading: boolean,
-    parameter: CollectionLoadParameters = { parentKey: '' /* first level */ })
+    parameter: CollectionLoadParameters = { ParentKey: '' /* first level */ })
     : Promise<TreeNodeResultParameter> {
     if (this.ownershipInfo == null) {
       return { entities: [], canLoadMore: false, totalCount: 0 };
@@ -69,7 +69,7 @@ export class TreeDatabaseAdaptorService extends TreeDatabase {
         }
       };
 
-      const data = await this.roleService.getEntitiesForTree(this.ownershipInfo, navigationState);
+      const data = await this.roleService.getEntitiesForTree(this.ownershipInfo.TableName, navigationState);
 
       if (data) {
         const nodeEntities = await Promise.all(data.Entities.map(async (elem): Promise<IEntity> => {

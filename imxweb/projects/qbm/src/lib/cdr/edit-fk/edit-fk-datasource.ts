@@ -106,8 +106,14 @@ export class EditFkDatasource extends DataSource<Candidate> {
           key = xObjectKeyColumn ? xObjectKeyColumn.Value : undefined;
         } else {
           this.logger.trace(this, 'foreign key');
-          const keys = entityData.Keys;
-          key = keys && keys.length ? keys[0] : undefined;
+          const parentColumn = entityData.Columns ? entityData.Columns[this.fkRelations[0].ColumnName] : undefined;
+          if (parentColumn != null) {
+            this.logger.trace(this, 'Use value from explicit parent column');
+            key = parentColumn.Value;
+          } else {
+            const keys = entityData.Keys;
+            key = keys && keys.length ? keys[0] : undefined;
+          }
         }
         return {
           DataValue: key,

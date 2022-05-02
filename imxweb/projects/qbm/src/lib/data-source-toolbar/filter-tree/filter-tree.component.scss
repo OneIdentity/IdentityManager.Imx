@@ -1,0 +1,49 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow: hidden;
+  padding-bottom: 15px;
+}
+
+.imx-dialog-content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.imx-filtertree-buttons {
+  display: flex;
+  flex-direction: row;
+}
+
+.imx-current-filter {
+  > :first-child {
+    font-weight: 600;
+    margin-right: 1rem;
+  }
+}
+
+::ng-deep .mat-menu-panel {
+  padding: 10px;
+  max-width: 500px;
+}
+
+.imx-badge {
+  background-color: $white;
+}
+
+.imx-spacer {
+  flex: 1 1 auto;
+}
+
+.imx-selected-item-element {
+  margin: 5px 0;
+}
+
+::ng-deep .mat-list-base {
+  .mat-list-item.imx-list-item {
+    height: auto;
+  }
+}

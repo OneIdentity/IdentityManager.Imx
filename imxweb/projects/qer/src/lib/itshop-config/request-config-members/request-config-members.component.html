@@ -20,7 +20,7 @@
         <imx-data-source-toolbar
           #dst
           [settings]="dstSettings"
-          [hiddenElements]="['groupBy', 'settings', 'selectedViewGroup']"
+          [options]="['search', 'filter']"
           [hiddenFilters]="['namespace']"
           [searchBoxText]="'#LDS#Search' | translate"
           (navigationStateChanged)="onNavigationStateChanged($event)"
@@ -63,7 +63,7 @@
         <imx-data-source-toolbar
           #dstExcluded
           [settings]="dstSettingsExcludedMembers"
-          [hiddenElements]="['groupBy', 'settings', 'selectedViewGroup']"
+          [options]="['search', 'filter']"
           [hiddenFilters]="['namespace']"
           [searchBoxText]="'#LDS#Search' | translate"
           (navigationStateChanged)="onNavigationStateExcludedChanged($event)"

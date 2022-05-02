@@ -28,7 +28,7 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, Input, OnInit } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { PortalTargetsystemUnsGroupmembers } from 'imx-api-tsb';
-import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, TypedEntityCollectionData } from 'imx-qbm-dbts';
 import { DataSourceToolbarSettings, SettingsService } from 'qbm';
 import { GroupsService } from '../../groups.service';
 
@@ -39,6 +39,7 @@ import { GroupsService } from '../../groups.service';
 })
 export class ChildSystemEntitlementsComponent implements OnInit {
   @Input() public groupId: string;
+  @Input() public isAdmin: boolean;
 
   public groupsGroupMembershipData: TypedEntityCollectionData<PortalTargetsystemUnsGroupmembers>;
   public groupsDstSettings: DataSourceToolbarSettings;
@@ -46,6 +47,7 @@ export class ChildSystemEntitlementsComponent implements OnInit {
   public readonly entitySchemaUnsGroupMemberships: EntitySchema;
 
   private groupDisplayedColumns: IClientProperty[] = [];
+  private dataModel: DataModel;
 
   constructor(
     private readonly busyService: EuiLoadingService,
@@ -63,6 +65,14 @@ export class ChildSystemEntitlementsComponent implements OnInit {
       this.entitySchemaUnsGroupMemberships.Columns.XDateInserted,
     ];
 
+    let overlayRef: OverlayRef;
+    setTimeout(() => (overlayRef = this.busyService.show()));
+
+    try {
+      this.dataModel = await this.groupsService.getDataModel(this.isAdmin);
+    } finally {
+      setTimeout(() => this.busyService.hide(overlayRef));
+    }
     await this.groupNavigate();
   }
 
@@ -77,6 +87,12 @@ export class ChildSystemEntitlementsComponent implements OnInit {
     try {
       if (newState) {
         this.navigationState = newState;
+      }
+
+      const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
+        .map(elem => elem.Property.ColumnName).join(',');
+      if (withProperties != null && withProperties !== '') {
+        this.navigationState.withProperties = withProperties;
       }
 
       this.groupsGroupMembershipData = await this.groupsService.getGroupsGroupMembers(this.groupId, this.navigationState);

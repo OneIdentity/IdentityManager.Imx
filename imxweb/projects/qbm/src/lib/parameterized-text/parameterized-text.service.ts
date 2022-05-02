@@ -69,6 +69,6 @@ export class ParameterizedTextService {
         delimiter: parameter,
         replacement: text.getParameterValue(parameter.split(text.marker.start).join('').split(text.marker.end).join(''))
       }))
-      .filter(parameter => parameter.replacement != null && parameter.replacement.length > 0);
+      .filter(parameter => parameter.replacement != null);
   }
 }

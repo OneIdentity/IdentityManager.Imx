@@ -33,7 +33,7 @@ import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { configureTestSuite } from 'ng-bullet';
 import { of } from 'rxjs';
 
-import { clearStylesFromDOM, EntityService, imx_SessionService } from 'qbm';
+import { AuthenticationService, clearStylesFromDOM, EntityService, imx_SessionService } from 'qbm';
 import { ProductSelectionComponent } from './product-selection.component';
 import { ServiceItemsService } from '../service-items/service-items.service';
 import { CartItemsService } from '../shopping-cart/cart-items.service';
@@ -44,6 +44,7 @@ import { QerApiService } from '../qer-api-client.service';
 import { ProductSelectionService } from './product-selection.service';
 import { PortalShopCategories } from 'imx-api-qer';
 import { ShelfService } from '../itshop/shelf.service';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'imx-servicecategory-list',
@@ -107,6 +108,7 @@ describe('ProductSelectionComponent', () => {
         TestHostComponent
       ],
       imports: [
+        MatMenuModule,
         MatCardModule
       ],
       providers: [
@@ -213,6 +215,12 @@ describe('ProductSelectionComponent', () => {
           provide: imx_SessionService,
           useValue: {
             getSessionState: () => ({})
+          }
+        },
+        {
+          provide: AuthenticationService,
+          useValue: {
+            onSessionResponse: of({UserUid: 'userUid'})
           }
         }
       ]

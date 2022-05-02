@@ -38,10 +38,12 @@ import {
   DataSourceToolbarModule,
   DataTableModule,
   DataTreeWrapperModule,
+  DynamicTabsModule,
   FkAdvancedPickerModule,
   LdsReplaceModule,
   MenuService,
-  RouteGuardService
+  RouteGuardService,
+  SqlWizardApiService
 } from 'qbm';
 
 import { RoleDetailComponent } from './role-detail/role-detail.component';
@@ -52,6 +54,13 @@ import { EntitlementSelectorComponent } from './role-entitlements/entitlement-se
 import { RoleMembershipsModule } from './role-memberships/role-memberships.module';
 import { isStructAdmin } from '../admin/qer-permissions-helper';
 import { DataExplorerRegistryService } from '../data-explorer-view/data-explorer-registry.service';
+import { DynamicRoleSqlWizardService } from './dynamicrole-sqlwizard.service';
+import { CompareComponent } from './compare/compare.component';
+import { CompareItemComponent } from './compare/compare-item.component';
+import { SplitComponent } from './split/split.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 const routes: Routes = [
   {
@@ -64,11 +73,14 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
+    CompareComponent,
+    CompareItemComponent,
     EntitlementSelectorComponent,
     RolesOverviewComponent,
     RoleDetailComponent,
     RoleMainDataComponent,
     RoleEntitlementsComponent,
+    SplitComponent,
   ],
   imports: [
     CdrModule,
@@ -81,10 +93,20 @@ const routes: Routes = [
     FkAdvancedPickerModule,
     FormsModule,
     LdsReplaceModule,
+    MatMenuModule,
     MatOptionModule,
+    MatSelectModule,
+    MatProgressSpinnerModule,
     ReactiveFormsModule,
     RoleMembershipsModule,
-    TranslateModule
+    TranslateModule,
+    DynamicTabsModule
+  ],
+  providers: [
+    {
+      provide: SqlWizardApiService,
+      useClass: DynamicRoleSqlWizardService
+    },
   ],
   exports: [
     RolesOverviewComponent

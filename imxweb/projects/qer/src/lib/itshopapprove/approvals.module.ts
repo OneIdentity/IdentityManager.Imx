@@ -54,6 +54,9 @@ import { WorkflowActionComponent } from './workflow-action/workflow-action.compo
 import { ItshopModule } from '../itshop/itshop.module';
 import { RequestHistoryModule } from '../request-history/request-history.module';
 import { RequestsFeatureGuardService } from '../requests-feature-guard.service';
+import { JustificationModule } from '../justification/justification.module';
+import { WorkflowMultiActionComponent } from './workflow-action/workflow-multi-action/workflow-multi-action.component';
+import { WorkflowSingleActionComponent } from './workflow-action/workflow-single-action/workflow-single-action.component';
 
 const routes: Routes = [
   {
@@ -64,14 +67,15 @@ const routes: Routes = [
   },
 ];
 
-
 @NgModule({
   declarations: [
     ApprovalsComponent,
     ApprovalsTableComponent,
     ApprovalsSidesheetComponent,
     QueryPersonComponent,
-    WorkflowActionComponent
+    WorkflowActionComponent,
+    WorkflowMultiActionComponent,
+    WorkflowSingleActionComponent
   ],
   imports: [
     BulkPropertyEditorModule,
@@ -85,6 +89,7 @@ const routes: Routes = [
     EuiMaterialModule,
     FormsModule,
     ItshopModule,
+    JustificationModule,
     LdsReplaceModule,
     ReactiveFormsModule,
     RequestHistoryModule,

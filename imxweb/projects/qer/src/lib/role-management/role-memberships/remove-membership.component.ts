@@ -27,8 +27,10 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+
 import { OwnershipInformation } from 'imx-api-qer';
 import { IEntity, TypedEntity, XOrigin } from 'imx-qbm-dbts';
+
 import { SnackBarService } from 'qbm';
 import { QerApiService } from '../../qer-api-client.service';
 import { RoleService } from '../role.service';
@@ -39,12 +41,25 @@ import { RoleService } from '../role.service';
 })
 export class RemoveMembershipComponent implements OnInit {
 
+  public get noneSelected(): boolean {
+    return !this.formAbortRequested.value && !this.formExcludeDynamic.value && !this.formDeleteDirect.value;
+  }
+
   public dynamicExclusionForm: FormGroup;
 
-  constructor(private formBuilder: FormBuilder,
+  public formAbortRequested: FormControl;
+  public formExcludeDynamic: FormControl;
+  public formDeleteDirect: FormControl;
+  public countDynamic: number;
+  public countDirect: number;
+  public countRequested: number;
+
+  constructor(
+    private formBuilder: FormBuilder,
     @Inject(EUI_SIDESHEET_DATA)
-    private readonly data: {
+    public readonly data: {
       ownershipInfo: OwnershipInformation,
+      nonDeletableMemberships: TypedEntity[],
       selectedEntities: TypedEntity[],
       entity: IEntity
     },
@@ -54,13 +69,6 @@ export class RemoveMembershipComponent implements OnInit {
     private readonly membershipService: RoleService,
     private readonly snackbar: SnackBarService
   ) { }
-
-  public formAbortRequested: FormControl;
-  public formExcludeDynamic: FormControl;
-  public formDeleteDirect: FormControl;
-  public countDynamic: number;
-  public countDirect: number;
-  public countRequested: number;
 
   public ngOnInit(): void {
 
@@ -84,20 +92,6 @@ export class RemoveMembershipComponent implements OnInit {
     });
   }
 
-  private getCount(xorigin: XOrigin): number {
-    return this.data.selectedEntities.filter(e => {
-      return this.hasBit(e, xorigin);
-    }).length;
-  }
-
-  private hasBit(e: TypedEntity, xorigin: XOrigin): boolean {
-    return (e.GetEntity().GetColumn('XOrigin').GetValue() & xorigin) > 0;
-  }
-
-  public get noneSelected(): boolean {
-    return !this.formAbortRequested.value && !this.formExcludeDynamic.value && !this.formDeleteDirect.value;
-  }
-
   public async save(): Promise<void> {
 
     this.busyService.show();
@@ -108,24 +102,24 @@ export class RemoveMembershipComponent implements OnInit {
 
         if (this.formDeleteDirect.value &&
           // is it a direct assignment?
-          (XOrigin.Direct & xorigin) == XOrigin.Direct) {
-          await this.membershipService.removeMembership(this.data.ownershipInfo, entity, this.data.entity.GetKeys()[0]);
+          (XOrigin.Direct & xorigin) === XOrigin.Direct) {
+          await this.membershipService.removeMembership(this.data.ownershipInfo.TableName, entity, this.data.entity.GetKeys()[0]);
         }
 
         // If the member is managed by a dynamic group, add an exclusion
         if (this.formExcludeDynamic.value && (xorigin & XOrigin.Dynamic) > 0) {
-          const uidDynamicGroup = this.data.entity.GetColumn("UID_DynamicGroup").GetValue();
+          const uidDynamicGroup = this.data.entity.GetColumn('UID_DynamicGroup').GetValue();
           const exclusionData = this.qerApiClient.typedClient.PortalRolesExclusions.createEntity();
           exclusionData.UID_Person.value = entity.GetEntity().GetColumn('UID_Person').GetValue();
           exclusionData.Description.value = this.dynamicExclusionForm.get('description').value || '';
           await this.qerApiClient.typedClient.PortalRolesExclusions.Post(uidDynamicGroup, exclusionData);
         }
-      };
+      }
 
       if (this.formAbortRequested.value) {
         const requested = this.data.selectedEntities.filter(e => {
           return e.GetEntity().GetColumn('IsRequestCancellable').GetValue();
-        }).map(e => <string>e.GetEntity().GetColumn("UID_PersonWantsOrg").GetValue());
+        }).map(e => e.GetEntity().GetColumn('UID_PersonWantsOrg').GetValue() as string);
 
         await this.qerApiClient.client.portal_itshop_unsubscribe_post({
           UidPwo: requested,
@@ -143,6 +137,16 @@ export class RemoveMembershipComponent implements OnInit {
 
   public cancel(): void {
     this.sidesheetRef.close();
+  }
+
+  private getCount(xorigin: XOrigin): number {
+    return this.data.selectedEntities.filter(e => {
+      return this.hasBit(e, xorigin);
+    }).length;
+  }
+
+  private hasBit(e: TypedEntity, xorigin: XOrigin): boolean {
+    return (e.GetEntity().GetColumn('XOrigin').GetValue() & xorigin) > 0;
   }
 
 }

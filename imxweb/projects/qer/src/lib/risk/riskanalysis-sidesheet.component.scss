@@ -1,0 +1,10 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+.riskanalysis-sidesheet {
+  background-color: $asher-gray;
+  padding: 2em;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}

@@ -25,12 +25,21 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, Input, Output, EventEmitter, AfterViewInit, OnChanges, SimpleChanges, ViewChild, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, AfterViewInit, OnChanges, SimpleChanges, ViewChild, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { DataSourceToolbarSettings, DataSourceToolbarComponent, DataTileBadge, DataTileMenuItem, SettingsService } from 'qbm';
-import { CollectionLoadParameters, DisplayColumns, IClientProperty, IWriteValue, ValType, MultiValue, EntitySchema } from 'imx-qbm-dbts';
+import { DataSourceToolbarSettings, DataSourceToolbarComponent, DataTileBadge, DataTileMenuItem, SettingsService, buildAdditionalElementsString } from 'qbm';
+import {
+  CollectionLoadParameters,
+  DisplayColumns,
+  IClientProperty,
+  IWriteValue,
+  ValType,
+  MultiValue,
+  EntitySchema,
+  DataModel
+} from 'imx-qbm-dbts';
 import { ITShopConfig, PortalShopCategories, PortalShopServiceitems } from 'imx-api-qer';
 
 import { ServiceItemsService } from '../service-items.service';
@@ -43,7 +52,7 @@ import { ProjectConfigurationService } from '../../project-configuration/project
   templateUrl: './serviceitem-list.component.html',
   styleUrls: ['./serviceitem-list.component.scss'],
 })
-export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDestroy {
+export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDestroy, OnInit {
   @ViewChild('dst') public dstComponent: DataSourceToolbarComponent;
 
   @Input() public selectedServiceCategory: PortalShopCategories;
@@ -55,6 +64,7 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
 
   @Output() public selectionChanged = new EventEmitter<PortalShopServiceitems[]>();
   @Output() public addItemToCart = new EventEmitter<PortalShopServiceitems>();
+  @Output() public showDetails = new EventEmitter<PortalShopServiceitems>();
   @Output() public categoryRemoved = new EventEmitter<PortalShopCategories>();
   @Output() public readonly openCategoryTree = new EventEmitter<void>();
 
@@ -103,6 +113,7 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
   private readonly badgeNotRequestableText = '#LDS#Not requestable';
   private navigationState: CollectionLoadParameters;
   private itshopConfig: ITShopConfig;
+  private dataModel: DataModel;
 
   constructor(
     private readonly busyService: EuiLoadingService,
@@ -121,6 +132,17 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
         Type: ValType.String,
       },
     ];
+  }
+
+  public async ngOnInit(): Promise<void> {
+    let overlayRef: OverlayRef;
+    setTimeout(() => (overlayRef = this.busyService.show()));
+
+    try {
+      this.dataModel = await this.serviceItemsProvider.getDataModel();
+    } finally {
+      setTimeout(() => this.busyService.hide(overlayRef));
+    }
   }
 
   public async ngAfterViewInit(): Promise<void> {
@@ -169,6 +191,12 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
       this.navigationState = newState;
     }
 
+    const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
+      .map(elem => elem.Property.ColumnName).join(',');
+    if (withProperties != null && withProperties !== '') {
+      this.navigationState.withProperties = withProperties;
+    }
+
     let overlayRef: OverlayRef;
     setTimeout(() => {
       overlayRef = this.busyService.show();
@@ -188,12 +216,14 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
         IncludeChildCategories: this.includeChildCategories,
         UID_AccProductGroup: this.selectedServiceCategory ? this.selectedServiceCategory.UID_AccProductGroup.value : undefined,
       });
+
       if (data) {
         this.dstSettings = {
           dataSource: data,
           displayedColumns: this.displayedColumns,
           entitySchema: this.entitySchema,
           navigationState: this.navigationState,
+          dataModel: this.dataModel
         };
 
         this.peerGroupSize = data.extendedData?.PeerGroupSize;
@@ -218,15 +248,25 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
     if (typeof values === 'string') {
       return inputValues.includes(values);
     }
-    return inputValues.findIndex((i) => values.includes(i)) != -1;
+    return inputValues.findIndex((i) => values.includes(i)) !== -1;
+  }
+
+  public getSubtitle(entity: PortalShopServiceitems, additionalProperties: IClientProperty[]): string {
+    const properties = [this.entitySchema.Columns.ServiceCategoryFullPath].concat(additionalProperties);
+    return buildAdditionalElementsString(entity.GetEntity(), properties);
   }
 
   public onViewSelectionChanged(view: string): void {
     this.dataSourceView.selected = view;
   }
 
-  public addTileItemToCart(item: DataTileMenuItem): void {
-    this.addItemToCart.emit(item.typedEntity as PortalShopServiceitems);
+  public handleAction(item: DataTileMenuItem): void {
+    if (item.name === 'edit') {
+      this.addItemToCart.emit(item.typedEntity as PortalShopServiceitems);
+    }
+    if (item.name === 'details') {
+      this.showDetails.emit(item.typedEntity as PortalShopServiceitems);
+    }
   }
 
   public async onRemoveChip(): Promise<void> {

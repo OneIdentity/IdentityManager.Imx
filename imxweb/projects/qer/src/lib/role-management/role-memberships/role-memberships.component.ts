@@ -36,15 +36,20 @@ import { RoleService } from '../role.service';
   styleUrls: ['./role-memberships.component.scss', '../sidesheet.scss']
 })
 export class RoleMembershipsComponent implements OnChanges {
-  public selectedView: 'primary' | 'secondary' | 'exclusions' = 'primary';
+  public selectedView: 'primary' | 'secondary' | 'exclusions' | 'dynamicgroup' = 'primary';
 
   @Input() public entity: IEntity;
+  @Input() public isAdmin: boolean;
   @Input() public ownershipInfo: OwnershipInformation;
 
   constructor(private readonly roleService: RoleService) { }
 
   public onToggleChanged(change: MatButtonToggleChange): void {
     this.selectedView = change.value;
+  }
+
+  public get canBeDynamic() {
+    return this.entity && this.roleService.canHaveDynamicMemberships(this.entity.TypeName);
   }
 
   public get isDynamic() {
@@ -62,4 +67,7 @@ export class RoleMembershipsComponent implements OnChanges {
       && this.roleService.targetMap.get(this.ownershipInfo.TableName).membership.hasPrimaryMemberships();
   }
 
+  public get uidDynamicGroup() {
+    return this.entity.GetColumn("UID_DynamicGroup").GetValue();
+  }
 }

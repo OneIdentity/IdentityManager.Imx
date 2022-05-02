@@ -24,10 +24,21 @@
  *
  */
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { UserService } from '../user/user.service';
 
 @Component({
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent {}
+export class DashboardComponent implements OnInit {
+
+  public isOperationsSupporter: boolean;
+
+  constructor(private readonly userService: UserService) {
+  }
+
+  public async ngOnInit() {
+    this.isOperationsSupporter = (await this.userService.getGroups()).map(g => g.Name).includes("QER_4_OperationsSupport");
+  }
+}

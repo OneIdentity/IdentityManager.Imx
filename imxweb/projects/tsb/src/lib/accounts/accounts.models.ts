@@ -24,7 +24,7 @@
  *
  */
 
-import { CollectionLoadParameters, DbObjectKey } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DbObjectKey, FilterData } from 'imx-qbm-dbts';
 import { AccountTypedEntity } from './account-typed-entity';
 
 export interface AccountSidesheetData {
@@ -40,4 +40,11 @@ export interface GetAccountsOptionalParameters extends CollectionLoadParameters 
   managerdiscrepancy?: string;
   system?: string;
   container?: string;
+}
+
+export interface AcountsFilterTreeParameters {
+  parentkey: string;
+  container: string;
+  system: string;
+  filter: FilterData[];
 }

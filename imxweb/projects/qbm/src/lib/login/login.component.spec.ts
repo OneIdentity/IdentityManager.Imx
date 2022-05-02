@@ -70,9 +70,7 @@ class MockUserMessageComponent {
     };
 
     const mockImxAppConfigService = {
-      client: {
-        imx_config_get: jasmine.createSpy('imx_config_get').and.returnValue(Promise.resolve({ProductName: null}))
-      },
+      getImxConfig: jasmine.createSpy('getImxConfig').and.returnValue(Promise.resolve({ProductName: null})),
       Config: {
         Basepath: '',
         BaseUrl: '',
@@ -128,7 +126,7 @@ class MockUserMessageComponent {
       mockRouter.navigate.calls.reset();
       euiLoadingServiceStub.hide.calls.reset();
       euiLoadingServiceStub.show.calls.reset();
-      mockImxAppConfigService.client.imx_config_get.calls.reset();
+      mockImxAppConfigService.getImxConfig.calls.reset();
     }));
 
     beforeEach(() => {
@@ -149,7 +147,7 @@ class MockUserMessageComponent {
     it('could be initialized by angular', fakeAsync(() => {
       fixture.detectChanges();
       tick();
-      expect(mockImxAppConfigService.client.imx_config_get).toHaveBeenCalled();
+      expect(mockImxAppConfigService.getImxConfig).toHaveBeenCalled();
     }));
 
     it('resets the loginData when AuthConfig is selected', () => {

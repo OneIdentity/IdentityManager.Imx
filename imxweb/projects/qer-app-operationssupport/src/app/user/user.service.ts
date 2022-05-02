@@ -26,7 +26,6 @@
 
 import { Injectable } from '@angular/core';
 import { UserGroupInfo } from 'imx-api-qbm';
-import { UserConfig } from 'imx-api-qer';
 import { imx_SessionService } from 'qbm';
 
 @Injectable({

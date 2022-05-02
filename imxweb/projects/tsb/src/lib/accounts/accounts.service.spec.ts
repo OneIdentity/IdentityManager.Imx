@@ -51,6 +51,9 @@ describe('AccountsService', () => {
       portal_targetsystem_uns_account_datamodel_get: jasmine
         .createSpy('portal_targetsystem_uns_account_datamodel_get')
         .and.returnValue({ Filters: [] }),
+      portal_targetsystem_uns_account_filtertree_get: jasmine
+      .createSpy('portal_targetsystem_uns_account_filtertree_get')
+      .and.returnValue({Elements:[]})
     }
   };
   let navigationState: CollectionLoadParameters = { StartIndex: 1, PageSize: 50 };
@@ -83,7 +86,7 @@ describe('AccountsService', () => {
     expect(await service.getAccounts(navigationState)).toBeDefined();
     expect(mockTsbApiService.typedClient.PortalTargetsystemUnsAccount.Get).toHaveBeenCalled();
   });
-  
+
   it('retrieves the specific Adsgroup', async () => {
     mockTsbApiService.typedClient.PortalTargetsystemUnsAccount.Get.calls.reset;
     expect(await service.getAccount({ TableName: 'ADSAccount', Keys: ['testAdsAccId'] })).toBeDefined();

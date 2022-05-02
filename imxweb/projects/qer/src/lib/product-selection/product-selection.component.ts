@@ -24,31 +24,39 @@
  *
  */
 
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatTabChangeEvent } from '@angular/material/tabs';
+import { MatTabChangeEvent, MatTabGroup } from '@angular/material/tabs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
+import { MatSelectChange } from '@angular/material/select';
+import { Subscription } from 'rxjs';
 
 import { IWriteValue, EntityValue, LocalProperty, ValueStruct, MultiValue } from 'imx-qbm-dbts';
-import { PortalShopServiceitems, PortalShopCategories, PortalItshopPeergroupMemberships, RequestableProductForPerson } from 'imx-api-qer';
+import {
+  PortalShopServiceitems,
+  PortalShopCategories,
+  PortalItshopPeergroupMemberships,
+  RequestableProductForPerson,
+  QerProjectConfig,
+  PortalItshopPatternRequestable
+} from 'imx-api-qer';
 
 import {
-  imx_SessionService,
   ColumnDependentReference,
   FkAdvancedPickerComponent,
   MessageDialogComponent,
   EntityService,
   BaseReadonlyCdr,
-  BaseCdr
+  BaseCdr,
+  AuthenticationService
 } from 'qbm';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
 import { UserModelService } from '../user/user-model.service';
 import { PersonService } from '../person/person.service';
 import { ServiceItemsService } from '../service-items/service-items.service';
 import { CartItemsService } from '../shopping-cart/cart-items.service';
-import { ItshopService } from '../itshop/itshop.service';
 import { QerApiService } from '../qer-api-client.service';
 import { ServiceCategoryListComponent } from './servicecategory-list/servicecategory-list.component';
 import { ServiceitemListComponent } from '../service-items/serviceitem-list/serviceitem-list.component';
@@ -57,6 +65,11 @@ import { CategoryTreeComponent } from './servicecategory-list/category-tree.comp
 import { RoleMembershipsComponent } from './role-memberships/role-memberships.component';
 import { RecipientsWrapper } from './recipients-wrapper';
 import { ShelfService } from '../itshop/shelf.service';
+import { throwToolbarMixedModesError } from '@angular/material/toolbar';
+import { ProductDetailsSidesheetComponent } from './product-details-sidesheet/product-details-sidesheet.component';
+import { PatternDetailsSidesheetComponent } from './pattern-details-sidesheet/pattern-details-sidesheet.component';
+import { PatternItemService } from '../pattern-item-list/pattern-item.service';
+import { PatternItemListComponent } from '../pattern-item-list/pattern-item-list.component';
 
 /** Main entry component for the product selection page. */
 @Component({
@@ -64,11 +77,12 @@ import { ShelfService } from '../itshop/shelf.service';
   styleUrls: ['./product-selection.component.scss'],
   selector: 'imx-product-selection'
 })
-export class ProductSelectionComponent implements OnInit {
+export class ProductSelectionComponent implements OnInit, OnDestroy {
 
   @ViewChild('CallAction12') public tplCallAction12: TemplateRef<any>;
   @ViewChild('Call4') public tplCall4: TemplateRef<any>;
   @ViewChild(ServiceitemListComponent) public serviceitemListComponent: ServiceitemListComponent;
+  @ViewChild(PatternItemListComponent) public patternitemListComponent: PatternItemListComponent;
   @ViewChild(ServiceCategoryListComponent) public serviceCategoryListComponent: ServiceCategoryListComponent;
 
   public readonly dataSourceView = { selected: 'cardlist' };
@@ -81,6 +95,7 @@ export class ProductSelectionComponent implements OnInit {
   public uidaccproduct: string;
   public searchString: string;
   public selectedItems: PortalShopServiceitems[] = [];
+  public selectedTemplates: PortalItshopPatternRequestable[] = [];
   public selectedRoles: PortalItshopPeergroupMemberships[] = [];
   public employeePreselected: boolean;
   public canSelectFromTemplate: boolean;
@@ -89,28 +104,44 @@ export class ProductSelectionComponent implements OnInit {
   public referenceUser: ValueStruct<string>;
   public uidPersonPeerGroup: string;
   public displayProducts = true;
+  public recipientType: 'self' | 'others' = 'self';
+  public showTemplates = false;
+  private authSubscription: Subscription;
+
+  private userUid: string;
+
+  private projectConfig: QerProjectConfig;
 
   @ViewChild(RoleMembershipsComponent) private roles: RoleMembershipsComponent;
+  @ViewChild(MatTabGroup) private tabControl: MatTabGroup;
 
   constructor(
     private readonly translate: TranslateService,
     private qerClient: QerApiService,
     private router: Router,
     private dialogService: MatDialog,
-    private sessionService: imx_SessionService,
-    private projectConfig: ProjectConfigurationService,
+    private projectConfigService: ProjectConfigurationService,
     private userModelSvc: UserModelService,
     private activatedRoute: ActivatedRoute,
     private readonly personProvider: PersonService,
     private readonly busyIndicator: EuiLoadingService,
     private readonly serviceItemsProvider: ServiceItemsService,
+    private readonly patternItemsService: PatternItemService,
     private readonly cartItemsProvider: CartItemsService,
-    private readonly itshopProvider: ItshopService,
     private readonly shelfService: ShelfService,
     private readonly sideSheetService: EuiSidesheetService,
     private readonly productSelectionService: ProductSelectionService,
-    private readonly entityService: EntityService
-  ) { }
+    private readonly entityService: EntityService,
+    authentication: AuthenticationService
+  ) {
+    this.authSubscription = authentication.onSessionResponse.subscribe(elem => {
+      this.userUid = elem.UserUid;
+    });
+  }
+
+  public ngOnDestroy(): void {
+    this.authSubscription.unsubscribe();
+  }
 
   public async ngOnInit(): Promise<void> {
     // define the recipients as a multi-valued property
@@ -123,12 +154,16 @@ export class ProductSelectionComponent implements OnInit {
     const dummyCartItemEntity = this.qerClient.typedClient.PortalCartitem.createEntity().GetEntity();
     const fkProviderItems = this.qerClient.client.getFkProviderItems('portal/cartitem').map(item => ({
       ...item,
-      load: (_, parameters = {}) => item.load(dummyCartItemEntity, parameters)
+      load: (_, parameters = {}) => item.load(dummyCartItemEntity, parameters),
+      getDataModel: async (entity) =>
+        item.getDataModel(entity),
+      getFilterTree: async (entity, parentKey) => item.getFilterTree(entity, parentKey)
     }));
 
     const column = this.entityService.createLocalEntityColumn(
       recipientsProperty,
-      fkProviderItems
+      fkProviderItems,
+      { Value: this.userUid }
     );
     this.recipients = new EntityValue(column);
 
@@ -150,12 +185,10 @@ export class ProductSelectionComponent implements OnInit {
       */
     }
 
-    const session = await this.sessionService.getSessionState();
-
     // preset recipient to the current user
     await this.recipients.Column.PutValueStruct({
-      DataValue: session.UserUid,
-      DisplayValue: await this.getPersonDisplay(session.UserUid)
+      DataValue: this.userUid,
+      DisplayValue: await this.getPersonDisplay(this.userUid)
     });
 
     const uidPerson = this.activatedRoute.snapshot.paramMap.get('UID_Person');
@@ -169,10 +202,10 @@ export class ProductSelectionComponent implements OnInit {
     }
 
     // apply project configuration
-    const c = await this.projectConfig.getConfig();
-    this.employeePreselected = c.ITShopConfig.VI_ITShop_Employee_Preselected;
-    this.canSelectFromTemplate = c.ITShopConfig.VI_ITShop_ProductSelectionFromTemplate;
-    this.canSelectByRefUser = c.ITShopConfig.VI_ITShop_ProductSelectionByReferenceUser;
+    this.projectConfig = await this.projectConfigService.getConfig();
+    this.employeePreselected = this.projectConfig.ITShopConfig.VI_ITShop_Employee_Preselected;
+    this.canSelectFromTemplate = this.projectConfig.ITShopConfig.VI_ITShop_ProductSelectionFromTemplate;
+    this.canSelectByRefUser = this.projectConfig.ITShopConfig.VI_ITShop_ProductSelectionByReferenceUser;
 
     this.cartItemRecipients = new BaseCdr(
       this.recipients.Column,
@@ -272,11 +305,24 @@ export class ProductSelectionComponent implements OnInit {
   }
 
   public setPeerGroupPerson(uidPerson: string): void {
+    this.showTemplates = false;
     this.uidPersonPeerGroup = uidPerson;
     this.selectedCategory = undefined;
 
     if (uidPerson != null) {
       this.referenceUser = undefined;
+    }
+  }
+
+  public cancelPeerOrReference(): void {
+    this.referenceUser = undefined;
+    this.uidPersonPeerGroup = undefined;
+    this.selectedRoles = [];
+    this.selectedCategory = undefined;
+    this.displayProducts = true;
+    this.showTemplates = false;
+    if (this.tabControl) {
+      this.tabControl.selectedIndex = 0;
     }
   }
 
@@ -292,32 +338,70 @@ export class ProductSelectionComponent implements OnInit {
     this.selectedItems = items;
   }
 
+  public onTemplateSelectionChanged(items: PortalItshopPatternRequestable[]): void {
+    this.selectedTemplates = items;
+  }
+
   public onRoleSelectionChanged(items: PortalItshopPeergroupMemberships[]): void {
     this.selectedRoles = items;
   }
 
+  public async requestDetails(item: PortalShopServiceitems): Promise<void> {
+    await this.sideSheetService.open(ProductDetailsSidesheetComponent, {
+      title: await this.translate.get('#LDS#Heading View Product Details').toPromise(),
+      padding: '0px',
+      width: 'max(700px, 60%)',
+      headerColour: 'iris-blue',
+      bodyColour: 'asher-gray',
+      testId: 'product-details-sidesheet',
+      data: {
+        item,
+        projectConfig: this.projectConfig
+      }
+    }).afterClosed().toPromise();
+  }
+
+  public async requestTemplateDetails(items: PortalShopServiceitems[]): Promise<void> {
+    await this.sideSheetService.open(PatternDetailsSidesheetComponent, {
+      title: await this.translate.get('#LDS#Heading View Request Template Details').toPromise(),
+      padding: '0px',
+      width: 'max(700px, 60%)',
+      headerColour: 'iris-blue',
+      bodyColour: 'asher-gray',
+      testId: 'template-details-sidesheet',
+      data: {
+        items,
+        projectConfig: this.projectConfig
+      }
+    }).afterClosed().toPromise();
+}
+
   public async onAddItemsToCart(): Promise<void> {
-    if (!this.selectedItems?.length && !this.selectedRoles?.length) {
+    if (!this.selectedItems?.length && !this.selectedRoles?.length && !this.selectedTemplates.length) {
       this.dialogService.open(MessageDialogComponent, {
         data: {
           ShowOk: true,
-          Title: await this.translate.get('#LDS#Request').toPromise(),
-          Message: await this.translate.get('#LDS#Please select at least one item you want to add to your shopping cart.').toPromise()
+          Title: await this.translate.get('#LDS#Heading Add to Cart').toPromise(),
+          Message: await this.translate.get('#LDS#Please select at least one product you want to add to your shopping cart.').toPromise()
         },
         panelClass: 'imx-messageDialog'
       });
       return;
     }
 
-    await this.orderSelected(this.selectedItems, this.selectedRoles);
+    await this.orderSelected(this.selectedItems, this.selectedTemplates, this.selectedRoles);
   }
 
   public async addItemToCart(serviceItem: PortalShopServiceitems): Promise<void> {
-    this.orderSelected([serviceItem]);
+    this.orderSelected([serviceItem], undefined);
+  }
+
+  public async addTemplateToCart(patternRequestable: PortalItshopPatternRequestable): Promise<void> {
+    this.orderSelected(undefined, [patternRequestable]);
   }
 
   public async addRoleToCart(role: PortalItshopPeergroupMemberships): Promise<void> {
-    this.orderSelected(undefined, [role]);
+    this.orderSelected(undefined, undefined, [role]);
   }
 
   public goToHistory(): void {
@@ -329,14 +413,41 @@ export class ProductSelectionComponent implements OnInit {
     await this.serviceitemListComponent.getData();
   }
 
+  public async selectedRecipientTypeChanged(arg: MatSelectChange): Promise<void> {
+    if (arg.value === 'self') {
+      await this.recipients.Column.PutValueStruct({
+        DataValue: this.userUid,
+        DisplayValue: await this.getPersonDisplay(this.userUid)
+      });
+    } else {
+      await this.recipients.Column.PutValueStruct({
+        DataValue: '',
+        DisplayValue: ''
+      });
+    }
+    this.onRecipientsChanged();
+  }
+
   public async onRecipientsChanged(): Promise<void> {
     this.setPeerGroupPerson(undefined);
-    this.serviceitemListComponent.deselectAll();
-    this.serviceitemListComponent.getData();
+
+    if (this.serviceCategoryListComponent) {
+      this.serviceitemListComponent.deselectAll();
+      this.serviceitemListComponent.getData();
+    }
+
+    if (this.patternitemListComponent) {
+      this.patternitemListComponent.deselectAll();
+      this.patternitemListComponent.getData();
+    }
   }
 
   public onSelectall(): void {
-    this.serviceitemListComponent.selectAll();
+    if (this.showTemplates) {
+      this.patternitemListComponent.selectAll();
+    } else {
+      this.serviceitemListComponent.selectAll();
+    }
   }
 
   public selectAllRolesOnPage(): void {
@@ -344,7 +455,10 @@ export class ProductSelectionComponent implements OnInit {
   }
 
   public onDeselectAll(): void {
-    this.serviceitemListComponent.deselectAll();
+    this.selectedItems = [];
+    this.serviceitemListComponent?.deselectAll();
+    this.selectedTemplates = [];
+    this.patternitemListComponent?.deselectAll();
   }
 
   public deselectAllRoles(): void {
@@ -359,7 +473,15 @@ export class ProductSelectionComponent implements OnInit {
     }
   }
 
-  private async orderSelected(serviceItems: PortalShopServiceitems[], roles?: PortalItshopPeergroupMemberships[]): Promise<void> {
+  public onTableChange(event: MatTabChangeEvent): void {
+    if (event.index === 0) {
+      this.showTemplates = false;
+    } else if (event.index === 1) {
+      this.showTemplates = true;
+    }
+  }
+
+  private async orderSelected(serviceItems: PortalShopServiceitems[], templateItems: PortalItshopPatternRequestable[], roles?: PortalItshopPeergroupMemberships[]): Promise<void> {
     if (this.recipients) {
       const recipientsUids = MultiValue.FromString(this.recipients.value).GetValues();
       const recipientsDisplays = MultiValue.FromString(this.recipients.Column.GetDisplayValue()).GetValues();
@@ -386,6 +508,32 @@ export class ProductSelectionComponent implements OnInit {
             setTimeout(() => this.busyIndicator.show());
             try {
               savedItems = await this.cartItemsProvider.addItems(serviceItemsForPersons.filter(item => item.UidITShopOrg?.length > 0));
+            } finally {
+              setTimeout(() => this.busyIndicator.hide());
+            }
+          }
+        }
+      }
+
+      if (templateItems && templateItems.length > 0 ) {
+        let templateItemsForPersons: RequestableProductForPerson[];
+        try {
+          templateItemsForPersons = await this.patternItemsService.getPatternItemsForPersons(
+            templateItems,
+            recipientsUids.map((uid, index) => ({
+              DataValue: uid,
+              DisplayValue: recipientsDisplays[index]
+            }))
+          );
+        } finally {
+          setTimeout(() => this.busyIndicator.hide());
+        }
+        if (templateItemsForPersons && templateItemsForPersons.length > 0) {
+          const hasItems = await this.shelfService.setShops(templateItemsForPersons);
+          if (hasItems) {
+            setTimeout(() => this.busyIndicator.show());
+            try {
+              savedItems = await this.cartItemsProvider.addItems(templateItemsForPersons.filter(item => item.UidITShopOrg?.length > 0));
             } finally {
               setTimeout(() => this.busyIndicator.hide());
             }

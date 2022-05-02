@@ -33,5 +33,6 @@ export interface WorkflowActionEditWrapper {
   data: WorkflowActionEdit;
   apply: (request: Approval) => Promise<any>;
   headerColour?: string;
+  bodyColour?: string;
   discardChangesOnAbort?: boolean;
 }

@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { OverlayRef } from '@angular/cdk/overlay';
@@ -38,10 +38,13 @@ import {
   DataTileBadge,
   TextContainer,
   SettingsService,
-  SystemInfoService
+  SystemInfoService,
+  MetadataService,
+  DataTableComponent,
+  DataTilesComponent
 } from 'qbm';
 import { PortalEntitlement, PortalApplication, PortalEntitlementServiceitem, EntitlementSystemRoleInput } from 'imx-api-aob';
-import { CollectionLoadParameters, IClientProperty, ValType, DisplayColumns, EntitySchema, TypedEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, IClientProperty, ValType, DisplayColumns, EntitySchema, TypedEntity, DbObjectKey } from 'imx-qbm-dbts';
 import { EntitlementsService } from './entitlements.service';
 import { LifecycleAction } from '../lifecycle-actions/lifecycle-action.enum';
 import { LifecycleActionComponent } from '../lifecycle-actions/lifecycle-action.component';
@@ -72,6 +75,8 @@ export class EntitlementsComponent implements OnChanges {
 
   /** The {@link PortalApplication|application} */
   @Input() public application: PortalApplication;
+  @ViewChild('table') public table: DataTableComponent<PortalEntitlement>;
+  @ViewChild('tiles') public tiles: DataTilesComponent;
 
   public readonly DisplayColumns = DisplayColumns; // Enables use of this static class in Angular Templates.
   public readonly EntitlementsType = EntitlementsType; // Enables use of this static class in Angular Templates.
@@ -98,6 +103,7 @@ export class EntitlementsComponent implements OnChanges {
   private isStarlingTwoFactorConfigured: boolean;
 
   private readonly displayedColumns: IClientProperty[];
+  private readonly updatedTableNames: string[] = [];
 
   constructor(
     private readonly logger: ClassloggerService,
@@ -113,11 +119,16 @@ export class EntitlementsComponent implements OnChanges {
     private readonly sidesheet: EuiSidesheetService,
     private readonly settingsService: SettingsService,
     private readonly userService: UserModelService,
-    private readonly systemInfo: SystemInfoService
+    private readonly systemInfo: SystemInfoService,
+    private readonly metadata: MetadataService
   ) {
     this.entitySchema = entitlementsProvider.entitlementSchema;
     this.displayedColumns = [
       this.entitySchema.Columns.Ident_AOBEntitlement,
+      {
+        Type: ValType.String,
+        ColumnName: 'type'
+      },
       this.entitySchema.Columns.UID_AERoleOwner,
       {
         Type: ValType.Date,
@@ -208,8 +219,7 @@ export class EntitlementsComponent implements OnChanges {
 
         if (publishCount > 0) {
           this.logger.debug(this, 'Deselect published entitlement(s)/role(s)');
-          this.selections = [];
-
+          this.clearSelections();
           let publishMessage: TextContainer = {
             key: 'Entitlements/Roles Published'
           };
@@ -256,7 +266,7 @@ export class EntitlementsComponent implements OnChanges {
 
         if (unpublishCount > 0) {
           this.logger.debug(this, 'Deselect unpublished entitlement(s)/role(s)');
-          this.selections = [];
+          this.clearSelections();
           this.snackbar.open({ key: '#LDS#Application entitlements unpublished' }, '#LDS#Close');
           await this.getData();
         }
@@ -291,7 +301,7 @@ export class EntitlementsComponent implements OnChanges {
           try {
             const unassignResult = await this.entitlementsProvider.unassign(selectedEntitlements);
             if (unassignResult) {
-              this.selections = [];
+              this.clearSelections();
               await this.getData();
               this.snackbar.open({ key: '#LDS#Application entitlements unassigned' }, '#LDS#Close');
             } else {
@@ -395,6 +405,12 @@ export class EntitlementsComponent implements OnChanges {
     this.logger.trace(this, 'grouping changed', col);
   }
 
+  public getType(data: PortalEntitlement): string {
+    if (data?.ObjectKeyElement?.value == null) { return ''; }
+    const tableName = DbObjectKey.FromXml(data.ObjectKeyElement.value)?.TableName;
+    return tableName != null && this.metadata.tables[tableName] ? this.metadata.tables[tableName]?.DisplaySingular : '';
+  }
+
   /**
    * Triggered action from the {@link DataSourceToolbar|DataSourceToolbar} after the view selection have changed.
    */
@@ -437,12 +453,17 @@ export class EntitlementsComponent implements OnChanges {
     }
   }
 
+  private clearSelections(): void {
+    this.selections = [];
+    this.table?.clearSelection();
+    this.tiles?.clearSelection();
+  }
 
   private async navigate(): Promise<void> {
     const overlayRef = this.busyService.show();
-    this.selections = [];
     try {
       const data = await this.entitlementsProvider.getEntitlementsForApplication(this.application, this.navigationState);
+      await this.updateTableNames(data.Data);
       if (data) {
         this.dstSettings = {
           displayedColumns: this.displayedColumns,
@@ -456,6 +477,18 @@ export class EntitlementsComponent implements OnChanges {
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
+  }
+
+  private async updateTableNames(objs: PortalEntitlement[]): Promise<void> {
+    const newTableNamesForUpdate = objs.map(obj => DbObjectKey.FromXml(obj.ObjectKeyElement.value).TableName)
+      .filter(obj => !this.updatedTableNames.includes(obj));
+    if (newTableNamesForUpdate.length === 0) {
+      this.logger.debug(this, 'there are no new table names in this data')
+      return;
+    }
+    this.updatedTableNames.push(...newTableNamesForUpdate);
+    this.logger.trace(this, 'following items are added to the list of table names', newTableNamesForUpdate);
+    return this.metadata.update([...new Set(newTableNamesForUpdate)]);
   }
 
   private async createEntitlementWrapper(entitlement: PortalEntitlement): Promise<EntitlementWrapper> {

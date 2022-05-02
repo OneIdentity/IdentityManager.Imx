@@ -40,7 +40,7 @@ export class AttestationHistoryCase extends PortalAttestationCase implements Att
 
   public readonly canRecallDecision: boolean;
 
-  public readonly typedEntity: TypedEntity<any>;
+  public readonly typedEntity: TypedEntity;
   public readonly propertiesForAction: IEntityColumn[];
 
   private readonly workflowWrapper: WorkflowDataWrapper;

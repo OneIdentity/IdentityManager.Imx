@@ -36,10 +36,6 @@
   }
 }
 
-.imx-object-attestation {
-  height: 100%;
-}
-
 @media screen and (max-width: 769px) {
   .product-owner-datasource-container .help-icon {
     display: none;
@@ -52,12 +48,14 @@
   overflow: hidden;
   > .governance-sidesheet__tab-content-body {
     flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
     overflow: hidden;
 
     > :first-child {
       overflow: auto;
+    }
+
+    > .imx-ext {
+      overflow: hidden;
     }
   }
 }
@@ -96,5 +94,13 @@
   justify-content: flex-end;
   button {
     margin-left: 10px;
+  }
+}
+
+.imx-breakable {
+  margin-top: -10px;
+  
+  > * {
+    margin-top: 10px;
   }
 }

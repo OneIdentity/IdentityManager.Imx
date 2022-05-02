@@ -1,15 +1,48 @@
-@import '~@elemental-ui/core/src/styles/_palette.scss';
+@import "~@elemental-ui/core/src/styles/_palette.scss";
 
-.imx-sidesheet-content {
-  height: inherit;
-  overflow: hidden;
+:host {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.imx-tab-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .imx-tab-content-body {
+    flex: 1;
+    padding: 32px;
+    overflow: auto;
+  }
+
+  .imx-action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    background-color: $white;
+    padding: 16px 32px;
+    margin: 16px 32px;
+
+    .imx-selected-items {
+      justify-self: flex-start;
+      margin: 0;
+      line-height: 36px;
+    }
+    
+    > :not(:last-child){
+      margin-right: 5px;
+    }
+  
+    .imx-menu-spacer {
+      flex-grow: 1;
+    }
+  }
 }
 
 .imx-subtext {
   color: $black-6;
   font-size: smaller;
 }
-
-

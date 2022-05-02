@@ -34,7 +34,7 @@ import { RouterModule } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { DataSourceToolbarModule, DataTableModule, CdrModule, LdsReplaceModule, DataTreeModule } from 'qbm';
+import { DataSourceToolbarModule, DataTableModule, CdrModule, LdsReplaceModule, DataTreeModule, ExtModule, DynamicTabsModule } from 'qbm';
 
 import { DataExplorerAccountsComponent } from '../accounts/accounts.component';
 import { AccountSidesheetComponent } from '../accounts/account-sidesheet/account-sidesheet.component';
@@ -42,6 +42,7 @@ import { DataFiltersModule } from '../data-filters/data-filters.module';
 import { NoDataModule } from '../no-data/no-data.module';
 import { GroupsModule } from '../groups/groups.module';
 import { AccountsExtComponent } from './account-ext/accounts-ext.component';
+import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   declarations: [
@@ -63,11 +64,14 @@ import { AccountsExtComponent } from './account-ext/accounts-ext.component';
     MatExpansionModule,
     MatIconModule,
     MatSidenavModule,
+    MatCardModule,
     TranslateModule,
     DataSourceToolbarModule,
     DataTableModule,
     LdsReplaceModule,
-    DataTreeModule
+    DataTreeModule,
+    ExtModule,
+    DynamicTabsModule
   ],
   exports: [
     DataExplorerAccountsComponent,

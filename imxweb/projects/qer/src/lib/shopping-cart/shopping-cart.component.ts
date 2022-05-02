@@ -32,7 +32,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { map } from 'rxjs/operators';
 
 import { PortalItshopCart, CheckMode, ITShopConfig, PortalCartitem } from 'imx-api-qer';
-import { MessageDialogComponent, MessageDialogResult, ClassloggerService, SnackBarService, LdsReplacePipe } from 'qbm';
+import { ClassloggerService, SnackBarService, LdsReplacePipe, ConfirmationService } from 'qbm';
 import { UserModelService } from '../user/user-model.service';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
 import { CartItemsService } from './cart-items.service';
@@ -41,6 +41,7 @@ import { ItshopService } from '../itshop/itshop.service';
 import { ConfirmCartSubmitDialog } from './confirm-cart-submit.dialog';
 import { ShoppingCartSubmitWarningsDialog } from './shopping-cart-submit-warnings.dialog';
 import { ShoppingCartValidator } from './shopping-cart-validator';
+import { ItshopPatternCreateService } from '../itshop-pattern/itshop-pattern-create-sidesheet/itshop-pattern-create.service';
 
 @Component({
   templateUrl: './shopping-cart.component.html',
@@ -52,20 +53,23 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
   public shoppingCartCandidates: PortalItshopCart[] = [];
   public selectedItshopCart: PortalItshopCart;
   public selectedItems: PortalCartitem[];
+  public isEmpty: boolean;
 
   private itshopConfig: ITShopConfig;
 
   constructor(
     private readonly translate: TranslateService,
     private readonly ldsReplace: LdsReplacePipe,
+    private readonly router: Router,
+    private readonly confirmationService: ConfirmationService,
     private readonly dialogService: MatDialog,
     private readonly userModelService: UserModelService,
     private readonly busyService: EuiLoadingService,
     private readonly logger: ClassloggerService,
     private readonly cartItemService: CartItemsService,
-    private readonly router: Router,
     private readonly projectConfig: ProjectConfigurationService,
     private readonly itshopProvider: ItshopService,
+    private readonly patternCreateService: ItshopPatternCreateService,
     private readonly snackBarService: SnackBarService
   ) { }
 
@@ -97,39 +101,43 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
     }
   }
 
+  public async createItshopPattern(cartItems?: PortalCartitem[]): Promise<void> {
+    if (await this.patternCreateService.createItshopPatternFromShoppingCart(cartItems) > 0) {
+      await this.getData(true);
+
+      const snackbarRef = this.snackBarService.open(
+        { key: '#LDS#The request template has been successfully created.' },
+        '#LDS#View my request templates');
+      snackbarRef.onAction().subscribe(() => this.router.navigate(['itshop/myrequesttemplates']));
+
+    } else {
+      this.snackBarService.open({ key: '#LDS#The request template could not be created.' });
+    }
+  }
+
   public async deleteCart(): Promise<void> {
     const docNr = this.selectedItshopCart.DocumentNumber.value;
 
-    const dialogRef = this.dialogService.open(MessageDialogComponent, {
-      data: {
-        ShowYesNo: true,
-        identifier: 'shoppingcart-delete',
-        Title: await this.translate
-          .get('#LDS#Heading Delete Shopping Cart {0}')
-          .pipe(map(text => this.ldsReplace.transform(text, docNr)))
-          .toPromise(),
-        Message: await this.translate
-          .get('#LDS#Are you sure you want to delete all products in the shopping cart "{0}"?')
-          .pipe(map(text => this.ldsReplace.transform(text, docNr)))
-          .toPromise(),
-        panelClass: 'imx-messageDialog'
-      }
-    });
+    const title = await this.translate.get('#LDS#Heading Delete Shopping Cart {0}')
+      .pipe(map(text => this.ldsReplace.transform(text, docNr))).toPromise();
+    const message = await this.translate.get('#LDS#Are you sure you want to delete all products in the shopping cart "{0}"?')
+      .pipe(map(text => this.ldsReplace.transform(text, docNr))).toPromise();
 
-    const result = await dialogRef.afterClosed().toPromise();
-
-    if (result === MessageDialogResult.YesResult) {
+    if (await this.confirmationService.confirm({
+      Title: title,
+      Message: message,
+      identifier: 'shoppingcart-delete',
+    })) {
       setTimeout(() => this.busyService.show());
 
       try {
-
         await this.cartItemService.removeItems(this.shoppingCart.getItems(item => item.UID_ShoppingCartItemParent.value === ''));
         await this.itshopProvider.deleteShoppingCart(this.selectedItshopCart.GetEntity().GetKeys()[0]);
 
         await this.getData(true);
         await this.userModelService.reloadPendingItems();
       } finally {
-        this.snackBarService.open({ key: '#LDS#The shopping cart "{0}" has been successfully deleted.', parameters: [docNr] }, '#LDS#Close');
+        this.snackBarService.open({ key: '#LDS#The shopping cart "{0}" has been successfully deleted.', parameters: [docNr] });
         setTimeout(() => this.busyService.hide());
       }
     }
@@ -201,8 +209,6 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
     return this.selectedItshopCart.GetEntity().Commit(true);
     // TODO apply the values; save affected items
   }
-
-  public isEmpty: boolean;
 
   public async getData(reloadAll: boolean): Promise<void> {
     setTimeout(() => this.busyService.show());

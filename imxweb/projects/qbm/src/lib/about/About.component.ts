@@ -79,7 +79,7 @@ export class AboutComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    const imxConfig = await this.config.client.imx_config_get();
+    const imxConfig = await this.config.getImxConfig();
     const name = imxConfig.ProductName;
     if (name)
       this.product.Name = name;

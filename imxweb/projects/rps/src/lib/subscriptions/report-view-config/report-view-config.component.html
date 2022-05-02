@@ -1,0 +1,17 @@
+<div eui-sidesheet-content>
+  <form [formGroup]="reportFormGroup">
+    <imx-report-selector formControlName="reportTable"></imx-report-selector>
+
+    <imx-cdr-editor *ngFor="let cdr of parameterCdrList" [cdr]="cdr" (controlCreated)="addFormControl($event)">
+    </imx-cdr-editor>
+  </form>
+
+  <!-- report generation errors should appear here -->
+  <imx-usermessage class="errormessages" panelClass="imx-small-message" [target]="'sidesheet'"></imx-usermessage>
+
+</div>
+
+<div eui-sidesheet-actions color="white">
+  <button color="primary" mat-raised-button (click)="viewReport()" [disabled]="reportFormGroup.invalid"
+    data-imx-identifier="view-config-view-report-button">{{'#LDS#View report' |translate}}</button>
+</div>

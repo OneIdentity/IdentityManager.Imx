@@ -1,19 +1,15 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
 
 	<PropertyGroup>
-		<ComponentDir>imxweb\project-setup\qer-app-pwdPortal</ComponentDir>
-		<PathPrefix>projects\qer-app-pwdPortal\</PathPrefix>
+		<ComponentDir>imxweb\project-setup\qer-app-pwdportal</ComponentDir>
+		<PathPrefix>projects\qer-app-pwdportal\</PathPrefix>
 		<SyncFilesInModuleInfo>true</SyncFilesInModuleInfo>
 		<ModuleDir>$(VI_PROJECTDIR)\AE</ModuleDir>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<SetupFiles Include="..\..\projects\qer-app-pwdPortal\.browserslistrc"/>
-		<SetupFiles Include="..\..\projects\qer-app-pwdPortal\karma.conf.js"/>
-		<SetupFiles Include="..\..\projects\qer-app-pwdPortal\package.json"/>
-		<SetupFiles Include="..\..\projects\qer-app-pwdPortal\tsconfig.app.json"/>
-		<SetupFiles Include="..\..\projects\qer-app-pwdPortal\tsconfig.spec.json"/>
-		<SetupFiles Include="..\..\projects\qer-app-pwdPortal\src\**\*.*"/>
+		<SetupFiles Include="..\..\projects\qer-app-pwdportal\*.*" Exclude="..\..\projects\qer-app-pwdportal\Build.proj"/>
+		<SetupFiles Include="..\..\projects\qer-app-pwdportal\src\**\*.*"/>
 	</ItemGroup>
 
 	<!-- getting default part of build file -->

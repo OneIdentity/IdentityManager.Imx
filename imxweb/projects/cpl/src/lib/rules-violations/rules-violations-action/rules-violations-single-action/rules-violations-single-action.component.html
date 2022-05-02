@@ -1,0 +1,10 @@
+<mat-card>
+  <mat-card-title>{{ rulesViolation.GetEntity()?.GetDisplay() }}</mat-card-title>
+  <mat-card-subtitle>{{ rulesViolation?.stateBadge?.caption }}</mat-card-subtitle>
+  <mat-card-content>
+    <imx-cdr-editor *ngFor="let cdr of columns; let i = index" [cdr]="cdr"
+      (controlCreated)="onFormControlCreated(cdr.column.ColumnName + '_' + i, $event)"
+      [attr.data-imx-identifier]="'rules-violations-single-action-' + cdr.column.ColumnName + '-' + i">
+    </imx-cdr-editor>
+  </mat-card-content>
+</mat-card>

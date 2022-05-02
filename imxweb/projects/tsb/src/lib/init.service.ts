@@ -26,10 +26,11 @@
 
 import { Injectable } from '@angular/core';
 import { Router, Route } from '@angular/router';
-import { UnsConfig } from 'imx-api-tsb';
-import { DynamicMethodService, ExtService, MenuService } from 'qbm';
+import { PortalPersonGroupmemberships, UnsConfig } from 'imx-api-tsb';
+import { DynamicMethodService, ExtService, MenuService, TabItem } from 'qbm';
 import {
   DataExplorerRegistryService,
+  IdentityRoleMembershipsService,
   IRequestableEntitlementType,
   ObjectSheetService,
   RequestableEntitlementTypeService,
@@ -38,12 +39,10 @@ import { AccountsExtComponent } from './accounts/account-ext/accounts-ext.compon
 import { DataExplorerAccountsComponent } from './accounts/accounts.component';
 import { isTsbNameSpaceAdminBase } from './admin/tsb-permissions-helper';
 import { DataExplorerGroupsComponent } from './groups/groups.component';
-import { IdentityGroupMembershipService } from './groups/identity-group-membership/identity-group-membership.service';
 import { RequestableEntitlementType } from 'qer';
 import { UnsGroupObjectSheetComponent } from './objectsheet-unsgroup/unsgroup.component';
 import { TsbApiService } from './tsb-api-client.service';
-
-
+import { ReportButtonExtComponent } from './report-button-ext/report-button-ext.component';
 @Injectable({ providedIn: 'root' })
 export class InitService {
   private cachedUnsConfig: Promise<UnsConfig>;
@@ -51,19 +50,50 @@ export class InitService {
   constructor(
     private readonly objectsheetSvc: ObjectSheetService,
     private readonly router: Router,
-    private readonly extService: ExtService,
     private readonly dataExplorerRegistryService: DataExplorerRegistryService,
     private readonly entlTypeService: RequestableEntitlementTypeService,
     private readonly tsbApiService: TsbApiService,
     private readonly dynamicMethodService: DynamicMethodService,
-    private readonly menuService: MenuService
+    private readonly menuService: MenuService,
+    private readonly extService: ExtService,
+    private readonly identityRoleService: IdentityRoleMembershipsService
   ) {
   }
 
   public async onInit(routes: Route[]): Promise<void> {
     this.objectsheetSvc.register('UNSGroup', UnsGroupObjectSheetComponent);
-    this.extService.register('AccountsExtComponent', { instance: AccountsExtComponent });
-    this.extService.register('IdentityGroupMembershipService', { instance: IdentityGroupMembershipService });
+    this.extService.register('identityReports', {
+      instance: ReportButtonExtComponent
+    });
+    this.extService.register('identityAssignment', {
+      instance: AccountsExtComponent,
+      inputData:
+      {
+        id: 'userAccounts',
+        label: '#LDS#Heading User Accounts',
+        checkVisibility: async _ => true
+      }, sortOrder: 10
+    } as TabItem);
+
+    this.identityRoleService.addTarget({
+      table: 'UNSAccountInUNSGroup',
+      entitySchema: this.tsbApiService.typedClient.PortalPersonGroupmemberships.GetSchema(),
+      type: PortalPersonGroupmemberships,
+      controlInfo: {
+        label: '#LDS#Heading System Entitlements',
+        index: 20
+      },
+        get: async (parameter: any) => this.tsbApiService.client.portal_person_groupmemberships_get(
+          parameter?.uidPerson,
+          parameter?.OrderBy,
+          parameter?.StartIndex,
+          parameter?.PageSize,
+          parameter?.filter,
+          parameter?.withProperties,
+          parameter?.search
+        )
+    });
+
     this.addRoutes(routes);
     this.setupMenu();
 
@@ -97,9 +127,9 @@ export class InitService {
     );
 
     this.entlTypeService.Register(async () => [
-      new RequestableEntitlementType("TSBAccountDef",
+      new RequestableEntitlementType('TSBAccountDef',
         this.tsbApiService.apiClient,
-        "UID_TSBAccountDef",
+        'UID_TSBAccountDef',
         this.dynamicMethodService)
     ]);
   }
@@ -143,7 +173,7 @@ export class InitService {
             {
               id: 'QER_Responsibilities_AssignOwnership',
               route: 'claimgroup',
-              title: '#LDS#Menu Entry Assign ownership',
+              title: '#LDS#Menu Entry System entitlement ownership',
               sorting: '30-20',
             }
           ]

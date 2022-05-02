@@ -1,0 +1,26 @@
+<div class="snavigation">
+  <mat-sidenav-container>
+    <mat-sidenav mode="side" opened [ngClass]="{ 'snavigation-side--expanded': mobileSideNavExpanded }">
+      <div class="snavigation-side">
+        <div class="snavigation-side-toggle">
+          <button mat-button color="primary" (click)="toggleMobileExpand()" data-imx-identifier="assignments-button-mobile-menu-expand">
+            <mat-icon>menu</mat-icon>
+          </button>
+        </div>
+
+        <div class="snavigation-side-content">
+          <div class="snavigation-item" (click)="updateTab(tab)" *ngFor="let tab of dynamicTabs" 
+          [attr.data-imx-identifier]="'assignments-clickable-'+ tab.inputData.id"
+            [ngClass]="{'snavigation-item--selected': currentTab.inputData.id === tab.inputData.id}">
+            <span translate>{{ tab.inputData.label }}</span>
+          </div>
+        </div>
+      </div>
+    </mat-sidenav>
+    <mat-sidenav-content [ngStyle]="{ 'margin-left': contentMargin }"
+      [ngClass]="{ 'snavigation--backdrop-showing': showBackdrop }">
+      <div class="snavigation-backdrop" *ngIf="showBackdrop" (click)="toggleMobileExpand()" data-imx-identifier="assignments-clickable-mobile-menu-collapse"></div>
+      <ng-template #sideNavContent></ng-template>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

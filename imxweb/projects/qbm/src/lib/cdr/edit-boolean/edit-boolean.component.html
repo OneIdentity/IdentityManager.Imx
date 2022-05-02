@@ -1,4 +1,4 @@
 <mat-checkbox [imxDisableControl]="!columnContainer?.canEdit" [formControl]="control" [attr.data-imx-identifier]="'cdr-edit-boolean-checkbox-' + columnContainer?.name">
-    {{ columnContainer?.display | translate }}
+  <span>{{ columnContainer?.display | translate }}</span>
 </mat-checkbox>
 <mat-spinner class="imx-checkbox-spinner" diameter="16" *ngIf="isBusy"></mat-spinner>

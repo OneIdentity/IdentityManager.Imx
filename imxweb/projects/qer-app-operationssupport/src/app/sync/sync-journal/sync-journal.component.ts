@@ -32,7 +32,7 @@ import { EuiDownloadDirective, EuiLoadingService } from '@elemental-ui/core';
 import { OpsupportSyncJournal } from 'imx-api-dpr';
 import { EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
 import { DataSourceToolbarSettings, ElementalUiConfigService, SettingsService } from 'qbm';
-import { OpsupportSyncShellParameters, SyncService } from '../sync.service';
+import { OpsSyncJournalParameters, SyncService } from '../sync.service';
 import { SyncSummaryService } from './sync-summary.service';
 
 @Component({
@@ -48,7 +48,7 @@ export class SyncJournalComponent implements OnInit {
   public readonly entitySchemaSyncInfo: EntitySchema;
   @ViewChild(EuiDownloadDirective) public directive: EuiDownloadDirective;
 
-  private navigationState: OpsupportSyncShellParameters;
+  private navigationState: OpsSyncJournalParameters;
   private readonly displayedColumns: IClientProperty[];
 
   constructor(
@@ -92,10 +92,13 @@ export class SyncJournalComponent implements OnInit {
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
-    await this.getData({ StartIndex: 0, PageSize: this.settings.DefaultPageSize });
+    await this.getData({
+      StartIndex: 0, PageSize: this.settings.DefaultPageSize,
+      shell: parameters.shell, filter: parameters.filter
+    });
   }
 
-  public async getData(navigationState: OpsupportSyncShellParameters): Promise<void> {
+  public async getData(navigationState: OpsSyncJournalParameters): Promise<void> {
     this.navigationState = navigationState;
 
     let overlayRef: OverlayRef;

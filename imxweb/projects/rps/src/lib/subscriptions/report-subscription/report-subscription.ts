@@ -24,21 +24,22 @@
  *
  */
 
-import { ParameterData, PortalSubscriptionInteractive } from 'imx-api-rps';
-import { EntityColumnData, FkProviderItem, IClientProperty, IEntityColumn } from 'imx-qbm-dbts';
+import { PortalSubscriptionInteractive } from 'imx-api-rps';
+import { FkProviderItem, IClientProperty, IEntityColumn, ParameterData } from 'imx-qbm-dbts';
 import { BaseCdr, ColumnDependentReference } from 'qbm';
+import { ParameterDataService } from 'qer';
 
 export class ReportSubscription {
 
   public readonly columnsWithParameterReload = ["UID_RPSReport"];
 
-  private parameterColumns: IEntityColumn[];
+  private parameterColumns: IEntityColumn[] = [];
 
   constructor(
     public subscription: PortalSubscriptionInteractive,
     private getFkProviderItem: (cartItem: PortalSubscriptionInteractive, parameter: ParameterData) => FkProviderItem[],
-    private createEntityColumn: (property: IClientProperty, fkProviderItems?: FkProviderItem[], data?: EntityColumnData)
-      => IEntityColumn) { }
+    private readonly parameterDataService: ParameterDataService,
+  ) { }
 
   public getCdrs(properties: IClientProperty[]): ColumnDependentReference[] {
     if (this.subscription == null) {
@@ -58,16 +59,14 @@ export class ReportSubscription {
   }
 
   public getParameterCdr(): ColumnDependentReference[] {
-    return this.parameterColumns == null ? [] : this.parameterColumns.map(col => new BaseCdr(col));
-  }
 
-  public calculateParameterColumns(): void {
-    this.parameterColumns = this.subscription == null || this.subscription.extendedDataRead.length <= 0 ? [] :
-      this.subscription.extendedDataRead[0].map(param => this.createEntityColumn(
-        param.Property,
-        this.getFkProviderItem(this.subscription, param),
-        param.Value
-      ));
+    this.parameterColumns = this.subscription == null || this.subscription.extendedDataRead.length <= 0 ? []
+      : this.parameterDataService.createInteractiveParameterColumns(
+        this.subscription.extendedDataRead[0],
+        parameterData => this.getFkProviderItem(this.subscription, parameterData),
+        this.subscription
+      );
+    return this.parameterColumns.map(col => new BaseCdr(col));
   }
 
   public getDisplayableColums(): IEntityColumn[] {

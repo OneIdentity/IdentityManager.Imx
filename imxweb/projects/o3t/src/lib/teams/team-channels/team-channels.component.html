@@ -4,7 +4,6 @@
 
   <imx-data-source-toolbar #dst
     [settings]="dstSettings"
-    [hiddenElements]="['search', 'filter', 'groupBy', 'settings', 'selectedViewGroup']"
     [hiddenFilters]="['namespace']"
     (navigationStateChanged)="onNavigationStateChanged($event)"
     (search)="onSearch($event)"
@@ -15,11 +14,9 @@
     <imx-data-table #membersTable [dst]="dst" mode="manual" detailViewVisible="false" data-imx-identifier="team-channels-tabledata-table"
       noDataText="#LDS#There are currently no team channels."
       [selectable]="false" (highlightedEntityChanged)="onTeamChannelChanged($event)">
-      <imx-data-table-column [entityColumn]="entitySchemaTeamChannels?.Columns.DisplayName" data-imx-identifier="team-channels-table-column-display"
-        [entitySchema]="entitySchemaTeamChannels">
+      <imx-data-table-column [entityColumn]="entitySchemaTeamChannels?.Columns.DisplayName" data-imx-identifier="team-channels-table-column-display">
       </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchemaTeamChannels?.Columns.Description"
-        [entitySchema]="entitySchemaTeamChannels">
+      <imx-data-table-column [entityColumn]="entitySchemaTeamChannels?.Columns.Description">
       </imx-data-table-column>
       <imx-data-table-generic-column alignHeader="center" alignContent="center"
         [columnName]="entitySchemaTeamChannels.Columns.WebUrl.ColumnName"

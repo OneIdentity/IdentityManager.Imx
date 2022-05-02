@@ -32,7 +32,7 @@ import {
   PortalItshopPersondecision, PortalItshopPeergroupMemberships, PwoData, ServiceItemsExtendedData
 } from 'imx-api-qer';
 import {
-  CollectionLoadParameters, EntityCollectionData, EntitySchema, ExtendedTypedEntityCollection, TypedEntityBuilder, TypedEntityCollectionData
+  CollectionLoadParameters, EntityCollectionData, EntitySchema, ExtendedTypedEntityCollection, FilterTreeData, TypedEntityBuilder, TypedEntityCollectionData
 } from 'imx-qbm-dbts';
 import { ParameterDataLoadParameters } from '../parameter-data/parameter-data-load-parameters.interface';
 import { QerApiService } from '../qer-api-client.service';
@@ -82,7 +82,18 @@ export class ItshopService {
       parameters.filter,
       null,
       parameters.search,
-      parameters.parentKey,
+      parameters.ParentKey,
+      parameters.diffData
+    );
+  }
+
+
+  public async getRequestParameterFilterTree(parameters: ParameterDataLoadParameters): Promise<FilterTreeData> {
+    return this.qerClient.client.portal_itshop_requests_parameter_candidates_filtertree_post(
+      parameters.columnName,
+      parameters.fkTableName,
+      parameters.filter,
+      parameters.ParentKey,
       parameters.diffData
     );
   }

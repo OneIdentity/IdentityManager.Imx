@@ -2,18 +2,16 @@
   {{'#LDS#Process steps per queue' | translate}}
 </h1>
 <div class="imx-table-container">
-  <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings" [hiddenElements]="['search', 'settings', 'selectedViewGroup']">
+  <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings" [options]="['filter', 'groupBy']">
     <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
   </imx-data-source-toolbar>
   <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual">
-    <imx-data-table-column [entityColumn]="entitySchemaJobChains?.Columns.JobChainName"
-      [entitySchema]="entitySchemaJobChains">
+    <imx-data-table-column [entityColumn]="entitySchemaJobChains?.Columns.JobChainName">
       <ng-template let-data>
         {{ data.JobChainName.Column.GetDisplayValue() }}
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaJobChains?.Columns.Count"
-    [entitySchema]="entitySchemaJobChains">
+    <imx-data-table-column [entityColumn]="entitySchemaJobChains?.Columns.Count">
     <ng-template let-data>
       {{ data.Count.Column.GetDisplayValue() }}
     </ng-template>

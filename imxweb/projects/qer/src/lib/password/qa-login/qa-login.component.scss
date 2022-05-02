@@ -1,4 +1,4 @@
-@import "../../../../../../shared/assets/variables.scss";
+@import "variables.scss";
 
 .imx-loginInput {
   margin: auto 12px;
@@ -6,7 +6,7 @@
   ::ng-deep {
     input {
       box-sizing: content-box;
-      border: 1px solid $QBM_Primary_Gray;
+      border: 1px solid mat-color($asher-gray-palette, 900);
       margin-bottom: 9px;
       height: 30px;
       width: calc(40vw - 6px);

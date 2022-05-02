@@ -4,17 +4,17 @@
     data-imx-identifier="workflow-action-data-source-toolbar">
   </imx-data-source-toolbar>
   <imx-data-table [dst]="dst" mode="manual" [detailViewVisible]="false" data-imx-identifier="workflow-action-table">
-    <imx-data-table-column [entityColumn]="entitySchema?.Columns.DisplayOrg" [entitySchema]="entitySchema">
+    <imx-data-table-column [entityColumn]="entitySchema?.Columns.DisplayOrg">
       <ng-template let-pwo>
         <imx-request-display [personWantsOrg]="pwo" data-imx-identifier="imx-request-display">
         </imx-request-display>
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchema?.Columns.OrderDate" [entitySchema]="entitySchema">
+    <imx-data-table-column [entityColumn]="entitySchema?.Columns.OrderDate">
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchema?.Columns.ValidUntil" [entitySchema]="entitySchema">
+    <imx-data-table-column [entityColumn]="entitySchema?.Columns.ValidUntil">
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchema?.Columns.MaxValidDays" [entitySchema]="entitySchema">
+    <imx-data-table-column [entityColumn]="entitySchema?.Columns.MaxValidDays">
     </imx-data-table-column>
   </imx-data-table>
 </div>

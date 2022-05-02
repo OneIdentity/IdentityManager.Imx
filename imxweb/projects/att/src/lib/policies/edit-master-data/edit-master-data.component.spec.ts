@@ -27,6 +27,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -38,7 +39,7 @@ import { of } from 'rxjs';
 
 import { PortalAttestationPolicyEditInteractive } from 'imx-api-att';
 import { UserModelService } from 'qer';
-import { clearStylesFromDOM, ConfirmationService, MessageDialogResult, SnackBarService } from 'qbm';
+import { clearStylesFromDOM, ConfirmationService, SnackBarService } from 'qbm';
 import { EditMasterDataComponent } from './edit-master-data.component';
 import { IEntityColumn } from 'imx-qbm-dbts';
 import { Policy } from '../policy.interface';
@@ -73,6 +74,9 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
         Ident_AttestationPolicy: {
             value: 'uidpolicy',
             Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                }),
                 GetDisplayValue: () => '',
                 ColumnName: 'Ident_AttestationPolicy'
             }
@@ -80,6 +84,9 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
         Description: {
             value: 'uidpolicy',
             Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                }),
                 GetDisplayValue: () => '',
                 ColumnName: 'Description'
             }
@@ -87,6 +94,9 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
         IsApproveRequiresMfa: {
             value: true,
             Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                }),
                 GetDisplayValue: () => '',
                 ColumnName: 'IsApproveRequiresMfa'
             }
@@ -94,6 +104,9 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
         IsAutoCloseOldCases: {
             value: true,
             Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                }),
                 GetDisplayValue: () => '',
                 ColumnName: 'IsAutoCloseOldCases'
             }
@@ -101,6 +114,9 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
         IsInActive: {
             value: isInactiv,
             Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                }),
                 GetDisplayValue: () => '',
                 ColumnName: 'IsInActive'
             }
@@ -108,6 +124,9 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
         RiskIndex: {
             value: 0.9,
             Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                }),
                 GetDisplayValue: () => '',
                 ColumnName: 'RiskIndex'
             }
@@ -115,6 +134,9 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
         SolutionDays: {
             value: 7,
             Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                }),
                 GetDisplayValue: () => '',
                 ColumnName: 'SolutionDays'
             }
@@ -122,6 +144,9 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
         UID_DialogCulture: {
             value: 'uidDialogCulture',
             Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                }),
                 GetDisplayValue: () => '',
                 ColumnName: 'UID_DialogCulture'
             }
@@ -129,6 +154,9 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
         UID_AttestationObject: {
             value: 'uidAttestationObject',
             Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                }),
                 GetDisplayValue: () => '',
                 ColumnName: 'UID_AttestationObject'
             }
@@ -136,6 +164,9 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
         UID_PWODecisionMethod: {
             value: 'uidPWODecisionMethod',
             Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                }),
                 GetDisplayValue: () => '',
                 ColumnName: 'UID_PWODecisionMethod'
             }
@@ -143,6 +174,9 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
         UID_DialogSchedule: {
             value: 'DialogSchedule',
             Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                }),
                 GetDisplayValue: () => '',
                 ColumnName: 'UID_DialogSchedule'
             }
@@ -150,6 +184,9 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
         UID_PersonOwner: {
             value: 'Owner',
             Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                }),
                 GetDisplayValue: () => '',
                 ColumnName: 'UID_PersonOwner'
             }
@@ -157,6 +194,9 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
         Areas: {
             value: 'area',
             Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                }),
                 GetDisplayValue: () => '',
                 ColumnName: 'Areas'
             }
@@ -164,6 +204,9 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
         NextRun: {
             value: 'ein datum',
             Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                }),
                 GetDisplayValue: () => '',
                 ColumnName: 'NextRun'
             }
@@ -171,6 +214,9 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
         IsOob: {
             value: 'true',
             Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                }),
                 GetDisplayValue: () => '',
                 ColumnName: 'IsOob'
             }
@@ -178,6 +224,9 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
         Attestators: {
             value: 'attestator',
             Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                }),
                 GetDisplayValue: () => '',
                 ColumnName: 'Attestators',
                 PutValueStruct: () => { }
@@ -187,7 +236,12 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
             })
         },
         CountOpenCases: {
-            value: openCases
+            value: openCases,
+            Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                })
+            }
         },
         UID_QERPickCategory: {
             Value: 'category',
@@ -195,7 +249,8 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
                 PutValueStuct: () => { },
                 GetDisplayValue: () => '',
                 GetMetadata: () => ({
-                    CanEdit: () => true
+                    CanEdit: () => true,
+                    CanSee: () => true
                 })
             },
             GetMetadata: () => ({
@@ -203,6 +258,11 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
             })
         }, IsPickCategoryMismatch: {
             Value: false,
+            Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                })
+            },
             GetMetadata: () => ({
                 CanEdit: () => false
             })
@@ -253,9 +313,12 @@ describe('EditMasterDataComponent', () => {
         closeClicked: jasmine.createSpy('closeClicked').and.returnValue(of(undefined))
     };
 
+    let confirmLeaveWithUnsavedChanges = true;    
     let confirm = true;
     const mockConfirmationService = {
         confirmLeaveWithUnsavedChanges: jasmine.createSpy('confirmLeaveWithUnsavedChanges')
+            .and.callFake(() => Promise.resolve(confirmLeaveWithUnsavedChanges)),
+        confirm: jasmine.createSpy('confirm')
             .and.callFake(() => Promise.resolve(confirm))
     }
 
@@ -279,6 +342,7 @@ describe('EditMasterDataComponent', () => {
     configureTestSuite(() => {
         TestBed.configureTestingModule({
             imports: [
+                MatCardModule,
                 MatFormFieldModule,
                 MatInputModule,
                 ReactiveFormsModule,
@@ -401,17 +465,17 @@ describe('EditMasterDataComponent', () => {
     });
 
     for (const testcase of [
-        { result: MessageDialogResult.OkResult, description: 'can delete a policy' },
-        { result: MessageDialogResult.CancelResult, description: 'can cancel delete for a policy' }
+        { confirm: true, description: 'can delete a policy' },
+        { confirm: false, description: 'can cancel delete for a policy' }
     ]) {
         it(testcase.description, async () => {
-            result = testcase.result
+            confirm = testcase.confirm
 
             component.policy.policy = buildPolicy(false, 0, 0) as PortalAttestationPolicyEditInteractive
 
             await component.delete();
 
-            if (testcase.result === MessageDialogResult.OkResult) {
+            if (testcase.confirm) {
                 expect(mockPolicyService.deleteAttestationPolicy).toHaveBeenCalled();
                 expect(mockSidesheetRef.close).toHaveBeenCalledWith(true);
             } else {

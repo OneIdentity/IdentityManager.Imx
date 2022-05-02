@@ -1,0 +1,21 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+div[subtitle] {
+  font-size: smaller;
+  color: $black-9;
+}
+
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: inherit;
+}
+
+.imx-table-container {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: inherit;
+  max-width: 1200px;
+}

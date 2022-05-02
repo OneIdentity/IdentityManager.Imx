@@ -1,17 +1,17 @@
-<imx-data-source-toolbar #dst [hiddenElements]="['settings', 'selectedViewGroup']" [settings]="dstSettings" [itemStatus]="itemStatus"
+<imx-data-source-toolbar #dst [options]="['search', 'filter', 'groupBy', 'settings']" [settings]="dstSettings" [itemStatus]="itemStatus"
   (search)="onSearch($event)" (navigationStateChanged)="getData($event)" data-imx-identifier="attestation-history-dst">
 </imx-data-source-toolbar>
 <imx-data-table [dst]="dst" [detailViewVisible]="false" mode="manual" [selectable]="true"
   (selectionChanged)="selectionChanged.emit($event)" data-imx-identifier="attestation-history-datatable"
   [groupData]="groupedData" (groupDataChanged)="onGroupingChange($event)">
-  <imx-data-table-column [entityColumn]="entitySchema.Columns.UiText" [entitySchema]="entitySchema"
+  <imx-data-table-column [entityColumn]="entitySchema.Columns.UiText"
     data-imx-identifier="attestation-history-table-column-attestationHistoryCaseDisplay">
     <ng-template let-item>
-      <imx-attestation-display [attestation]="item"></imx-attestation-display>
+      <imx-attestation-display [additionalColumns]="dst.additionalListElements" [attestation]="item"></imx-attestation-display>
     </ng-template>
   </imx-data-table-column>
 
-  <imx-data-table-column [entityColumn]="entitySchema?.Columns.AttestationState" [entitySchema]="entitySchema"
+  <imx-data-table-column [entityColumn]="entitySchema?.Columns.AttestationState"
     columnLabel="">
     <ng-template let-item>
       <div class="imx-badge-container">
@@ -25,16 +25,16 @@
             {{ item.AttestationState.Column.GetDisplayValue() }}
           </eui-badge>
         </div>
-        <div> 
+        <div>
           <eui-badge *ngIf="item.isPending">
             {{ item.AttestationState.Column.GetDisplayValue() }}
-          </eui-badge>       
+          </eui-badge>
         </div>
-        <div>     
+        <div>
           <eui-badge color="red" *ngIf="item.RiskIndex.value > 0">
             {{ item.RiskIndex.GetMetadata().GetDisplay() + ": " + item.RiskIndex.Column.GetDisplayValue() }}
-          </eui-badge>     
-        </div>               
+          </eui-badge>
+        </div>
       </div>
     </ng-template>
   </imx-data-table-column>

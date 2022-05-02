@@ -33,7 +33,9 @@
       "rps": ["dist/rps"],
       "rps/*": ["dist/rps/*"],
       "o3t": ["dist/o3t"],
-      "o3t/*": ["dist/o3t/*"]
+      "o3t/*": ["dist/o3t/*"],
+      "aad": ["dist/aad"],
+      "aad/*": ["dist/aad/*"]
     }
   }
 }

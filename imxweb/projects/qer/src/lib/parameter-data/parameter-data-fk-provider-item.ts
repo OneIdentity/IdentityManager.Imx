@@ -24,7 +24,7 @@
  *
  */
 
-import { CollectionLoadParameters, EntityCollectionData, FkProviderItem, IEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DataModel, EntityCollectionData, FilterTreeData, FkProviderItem, IEntity } from 'imx-qbm-dbts';
 import { ParameterDataLoadParameters } from './parameter-data-load-parameters.interface';
 
 export class ParameterDataFkProviderItem implements FkProviderItem {
@@ -33,6 +33,7 @@ export class ParameterDataFkProviderItem implements FkProviderItem {
     public readonly fkTableName: string,
     private readonly entity: IEntity,
     private readonly getCandidates: (loadParameters: ParameterDataLoadParameters) => Promise<EntityCollectionData>,
+    private readonly getFillterTree: (loadParameters: ParameterDataLoadParameters) => Promise<FilterTreeData>,
     public readonly parameterNames: string[] = [
       'OrderBy',
       'StartIndex',
@@ -40,11 +41,23 @@ export class ParameterDataFkProviderItem implements FkProviderItem {
       'filter',
       'search'
     ]
-  ) {}
+  ) { }
 
   public async load(__: IEntity, parameters: CollectionLoadParameters): Promise<EntityCollectionData> {
     return this.getCandidates(
       { ...parameters, ...{ columnName: this.columnName, fkTableName: this.fkTableName, diffData: this.entity.GetDiffData() } }
     );
+  }
+  public async getDataModel(entity: IEntity): Promise<DataModel> {
+    return {};
+  }
+
+  public async getFilterTree(entity: IEntity, parentKey?: string): Promise<FilterTreeData> {
+    return this.getFillterTree({
+      columnName: this.columnName,
+      fkTableName: this.fkTableName,
+      ParentKey: parentKey,
+      diffData: this.entity.GetDiffData()
+    });
   }
 }

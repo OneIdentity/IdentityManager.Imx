@@ -11,7 +11,7 @@
   <imx-data-source-toolbar #dst
     [settings]="dstSettings"
     (navigationStateChanged)="getData($event)"
-    [hiddenElements]="['filter', 'groupBy', 'settings', 'selectedViewGroup']"
+    [options]="['search']"
     [hideCustomToolbar]="hideCustomToolbar"
     [itemStatus]="status"
     (search)="onSearch($event)"

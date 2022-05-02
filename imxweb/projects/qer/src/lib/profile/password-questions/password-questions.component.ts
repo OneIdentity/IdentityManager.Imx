@@ -163,19 +163,19 @@ export class PasswordQuestionsComponent implements OnInit, AfterViewInit {
     const message =
       this.totalCount <= this.userConfig.RequiredPasswordQuestions
         ? this.ldsReplace.transform(
-            await this.translate
-              .get(
-                '#LDS#If you delete this password question, you no longer have enough password questions and must create a new password question. You need at least {0} active password questions. Are you sure you want to delete this password question?'
-              )
-              .toPromise(),
-            this.userConfig.RequiredPasswordQuestions
-          )
-        : await this.translate
-        .get(
-          '#LDS#Are you sure you want to delete this password question?' )
+          await this.translate.get(
+            '#LDS#If you delete this password question, you no longer have enough password questions and must create a new password question. You need at least {0} active password questions. Are you sure you want to delete this password question?'
+          ).toPromise(),
+          this.userConfig.RequiredPasswordQuestions
+        )
+        : await this.translate.get(
+          '#LDS#Are you sure you want to delete this password question?')
           .toPromise();
 
-    if (await this.confirmation.confirmLeaveWithUnsavedChanges('#LDS#Heading Delete Password Question', message)) {
+    if (await this.confirmation.confirm({
+      Title: '#LDS#Heading Delete Password Question',
+      Message: message
+    })) {
       this.busy.show();
 
       try {

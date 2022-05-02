@@ -117,7 +117,7 @@ describe('AppComponent', () => {
 
   const mockSystemInfoService = {
     get: () => {
-      return { UpdatePhase: 0 };
+      return { UpdatePhase: 0, PreProps:[] };
     },
   };
 
@@ -256,7 +256,7 @@ describe('AppComponent', () => {
   describe('system update check', () => {
     beforeEach(() => {
       alertSpy = spyOn<any>(component, 'openUpgradeAlert');
-      spyOn(mockSystemInfoService, 'get').and.returnValue({ UpdatePhase: 1 });
+      spyOn(mockSystemInfoService, 'get').and.returnValue({ UpdatePhase: 1 , PreProps:[]});
       spyOn(component['translate'], 'get').and.returnValue(of('test'));
     });
 

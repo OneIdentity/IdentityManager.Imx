@@ -25,11 +25,11 @@
  */
 
 import { Type } from '@angular/core';
+import { Subject } from 'rxjs/internal/Subject';
 
 export interface IExtension {
   sortOrder?: number;
-
-  instance: Type<any>;
-
-  condition?: () => Promise<boolean>;
+  instance?: Type<any>;
+  subject?: Subject<any>;
+  inputData?: any;
 }

@@ -24,7 +24,7 @@
  *
  */
 
-import { ParameterData } from 'imx-api-qer';
+import { ParameterData } from 'imx-qbm-dbts';
 import { ParameterDataContainer } from './parameter-data-container';
 
 export interface ExtendedCollectionData<TData> {

@@ -35,7 +35,8 @@ import { ImxExpandableItem } from './imx-data-source';
 
 @Component({
   selector: 'imx-column',
-  templateUrl: './MatColumn.html'
+  templateUrl: './MatColumn.html',
+  styleUrls: ['./MatColumn.scss']
 })
 export class ImxMatColumnComponent<T> implements OnDestroy, OnInit {
   @Input()

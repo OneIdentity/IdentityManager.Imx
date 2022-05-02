@@ -1,0 +1,40 @@
+<div *ngFor="let cdetail of changeDetail; let idx = index">
+
+    <mat-card>
+        <h4 mat-card-title>{{"#LDS#Requested operation" | translate}}
+            <ng-container *ngIf="changeDetail.length>1">({{idx+1}}/{{changeDetail.length}})</ng-container>
+            <eui-badge class="state-badge" *ngIf="cdetail.IsProcessed.value == 1" color="green">{{'#LDS#Completed' |
+                translate }}</eui-badge>
+            <eui-badge class="state-badge" *ngIf="cdetail.IsProcessed.value == 0" color="orange">{{'#LDS#Pending' |
+                translate }}</eui-badge>
+            <eui-badge class="state-badge" *ngIf="cdetail.IsProcessed.value == 2" color="red">{{'#LDS#Error' | translate
+                }}</eui-badge>
+        </h4>
+
+        <eui-alert *ngIf="CanMarkAsDone(cdetail)" class="imx-helper-alert" type="info" [condensed]="true"
+            [colored]="true">
+            <ng-container *ngIf="cdetail.Operation.value == 'I'">
+                {{"#LDS#Create the following object in the cloud application and click 'Mark as Done'."|translate}}
+            </ng-container>
+            <ng-container *ngIf="cdetail.Operation.value == 'D'">
+                {{"#LDS#Delete the following object from the cloud application, and click 'Mark as Done'."|translate}}
+            </ng-container>
+            <ng-container *ngIf="cdetail.Operation.value == 'U'">
+                {{"#LDS#Set the following values in the cloud application, and click 'Mark as Done'."|translate}}
+            </ng-container>
+
+        </eui-alert>
+
+        <imx-property-viewer [properties]="[cdetail.Operation.Column, cdetail.CreationDate.Column]"></imx-property-viewer>
+
+        <imx-property-viewer [properties]="changeProperties[idx]"></imx-property-viewer>
+
+        <div class="button-bar" *ngIf="CanMarkAsDone(cdetail)">
+            <button data-imx-identifier="imx-changeview-markdone" mat-raised-button color="primary"
+                (click)="MarkAsDone(cdetail)">{{'#LDS#Mark as Done' | translate}}</button>
+            <button data-imx-identifier="imx-changeview-markerror" mat-raised-button color="warn"
+                (click)="MarkAsError(cdetail)">{{'#LDS#Report Error' | translate}}</button>
+        </div>
+    </mat-card>
+
+</div>

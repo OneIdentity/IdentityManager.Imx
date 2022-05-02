@@ -1,13 +1,13 @@
 {
-  "Name": "qer-app-pwdPortal",
-  "Path": "imxweb\\projects\\qer-app-pwdPortal",
+  "Name": "qer-app-pwdportal",
+  "Path": "imxweb\\projects\\qer-app-pwdportal",
   "ProjectType": "ng-app",
   "ProjectDependcies": [
     "qbm",
     "qer"
   ],
   "ChangePatterns": [
-    "imxweb\\projects\\qer-app-pwdPortal",
+    "imxweb\\projects\\qer-app-pwdportal",
     "imxweb\\shared\\assets"
   ]
 }

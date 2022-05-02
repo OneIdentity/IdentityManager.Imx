@@ -111,24 +111,20 @@ export class Approval extends PortalItshopApproveRequests implements RequestPara
 
   public canAddApprover(userUid: string): boolean {
     return !this.IsReserved.value &&
-    !this.entityWrapper.isChiefApproval &&
     this.workflowWrapper?.isAdditionalAllowed(userUid, this.DecisionLevel.value);
   }
 
   public canDelegateDecision(userUid: string): boolean {
     return !this.IsReserved.value &&
-    !this.entityWrapper.isChiefApproval &&
-    this.workflowWrapper?.isInsteadOfAllowed(userUid, this.DecisionLevel.value);
+      this.workflowWrapper?.isInsteadOfAllowed(userUid, this.DecisionLevel.value);
   }
 
   public canWithdrawAdditionalApprover(userUid: string): boolean {
-    return !this.entityWrapper.isChiefApproval &&
-    this.workflowWrapper?.canRevokeAdditionalApprover(userUid, this.DecisionLevel.value);
+    return this.workflowWrapper?.canRevokeAdditionalApprover(userUid, this.DecisionLevel.value);
   }
 
   public canDenyApproval(userUid: string): boolean {
     return !this.IsReserved.value &&
-    !this.entityWrapper.isChiefApproval &&
     this.workflowWrapper?.canDenyDecision(userUid, this.DecisionLevel.value);
   }
 }

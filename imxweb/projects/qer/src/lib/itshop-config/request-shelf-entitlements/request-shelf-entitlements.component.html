@@ -9,7 +9,8 @@
       </eui-alert>
 
       <imx-data-source-toolbar #dst [settings]="dstSettings"
-        [hiddenElements]="['groupBy', 'settings', 'selectedViewGroup']" [hiddenFilters]="['namespace']"
+        [options]="['search', 'filter']"
+        [hiddenFilters]="['namespace']"
         [searchBoxText]="'#LDS#Search' | translate" (navigationStateChanged)="onNavigationStateChanged($event)"
         (search)="onSearch($event)"></imx-data-source-toolbar>
 
@@ -18,14 +19,13 @@
           (selectionChanged)="onEntitlementSelected($event)" noDataText="#LDS#There are currently no products."
           noMatchingDataText="#LDS#There are no matching products." data-imx-identifier="roles-entitlements-table"
           mode="manual" [showSelectionInfo]="false">
-          <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns?.DISPLAY_PROPERTYNAME]"
-            [entitySchema]="entitySchema">
+          <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns?.DISPLAY_PROPERTYNAME]">
             <ng-template let-item>
               <div>{{item.GetEntity().GetDisplay()}}</div>
               <div class="imx-subtext">{{ entitlementTypes.get(item.GetEntity().GetKeys().toString()) }}</div>
             </ng-template>
           </imx-data-table-column>
-          <imx-data-table-column [entityColumn]="entitySchema?.Columns.XOrigin" [entitySchema]="entitySchema"
+          <imx-data-table-column [entityColumn]="entitySchema?.Columns.XOrigin"
             [columnLabel]="'#LDS#Origin' | translate">
             <ng-template let-item>
               <div>{{item.GetEntity().GetColumn('XOrigin').GetDisplayValue()}}</div>
@@ -34,7 +34,7 @@
                 {{item.GetEntity().GetColumn('ValidUntil').GetValue() | date}}</eui-badge>
             </ng-template>
           </imx-data-table-column>
-          <imx-data-table-column [entityColumn]="entitySchema?.Columns.XDateInserted" [entitySchema]="entitySchema"
+          <imx-data-table-column [entityColumn]="entitySchema?.Columns.XDateInserted"
             [columnLabel]="'#LDS#Added on' | translate">
             <ng-template let-item>
               <div>{{item.GetEntity().GetColumn('XDateInserted').GetValue() | date}}</div>

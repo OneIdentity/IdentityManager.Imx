@@ -27,15 +27,14 @@
 import { Component, Input } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { EuiCoreModule, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { configureTestSuite } from 'ng-bullet';
 import { TranslateModule } from '@ngx-translate/core';
-import { of, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 
 import { PortalServicecategories } from 'imx-api-qer';
-import { clearStylesFromDOM, MessageDialogResult } from 'qbm';
+import { clearStylesFromDOM, ConfirmationService } from 'qbm';
 import { ServiceCategoryComponent } from './service-category.component';
 import { ServiceCategoryChangedType } from './service-category-changed.enum';
 
@@ -112,13 +111,11 @@ const serviceCategoryTestdata = new class {
 }();
 
 describe('ServiceCategoryComponent', () => {
-  let messageBoxResult: MessageDialogResult;
-
-  const mockDialog = {
-    open: jasmine.createSpy('open').and.callFake(__ => ({
-      afterClosed: () => of(messageBoxResult)
-    }))
-  };
+  let confirm = true;
+  const mockConfirmationService = {
+    confirm: jasmine.createSpy('confirm')
+      .and.callFake(() => Promise.resolve(confirm))
+  }
 
   const sidesheetData = new class {
     editMode = false;
@@ -141,15 +138,14 @@ describe('ServiceCategoryComponent', () => {
       ],
       imports: [
         EuiCoreModule,
-        MatDialogModule,
         NoopAnimationsModule,
         ReactiveFormsModule,
         TranslateModule.forRoot({})
       ],
       providers: [
         {
-          provide: MatDialog,
-          useValue: mockDialog
+          provide: ConfirmationService,
+          useValue: mockConfirmationService
         },
         {
           provide: EUI_SIDESHEET_DATA,
@@ -203,19 +199,19 @@ describe('ServiceCategoryComponent', () => {
   }
 
   for (const testcase of [
-    { description: '', result: MessageDialogResult.OkResult },
-    { description: 'not', result: MessageDialogResult.CancelResult },
+    { description: '', confirm: true },
+    { description: 'not', confirm: false },
   ]) {
-    it(`should ${testcase.description} close the sidesheet with type delete because the user ${testcase.result ? 'confirmed' : 'cancelled'} the deletion`, async () => {
+    it(`should ${testcase.description} close the sidesheet with type delete because the user ${testcase.confirm ? 'confirmed' : 'cancelled'} the deletion`, async () => {
       const component = TestBed.createComponent(ServiceCategoryComponent).componentInstance;
 
       serviceCategoryTestdata.keys = ['uid'];
 
-      messageBoxResult = testcase.result;
+      confirm = testcase.confirm;
 
       await component.delete();
 
-      if (testcase.result === MessageDialogResult.OkResult) {
+      if (testcase.confirm) {
         expect(sidesheetRef.close).toHaveBeenCalledWith(ServiceCategoryChangedType.Delete);
       } else {
         expect(sidesheetRef.close).not.toHaveBeenCalled();

@@ -27,7 +27,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AccountSidesheetComponent } from './account-sidesheet.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CdrModule, AppConfigService, ElementalUiConfigService } from 'qbm';
+import { CdrModule, AppConfigService, ElementalUiConfigService, ExtService } from 'qbm';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DeHelperService } from '../../de-helper.service';
 import { TsbTestBed } from '../../test/tsb-test-bed.spec';
@@ -129,6 +129,7 @@ describe('AccountSidesheetComponent', () => {
         }
       },
       DeHelperService,
+      ExtService,
       AccountsReportsService,
       {
         provide: ProjectConfigurationService,

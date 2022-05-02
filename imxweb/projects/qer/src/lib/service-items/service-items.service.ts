@@ -30,7 +30,7 @@ import {
   PortalShopServiceitems, RequestableProductForPerson, ServiceItemsExtendedData
 } from 'imx-api-qer';
 import {
-  CollectionLoadParameters, ExtendedTypedEntityCollection, FilterType, CompareOperator, ValueStruct, TypedEntity, EntitySchema
+  CollectionLoadParameters, ExtendedTypedEntityCollection, FilterType, CompareOperator, ValueStruct, TypedEntity, EntitySchema, DataModel
 } from 'imx-qbm-dbts';
 import { QerApiService } from '../qer-api-client.service';
 
@@ -55,7 +55,7 @@ export class ServiceItemsService {
     return this.qerClient.typedClient.PortalShopServiceitems.Get(parameters);
   }
 
-  public async getServiceItem(serviceItemUid: string): Promise<PortalShopServiceitems> {
+  public async getServiceItem(serviceItemUid: string, isSkippable?: boolean): Promise<PortalShopServiceitems> {
     const serviceItemCollection = await this.get({
       IncludeChildCategories: false,
       filter: [
@@ -69,10 +69,17 @@ export class ServiceItemsService {
     });
 
     if (serviceItemCollection == null || serviceItemCollection.Data == null || serviceItemCollection.Data.length === 0) {
+      if (isSkippable) {
+        return null;
+      }
       throw new Error('getServiceItem - service item not found');
     }
 
     return serviceItemCollection.Data[0];
+  }
+
+  public async getDataModel(): Promise<DataModel>{
+    return this.qerClient.client.portal_shop_serviceitems_datamodel_get(undefined);
   }
 
   public async getServiceItemsForPersons(

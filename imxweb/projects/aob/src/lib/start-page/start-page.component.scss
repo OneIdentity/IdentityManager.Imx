@@ -1,4 +1,4 @@
-@import "../../../../../shared/assets/variables.scss";
+@import "~@elemental-ui/core/src/styles/_palette.scss";
 
 // Host
 :host {
@@ -84,5 +84,5 @@ img {
   font-size: 100px;
   text-align: center;
   display: inline;
-  color: $VI_Common_Color_MastHead;
+  color: $iris-blue;
 }

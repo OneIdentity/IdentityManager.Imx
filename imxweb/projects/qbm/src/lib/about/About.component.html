@@ -36,8 +36,7 @@
           </div>
         </mat-card>
         <ng-container *ngIf="dstSettings?.dataSource">
-          <imx-data-source-toolbar #dst [settings]="dstSettings" (navigationStateChanged)="update($event)"
-            [hiddenElements]="['filter', 'groupBy', 'settings', 'selectedViewGroup','search']" ></imx-data-source-toolbar>
+          <imx-data-source-toolbar #dst [settings]="dstSettings" (navigationStateChanged)="update($event)"></imx-data-source-toolbar>
           <imx-data-table [dst]="dst" [selectable]="false"  [detailViewVisible]="false" mode="auto"></imx-data-table>
           <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
         </ng-container>
@@ -45,10 +44,9 @@
     </mat-tab>
     <mat-tab label="{{ '#LDS#Contact' | translate }}">
       <ng-template matTabContent>
-        <div class="imx-contact imx-elementloadingouter ng-scope">
+        <div class="imx-contact imx-elementloadingouter">
           <div class="imx-contact-Header">
             <span>{{ '#LDS#Contacting Us' | translate }}</span>
-
           </div>
           <div>
             <span>{{ '#LDS#For sales or other inquiries, visit' | translate }} </span>

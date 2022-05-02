@@ -29,7 +29,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { MatDialog } from '@angular/material/dialog';
-import { ChartOptions } from 'billboard.js';
+import { ChartOptions, pie } from 'billboard.js';
 import { KeyValue } from '@angular/common';
 
 import { ChartDto, ChartDataPoint } from 'imx-api-aob';
@@ -175,7 +175,7 @@ export class GlobalKpiComponent implements OnInit {
         ['data2', 100 - chart.Data[0].Points[0].Value]],
         names: { data1: name, data2: this.others },
         colors: { data1: this.colors[0], data2: '#CCC' },
-        type: 'pie',
+        type: pie(),
         empty: {
           label: {
             text: this.noDataLoaded
@@ -204,7 +204,7 @@ export class GlobalKpiComponent implements OnInit {
         columns: chart.Data.map((ch, index) => ['data' + index, ch.Points[0].Value]) as any[],
         names: this.toObject(chart.Data.map((ch, index) => ({ key: 'data' + index, value: ch.Name }))),
         colors: this.toObject(chart.Data.map((ch, index) => ({ key: 'data' + index, value: this.colors[index] }))),
-        type: 'pie',
+        type: pie(),
         empty: {
           label: {
             text: this.noDataLoaded

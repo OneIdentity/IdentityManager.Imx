@@ -27,26 +27,22 @@
           <div *ngIf="!queuesUnsupported">
             <div class="imx-table-container">
               <imx-data-source-toolbar [alwaysVisible]="true" #dstJobs [settings]="dstSettingsJobs"
-                [hiddenElements]="['search', 'settings', 'selectedViewGroup']">
+                [options]="['filter', 'groupBy']">
                 <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplateJobs">
                 </imx-data-source-toolbar-custom>
               </imx-data-source-toolbar>
-              <imx-data-table [dst]="dstJobs" detailViewVisible="false" mode="manual" [selectable]="true"
-                (selectionChanged)="onSelectionChanged($event)">
-                <imx-data-table-column [entityColumn]="entitySchemaJobs?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-                  [entitySchema]="entitySchemaJobs">
+              <imx-data-table [dst]="dstJobs" detailViewVisible="false" mode="manual">
+                <imx-data-table-column [entityColumn]="entitySchemaJobs?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
                   <ng-template let-dataItem>
                     {{dataItem.GetEntity().GetDisplay()}}
                   </ng-template>
                 </imx-data-table-column>
-                <imx-data-table-column [entityColumn]="entitySchemaJobs?.Columns.Queue"
-                  [entitySchema]="entitySchemaJobs">
+                <imx-data-table-column [entityColumn]="entitySchemaJobs?.Columns.Queue">
                   <ng-template let-dataItem>
                     {{ dataItem.Queue.Column.GetDisplayValue() }}
                   </ng-template>
                 </imx-data-table-column>
-                <imx-data-table-column [entityColumn]="entitySchemaJobs?.Columns.TaskName"
-                  [entitySchema]="entitySchemaJobs">
+                <imx-data-table-column [entityColumn]="entitySchemaJobs?.Columns.TaskName">
                   <ng-template let-dataItem>
                     {{ dataItem.TaskName.Column.GetDisplayValue() }}
                   </ng-template>
@@ -76,33 +72,28 @@
           </div>
           <div *ngIf="!queuesUnsupported">
             <div class="imx-table-container">
-              <imx-data-source-toolbar [alwaysVisible]="true" #dstDbs [settings]="dstSettingsDbs"
-                [hiddenElements]="['search', 'settings', 'selectedViewGroup']">
+              <imx-data-source-toolbar [alwaysVisible]="true" #dstDbs [settings]="dstSettingsDb"
+                [options]="['filter', 'groupBy']">
                 <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplateDbs">
                 </imx-data-source-toolbar-custom>
               </imx-data-source-toolbar>
-              <imx-data-table [dst]="dstDbs" detailViewVisible="false" mode="manual" [selectable]="true"
-                (selectionChanged)="onSelectionChanged($event)">
-                <imx-data-table-column [entityColumn]="entitySchemaDbs?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-                  [entitySchema]="entitySchemaDbs">
+              <imx-data-table [dst]="dstDbs" detailViewVisible="false" mode="manual">
+                <imx-data-table-column [entityColumn]="entitySchemaDbs?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
                   <ng-template let-dataItem>
                     {{dataItem.GetEntity().GetDisplay()}}
                   </ng-template>
                 </imx-data-table-column>
-                <imx-data-table-column [entityColumn]="entitySchemaDbs?.Columns.Object"
-                  [entitySchema]="entitySchemaDbs">
+                <imx-data-table-column [entityColumn]="entitySchemaDbs?.Columns.Object">
                   <ng-template let-dataItem>
                     {{ dataItem.Object.Column.GetDisplayValue() }}
                   </ng-template>
                 </imx-data-table-column>
-                <imx-data-table-column [entityColumn]="entitySchemaDbs?.Columns.SubObject"
-                  [entitySchema]="entitySchemaDbs">
+                <imx-data-table-column [entityColumn]="entitySchemaDbs?.Columns.SubObject">
                   <ng-template let-dataItem>
                     {{ dataItem.SubObject.Column.GetDisplayValue() }}
                   </ng-template>
                 </imx-data-table-column>
-                <imx-data-table-column [entityColumn]="entitySchemaDbs?.Columns.SortOrder"
-                  [entitySchema]="entitySchemaDbs">
+                <imx-data-table-column [entityColumn]="entitySchemaDbs?.Columns.SortOrder">
                   <ng-template let-dataItem>
                     {{ dataItem.SortOrder.Column.GetDisplayValue() }}
                   </ng-template>
@@ -121,7 +112,7 @@
         <imx-object-history></imx-object-history>
       </ng-template>
     </mat-tab>
-    <mat-tab *ngIf="showPassCodeTab()" label="{{ '#LDS#Passwords' | translate }}">
+    <mat-tab *ngIf="showPassCodeTab" label="{{ '#LDS#Passwords' | translate }}">
       <imx-ext id="QBM_ops_ObjectOverview_Actions" [referrer]="this"></imx-ext>
     </mat-tab>
     <mat-tab label="{{ '#LDS#Hyperview' | translate }}">

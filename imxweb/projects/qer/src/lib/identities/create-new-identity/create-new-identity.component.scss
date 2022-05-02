@@ -1,0 +1,18 @@
+.imx-info {
+  ::ng-deep .eui-alert {
+    width: auto;
+    margin-bottom: 10px;
+  }
+  ::ng-deep .eui-alert .eui-alert-header {
+    width: 100%;
+  }
+}
+
+.imx-alert-button {
+  align-self: flex-end;
+}
+
+.imx-flex-alert {
+  display: flex;
+  flex-direction: column;
+}

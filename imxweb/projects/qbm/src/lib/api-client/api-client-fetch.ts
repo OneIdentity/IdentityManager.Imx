@@ -69,14 +69,16 @@ export class ApiClientFetch implements ApiClient {
             });
         } catch {
             this.errorHandler.handleError(new ServerError(await this.GetUnexpectedErrorText()));
-            return Promise.reject();
+
+//TODO: or throw?            
+            return null;
         }
 
         if (response) {
 
             // empty response, but success
             if (response.status === 204) {
-                return Promise.resolve(null);
+                return null;
             }
 
             const actualContentType = response.headers.get('Content-Type');
@@ -102,7 +104,8 @@ export class ApiClientFetch implements ApiClient {
         }
 
         this.errorHandler.handleError(new ServerError(await this.GetUnexpectedErrorText()));
-        return Promise.resolve(null);
+        //TODO: or throw?
+        return null;
     }
 
     private append(input: string, statusText: string): string {

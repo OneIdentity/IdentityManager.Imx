@@ -37,7 +37,8 @@ import {
   TypedEntityBuilder,
   TypedEntityCollectionData,
   EntitySchema,
-  IReadValue
+  IReadValue,
+  FilterTreeData
 } from 'imx-qbm-dbts';
 import {
   ApiClientMethodFactory,
@@ -45,6 +46,7 @@ import {
   DecisionInput,
   DenyDecisionInput,
   DirectDecisionInput,
+  EntitlementLossDto,
   OtherApproverInput,
   PortalAttestationApprove,
   PortalAttestationCaseHistory,
@@ -62,6 +64,7 @@ import { AttestationCaseLoadParameters } from '../attestation-history/attestatio
   providedIn: 'root'
 })
 export class AttestationCasesService {
+  public isChiefApproval: boolean;
   private readonly historyBuilder = new TypedEntityBuilder(PortalAttestationCaseHistory);
   private readonly apiClientMethodFactory = new ApiClientMethodFactory();
 
@@ -72,7 +75,6 @@ export class AttestationCasesService {
     private readonly config: AppConfigService
   ) { }
 
-  public isChiefApproval: boolean;
 
   public get attestationApproveSchema(): EntitySchema {
     return this.attClient.typedClient.PortalAttestationApprove.GetSchema();
@@ -91,7 +93,8 @@ export class AttestationCasesService {
         const parameterDataContainer = this.parameterDataService.createContainer(
           item.GetEntity(),
           { ...collection.extendedData, ...{ index } },
-          parameters => this.getParameterCandidates(parameters)
+          parameters => this.getParameterCandidates(parameters),
+          treefilterparameter => this.getFilterTree(treefilterparameter)
         );
 
         return new AttestationCase(item, this.isChiefApproval, parameterDataContainer, { ...collection.extendedData, ...{ index } });
@@ -159,6 +162,11 @@ export class AttestationCasesService {
     );
   }
 
+  public async getLossPreviewEntities(attestationCase: AttestationCase): Promise<EntitlementLossDto[]> {
+    const key = this.getKey(attestationCase);
+    return this.attClient.client.portal_attestation_approve_losspreview_get(key);
+  }
+
   public getReportDownloadOptions(attestationCase: TypedEntity): EuiDownloadOptions {
     const key = this.getKey(attestationCase);
     return {
@@ -187,6 +195,13 @@ export class AttestationCasesService {
    */
   public async directDecision(attestationCase: PortalAttestationApprove, input: DirectDecisionInput): Promise<any> {
     return this.attClient.client.portal_attestation_directdecision_post(
+      this.getKey(attestationCase),
+      input
+    );
+  }
+
+  public async escalateDecision(attestationCase: PortalAttestationApprove, input: ReasonInput): Promise<any> {
+    return this.attClient.client.portal_attestation_escalate_post(
       this.getKey(attestationCase),
       input
     );
@@ -266,7 +281,18 @@ export class AttestationCasesService {
       parameters.filter,
       null,
       parameters.search,
-      parameters.parentKey,
+      parameters.ParentKey,
+      parameters.diffData
+    );
+  }
+
+  private async getFilterTree(parameters: ParameterDataLoadParameters): Promise<FilterTreeData>
+  {
+    return this.attClient.client.portal_attestation_approve_parameter_candidates_filtertree_post(
+      parameters.columnName,
+      parameters.fkTableName,
+      parameters.filter,
+      parameters.ParentKey,
       parameters.diffData
     );
   }

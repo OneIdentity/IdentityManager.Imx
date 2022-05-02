@@ -25,7 +25,7 @@
  */
 
 import { ColumnDependentReference } from './column-dependent-reference.interface';
-import { ValueStruct, IForeignKeyInfo, ValType, ValueConstraint } from 'imx-qbm-dbts';
+import { ValueStruct, IForeignKeyInfo, ValType, ValueConstraint, IValueMetadata } from 'imx-qbm-dbts';
 import { LimitedValuesContainer } from './limited-values-container';
 import { ValueWrapper } from '../value-wrapper/value-wrapper';
 import { Subscription } from 'rxjs';
@@ -76,9 +76,17 @@ export class EntityColumnContainer<T = any> implements ValueWrapper<T> {
       return this.cdr && this.cdr.column ? this.cdr.column.GetMetadata().valueConstraint : undefined;
     }
 
+    public get metaData(): IValueMetadata {
+        return this.cdr && this.cdr.column ? this.cdr.column.GetMetadata() : undefined;
+    }
+
     public get hint(): string {
       return this.cdr?.hint;
     }
+
+    public get title(): string {
+      return this.cdr && this.cdr.title ? this.cdr.title : undefined;
+  }
 
     public limitedValuesContainer: LimitedValuesContainer;
 
@@ -91,9 +99,9 @@ export class EntityColumnContainer<T = any> implements ValueWrapper<T> {
 
     public subscribe(listener: () => void): Subscription {
         // subscribe to entity event
-        const subscription = this.cdr.column.ColumnChanged.subscribe(listener);
+        const subscription = this.cdr.column.ColumnChanged?.subscribe(listener);
         // wrap in a rxjs subscription
-        return new Subscription(() => subscription.unsubscribe());
+        return new Subscription(() => subscription?.unsubscribe());
     }
 
     public async updateValue(value: T): Promise<void> {

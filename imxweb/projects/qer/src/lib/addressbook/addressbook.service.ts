@@ -39,6 +39,7 @@ export class AddressbookService {
   constructor(private readonly personService: PersonService) { }
 
   public async createDataSourceWrapper(columnNames: string[]): Promise<DataSourceWrapper> {
+
     const entitySchema = this.personService.schemaPersonAll;
 
     const displayedColumns = columnNames

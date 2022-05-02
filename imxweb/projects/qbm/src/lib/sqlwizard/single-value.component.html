@@ -1,0 +1,34 @@
+<!-- Limited Values-->
+<mat-form-field appearance="outline" class="operand" *ngIf="expr.Property.LimitedValues">
+  <mat-select [(ngModel)]="value" data-imx-identifier="single-value-select-limvalue">
+    <mat-option *ngFor="let lv of expr.Property.LimitedValues" [value]="lv.Value">
+      {{lv.Description}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<ng-container *ngIf="expr.Property.SelectionTables">
+  <imx-cdr-editor [cdr]="cdr" class="auto-flex">
+  </imx-cdr-editor>
+</ng-container>
+
+<ng-container [ngSwitch]="expr.Property.Type" *ngIf="!expr.Property.LimitedValues && !expr.Property.SelectionTables">
+  <div *ngSwitchCase="ValType.Bool" class="operand">
+    <mat-slide-toggle data-imx-identifier="single-value-toggle" [(ngModel)]="value">{{ '#LDS#Property is activated' | translate }}
+    </mat-slide-toggle>
+  </div>
+  <div *ngSwitchCase="ValType.Date" class="operand">
+    <imx-sqlwizard-datepicker [expr]="expr"></imx-sqlwizard-datepicker>
+  </div>
+  <div *ngSwitchCase="ValType.Int" class="operand">
+    <mat-form-field appearance="outline">
+      <input matInput type="number" [(ngModel)]="value">
+    </mat-form-field>
+  </div>
+  <div *ngSwitchDefault class="operand">
+
+    <mat-form-field class="flex-grow" appearance="outline">
+      <input matInput type="text" [(ngModel)]="value" data-imx-identifier="single-value-input-value">
+    </mat-form-field>
+  </div>
+</ng-container>

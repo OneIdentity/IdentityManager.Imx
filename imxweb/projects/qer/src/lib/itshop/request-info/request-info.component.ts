@@ -25,10 +25,10 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChildren, AfterViewInit } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { BaseReadonlyCdr, ClassloggerService, ColumnDependentReference, TabControlHelper } from 'qbm';
+import { BaseReadonlyCdr, ClassloggerService, ColumnDependentReference, ExtComponent, ExtService, IExtension, TabControlHelper } from 'qbm';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
 import { ApproverContainer } from './approver-container';
 import { ItshopService } from '../itshop.service';
@@ -44,19 +44,25 @@ import { DecisionHistoryService } from '../decision-history.service';
 export class RequestInfoComponent implements OnInit {
   @Input() public isReadOnly: boolean; // TODO later: an einer passenden Stelle verarbeiten
   @Input() public request: RequestParameterDataEntity;
+  @Input() public userId: string;
 
   public parameters: BaseReadonlyCdr[];
   public propertyInfo: ColumnDependentReference[];
   public approverContainer: ApproverContainer;
   public workflow: WorkflowHistoryItemWrapper[];
+  public readonly ruleViolationDetailId = 'cpl.ruleViolationDetail';
+  public extensions: IExtension[] = [];
 
   constructor(
     private readonly projectConfig: ProjectConfigurationService,
     private readonly logger: ClassloggerService,
     private readonly busyService: EuiLoadingService,
     private readonly itshopService: ItshopService,
-    private readonly decisionHistory: DecisionHistoryService
-  ) { }
+    private readonly decisionHistory: DecisionHistoryService,
+    private readonly ext: ExtService
+  ) {
+    this.extensions = this.ext.Registry[this.ruleViolationDetailId];
+  }
 
   public async ngOnInit(): Promise<void> {
     let overlayRef: OverlayRef;

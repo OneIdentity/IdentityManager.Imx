@@ -1,0 +1,90 @@
+@import '~@elemental-ui/core/src/styles/_palette.scss';
+
+:host{
+  display:flex;
+  flex-direction: column;
+  height: 100%
+}
+
+.imx-dialog-content{
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.imx-element-chooser{
+  margin-right: 15px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  
+  > .imx-item-list {
+    padding: 10px;
+    overflow: auto;
+  }
+}
+
+.disabled-list {
+  background: transparent;
+}
+
+.example-list {
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  background: $white;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.example-box {
+  padding: 20px 0px 20px 10px;
+  border: solid 1px $black-c;
+  color: $black-3;
+  display: flex;
+  flex-direction: row;
+  height: 60px;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  background:  $white;
+  flex-grow: 1;
+  flex-basis: 0;
+
+  > :first-child {
+    flex: 1 1 auto;
+  }
+}
+
+.dragDropContainer{
+  grid-column: 2;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.imx-drag-handle {
+  width: 16px;
+  height: 60px;
+  cursor: move;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow: 0 5px 5px -3px $black-c
+              0 8px 10px 1px mat-color($asher-gray-palette, 900),
+              0 3px 14px 2px mat-color($asher-gray-palette, 700);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+

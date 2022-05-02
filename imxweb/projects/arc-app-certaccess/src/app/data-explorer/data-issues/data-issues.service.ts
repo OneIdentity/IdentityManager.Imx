@@ -33,6 +33,9 @@ import { EuiLoadingService } from '@elemental-ui/core';
 import { ApiService } from 'att';
 import { QerApiService } from 'qer';
 import { ADS_NAMESPACE_FILTER } from '../../responsibilities/unsgroups/unsgroups.service';
+import { ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+import { PortalPersonAll } from 'imx-api-qer';
+import { QerPermissionsService } from 'qer';
 
 @Injectable()
 export class DataIssuesService {
@@ -40,8 +43,9 @@ export class DataIssuesService {
     private readonly arcClient: ArcApiService,
     private readonly qerClient: QerApiService,
     private readonly loader: EuiLoadingService,
-    private readonly attClient: ApiService
-  ) {}
+    private readonly attClient: ApiService,
+    private qerPersmission: QerPermissionsService
+  ) { }
 
   public startIdentitiesManagerWorkflow(): Promise<void> {
     const loaderRef = this.loader.show();
@@ -84,11 +88,16 @@ export class DataIssuesService {
   }
 
   private getIdentityIssues(): Observable<number> {
-    return from(this.qerClient.typedClient.PortalPersonAll.Get({ PageSize: -1, withmanager: '0' })).pipe(
+    return from(this.getPersons()).pipe(
       map((data) => {
         return data.totalCount;
       })
     );
+  }
+
+  private async getPersons(): Promise<ExtendedTypedEntityCollection<PortalPersonAll, unknown>> {
+    const nav = (await this.qerPersmission.isPersonAdmin()) ? { PageSize: -1, withmanager: '0' } : { PageSize: -1 };
+    return this.qerClient.typedClient.PortalPersonAll.Get(nav);
   }
 
   private getAccountIssues(): Observable<number> {

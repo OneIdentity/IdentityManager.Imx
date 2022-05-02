@@ -1,0 +1,51 @@
+<div class="imx-reports-page">
+  <div class="heading-wrapper">
+    <h1 class="mat-headline">
+      {{ '#LDS#Heading Reports' | translate }}
+    </h1>
+  </div>
+  <div class="imx-table-container" *ngIf="dstWrapper && dstSettings">
+    <imx-data-source-toolbar #dst [options]="['search']" [settings]="dstSettings" [alwaysVisible]="true"
+      (search)="getData({ search: $event })" (navigationStateChanged)="getData($event)"
+      data-imx-identifier="report-dst">
+    </imx-data-source-toolbar>
+    <imx-data-table #dataTable [dst]="dst" class="imx-reports-table" [detailViewVisible]="false" mode="manual"
+      [selectable]="true" [showSelectedItemsMenu]="false" (selectionChanged)="onSelectionChanged($event)"
+      [noDataText]="'#LDS#There are currently no reports.' | translate" data-imx-identifier="report-datatable">
+      <imx-data-table-column data-imx-identifier="report-table-column-display"
+        [entityColumn]="dstWrapper.propertyDisplay">
+        <ng-template let-item>
+          <div data-imx-identifier="report-table-display">{{ item.GetEntity().GetDisplay() }}</div>
+          <div subtitle data-imx-identifier="report-table-description">{{ item.Description.Column.GetDisplayValue() }}
+          </div>
+        </ng-template>
+      </imx-data-table-column>
+      <imx-data-table-generic-column columnName="actions">
+        <ng-template let-item>
+          <button mat-button color="primary" (click)="viewDetails(item)"
+            data-imx-identifier="report-button-view-details">
+            {{'#LDS#Edit' | translate}}
+          </button>
+        </ng-template>
+      </imx-data-table-generic-column>
+    </imx-data-table>
+    <imx-data-source-paginator data-imx-identifier="report-paginator" [dst]="dst">
+    </imx-data-source-paginator>
+  </div>
+
+  <div class="imx-button-bar">
+    <div class="imx-selected-items">
+      <div class="flex-grow">
+        <span>
+          {{ '#LDS#Selected reports' | translate }}
+        </span>
+        <eui-badge data-imx-identifier="report-selection-badge" class="imx-badge" color="orange">
+          {{selectedReports?.length > 0 ? selectedReports.length : 0}}
+        </eui-badge>
+      </div>
+      <button mat-raised-button color="warn" [disabled]="!canDeleteSelected()"
+        (click)="deleteSelected()">{{'#LDS#Delete' | translate}}</button>
+      <button mat-raised-button color="primary" (click)="createNew()">{{'#LDS#Create report' | translate}}</button>
+    </div>
+  </div>
+</div>

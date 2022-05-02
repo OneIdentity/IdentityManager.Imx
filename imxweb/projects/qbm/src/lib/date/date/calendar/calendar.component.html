@@ -1,0 +1,11 @@
+<div class="mat-datepicker-content" >
+  <mat-calendar (_userSelection)="onDateChanged($event)" 
+    [selected]="datePickerDate" 
+    [minDate]="min || dbValMinDate" 
+    [maxDate]="max || '9999-12-31'"
+    [startAt]="datePickerDate"></mat-calendar>
+  <mat-divider></mat-divider>
+  <button mat-button color="primary" (click)="close.emit()">
+    <span translate>#LDS#Close</span>
+  </button>
+</div>

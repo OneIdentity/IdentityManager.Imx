@@ -30,13 +30,16 @@ import {
   CollectionLoadParameters,
   TypedEntityCollectionData,
   DataModelFilter,
-  EntitySchema
+  EntitySchema,
+  FilterTreeData,
+  DataModel
 } from 'imx-qbm-dbts';
 import { TsbApiService } from '../tsb-api-client.service';
 import { PortalTargetsystemUnsAccount } from 'imx-api-tsb';
 import { TargetSystemDynamicMethodService } from '../target-system/target-system-dynamic-method.service';
 import { AccountTypedEntity } from './account-typed-entity';
 import { DbObjectKeyBase } from '../target-system/db-object-key-wrapper.interface';
+import { AcountsFilterTreeParameters as AccountsFilterTreeParameters } from './accounts.models';
 
 @Injectable({ providedIn: 'root' })
 export class AccountsService {
@@ -64,7 +67,25 @@ export class AccountsService {
     return this.dynamicMethod.get(AccountTypedEntity, { dbObjectKey, columnName });
   }
 
+  public async getAccountInteractive(dbObjectKey: DbObjectKeyBase, columnName: string): Promise<AccountTypedEntity> {
+    return (await this.dynamicMethod.getById(AccountTypedEntity, { dbObjectKey, columnName })) as AccountTypedEntity;
+  }
+
   public async getFilterOptions(): Promise<DataModelFilter[]> {
-    return (await this.tsbClient.client.portal_targetsystem_uns_account_datamodel_get(undefined)).Filters;
+    return (await this.getDataModel()).Filters;
+  }
+
+  public async getDataModel(): Promise<DataModel>{
+    return this.tsbClient.client.portal_targetsystem_uns_account_datamodel_get(undefined);
+  }
+
+
+  public async getFilterTree(parameter: AccountsFilterTreeParameters):Promise<FilterTreeData>{
+    return this.tsbClient.client.portal_targetsystem_uns_account_filtertree_get(
+      parameter.container,  //container
+      parameter.system, //system
+      parameter.filter, //filter
+      parameter.parentkey //parentkey
+    );
   }
 }

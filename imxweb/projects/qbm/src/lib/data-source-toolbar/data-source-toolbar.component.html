@@ -1,32 +1,44 @@
 <div class="imx-data-source-toolbar-container" *ngIf="showDataSourceToolbar">
-  <div class="imx-data-source-toolbar" [ngClass]="{'no-toolbar-options-visible': hiddenElementSet.size === 5}">
+  <div class="imx-data-source-toolbar" [ngClass]="{'no-toolbar-options-visible': optionset.size === 0}">
     <div class="imx-data-source-toolbar-left" *ngIf="!hideCustomToolbar">
       <ng-content select="imx-data-source-toolbar-custom"></ng-content>
     </div>
     <div class="imx-data-source-toolbar-middle">
-      <eui-search *ngIf="!hiddenElementSet.has('search')" class="imx-data-source-toolbar-search" data-imx-identifier="dst-eui-search"
-        [placeholder]="searchBoxText ? searchBoxText : '#LDS#Search' | translate"
-        [searchControl]="searchControl"
-        size="medium">
+      <eui-search *ngIf="optionset.has('search')" class="imx-data-source-toolbar-search"
+        data-imx-identifier="dst-eui-search" [placeholder]="searchBoxText ? searchBoxText : '#LDS#Search' | translate"
+        [searchControl]="searchControl" size="medium">
       </eui-search>
-  </div>
+    </div>
     <div class="imx-data-source-toolbar-right">
-      <button type="button" mat-icon-button [matMenuTriggerFor]="filterMenu" matTooltip="{{ '#LDS#Filter' | translate }}" *ngIf="settings?.filters?.length && !hiddenElementSet.has('filter')" data-imx-identifier="dst-button-filter">
+      <button type="button" mat-icon-button [matMenuTriggerFor]="filterMenu"
+        matTooltip="{{ '#LDS#Filter' | translate }}" *ngIf="settings?.filters?.length && optionset.has('filter')"
+        data-imx-identifier="dst-button-filter">
         <eui-icon icon="filter"></eui-icon>
       </button>
-      <button type="button" mat-icon-button [matMenuTriggerFor]="groupByMenu" matTooltip="{{ '#LDS#Group by' | translate }}" *ngIf="settings?.groupData && !hiddenElementSet.has('groupBy')" data-imx-identifier="dst-button-groupby">
+      <button type="button" mat-icon-button (click)="showFilterTree()" matTooltip="{{ filterType }}"
+        *ngIf="hasFilterTree && optionset.has('filterTree')" data-imx-identifier="dst-button-filterTree">
+        <eui-icon icon="network"></eui-icon>
+      </button>
+      <button type="button" mat-icon-button [matMenuTriggerFor]="groupByMenu"
+        matTooltip="{{ '#LDS#Group by' | translate }}" *ngIf="settings?.groupData && optionset.has('groupBy')"
+        data-imx-identifier="dst-button-groupby">
         <mat-icon>group_work</mat-icon>
       </button>
-      <button type="button" mat-icon-button [matMenuTriggerFor]="settingsMenu" matTooltip="{{ '#LDS#Settings' | translate }}" *ngIf="!hiddenElementSet.has('settings')" data-imx-identifier="dst-button-settings">
+      <button type="button" mat-icon-button [matMenuTriggerFor]="settingsMenu"
+        matTooltip="{{ '#LDS#Settings' | translate }}" *ngIf="hasViewSettings && optionset.has('settings') && initalView === 'table'"
+        data-imx-identifier="dst-button-settings">
         <eui-icon icon="settings"></eui-icon>
       </button>
-      <mat-button-toggle-group (change)="onViewSelectionChanged($event)" *ngIf="!hiddenElementSet.has('selectedViewGroup')" data-imx-identifier="dst-togglegroup-views">
+      <mat-button-toggle-group (change)="onViewSelectionChanged($event)" *ngIf="optionset.has('selectedViewGroup')"
+        data-imx-identifier="dst-togglegroup-views">
         <mat-button-toggle *ngFor="let view of views; let index = index" [value]="view" [checked]="view  === initalView"
           [attr.data-imx-identifier]="'dst-togglegroup-views-button-'+ view">
           <eui-icon [icon]="viewIcons[index]"></eui-icon>
         </mat-button-toggle>
       </mat-button-toggle-group>
-      <eui-icon icon="warning" class="imx-warning-icon" *ngIf="dataSourceIsLimitReached" matTooltip="{{'#LDS#TooManySearchResults' | translate}}" data-imx-identifier="dst-to-many-seach-results-icon"></eui-icon> 
+      <eui-icon icon="warning" class="imx-warning-icon" *ngIf="dataSourceIsLimitReached"
+        matTooltip="{{'#LDS#TooManySearchResults' | translate}}" data-imx-identifier="dst-to-many-seach-results-icon">
+      </eui-icon>
     </div>
   </div>
 
@@ -41,30 +53,36 @@
           {{filter.Options[0].Display}}
         </mat-checkbox>
         <p *ngIf="filter.Options.length > 1">{{filter.Description || filter.Name}}</p>
-        <span *ngIf="filter.Delimiter && filter.Options.length > 1 && filter.Options.length <= filterOptionLengthThreshold">
-          <mat-checkbox *ngFor="let fopt of filter.Options" [checked]="filter.CurrentValue?.includes(fopt.Value)" (change)="onCheckboxFilterChanged(filter, fopt, $event)"
+        <span
+          *ngIf="filter.Delimiter && filter.Options.length > 1 && filter.Options.length <= filterOptionLengthThreshold">
+          <mat-checkbox *ngFor="let fopt of filter.Options" [checked]="filter.CurrentValue?.includes(fopt.Value)"
+            (change)="onCheckboxFilterChanged(filter, fopt, $event)"
             [attr.data-imx-identifier]="'dst-checkbox-filtermenu-option-'+ filter.Name +'-'+ fopt.Value">
             {{fopt.Display}}
           </mat-checkbox>
         </span>
-        <mat-select *ngIf="filter.Delimiter && filter.Options.length > filterOptionLengthThreshold" [placeholder]="'#LDS#Select an option' | translate"
-          [value]="getMultiSelectCurrentValue(filter)" (selectionChange)="multiSelectFilterValueChange(filter, $event)" multiple>
+        <mat-select *ngIf="filter.Delimiter && filter.Options.length > filterOptionLengthThreshold"
+          [placeholder]="'#LDS#Select an option' | translate" [value]="getMultiSelectCurrentValue(filter)"
+          (selectionChange)="multiSelectFilterValueChange(filter, $event)" multiple>
           <mat-option *ngFor="let fopt of filter.Options" [value]="fopt.Value"
-          [attr.data-imx-identifier]="'dst-select-filtermenu-option-'+ filter.Name +'-'+ fopt.Value">
+            [attr.data-imx-identifier]="'dst-select-filtermenu-option-'+ filter.Name +'-'+ fopt.Value">
             {{fopt.Display}}
           </mat-option>
         </mat-select>
-        <mat-radio-group *ngIf="!filter.Delimiter && filter.Options.length > 1 && filter.Options.length <= filterOptionLengthThreshold" [value]="filter.CurrentValue">
+        <mat-radio-group
+          *ngIf="!filter.Delimiter && filter.Options.length > 1 && filter.Options.length <= filterOptionLengthThreshold"
+          [value]="filter.CurrentValue">
           <mat-radio-button *ngFor="let foption of filter.Options" [value]="foption.Value"
-          (change)="onRadioFilterChanged(filter, foption)"
-          [attr.data-imx-identifier]="'dst-radiobutton-filtermenu-option-'+ filter.Name +'-'+ foption.Value">
+            (change)="onRadioFilterChanged(filter, foption)"
+            [attr.data-imx-identifier]="'dst-radiobutton-filtermenu-option-'+ filter.Name +'-'+ foption.Value">
             <span>{{foption.Display}}</span>
           </mat-radio-button>
         </mat-radio-group>
-        <mat-select *ngIf="!filter.Delimiter && filter.Options.length > filterOptionLengthThreshold" [placeholder]="'#LDS#Select an option' | translate" panelClass="imx-data-source-filter-select"
+        <mat-select *ngIf="!filter.Delimiter && filter.Options.length > filterOptionLengthThreshold"
+          [placeholder]="'#LDS#Select an option' | translate" panelClass="imx-data-source-filter-select"
           [value]="filter.CurrentValue" (selectionChange)="selectFilterValueChanged(filter, $event)">
           <mat-option *ngFor="let foption of filter.Options" [value]="foption.Value"
-          [attr.data-imx-identifier]="'dst-radiobutton-filtermenu-option-'+ filter.Name +'-'+ foption.Value">
+            [attr.data-imx-identifier]="'dst-radiobutton-filtermenu-option-'+ filter.Name +'-'+ foption.Value">
             {{foption.Display}}
           </mat-option>
         </mat-select>
@@ -82,14 +100,17 @@
       <span>{{ '#LDS#Group by' | translate }}</span>
     </button>
     <mat-divider></mat-divider>
-    <div *ngFor="let group of settings?.groupData?.groups" [attr.data-imx-identifier]="'dst-groupbymenu-'+ getGroupColumnDisplay(group)">
+    <div *ngFor="let group of settings?.groupData?.groups"
+      [attr.data-imx-identifier]="'dst-groupbymenu-'+ getGroupColumnDisplay(group)">
       <button mat-menu-item (click)="onGroupSelected(group)">
         <span>{{ getGroupColumnDisplay(group) }}</span>
       </button>
     </div>
-    <div *ngFor="let category of settings?.groupData?.groupingCategories" [attr.data-imx-identifier]="'dst-groupbymenuNested-'+ category.property.Display">
+    <div *ngFor="let category of settings?.groupData?.groupingCategories"
+      [attr.data-imx-identifier]="'dst-groupbymenuNested-'+ category.property.Display">
       <mat-menu #groupByNestedMenu="matMenu">
-        <div *ngFor="let group of category.groups" [attr.data-imx-identifier]="'dst-groupbymenuNested-'+ category.property.Display + getGroupColumnDisplay(group)">
+        <div *ngFor="let group of category.groups"
+          [attr.data-imx-identifier]="'dst-groupbymenuNested-'+ category.property.Display + getGroupColumnDisplay(group)">
           <button mat-menu-item (click)="onGroupSelected(group, category)">
             <span>{{ getGroupColumnDisplay(group) }}</span>
           </button>
@@ -101,23 +122,28 @@
       </button>
     </div>
     <mat-divider></mat-divider>
-    <button mat-menu-item (click)="clearGroupedBy()" [disabled]="!settings?.groupData?.currentGrouping" data-imx-identifier="dst-button-groupbymenu-clear-groupby">
+    <button mat-menu-item (click)="clearGroupedBy()" [disabled]="!settings?.groupData?.currentGrouping"
+      data-imx-identifier="dst-button-groupbymenu-clear-groupby">
       <span class="link-button">{{ '#LDS#Clear grouping' | translate }}</span>
     </button>
   </mat-menu>
 
   <mat-menu #settingsMenu="matMenu">
-    <button mat-menu-item [disabled]="true">
+    <!-- ToDo Later-->
+    <!-- <button mat-menu-item [disabled]="true">
       <eui-icon icon="settings" class="imx-eui-icon"></eui-icon>
       <span>{{ '#LDS#View settings' | translate }}</span>
     </button>
-    <mat-divider></mat-divider>
-    <button mat-menu-item>
-      <span>{{ '#LDS#Additional columns' | translate }}</span>
+    <mat-divider></mat-divider> -->
+    <button mat-menu-item *ngIf="optionalColumns.length > 0"
+      (click)="updateAdditional()" data-imx-identifier="dst-menu-button-additional-table-columns">
+      {{'#LDS#Additional columns' | translate}}
     </button>
-    <button mat-menu-item>
+    <button mat-menu-item (click)="resetView()" data-imx-identifier="dst-menu-button-reset-view">
       <span>{{ '#LDS#Reset view' | translate }}</span>
     </button>
+    <!-- ToDo Later-->
+    <!-- 
     <button mat-menu-item>
       <span>{{ '#LDS#Save current view' | translate }}</span>
     </button>
@@ -127,17 +153,23 @@
     </button>
     <button mat-menu-item>
       <span>{{ '#LDS#Export data' | translate }}</span>
-    </button>
+    </button> -->
   </mat-menu>
 
-  <mat-chip-list *ngIf="!hiddenElementSet.has('filter')" #chipList class="imx-data-source-selected-filters"
+  <mat-chip-list *ngIf="optionset.has('filter') || optionset.has('filterTree')" #chipList class="imx-data-source-selected-filters"
     data-imx-identifier="dst-mat-chip-list-selected-filters">
     <span *ngIf="selectedFilters.length" translate>#LDS#Filtering on:</span>
-    <mat-chip *ngFor="let sf of selectedFilters" (click)="removeSelectedFilter(sf.filter, true, sf.selectedOption.Value, sf)"
+    <mat-chip *ngFor="let sf of selectedFilters"
+      (click)="removeSelectedFilter(sf.filter, true, sf.selectedOption.Value, sf)"
       [attr.data-imx-identifier]="'dst-mat-chip-selected-filters-chip-'+ sf.filter.Name +'-' + sf.selectedOption.Value">
       <span class="tag-name">{{ sf.selectedOption.Display }}</span>
       <eui-icon class="remove" icon="stop"
         [attr.data-imx-identifier]="'dst-mat-chip-selected-filters-chip-remove-'+ sf.filter.Name +'-' + sf.selectedOption.Value">
+      </eui-icon>
+    </mat-chip>
+    <mat-chip *ngIf="currentFilterData.length > 0" (click)="clearTreeFilter()" data-imx-identifier="dst-mat-chip-filter-tree-active">
+      <span class="tag-name">{{ '#LDS#Filter by {0}' |translate |ldsReplace:filterType }}</span>
+      <eui-icon class="remove" icon="stop" data-imx-identifier="dst-mat-chip-filter-tree-active-chip-remove">
       </eui-icon>
     </mat-chip>
   </mat-chip-list>

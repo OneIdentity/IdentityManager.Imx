@@ -24,24 +24,34 @@
  *
  */
 
-import { Injectable } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
-import { TranslateService } from "@ngx-translate/core";
-import { ConfigNodeData } from "imx-api-qbm";
-import { MessageDialogResult } from "../message-dialog/message-dialog-result.enum";
-import { MessageDialogComponent } from "../message-dialog/message-dialog.component";
-import { imx_SessionService } from "../session/imx-session.service";
-import { SnackBarService } from "../snackbar/snack-bar.service";
-import { ConfigSection, KeyData } from "./config-section";
+import { Injectable } from '@angular/core';
+import { EuiLoadingService } from '@elemental-ui/core';
+
+import { ConfigNodeData, ConfigSettingType } from 'imx-api-qbm';
+import { ConfirmationService } from '../confirmation/confirmation.service';
+import { imx_SessionService } from '../session/imx-session.service';
+import { SnackBarService } from '../snackbar/snack-bar.service';
+import { ConfigSection, KeyData } from './config-section';
 
 @Injectable()
 export class ConfigService {
-  constructor(
-    private readonly session: imx_SessionService,
-    private readonly dialog: MatDialog,
-    private readonly translator: TranslateService,
-    private readonly snackbar: SnackBarService) {
+
+  public get pendingChangeCount(): number {
+    return Object.keys(this.pendingChanges).length;
   }
+
+  public appId: string;
+
+  /** all sections */
+  public sections: ConfigSection[] = [];
+
+  /** view model for the sections */
+  public sectionsFiltered: ConfigSection[] = [];
+
+  public readonly filter: {
+    customized?: boolean,
+    keywords?: string
+  } = {};
 
   private pendingChanges: {
     [appId: string]: {
@@ -49,45 +59,67 @@ export class ConfigService {
     }
   } = {};
 
-  public appId: string;
-  /** all sections */
-  sections: ConfigSection[] = [];
-
-  /** view model for the sections */
-  sectionsFiltered: ConfigSection[] = [];
-
-  public readonly filter: {
-    customized?: boolean,
-    keywords?: string
-  } = {};
+  constructor(
+    private readonly session: imx_SessionService,
+    private readonly confirmationService: ConfirmationService,
+    private readonly busySvc: EuiLoadingService,
+    private readonly snackbar: SnackBarService) {
+  }
 
   /** Returns display information about the pending changes to keys. */
   public getPendingChanges(): string[][] {
     const result: string[][] = [];
     for (const appId in this.pendingChanges) {
-      if (Object.prototype.hasOwnProperty.call(this.pendingChanges, appId))
+      if (Object.prototype.hasOwnProperty.call(this.pendingChanges, appId)) {
         for (const elem of Object.values(this.pendingChanges[appId])) {
           result.push([appId, ...elem.DisplayPath]);
         }
+      }
     }
     return result;
   }
 
-  public get pendingChangeCount() {
-    return Object.keys(this.pendingChanges).length;
-  }
-
-  private initForAppId() {
-    if (!this.pendingChanges[this.appId])
-      this.pendingChanges[this.appId] = {};
-  }
-
-  public addChange(conf: KeyData) {
+  public addChange(conf: KeyData): void {
     this.initForAppId();
     this.pendingChanges[this.appId][conf.Path] = conf;
   }
 
-  public async revert(conf: KeyData) {
+  public async addKey(path: string): Promise<void> {
+    await this.session.Client.admin_apiconfigsingle_post(this.appId, path);
+  }
+
+  public getLocalCustomizations(): string[][] {
+    var result: string[][] = [];
+
+    for (var s of this.sections) {
+      for (var key of s.Keys) {
+        if (key.HasCustomLocalValue)
+          result.push(key.DisplayPath);
+      }
+    }
+    return result;
+  }
+
+  public async convert(): Promise<void> {
+    const overlay = this.busySvc.show();
+    try {
+      await this.session.Client.admin_apiconfig_convert_post(this.appId);
+
+      for (var s of this.sections) {
+        for (var key of s.Keys) {
+          if (key.HasCustomLocalValue) {
+            key.HasCustomGlobalValue = true;
+            key.HasCustomLocalValue = false;
+          }
+        }
+      }
+    }
+    finally {
+      this.busySvc.hide(overlay);
+    }
+  }
+
+  public async revert(conf: KeyData): Promise<void> {
     // delete pending change if there is one
     if (this.pendingChanges[this.appId]) {
       delete this.pendingChanges[this.appId][conf.Path];
@@ -104,23 +136,18 @@ export class ConfigService {
   }
 
   public async revertAll(isGlobal: boolean): Promise<void> {
-    const result = await this.dialog.open(MessageDialogComponent, {
-      data: {
-        ShowYesNo: true,
-        Title: await this.translator.get('#LDS#Heading Reset Configuration').toPromise(),
-        Message: await this.translator.get('#LDS#Are you sure you want to reset all customized configuration values?').toPromise()
-      },
-      panelClass: 'imx-messageDialog'
-    }).afterClosed().toPromise();
-
-    if (result === MessageDialogResult.YesResult) {
+    if (await this.confirmationService.confirm({
+      Title: '#LDS#Heading Reset Configuration',
+      Message: '#LDS#Are you sure you want to reset all customized configuration values?',
+      identifier: 'config-confirm-reset-configuration'
+    })) {
       await this.session.Client.admin_apiconfig_revert_post(this.appId, isGlobal);
       delete this.pendingChanges[this.appId];
       this.load();
     }
   }
 
-  public async submit(isGlobal: boolean) {
+  public async submit(isGlobal: boolean): Promise<void> {
     const changeObj: {
       [id: string]: any
     } = {};
@@ -132,8 +159,8 @@ export class ConfigService {
       }
     }
 
-    for (var appId in this.pendingChanges) {
-      await this.session.Client.admin_apiconfig_post(appId, isGlobal, changeObj)
+    for (let appId in this.pendingChanges) {
+      await this.session.Client.admin_apiconfig_post(appId, isGlobal, changeObj);
     }
     this.pendingChanges = {};
     this.load();
@@ -141,11 +168,11 @@ export class ConfigService {
       ? '#LDS#Your changes have been successfully saved. The changes apply to all API Server instances connected to the software update process. It may take some time for the changes to take effect.'
       : '#LDS#Your changes have been successfully saved. The changes only apply to this API Server and will be lost when you restart the server.';
     this.snackbar.open({
-      key: key
+      key
     });
   }
 
-  public async load() {
+  public async load(): Promise<void> {
     // remove data from unselected project
     this.sections = [];
     this.sectionsFiltered = [];
@@ -155,19 +182,39 @@ export class ConfigService {
     const result: ConfigSection[] = [];
     for (const topLevelNode of configNodes) {
       const keyData: KeyData[] = [];
-      this.flatten(keyData, topLevelNode, "", []);
+      const settingsSupportingAdd: KeyData[] = [];
+      this.flatten(keyData, topLevelNode, '', [], settingsSupportingAdd);
 
-      var name = topLevelNode.Name;
-      if (!name)
+      let name = topLevelNode.Name;
+      if (!name) {
         name = topLevelNode.Key;
-      result.push(new ConfigSection(name, topLevelNode.Description, keyData));
+      }
+      result.push(new ConfigSection(name, topLevelNode.Description, keyData, settingsSupportingAdd));
     }
 
     this.sections = result;
     this.search();
   }
 
-  private flatten(keyData: KeyData[], node: ConfigNodeData, path: string, displayPath: string[]) {
+  public async search(): Promise<void> {
+    const keywords = this.filter.keywords;
+    let result = this.sections;
+    if (keywords || this.filter.customized) {
+      result = result
+        .map(d => this.matchesSection(d, keywords, this.filter.customized))
+        .filter(d => d.Keys.length > 0);
+    }
+
+    this.sectionsFiltered = result;
+  }
+
+  private initForAppId(): void {
+    if (!this.pendingChanges[this.appId]) {
+      this.pendingChanges[this.appId] = {};
+    }
+  }
+
+  private flatten(keyData: KeyData[], node: ConfigNodeData, path: string, displayPath: string[], settingsSupportingAdd: KeyData[]): void {
 
     const thisPath = path + node.Key;
     for (const n of node.Settings) {
@@ -179,32 +226,33 @@ export class ConfigService {
       keyData.push({
         ...n,
         DisplayPath: [...displayPath, n.Name],
-        Path: thisPath + "/" + n.Key,
-        searchTerms: searchTerms
+        Path: thisPath + '/' + n.Key,
+        searchTerms
+      });
+
+    }
+
+    if (node.CanAddSetting) {
+      settingsSupportingAdd.push({
+        Name: node.Name,
+        Key: node.Key,
+        Description: node.Description,
+        Type: ConfigSettingType.None,
+        DisplayPath: [...displayPath],
+        Path: thisPath,
+        searchTerms: []
       });
     }
 
     for (const n of node.Children) {
-      this.flatten(keyData, n, thisPath + "/", [...displayPath, n.Name]);
+      this.flatten(keyData, n, thisPath + '/', [...displayPath, n.Name], settingsSupportingAdd);
     }
-  }
-
-  public async search(): Promise<void> {
-    const keywords = this.filter.keywords;
-    var result = this.sections;
-    if (keywords || this.filter.customized) {
-      result = result
-        .map(d => this.matchesSection(d, keywords, this.filter.customized))
-        .filter(d => d.Keys.length > 0);
-    }
-
-    this.sectionsFiltered = result;
   }
 
   private matchesSection(section: ConfigSection, keywords: string, onlyCustomized: boolean): ConfigSection {
     const matching = section.Keys.filter(d => this.matches(d, keywords, onlyCustomized));
 
-    return new ConfigSection(section.Title, section.Description, matching);
+    return new ConfigSection(section.Title, section.Description, matching, section.SettingsSupportingAdd);
   }
 
   private matches(d: KeyData, keywords: string, onlyCustomized: boolean): boolean {
@@ -218,7 +266,4 @@ export class ConfigService {
 
     return false;
   }
-
-
-
 }

@@ -32,7 +32,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IdentitiesWorkflowComponent } from './identities-workflow.component';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DataIssuesService } from '../data-issues.service';
-import { of } from 'rxjs';
+import { UserModelService } from 'qer';
 
 describe('IdentitiesWorkflowComponent', () => {
   let component: IdentitiesWorkflowComponent;
@@ -46,6 +46,7 @@ describe('IdentitiesWorkflowComponent', () => {
         useValue: { close: () => {} },
       },
       DataIssuesService,
+      UserModelService
     ],
   });
 

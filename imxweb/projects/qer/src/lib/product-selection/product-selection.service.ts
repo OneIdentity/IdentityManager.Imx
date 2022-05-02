@@ -49,13 +49,21 @@ export class ProductSelectionService {
         UID_AccProductGroupParent?: string;
         IncludeChildCategories?: boolean;
     }): Promise<TypedEntityCollectionData<PortalShopCategories>> {
-        const opts = {
-            ...navigationState,
+        const opts: CollectionLoadParameters = {
+            StartIndex: navigationState.StartIndex,
+            OrderBy: navigationState.OrderBy,
+            PageSize: navigationState.PageSize,
+            filter: navigationState.filter,
+            search: navigationState.search,
             UID_Person: navigationState.UID_Person,
-            ParentKey: navigationState.UID_AccProductGroupParent
-                ? navigationState.UID_AccProductGroupParent
-                : "" // empty string: first level
         };
+
+        if (!navigationState.search || navigationState.search === '') {
+            opts.ParentKey = navigationState.UID_AccProductGroupParent
+            ? navigationState.UID_AccProductGroupParent
+            : "" // empty string: first level
+          }
+        
         return this.qerClient.typedClient.PortalShopCategories.Get(opts);
     }
 }

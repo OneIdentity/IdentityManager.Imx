@@ -1,0 +1,11 @@
+<div eui-sidesheet-content>
+  <mat-card>
+    <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"></imx-cdr-editor>
+  </mat-card>
+</div>
+
+<div eui-sidesheet-actions color="white">
+  <button mat-stroked-button [euiDownload]="reportDownload" class="justify-start" data-imx-identifier="rules-sidesheet-button-download-report">
+    {{ '#LDS#Download report' | translate }}
+  </button>
+</div>

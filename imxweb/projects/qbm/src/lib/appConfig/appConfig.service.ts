@@ -29,7 +29,7 @@ import { Injectable, ErrorHandler, Injector } from '@angular/core';
 
 import { AppConfig } from './appConfig.interface';
 import { ApiClientFetch } from '../api-client/api-client-fetch';
-import { V2Client, Client } from 'imx-api-qbm';
+import { V2Client, Client, ImxConfig } from 'imx-api-qbm';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ApiClient } from 'imx-qbm-dbts';
@@ -37,25 +37,17 @@ import { ApiClient } from 'imx-qbm-dbts';
 // @dynamic
 @Injectable()
 export class AppConfigService {
-  public get Config(): AppConfig {
-    return this.config;
-  }
-  public get BaseUrl(): string {
-    return this.baseUrl;
-  }
+  public get Config(): AppConfig { return this.config; }
+  public get BaseUrl(): string { return this.baseUrl; }
 
   private _client: Client;
-  public get client(): Client {
-    return this._client;
-  }
+  public get client(): Client { return this._client; }
 
   private _v2client: V2Client;
   public get v2client(): V2Client { return this._v2client; }
 
   private _apiClient: ApiClient;
-  public get apiClient(): ApiClient {
-    return this._apiClient;
-  }
+  public get apiClient(): ApiClient { return this._apiClient; }
 
   private config: AppConfig;
   private baseUrl: string;
@@ -65,7 +57,7 @@ export class AppConfigService {
     private readonly logger: ClassloggerService,
     private readonly errorHandler: ErrorHandler,
     private readonly injector: Injector
-  ) {}
+  ) { }
 
   public async init(apiServerUrl: string): Promise<void> {
     this.config = (await this.httpClient.get('appconfig.json').toPromise()) as AppConfig;
@@ -73,22 +65,35 @@ export class AppConfigService {
     await this.client.loadSchema();
   }
 
-  public init2(apiServerUrl: string, config: any): void {
+  public initSynchronous(apiServerUrl: string, config: AppConfig): void {
     this.config = config;
+    const basepathArray = window.location.pathname.split('html');
+    this.config.Basepath = basepathArray[0].slice(0, -1);
     this.initialize(apiServerUrl);
   }
 
-  public async loadSchema2(): Promise<void> {
+  public async loadSchema(): Promise<void> {
     await this.client.loadSchema();
   }
 
   private initialize(apiServerUrl: string): void {
-    this.baseUrl = apiServerUrl || window.location.origin + (this.config.Basepath || '');
+    this.baseUrl = apiServerUrl || (window.location.origin + (this.config.Basepath || ''));
 
     // avoid cyclic dependency
     const translation = this.injector.get(TranslateService);
     this._apiClient = new ApiClientFetch(this.errorHandler, this.baseUrl, this.logger, translation);
     this._client = new Client(this._apiClient);
     this._v2client = new V2Client(this._apiClient, this._client);
+  }
+
+ 
+  private _imxConfig: Promise<ImxConfig>;
+
+  /** Returns the cached ImxConfig object. */
+  public getImxConfig(): Promise<ImxConfig> {
+    if (this._imxConfig)
+      return this._imxConfig;
+    this._imxConfig = this.client.imx_config_get();
+    return this._imxConfig;
   }
 }

@@ -1,0 +1,11 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+ul {
+  margin: 1em;
+  max-height: 200px;
+  overflow: auto;
+}
+
+li {
+  list-style-type: disc;
+}

@@ -96,7 +96,9 @@ describe('RequestConfigMembersComponent', () => {
     let dialogOpenSpy: jasmine.Spy;
     let isMobileSpy: jasmine.Spy;
     const expectedDialogData = {
-      get: jasmine.anything(), hasSearchParameter: true, isMultiValue: true
+      get: jasmine.anything(), 
+      GetFilterTree: jasmine.anything(), 
+      hasSearchParameter: true, isMultiValue: true
     };
     beforeEach(() => {
       dialogOpenSpy = spyOn<any>(component['matDialog'], 'open').and.callFake(() => RequestsConfigurationCommonMocks.mockDialogRef);

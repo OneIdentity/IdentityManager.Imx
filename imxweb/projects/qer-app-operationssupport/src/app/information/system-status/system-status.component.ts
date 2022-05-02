@@ -24,16 +24,14 @@
  *
  */
 
-import { Observable, Subject, Subscription, interval } from 'rxjs';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
+import { Observable, Subject, Subscription, interval } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { MatDialog } from '@angular/material/dialog';
-import { TranslateService } from '@ngx-translate/core';import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { SystemStatusService } from './system-status.service';
-import { MessageParameter, MessageDialogComponent, ClassloggerService, MessageDialogResult } from 'qbm';
-
 import { SystemStatusInformation } from './system-status-information.interface';
+import { ConfirmationService } from 'qbm';
 
 @Component({
   templateUrl: './system-status.component.html',
@@ -96,11 +94,9 @@ export class SystemStatusComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   constructor(
-    private sanitizer: DomSanitizer,
-    private statusService: SystemStatusService,
-    private dialog: MatDialog,
-    private translationProvider: TranslateService,
-    private logger: ClassloggerService,
+    private readonly sanitizer: DomSanitizer,
+    private readonly statusService: SystemStatusService,
+    private readonly confirmationService: ConfirmationService
   ) { }
 
   public async ngOnInit(): Promise<void> {
@@ -119,17 +115,13 @@ export class SystemStatusComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const messageParameter: MessageParameter = { ShowYesNo: true };
-    messageParameter.Title = await this.translationProvider.get('#LDS#Stop DBQueue').toPromise();
-    messageParameter.Message = await this.translationProvider.get('#LDS#Are you sure you want to stop the DBQueue?').toPromise();
-
-    const dialogRef = this.dialog.open(MessageDialogComponent, { data: messageParameter, panelClass: 'imx-messageDialog' });
-    dialogRef.afterClosed().subscribe((result: MessageDialogResult) => {
-      this.logger.debug(this, `Dialog result: ${result}`);
-      if (result === MessageDialogResult.YesResult) {
-        this.changeIsDbServiceDisabled();
-      }
-    });
+    if (await this.confirmationService.confirm({
+      Title: '#LDS#Stop DBQueue',
+      Message: '#LDS#Are you sure you want to stop the DBQueue?',
+      identifier: 'system-status-confirm-stop-dbqueue'
+    })) {
+      this.changeIsDbServiceDisabled();
+    }
   }
 
   public async toggleJobQueue(): Promise<void> {
@@ -138,18 +130,13 @@ export class SystemStatusComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const messageParameter: MessageParameter = { ShowYesNo: true };
-    messageParameter.Title = await this.translationProvider.get('#LDS#Stop job queue').toPromise();
-    messageParameter.Message = await this.translationProvider.get('#LDS#Are you sure you want to stop the job queue?').toPromise();
-
-    const dialogRef = this.dialog.open(MessageDialogComponent, { data: messageParameter, panelClass: 'imx-messageDialog' });
-
-    dialogRef.afterClosed().subscribe((result: MessageDialogResult) => {
-      this.logger.debug(this, `Dialog result: ${result}`);
-      if (result === MessageDialogResult.YesResult) {
-        this.changeIsJobServiceDisabled();
-      }
-    });
+    if (await this.confirmationService.confirm({
+      Title: '#LDS#Stop job queue',
+      Message: '#LDS#Are you sure you want to stop the job queue?',
+      identifier: 'system-status-confirm-stop-jobqueue'
+    })) {
+      this.changeIsJobServiceDisabled();
+    }
   }
 
   private changeIsJobServiceDisabled(): void {

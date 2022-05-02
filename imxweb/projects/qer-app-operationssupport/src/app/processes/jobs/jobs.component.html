@@ -1,24 +1,15 @@
-<h1 class="mat-headline">
-  {{ '#LDS#Processes' | translate }}
-</h1>
-<mat-slide-toggle [ngStyle]="{ 'padding-bottom': '4vh' }" color="primary" [(ngModel)]="isShowGraph" data-imx-identifier="jobs-toggle-showGraph">
-  {{ '#LDS#Toggle Table/Graph View' | translate }}
-</mat-slide-toggle>
-<div [style.display]="isShowGraph ? 'none' : 'block'">
-  <div [hidden]="numberOfJobs === 0 && selectedFilter === ''" class="imx-filter-line">
-    <imx-filter-tile
-      *ngFor="let filter of filters"
-      (checkedChanged)="handleCheckClick($event)"
-      [isChecked]="selectedFilter === filter.value"
-      [caption]="filter.caption"
-      [value]="filter.value"
-      [groupName]="filter.groupname"
-      class="imx-filter-item"
-    >
-    </imx-filter-tile>
-  </div>
-  <imx-jobs-gridview class="imx-job-grid" [filterSetting]="parameterForGrid" (refreshRequested)="refresh()"> </imx-jobs-gridview>
-  <!-- Hack to prevent billboard legend from appearing squished with display:block, push it always out of view -->
-  <div [ngStyle]="{ visibility: 'hidden', height: '100vh' }"></div>
+<div class="imx-heading-wrapper">
+  <h1 class="mat-headline" translate>#LDS#Processes</h1>
+  <eui-alert class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" [dismissable]="false">
+    <span>{{infoText | translate}}</span>
+  </eui-alert>
 </div>
-<imx-jobqueue-overview></imx-jobqueue-overview>
+
+<mat-slide-toggle class="jobs-toggle-showGraph" color="primary" [checked]="isShowGraph"
+  (change)="isShowGraph = !isShowGraph" data-imx-identifier="jobs-toggle-showGraph">
+  <span [translate]="isShowGraph ? '#LDS#Chart view' : '#LDS#Table view'"></span>
+</mat-slide-toggle>
+<imx-jobs-gridview [style.display]="isShowGraph ? 'none' : 'flex'" class="imx-job-grid"
+  [preselectFailed]="failed">
+</imx-jobs-gridview>
+<imx-jobqueue-overview [isShowGraph]="isShowGraph" [style.display]="isShowGraph ? 'flex' : 'none'"></imx-jobqueue-overview>

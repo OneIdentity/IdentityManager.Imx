@@ -31,6 +31,7 @@ import {
   EntityCollectionData,
   ExtendedTypedEntityCollection,
   FilterData,
+  FilterTreeData,
   GroupInfo,
   TypedEntityCollectionData
 } from 'imx-qbm-dbts';
@@ -61,7 +62,8 @@ export class AttestationHistoryService {
         const parameterDataContainer = this.parameterDataService.createContainer(
           item.GetEntity(),
           { ...collection.extendedData, ...{ index } },
-          parameters => this.getParameterCandidates(parameters)
+          parameters => this.getParameterCandidates(parameters),
+          treefilterparameter => this.getFilterTree(treefilterparameter)
         );
 
         return new AttestationHistoryCase(item, parameterDataContainer, { ...collection.extendedData, ...{ index } });
@@ -101,7 +103,18 @@ export class AttestationHistoryService {
       parameters.filter,
       null,
       parameters.search,
-      parameters.parentKey,
+      parameters.ParentKey,
+      parameters.diffData
+    );
+  }
+
+  private async getFilterTree(parameters: ParameterDataLoadParameters): Promise<FilterTreeData>
+  {
+    return this.attClient.client.portal_attestation_case_parameter_candidates_filtertree_post(
+      parameters.columnName,
+      parameters.fkTableName,
+      parameters.filter,
+      parameters.ParentKey,
       parameters.diffData
     );
   }

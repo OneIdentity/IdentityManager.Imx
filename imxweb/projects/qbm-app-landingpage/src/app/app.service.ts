@@ -52,7 +52,7 @@ export class AppService {
   public async init(): Promise<void> {
     await this.config.init(environment.clientUrl);
 
-    const imxConfig = await this.config.client.imx_config_get();
+    const imxConfig = await this.config.getImxConfig();
     const name = imxConfig.ProductName  || Globals.QIM_ProductNameFull;
     const title = `${name} ${this.config.Config.Title}`;
     this.logger.debug(this, 'Set page title to', title);

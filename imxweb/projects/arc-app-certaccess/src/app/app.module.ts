@@ -60,11 +60,13 @@ import {
   RequestHistoryModule,
   TilesModule,
   IdentitiesModule,
+  DelegationModule,
+  RoleManangementModule
 } from 'qer';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { CommonModule } from '@angular/common';
 import { DataExplorerModule } from './data-explorer/data-explorer.module';
-import { UnsgroupsModule } from './responsibilities/unsgroups/unsgroups.module';
+import { UnsgroupsModule} from './responsibilities/unsgroups/unsgroups.module';
 import { GovernanceMastheadModule } from './governance-masthead/governance-masthead.module';
 import { ReportsModule } from './reports/reports.module';
 import { AdminGuardService } from './services/admin-guard.service';
@@ -73,13 +75,20 @@ import { TsbConfigModule } from 'tsb';
 import { SubscriptionsModule } from 'rps';
 import { ConfigurationModule } from './configuration/configuration.module';
 import { TeamsModule } from 'o3t';
+import { AadConfigModule, AzureAdModule } from 'aad';
 import { DashboardPluginComponent } from './dashboard-plugin/dashboard-plugin.component';
 import { RequestShopAlertComponent } from './configuration/request-shop-alert/request-shop-alert.component';
 import { environment } from '../environments/environment';
 import appConfigJson from '../appconfig.json';
+import { OpsWebLinkPluginComponent } from './dashboard-plugin/opsweblink-plugin.component';
 
 @NgModule({
-  declarations: [AppComponent, DashboardPluginComponent, RequestShopAlertComponent],
+  declarations: [
+    AppComponent,
+    DashboardPluginComponent,
+    OpsWebLinkPluginComponent,
+    RequestShopAlertComponent
+  ],
   imports: [
     CommonModule,
     QbmModule,
@@ -102,6 +111,7 @@ import appConfigJson from '../appconfig.json';
     UnsgroupsModule,
     ProfileModule,
     ReportsModule,
+    DelegationModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -121,14 +131,16 @@ import appConfigJson from '../appconfig.json';
     ServiceCategoriesModule,
     RequestHistoryModule,
     ApprovalsModule,
+    RoleManangementModule,
     SubscriptionsModule,
     TsbConfigModule,
-    TilesModule,
+    AzureAdModule,
     TeamsModule,
+    AadConfigModule,
+    TilesModule,
+    TeamsModule
   ],
   providers: [
-    { provide: 'environment', useValue: environment },
-    { provide: 'appConfigJson', useValue: appConfigJson },
     {
       provide: APP_INITIALIZER,
       useFactory: AppService.init,
@@ -146,14 +158,16 @@ import appConfigJson from '../appconfig.json';
     },
     CdrRegistryService,
     AdminGuardService,
+    { provide: 'environment', useValue: environment },
+    { provide: 'appConfigJson', useValue: appConfigJson },
+
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent],
 })
 export class AppModule {
-  constructor(private readonly logger: ClassloggerService) {
-    this.logger.info(this, '🔥 Cert Access loaded');
+  constructor(logger: ClassloggerService) {
+    logger.info(this, '▶️ Cert Access loaded');
 
-    this.logger.info(this, '▶️ Cert Access initialized');
   }
 }

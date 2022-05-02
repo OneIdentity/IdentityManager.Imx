@@ -1,0 +1,32 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+.imx-tab-content-body {
+  flex: 1;
+  padding: 32px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.imx-action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  background-color: $white;
+  padding: 16px 32px;
+  margin: 16px 32px;
+
+  .imx-selected-items {
+    justify-self: flex-start;
+    margin: 0;
+    line-height: 36px;
+  }
+  > :not(:last-child){
+    margin-right: 5px;
+  }
+
+  .imx-menu-spacer {
+    flex-grow: 1;
+  }
+}

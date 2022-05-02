@@ -48,6 +48,8 @@ import {
   GroupsModule
 } from 'tsb';
 import { TeamsModule } from 'o3t';
+import { AzureAdModule } from 'aad';
+
 import { AdminGuardService } from '../services/admin-guard.service';
 
 const routes: Routes = [
@@ -106,7 +108,8 @@ const routes: Routes = [
     LdsReplaceModule,
     DataTreeModule,
     AttestationRunsModule,
-    TeamsModule
+    TeamsModule,
+    AzureAdModule
   ],
   providers: [DataIssuesService],
   exports: [DataExplorerComponent],

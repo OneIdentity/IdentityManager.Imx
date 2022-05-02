@@ -27,7 +27,7 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
@@ -39,6 +39,7 @@ import {
   DataTableModule,
   LdsReplaceModule,
   MultiSelectFormcontrolModule,
+  UserMessageModule,
   RouteGuardService
 } from 'qbm';
 import { ReportSelectorComponent } from './subscription-wizard/report-selector/report-selector.component';
@@ -49,6 +50,9 @@ import { SubscriptionPropertiesComponent } from './subscription-properties/subsc
 import { SubscriptionsComponent } from './subscriptions.component';
 import { SubscriptionsService } from './subscriptions.service';
 import { SubscriptionWizardComponent } from './subscription-wizard/subscription-wizard.component';
+import { ReportViewConfigComponent } from './report-view-config/report-view-config.component';
+import { HttpClientModule } from '@angular/common/http';
+import { OverlayModule } from '@angular/cdk/overlay';
 
 
 const routes: Routes = [
@@ -63,6 +67,7 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     ReportSelectorComponent,
+    ReportViewConfigComponent,
     SubscriptionDetailsComponent,
     SubscriptionPropertiesComponent,
     SubscriptionOverviewComponent,
@@ -77,12 +82,16 @@ const routes: Routes = [
     DataTableModule,
     EuiCoreModule,
     EuiMaterialModule,
+    FormsModule,
+    HttpClientModule,
     LdsReplaceModule,
     MultiSelectFormcontrolModule,
+    OverlayModule,
     ReactiveFormsModule,
     RouterModule.forChild(routes),
     ScrollingModule,
-    TranslateModule
+    TranslateModule,
+    UserMessageModule
   ],
   providers: [
     ReportSubscriptionService,

@@ -26,15 +26,15 @@
 
 import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { PortalSubscription } from 'imx-api-rps';
 import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings, MessageDialogComponent, MessageDialogResult, SnackBarService } from 'qbm';
+import { ConfirmationService, DataSourceToolbarSettings, SnackBarService } from 'qbm';
 import { ReportSubscription } from './report-subscription/report-subscription';
 import { ReportSubscriptionService } from './report-subscription/report-subscription.service';
+import { ReportViewConfigComponent } from './report-view-config/report-view-config.component';
 import { SubscriptionDetailsComponent } from './subscription-details/subscription-details.component';
 import { SubscriptionWizardComponent } from './subscription-wizard/subscription-wizard.component';
 import { SubscriptionsService } from './subscriptions.service';
@@ -58,7 +58,7 @@ export class SubscriptionsComponent implements OnInit {
   constructor(
     private readonly subscriptionService: SubscriptionsService,
     private readonly rpsReportService: ReportSubscriptionService,
-    private readonly dialog: MatDialog,
+    private readonly confirmationService: ConfirmationService,
     private readonly sideSheet: EuiSidesheetService,
     private readonly snackbar: SnackBarService,
     private readonly translator: TranslateService,
@@ -106,25 +106,19 @@ export class SubscriptionsComponent implements OnInit {
   public async sendMail(subscription: PortalSubscription, withCc: boolean): Promise<void> {
     await this.subscriptionService.sendMail(subscription.GetEntity().GetKeys()[0], withCc);
     this.snackbar.open({
-      key: withCc ?
-        '#LDS#The report "{0}" will be sent to all subscribers.' : '#LDS#The report "{0}" will be sent to you.'
-      , parameters: [subscription.UID_RPSReport.Column.GetDisplayValue()]
-    }, '#LDS#Close');
+      key: withCc
+        ? '#LDS#The report "{0}" will be sent to all subscribers.'
+        : '#LDS#The report "{0}" will be sent to you.',
+      parameters: [subscription.UID_RPSReport.Column.GetDisplayValue()]
+    });
   }
 
   public async delete(subscription: PortalSubscription): Promise<void> {
-    const dialogRef = this.dialog.open(MessageDialogComponent, {
-      data: {
-        ShowOk: true,
-        ShowCancel: true,
-        Title: await this.translator.get('#LDS#Heading Unsubscribe Report').toPromise(),
-        Message: await this.translator.get('#LDS#Do you want to unsubscribe from this report?').toPromise()
-      },
-      panelClass: 'imx-messageDialog'
-    });
-
-    const result = await dialogRef.afterClosed().toPromise();
-    if (result === MessageDialogResult.OkResult) {
+    if (await this.confirmationService.confirm({
+      Title: '#LDS#Heading Unsubscribe Report',
+      Message: '#LDS#Do you want to unsubscribe from this report?',
+      identifier: 'subscriptions-confirm-unsubscribe-report'
+    })) {
       let overlayRef: OverlayRef;
       setTimeout(() => overlayRef = this.busyService.show());
       try {
@@ -138,7 +132,7 @@ export class SubscriptionsComponent implements OnInit {
       };
 
       this.navigate();
-      this.snackbar.open(message, '#LDS#Close');
+      this.snackbar.open(message);
     }
   }
 
@@ -174,14 +168,33 @@ export class SubscriptionsComponent implements OnInit {
   public async createSubscription(): Promise<void> {
     const sidesheetRef = this.sideSheet.open(SubscriptionWizardComponent, {
       title: await this.translator.get('#LDS#Heading Add Report Subscription').toPromise(),
+      bodyColour: 'asher-gray',
       headerColour: 'iris-blue',
       padding: '0px',
       width: '70%',
       disableClose: true,
+      testId: 'subscriptions-create',
     });
 
     if (await sidesheetRef.afterClosed().toPromise()) {
-      this.snackbar.open({ key: '#LDS#The subscription has been successfully created.' }, '#LDS#Close');
+      this.snackbar.open({ key: '#LDS#The subscription has been successfully created.' });
+
+      return this.navigate();
+    }
+  }
+
+  public async viewReport(): Promise<void> {
+    const sidesheetRef = this.sideSheet.open(ReportViewConfigComponent, {
+      title: await this.translator.get('#LDS#Heading View a Report').toPromise(),
+      bodyColour: 'asher-gray',
+      headerColour: 'iris-blue',
+      padding: '0px',
+      width: '70%',
+      testId: 'subscriptions-view-config',
+    });
+
+    if (await sidesheetRef.afterClosed().toPromise()) {
+      this.snackbar.open({ key: '#LDS#The subscription has been successfully created.' });
 
       return this.navigate();
     }

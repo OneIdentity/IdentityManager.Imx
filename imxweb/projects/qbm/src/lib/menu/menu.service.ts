@@ -38,6 +38,10 @@ export class MenuService {
     this.factories.push(...factories);
   }
 
+  public clearFactories(): void {
+    this.factories = [];
+  }
+
   public getMenuItems(preProps: string[], groups: string[], allowEmpty: boolean = false): MenuItem[] {
     const menuItems: MenuItem[] = [];
 

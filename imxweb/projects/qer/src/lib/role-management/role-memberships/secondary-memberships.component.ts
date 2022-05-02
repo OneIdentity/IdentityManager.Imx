@@ -24,11 +24,14 @@
  *
  */
 
+import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetConfig, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
+
 import { OwnershipInformation } from 'imx-api-qer';
-import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, IEntity, TypedEntity, XOrigin } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, IEntity, TypedEntity, XOrigin } from 'imx-qbm-dbts';
+
 import { DataSourceItemStatus, DataSourceToolbarSettings, DataTableComponent } from 'qbm';
 import { SourceDetectiveSidesheetData } from '../../sourcedetective/sourcedetective-sidesheet.component';
 import { SourceDetectiveSidesheetComponent } from '../../sourcedetective/sourcedetective-sidesheet.component';
@@ -40,7 +43,7 @@ import { RemoveMembershipComponent } from './remove-membership.component';
 @Component({
   selector: 'imx-secondary-memberships',
   templateUrl: './secondary-memberships.component.html',
-  styleUrls: ['./secondary-memberships.component.scss', '../sidesheet.scss'],
+  styleUrls: ['./secondary-memberships.component.scss', '../sidesheet.scss', './role-sidesheet-tabs.scss'],
 })
 export class SecondaryMembershipsComponent implements OnInit {
   public dstSettings: DataSourceToolbarSettings;
@@ -52,23 +55,15 @@ export class SecondaryMembershipsComponent implements OnInit {
     enabled: (item: TypedEntity) => true,
   };
 
-  public canDeleteAllSelected(): boolean {
-    if (this.selectedEntities.length < 1)
-      return false;
-
-    return this.selectedEntities.filter(item => {
-      // is it a direct assignment?
-      return ((XOrigin.Direct & item.GetEntity().GetColumn('XOrigin').GetValue()) == XOrigin.Direct)
-        || item.GetEntity().GetColumn('IsRequestCancellable').GetValue();
-    }).length == this.selectedEntities.length;
-  }
-
   @Input() public entity: IEntity;
+  @Input() public isAdmin: boolean;
   @Input() public ownershipInfo: OwnershipInformation;
 
   @ViewChild('dataTable') public dataTable: DataTableComponent<TypedEntity>;
 
   private selectedEntities: TypedEntity[] = [];
+
+  private dataModel: DataModel;
 
   constructor(
     private readonly sidesheet: EuiSidesheetService,
@@ -79,8 +74,12 @@ export class SecondaryMembershipsComponent implements OnInit {
     this.navigationState = {};
   }
 
+  public canDeleteAllSelected(): boolean {
+    return this.selectedEntities.length > 0;
+  }
+
   public async ngOnInit(): Promise<void> {
-    this.entitySchema = this.membershipService.getMembershipEntitySchema(this.ownershipInfo, 'get');
+    this.entitySchema = this.membershipService.getMembershipEntitySchema(this.ownershipInfo.TableName, 'get');
     this.displayColumns = [
       this.entitySchema.Columns.UID_Person,
       this.entitySchema.Columns.XDateInserted,
@@ -88,6 +87,15 @@ export class SecondaryMembershipsComponent implements OnInit {
       this.entitySchema.Columns.XOrigin,
       this.entitySchema.Columns.ValidUntil,
     ];
+
+    let overlayRef: OverlayRef;
+    setTimeout(() => (overlayRef = this.busyService.show()));
+
+    try {
+      this.dataModel = await this.membershipService.getDataModel(this.ownershipInfo.TableName, this.isAdmin);
+    } finally {
+      setTimeout(() => this.busyService.hide(overlayRef));
+    }
 
     await this.navigate();
   }
@@ -107,16 +115,27 @@ export class SecondaryMembershipsComponent implements OnInit {
 
   public async onDeleteMemberships(): Promise<void> {
 
-    var config: EuiSidesheetConfig = {
+    const deletableMemberships = this.selectedEntities.filter(item => {
+      // is it a direct assignment?
+      return ((XOrigin.Direct & item.GetEntity().GetColumn('XOrigin').GetValue()) === XOrigin.Direct) ||
+        ((XOrigin.Dynamic & item.GetEntity().GetColumn('XOrigin').GetValue()) === XOrigin.Dynamic) ||
+        item.GetEntity().GetColumn('IsRequestCancellable').GetValue();
+    });
+
+    const nonDeletableMemberships = this.selectedEntities.filter(item => deletableMemberships.indexOf(item) < 0);
+
+    const config: EuiSidesheetConfig = {
       title: await this.translate.get('#LDS#Heading Remove Memberships').toPromise(),
       width: '650px',
       headerColour: 'red',
+      bodyColour: 'asher-gray',
       padding: '0px',
       disableClose: false,
       testId: 'role-membership-remove',
       data: {
         ownershipInfo: this.ownershipInfo,
-        selectedEntities: this.selectedEntities,
+        nonDeletableMemberships,
+        selectedEntities: deletableMemberships,
         entity: this.entity
       }
     };
@@ -127,12 +146,11 @@ export class SecondaryMembershipsComponent implements OnInit {
         this.navigate();
       }
     });
-
   }
 
   public async onSelectIdentities(): Promise<void> {
     this.sidesheet.open(MembershipsChooseIdentitiesComponent, {
-      title: await this.translate.get("#LDS#Heading Select Identities").toPromise(),
+      title: await this.translate.get('#LDS#Heading Select Identities').toPromise(),
       headerColour: 'blue',
       padding: '0px',
       width: '800px',
@@ -141,7 +159,7 @@ export class SecondaryMembershipsComponent implements OnInit {
       data: {
         id: this.entity.GetKeys()[0],
         entity: this.entity,
-        ownershipInfo: this.ownershipInfo,
+        ownershipInfo: this.ownershipInfo.TableName,
       },
     });
   }
@@ -155,23 +173,9 @@ export class SecondaryMembershipsComponent implements OnInit {
     return validUntil.toLocaleDateString();
   }
 
-  private async navigate(): Promise<void> {
-    this.busyService.show();
-    try {
-      this.dstSettings = {
-        dataSource: await this.membershipService.getMemberships(this.ownershipInfo, this.entity.GetKeys()[0], this.navigationState),
-        entitySchema: this.entitySchema,
-        navigationState: this.navigationState,
-        displayedColumns: this.displayColumns,
-      };
-    } finally {
-      this.busyService.hide();
-    }
-  }
+  public async onShowDetails(): Promise<void> {
 
-  public async onShowDetails() {
-
-    const uidPerson = this.membershipService.GetUidPerson(this.ownershipInfo, this.selectedEntities[0]);
+    const uidPerson = this.membershipService.GetUidPerson(this.ownershipInfo.TableName, this.selectedEntities[0]);
 
     const data: SourceDetectiveSidesheetData = {
       UID_Person: uidPerson,
@@ -180,20 +184,40 @@ export class SecondaryMembershipsComponent implements OnInit {
       TableName: this.entity.TypeName
     };
     this.sidesheet.open(SourceDetectiveSidesheetComponent, {
-      title: await this.translate.get("#LDS#Heading View Assignment Analysis").toPromise(),
+      title: await this.translate.get('#LDS#Heading View Assignment Analysis').toPromise(),
       headerColour: 'orange',
       padding: '0px',
       width: '800px',
       disableClose: false,
       testId: 'role-membership-details',
-      data: data,
+      data,
     });
   }
 
   public isNotEffective(item: TypedEntity): boolean {
-    if (!this.entitySchema.Columns["XIsInEffect"])
+    if (!this.entitySchema.Columns.XIsInEffect) {
       return false;
-
+    }
     return !item.GetEntity().GetColumn('XIsInEffect').GetValue();
+  }
+
+  private async navigate(): Promise<void> {
+    this.busyService.show();
+    const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
+      .map(elem => elem.Property.ColumnName).join(',');
+    if (withProperties != null && withProperties !== '') {
+      this.navigationState.withProperties = withProperties;
+    }
+    try {
+      this.dstSettings = {
+        dataSource: await this.membershipService.getMemberships(this.ownershipInfo.TableName, this.entity.GetKeys()[0], this.navigationState),
+        entitySchema: this.entitySchema,
+        navigationState: this.navigationState,
+        displayedColumns: this.displayColumns,
+        dataModel: this.dataModel
+      };
+    } finally {
+      this.busyService.hide();
+    }
   }
 }

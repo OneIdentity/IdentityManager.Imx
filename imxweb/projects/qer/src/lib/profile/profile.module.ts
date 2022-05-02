@@ -31,7 +31,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CdrModule, DataSourceToolbarModule, DataTableModule, ExtModule, LdsReplaceModule, RouteGuardService, TileModule } from 'qbm';
+import { CdrModule, DataSourceToolbarModule, DataTableModule, DynamicTabsModule, ExtModule, LdsReplaceModule, RouteGuardService, TileModule } from 'qbm';
 import { BusinessownerAddonTileModule } from '../businessowner-addon-tile/businessowner-addon-tile.module';
 import { MailSubscriptionsComponent } from './mailsubscriptions.component';
 import { MailSubscriptionService } from './mailsubscription.service';
@@ -70,7 +70,8 @@ const routes: Routes = [
     TileModule,
     LdsReplaceModule,
     EuiCoreModule,
-    EuiMaterialModule
+    EuiMaterialModule,
+    DynamicTabsModule
   ],
   providers: [
     MailSubscriptionService

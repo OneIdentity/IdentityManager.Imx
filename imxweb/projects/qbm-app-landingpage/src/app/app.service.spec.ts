@@ -56,9 +56,7 @@ describe('AppService', () => {
 
     appConfigService = {
       init: jasmine.createSpy('init'),
-      client: {
-        imx_config_get: jasmine.createSpy('imx_config_get').and.returnValue(Promise.resolve({ProductName: null}))
-      },
+      getImxConfig: jasmine.createSpy('getImxConfig').and.returnValue(Promise.resolve({ProductName: null})),
       Config: { Translation: {} }
     };
 

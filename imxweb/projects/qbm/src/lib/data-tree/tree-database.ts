@@ -65,7 +65,7 @@ export abstract class TreeDatabase {
   /** Initial data from database */
   public async initialize(navigationState: CollectionLoadParameters = {}): Promise<TreeNode[]> {
     // load the root entities
-    const entities = await this.getData(true, navigationState);
+    const entities = await this.getData(true, { ...navigationState, ...{ ParentKey: '' } });
 
     if (entities.totalCount === 0 || entities.entities.length === 0) {
       return [];
@@ -84,9 +84,10 @@ export abstract class TreeDatabase {
   }
 
   public updateNodeItem(item: IEntity): void {
-    const roots = this.rootNodes?.find(node => TreeDatabase.getId(node.item) === TreeDatabase.getId(item));
-    if (roots) {
-      roots.item = item;
+    const root = this.rootNodes?.filter(node => node.item != null)
+    .find(node => this.getId(node.item) === this.getId(item));
+    if (root) {
+      root.item = item;
     }
   }
 
@@ -94,11 +95,11 @@ export abstract class TreeDatabase {
   public async getChildren(node: TreeNode, startIndex: number)
     : Promise<{ nodes: TreeNode[], canLoadMore: boolean }> {
 
-    const entities = await this.getData(false, { parentKey: node.name, StartIndex: startIndex });
+    const entities = await this.getData(false, { ParentKey: node.name, StartIndex: startIndex });
 
     const nodes = this.createSortedNodes(entities.entities, node.level + 1);
     return {
-      nodes: entities.entities.map(entity => nodes.find(x => TreeDatabase.getId(x.item) === TreeDatabase.getId(entity))),
+      nodes: entities.entities.map(entity => nodes.find(x => this.getId(x.item) === this.getId(entity))),
       canLoadMore: entities.canLoadMore
     };
   }
@@ -122,12 +123,12 @@ export abstract class TreeDatabase {
     const sortedEntityMap = entities.sort((a, b) => a.GetDisplay().localeCompare(b.GetDisplay()));
     return sortedEntityMap.map(item => new TreeNode(item,
       this.identifierColumnName ? item.GetColumn(this.identifierColumnName).GetValue() : '',
-      TreeDatabase.getId(item), levelNumber, item.GetColumn(this.hasChildrenColumnName).GetValue()));
+      this.getId(item), levelNumber, item.GetColumn(this.hasChildrenColumnName).GetValue()));
   }
 
   /** gets an unique id by combining all id parts */
-  public static getId(entity: IEntity): string {
-    return entity.GetKeys() ? entity.GetKeys().join(',') : '';
+  public getId(entity: IEntity): string {
+    return entity?.GetKeys() ? entity.GetKeys().join(',') : '';
   }
 
 }

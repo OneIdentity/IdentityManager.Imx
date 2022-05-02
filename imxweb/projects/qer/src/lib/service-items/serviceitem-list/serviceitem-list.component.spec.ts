@@ -145,7 +145,8 @@ describe('ServiceitemListComponent', () => {
           provide: ServiceItemsService,
           useValue: {
             PortalShopServiceItemsSchema: PortalShopServiceitems.GetEntitySchema(),
-            get: jasmine.createSpy('get').and.returnValue(Promise.resolve(serviceItems))
+            get: jasmine.createSpy('get').and.returnValue(Promise.resolve(serviceItems)),
+            getDataModel: jasmine.createSpy('getDataModel').and.returnValue(Promise.resolve({}))
           }
         },
         {

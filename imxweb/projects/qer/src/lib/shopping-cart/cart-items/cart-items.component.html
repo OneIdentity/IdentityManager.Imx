@@ -1,5 +1,4 @@
 <imx-data-source-toolbar #dst
-  [hiddenElements]="['filter', 'search', 'groupBy', 'settings', 'selectedViewGroup']"
   [settings]="dstSettings" [itemStatus]="itemStatus"
   data-imx-identifier="cart-items-dst" hidden>
 </imx-data-source-toolbar>
@@ -7,7 +6,7 @@
     <imx-data-table [dst]="dst" [detailViewVisible]="false" [selectable]="true" mode="manual"
         (selectionChanged)="onSelectionChanged($event)" data-imx-identifier="cart-items-data-table">
         <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-            [entitySchema]="entitySchema" columnLabel="{{'#LDS#Product' | translate}}" data-imx-identifier="cart-items-data-table-column-default">
+            columnLabel="{{'#LDS#Product' | translate}}" data-imx-identifier="cart-items-data-table-column-default">
             <ng-template let-cartItem>
                 <div class="imx-display-column">
                     <div class="imx-placeholder" *ngIf="cartItem.UID_ShoppingCartItemParent.value"></div>
@@ -33,7 +32,7 @@
 
             </ng-template>
         </imx-data-table-column>
-        <imx-data-table-column *ngIf="!forLater" [entityColumn]="entitySchema?.Columns.CheckResult" [entitySchema]="entitySchema" [align]="'center'" [width]="'150px'">
+        <imx-data-table-column *ngIf="!forLater" [entityColumn]="entitySchema?.Columns.CheckResult" [align]="'center'" [width]="'150px'">
           <ng-template let-cartItem>
             <button mat-flat-button *ngIf="cartItem.CheckResult.value !== CartItemCheckStatus.notChecked"
               class="imx-validation-button"
@@ -47,7 +46,7 @@
           </ng-template>
         </imx-data-table-column>
         <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_LONG_PROPERTYNAME]"
-            [entitySchema]="entitySchema" columnLabel="{{'#LDS#Actions' | translate}}" [align]="'center'">
+            columnLabel="{{'#LDS#Actions' | translate}}" [align]="'center'">
             <ng-template let-cartItem>
                 <button mat-flat-button
                   [attr.data-imx-identifier]="'cartitem-button-edit-' + cartItem.UID_AccProduct.Column.GetDisplayValue()"

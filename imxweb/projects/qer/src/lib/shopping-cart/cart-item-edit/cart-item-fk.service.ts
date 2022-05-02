@@ -26,7 +26,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { ParameterData } from 'imx-api-qer';
+import { ParameterData } from 'imx-qbm-dbts';
 import { FkProviderItem, InteractiveEntityWriteData } from 'imx-qbm-dbts';
 import { QerApiService } from '../../qer-api-client.service';
 
@@ -80,8 +80,14 @@ export class CartItemFkService {
           parameters.filter,
           null,
           parameters.search,
-          parameters.parentKey,
+          parameters.ParentKey,
           interactiveEntity.InteractiveEntityWriteData
+        );
+      },
+      getDataModel: async () => ({}),
+      getFilterTree: async (entity, parentkey) => {
+        return this.qerClient.client.portal_itshop_requests_parameter_candidates_filtertree_post(
+          columnName, fkTableName, undefined, parentkey, entity.GetDiffData()
         );
       }
     };

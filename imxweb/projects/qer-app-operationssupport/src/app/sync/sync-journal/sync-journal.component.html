@@ -5,31 +5,27 @@
 </div>
 <input [hidden]="true" [euiDownload]="{}"> <!-- dummy element as reference for EuiDownloadDirective-->
 <div class ="imx-table-container">
-  <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings" [hiddenElements]="['search', 'settings', 'selectedViewGroup']"
+  <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings" [options]="['filter', 'groupBy']"
     (navigationStateChanged)="getData($event)">
     <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
   </imx-data-source-toolbar>
   <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual">
-    <imx-data-table-column [entityColumn]="entitySchemaSyncInfo?.Columns.CreationTime"
-      [entitySchema]="entitySchemaSyncInfo">
+    <imx-data-table-column [entityColumn]="entitySchemaSyncInfo?.Columns.CreationTime">
       <ng-template let-data>
         {{ data.CreationTime.Column.GetDisplayValue() }}
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaSyncInfo?.Columns.ProjectionConfigDisplay"
-      [entitySchema]="entitySchemaSyncInfo">
+    <imx-data-table-column [entityColumn]="entitySchemaSyncInfo?.Columns.ProjectionConfigDisplay">
       <ng-template let-data>
         {{ data.ProjectionConfigDisplay.Column.GetDisplayValue() }}
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaSyncInfo?.Columns.ProjectionState"
-      [entitySchema]="entitySchemaSyncInfo">
+    <imx-data-table-column [entityColumn]="entitySchemaSyncInfo?.Columns.ProjectionState">
       <ng-template let-data>
         {{ data.ProjectionState.Column.GetDisplayValue() }}
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaSyncInfo?.Columns.ProjectionStartInfoDisplay"
-      [entitySchema]="entitySchemaSyncInfo">
+    <imx-data-table-column [entityColumn]="entitySchemaSyncInfo?.Columns.ProjectionStartInfoDisplay">
       <ng-template let-data>
         {{ data.ProjectionStartInfoDisplay.Column.GetDisplayValue() }}
       </ng-template>

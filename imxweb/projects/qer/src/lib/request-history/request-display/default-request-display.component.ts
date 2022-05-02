@@ -27,7 +27,8 @@
 import { Component, Input } from '@angular/core';
 
 import { PortalItshopRequests } from 'imx-api-qer';
-import { ParameterizedText } from 'qbm';
+import { IClientProperty } from 'imx-qbm-dbts';
+import { buildAdditionalElementsString, ParameterizedText } from 'qbm';
 
 import { RequestDisplayInterface } from './request-display.interface';
 
@@ -47,6 +48,14 @@ export class DefaultRequestDisplayComponent implements RequestDisplayInterface {
   @Input() public set personWantsOrg(pwo: PortalItshopRequests) {
     this._pwo = pwo;
     this.setPText();
+  }
+
+  private additional: string;
+  public get additionalText(): string {
+    return this.additional;
+  }
+  @Input() public set additionalText(value: string) {
+    this.additional = value;
   }
 
   public parameterizedText: ParameterizedText;

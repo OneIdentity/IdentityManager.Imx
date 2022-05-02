@@ -26,7 +26,7 @@
 
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, Input, OnChanges, ViewChild, TemplateRef, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, ViewChild, TemplateRef, OnInit, Output, EventEmitter } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
@@ -34,7 +34,7 @@ import { Platform } from '@angular/cdk/platform';
 import { TranslateService } from '@ngx-translate/core';
 
 import { PortalApplication } from 'imx-api-aob';
-import { ClassloggerService, SnackBarService, TextContainer } from 'qbm';
+import { ClassloggerService, ConfirmationService, SnackBarService, TextContainer } from 'qbm';
 import { ShopsService } from '../../shops/shops.service';
 import { EntitlementsService } from '../../entitlements/entitlements.service';
 import { EntitlementFilter } from '../../entitlements/entitlement-filter';
@@ -46,6 +46,7 @@ import { ApplicationsService } from '../applications.service';
 import { AobApiService } from '../../aob-api-client.service';
 import { EditApplicationComponent } from '../edit-application/edit-application.component';
 import { AccountDetails } from './account-details.interface';
+import { AobPermissionsService } from '../../permissions/aob-permissions.service';
 @Component({
   selector: 'imx-application-details',
   templateUrl: './application-details.component.html',
@@ -63,6 +64,7 @@ export class ApplicationDetailsComponent implements OnChanges, OnInit {
 
   public hasAssignedEntitlements: boolean;
   public hasPublishedEntitlements = false;
+  public canBeDeleted = false;
   public hasOwner: boolean;
   public accountsInformation: AccountDetails;
 
@@ -83,7 +85,9 @@ export class ApplicationDetailsComponent implements OnChanges, OnInit {
     private readonly platform: Platform,
     private readonly aobApiService: AobApiService,
     private readonly translateService: TranslateService,
-    private readonly sidesheetService: EuiSidesheetService
+    private readonly confirmation: ConfirmationService,
+    private readonly sidesheetService: EuiSidesheetService,
+    private readonly permissions: AobPermissionsService
   ) {
     this.shopsDisplay = this.aobApiService.typedClient.PortalShops.GetSchema().Display;
     this.accountsDisplay = this.aobApiService.typedClient.PortalApplicationusesaccount.GetSchema().Display;
@@ -102,7 +106,22 @@ export class ApplicationDetailsComponent implements OnChanges, OnInit {
     return this.reloadData();
   }
 
-  public async editApplication(event: MouseEvent): Promise<void> {
+  public async deleteApplication(): Promise<void> {
+    if (await this.confirmation.confirm({
+      Title: '#LDS#Heading Delete Application',
+      Message: '#LDS#Are you sure you want to delete the application?'
+    })) {
+      let overlayRef: OverlayRef;
+      setTimeout(() => overlayRef = this.busyService.show());
+      try {
+        await this.applicationprovider.deleteApplication(this.application.UID_AOBApplication.value);
+      } finally {
+        setTimeout(() => this.busyService.hide(overlayRef));
+      }
+    }
+  }
+
+  public async editApplication(): Promise<void> {
     await this.sidesheetService.open(EditApplicationComponent, {
       title: await this.translateService.get('#LDS#Heading Edit Application').toPromise(),
       bodyColour: 'asher-gray',
@@ -228,7 +247,7 @@ export class ApplicationDetailsComponent implements OnChanges, OnInit {
     setTimeout(() => overlayRef = this.busyService.show());
     try {
       const elements = await this.accountsProvider.getAssigned(this.application.UID_AOBApplication.value,
-         { PageSize: this.accountsInformation.count });
+        { PageSize: this.accountsInformation.count });
       this.showMore(elements, this.accountsDisplay);
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
@@ -257,6 +276,10 @@ export class ApplicationDetailsComponent implements OnChanges, OnInit {
         const entitlementFilter = new EntitlementFilter();
         this.hasPublishedEntitlements = applicationEntitlements.Data.filter(entitlementFilter.published).length > 0;
         this.hasAssignedEntitlements = applicationEntitlements.Data.length > 0;
+        const publishedAndWillBePublished = applicationEntitlements.Data.filter(
+          elem => entitlementFilter.published(elem)
+            || entitlementFilter.willPublish(elem));
+        this.canBeDeleted = await this.permissions.isAobApplicationAdmin() && publishedAndWillBePublished.length === 0;
       } else {
         this.logger.error(this, 'TypedEntityCollectionData<PortalEntitlement> is undefined');
       }

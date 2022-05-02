@@ -26,16 +26,21 @@
 
 import { PortalSubscriptionInteractive } from "imx-api-rps";
 import { IClientProperty, IEntityColumn } from "imx-qbm-dbts";
+import { ClassloggerService } from "qbm";
+import { ParameterDataService } from "qer";
 import { ReportSubscription } from "./report-subscription";
 
 describe('ReportSubscription', () => {
   let subscription: ReportSubscription;
+  const parameterDataService = new ParameterDataService(<any>{
+    createLocalEntityColumn: () => ({} as IEntityColumn),
+  }, <ClassloggerService>{});
 
   beforeEach(() => {
     subscription = new ReportSubscription(
       {} as PortalSubscriptionInteractive,
       () => [],
-      () => ({} as IEntityColumn))
+      parameterDataService)
   });
 
 
@@ -78,7 +83,7 @@ describe('ReportSubscription', () => {
       subscription = new ReportSubscription(
         testcase.subscription as PortalSubscriptionInteractive,
         () => [],
-        () => ({} as IEntityColumn));
+        parameterDataService);
 
       expect(subscription.getCdrs(testcase.properties as IClientProperty[]).length).toEqual(testcase.expect);
     })
@@ -106,13 +111,13 @@ describe('ReportSubscription', () => {
           AddtlSubscribers: {
             Column: {}
           },
-          extendedDataRead: testcase.parameter
+          extendedDataRead: testcase.parameter,
+          onChangeExtendedDataRead: _=> {}
         } as unknown as PortalSubscriptionInteractive,
         () => [],
-        () => ({} as IEntityColumn));
+        parameterDataService);
 
-      subscription.calculateParameterColumns();
-
+      subscription.getParameterCdr();
       expect(subscription.getDisplayableColums().length).toEqual(testcase.count);
     })
   }
@@ -124,12 +129,11 @@ describe('ReportSubscription', () => {
     it(`can get parameter cdrs ${testcase.description}`, () => {
       subscription = new ReportSubscription(
         {
-          extendedDataRead: testcase.parameter
+          extendedDataRead: testcase.parameter,
+          onChangeExtendedDataRead: _ => { },
         } as PortalSubscriptionInteractive,
         () => [],
-        () => ({} as IEntityColumn));
-
-      subscription.calculateParameterColumns();
+        parameterDataService);
 
       expect(subscription.getParameterCdr().length).toEqual(testcase.count);
     })
@@ -142,12 +146,11 @@ describe('ReportSubscription', () => {
     it(`can init parameter columns ${testcase.description}`, () => {
       subscription = new ReportSubscription(
         {
-          extendedDataRead: testcase.parameter
+          extendedDataRead: testcase.parameter,
+          onChangeExtendedDataRead: _ => { },
         } as PortalSubscriptionInteractive,
         () => [],
-        () => ({} as IEntityColumn));
-
-      subscription.calculateParameterColumns();
+        parameterDataService);
 
       expect(subscription.getParameterCdr().length).toEqual(testcase.count);
 
@@ -168,9 +171,8 @@ describe('ReportSubscription', () => {
           extendedDataRead: testcase.parameter
         } as unknown as PortalSubscriptionInteractive,
         () => [],
-        () => ({ GetValue: () => 'test' } as IEntityColumn));
-
-      subscription.calculateParameterColumns();
+        // () => ({ GetValue: () => 'test' } as IEntityColumn));
+        parameterDataService);
 
       await subscription.submit();
 

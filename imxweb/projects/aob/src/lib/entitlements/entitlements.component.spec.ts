@@ -45,7 +45,7 @@ import { EntitlementsService } from './entitlements.service';
 import { LifecycleAction } from '../lifecycle-actions/lifecycle-action.enum';
 import { LifecycleActionComponent } from '../lifecycle-actions/lifecycle-action.component';
 import { PortalApplication, PortalEntitlement } from 'imx-api-aob';
-import { SnackBarService, DataSourceToolbarModule, DisableControlModule, clearStylesFromDOM, SystemInfoService } from 'qbm';
+import { SnackBarService, DataSourceToolbarModule, DisableControlModule, clearStylesFromDOM, SystemInfoService, MetadataService } from 'qbm';
 import { DbVal, IClientProperty, ValType } from 'imx-qbm-dbts';
 import { ShopsService } from '../shops/shops.service';
 import { ServiceItemsService } from '../service-items/service-items.service';
@@ -138,7 +138,7 @@ describe('EntitlementsComponent', () => {
   const mockApplication = {
     UID_AOBApplication: {
       value: 'uid', Column: { GetDisplayValue: () => 'return a' },
-    }, 
+    },
     GetEntity: () => ({
       GetKeys: () => ['key1']
     })
@@ -147,6 +147,7 @@ describe('EntitlementsComponent', () => {
   const mockEntitlementNotPublished = {
     Ident_AOBEntitlement: { value: 'unpublished' },
     Description: { value: '' },
+    ObjectKeyElement: { value: '<Key><T>tableName</T><P>uid</P></Key>' },
     IsInActive: { value: true },
     XTouched: { value: null },
     ActivationDate: {
@@ -167,6 +168,7 @@ describe('EntitlementsComponent', () => {
     {
       IsInActive: { value: true },
       XTouched: { value: "some date" },
+      ObjectKeyElement: { value: '<Key><T>tableName</T><P>uid</P></Key>' },
       ActivationDate: {
         value: null, GetMetadata: () => ({
           CanEdit: () => true
@@ -180,6 +182,7 @@ describe('EntitlementsComponent', () => {
     {
       IsInActive: { value: true },
       XTouched: { value: "some date" },
+      ObjectKeyElement: { value: '<Key><T>tableName</T><P>uid</P></Key>' },
       ActivationDate: {
         value: null, GetMetadata: () => ({
           CanEdit: () => true
@@ -193,6 +196,7 @@ describe('EntitlementsComponent', () => {
     {
       IsInActive: { value: true },
       XTouched: { value: "some date" },
+      ObjectKeyElement: { value: '<Key><T>tableName</T><P>uid</P></Key>' },
       ActivationDate: {
         value: null, GetMetadata: () => ({
           CanEdit: () => true
@@ -206,6 +210,7 @@ describe('EntitlementsComponent', () => {
     {
       IsInActive: { value: false },
       XTouched: { value: "some date" },
+      ObjectKeyElement: { value: '<Key><T>tableName</T><P>uid</P></Key>' },
       ActivationDate: {
         value: null, GetMetadata: () => ({
           CanEdit: () => true
@@ -341,6 +346,12 @@ describe('EntitlementsComponent', () => {
         {
           provide: SystemInfoService,
           useValue: mockSystemInfo,
+        },
+        {
+          provide: MetadataService,
+          useValue: {
+            update: jasmine.createSpy('update'),
+          }
         }
       ]
     });

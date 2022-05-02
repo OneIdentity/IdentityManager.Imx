@@ -41,11 +41,12 @@ import {
   OpsupportDbObjectService,
   ShapeClickArgs,
   ClassloggerService,
-  DataSourceToolbarSettings
+  DataSourceToolbarSettings,
+  AuthenticationService
 } from 'qbm';
 import { QueueJobsService } from '../processes/jobs/queue-jobs.service';
 import { MatDialog } from '@angular/material/dialog';
-import { ObjectOverviewContainer } from 'qer';
+import { ObjectOverviewContainer, FeatureConfigService  } from 'qer';
 import { HyperviewService } from './hyperview/hyperview.service';
 import { ObjectOverviewService } from './object-overview.service';
 import { PersonDbQueueInfo } from './person-db-queue-info';
@@ -73,6 +74,8 @@ export class ObjectOverviewComponent implements OnInit, ObjectOverviewContainer 
   public dstSettingsJobs: DataSourceToolbarSettings;
   public dstSettingsDb: DataSourceToolbarSettings;
 
+  public showPassCodeTab: boolean;
+
   public objectKey: DbObjectKey;
   public tableDisplay: string;
   public display: string;
@@ -80,6 +83,7 @@ export class ObjectOverviewComponent implements OnInit, ObjectOverviewContainer 
 
   private readonly tablePerson = 'person';
   private objectUID: string;
+  private uidUser: string;
 
   constructor(
     private router: Router,
@@ -89,12 +93,13 @@ export class ObjectOverviewComponent implements OnInit, ObjectOverviewContainer 
     private dbObjectService: OpsupportDbObjectService,
     private jobService: QueueJobsService,
     private metadataService: MetadataService,
-    private sessionService: imx_SessionService,
     private translationProvider: TranslateService,
     private logger: ClassloggerService,
     private hyperview: HyperviewService,
     private busyService: EuiLoadingService,
-    private overviewService: ObjectOverviewService
+    private overviewService: ObjectOverviewService,
+    private featureService: FeatureConfigService,
+    authentication: AuthenticationService,
   ) {
 
     this.entitySchemaDbs = PersonDbQueueInfo.GetEntitySchema();
@@ -116,6 +121,8 @@ export class ObjectOverviewComponent implements OnInit, ObjectOverviewContainer 
       this.entitySchemaDbs.Columns.SubObject,
       this.entitySchemaDbs.Columns.SortOrder,
     ];
+
+    authentication.onSessionResponse.subscribe(session => this.uidUser = session.UserUid);
   }
 
   public async ngOnInit(): Promise<void> {
@@ -123,6 +130,10 @@ export class ObjectOverviewComponent implements OnInit, ObjectOverviewContainer 
     setTimeout(() => overlayRef = this.busyService.show());
     try {
       await this.initDataFromPath(this.route);
+      const featureConfig = await this.featureService.getFeatureConfig();
+      this.showPassCodeTab = featureConfig.EnableSetPasswords
+        && this.objectKey.TableName.toLowerCase() === this.tablePerson
+        && this.uidUser !== this.objectUID;
       await this.loadQueue();
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
@@ -142,10 +153,7 @@ export class ObjectOverviewComponent implements OnInit, ObjectOverviewContainer 
     }
   }
 
-  public showPassCodeTab(): boolean {
-    const sessionState = this.sessionService.SessionState;
-    return this.objectKey.TableName.toLowerCase() === this.tablePerson && sessionState.UserUid !== this.objectUID;
-  }
+
 
   // Checks if the item has an ErrorMessage or not
   public hasContent(item: PersonJobQueueInfo): boolean {

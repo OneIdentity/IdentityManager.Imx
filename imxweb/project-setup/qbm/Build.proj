@@ -11,12 +11,7 @@
     	<SetupFiles Include="..\..\*.json"/>
     	<SetupFiles Include="..\..\*.md"/>
 		<SetupFiles Include="..\..\shared\**\*.*"/>
-		<SetupFiles Include="..\..\projects\qbm\karma.conf.js"/>
-		<SetupFiles Include="..\..\projects\qbm\ng-package.json"/>
-		<SetupFiles Include="..\..\projects\qbm\package.json"/>
-		<SetupFiles Include="..\..\projects\qbm\README.md"/>
-		<SetupFiles Include="..\..\projects\qbm\tsconfig.lib.json"/>
-		<SetupFiles Include="..\..\projects\qbm\tsconfig.spec.json"/>
+		<SetupFiles Include="..\..\projects\qbm\*.*" Exclude="..\..\projects\qbm\Build.proj"/>
 		<SetupFiles Include="..\..\projects\qbm\src\**\*.*"/>
 	</ItemGroup>
 

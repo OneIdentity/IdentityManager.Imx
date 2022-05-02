@@ -27,20 +27,16 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiDownloadOptions, EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
-import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { MatButton } from '@angular/material/button';
 
 import {
   ClassloggerService,
+  ConfirmationService,
   DataSourceToolbarFilter,
   DataSourceToolbarGroupData,
   DataSourceToolbarSettings,
   DataTableGroupedData,
-  isIE,
-  MessageDialogComponent,
-  MessageDialogResult,
   SettingsService,
   SnackBarService,
   SystemInfoService
@@ -52,7 +48,8 @@ import {
   ExtendedTypedEntityCollection,
   EntitySchema,
   FilterType,
-  CompareOperator
+  CompareOperator,
+  DataModel
 } from 'imx-qbm-dbts';
 import { PolicyFilterData, PortalAttestationPolicy, PortalAttestationPolicyEditInteractive } from 'imx-api-att';
 import { UserModelService } from 'qer';
@@ -82,12 +79,12 @@ export class PolicyListComponent implements OnInit {
   private filterOptions: DataSourceToolbarFilter[] = [];
   private prefilterOwner = false;
   private readonly displayedColumns: IClientProperty[];
+  private dataModel: DataModel;
 
   constructor(
     private readonly busyService: EuiLoadingService,
     private readonly policyService: PolicyService,
-    private readonly router: Router,
-    private readonly dialog: MatDialog,
+    private readonly confirmationService: ConfirmationService,
     private readonly snackbar: SnackBarService,
     private readonly translator: TranslateService,
     private readonly sideSheet: EuiSidesheetService,
@@ -114,6 +111,7 @@ export class PolicyListComponent implements OnInit {
     let prep: string[];
     try {
 
+      this.dataModel = await this.policyService.getDataModel();
       groups = (await this.userService.getGroups()).map(elem => elem.Name);
       prep = (await this.systemInfoService.get()).PreProps;
 
@@ -235,18 +233,10 @@ export class PolicyListComponent implements OnInit {
   }
 
   public async delete(policy: PortalAttestationPolicy): Promise<void> {
-    const dialogRef = this.dialog.open(MessageDialogComponent, {
-      data: {
-        ShowOk: true,
-        ShowCancel: true,
-        Title: await this.translator.get('#LDS#Heading Delete Attestation Policy').toPromise(),
-        Message: await this.translator.get('#LDS#Are you sure you want to delete the attestation policy?').toPromise()
-      },
-      panelClass: 'imx-messageDialog'
-    });
-
-    const result = await dialogRef.afterClosed().toPromise();
-    if (result === MessageDialogResult.OkResult) {
+    if (await this.confirmationService.confirm({
+      Title: '#LDS#Heading Delete Attestation Policy',
+      Message: '#LDS#Are you sure you want to delete the attestation policy?'
+    })) {
 
       let overlayRef: OverlayRef;
       setTimeout(() => overlayRef = this.busyService.show());
@@ -308,7 +298,7 @@ export class PolicyListComponent implements OnInit {
         data,
         testId: 'policy-list-start-attestation-run-sidesheet'
       }).afterClosed().toPromise();
-      if (result) { 
+      if (result) {
         this.navigate();
       }
     }
@@ -352,6 +342,12 @@ export class PolicyListComponent implements OnInit {
     setTimeout(() => overlayRef = this.busyService.show());
     try {
 
+      const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
+        .map(elem => elem.Property.ColumnName).join(',');
+      if (withProperties != null && withProperties !== '') {
+        this.navigationState.withProperties = withProperties;
+      }
+
       const policies = await this.policyService.getPolicies(this.navigationState);
       this.logger.trace(this, 'interactive policy loaded', policies);
 
@@ -361,7 +357,8 @@ export class PolicyListComponent implements OnInit {
         filters: this.filterOptions,
         groupData: this.groupData,
         entitySchema: this.entitySchemaPolicy,
-        navigationState: this.navigationState
+        navigationState: this.navigationState,
+        dataModel: this.dataModel
       };
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));

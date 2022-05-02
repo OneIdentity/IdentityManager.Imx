@@ -1,0 +1,20 @@
+<div eui-sidesheet-content>
+
+  <mat-card>
+    <eui-alert type="info" condensed="true" [colored]="true">
+      <span>{{LdsInfoText | translate}}</span>
+    </eui-alert>
+
+    <ul>
+      <li *ngFor="let path of customizationsToConvert">
+        <config-key-path [path]="path"></config-key-path>
+      </li>
+    </ul>
+  </mat-card>
+</div>
+
+<div eui-sidesheet-actions>
+  <button data-imx-identifier="admin-config-convert-submit-button" mat-raised-button (click)="submit()" color="primary"
+    *ngIf="customizationsToConvert.length > 0">
+    {{'#LDS#Convert' | translate}}</button>
+</div>

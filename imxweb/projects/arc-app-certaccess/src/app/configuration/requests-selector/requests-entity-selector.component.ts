@@ -26,7 +26,7 @@
 
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { CollectionLoadParameters, EntityCollectionData, TypedEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, EntityCollectionData, FilterTreeData, TypedEntity } from 'imx-qbm-dbts';
 
 @Component({
   selector: 'imx-requests-selector',
@@ -41,6 +41,7 @@ export class RequestsEntitySelectorComponent {
     public readonly dialogRef: MatDialogRef<RequestsEntitySelectorComponent, string[]>,
     @Inject(MAT_DIALOG_DATA) public readonly data: {
       get: (parameters: CollectionLoadParameters) => Promise<EntityCollectionData>;
+      GetFilterTree?: (parentKey: string) => Promise<FilterTreeData>;
       hasSearchParameter: boolean;
       isMultiValue: boolean;
     }

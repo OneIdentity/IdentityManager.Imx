@@ -8,9 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<SetupFiles Include="..\..\projects\rps\karma.conf.js"/>
-		<SetupFiles Include="..\..\projects\rps\package.json"/>
-		<SetupFiles Include="..\..\projects\rps\tsconfig.spec.json"/>
+		<SetupFiles Include="..\..\projects\rps\*.*" Exclude="..\..\projects\rps\Build.proj"/>
 		<SetupFiles Include="..\..\projects\rps\src\**\*.*"/>
 	</ItemGroup>
 

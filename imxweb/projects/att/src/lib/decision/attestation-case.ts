@@ -38,7 +38,7 @@ export class AttestationCase extends PortalAttestationApprove implements Attesta
   public readonly propertyInfo: ColumnDependentReference[];
   public readonly key: string;
   public readonly data: AttestationCaseData;
-  public readonly typedEntity: TypedEntity<any>;  // from interface AttestationAction
+  public readonly typedEntity: TypedEntity;  // from interface AttestationAction
   public readonly propertiesForAction: IEntityColumn[]; // from interface AttestationAction
   public readonly uiData: AttestationCaseUiData;
 
@@ -135,5 +135,9 @@ export class AttestationCase extends PortalAttestationApprove implements Attesta
   public canWithdrawAddApprover(userUid: string): boolean {
     return !this.isChiefApproval &&
     this.workflowWrapper?.canRevokeAdditionalApprover(userUid, this.DecisionLevel.value);
+  }
+
+  public canEscalateDecision(userUid: string): boolean {
+    return  this.UID_PersonHead.value === userUid && this.workflowWrapper.canEscalateDecision(this.DecisionLevel.value);
   }
 }

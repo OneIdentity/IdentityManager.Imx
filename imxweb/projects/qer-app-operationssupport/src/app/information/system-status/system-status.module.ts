@@ -27,7 +27,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatGridListModule } from '@angular/material/grid-list';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { EuiCoreModule } from '@elemental-ui/core';
@@ -42,7 +41,6 @@ import { SystemStatusService } from './system-status.service';
     CommonModule,
     TranslateModule,
     MatButtonModule,
-    MatGridListModule,
     MatCardModule,
     EuiCoreModule
   ],

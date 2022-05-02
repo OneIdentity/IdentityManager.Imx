@@ -1,0 +1,13 @@
+{
+  "Name": "uci",
+  "Path": "imxweb\\projects\\uci",
+  "ProjectType": "ng-lib",
+  "ProjectDependcies": [
+    "qbm",
+    "qer"
+  ],
+  "ChangePatterns": [
+    "imxweb\\projects\\uci",
+    "imxweb\\shared\\assets"
+  ]
+}

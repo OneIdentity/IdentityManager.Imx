@@ -26,8 +26,8 @@
 
 import { Injectable } from '@angular/core';
 
-import { EntityCollectionData, EntitySchema, TypedEntityCollectionData, FilterData, CollectionLoadParameters } from 'imx-qbm-dbts';
-import { imx_SessionService } from 'qbm';
+import { EntityCollectionData, EntitySchema, TypedEntityCollectionData, FilterData, CollectionLoadParameters, DataModel } from 'imx-qbm-dbts';
+import { DataSourceToolbarFilter, imx_SessionService } from 'qbm';
 import { OpsupportQueueJobs, ReactivateJobMode } from 'imx-api-qbm';
 
 export interface OpsupportQueueJobsParameters extends CollectionLoadParameters {
@@ -46,6 +46,14 @@ export class QueueJobsService {
 
   public Get(parameters: OpsupportQueueJobsParameters): Promise<TypedEntityCollectionData<OpsupportQueueJobs>> {
     return this.session.TypedClient.OpsupportQueueJobs.Get(parameters);
+  }
+
+  public async getFilters(): Promise<DataSourceToolbarFilter[]> {
+    return (await this.getDataModel()).Filters;
+  }
+
+  public async getDataModel(): Promise<DataModel> {
+    return this.session.Client.opsupport_queue_jobs_datamodel_get(undefined);
   }
 
   public Post(jobs: string[]): Promise<EntityCollectionData> {

@@ -46,7 +46,7 @@ describe('ServiceItemsService', () => {
 
   interface mockServiceItem {
     key: string;
-    parentKey?: string;
+    ParentKey?: string;
   }
 
   const testhelpers = new class {

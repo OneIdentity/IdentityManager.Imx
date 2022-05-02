@@ -46,6 +46,10 @@ imx-iconstack {
 }
 
 
+.imx-notification-container {
+  display: flex;
+  flex-wrap: wrap;
+}
 
 .notificationContentPane {
   width: 726px;

@@ -26,6 +26,7 @@
 
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { AobPermissionsService } from '../../permissions/aob-permissions.service';
 
 @Component({
   selector: 'imx-kpi-tile',
@@ -33,7 +34,15 @@ import { Router } from '@angular/router';
 })
 export class KpiTileComponent {
 
-  constructor(private readonly router: Router) { }
+  constructor(private readonly router: Router,
+    private readonly aobPermissionService: AobPermissionsService,
+  ) { }
+
+  public isAobOwner: boolean;
+
+  public async ngOnInit() {
+    this.isAobOwner = await this.aobPermissionService.isAobApplicationAdmin();
+  }
 
   public goToGlobalKpi(): void {
     this.router.navigate(['applications/kpi']);

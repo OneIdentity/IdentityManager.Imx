@@ -5,40 +5,34 @@
       <span translate>#LDS#Identities</span>
     </div>
   </div>
-  <imx-data-source-toolbar #dst [settings]="dstSettings" [hiddenElements]="['settings', 'selectedViewGroup']"
+  <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['search', 'filter', 'groupBy']"
     [searchBoxText]="'#LDS#Search' | translate" (navigationStateChanged)="onNavigationStateChanged($event)"
     (search)="onSearch($event)"></imx-data-source-toolbar>
   <div class="data-explorer-table">
     <imx-data-table [dst]="dst" (highlightedEntityChanged)="onIdentityChanged($event)" detailViewVisible="false"
       data-imx-identifier="identities-tabledata-table" mode="manual" [groupData]="groupData"
       (groupDataChanged)="onGroupingChange($event)">
-      <imx-data-table-column [entityColumn]="entitySchemaPersonReports?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-        [entitySchema]="entitySchemaPersonReports">
+      <imx-data-table-column [entityColumn]="entitySchemaPersonReports?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
         <ng-template let-item>
           <div data-imx-identifier="identities-tabledata-display">{{ item.GetEntity().GetDisplay() }}</div>
           <div subtitle data-imx-identifier="identities-tabledata-description">{{
             item.DefaultEmailAddress.Column.GetDisplayValue() }}</div>
         </ng-template>
       </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchemaPersonReports?.Columns.IsSecurityIncident" columnLabel=""
-        [entitySchema]="entitySchemaPersonReports">
+      <imx-data-table-column [entityColumn]="entitySchemaPersonReports?.Columns.IsSecurityIncident" columnLabel="">
         <ng-template let-item>
           <div *ngIf="item.IsSecurityIncident.value">
             <eui-badge color="red">{{ '#LDS#Security risk' | translate }}</eui-badge>
           </div>
         </ng-template>
       </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchemaPersonReports?.Columns.UID_Department"
-        [entitySchema]="entitySchemaPersonReports">
+      <imx-data-table-column [entityColumn]="entitySchemaPersonReports?.Columns.UID_Department">
       </imx-data-table-column>
-      <imx-data-table-column *ngIf="!this.isAdmin" [entityColumn]="entitySchemaPersonReports?.Columns.IdentityType"
-        [entitySchema]="entitySchemaPersonReports">
+      <imx-data-table-column *ngIf="!this.isAdmin" [entityColumn]="entitySchemaPersonReports?.Columns.IdentityType">
       </imx-data-table-column>
-      <imx-data-table-column *ngIf="!this.isAdmin" [entityColumn]="entitySchemaPersonReports?.Columns.EmployeeType"
-        [entitySchema]="entitySchemaPersonReports">
+      <imx-data-table-column *ngIf="!this.isAdmin" [entityColumn]="entitySchemaPersonReports?.Columns.EmployeeType">
       </imx-data-table-column>
-      <imx-data-table-column *ngIf="!this.isAdmin" [entityColumn]="entitySchemaPersonReports?.Columns.IsExternal"
-        [entitySchema]="entitySchemaPersonReports">
+      <imx-data-table-column *ngIf="!this.isAdmin" [entityColumn]="entitySchemaPersonReports?.Columns.IsExternal">
       </imx-data-table-column>
       <imx-data-table-generic-column alignHeader="center" alignContent="center"
         [columnName]="entitySchemaPersonReports?.Columns.XMarkedForDeletion.ColumnName">
@@ -53,3 +47,18 @@
     <imx-data-source-paginator *ngIf="!dstSettings?.groupData?.currentGrouping" [dst]="dst"></imx-data-source-paginator>
   </div>
 </mat-card>
+<div class="data-explorer-bottom-button-row">
+  <button mat-button [matMenuTriggerFor]="menu" data-imx-identifier="identities-button-actions" *ngIf="isManagerForPersons">
+    <eui-icon icon="ellipsisvertical"></eui-icon>
+  </button>
+  <button mat-stroked-button data-imx-identifier="identities-button-create-new-identity" (click)="createNewIdentity()" class="imx-right-button">
+    <span translate>#LDS#Create identity</span>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item data-imx-identifier="identities-menu-item-download-report" [euiDownload]="downloadOptions">
+      {{'#LDS#Download report on identities who report directly to you' | translate}}
+    </button>
+    <imx-ext id="identityReports" [referrer]="currentUser"></imx-ext>
+  </mat-menu>
+  
+</div>

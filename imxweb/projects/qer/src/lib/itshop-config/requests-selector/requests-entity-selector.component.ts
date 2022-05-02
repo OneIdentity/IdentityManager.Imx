@@ -90,7 +90,13 @@ export class RequestsEntitySelectorComponent {
         if (!this.fk) {
           return this.empty;
         }
-        return this.fk.load(this.fkEntity, { ...parameters, ...{ UID_ITShopOrg: this.sidesheetData.shelfId } })
+        return this.fk.load(this.fkEntity, { ...parameters, ...{ UID_ITShopOrg: this.sidesheetData.shelfId } });
+      },
+      GetFilterTree: parentKey => {
+        if (!this.fk) {
+          return { Elements: [] };
+        }
+        return this.fk.getFilterTree(this.fkEntity, parentKey);
       },
       hasSearchParameter: true,
       isMultiValue: true

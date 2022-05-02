@@ -1,0 +1,15 @@
+<ng-container *ngIf="viewSettings">
+    <mat-list>
+        <ng-container *ngFor="let expr of viewSettings.root.childViews; let first = first; let last = last">
+            <li>
+                <imx-sqlwizard-singleexpression [expr]="expr" [first]="first" [last]="last" [allowEmptyExpression]="allowEmptyExpression">
+                </imx-sqlwizard-singleexpression>
+            </li>
+        </ng-container>
+    </mat-list>
+</ng-container>
+
+<div class="add-expression-row">
+    <button mat-raised-button (click)="viewSettings.root.addChildNode()">
+        {{'#LDS#Add condition' | translate }}</button>
+</div>

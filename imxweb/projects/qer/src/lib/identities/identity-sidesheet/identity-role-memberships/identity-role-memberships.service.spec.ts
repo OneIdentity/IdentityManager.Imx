@@ -36,10 +36,26 @@ describe('IdentityRoleMembershipsService', () => {
 
   const apiServiceStub = {
     typedClient: {
-      PortalPersonRolemembershipsAerole: ({
+      PortalPersonRolemembershipsAerole: {
         GetSchema: jasmine.createSpy('GetSchema'),
         Get: jasmine.createSpy('Get')
-      })
+      },
+      PortalPersonRolemembershipsLocality: {
+        GetSchema: jasmine.createSpy('GetSchema'),
+        Get: jasmine.createSpy('Get')
+      },
+      PortalPersonRolemembershipsProfitcenter: {
+        GetSchema: jasmine.createSpy('GetSchema'),
+        Get: jasmine.createSpy('Get')
+      },
+      PortalPersonRolemembershipsDepartment: {
+        GetSchema: jasmine.createSpy('GetSchema'),
+        Get: jasmine.createSpy('Get')
+      },
+      PortalPersonRolemembershipsItshoporg: {
+        GetSchema: jasmine.createSpy('GetSchema'),
+        Get: jasmine.createSpy('Get')
+      }
     }
   }
 

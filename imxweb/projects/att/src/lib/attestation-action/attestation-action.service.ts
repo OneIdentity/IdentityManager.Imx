@@ -136,6 +136,23 @@ export class AttestationActionService {
     });
   }
 
+  public async escalateDecisions(attestationCases: PortalAttestationApprove[]): Promise<void> {
+    const actionParameters = {
+      reason: this.createCdrReason({ mandatory: true })
+    };
+
+    return this.editAction({
+      title: '#LDS#Heading Escalate Approval',
+      data: { attestationCases, actionParameters },
+      getMessage: () => ({
+        key: '#LDS#{0} approvals have been successfully escalated.',
+        parameters: [attestationCases.length]
+      }),
+      apply: (attestationCase: PortalAttestationApprove) =>
+        this.attestationCases.escalateDecision(attestationCase, {Reason: actionParameters.reason.column.GetValue()})
+    });
+  }
+
   public async revokeDelegation(attestationCases: PortalAttestationApprove[]): Promise<void> {
     const actionParameters = {
       reason: this.createCdrReason({ mandatory: true })
@@ -164,6 +181,31 @@ export class AttestationActionService {
         Reason: actionParameters.reason.column.GetValue()
       })
     });
+  }
+
+  public async checkForViolations(attestationCases: AttestationCase[]): Promise<void> {
+    let isApprovable = true;
+    for (const attestationCase of attestationCases) {
+      const isAllAllowable = attestationCase.data.ComplianceViolations.every(item => item.IsExceptionAllowed);
+      if (!isAllAllowable) {
+        // Found a case that has an unexceptional violation, break early
+        isApprovable = false;
+        break;
+      }
+    }
+
+    if (isApprovable) {
+      return this.approve(attestationCases);
+    } else {
+      let message: string;
+      if (attestationCases.length === 1) {
+        // Special case length one
+        message = '#LDS#You cannot approve this attestation case. There are rule violations for the attestation case for which no exceptions may be granted.';
+      } else {
+        message = '#LDS#You cannot approve these attestation cases. There are rule violations for at least one attestation case for which no exceptions may be granted.';
+      }
+      this.snackBar.open({key: message});
+    }
   }
 
   public async approve(attestationCases: AttestationCaseAction[]): Promise<void> {

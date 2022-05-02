@@ -66,7 +66,7 @@ export class FkCdrEditorProvider implements CdrEditorProvider {
     }
 
     for (const fkRel of fkRelations) {
-      if (fkRel.TableName.length > 0 && fkRel.ColumnName.length > 0) {
+      if (fkRel.TableName?.length > 0 && fkRel.ColumnName?.length > 0) {
         return true;
       }
     }

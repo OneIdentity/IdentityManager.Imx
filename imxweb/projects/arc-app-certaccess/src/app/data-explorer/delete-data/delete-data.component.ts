@@ -30,6 +30,7 @@ import { PortalTargetsystemUnsSystem } from 'imx-api-arc';
 import { DataDeleteOptions, DeHelperService } from 'tsb';
 import { EuiSelectOption } from '@elemental-ui/core';
 import { DeleteDataService } from './delete-data.service';
+import { DbObjectKey } from 'imx-qbm-dbts';
 
 @Component({
   selector: 'imx-delete-data',
@@ -76,7 +77,8 @@ export class DeleteDataComponent {
   }
 
   public delete(): void {
-    this.deleteDataService.deleteData(this.selectedAuthority.value).then(() => this.dialogRef.close(this.selectedAuthority.value));
+    const xobjectkey = DbObjectKey.FromXml(<string>this.selectedAuthority.value);
+    this.deleteDataService.deleteData(xobjectkey.TableName, xobjectkey.Keys[0]).then(() => this.dialogRef.close(this.selectedAuthority.value));
   }
 
   private setupAuthorities(authorities: PortalTargetsystemUnsSystem[]): void {
@@ -84,7 +86,7 @@ export class DeleteDataComponent {
 
     if (this.data.hasAuthorities) {
       this.authorities = authorities.map((a: PortalTargetsystemUnsSystem) => {
-        return { display: a.GetEntity().GetDisplay(), value: a.UID_UNSRoot.value, hasSync: a.HasSync.value };
+        return { display: a.GetEntity().GetDisplay(), value: a.XObjectKey.value, hasSync: a.HasSync.value };
       });
     }
   }

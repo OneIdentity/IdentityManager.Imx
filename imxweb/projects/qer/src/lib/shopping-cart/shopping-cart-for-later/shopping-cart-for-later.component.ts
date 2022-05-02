@@ -25,87 +25,71 @@
  */
 
 import { Component, AfterViewInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { Router } from '@angular/router';
 
-import { MessageDialogComponent, MessageDialogResult, ClassloggerService } from 'qbm';
+import { ClassloggerService, ConfirmationService } from 'qbm';
 import { PortalCartitem } from 'imx-api-qer';
 import { CartItemsService } from '../cart-items.service';
 import { ShoppingCart } from '../shopping-cart';
-import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-    styleUrls: ['./shopping-cart-for-later.component.scss'],
-    templateUrl: './shopping-cart-for-later.component.html'
+  styleUrls: ['./shopping-cart-for-later.component.scss'],
+  templateUrl: './shopping-cart-for-later.component.html'
 })
 export class ShoppingCartForLaterComponent implements AfterViewInit {
-    public shoppingCart: ShoppingCart;
-    public selectedItems: PortalCartitem[] = [];
+  public shoppingCart: ShoppingCart;
+  public selectedItems: PortalCartitem[] = [];
 
-    constructor(private translate: TranslateService,
-                private readonly busyService: EuiLoadingService,
-                private readonly cartItemService: CartItemsService,
-                private readonly logger: ClassloggerService,
-                private readonly router: Router,
-                private dialogService: MatDialog) { }
+  constructor(
+    private readonly confirmationService: ConfirmationService,
+    private readonly busyService: EuiLoadingService,
+    private readonly cartItemService: CartItemsService,
+    private readonly logger: ClassloggerService,
+    private readonly router: Router) { }
 
-    public async ngAfterViewInit(): Promise<void> {
-        return this.updateShoppingCart();
+  public async ngAfterViewInit(): Promise<void> {
+    return this.updateShoppingCart();
+  }
+
+  public async getData(): Promise<void> {
+    await this.updateShoppingCart();
+
+    if (this.shoppingCart == null || this.shoppingCart.numberOfItems === 0) {
+      this.router.navigate(['/shoppingcart']);
     }
+  }
 
-    public async getData(): Promise<void> {
-        await this.updateShoppingCart();
+  public async clearForLaterList(): Promise<void> {
+    if (await this.confirmationService.confirm({
+      Title: '#LDS#Heading Delete Saved for Later List',
+      Message: '#LDS#Are you sure you want to delete all products from your Saved for Later list?',
+      identifier: 'shoppingcart-for-later-delete'
+    })) {
+      setTimeout(() => this.busyService.show());
 
-        if (this.shoppingCart == null || this.shoppingCart.numberOfItems === 0) {
-            this.router.navigate(['/shoppingcart']);
-        }
+      try {
+        await this.cartItemService.removeItems(this.shoppingCart.getItems(item => item.UID_ShoppingCartItemParent.value === ''));
+        this.logger.debug(this, 'The "for later list" is cleared');
+      } finally {
+        setTimeout(() => this.busyService.hide());
+        this.router.navigate(['/shoppingcart/']);
+      }
     }
+  }
 
-    public async clearForLaterList(): Promise<void> {
-        const dialogRef = this.dialogService.open(
-            MessageDialogComponent,
-            {
-                data: {
-                    ShowYesNo: true,
-                    Title: await this.translate.get(
-                        '#LDS#Heading Delete Saved for Later List'
-                    ).toPromise(),
-                    Message: await this.translate.get(
-                        '#LDS#Are you sure you want to delete all products from your Saved for Later list?'
-                    ).toPromise()
-                },
-                panelClass: 'imx-messageDialog'
-            }
-        );
+  public selectionChanged(items: PortalCartitem[]): void {
+    this.selectedItems = items;
+  }
 
-        const result = await dialogRef.afterClosed().toPromise();
+  private async updateShoppingCart(): Promise<void> {
+    setTimeout(() => this.busyService.show());
 
-        if (result === MessageDialogResult.YesResult) {
-            setTimeout(() => this.busyService.show());
-
-            try {
-                await this.cartItemService.removeItems(this.shoppingCart.getItems(item => item.UID_ShoppingCartItemParent.value === ''));
-                this.logger.debug(this, 'The "for later list" is cleared');
-            } finally {
-                setTimeout(() => this.busyService.hide());
-                this.router.navigate(['/shoppingcart/']);
-            }
-        }
+    try {
+      this.shoppingCart = new ShoppingCart(await this.cartItemService.getItemsForCart());
+      this.logger.debug(this, 'The "for later list" loaded');
+    } finally {
+      setTimeout(() => this.busyService.hide());
     }
-
-    public selectionChanged(items: PortalCartitem[]): void {
-      this.selectedItems = items;
-    }
-
-    private async updateShoppingCart(): Promise<void> {
-        setTimeout(() => this.busyService.show());
-
-        try {
-            this.shoppingCart = new ShoppingCart(await this.cartItemService.getItemsForCart());
-            this.logger.debug(this, 'The "for later list" loaded');
-        } finally {
-            setTimeout(() => this.busyService.hide());
-        }
-    }
+  }
 }
