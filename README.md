@@ -19,7 +19,7 @@ Each Angular library and app belongs to a folder in the `projects` directory. Th
 |Name|Type|Dependencies inside the workspace|
 |-|-|-|
 |`qbm`|Angular library|none|
-|`qer`|Angular library|`qer`|
+|`qer`|Angular library|`qbm`|
 |`tsb`|Angular plugin library|`qbm`, `qer`|
 |`att`|Angular plugin library|`qbm`, `qer`|
 |`rms`|Angular plugin library|`qbm`, `qer`|
