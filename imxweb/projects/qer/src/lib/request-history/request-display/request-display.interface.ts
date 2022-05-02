@@ -30,4 +30,5 @@ export interface RequestDisplayInterface {
   isReadOnly: boolean;
 
   personWantsOrg: PortalItshopRequests;
+  additionalText: string;
 }

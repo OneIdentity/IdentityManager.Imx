@@ -26,7 +26,6 @@
 
 import { Component, Input, Output } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { configureTestSuite } from 'ng-bullet';
 import { of } from 'rxjs';
@@ -34,7 +33,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { CollectionLoadParameters } from 'imx-qbm-dbts';
 import { PortalSubscription } from 'imx-api-rps';
-import { clearStylesFromDOM, MessageDialogResult, SnackBarService } from 'qbm';
+import { clearStylesFromDOM, ConfirmationService, SnackBarService } from 'qbm';
 import { SubscriptionsComponent } from './subscriptions.component';
 import { SubscriptionsService } from './subscriptions.service';
 import { ReportSubscriptionService } from './report-subscription/report-subscription.service';
@@ -98,12 +97,6 @@ describe('SubscriptionsComponent', () => {
   let component: SubscriptionsComponent;
   let fixture: ComponentFixture<SubscriptionsComponent>;
 
-  let result: any;
-  const mockMatDialog = {
-    open: jasmine.createSpy('open').and.returnValue({ afterClosed: () => of(result) }),
-    closeAll: jasmine.createSpy('closeAll')
-  };
-
   const euiLoadingServiceStub = {
     hide: jasmine.createSpy('hide'),
     show: jasmine.createSpy('show')
@@ -145,6 +138,12 @@ describe('SubscriptionsComponent', () => {
     buildRpsSubscription: jasmine.createSpy('buildRpsSubscription').and.callFake(() => Promise.resolve(reportSubscription))
   }
 
+  let confirm = true;
+  const mockConfirmationService = {
+    confirm: jasmine.createSpy('confirm')
+      .and.callFake(() => Promise.resolve(confirm))
+  }
+
   configureTestSuite(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -180,8 +179,8 @@ describe('SubscriptionsComponent', () => {
           useValue: matSidesheetStub
         },
         {
-          provide: MatDialog,
-          useValue: mockMatDialog
+          provide: ConfirmationService,
+          useValue: mockConfirmationService
         }
       ]
     });
@@ -240,11 +239,11 @@ describe('SubscriptionsComponent', () => {
   }
 
   for (const testcase of [
-    { result: MessageDialogResult.OkResult, description: 'can delete a report subscription' },
-    { result: MessageDialogResult.CancelResult, description: 'can cancel delete for a report subscription' }
+    { confirm: true, description: 'can delete a report subscription' },
+    { confirm: false, description: 'can cancel delete for a report subscription' }
   ]) {
     it(testcase.description, async () => {
-      result = testcase.result
+      confirm = testcase.confirm
 
       const subscription = {
         GetEntity: () => ({
@@ -255,7 +254,7 @@ describe('SubscriptionsComponent', () => {
 
       await component.delete(subscription);
 
-      if (testcase.result === MessageDialogResult.OkResult) {
+      if (testcase.confirm) {
         expect(mockSubscriptionService.deleteSubscription).toHaveBeenCalled();
       } else {
         expect(mockSubscriptionService.deleteSubscription).not.toHaveBeenCalled();

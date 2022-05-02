@@ -27,11 +27,11 @@
 import { Injectable } from '@angular/core';
 import { Router, Route } from '@angular/router';
 
-import { ExtService, MenuItem, MenuService } from 'qbm';
+import { ExtService, MenuItem, MenuService, TabItem } from 'qbm';
 import { canSeeAttestationPolicies, isAttestationAdmin } from './admin/permissions-helper';
+import { PermissionsService } from './admin/permissions.service';
 import { DashboardPluginComponent } from './dashboard-plugin/dashboard-plugin.component';
-import { IdentityAttestationService } from './identity-attestation.service';
-import { AttestationExtComponent } from './runs/attestation/attestation-ext/attestation-ext.component';
+import { AttestationWrapperComponent } from './runs/attestation/attestation-wrapper/attestation-wrapper.component';
 
 @Injectable({ providedIn: 'root' })
 export class InitService {
@@ -39,6 +39,7 @@ export class InitService {
     private readonly extService: ExtService,
     private readonly router: Router,
     private readonly menuService: MenuService,
+    private readonly permissions: PermissionsService
   ) {
     this.setupMenu();
   }
@@ -47,8 +48,23 @@ export class InitService {
     this.addRoutes(routes);
 
     this.extService.register('Dashboard-SmallTiles', { instance: DashboardPluginComponent });
-    this.extService.register('IdentityAttestationService', { instance: IdentityAttestationService });
-    this.extService.register('AttestationExtComponent', { instance: AttestationExtComponent });
+    this.extService.register('groupSidesheet', {
+      instance: AttestationWrapperComponent, inputData:
+      {
+        id: 'attestations',
+        label: '#LDS#Attestation',
+        checkVisibility: async _ => this.permissions.isAttestationAdmin()
+      },
+      sortOrder: 0
+    } as TabItem);
+    this.extService.register('identitySidesheet', {
+      instance: AttestationWrapperComponent, inputData: {
+        id: 'attestations',
+        label: '#LDS#Attestation',
+        checkVisibility: async _ => this.permissions.isAttestationAdmin()
+      },
+      sortOrder: 0
+    } as TabItem);
   }
 
   private addRoutes(routes: Route[]): void {
@@ -66,7 +82,7 @@ export class InitService {
       }
 
       const menu: MenuItem = {
-        title: '#LDS#Heading Attestation',
+        title: '#LDS#Attestation',
         sorting: '20',
         items: [
           {
@@ -107,12 +123,31 @@ export class InitService {
           id: 'ATT_Attestation_AttestationPreselection',
           route: 'attestation/preselection',
           title: '#LDS#Menu Entry Sample data',
-          description: '#LDS#Shows an overview of sample data.',
+          description: '#LDS#Shows an overview of samples.',
           sorting: '20-50',
         });
       }
 
       return menu;
-    });
+    },
+      (preProps: string[], __: string[]) => {
+        if (!preProps.includes('ITSHOP')) {
+          return null;
+        }
+
+        return {
+          id: 'ROOT_Responsibilities',
+          title: '#LDS#Responsibilities',
+          sorting: '30',
+          items: [
+            {
+              id: 'QER_Responsibilities_AssignDevice',
+              route: 'claimdevice',
+              title: '#LDS#Menu Entry Device ownership',
+              sorting: '30-20',
+            }
+          ]
+        };
+      });
   }
 }

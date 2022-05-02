@@ -28,37 +28,73 @@ import { ErrorHandler, Injectable, Injector } from '@angular/core';
 
 import { UserMessageService } from '../user-message/user-message.service';
 import { ClassloggerService } from '../classlogger/classlogger.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ErrorService } from './error.service';
 
 @Injectable()
 export class GlobalErrorHandler implements ErrorHandler {
   private messageService: UserMessageService;
   private logger: ClassloggerService;
 
-  constructor(private injector: Injector) { }
+  constructor(private injector: Injector, private readonly errorService: ErrorService) { }
+
+  private get target() { return this.errorService.target; }
 
   public handleError(error: any): void {
     this.checkInjectedServices();
 
-    if (error instanceof Error) {
+    if (error instanceof HttpErrorResponse) {
+      this.handleHttpErrorResponse(error);
+    } else if (error instanceof Error) {
       if (error.message != null && error.message.indexOf('\n') !== -1) {
         this.messageService.subject.next({
           text: error.message.substring(0, error.message.indexOf('\n')).replace('Uncaught (in promise):', ''),
+          target: this.target,
           type: 'error'
         });
       } else {
         this.messageService.subject.next({
           text: error.toString(),
+          target: this.target,
           type: 'error'
         });
       }
     } else {
       this.messageService.subject.next({
+        // TODO: do we really want the full error JSON shown to the user?
         text: JSON.stringify(error),
+        target: this.target,
         type: 'error'
       });
     }
 
     this.logger.error(this, error);
+  }
+
+  private async handleHttpErrorResponse(error: HttpErrorResponse): Promise<void> {
+    const body = error.error;
+    var response: any;
+    // By default, just use the HTTP status text of the response.
+    var text = error.statusText;
+    // Angular returns the error as a ArrayBuffer object
+    if (body instanceof ArrayBuffer) {
+      var t = await new Blob([body]).text();
+      var response: any;
+      try {
+        response = JSON.parse(t);
+        // assume that the body of the response is of the ExceptionData type defined by the API
+        text = (<any>response[0])?.Message;
+      }
+      catch {
+        // Cannot parse as JSON? ignore
+      }
+    }
+
+    this.messageService.subject.next({
+      text: text,
+      target: this.target,
+      type: 'error'
+    });
   }
 
   private checkInjectedServices(): void {

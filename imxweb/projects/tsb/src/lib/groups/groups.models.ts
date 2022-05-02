@@ -44,3 +44,10 @@ export interface GroupSidesheetData {
   groupServiceItem: PortalTargetsystemUnsGroupServiceitem;
   isAdmin?: boolean;
 }
+
+export interface GroupsFilterTreeParameters {
+  container: string;
+  system: string;
+  uid_unsaccount: string;
+  parentkey:string;
+}

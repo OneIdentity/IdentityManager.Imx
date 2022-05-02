@@ -1,0 +1,24 @@
+<mat-card>
+  <mat-card-title>{{ request.GetEntity()?.GetDisplay() }}</mat-card-title>
+  <mat-card-subtitle>{{ request.OrderState.Column.GetDisplayValue() }}</mat-card-subtitle>
+  <mat-card-content>
+    <imx-cdr-editor
+      *ngFor="let cdr of columns; let i = index"
+      [cdr]="cdr"
+      (controlCreated)="onFormControlCreated(cdr.column.ColumnName + '_' + i, $event)"
+      [attr.data-imx-identifier]="'column_' + cdr.column.ColumnName + '_' + i"
+    >
+    </imx-cdr-editor>
+    <imx-entity-select
+      *ngIf="data.workflow"
+      class="imx-custom-property"
+      [title]="data.workflow.title"
+      [entities]="data.workflow.data[data.requests[0].key]"
+      (controlCreated)="onFormControlCreated('customSelect', $event)"
+      (selectionChange)="onChangeDirectDecisionTarget($event)"
+      [placeholder]="data.workflow.placeholder"
+      data-imx-identifier="bulk-item-custom-select-option"
+    >
+    </imx-entity-select>
+  </mat-card-content>
+</mat-card>

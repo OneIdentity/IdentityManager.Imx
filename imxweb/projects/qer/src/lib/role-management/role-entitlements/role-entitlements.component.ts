@@ -24,18 +24,19 @@
  *
  */
 
+import { ThrowStmt } from '@angular/compiler';
 import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { EuiLoadingService } from '@elemental-ui/core';
+import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
-import { PortalRolesEntitlements } from 'imx-api-qer';
-import { OwnershipInformation } from 'imx-api-qer';
+
+import { OwnershipInformation, PortalRolesEntitlements } from 'imx-api-qer';
 import { CollectionLoadParameters, DbObjectKey, DisplayColumns, EntitySchema, IClientProperty, IEntity, TypedEntity, XOrigin } from 'imx-qbm-dbts';
+
 import { ConfirmationService, DataSourceToolbarSettings, DataTableComponent, imx_SessionService, MetadataService } from 'qbm';
 import { QerApiService } from '../../qer-api-client.service';
 import { RoleService } from '../role.service';
-import { EntitlementSelectorComponent, SelectedEntitlements } from './entitlement-selector.component';
+import { EntitlementSelectorComponent, SelectedEntitlement } from './entitlement-selector.component';
 
 @Component({
   selector: 'imx-role-entitlements',
@@ -43,6 +44,10 @@ import { EntitlementSelectorComponent, SelectedEntitlements } from './entitlemen
   styleUrls: ['./role-entitlements.component.scss', '../sidesheet.scss']
 })
 export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
+
+  get isMobile(): boolean {
+    return document.body.offsetWidth <= 768;
+  }
   public dstSettings: DataSourceToolbarSettings;
   public navigationState: CollectionLoadParameters = {};
   public entitySchema: EntitySchema;
@@ -53,21 +58,6 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
   @Input() public entity: IEntity;
   @Input() public ownershipInfo: OwnershipInformation;
   @ViewChild('dataTable') public dataTable: DataTableComponent<TypedEntity>;
-  private selectedEntities: TypedEntity[] = [];
-
-  constructor(private readonly busyService: EuiLoadingService,
-    private readonly qerApiService: QerApiService,
-    private readonly entitlementService: RoleService,
-    private readonly confirm: ConfirmationService,
-    private readonly snackbar: MatSnackBar,
-    private readonly matDialog: MatDialog,
-    private readonly metadata: MetadataService,
-    private readonly translate: TranslateService,
-    private readonly session: imx_SessionService,
-  ) { }
-  ngOnInit(): void {
-    this.entitySchema = PortalRolesEntitlements.GetEntitySchema();
-  }
 
   public readonly itemStatus = {
     enabled: (item: PortalRolesEntitlements): boolean => {
@@ -75,6 +65,23 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
         || item.GetEntity().GetColumn('IsRequestCancellable').GetValue();
     }
   };
+  private selectedEntities: TypedEntity[] = [];
+
+  constructor(
+    private readonly busyService: EuiLoadingService,
+    private readonly qerApiService: QerApiService,
+    private readonly entitlementService: RoleService,
+    private readonly confirmationService: ConfirmationService,
+    private readonly snackbar: MatSnackBar,
+    private readonly sidesheet: EuiSidesheetService,
+    private readonly metadata: MetadataService,
+    private readonly translate: TranslateService,
+    private readonly session: imx_SessionService,
+  ) { }
+
+  public ngOnInit(): void {
+    this.entitySchema = PortalRolesEntitlements.GetEntitySchema();
+  }
 
   public async ngAfterViewInit(): Promise<void> {
 
@@ -84,10 +91,6 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
       this.entitySchema.Columns.XDateInserted
     ];
     await this.navigate();
-  }
-
-  get isMobile(): boolean {
-    return document.body.offsetWidth <= 768;
   }
 
   public getValidUntil(item: TypedEntity): string {
@@ -107,17 +110,22 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
   }
 
   public async onSelectEntitlements(): Promise<void> {
-    const entlTypes = await this.entitlementService.getEntitlementTypes(this.ownershipInfo, this.entity);
-    const dialogRef = this.matDialog.open(EntitlementSelectorComponent, {
-      width: this.isMobile ? '90vw' : '60vw',
-      maxWidth: this.isMobile ? '90vw' : '80vw',
-      minHeight: '60vh',
-      data: {
-        entitlementTypes: entlTypes,
-        roleEntity: this.entity
+    const entlTypes = await this.entitlementService.getEntitlementTypes(this.ownershipInfo.TableName, this.entity);
+    const dialogRef = this.sidesheet.open(EntitlementSelectorComponent,
+      {
+        title: await this.translate.get('#LDS#Heading Request Entitlements').toPromise(),
+        headerColour: 'iris-blue',
+        bodyColour: 'asher-gray',
+        padding: '0px',
+        width: 'max(600px, 60%)',
+        testId: 'role-entitlements-new-sidesheet',
+        data: {
+          entitlementTypes: entlTypes,
+          roleEntity: this.entity
+        }
       }
-    });
-    dialogRef.afterClosed().subscribe((selectedValues: SelectedEntitlements) => {
+    );
+    dialogRef.afterClosed().subscribe((selectedValues: SelectedEntitlement[]) => {
       if (selectedValues) {
         this.processEntitlementSelections(selectedValues);
       }
@@ -125,17 +133,75 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
 
   }
 
-  private async processEntitlementSelections(values: SelectedEntitlements): Promise<void> {
+  public async onNavigationStateChanged(newState?: CollectionLoadParameters): Promise<void> {
+    if (newState) {
+      this.navigationState = newState;
+    }
+    await this.navigate();
+  }
+
+  public async getTypeDescription(item: any): Promise<string> {
+    const colName = this.entitlementService.getEntitlementFkName(this.ownershipInfo.TableName);
+    const objKey = DbObjectKey.FromXml(item.GetEntity().GetColumn(colName).GetValue());
+    const metadata = await this.metadata.GetTableMetadata(objKey.TableName);
+    return metadata.DisplaySingular;
+  }
+
+  public canDeleteAllSelected(): boolean {
+    if (this.selectedEntities.length < 1) {
+      return false;
+    }
+
+    return this.selectedEntities.findIndex(item => ! this.canDelete(item)) < 0;
+  }
+
+  public async onDeleteEntitlements(): Promise<void> {
+    if (await this.confirmationService.confirm({
+      Title: '#LDS#Heading Remove Entitlements',
+      Message: '#LDS#Are you sure you want to remove the selected entitlements?'
+    })) {
+      this.busyService.show();
+      try {
+        for (const entlasgn of this.selectedEntities) {
+          if (this.isDirectAssignment(entlasgn)) {
+            await this.entitlementService.removeEntitlements(this.ownershipInfo.TableName, this.entity.GetKeys()[0], entlasgn.GetEntity());
+          }
+
+          if (this.isRequestCancellable(entlasgn)) {
+            await this.entitlementService.unsubscribe(entlasgn);
+          }
+
+        }
+
+      } finally {
+        this.busyService.hide();
+        this.dataTable.clearSelection();
+        this.openSnackbar('#LDS#The entitlements have been successfully removed. It may take some time for the changes to take effect.',
+          '#LDS#Close');
+        await this.navigate();
+      }
+    }
+  }
+
+  public isNotEffective(item: TypedEntity): boolean {
+    if (!this.entitySchema.Columns.XIsInEffect) {
+      return false;
+    }
+
+    return !item.GetEntity().GetColumn('XIsInEffect').GetValue();
+  }
+
+  private async processEntitlementSelections(values: SelectedEntitlement[]): Promise<void> {
     const overlay = this.busyService.show();
     try {
-      for (const entity of values.entities) {
+      for (const asgn of values) {
         const newCartItem = this.qerApiService.typedClient.PortalCartitem.createEntity();
 
         // i.e. "<Key><T>Org</T><P>4ee782c2-a518-42d3-8d38-73b0d287b7e6</P></Key>"
-        newCartItem.RoleMembership.value = this.entity.GetColumn("XObjectKey").GetValue();
+        newCartItem.RoleMembership.value = this.entity.GetColumn('XObjectKey').GetValue();
 
         // i.e. "OrgHasADSGroup|<Key><T>ADSGroup</T><P>468fa7aa-26d8-4c81-8944-a00146014ece</P></Key>"
-        newCartItem.EntitlementData.value = values.assignmentType.AssignTable + "|" + entity.GetColumn("XObjectKey").GetValue();
+        newCartItem.EntitlementData.value = asgn.assignmentType.AssignTable + '|' + asgn.entity.GetColumn('XObjectKey').GetValue();
 
         newCartItem.UID_PersonOrdered.value = this.session.SessionState.UserUid;
         await newCartItem.GetEntity().Commit(false);
@@ -154,24 +220,10 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  public async onNavigationStateChanged(newState?: CollectionLoadParameters): Promise<void> {
-    if (newState) {
-      this.navigationState = newState;
-    }
-    await this.navigate();
-  }
-
-  public async getTypeDescription(item: any): Promise<string> {
-    const colName = this.entitlementService.getEntitlementFkName(this.ownershipInfo);
-    const objKey = DbObjectKey.FromXml(item.GetEntity().GetColumn(colName).GetValue());
-    const metadata = await this.metadata.GetTableMetadata(objKey.TableName);
-    return metadata.DisplaySingular;
-  }
-
   private async navigate(): Promise<void> {
     this.busyService.show();
     try {
-      const ds = await this.entitlementService.getEntitlements(this.ownershipInfo, this.entity.GetKeys()[0], this.navigationState);
+      const ds = await this.entitlementService.getEntitlements(this.ownershipInfo.TableName, this.entity.GetKeys()[0], this.navigationState);
       this.entitlementTypes = new Map();
 
       ds.Data.forEach(async item => {
@@ -190,54 +242,24 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  public canDeleteAllSelected(): boolean {
-    if (this.selectedEntities.length < 1)
-      return false;
-
-      return this.selectedEntities.filter(item => {
-        // is it a direct or dynamic assignment?
-        const xorigin = item.GetEntity().GetColumn('XOrigin').GetValue();
-        ((XOrigin.Direct & xorigin) == XOrigin.Direct)
-          || ((XOrigin.Dynamic & xorigin) == XOrigin.Dynamic)
-          || item.GetEntity().GetColumn('IsRequestCancellable').GetValue()
-      }).length == this.selectedEntities.length;
+  private canDelete(entity: TypedEntity): boolean {
+    return this.isDirectAssignment(entity) || this.isDynamicAssignment(entity) || this.isRequestCancellable(entity);
   }
 
-  public async onDeleteEntitlements(): Promise<void> {
-    const result = await this.confirm.confirmLeaveWithUnsavedChanges(
-      '#LDS#Heading Remove Entitlements',
-      '#LDS#Are you sure you want to remove the selected entitlements?'
-    );
-
-    if (result) {
-      this.busyService.show();
-      try {
-        for (const entlasgn of this.selectedEntities) {
-          // is it a direct assignment?
-          if ((XOrigin.Direct & entlasgn.GetEntity().GetColumn('XOrigin').GetValue()) == XOrigin.Direct) {
-            await this.entitlementService.removeEntitlements(this.ownershipInfo, this.entity.GetKeys()[0], entlasgn.GetEntity());
-          }
-
-          if (entlasgn.GetEntity().GetColumn('IsRequestCancellable').GetValue()) {
-            await this.entitlementService.unsubscribe(entlasgn);
-          }
-
-        };
-
-      } finally {
-        this.busyService.hide();
-        this.dataTable.clearSelection();
-        this.openSnackbar('#LDS#The entitlements have been successfully removed. It may take some time for the changes to take effect.',
-          '#LDS#Close');
-        await this.navigate();
-      }
-    }
+  private isDirectAssignment(entity: TypedEntity): boolean {
+    const xorigin = entity.GetEntity().GetColumn('XOrigin').GetValue() as XOrigin;
+    // tslint:disable-next-line:no-bitwise
+    return xorigin && (XOrigin.Direct === (XOrigin.Direct & xorigin));
   }
 
-  public isNotEffective(item: TypedEntity): boolean {
-    if (!this.entitySchema.Columns['XIsInEffect'])
-      return false;
-
-    return !item.GetEntity().GetColumn('XIsInEffect').GetValue();
+  private isDynamicAssignment(entity: TypedEntity): boolean {
+    const xorigin = entity.GetEntity().GetColumn('XOrigin').GetValue() as XOrigin;
+    // tslint:disable-next-line:no-bitwise
+    return xorigin && (XOrigin.Dynamic === (XOrigin.Dynamic & xorigin));
   }
+
+  private isRequestCancellable(entity: TypedEntity): boolean {
+    return true === entity.GetEntity().GetColumn('IsRequestCancellable')?.GetValue();
+  }
+
 }

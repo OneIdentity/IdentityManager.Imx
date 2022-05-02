@@ -1,14 +1,14 @@
 <h1 class="mat-headline">{{'#LDS#Heading Attestation Policies' | translate}}</h1>
 
 <div class="imx-table-container">
-    <imx-data-source-toolbar #dst [settings]="dstSettings" [hiddenElements]="['settings', 'selectedViewGroup']"
+    <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['search', 'filter', 'groupBy', 'settings']"
         (search)="onSearch($event)" (navigationStateChanged)="onNavigationStateChanged($event)">
     </imx-data-source-toolbar>
 
     <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual" [groupData]="groupedData"
         (groupDataChanged)="onGroupingChange($event)">
         <imx-data-table-column [entityColumn]="entitySchemaPolicy?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-            [entitySchema]="entitySchemaPolicy" columnLabel="{{'#LDS#Attestation policy' | translate}}">
+            columnLabel="{{'#LDS#Attestation policy' | translate}}">
             <ng-template let-data>
                 <div>{{ data.GetEntity().GetDisplay() }}</div>
                 <div subtitle>
@@ -17,7 +17,7 @@
                 </div>
             </ng-template>
         </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchemaPolicy?.Columns.NextRun" [entitySchema]="entitySchemaPolicy">
+        <imx-data-table-column [entityColumn]="entitySchemaPolicy?.Columns.NextRun">
         </imx-data-table-column>
         <imx-data-table-generic-column columnName="actions" [columnLabel]="">
             <ng-template let-prod>

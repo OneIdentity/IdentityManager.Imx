@@ -30,14 +30,12 @@ import { Router, Route } from '@angular/router';
 import { ExtService, MenuItem, MenuService } from 'qbm';
 import { KpiTileComponent } from './global-kpi/kpi-tile/kpi-tile.component';
 import { isAobApplicationAdmin, isAobApplicationOwner } from './permissions/aob-permissions-helper';
-import { AobPermissionsService } from './permissions/aob-permissions.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AobService {
   constructor(
-    private readonly aobPermissionService: AobPermissionsService,
     private readonly router: Router,
     private readonly extService: ExtService,
     private readonly menuService: MenuService
@@ -47,11 +45,8 @@ export class AobService {
 
   public onInit(routes: Route[]): void {
     this.addRoutes(routes);
-    this.extService.register('KpiTileComponent', {
-      instance: KpiTileComponent, condition: async () => {
-        const isApplicationAdmin = await this.aobPermissionService.isAobApplicationAdmin();
-        return isApplicationAdmin;
-      }
+    this.extService.register('Dashboard-MediumTiles', {
+      instance: KpiTileComponent
     });
   }
 

@@ -1,24 +1,31 @@
 <ng-container *ngIf="hasTreeData; else noDataContainer">
   <div class="imx-selected-items-button-containter">
-    <button *ngIf="withMultiSelect" [disabled]="selectedEntities.length === 0" mat-flat-button
+    <button *ngIf="withMultiSelect && !hideSelection" [disabled]="selectedEntities.length === 0" mat-flat-button
       class="imx-data-table-selection-info mat-caption" (click)="onOpenSelectionDialog()"
       data-imx-identifier="datatree-button-show-selected">
       {{'#LDS#Selected items' | translate}} ({{selectedEntities.length}})
     </button>
   </div>
   <div class="imx-data-tree-content">
-    <imx-checkable-tree *ngIf="!hasSearchResults()" [database]="database" [selectedEntities]="selectedEntities"
+    <imx-checkable-tree *ngIf="!hasSearchResults()" [database]="database"
+      [withSelectedNodeHighlight]="withSelectedNodeHighlight" [selectedEntities]="selectedEntities"
       [withMultiSelect]="withMultiSelect" [emptyNodeCaption]="emptyNodeCaption" [navigationState]="navigationState"
       (checkedNodesChanged)="selectedNodesChanged()" (nodeSelected)="onNodeSelected($event)">
+      <ng-template let-entity>
+        <ng-container *ngTemplateOutlet="templateRef; context: {$implicit:  entity}">
+        </ng-container>
+      </ng-template>
     </imx-checkable-tree>
 
     <div class="imx-search-selection">
-     
-      <imx-data-tree-search-results #treeSearchResults 
-      *ngIf="hasSearchResults()"
-      [withMultiSelect]="withMultiSelect"
-        [selectedEntities]="selectedEntities" [action]="searchResultAction" (checkedNodesChanged)="selectedNodesChanged()"
-        (nodeSelected)="onNodeSelected($event)" [database]="database" [navigationState]="navigationState">
+      <imx-data-tree-search-results #treeSearchResults *ngIf="hasSearchResults()" [withMultiSelect]="withMultiSelect"
+        [withSelectedNodeHighlight]="withSelectedNodeHighlight" [selectedEntities]="selectedEntities"
+        (checkedNodesChanged)="selectedNodesChanged()" (nodeSelected)="onNodeSelected($event)" [database]="database"
+        [navigationState]="navigationState">
+        <ng-template let-entity>
+          <ng-container *ngTemplateOutlet="templateRef; context: {$implicit:  entity}">
+          </ng-container>
+        </ng-template>
       </imx-data-tree-search-results>
     </div>
   </div>

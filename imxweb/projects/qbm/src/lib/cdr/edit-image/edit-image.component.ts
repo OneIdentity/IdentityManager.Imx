@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, OnDestroy } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -51,12 +51,14 @@ export class EditImageComponent implements CdrEditor, OnDestroy {
   public readonly control = new FormControl(undefined);
 
   public readonly columnContainer = new EntityColumnContainer<string>();
+  public readonly valueHasChanged = new EventEmitter<any>();
 
   public isLoading = false;
 
   private fileFormatError = false;
 
   private readonly subscriptions: Subscription[] = [];
+  private isWriting = false;
 
   constructor(
     private readonly logger: ClassloggerService,
@@ -88,6 +90,14 @@ export class EditImageComponent implements CdrEditor, OnDestroy {
       if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
         this.control.setValidators(Validators.required);
       }
+      this.subscriptions.push(this.columnContainer.subscribe(() => {
+        if (this.isWriting) { return; }
+        if (this.control.value !== this.columnContainer.value) {
+          this.logger.trace(this, 'Control set to new value');
+          this.control.setValue(this.columnContainer.value, { emitEvent: false });
+        }
+        this.valueHasChanged.emit(this.control.value);
+      }));
     }
   }
 
@@ -124,12 +134,14 @@ export class EditImageComponent implements CdrEditor, OnDestroy {
 
     try {
       this.isLoading = true;
+      this.isWriting = true;
       this.logger.debug(this, 'writeValue - updateCdrValue...');
       await this.columnContainer.updateValue(value);
     } catch (e) {
       this.logger.error(this, e);
     } finally {
       this.isLoading = false;
+      this.isWriting = false;
 
       if (this.control.value !== this.columnContainer.value) {
         this.control.setValue(this.columnContainer.value, { emitEvent: false });

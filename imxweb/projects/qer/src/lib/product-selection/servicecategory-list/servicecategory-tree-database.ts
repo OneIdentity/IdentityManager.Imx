@@ -63,7 +63,7 @@ export class ServicecategoryTreeDatabase extends TreeDatabase {
         ...navigationState,
         ...parameters,
         UID_Person: recipients.length === 1 ? recipients[0] : undefined,
-        UID_AccProductGroupParent: parameters.parentKey
+        UID_AccProductGroupParent: parameters.ParentKey
       };
 
       serviceCategories = await this.productSelectionService.getServiceCategories(opts);

@@ -31,7 +31,9 @@ import { EuiLoadingService } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
 import { MenuItem, AuthenticationService, ISessionState, MenuService, SettingsService, imx_SessionService } from 'qbm';
+import { FeatureConfigService } from 'qer';
 import { UserService } from './user/user.service';
+import { FeatureConfig } from 'imx-api-qer';
 
 @Component({
   selector: 'imx-root',
@@ -52,21 +54,24 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly router: Router,
     private readonly menuService: MenuService,
     private readonly userModelService: UserService,
+    private readonly featureService: FeatureConfigService,
     sessionService: imx_SessionService,
     settings: SettingsService
   ) {
-
-    this.setupMenu();
 
     this.subscriptions.push(
       this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
         this.isLoggedIn = sessionState.IsLoggedIn;
         if (this.isLoggedIn) {
+          await this.setupMenu();
           const conf = await sessionService.Client.opsupport_config_get();
           settings.DefaultPageSize = conf.DefaultPageSize;
 
           const groupInfo = await this.userModelService.getGroups();
           this.menuItems = this.menuService.getMenuItems([], groupInfo.map(group => group.Name), true);
+        }
+        else {
+          this.menuService.clearFactories();
         }
       })
     );
@@ -106,18 +111,34 @@ export class AppComponent implements OnInit, OnDestroy {
     }));
   }
 
-  private setupMenu(): void {
+  private async setupMenu(): Promise<void> {
+
+    let featureConfig : FeatureConfig;
+    const overlay = this.busyService.show();
+    try {
+      featureConfig = await this.featureService.getFeatureConfig();
+    } finally {
+      this.busyService.hide(overlay);
+    }
+
     this.menuService.addMenuFactories(
       () => {
         return {
           id: 'OpsWeb_ROOT_Dashboard',
+          sorting: '10',
           title: '#LDS#Home',
           route: 'start'
         };
       },
-      () => {
+      (__: string[], groups: string[]) => {
+
+        if (!groups.includes('QER_4_OperationsSupport')) {
+          return null;
+        }
+
         const menu = {
           id: 'OpsWeb_ROOT_Processes',
+          sorting: '20',
           title: '#LDS#Processes',
           items: [
             {
@@ -134,58 +155,76 @@ export class AppComponent implements OnInit, OnDestroy {
               id: 'OpsWeb_Processes_Performance',
               title: '#LDS#Performance',
               route: 'JobPerformance'
-            },
-            {
-              id: 'OpsWeb_Processes_SyncInformation',
-              title: '#LDS#Synchronization',
-              route: 'SyncInformation'
             }
           ]
         };
         return menu;
       },
-      () => {
-        return {
-          id: 'OpsWeb_ROOT_Database',
-          title: '#LDS#Database log',
-          route: 'journal'
-        };
-      },
       (__: string[], groups: string[]) => {
+        if (!groups.includes('QER_4_OperationsSupport')) {
+          return null;
+        }
         const menu = {
           id: 'OpsWeb_ROOT_Synchronization',
           title: '#LDS#Synchronization',
+          sorting: '30',
           items: [
             {
               id: 'OpsWeb_Synchronization_UnresolvedReferences',
               title: '#LDS#Unresolved references',
-              route: 'unresolvedRefs'
+              route: 'unresolvedRefs',
+              sorting: '30-10'
             }
           ]
         };
 
         if (groups.some(elem => elem === 'QER_4_ManageOutstanding')) {
-          menu.items.unshift({
+          menu.items.push({
             id: 'OpsWeb_Synchronization_OutstandingObjects',
             title: '#LDS#Menu Entry Outstanding objects',
-            route: 'outstanding'
+            route: 'outstanding',
+            sorting: '30-20'
+          });
+        }
+
+        menu.items.push({
+          id: 'OpsWeb_Synchronization_SyncInformation',
+          title: '#LDS#Synchronization',
+          route: 'SyncInformation',
+          sorting: '30-30'
+        });
+        return menu;
+      },
+      (__: string[], groups: string[]) => {
+        if (!groups.includes('QER_4_OperationsSupport')) {
+          return null;
+        }
+        const menu = {
+          id: 'OpsWeb_ROOT_System',
+          sorting: '40',
+          title: '#LDS#System',
+          items: [
+            {
+              id: 'OpsWeb_System_Database',
+              title: '#LDS#Database log',
+              route: 'journal'
+            },
+            {
+              id: 'OpsWeb_System_WebApplications',
+              title: '#LDS#Web applications',
+              route: 'WebApplications'
+            },
+          ]
+        };
+
+        if (featureConfig?.EnableSystemStatus) {
+          menu.items.unshift({
+            id: 'OpsWeb_System_SystemStatus',
+            title: '#LDS#System status',
+            route: 'SystemStatus'
           });
         }
         return menu;
-      },
-      () => {
-        return {
-          id: 'OpsWeb_ROOT_WebApplications',
-          title: '#LDS#Web applications',
-          route: 'WebApplications'
-        };
-      },
-      () => {
-        return {
-          id: 'OpsWeb_ROOT_SystemStatus',
-          title: '#LDS#System status',
-          route: 'SystemStatus'
-        };
       });
 
     return null;

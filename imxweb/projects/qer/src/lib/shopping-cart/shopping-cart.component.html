@@ -82,13 +82,6 @@
               title="{{ '#LDS#Checks your request for possible errors' | translate }}" mat-menu-item (click)="validate()">
               {{ '#LDS#Check shopping cart' | translate }}
             </button>
-
-            <!-- todo later
-            <a *ngIf="ProductSelectionFromTemplate && ShoppingCartOrderSelected" data-imx-identifier="MenuElement1"
-                mat-menu-item [routerLink]="['shoppingcart', 'template']">
-                {{'#LDS#Create template from shopping cart' | translate}}</a>
-            -->
-
             <button data-imx-identifier="shoppingcart-delete-all-requests-button"
               title="{{ '#LDS#Removes all products from your shopping cart' | translate }}" mat-menu-item (click)="deleteCart()">
               {{ '#LDS#Delete shopping cart' | translate }}
@@ -98,6 +91,10 @@
               {{ '#LDS#View saved for later list' | translate }}
             </button>
             <mat-divider></mat-divider>
+            <button [disabled]="!cartItems?.haveSelectedItems()" data-imx-identifier="shoppingcart-create-itshoppattern-button-selected-products"
+              mat-menu-item (click)="createItshopPattern(selectedItems)">
+              {{'#LDS#Create request template' | translate}}
+            </button>
             <button *ngIf="cartItems?.forLater; else moveToLater" mat-menu-item data-imx-identifier="imx-table-actions-move-menu" [disabled]="!cartItems?.itemsCanBeMoved()"
                 title="{{ '#LDS#Moves the selected products to your shopping cart' | translate }}" (click)="cartItems?.moveSelectedToCart()">
                 {{ '#LDS#Move to shopping cart' | translate }}

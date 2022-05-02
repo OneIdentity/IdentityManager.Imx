@@ -78,7 +78,9 @@ export class FilterElementColumnService {
       ],
       load: async (__, parameters?) => {
         return this.policyService.getFilterCandidates(parameters, uidParameter);
-      }
+      },
+      getDataModel: async () => ({}),
+      getFilterTree: async ()=>({})
     }] : [], this.getValue(withfk, value, displays));
   }
 

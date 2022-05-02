@@ -38,7 +38,6 @@ import {
   DataTilesModule,
   DisableControlModule,
   QbmModule,
-  DataTreeModule,
   LdsReplaceModule,
   CdrModule,
   BulkPropertyEditorModule,
@@ -58,6 +57,10 @@ import { ServiceItemEditComponent } from './service-item-edit/service-item-edit.
 import { CategoryTreeComponent } from './servicecategory-list/category-tree.component';
 import { RoleMembershipsComponent } from './role-memberships/role-memberships.component';
 import { RequestsFeatureGuardService } from '../requests-feature-guard.service';
+import { ProductDetailsSidesheetComponent } from './product-details-sidesheet/product-details-sidesheet.component';
+import { PatternDetailsSidesheetComponent } from './pattern-details-sidesheet/pattern-details-sidesheet.component';
+import { ProductEntitlementsComponent } from './product-details-sidesheet/product-entitlements/product-entitlements.component';
+import { PatternItemsModule } from '../pattern-item-list/pattern-items.module';
 
 const routes: Routes = [
   {
@@ -88,6 +91,7 @@ const routes: Routes = [
     TranslateModule,
     ItshopModule,
     ServiceItemsModule,
+    PatternItemsModule,
     UserModule,
     BulkPropertyEditorModule
   ],
@@ -96,10 +100,17 @@ const routes: Routes = [
     ServiceCategoryListComponent,
     CategoryTreeComponent,
     ServiceItemEditComponent,
-    RoleMembershipsComponent
+    RoleMembershipsComponent,
+    ProductDetailsSidesheetComponent,
+    PatternDetailsSidesheetComponent,
+    ProductEntitlementsComponent
   ],
   providers: [
     ProductSelectionService
+  ],
+  entryComponents: [
+    ProductDetailsSidesheetComponent,
+    PatternDetailsSidesheetComponent
   ]
 })
 

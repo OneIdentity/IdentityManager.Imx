@@ -102,7 +102,7 @@ export class IdentitiesComponent implements OnChanges {
     };
 
     this.sidesheetService.open(IdentityDetailComponent, {
-      title: await this.translateService.get('#LDS#Heading Application Entitlements').toPromise(),
+      title: await this.translateService.get('#LDS#Heading View Application Entitlements').toPromise(),
       width: '800px',
       bodyColour: 'asher-gray',
       headerColour: 'iris-blue',

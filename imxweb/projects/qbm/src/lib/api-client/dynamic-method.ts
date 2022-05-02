@@ -35,12 +35,16 @@ import {
   TypedEntity,
   TypedEntityBuilder,
   EntitySchema,
-  EntityData
+  EntityData,
+  FilterData,
+  DataModel,
+  MethodDefinition
 } from 'imx-qbm-dbts';
 import { imx_SessionService } from '../session/imx-session.service';
 
 export class GenericTypedEntity extends TypedEntity { }
 
+// tslint:disable-next-line: max-classes-per-file
 export class DynamicMethod {
   private builder: TypedEntityBuilder<TypedEntity>;
 
@@ -60,9 +64,28 @@ export class DynamicMethod {
 
     this.getSchema = () => session.Client.getSchema(this.schemaPath);
 
-    const fkProviderItems = new FkCandidateBuilder(this.getSchema(), this.apiClient).build();
+    const fkProviderItems = new FkCandidateBuilder(this.getSchema()?.FkCandidateRoutes, this.apiClient).build();
 
     this.builder = new TypedEntityBuilder(GenericTypedEntity, fkProviderItems, commitMethod, translationProvider);
+  }
+
+
+  public createEntity(initialData?: EntityData): TypedEntity {
+    return this.builder.buildReadWriteEntity({ entitySchema: this.getSchema(), entityData: initialData });
+  }
+
+  async Get(parametersOptional: any = {}) {
+    const data = await this.apiClient.processRequest(this.do_get(parametersOptional));
+    return this.builder.buildReadWriteEntities(data, this.getSchema());
+  }
+
+  public async getDataModei(options: { filter?: FilterData[] } = {}): Promise<DataModel> {
+    return this.apiClient.processRequest(this.do_getDataModel(options));
+  }
+
+  async Put(entity: TypedEntity) {
+    const data = await this.apiClient.processRequest(this.do_put(entity.EntityWriteData));
+    return this.builder.buildReadWriteEntities(data, this.getSchema());
   }
 
   private do_get(parametersOptional: any): MethodDescriptor<EntityCollectionData> {
@@ -78,7 +101,7 @@ export class DynamicMethod {
 
     return {
       path: this.path,
-      parameters: parameters,
+      parameters,
       method: 'GET',
       headers: {
         'imx-timezone': TimeZoneInfo.get()
@@ -86,6 +109,21 @@ export class DynamicMethod {
       credentials: 'include',
       observe: 'response',
       responseType: 'json',
+    };
+  }
+
+  private do_getDataModel(options: { filter?: FilterData[] } = {}): MethodDescriptor<DataModel> {
+    return {
+      path: this.path + '/datamodel',
+      parameters: MethodDefinition.MakeQueryParameters(options, [
+      ]),
+      method: 'GET',
+      headers: {
+        'imx-timezone': TimeZoneInfo.get(),
+      },
+      credentials: 'include',
+      observe: 'response',
+      responseType: 'json'
     };
   }
 
@@ -107,19 +145,5 @@ export class DynamicMethod {
       observe: 'response',
       responseType: 'json',
     };
-  }
-
-  public createEntity(initialData?: EntityData): TypedEntity {
-    return this.builder.buildReadWriteEntity({ entitySchema: this.getSchema(), entityData: initialData });
-  }
-
-  async Get(parametersOptional: any = {}) {
-    const data = await this.apiClient.processRequest(this.do_get(parametersOptional));
-    return this.builder.buildReadWriteEntities(data, this.getSchema());
-  }
-
-  async Put(entity: TypedEntity) {
-    const data = await this.apiClient.processRequest(this.do_put(entity.EntityWriteData));
-    return this.builder.buildReadWriteEntities(data, this.getSchema());
   }
 }

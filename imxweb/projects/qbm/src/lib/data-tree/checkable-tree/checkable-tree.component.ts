@@ -26,7 +26,7 @@
 
 import { SelectionModel } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
+import { AfterViewInit, Component, ContentChild, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, TemplateRef } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { Subscription } from 'rxjs';
 
@@ -53,6 +53,8 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
   /** the {@link FlatTreeControl| FlatTreeControl} of @angular/cdk */
   public treeControl: FlatTreeControl<TreeNode>;
 
+  @ContentChild(TemplateRef, { static: true }) public templateRef: TemplateRef<any>;
+
   /** currently selected entities */
   @Input() public selectedEntities: IEntity[] = [];
 
@@ -64,6 +66,8 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
 
   /** determines whether the control allows multiselect or not  */
   @Input() public withMultiSelect: boolean;
+
+  @Input() public withSelectedNodeHighlight: boolean;
 
   /** determines whether the control allows multiselect or not  */
   @Input() public navigationState: CollectionLoadParameters;
@@ -114,7 +118,7 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
     }
 
     if (changes.selectedEntities && changes.selectedEntities.currentValue && changes.selectedEntities.currentValue.length === 1) {
-      const key = TreeDatabase.getId(changes.selectedEntities.currentValue[0]);
+      const key = this.getId(changes.selectedEntities.currentValue[0]);
 
       if (key !== '') {
         if (this.treeControl.dataNodes != null) {
@@ -136,7 +140,7 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
       }
     }
 
-    this.updateCheckedTreeNodes(this.treeDataSource?.data, true);
+    this.updateCheckedTreeNodes(this.treeDataSource?.data);
   }
 
   public ngAfterViewInit(): void {
@@ -204,22 +208,28 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
   /** clears all selected nodes for the tree */
   public clearSelection(): void {
     this.checklistSelection.clear();
+    this.selectedEntities = [];
   }
 
   /** mark nodes as selected, if its entity is in the selected entities list */
-  public updateCheckedTreeNodes(nodes?: TreeNode[], openSelectedNode?: boolean): void {
+  public updateCheckedTreeNodes(nodes?: TreeNode[]): void {
     const data = nodes || this.treeDataSource?.data;
     if (this.withMultiSelect) {
       const selected = this.getSelectedItems();
       if (selected) {
         this.updatePreselectedEntities(data, selected);
       }
-    } else if (openSelectedNode) {
+    } else if (!this.withMultiSelect) {
       const selected = this.getSelectedItem();
       if (selected) {
         this.selectTreeNode(selected);
       }
     }
+  }
+
+  public isSameNode(node1: TreeNode, node2: TreeNode): boolean {
+    if (node1 == null || node2 == null) { return false; }
+    return this.getId(node1.item) === this.getId(node2.item);
   }
 
   private async initializeTreeData(): Promise<void> {
@@ -228,7 +238,7 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
 
   private getSelectedItem(): string {
     return this.selectedEntities.length > 0
-      && this.selectedEntities[0] != null ? TreeDatabase.getId(this.selectedEntities[0]) : null;
+      && this.selectedEntities[0] != null ? this.getId(this.selectedEntities[0]) : null;
   }
 
   /* Get the parent node of a node */
@@ -255,7 +265,7 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
   private getSelectedItems(): string[] {
     this.logger.log(this, 'selected', this.selectedEntities);
     return this.selectedEntities.length > 0 ?
-      this.selectedEntities.map(elem => TreeDatabase.getId(elem))
+      this.selectedEntities.map(elem => this.getId(elem))
         .filter(elem => elem != null)
       : [];
   }
@@ -270,7 +280,7 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
   private selectTreeNode(ident: string): void {
     if (!this.treeControl.dataNodes) { return; }
 
-    const selectedTreeNodes = this.treeControl.dataNodes.filter(treeNode => treeNode.name === ident);
+    const selectedTreeNodes = this.treeControl.dataNodes.filter(treeNode => this.getId(treeNode.item) === ident);
     if (selectedTreeNodes.length > 0) {
       this.treeControl.expand(selectedTreeNodes[0]);
       this.selectedNode = selectedTreeNodes[0];
@@ -292,8 +302,12 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
     if (checked) {
       this.selectedEntities.push(current);
     } else {
-      const index = this.selectedEntities.findIndex(elem => TreeDatabase.getId(elem) === TreeDatabase.getId(current));
+      const index = this.selectedEntities.findIndex(elem => this.getId(elem) === this.getId(current));
       this.selectedEntities.splice(index, 1);
     }
+  }
+
+  private getId(entity: IEntity): string {
+    return this.database ? this.database.getId(entity) : entity.GetKeys()[0];
   }
 }

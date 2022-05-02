@@ -31,6 +31,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { RouterModule, Routes } from '@angular/router';
 import { EuiCoreModule } from '@elemental-ui/core';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { DataSourceToolbarModule, DataTableModule, CdrModule, RouteGuardService } from 'qbm';
@@ -44,15 +45,12 @@ const routes: Routes = [
     path: 'addressbook',
     component: AddressbookComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
-  }
+    resolve: [RouteGuardService],
+  },
 ];
 
 @NgModule({
-  declarations: [
-    AddressbookComponent,
-    AddressbookDetailComponent
-  ],
+  declarations: [AddressbookComponent, AddressbookDetailComponent],
   imports: [
     CommonModule,
     CdrModule,
@@ -64,9 +62,10 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     MatButtonModule,
     MatCardModule,
+    MatExpansionModule,
     OrgChartModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
-  exports: [AddressbookComponent]
+  exports: [AddressbookComponent],
 })
-export class AddressbookModule { }
+export class AddressbookModule {}

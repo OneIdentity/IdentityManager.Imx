@@ -29,7 +29,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { CollectionLoadParameters, CompareOperator, FilterData, FilterType, ValType } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, CompareOperator, DataModel, FilterData, FilterType, ValType } from 'imx-qbm-dbts';
 import { PortalAttestationRun, RunStatisticsConfig } from 'imx-api-att';
 import { DataSourceToolbarFilter, DataSourceToolbarGroupData, DataSourceToolbarSettings, DataTableGroupedData, SettingsService } from 'qbm';
 import { ApiService } from '../../api.service';
@@ -75,6 +75,7 @@ export class RunsGridComponent implements OnInit {
   private readonly orderBy = { OrderBy: 'PolicyProcessed desc' };
 
   private filter: { filter: FilterData[] };
+  private dataModel: DataModel;
 
   constructor(
     private runsService: RunsService,
@@ -95,7 +96,7 @@ export class RunsGridComponent implements OnInit {
         Value1: this.uidAttestationPolicy
       }]
     };
-    this.navigationState = { ...{ PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 }, ...this.orderBy,...this.filter };
+    this.navigationState = { ...{ PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 }, ...this.orderBy, ...this.filter };
     const config = await this.attService.client.portal_attestation_config_get();
     this.attestationRunConfig = config.AttestationRunConfig;
     this.progressCalcThreshold = config.ProgressCalculationThreshold;
@@ -104,10 +105,10 @@ export class RunsGridComponent implements OnInit {
     let busyIndicator: OverlayRef;
     setTimeout(() => busyIndicator = this.busyService.show());
     try {
-      const dataModel = await this.runsService.getDataModel();
-      this.filterOptions = dataModel.Filters;
+      this.dataModel = await this.runsService.getDataModel();
+      this.filterOptions = this.dataModel.Filters;
       this.groupData = createGroupData(
-        dataModel,
+        this.dataModel,
         parameters => this.runsService.getGroupInfo({ ...{ PageSize: this.navigationState.PageSize, StartIndex: 0 }, ...parameters }),
         this.uidAttestationPolicy == null ? [] : ['UID_AttestationPolicy']
       );
@@ -125,13 +126,17 @@ export class RunsGridComponent implements OnInit {
       this.navigationState = { ...newState, ...this.orderBy, ...this.filter };
     }
 
-    console.log("FILTER",this.navigationState);
-
-
     let overlayRef: OverlayRef;
     setTimeout(() => overlayRef = this.busyService.show());
 
     const entitySchema = this.attService.typedClient.PortalAttestationRun.GetSchema();
+
+
+    const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
+      .map(elem => elem.Property.ColumnName).join(',');
+    if (withProperties != null && withProperties !== '') {
+      this.navigationState.withProperties = withProperties;
+    }
 
     try {
       const data = await this.attService.typedClient.PortalAttestationRun.Get(this.navigationState);
@@ -154,6 +159,7 @@ export class RunsGridComponent implements OnInit {
         entitySchema,
         navigationState: this.navigationState,
         filters: this.filterOptions,
+        dataModel: this.dataModel,
         groupData: this.groupData
       };
 
@@ -175,8 +181,9 @@ export class RunsGridComponent implements OnInit {
     await this.sideSheet.open(RunSidesheetComponent, {
       title: await this.translate.get('#LDS#Heading View Attestation Run Details').toPromise(),
       headerColour: 'iris-blue',
+      bodyColour: 'asher-gray',
       padding: '0px',
-      width: '700px',
+      width: 'max(768px, 60%)',
       data: {
         run: await this.runsService.getSingleRun(run.GetEntity().GetKeys()[0]),
         attestationRunConfig: this.attestationRunConfig,

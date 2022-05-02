@@ -33,6 +33,8 @@ import * as moment from 'moment-timezone';
 
 import { EntityColumnContainer } from '../entity-column-container';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
+import { DateFormat } from 'imx-qbm-dbts';
+
 /**
  * A component for viewing / editing date columns
  */
@@ -51,11 +53,20 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
   public isBusy = false;
 
   private readonly subscribers: Subscription[] = [];
+  private isWriting = false;
+
+
+  public get withTime(): boolean {
+    // try to get the date format detail from metadata; defaulting to DateTime.
+    const dateFormat = this.columnContainer.metaData?.GetDateFormat() ?? DateFormat.DateTime;
+
+    return (dateFormat === DateFormat.DateTime) || (dateFormat === DateFormat.UtcDateTime);
+  }
 
   public constructor(
     private readonly errorHandler: ErrorHandler,
     private logger: ClassloggerService,
-  ) {}
+  ) { }
 
   public ngOnDestroy(): void {
     this.subscribers.forEach(s => s.unsubscribe());
@@ -69,23 +80,32 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
     if (cdref && cdref.column) {
       this.columnContainer.init(cdref);
 
-      this.setControlValue();
-
-      if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
-        this.control.setValidators(Validators.required);
-      }
+      this.resetControlValue();
 
       this.subscribers.push(this.control.valueChanges.subscribe(async value =>
         this.writeValue(this.control.value)
       ));
 
+      // bind to entity change event
+      this.subscribers.push(this.columnContainer.subscribe(() => {
+        if (!this.isWriting) {
+          this.logger.trace(this, 'Control set to new value');
+          this.resetControlValue();
+          this.valueHasChanged.emit(this.control.value);
+        }
+      }));
+
     }
   }
 
-  private setControlValue(): void {
-    this.control.setValue(this.columnContainer.value, { emitEvent: false });
-    if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
-      this.control.setValidators(Validators.required);
+  private resetControlValue(): void {
+    const value = this.columnContainer.value ? moment(this.columnContainer.value) : undefined;
+    this.updateControlValue(value);
+  }
+
+  private updateControlValue(value: moment): void {
+    if (this.control.value !== value) {
+      this.control.setValue(value, {emitEvent: false});
     }
   }
 
@@ -98,24 +118,27 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
       return;
     }
 
-    const date = value.toDate();
+    // Beware: the columnContainer used date while the date editor uses moment!!
+    const date = value == null ? undefined : value.toDate();
     this.logger.debug(this, 'writeValue called with value', date);
     if (!this.columnContainer.canEdit || this.columnContainer.value === date) {
       return;
     }
 
-    this.control.setValue(date, { emitEvent: false });
+    this.updateControlValue(value);
 
     this.isBusy = true;
     try {
+      this.isWriting = true;
       await this.columnContainer.updateValue(date);
     } catch (error) {
       this.errorHandler.handleError(error);
     } finally {
       this.isBusy = false;
-      if (this.control.value !== this.columnContainer.value) {
-        this.control.setValue(this.columnContainer.value, { emitEvent: false });
-      }
+      this.isWriting = false;
+
+      // Writing could fail or not but in the end the columns value (date) and the controls value (moment) should be "equal".
+      this.resetControlValue();
     }
 
     this.valueHasChanged.emit(this.columnContainer.value);

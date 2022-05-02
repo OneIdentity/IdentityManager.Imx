@@ -24,21 +24,34 @@
  *
  */
 
-import { EntitySchema } from 'imx-qbm-dbts';
+import { RoleExtendedDataWrite } from 'imx-api-qer';
+import { EntitySchema, ExtendedTypedEntityCollection, WriteExtTypedEntity } from 'imx-qbm-dbts';
 import { IRoleDataModel } from './role-data-model.interface';
 import { IRoleEntitlements } from './role-entitlements/entitlement-handlers';
 import { IRoleMembershipType } from './role-memberships/membership-handlers';
 
+type InteractiveEntityType = {
+  GetSchema(): EntitySchema,
+  Get_byid(id: string): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>>,
+  Get(): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>>
+}
+
 export interface RoleObjectInfo {
   table: string;
+  
+  /** Returns a flag indicating whether roles of this type can be split. */
+  canBeSplitSource: boolean;
+
+  /** Returns a flag indicating whether roles of this type can be created by splitting an existing role. */
+  canBeSplitTarget: boolean;
   respType?: any;
   adminType?: any;
   resp?: any;
   admin?: any;
   adminSchema?: EntitySchema;
   dataModel?: IRoleDataModel;
-  interactiveResp?: any;
-  interactiveAdmin?: any;
+  interactiveResp?: InteractiveEntityType;
+  interactiveAdmin?: InteractiveEntityType;
   entitlements?: IRoleEntitlements;
   membership?: IRoleMembershipType;
 }

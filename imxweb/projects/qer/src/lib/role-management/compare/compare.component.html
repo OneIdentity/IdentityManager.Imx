@@ -1,0 +1,50 @@
+<mat-vertical-stepper [linear]="true">
+  <mat-step label="{{'#LDS#Select the object with which the selected object should be compared' | translate}}">
+
+    <imx-cdr-editor [cdr]="roleCdr"></imx-cdr-editor>
+
+    <div class="imx-step-button" *ngIf="roleCdr">
+      <button mat-raised-button color="primary" data-imx-identifier="compare-step-1-next" matStepperNext
+        [disabled]="!roleCdr.column.GetValue()" (click)="loadCompareItems()">{{'#LDS#Next' | translate}}</button>
+    </div>
+  </mat-step>
+  <mat-step label="{{'#LDS#View comparison result' | translate}}">
+
+    <mat-spinner *ngIf="busy"></mat-spinner>
+
+    <ng-container *ngIf="compareItems">
+
+      <table mat-table [dataSource]="compareItems.Items" class="mat-elevation-z2">
+        <ng-container [matColumnDef]="'Object'">
+          <th mat-header-cell *matHeaderCellDef> {{'#LDS#Assigned object' | translate}} </th>
+          <td mat-cell *matCellDef="let item">
+            <div>{{ item.Display }}</div>
+            <div class="subtext">{{ item.ObjectTypeDisplay }}</div>
+          </td>
+        </ng-container>
+
+        <ng-container [matColumnDef]="'Role1'">
+          <th mat-header-cell *matHeaderCellDef> {{'#LDS#This object' | translate}} </th>
+          <td mat-cell *matCellDef="let item">
+            <imx-role-compareitem class="compareitem" [val]="item.XOriginRole1"
+              [captions]="compareItems.OriginCaptions">
+            </imx-role-compareitem>
+          </td>
+        </ng-container>
+
+        <ng-container [matColumnDef]="'Role2'">
+          <th mat-header-cell *matHeaderCellDef> {{'#LDS#Comparison object' | translate}} </th>
+          <td mat-cell *matCellDef="let item">
+            <imx-role-compareitem class="compareitem" [val]="item.XOriginRole2"
+              [captions]="compareItems.OriginCaptions">
+            </imx-role-compareitem>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </ng-container>
+  </mat-step>
+
+</mat-vertical-stepper>

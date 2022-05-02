@@ -9,6 +9,15 @@ $imx-component-height: calc(100vh - 180px);
   height: 100%;
 }
 
+
+:host ::ng-deep .mat-tab-body-wrapper{
+    .mat-tab-body-content{
+      overflow: hidden;
+      height: 100%;
+      display: flex;
+    }
+  }
+
 .imx-application-details {
   display: flex;
 }

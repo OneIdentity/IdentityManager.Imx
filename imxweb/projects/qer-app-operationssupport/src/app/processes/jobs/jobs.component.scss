@@ -1,9 +1,31 @@
 :host {
-  display: flex;
-  flex-direction: column;
+  display: contents;
   max-height: 100%;
   flex: 1 1 auto;
   max-width: 1200px;
+  
+  ::ng-deep .imx-table-container .imx-data-table-no-results {
+    height: 100%;
+    display: flex;
+    margin: 0;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+.imx-heading-wrapper {
+  display: flex;
+  max-width: 1200px;
+
+  .imx-helper-alert {
+    display: flex;
+    margin: 0 0 20px auto;
+    align-self: flex-end;
+    width: 70%;
+  }
+}
+.jobs-toggle-showGraph {
+  margin-bottom: 10px;
 }
 
 .imx-filter-title {
@@ -17,12 +39,15 @@
   flex-direction: column;
 }
 
-.imx-filter-item {
-  margin-right: 25px;
-  margin-bottom: 25px;
+
+imx-jobqueue-overview {
+  display: flex;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-.imx-filter-line {
+.imx-job-line {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: row;
 }

@@ -1,0 +1,14 @@
+.flex-container {
+  position: absolute;
+  top: 32px;
+  bottom: 32px;
+  left: 32px;
+  right: 32px;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+}
+
+.fingerprint {
+  font-family: monospace;
+}

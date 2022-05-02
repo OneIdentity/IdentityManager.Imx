@@ -110,7 +110,9 @@ export class ClaimGroupService {
           'filter',
           'search',
         ],
-        load: async (_, parameters: CollectionLoadParameters = {}) => loadFkCandidates(parameters)
+        load: async (_, parameters: CollectionLoadParameters = {}) => loadFkCandidates(parameters),
+        getDataModel: async () => ({}),
+        getFilterTree: async () => ({ Elements: [] })
       }]
     );
   }

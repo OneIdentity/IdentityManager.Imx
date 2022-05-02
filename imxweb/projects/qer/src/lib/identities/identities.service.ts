@@ -37,11 +37,13 @@ import {
   GroupInfo,
   DataModel,
   EntitySchema,
+  ExtendedTypedEntityCollection,
+  FilterData,
 } from 'imx-qbm-dbts';
 import { PortalPersonReports, PortalPersonReportsInteractive, PortalPersonAll, PortalAdminPerson, PortalPersonUid } from 'imx-api-qer';
 import { QerApiService } from '../qer-api-client.service';
-import { UserModelService } from '../user/user-model.service';
 import { QerPermissionsService } from '../admin/qer-permissions.service';
+import { DuplicateCheckParameter } from './create-new-identity/duplicate-check-parameter.interface';
 
 @Injectable()
 export class IdentitiesService {
@@ -187,5 +189,46 @@ export class IdentitiesService {
 
   public async deleteIdentity(id: string): Promise<EntityCollectionData> {
     return this.qerClient.client.portal_admin_person_delete(id);
+  }
+
+  public async createEmptyEntity(): Promise<PortalPersonReportsInteractive> {
+    return (await this.qerClient.typedClient.PortalPersonReportsInteractive.Get()).Data[0];
+  }
+
+  public buildFilterForduplicates(parameter: DuplicateCheckParameter): FilterData[] {
+    const filter = [];
+    if (parameter.firstName != null && parameter.firstName !== ''
+      && parameter.lastName != null && parameter.lastName !== '') {
+      filter.push(this.buildFilter('FirstName', parameter.firstName));
+      filter.push(this.buildFilter('LastName', parameter.lastName));
+    }
+
+    if (parameter.centralAccount != null && parameter.centralAccount !== '') {
+      filter.push(this.buildFilter('CentralAccount', parameter.centralAccount));
+    }
+
+    if (parameter.defaultEmailAddress != null && parameter.defaultEmailAddress !== '') {
+      filter.push(this.buildFilter('DefaultEmailAddress', parameter.defaultEmailAddress));
+    }
+
+    return filter;
+  }
+
+  public async getDuplicates(parameter: CollectionLoadParameters)
+    : Promise<Promise<ExtendedTypedEntityCollection<PortalPersonAll, any>>> {
+
+    if (parameter.filter?.length === 0) {
+      return { Data: [], totalCount: 0 };
+    }
+    return this.qerClient.typedClient.PortalPersonAll.Get(parameter);
+  }
+
+  private buildFilter(column: string, value: string): FilterData {
+    return {
+      CompareOp: CompareOperator.Equal,
+      Type: FilterType.Compare,
+      ColumnName: column,
+      Value1: value
+    };
   }
 }

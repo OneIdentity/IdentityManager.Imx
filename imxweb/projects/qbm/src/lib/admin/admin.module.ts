@@ -51,6 +51,9 @@ import { FormsModule } from '@angular/forms';
 import { SelectValueComponent } from './select-value.component';
 import { ApplyConfigSidesheetComponent } from './apply-config-sidesheet.component';
 import { ConfigKeyPathComponent } from './config-key-path.component';
+import { PackagesComponent } from './packages.component';
+import { AddConfigSidesheetComponent } from './add-config-sidesheet.component';
+import { ConvertConfigSidesheetComponent } from './convert-config-sidesheet.component';
 
 @NgModule({
     imports: [
@@ -78,11 +81,14 @@ import { ConfigKeyPathComponent } from './config-key-path.component';
         ConfigService
     ],
     declarations: [
+        AddConfigSidesheetComponent,
         ApplyConfigSidesheetComponent,
+        ConvertConfigSidesheetComponent,
         ConfigComponent,
         ConfigKeyPathComponent,
         ListSettingComponent,
         DashboardComponent,
+        PackagesComponent,
         SelectValueComponent,
         StatusComponent
     ]

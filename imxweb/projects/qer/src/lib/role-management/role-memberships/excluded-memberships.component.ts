@@ -24,32 +24,32 @@
  *
  */
 
-import { Component, Input, OnInit, ViewChild } from "@angular/core";
-import { EuiLoadingService } from "@elemental-ui/core";
-import { TranslateService } from "@ngx-translate/core";
-import { PortalRolesExclusions } from "imx-api-qer";
-import { CollectionLoadParameters, EntitySchema, IClientProperty, IEntity, TypedEntity, TypedEntityCollectionData } from "imx-qbm-dbts";
-import { DataSourceToolbarFilter, DataSourceToolbarSettings, DataTableComponent, HELPER_ALERT_KEY_PREFIX, SnackBarService, StorageService } from "qbm";
-import { ACTION_DISMISS } from "../../itshop-config/requests.service";
-import { QerApiService } from "../../qer-api-client.service";
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { EuiLoadingService } from '@elemental-ui/core';
+import { TranslateService } from '@ngx-translate/core';
+import { PortalRolesExclusions } from 'imx-api-qer';
+import { CollectionLoadParameters, EntitySchema, IClientProperty, IEntity, TypedEntity, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import {
+  DataSourceToolbarFilter,
+  DataSourceToolbarSettings,
+  DataTableComponent,
+  HELPER_ALERT_KEY_PREFIX,
+  SnackBarService,
+  StorageService
+} from 'qbm';
+import { ACTION_DISMISS } from '../../itshop-config/requests.service';
+import { QerApiService } from '../../qer-api-client.service';
 
 const helperAlertKey = `${HELPER_ALERT_KEY_PREFIX}_roleMembership`;
 const LdsMembersAdded = '#LDS#The members have been successfully assigned. It may take some time for the changes to take effect.';
-const LdsMembersByDynamicRole = "#LDS#Here you can see the members that are originally assigned by a dynamic role but have been excluded. Additionally, you can add these excluded members back by removing the exclusion.";
+const LdsMembersByDynamicRole = '#LDS#Here you can see the members that are originally assigned by a dynamic role but have been excluded. Additionally, you can add these excluded members back by removing the exclusion.';
 
 @Component({
   selector: 'imx-excluded-memberships',
   templateUrl: './excluded-memberships.component.html',
-  styleUrls: ['./excluded-memberships.component.scss']
+  styleUrls: ['./excluded-memberships.component.scss', './role-sidesheet-tabs.scss']
 })
 export class ExcludedMembershipsComponent implements OnInit {
-
-  constructor(private readonly qerApiClient: QerApiService,
-    private readonly translate: TranslateService,
-    private readonly snackbar: SnackBarService,
-    private readonly busyService: EuiLoadingService,
-    private readonly storageService: StorageService
-  ) { }
 
   @Input() public entity: IEntity;
 
@@ -69,6 +69,15 @@ export class ExcludedMembershipsComponent implements OnInit {
   }
 
   public displayedColumnsExcluded: IClientProperty[] = [];
+
+  constructor(
+    private readonly qerApiClient: QerApiService,
+    private readonly translate: TranslateService,
+    private readonly snackbar: SnackBarService,
+    private readonly busyService: EuiLoadingService,
+    private readonly storageService: StorageService
+  ) { }
+
 
   public async ngOnInit(): Promise<void> {
     this.schema = this.qerApiClient.typedClient.PortalRolesExclusions.GetSchema();
@@ -90,11 +99,39 @@ export class ExcludedMembershipsComponent implements OnInit {
     this.selectedExclusions = selected;
   }
 
+
+
+  public onHelperDismissed(): void {
+    this.storageService.storeHelperAlertDismissal(helperAlertKey);
+  }
+
+  public async onSearchExcluded(keywords: string): Promise<void> {
+    this.navigationStateExcludedMembers.StartIndex = 0;
+    this.navigationStateExcludedMembers.search = keywords;
+    await this.navigateExcludedMembers();
+  }
+
+
+  public async removeExclusions(): Promise<void> {
+    const overlayRef = this.busyService.show();
+    try {
+      await this.removeRequestConfigMemberExclusions(this.entity.GetColumn('UID_DynamicGroup').GetValue(), this.selectedExclusions);
+      await this.navigateExcludedMembers();
+
+      this.translate.get([LdsMembersAdded, ACTION_DISMISS]).subscribe((translations: any[]) => {
+        this.snackbar.open({ key: translations[LdsMembersAdded] }, translations[ACTION_DISMISS], { duration: 10000 });
+      });
+      // Reset table selections (removing references to now deleted members)
+      this.dataTableExclusions.clearSelection();
+    } finally {
+      this.busyService.hide(overlayRef);
+    }
+  }
   private async navigateExcludedMembers(data?: TypedEntityCollectionData<TypedEntity>): Promise<void> {
     const overlayRef = this.busyService.show();
     try {
       if (!data) {
-        data = await this.qerApiClient.typedClient.PortalRolesExclusions.Get(this.entity.GetColumn("UID_DynamicGroup").GetValue(),
+        data = await this.qerApiClient.typedClient.PortalRolesExclusions.Get(this.entity.GetColumn('UID_DynamicGroup').GetValue(),
           this.navigationStateExcludedMembers);
       }
       this.dstSettingsExcludedMembers = {
@@ -109,17 +146,6 @@ export class ExcludedMembershipsComponent implements OnInit {
     }
   }
 
-  public onHelperDismissed(): void {
-    this.storageService.storeHelperAlertDismissal(helperAlertKey);
-  }
-
-  public async onSearchExcluded(keywords: string): Promise<void> {
-    this.navigationStateExcludedMembers.StartIndex = 0;
-    this.navigationStateExcludedMembers.search = keywords;
-    await this.navigateExcludedMembers();
-  }
-
-
   private removeRequestConfigMemberExclusions(uidDynamicGroup: string, exclusions: PortalRolesExclusions[]): Promise<any> {
     const promises = [];
     exclusions.forEach((exclusion) => {
@@ -129,19 +155,4 @@ export class ExcludedMembershipsComponent implements OnInit {
     return Promise.all(promises);
   }
 
-  public async removeExclusions(): Promise<void> {
-    const overlayRef = this.busyService.show();
-    try {
-      await this.removeRequestConfigMemberExclusions(this.entity.GetColumn("UID_DynamicGroup").GetValue(), this.selectedExclusions);
-      await this.navigateExcludedMembers();
-
-      this.translate.get([LdsMembersAdded, ACTION_DISMISS]).subscribe((translations: any[]) => {
-        this.snackbar.open({ key: translations[LdsMembersAdded] }, translations[ACTION_DISMISS], { duration: 10000 });
-      });
-      // Reset table selections (removing references to now deleted members)
-      this.dataTableExclusions.clearSelection();
-    } finally {
-      this.busyService.hide(overlayRef);
-    }
-  }
 }

@@ -26,7 +26,6 @@
 
 import { Injectable } from '@angular/core';
 import {
-  OwnershipInformation,
   PortalAdminRoleDepartment,
   PortalAdminRoleLocality,
   PortalAdminRoleProfitcenter,
@@ -34,10 +33,25 @@ import {
   PortalRespDepartment,
   PortalRespLocality,
   PortalRespProfitcenter,
+  ProjectConfig,
   QerProjectConfig,
   RoleAssignmentData,
+  RoleExtendedDataWrite,
 } from 'imx-api-qer';
-import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection, TypedEntity, IEntity, TypedEntityCollectionData, XOrigin, DataModel, TypedEntityBuilder, EntityCollectionData } from 'imx-qbm-dbts';
+import {
+  CollectionLoadParameters,
+  DataModel,
+  EntityCollectionData,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  FkCandidateRouteDto,
+  IEntity,
+  TypedEntity,
+  TypedEntityBuilder,
+  TypedEntityCollectionData,
+  WriteExtTypedEntity,
+  XOrigin,
+} from 'imx-qbm-dbts';
 import { AERoleMembership, DepartmentMembership, LocalityMembership, ProfitCenterMembership } from './role-memberships/membership-handlers';
 import { Subject } from 'rxjs';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
@@ -57,17 +71,18 @@ export class RoleService {
   protected readonly ProfitCenterTag = 'ProfitCenter';
   protected readonly DepartmentTag = 'Department';
   protected readonly AERoleTag = 'AERole';
-  protected config: QerProjectConfig;
+  protected config: QerProjectConfig & ProjectConfig;
 
   private readonly targets = [this.LocalityTag, this.ProfitCenterTag, this.DepartmentTag, this.AERoleTag];
 
-  constructor(protected readonly api: QerApiService,
-              public readonly session: imx_SessionService,
-              public readonly translator: ImxTranslationProviderService,
-              dynamicMethodSvc: DynamicMethodService,
-              protected readonly project: ProjectConfigurationService) {
+  constructor(
+    protected readonly api: QerApiService,
+    public readonly session: imx_SessionService,
+    public readonly translator: ImxTranslationProviderService,
+    dynamicMethodSvc: DynamicMethodService,
+    protected readonly project: ProjectConfigurationService) {
     this.targets.forEach((target) => {
-      this.targetMap.set(target, { table: target });
+      this.targetMap.set(target, { table: target, canBeSplitTarget: false, canBeSplitSource: false });
     });
 
     // Type of Role Objects
@@ -85,6 +100,14 @@ export class RoleService {
     this.targetMap.get(this.DepartmentTag).resp = this.api.typedClient.PortalRespDepartment;
     this.targetMap.get(this.AERoleTag).resp = this.api.typedClient.PortalRespAerole;
 
+    this.targetMap.get(this.LocalityTag).canBeSplitTarget = true;
+    this.targetMap.get(this.ProfitCenterTag).canBeSplitTarget = true;
+    this.targetMap.get(this.DepartmentTag).canBeSplitTarget = true;
+
+    this.targetMap.get(this.LocalityTag).canBeSplitSource = true;
+    this.targetMap.get(this.ProfitCenterTag).canBeSplitSource = true;
+    this.targetMap.get(this.DepartmentTag).canBeSplitSource = true;
+
     // Role Objects for Admin (useable by tree)
     this.targetMap.get(this.LocalityTag).admin =
     {
@@ -95,7 +118,7 @@ export class RoleService {
         parameter?.filter,
         parameter?.withProperties,
         parameter?.search,
-        parameter?.parentKey,
+        parameter?.ParentKey,
         parameter?.risk)
     };
     this.targetMap.get(this.ProfitCenterTag).admin = {
@@ -106,7 +129,7 @@ export class RoleService {
         parameter?.filter,
         parameter?.withProperties,
         parameter?.search,
-        parameter?.parentKey,
+        parameter?.ParentKey,
         parameter?.risk
       )
     };
@@ -118,7 +141,7 @@ export class RoleService {
         parameter?.filter,
         parameter?.withProperties,
         parameter?.search,
-        parameter?.parentKey,
+        parameter?.ParentKey,
         parameter?.risk
       )
     };
@@ -129,16 +152,56 @@ export class RoleService {
     this.targetMap.get(this.ProfitCenterTag).adminSchema = this.api.typedClient.PortalAdminRoleProfitcenter.GetSchema();
     this.targetMap.get(this.DepartmentTag).adminSchema = this.api.typedClient.PortalAdminRoleDepartment.GetSchema();
 
+    // wrapper class for interactive and interactive_byid methods
+    class ApiWrapper {
+
+      constructor(private getApi: {
+        GetSchema(): EntitySchema,
+        Get(): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>>
+      }, private getByIdApi: {
+        Get_byid(id: string): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>>
+      }) { }
+
+      Get(): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>> {
+        return this.getApi.Get();
+      }
+
+      GetSchema() { return this.getApi.GetSchema(); }
+
+      Get_byid(id: string): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>> {
+        return this.getByIdApi.Get_byid(id);
+      }
+    }
+
     // Interactive Role Objects for Resp
-    this.targetMap.get(this.LocalityTag).interactiveResp = this.api.typedClient.PortalRespLocalityInteractive_byid;
-    this.targetMap.get(this.ProfitCenterTag).interactiveResp = this.api.typedClient.PortalRespProfitcenterInteractive_byid;
-    this.targetMap.get(this.DepartmentTag).interactiveResp = this.api.typedClient.PortalRespDepartmentInteractive_byid;
-    this.targetMap.get(this.AERoleTag).interactiveResp = this.api.typedClient.PortalRespAeroleInteractive_byid;
+    this.targetMap.get(this.LocalityTag).interactiveResp = new ApiWrapper(
+      this.api.typedClient.PortalRespLocalityInteractive,
+      this.api.typedClient.PortalRespLocalityInteractive_byid);
+
+    this.targetMap.get(this.ProfitCenterTag).interactiveResp = new ApiWrapper(
+      this.api.typedClient.PortalRespProfitcenterInteractive,
+      this.api.typedClient.PortalRespProfitcenterInteractive_byid);
+
+    this.targetMap.get(this.DepartmentTag).interactiveResp = new ApiWrapper(
+      this.api.typedClient.PortalRespDepartmentInteractive,
+      this.api.typedClient.PortalRespDepartmentInteractive_byid);
+
+    this.targetMap.get(this.AERoleTag).interactiveResp = new ApiWrapper(
+      this.api.typedClient.PortalRespAeroleInteractive,
+      this.api.typedClient.PortalRespAeroleInteractive_byid);
 
     // Interactive Role Objects for Admin
-    this.targetMap.get(this.LocalityTag).interactiveAdmin = this.api.typedClient.PortalAdminRoleLocalityInteractive_byid;
-    this.targetMap.get(this.ProfitCenterTag).interactiveAdmin = this.api.typedClient.PortalAdminRoleProfitcenterInteractive_byid;
-    this.targetMap.get(this.DepartmentTag).interactiveAdmin = this.api.typedClient.PortalAdminRoleDepartmentInteractive_byid;
+    this.targetMap.get(this.LocalityTag).interactiveAdmin = new ApiWrapper(
+      this.api.typedClient.PortalAdminRoleLocalityInteractive,
+      this.api.typedClient.PortalAdminRoleLocalityInteractive_byid);
+
+    this.targetMap.get(this.ProfitCenterTag).interactiveAdmin = new ApiWrapper(
+      this.api.typedClient.PortalAdminRoleProfitcenterInteractive,
+      this.api.typedClient.PortalAdminRoleProfitcenterInteractive_byid);
+
+    this.targetMap.get(this.DepartmentTag).interactiveAdmin = new ApiWrapper(
+      this.api.typedClient.PortalAdminRoleDepartmentInteractive,
+      this.api.typedClient.PortalAdminRoleDepartmentInteractive_byid);
 
     // Role Membership Objects
     this.targetMap.get(this.LocalityTag).membership = new LocalityMembership(this.api, session, this.translator);
@@ -156,202 +219,246 @@ export class RoleService {
       'Department', e => 'QER-V-Department');
   }
 
+  public getRoleTypeInfo(tableName: string): RoleObjectInfo {
+    return this.targetMap.get(tableName);
+  }
+
   public dataDirty(flag: boolean): void {
     this.dataDirtySubject.next(flag);
   }
 
-  public exists(ownershipInfo: OwnershipInformation): boolean {
-    return this.targetMap.has(ownershipInfo.TableName);
+  public exists(tableName: string): boolean {
+    return this.targetMap.has(tableName);
   }
 
   public async get(
-    ownershipInfo: OwnershipInformation,
+    tableName: string,
     isAdmin: boolean = false,
     navigationState?: CollectionLoadParameters
   ): Promise<TypedEntityCollectionData<TypedEntity>> {
-    if (this.exists(ownershipInfo)) {
+    if (this.exists(tableName)) {
       return isAdmin
-        ? await this.getEntities(ownershipInfo, navigationState)
-        : await this.targetMap.get(ownershipInfo.TableName).resp.Get(navigationState);
+        ? await this.getEntities(tableName, navigationState)
+        : await this.targetMap.get(tableName).resp.Get(navigationState);
     }
     return null;
   }
 
-  public getType(ownershipInfo: OwnershipInformation, admin: boolean = false): any {
-    return admin ? this.targetMap.get(ownershipInfo.TableName).adminType
-      : this.targetMap.get(ownershipInfo.TableName).respType;
+  public getType(tableName: string, admin: boolean = false): any {
+    return admin ? this.targetMap.get(tableName).adminType
+      : this.targetMap.get(tableName).respType;
   }
 
   public async getEntitiesForTree(
-    ownershipInfo: OwnershipInformation,
+    tableName: string,
     navigationState: CollectionLoadParameters)
     : Promise<EntityCollectionData> {
-    return this.targetMap.get(ownershipInfo.TableName).admin.get(navigationState);
+    return this.targetMap.get(tableName).admin.get(navigationState);
   }
 
-  public async getInteractive(ownershipInfo: OwnershipInformation, id: string, isAdmin: boolean = false): Promise<TypedEntity> {
-    if (this.exists(ownershipInfo)) {
+  public async getInteractive(tableName: string, id: string, isAdmin: boolean = false): Promise<TypedEntity> {
+    if (this.exists(tableName)) {
       return isAdmin
-        ? (await this.targetMap.get(ownershipInfo.TableName).interactiveAdmin.Get_byid(id)).Data[0]
-        : (await this.targetMap.get(ownershipInfo.TableName).interactiveResp.Get_byid(id)).Data[0];
+        ? (await this.targetMap.get(tableName).interactiveAdmin.Get_byid(id)).Data[0]
+        : (await this.targetMap.get(tableName).interactiveResp.Get_byid(id)).Data[0];
     }
 
     return null;
   }
 
-  public getRoleEntitySchema(ownershipInfo: OwnershipInformation,
-                             interactive: boolean = false, isAdmin: boolean = false): EntitySchema {
-    if (!this.exists(ownershipInfo)) {
+  public async getInteractiveNew(tableName: string, isAdmin: boolean = false): Promise<WriteExtTypedEntity<RoleExtendedDataWrite>> {
+    if (this.exists(tableName)) {
+      return isAdmin
+        ? (await this.targetMap.get(tableName).interactiveAdmin.Get()).Data[0]
+        : (await this.targetMap.get(tableName).interactiveResp.Get()).Data[0];
+    }
+
+    return null;
+  }
+
+  public getRoleEntitySchema(tableName: string,
+    interactive: boolean = false, isAdmin: boolean = false): EntitySchema {
+    if (!this.exists(tableName)) {
       return null;
     }
 
     if (!interactive) {
       return isAdmin
-        ? this.targetMap.get(ownershipInfo.TableName).admin.GetSchema()
-        : this.targetMap.get(ownershipInfo.TableName).resp.GetSchema();
+        ? this.targetMap.get(tableName).admin.GetSchema()
+        : this.targetMap.get(tableName).resp.GetSchema();
     }
 
     return isAdmin
-      ? this.targetMap.get(ownershipInfo.TableName).interactiveAdmin.GetSchema()
-      : this.targetMap.get(ownershipInfo.TableName).interactiveResp.GetSchema();
+      ? this.targetMap.get(tableName).interactiveAdmin.GetSchema()
+      : this.targetMap.get(tableName).interactiveResp.GetSchema();
   }
 
   public getMembershipEntitySchema(
-    ownershipInfo: OwnershipInformation,
+    tableName: string,
     key: string
   ): EntitySchema {
-    const membership = this.targetMap.get(ownershipInfo.TableName).membership;
+    const membership = this.targetMap.get(tableName).membership;
     return membership.getSchema(key);
   }
 
-  public async getDataModel(ownershipInfo: OwnershipInformation, isAdmin: boolean): Promise<DataModel> {
-    const dataModel = this.targetMap.get(ownershipInfo.TableName).dataModel;
+  public async getDataModel(tableName: string, isAdmin: boolean): Promise<DataModel> {
+    const dataModel = this.targetMap.get(tableName).dataModel;
     return dataModel?.getModel(undefined, isAdmin);
   }
 
-  public async getEditableFields(objectType: string, entity: IEntity): Promise<string[]> {
+  public async getComparisonConfig(): Promise<FkCandidateRouteDto[]> {
     if (this.config == null) {
       this.config = await this.project.getConfig();
     }
 
-    return this.config.OwnershipConfig.EditableFields[objectType]
+    // Configure role comparison
+    // TODO 304148: this should not be hard-coded
+    const url = 'roles/{roletype}/{uidrole}/compare/{compareroletype}/{uidcomparerole}';
+    const candidates = this.config.CandidateConfig[url].filter(d => d.ParameterName == 'uidcomparerole').map(d => d.Candidates);
+    return candidates;
+  }
+
+  public async getEditableFields(objectType: string, entity: IEntity, primary: boolean = false): Promise<string[]> {
+    if (this.config == null) {
+      this.config = await this.project.getConfig();
+    }
+
+    const list = primary
+      ? this.config.OwnershipConfig.PrimaryFields
+      : this.config.OwnershipConfig.EditableFields;
+    return list[objectType]
       .filter(name => entity.GetSchema().Columns[name]);
   }
 
   public async getMemberships(
-    ownershipInfo: OwnershipInformation,
+    tableName: string,
     id: string,
     navigationState?: CollectionLoadParameters
   ): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
-    if (!this.exists(ownershipInfo)) {
+    if (!this.exists(tableName)) {
       return null;
     }
-    return await this.targetMap.get(ownershipInfo.TableName).membership.get(id, navigationState);
+    return await this.targetMap.get(tableName).membership.get(id, navigationState);
   }
 
   public async getPrimaryMemberships(
-    ownershipInfo: OwnershipInformation,
+    tableName: string,
     id: string,
     navigationState?: CollectionLoadParameters
   ): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
-    if (!this.exists(ownershipInfo)) {
+    if (!this.exists(tableName)) {
       return null;
     }
 
-    return await this.targetMap.get(ownershipInfo.TableName).membership.getPrimaryMembers(id, navigationState);
+    return await this.targetMap.get(tableName).membership.getPrimaryMembers(id, navigationState);
   }
 
-  public canHavePrimaryMemberships(ownershipInfo: OwnershipInformation): boolean {
-    return this.targetMap.get(ownershipInfo.TableName).membership.hasPrimaryMemberships();
+  public canHavePrimaryMemberships(tableName: string): boolean {
+    return this.targetMap.get(tableName).membership.hasPrimaryMemberships();
   }
 
-  public getPrimaryMembershipSchema(ownershipInfo: OwnershipInformation): EntitySchema {
-    if (!this.exists(ownershipInfo)) {
+  public canHaveDynamicMemberships(tableName: string): boolean {
+    return this.targetMap.get(tableName).membership.supportsDynamicMemberships;
+  }
+
+  public getPrimaryMembershipSchema(tableName: string): EntitySchema {
+    if (!this.exists(tableName)) {
       return null;
     }
 
-    return this.targetMap.get(ownershipInfo.TableName).membership.getPrimaryMembersSchema();
+    return this.targetMap.get(tableName).membership.getPrimaryMembersSchema();
   }
 
   public async getCandidates(
-    ownershipInfo: OwnershipInformation,
+    tableName: string,
     id: string,
     navigationState?: CollectionLoadParameters & { xorigin?: XOrigin }
   ): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
-    return await this.targetMap.get(ownershipInfo.TableName).membership.getCandidates(id, navigationState);
+    return await this.targetMap.get(tableName).membership.getCandidates(id, navigationState);
   }
 
-  public GetUidPerson(ownershipInfo: OwnershipInformation, item: TypedEntity): string {
-    if (!this.exists(ownershipInfo)) {
+  public async getCandidatesDataModel(
+    tableName: string,
+    id: string
+  ): Promise<DataModel> {
+    return this.targetMap.get(tableName).membership.getCandidatesDataModel(id);
+  }
+
+  public GetUidPerson(tableName: string, item: TypedEntity): string {
+    if (!this.exists(tableName)) {
       return null;
     }
 
-    return this.targetMap.get(ownershipInfo.TableName).membership.GetUidPerson(item.GetEntity());
+    return this.targetMap.get(tableName).membership.GetUidPerson(item.GetEntity());
   }
 
-  public async removeMembership(ownershipInfo: OwnershipInformation, item: TypedEntity, role: string): Promise<void> {
-    if (!this.exists(ownershipInfo)) {
+  public async removeMembership(tableName: string, item: TypedEntity, role: string): Promise<void> {
+    if (!this.exists(tableName)) {
       return null;
     }
 
-    const membership = this.targetMap.get(ownershipInfo.TableName).membership;
+    const membership = this.targetMap.get(tableName).membership;
     // the UID_Person is 1 of 2 primary keys of the membership - the one that is not equal to the UID of the role
     const uidPerson = item.GetEntity().GetKeys().filter(k => k !== role)[0];
     await membership.delete(role, uidPerson);
   }
 
-  public async removeEntitlements(ownershipInfo: OwnershipInformation, roleId: string, entity: IEntity): Promise<void> {
-    this.targetMap.get(ownershipInfo.TableName).entitlements.delete(roleId, entity);
+  public async removeEntitlements(tableName: string, roleId: string, entity: IEntity): Promise<void> {
+    this.targetMap.get(tableName).entitlements.delete(roleId, entity);
   }
 
   public async unsubscribe(item: TypedEntity): Promise<void> {
     await this.api.client.portal_itshop_unsubscribe_post({ UidPwo: [item.GetEntity().GetColumn('UID_PersonWantsOrg').GetValue()] });
   }
 
-  public canHaveMemberships(ownershipInfo: OwnershipInformation): boolean {
-    if (!this.exists(ownershipInfo)) {
+  public canHaveMemberships(tableName: string): boolean {
+    if (!this.exists(tableName)) {
       return false;
     }
 
-    return this.targetMap.get(ownershipInfo.TableName).membership ? true : false;
+    return this.targetMap.get(tableName).membership ? true : false;
   }
 
-  public canHaveEntitlements(ownershipInfo: OwnershipInformation): boolean {
-    if (!this.exists(ownershipInfo)) {
+  public canHaveEntitlements(tableName: string): boolean {
+    if (!this.exists(tableName)) {
       return false;
     }
 
-    return this.targetMap.get(ownershipInfo.TableName).entitlements ? true : false;
+    return this.targetMap.get(tableName).entitlements ? true : false;
   }
 
   public async getEntitlements(
-    ownershipInfo: OwnershipInformation,
+    tableName: string,
     id: string,
     navigationState?: CollectionLoadParameters
   ): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
-    if (!this.exists(ownershipInfo)) {
+    if (!this.exists(tableName)) {
       return null;
     }
-    return await this.targetMap.get(ownershipInfo.TableName).entitlements.getCollection(id, navigationState);
+    return await this.targetMap.get(tableName).entitlements.getCollection(id, navigationState);
   }
 
-  public async getEntitlementTypes(ownershipInfo: OwnershipInformation, role: IEntity): Promise<RoleAssignmentData[]> {
-    return await this.targetMap.get(ownershipInfo.TableName).entitlements.getEntitlementTypes(role);
+  public async getEntitlementTypes(tableName: string, role: IEntity): Promise<RoleAssignmentData[]> {
+    return await this.targetMap.get(tableName).entitlements.getEntitlementTypes(role);
   }
 
   public createEntitlementAssignmentEntity(role: IEntity, entlType: RoleAssignmentData): IEntity {
     return this.targetMap.get(role.TypeName).entitlements.createEntitlementAssignmentEntity(role, entlType);
   }
 
-  public getEntitlementFkName(ownershipInfo: OwnershipInformation): string {
-    return this.targetMap.get(ownershipInfo.TableName).entitlements.getEntitlementFkName();
+  public getEntitlementFkName(tableName: string): string {
+    return this.targetMap.get(tableName).entitlements.getEntitlementFkName();
   }
 
-  private async getEntities(ownershipInfo: OwnershipInformation, navigationState: CollectionLoadParameters)
+  private async getEntities(tableName: string, navigationState: CollectionLoadParameters)
     : Promise<TypedEntityCollectionData<TypedEntity>> {
-    const builder = new TypedEntityBuilder(this.targetMap.get(ownershipInfo.TableName).adminType);
-    const data = await this.targetMap.get(ownershipInfo.TableName).admin.get(navigationState);
+    const builder = new TypedEntityBuilder(this.targetMap.get(tableName).adminType);
+    const data = await this.targetMap.get(tableName).admin.get(navigationState);
 
-    return builder.buildReadWriteEntities(data, this.targetMap.get(ownershipInfo.TableName).adminSchema);
+    return builder.buildReadWriteEntities(data, this.targetMap.get(tableName).adminSchema);
+  }
+
+  public getSplitTargets(): string[] {
+    return [...this.targetMap].filter(m => m[1].canBeSplitTarget).map(m => m[0]);
   }
 }

@@ -33,23 +33,21 @@ import { UserConfig, ProjectConfig, QerProjectConfig } from 'imx-api-qer';
 import { UserModelService } from '../../user/user-model.service';
 import { PendingItemsType } from '../../user/pending-items-type.interface';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
-import { ExtService, imx_SessionService, SystemInfoService } from 'qbm';
+import { imx_SessionService, SystemInfoService } from 'qbm';
 import { SystemInfo } from 'imx-api-qbm';
 
 @Component({
   templateUrl: './start.component.html',
   selector: 'imx-start',
-  styleUrls: ['./start.component.scss']
+  styleUrls: ['./start.component.scss'],
 })
 export class StartComponent implements OnInit {
-
   public userConfig: UserConfig;
   public projectConfig: QerProjectConfig & ProjectConfig;
   public pendingItems: PendingItemsType;
   public systemInfo: SystemInfo;
   public viewReady: boolean;
   public userUid: string;
-  public hasKpi = false;
 
   constructor(
     public readonly router: Router,
@@ -57,16 +55,12 @@ export class StartComponent implements OnInit {
     private readonly userModelSvc: UserModelService,
     private readonly systemInfoService: SystemInfoService,
     private readonly sessionService: imx_SessionService,
-    private readonly extService: ExtService,
     private readonly projectConfigurationService: ProjectConfigurationService
-  ) {
-
-
-  }
+  ) {}
 
   public async ngOnInit(): Promise<void> {
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
       this.userConfig = await this.userModelSvc.getUserConfig();
       this.pendingItems = await this.userModelSvc.getPendingItems();
@@ -74,9 +68,6 @@ export class StartComponent implements OnInit {
       this.systemInfo = await this.systemInfoService.get();
       this.userUid = (await this.sessionService.getSessionState()).UserUid;
       this.viewReady = true;
-
-      const kpiTileComponent = this.extService.Registry?.KpiTileComponent?.slice(-1)[0];
-      this.hasKpi = kpiTileComponent != null && (await kpiTileComponent.condition());
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
@@ -87,8 +78,7 @@ export class StartComponent implements OnInit {
   }
 
   public ShowPasswordMgmtTile(): boolean {
-    return this.projectConfig.PasswordConfig.VI_MyData_MyPassword_Visibility
-      && !!this.projectConfig.PasswordConfig.PasswordMgmtUrl;
+    return this.projectConfig.PasswordConfig.VI_MyData_MyPassword_Visibility && !!this.projectConfig.PasswordConfig.PasswordMgmtUrl;
   }
 
   public GoToMyPassword(): void {
@@ -143,6 +133,10 @@ export class StartComponent implements OnInit {
     return this.pendingItems.CountProductsInShoppingCart;
   }
 
+  public GetCountInRequestHistory(): number {
+    return this.userConfig.CountPendingRequests;
+  }
+
   public GetCountPendingRequests(): number {
     return this.pendingItems.OpenPWO;
   }
@@ -165,5 +159,4 @@ export class StartComponent implements OnInit {
     // Starting a new request is only allowed when the session has an identity and the ITShop(Requests) feature is enabled
     return this.userConfig?.IsITShopEnabled && this.userUid && this.systemInfo.PreProps.includes('ITSHOP');
   }
-
 }

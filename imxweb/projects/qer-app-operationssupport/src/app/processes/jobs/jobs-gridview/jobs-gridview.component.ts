@@ -24,14 +24,14 @@
  *
  */
 
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiLoadingService, EuiSidesheetConfig, EuiSidesheetService } from '@elemental-ui/core';
 
 import { OpsupportQueueJobs, ReactivateJobMode } from 'imx-api-qbm';
 import { OpsupportQueueJobsParameters, QueueJobsService } from '../queue-jobs.service';
-import { SnackBarService, TextContainer, DataSourceToolbarSettings, SettingsService } from 'qbm';
-import { CollectionLoadParameters, EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
+import { SnackBarService, TextContainer, DataSourceToolbarSettings, DataSourceToolbarFilter, SettingsService } from 'qbm';
+import { CollectionLoadParameters, CompareOperator, DataModel, EntitySchema, FilterType, IClientProperty, ValType } from 'imx-qbm-dbts';
 import { SingleFrozenJobComponent } from '../../frozen-jobs/single-frozen-job.component';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -41,10 +41,7 @@ import { TranslateService } from '@ngx-translate/core';
   templateUrl: './jobs-gridview.component.html',
   styleUrls: ['./jobs-gridview.component.scss'],
 })
-export class JobsGridviewComponent implements OnChanges {
-
-  @Input() public filterSetting: OpsupportQueueJobsParameters;
-  @Output() public refreshRequested = new EventEmitter();
+export class JobsGridviewComponent implements OnInit {
 
   public dstSettings: DataSourceToolbarSettings;
   public readonly entitySchemaJobs: EntitySchema;
@@ -56,35 +53,66 @@ export class JobsGridviewComponent implements OnChanges {
     }
   };
 
+  @Input() public preselectFailed = false;
+
   private navigationState: CollectionLoadParameters;
   private readonly displayedColumns: IClientProperty[];
+  private filters: DataSourceToolbarFilter[];
+  private dataModel: DataModel;
 
   constructor(
     private snackBarService: SnackBarService,
     private readonly sideSheet: EuiSidesheetService,
     private busyService: EuiLoadingService,
     private readonly translator: TranslateService,
-    private readonly settings: SettingsService,
-    private jobService: QueueJobsService
+    private jobService: QueueJobsService,
+    settings: SettingsService
   ) {
     this.entitySchemaJobs = jobService.EntitySchema;
     this.displayedColumns = [
-      this.entitySchemaJobs.Columns.CombinedStatus,
       this.entitySchemaJobs.Columns.JobChainName,
-      this.entitySchemaJobs.Columns.TaskName,
+      this.entitySchemaJobs.Columns.CombinedStatus,
+      this.entitySchemaJobs.Columns.XDateInserted,
       {
         ColumnName: 'actions',
         Type: ValType.String
       }
     ];
+
+    this.navigationState = {
+      StartIndex: 0, PageSize: settings.DefaultPageSize,
+      filter: [
+        {
+          ColumnName: 'IsRootJob',
+          Type: FilterType.Compare,
+          CompareOp: CompareOperator.Equal,
+          Value1: true
+        }
+      ]
+    };
   }
 
-  public async ngOnChanges(): Promise<void> {
-    this.getData({ ...this.filterSetting, ...{ StartIndex: 0, PageSize: this.settings.DefaultPageSize } });
+  public async ngOnInit(): Promise<void> {
+    let overlayRef: OverlayRef;
+    setTimeout(() => overlayRef = this.busyService.show());
+    try {
+      this.filters = await this.jobService.getFilters();
+      this.dataModel = await this.jobService.getDataModel();
+    } finally {
+      setTimeout(() => this.busyService.hide(overlayRef));
+    }
+    if (this.preselectFailed) {
+      const indexActive = this.filters.findIndex(elem => elem.Name === 'state');
+      if (indexActive > -1) {
+        this.filters[indexActive].InitialValue = 'failed';
+        this.navigationState.state = 'failed';
+      }
+    }
+    this.getData(this.navigationState);
   }
 
   public onSearch(keywords: string): Promise<void> {
-    return this.getData({ ...this.filterSetting, ...{ StartIndex: 0, search: keywords } });
+    return this.getData({ StartIndex: 0, search: keywords });
   }
 
   public isFrozen(job: OpsupportQueueJobs): boolean {
@@ -107,7 +135,8 @@ export class JobsGridviewComponent implements OnChanges {
       data: {
         UID_Tree: job.UID_Tree.value
       },
-    }
+    };
+
     this.sideSheet.open(SingleFrozenJobComponent, opts)
       // After the sidesheet closes, reload the current data to refresh any changes that might have been made
       .afterClosed().subscribe(() => this.getData(this.navigationState));
@@ -133,15 +162,32 @@ export class JobsGridviewComponent implements OnChanges {
   }
 
   public refresh(): void {
-    this.refreshRequested?.emit();
+    this.getData({ StartIndex: 0 });
   }
 
   public async getData(navigationState: OpsupportQueueJobsParameters): Promise<void> {
-    this.navigationState = navigationState;
+    this.navigationState = {
+      ...navigationState, ...{
+        filter: [
+          {
+            ColumnName: 'IsRootJob',
+            Type: FilterType.Compare,
+            CompareOp: CompareOperator.Equal,
+            Value1: true
+          }
+        ]
+      }
+    };
 
     let overlayRef: OverlayRef;
     setTimeout(() => overlayRef = this.busyService.show());
     try {
+
+      const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
+        .map(elem => elem.Property.ColumnName).join(',');
+      if (withProperties != null && withProperties !== '') {
+        this.navigationState.withProperties = withProperties;
+      }
 
       const queuedJobs = await this.jobService.Get(navigationState);
 
@@ -149,7 +195,9 @@ export class JobsGridviewComponent implements OnChanges {
         displayedColumns: this.displayedColumns,
         dataSource: queuedJobs,
         entitySchema: this.entitySchemaJobs,
-        navigationState: this.navigationState
+        navigationState: this.navigationState,
+        filters: this.filters,
+        dataModel: this.dataModel
       };
 
     } finally {

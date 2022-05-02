@@ -1,4 +1,4 @@
-@import "../../../../../shared/assets/variables.scss";
+@import "variables.scss";
 
 $inputWidth: calc(40vw + 2px);
 
@@ -22,7 +22,7 @@ $inputWidth: calc(40vw + 2px);
   left: 25px;
   right: 25px;
   bottom: 25px;
-  color: $VI_Common_Color_ColorBase1;
+  color: $white;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -48,7 +48,7 @@ $inputWidth: calc(40vw + 2px);
     input {
       width: $propertylabelwidth;
       box-sizing: content-box;
-      border: 1px solid $QBM_Primary_Gray;
+      border: 1px solid mat-color($asher-gray-palette, 900);
       margin-bottom: 9px;
       height: 30px;
       padding-left: 6px;
@@ -60,7 +60,7 @@ $inputWidth: calc(40vw + 2px);
     }
 
     .mat-form-field-flex {
-      background-color: $QBM_Primary_White;
+      background-color: $white;
       padding-left: 6px;
     }
 
@@ -104,7 +104,7 @@ $inputWidth: calc(40vw + 2px);
   bottom: 10px;
   left: 0;
   right: 0;
-  color: $VI_Common_Color_ColorBase1;
+  color: $white;
 }
 
 .imx-loginMessageContainer {
@@ -124,7 +124,7 @@ $inputWidth: calc(40vw + 2px);
 }
 
 a.imx-loginLink {
-  color: $VI_Common_Color_ColorBase1 !important;
+  color: $white !important;
 }
 
 a.imx-loginLink:hover {
@@ -175,4 +175,14 @@ mat-form-field {
   .imx-loginFooter {
     visibility: hidden;
   }
+}
+
+.custom-logo {
+  max-width: 400px;
+  max-height: 150px;
+  margin-bottom: 1em;
+}
+
+.usermessage {
+  margin-top: 1em;
 }

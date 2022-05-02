@@ -297,7 +297,7 @@ export class DataExplorerFiltersComponent implements OnInit {
   }
 
   private async getContainers(search?: string): Promise<void> {
-    const navState: any = { PageSize: 1000, StartIndex: 0, parentKey: '' };
+    const navState: any = { PageSize: 1000, StartIndex: 0, ParentKey: '' };
     navState.search = search ? search : undefined;
     navState.system = this.selectedTargetSystemUid ? this.selectedTargetSystemUid : undefined;
     const data = await this.dataHelper.getContainers(navState);

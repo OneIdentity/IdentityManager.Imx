@@ -33,7 +33,8 @@ import { RequestHistoryLoadParameters } from './request-history-load-parameters.
 
 @Component({
     templateUrl: './requestfilter.component.html',
-    selector: 'imx-request-filter'
+    selector: 'imx-request-filter',
+    styleUrls: ['./requestfilter.component.scss']
 })
 export class RequestFilterComponent implements OnInit {
 

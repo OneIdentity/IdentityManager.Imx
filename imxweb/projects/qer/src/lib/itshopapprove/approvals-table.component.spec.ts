@@ -34,7 +34,7 @@ import { of, Subject } from 'rxjs';
 
 import { IEntity, IEntityColumn } from 'imx-qbm-dbts';
 
-import { AuthenticationService, clearStylesFromDOM } from 'qbm';
+import { AuthenticationService, clearStylesFromDOM, ExtService } from 'qbm';
 import { ApprovalsTableComponent } from './approvals-table.component';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
 import { ApprovalsService } from './approvals.service';
@@ -125,6 +125,10 @@ describe('ApprovalsTable', () => {
 
   let getDataSpy: jasmine.Spy;
 
+  const extServiceStub = {
+    Registry: jasmine.createSpy('Registry')
+  };
+
   const approvalServiceTestHelper = new class {
     actionResult = false;
 
@@ -139,6 +143,7 @@ describe('ApprovalsTable', () => {
       revokeDelegations: jasmine.createSpy('revokeDelegations').and.callFake(() => Promise.resolve(this.actionResult)),
       approve: jasmine.createSpy('approve').and.callFake(() => Promise.resolve(this.actionResult)),
       deny: jasmine.createSpy('deny').and.callFake(() => Promise.resolve(this.actionResult)),
+      getApprovalDataModel: jasmine.createSpy('getApprovalDataModel').and.returnValue(Promise.resolve({}))
     };
   }();
 
@@ -175,6 +180,10 @@ describe('ApprovalsTable', () => {
         MatMenuModule
       ],
       providers: [
+        {
+          provide: ExtService,
+          useValue: extServiceStub
+        },
         {
           provide: EuiLoadingService,
           useValue: {
@@ -226,15 +235,6 @@ describe('ApprovalsTable', () => {
   afterAll(() => {
     clearStylesFromDOM();
   });
-
-  it('should create', fakeAsync(() => {
-    fixture.detectChanges();
-
-    tick();
-
-    expect(component).toBeDefined();
-    expect(approvalServiceTestHelper.approvalsServiceStub.get).toHaveBeenCalled();
-  }));
 
   it('should have an selected item there only rerouting is allowed', () => {
     const approval = new class {

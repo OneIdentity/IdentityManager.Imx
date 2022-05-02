@@ -78,17 +78,10 @@ export class PersonService {
   }
 
   public async getGroupInfo(parameters: PersonAllLoadParameters = {}): Promise<GroupInfo[]> {
-    return this.qerClient.client.portal_person_all_group_get(
-      parameters.by,
-      parameters.def,
-      parameters.filter,
-      parameters.StartIndex,
-      parameters.PageSize,
-      true, // withcount
-      parameters.withmanager,
-      parameters.orphaned,
-      undefined
-    );
+    return this.qerClient.v2Client.portal_person_all_group_get({
+      ...parameters,
+      withcount: true
+    });
   }
 
   public createColumnCandidatesPerson(): IEntityColumn {
@@ -123,14 +116,9 @@ export class PersonService {
         'search',
       ],
       load: async (_, parameters: CollectionLoadParameters = {}) =>
-        this.qerClient.client.portal_person_active_get(
-          parameters.OrderBy,
-          parameters.StartIndex,
-          parameters.PageSize,
-          parameters.filter,
-          parameters.withProperties,
-          parameters.search
-      )
+        this.qerClient.v2Client.portal_person_active_get(parameters),
+      getDataModel: async () => ({}),
+      getFilterTree: async () => ({Elements: []})
     };
   }
 }

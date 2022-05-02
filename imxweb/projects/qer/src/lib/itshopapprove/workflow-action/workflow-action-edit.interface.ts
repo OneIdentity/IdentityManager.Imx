@@ -28,11 +28,33 @@ import { EntitySchema, IClientProperty, IEntity } from 'imx-qbm-dbts';
 import { Approval } from '../approval';
 import { WorkflowActionParameters } from './workflow-action-parameters.interface';
 
+/**
+ * Common View Model for making a decision for one or more requests.
+ */
 export interface WorkflowActionEdit {
+  /**
+   * Parameters according to the type of decision.
+   */
   actionParameters: WorkflowActionParameters;
+
+  /**
+   * The requests to make a decision for.
+   */
   requests: Approval[];
+
+  /**
+   * Whether or not the decision is an approval.
+   */
   approve?: boolean;
+
+  /**
+   * A description for the type of decision to be made.
+   */
   description?: string;
+
+  /**
+   * Information about the workflow so far.
+   */
   workflow?: {
     entitySchema: EntitySchema,
     display: { primary: IClientProperty, secondary?: IClientProperty },
@@ -40,10 +62,20 @@ export interface WorkflowActionEdit {
     title: string,
     placeholder: string
   };
+
+  /**
+   * General information whether to show valid from and/or valid until fields for ALL requests.
+   *
+   * If given and specified these values are meant to be applied to all requests where such a value can be applied.
+   */
   showValidDate?: {
     validFrom?: { key: string, placeholder: string };
     validUntil?: { key: string, placeholder: string };
   };
+
+  /**
+   * A custom validation method for all of the settings made.
+   */
   customValidation?: {
     validate: () => boolean;
     message: string

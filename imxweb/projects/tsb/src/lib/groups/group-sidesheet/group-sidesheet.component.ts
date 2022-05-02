@@ -37,6 +37,8 @@ import {
   SnackBarService,
   ElementalUiConfigService,
   ConfirmationService,
+  TabItem,
+  ExtService,
 } from 'qbm';
 import {
   HelperAlertContent,
@@ -71,12 +73,16 @@ export class GroupSidesheetComponent implements OnInit {
   public isRequestable: boolean;
   public parameters: { objecttable: string; objectuid: string; };
   public unsGroupDbObjectKey: DbObjectKeyBase;
-  public hideAttestationTab = false;
   public reportDownload: EuiDownloadOptions;
+  public buttonBarExtensionReferrer: { type: string, uidGroup: string, defaultDownloadOptions: EuiDownloadOptions };
   public readonly pendingAttestations: HelperAlertContent = { loading: false };
+
+  public canCreateServiceItem = false;
 
   @ViewChild('groupMembers') public groupMembersComponent: GroupMembersComponent;
   @ViewChild('serviceItemsEditForm') public serviceItemsEditForm: ServiceItemsEditFormComponent;
+
+  public dynamicTabs: TabItem[] = [];
 
   constructor(
     formBuilder: FormBuilder,
@@ -91,6 +97,7 @@ export class GroupSidesheetComponent implements OnInit {
     private readonly reports: GroupsReportsService,
     private readonly configService: ProjectConfigurationService,
     private readonly sidesheetRef: EuiSidesheetRef,
+    private readonly tabService: ExtService,
     private readonly confirmation: ConfirmationService,
   ) {
 
@@ -123,6 +130,13 @@ export class GroupSidesheetComponent implements OnInit {
         objectuid: this.unsGroupDbObjectKey.Keys[0]
       };
     }
+    this.canCreateServiceItem = !sidesheetData.group.GetEntity().GetColumn('XReadOnlyMemberships')?.GetValue();
+
+    this.buttonBarExtensionReferrer = {
+      type: this.sidesheetData.unsGroupDbObjectKey.TableName,
+      uidGroup: this.sidesheetData.group.GetEntity().GetKeys()[0],
+      defaultDownloadOptions: this.elementalUiConfigService.Config.downloadOptions
+    };
   }
 
   public async ngOnInit(): Promise<void> {
@@ -133,16 +147,19 @@ export class GroupSidesheetComponent implements OnInit {
     return this.sidesheetData.groupServiceItem;
   }
 
+  get isAadGroup(): boolean {
+    let isAad = false;
+    const xObjKey = this.sidesheetData.unsGroupDbObjectKey;
+    isAad = xObjKey ? xObjKey.TableName === 'AADGroup' : false;
+    return isAad;
+  }
+
   get formArray(): FormArray {
     return this.detailsFormGroup.get('formArray') as FormArray;
   }
 
   get siFormArray(): FormArray {
     return this.serviceItemFormGroup.get('formArray') as FormArray;
-  }
-
-  public attestationControlCreated(attestationServiceAvailable: boolean): void {
-    this.hideAttestationTab = !attestationServiceAvailable;
   }
 
   public cancel(): void {
@@ -169,7 +186,7 @@ export class GroupSidesheetComponent implements OnInit {
         UidPerson: uidPerson,
         CopyAllMembers: true,
       };
-      confirmMessage += ' It may take some time for the changes to take effect.';
+      confirmMessage = '#LDS#The service item has been successfully saved. It may take some time for the changes to take effect.';
     } else {
       this.groupServiceItem.extendedData = undefined;
     }
@@ -215,6 +232,10 @@ export class GroupSidesheetComponent implements OnInit {
       const config = (await this.configService.getConfig()).OwnershipConfig;
       const type = this.parameters?.objecttable;
 
+      this.dynamicTabs = (await this.tabService.getFittingComponents<TabItem>('groupSidesheet',
+      (ext) =>  ext.inputData.checkVisibility(this.parameters)))
+      .sort((tab1: TabItem, tab2: TabItem) => tab1.sortOrder - tab2.sortOrder);
+
       const cols = this.sidesheetData.group
         .getColumns(systemInfo.PreProps.includes('RISKINDEX'), type == null ? [] : config.EditableFields[type]);
 
@@ -224,6 +245,7 @@ export class GroupSidesheetComponent implements OnInit {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
   }
+
 
   private async saveChanges(
     formGroup: FormGroup,

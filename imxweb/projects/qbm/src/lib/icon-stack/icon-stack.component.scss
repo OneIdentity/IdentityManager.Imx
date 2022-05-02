@@ -1,0 +1,65 @@
+@import "variables.scss";
+
+:host {
+  display: flex;
+
+  .imx-iconStack {
+    flex: 0 0 100px;
+  }
+
+  .imx-iconStack-text {
+    flex: 0 0 200px;
+  }
+
+  .imx-iconStack {
+    display: inline-block;
+    height: 2em;
+    line-height: 2em;
+    position: relative;
+    vertical-align: middle;
+    width: 100%;
+    margin-top: 6px;
+  }
+
+  .imx-iconStack-0x,
+  .imx-iconStack-1x,
+  .imx-iconStack-2x {
+    left: 0;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    top: -11px;
+  }
+
+  .imx-iconStack-2x {
+    line-height: 6em;
+  }
+
+  .imx-iconStack-1x {
+    line-height: 5.5em;
+  }
+
+  .imx-iconStack-0x {
+    line-height: 5.5em;
+    top: 17px;
+  }
+
+  .imx-iconStack eui-icon {
+    color: $black-6;
+  }
+
+  .imx-ellipse {
+    height: 13px;
+    width: 90px;
+    background-color: $Imx_Ellipse_Gray;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .imx-iconStack-text {
+    width: 100%;
+    font-size: 16px;
+    color: $black-6;
+    line-height: 4em;
+  }
+}

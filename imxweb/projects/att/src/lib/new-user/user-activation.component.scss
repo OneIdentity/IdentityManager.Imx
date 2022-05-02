@@ -1,0 +1,19 @@
+:host {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+
+.button-bar {
+  margin-top: 1em;
+
+  button:not(:last-child) {
+    margin-right: 1em;
+  }
+}
+
+.pagecontent {
+  margin: 1em;
+}

@@ -187,11 +187,11 @@ describe('TreeDatabase', () => {
   }
 
   for (const testcase of [
-    { desciption: 'for root', entities:[dummyEntity], node: new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0), parentKey: '', startIndex: 0, hasmore: true, expectedLenght: 2 },
-    { desciption: 'for children', entities:[dummyEntity], node: new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0), parentKey: 'uid-parent1', startIndex: 0, hasmore: true, expectedLenght: 2 },
-    { desciption: 'for root', entities:[dummyEntity], node: new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0), parentKey: '', startIndex: 0, hasmore: false, expectedLenght: 1 },
-    { desciption: 'for children', entities:[dummyEntity], node: new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0), parentKey: 'uid-parent1', startIndex: 0, hasmore: false, expectedLenght: 1 },
-    { desciption: 'without nodes', entities:[], node: new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0), parentKey: 'uid-parent1', startIndex: 0, hasmore: false, expectedLenght: 0 }
+    { desciption: 'for root', entities:[dummyEntity], node: new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0), ParentKey: '', startIndex: 0, hasmore: true, expectedLenght: 2 },
+    { desciption: 'for children', entities:[dummyEntity], node: new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0), ParentKey: 'uid-parent1', startIndex: 0, hasmore: true, expectedLenght: 2 },
+    { desciption: 'for root', entities:[dummyEntity], node: new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0), ParentKey: '', startIndex: 0, hasmore: false, expectedLenght: 1 },
+    { desciption: 'for children', entities:[dummyEntity], node: new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0), ParentKey: 'uid-parent1', startIndex: 0, hasmore: false, expectedLenght: 1 },
+    { desciption: 'without nodes', entities:[], node: new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0), ParentKey: 'uid-parent1', startIndex: 0, hasmore: false, expectedLenght: 0 }
   ]) {
     it(`can load more (${testcase.desciption})`, async () => {
       //Arrange
@@ -210,7 +210,7 @@ describe('TreeDatabase', () => {
       const source = new TreeDatasource(treeControl, treeDatabase);
 
       // Act
-      await source.loadMore(testcase.node as TreeNode, testcase.parentKey, testcase.startIndex);
+      await source.loadMore(testcase.node as TreeNode, testcase.ParentKey, testcase.startIndex);
 
       // check
 

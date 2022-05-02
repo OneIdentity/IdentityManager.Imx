@@ -165,7 +165,7 @@ export class RequestShelfEntitlementsComponent implements OnInit {
       await this.navigate(true);
       // Reset table selections (removing references to now deleted members)
       this.dataTable.clearSelection();
-      this.requestsService.openSnackbar('#LDS#The entitlements have been successfully updated.', ACTION_DISMISS);
+      this.requestsService.openSnackbar('#LDS#The products have been successfully removed.', ACTION_DISMISS);
     } finally {
       this.requestsService.handleCloseLoader();
     }
@@ -179,7 +179,7 @@ export class RequestShelfEntitlementsComponent implements OnInit {
     this.requestsService.handleOpenLoader();
     try {
       await this.requestsService.selectedEntitlementType.addEntitlementSelections(this.shelfId, values);
-      this.requestsService.openSnackbar('#LDS#The entitlements have been successfully updated.', ACTION_DISMISS);
+      this.requestsService.openSnackbar('#LDS#The products have been successfully added.', ACTION_DISMISS);
       await this.navigate();
     } finally {
       this.requestsService.handleCloseLoader();

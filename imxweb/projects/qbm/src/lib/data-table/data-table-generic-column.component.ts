@@ -76,6 +76,8 @@ export class DataTableGenericColumnComponent implements OnInit {
     this.columnNameField = value;
   }
 
+  public columnIndex: number;
+
   /**
    * @ignore Used internally in components template.
    * Reference to a custom template, that contains the visual representation of the provided data.

@@ -25,12 +25,13 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Data, Router } from '@angular/router';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { OwnershipInformation } from 'imx-api-qer';
 import {
   CollectionLoadParameters,
+  DataModel,
   DisplayColumns,
   EntitySchema,
   IClientProperty,
@@ -45,8 +46,7 @@ import {
   LdsReplacePipe,
   DataSourceToolbarSettings,
   MetadataService,
-  SettingsService,
-  SearchResultAction
+  SettingsService
 } from 'qbm';
 import { IDataExplorerComponent } from '../../data-explorer-view/data-explorer-extension';
 import { RoleDetailComponent } from '../role-detail/role-detail.component';
@@ -71,8 +71,9 @@ export class RolesOverviewComponent implements OnInit, IDataExplorerComponent {
   public useTree = false;
   public ValType = ValType;
   public treeDatabase: TreeDatabaseAdaptorService;
-  public searchResultAction: SearchResultAction;
   public filterOptions: DataSourceToolbarFilter[] = [];
+
+  private dataModel: DataModel;
 
   constructor(
     private readonly sidesheet: EuiSidesheetService,
@@ -93,8 +94,6 @@ export class RolesOverviewComponent implements OnInit, IDataExplorerComponent {
         Count: params.count,
       };
     });
-
-    this.searchResultAction = { action: async (entity: IEntity) => { await this.openDetails(entity); } };
   }
 
   public async ngOnInit(): Promise<void> {
@@ -116,25 +115,25 @@ export class RolesOverviewComponent implements OnInit, IDataExplorerComponent {
 
     this.ownershipInfo.TableNameDisplay = table.Display;
 
-    const type  = this.roleService.getType(this.ownershipInfo, true);
+    const type = this.roleService.getType(this.ownershipInfo.TableName, true);
 
     this.treeDatabase = new TreeDatabaseAdaptorService(this.roleService, this.settings, this.busyService, this.ownershipInfo, type);
 
-    if (!this.roleService.exists(this.ownershipInfo)) {
+    if (!this.roleService.exists(this.ownershipInfo.TableName)) {
       return;
     }
     this.isAdmin = this.route.snapshot?.url[0]?.path === 'admin';
     setTimeout(() => { this.busyService.show(); });
     try {
-      this.useTree = this.isAdmin && (await this.roleService.getEntitiesForTree(this.ownershipInfo, { PageSize: 1 })).Hierarchy != null;
+      this.useTree = this.isAdmin && (await this.roleService.getEntitiesForTree(this.ownershipInfo.TableName, { PageSize: -1 })).Hierarchy != null;
     } finally {
       setTimeout(() => { this.busyService.hide(); });
     }
-    this.navigationState = {
+    this.navigationState = this.useTree ? {
       // empty string: load first level
-      parentKey: ''
-    };
-    this.entitySchema = this.roleService.getRoleEntitySchema(this.ownershipInfo);
+      ParentKey: ''
+    } : {};
+    this.entitySchema = this.roleService.getRoleEntitySchema(this.ownershipInfo.TableName);
     this.displayColumns = [
       this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
       {
@@ -145,7 +144,8 @@ export class RolesOverviewComponent implements OnInit, IDataExplorerComponent {
 
     setTimeout(() => { this.busyService.show(); });
     try {
-      this.filterOptions = (await this.roleService.getDataModel(this.ownershipInfo, this.isAdmin))?.Filters;
+      this.dataModel = await this.roleService.getDataModel(this.ownershipInfo.TableName, this.isAdmin)
+      this.filterOptions = this.dataModel?.Filters;
     } finally {
       setTimeout(() => { this.busyService.hide(); });
     }
@@ -188,7 +188,7 @@ export class RolesOverviewComponent implements OnInit, IDataExplorerComponent {
         table.DisplaySingular),
       headerColour: 'blue',
       padding: '0px',
-      width: '900px',
+      width: 'max(768px, 80%)',
       disableClose: true,
       testId: 'role-detail-sidesheet',
       data: {
@@ -215,16 +215,18 @@ export class RolesOverviewComponent implements OnInit, IDataExplorerComponent {
 
   private async navigateInTree(): Promise<void> {
     await this.treeDatabase.prepare(
-      this.roleService.getRoleEntitySchema(this.ownershipInfo));
+      this.roleService.getRoleEntitySchema(this.ownershipInfo.TableName));
   }
 
   private async navigateWithTable(): Promise<void> {
+
     this.dstSettings = {
-      dataSource: await this.roleService.get(this.ownershipInfo, this.isAdmin, this.navigationState),
+      dataSource: await this.roleService.get(this.ownershipInfo.TableName, this.isAdmin, this.navigationState),
       entitySchema: this.entitySchema,
       navigationState: this.navigationState,
       displayedColumns: this.displayColumns,
-      filters: this.filterOptions
+      filters: this.filterOptions,
+      dataModel: this.dataModel
     };
   }
 }

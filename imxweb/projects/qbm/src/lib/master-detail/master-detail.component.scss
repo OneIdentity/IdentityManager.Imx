@@ -1,0 +1,279 @@
+@import "variables.scss";
+
+$headerheight: 43;
+
+/* #region VI_Styles_MasterDetailControl_Default (CSS) */
+/* vertical layout is the default */
+.imx-mdc-masterdetail {
+  position: relative;
+  overflow: hidden;
+  min-width: 100%;
+  clear: both;
+}
+
+.imx-mdc-master {
+  overflow: auto;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+@media #{$IMX_Mediaquery_Smartphone} {
+  .imx-mdc-master {
+    position: static;
+  }
+}
+
+.imx-mdc-detail-opened .imx-mdc-master {
+  max-width: calc( 100% - 40em );
+  width: 100%;
+}
+
+.imx-mdc-detail-close .imx-mdc-master {
+  max-width: calc( 100% - 30px );
+  width: 100%;
+}
+
+.imx-mdc-detail {
+  background: none repeat scroll 0 0 mat-color($asher-gray-palette, 900);
+  border-width: 0;
+  display: block;
+  position: absolute;
+  z-index: 50;
+  bottom: 0;
+  right: 0;
+  top: 0;
+  width: 40em;
+  display: flex;
+  flex-direction: column;
+}
+
+.imx-mdc-detail {
+  outline: none;
+}
+
+.imx-mdc-detail-closed {
+  overflow: hidden;
+  visibility: hidden;
+}
+
+.imx-mdc-detail-close .imx-mdc-detail-content {
+  visibility: hidden;
+  overflow: hidden;
+}
+
+.imx-mdc-detail-close .imx-mdc-detail {
+  width: 30px;
+}
+
+.imx-mdc-detail-close .imx-mdc-detail-header {
+  -webkit-transform: translate(35px, 0px) rotate(90deg);
+  -webkit-transform-origin: 0 0;
+  -moz-transform: translate(35px, 0px) rotate(90deg);
+  -moz-transform-origin: 0 0;
+  -ms-transform: translate(35px, 0px) rotate(90deg);
+  -ms-transform-origin: 0 0;
+  transform: translate(35px, 0px) rotate(90deg);
+  transform-origin: 0 0;
+  width: 100%;
+  white-space: nowrap;
+  /* background-image: url('images/ic/ic_expndrChevDwnMed_active_16.png'); */
+}
+
+.imx-mdc-detail-header {
+  background-repeat: no-repeat;
+  box-sizing: border-box;
+  z-index: 10;
+  position: relative;
+  /* background-image: url('images/ic/ic_expndrChevSide1Med_active_16.png'); */
+  background-position: 12px 12px;
+  margin-bottom: 10px;
+  padding-left: 40px;
+  padding-top: 12px;
+  min-height: 32px;
+  flex: 1 0 auto;
+}
+
+.imx-mdc-detail-header img {
+  max-height: 15px;
+}
+
+.imx-mdc-detail-opened .imx-mdc-detail-header {
+  background-color: inherit;
+  width: inherit;
+}
+
+.imx-mdc-detail-header > div {
+  display: inline-block;
+}
+
+.imx-mdc-detail-header span {
+  padding-right: 5px;
+  font-size: 14px;
+}
+
+.imx-mdc-detail-header span.imx-mdc-detail-header-value {
+  font-weight: bold;
+  padding-right: 15px;
+}
+
+.imx-mdc-detail-contentWrapper {
+  position: relative;
+  height: 100%;
+}
+
+.imx-mdc-detail-content {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  overflow: auto;
+  left: 15px;
+  right: 0;
+}
+
+/* Required for iOS scrolling */
+@media #{$IMX_Mediaquery_Smartphone} {
+  .imx-mdc-detail-contentWrapper {
+    position: static;
+  }
+
+  .imx-mdc-detail-content {
+    top: 45px;
+  }
+}
+
+.imx-mdc-detail-header h1,
+.imx-mdc-detail-header h2,
+.imx-mdc-detail-header h3 {
+  font-family: inherit;
+  padding: 0;
+  margin: 0;
+  font-size: inherit;
+  width: calc(100% - 30px);
+}
+/*#endregion*/
+
+/* #region VI_Styles_MasterDetailControl_Default (Horizontal layout) */
+/* rules for horizontal layout */
+@media only screen and (orientation: portrait) {
+  .imx-mdc-detail-opened .imx-mdc-master {
+    bottom: 25em;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .imx-mdc-detail-close .imx-mdc-master {
+    bottom: 30px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .imx-mdc-detail {
+    bottom: 0;
+    height: 25em;
+    min-height: 0;
+    width: 100%;
+    top: inherit;
+  }
+
+  .imx-mdc-detail-close .imx-mdc-detail {
+    width: 100%;
+    height: 30px;
+  }
+
+  .imx-mdc-detail-close .imx-mdc-detail-content {
+    height: 0;
+  }
+
+  .imx-mdc-detail-close .imx-mdc-detail-header {
+    width: inherit;
+    padding-top: 10px;
+  }
+
+  .imx-mdc-detail-header {
+    position: relative;
+    top: 0;
+    right: 0;
+    /* background-image: url('images/ic/ic_expndrChevDwnMed_active_16.png'); */
+    background-position: 97% 12px;
+    padding-left: 12px;
+    padding-top: 12px;
+    width: auto;
+  }
+
+  /* .imx-mdc-detail-close .imx-mdc-detail-header {
+    background-image: url('images/ic/ic_expndrChevUpMed_active_16.png');
+  } */
+
+  .imx-mdc-detail-close .imx-mdc-detail-header {
+    -webkit-transform: inherit;
+    -moz-transform: inherit;
+    -ms-transform: inherit;
+    transform: inherit;
+  }
+}
+/*#endregion*/
+
+/* #region VI_Styles_MasterDetailControl_Default (Smartphone-Mode (imx-mdc-singlePanel)) */
+/* SinglePanelVisible-Mode for smartphones */
+/* when changing this media query, also change the "SinglePanelMediaQuery"-property at each Master-Detail-Control */
+
+/* detail-panel open */
+.imx-mdc-singlePanel.imx-mdc-detail {
+  top: $headerheight + px;
+  left: 5px;
+  width: inherit;
+  right: 5px;
+  bottom: 5px;
+  height: inherit;
+}
+
+/* singlePanel in modal dialog*/
+.imx-Modal .imx-mdc-singlePanel.imx-mdc-detail {
+  top: 5px;
+}
+
+.imx-mdc-singlePanel .imx-mdc-detail-header {
+  /* TODO use EUI-Icon background-image: url('images/StockImg/BlueDelete.png'); */
+  background-position: 97% 12px;
+  padding-left: 12px;
+}
+
+/* master-panel open */
+.imx-mdc-singlePanel.imx-mdc-detail-close.imx-mdc-detail {
+  height: 0;
+  display: none;
+}
+
+.imx-documentloading .imx-mdc-singlePanel .imx-mdc-detail-content {
+  visibility: hidden;
+}
+
+.imx-mdc-singlePanel.imx-mdc-detail-close .imx-mdc-master,
+.imx-mdc-singlePanel.imx-mdc-detail-opened .imx-mdc-master {
+  bottom: 0;
+}
+/*#endregion*/
+
+/* #region VI_Styles_LayoutPanel_Default (Detail Pane CSS) */
+.imx-mdc-detail .LayoutpPropRow {
+  border-bottom: 1px solid $VI_Common_Color_LightGray;
+  line-height: 20px;
+  min-height: 26px;
+}
+
+.imx-mdc-detail .LayoutpPropCol0 {
+  width: 146px;
+  max-width: 146px;
+  color: $VI_Common_Color_Font;
+}
+
+.imx-mdc-detail .LayoutpPropCol1 {
+  width: 245px;
+  /* leave some space for scrollbars*/
+  max-width: 245px;
+  /* #27180 */
+  color: $VI_Common_Color_Font_Secondary;
+  font-weight: bold;
+}
+
+/*#endregion*/

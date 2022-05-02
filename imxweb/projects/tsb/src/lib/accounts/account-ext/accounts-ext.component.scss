@@ -1,5 +1,25 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
 
-
-.imx-table-margin{
-  margin-top: 10px;
+:host {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
+
+
+.imx-memberships {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.imx-membership-table {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  margin-top: 20px;
+}
+

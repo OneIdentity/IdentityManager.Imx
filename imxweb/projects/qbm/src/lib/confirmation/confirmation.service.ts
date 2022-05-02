@@ -30,12 +30,13 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { MessageDialogResult } from '../message-dialog/message-dialog-result.enum';
 import { MessageDialogComponent } from '../message-dialog/message-dialog.component';
+import { MessageParameter } from '../message-dialog/message-parameter.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ConfirmationService {
-  constructor(private readonly dialogService: MatDialog, private readonly translate: TranslateService) {}
+  constructor(private readonly dialogService: MatDialog, private readonly translate: TranslateService) { }
 
   public async confirmLeaveWithUnsavedChanges(title?: string, message?: string): Promise<boolean> {
     const dialogRef = this.dialogService.open(MessageDialogComponent, {
@@ -50,4 +51,26 @@ export class ConfirmationService {
     });
     return (await dialogRef.beforeClosed().toPromise()) === MessageDialogResult.YesResult ? true : false;
   }
+
+  public async confirm(data: MessageParameter): Promise<boolean> {
+    const dialogRef = this.dialogService.open(MessageDialogComponent, {
+      data: {
+        ShowYesNo: true,
+        Title: await this.translate.get(data.Title).toPromise(),
+        Message: await this.translate.get(data.Message).toPromise(),
+        identifier: data.identifier
+      },
+      panelClass: 'imx-messageDialog',
+    });
+    return (await dialogRef.afterClosed().toPromise()) === MessageDialogResult.YesResult ? true : false;
+  }
+
+  // Damit es bis "Pull Request 38432: 299557-imxweb-confirmdialogs-with-yes-no-buttons" funktioniert
+  public async confirmDelete(title?: string, message?: string): Promise<boolean> {
+    return this.confirm({
+      Title: title || '#LDS#Heading Delete Object',
+      Message: message || '#LDS#Are you sure you want to delete the object?'
+    });
+  }
 }
+

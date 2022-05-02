@@ -36,7 +36,10 @@ import {
   IForeignKeyInfo,
   FilterType,
   CompareOperator,
-  DbObjectKey
+  DbObjectKey,
+  DataModelFilter,
+  FilterData,
+  DataModel
 } from 'imx-qbm-dbts';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 import { MetadataService } from '../base/metadata.service';
@@ -67,6 +70,8 @@ export class FkSelectorComponent implements OnInit {
 
   private readonly builder = new TypedEntityBuilder(CandidateEntity);
   private readonly entitySchema = CandidateEntity.GetEntitySchema();
+  private filters: DataModelFilter[];
+  private dataModel: DataModel;
 
   constructor(
     public readonly metadataProvider: MetadataService,
@@ -76,9 +81,14 @@ export class FkSelectorComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
+    let over: OverlayRef;
+
+    setTimeout(() => over = this.busyService.show());
     if (this.data.fkRelations && this.data.fkRelations.length > 0) {
       this.logger.trace(this, 'Pre-select the first candidate table');
       this.selectedTable = this.data.fkRelations.find(fkr => fkr.TableName === this.data.selectedTableName) || this.data.fkRelations[0];
+      this.dataModel = await this.selectedTable.GetDataModel();
+      this.filters = this.dataModel.Filters;
     }
 
     if (this.data.fkRelations && this.data.fkRelations.length > 0) {
@@ -90,6 +100,7 @@ export class FkSelectorComponent implements OnInit {
       this.selectedCandidates = this.preselectedEntities;
     }
     this.logger.debug(this, 'Pre selected elements', this.selectedCandidates.length);
+    setTimeout(() => this.busyService.hide(over));
   }
 
   public search(keywords: string): void {
@@ -126,8 +137,12 @@ export class FkSelectorComponent implements OnInit {
    * @ignore
    */
   public async tableChanged(): Promise<void> {
-    await this.loadTableData({ StartIndex: 0 });
+    await this.loadTableData({ StartIndex: 0, filter: undefined });
     this.tableselected.emit(this.selectedTable);
+  }
+
+  public async filterByTree(filters: FilterData[]): Promise<void> {
+    return this.loadTableData({ StartIndex: 0, filter: filters });
   }
 
   /**
@@ -146,6 +161,12 @@ export class FkSelectorComponent implements OnInit {
 
         if (newState) {
           navigationState = { ...navigationState, ...newState };
+        }
+
+        const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
+          .map(elem => elem.Property.ColumnName).join(',');
+        if (withProperties != null && withProperties !== '') {
+          navigationState.withProperties = withProperties;
         }
 
         this.logger.debug(this, 'LoadTableData - loading with navigationState', navigationState);
@@ -168,7 +189,13 @@ export class FkSelectorComponent implements OnInit {
           ),
           displayedColumns,
           entitySchema: this.entitySchema,
-          navigationState
+          filters: this.filters,
+          dataModel: this.dataModel,
+          navigationState,
+          filterTree: {
+            multiSelect: true,
+            filterMethode: async (parentKey) => this.selectedTable.GetFilterTree(parentKey)
+          }
         };
       } finally {
         setTimeout(() => this.busyService.hide());

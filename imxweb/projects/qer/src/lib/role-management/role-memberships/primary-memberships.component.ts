@@ -27,14 +27,14 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { OwnershipInformation } from 'imx-api-qer';
-import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, IEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DisplayColumns, IClientProperty, IEntity } from 'imx-qbm-dbts';
 import { DataSourceToolbarFilter, DataSourceToolbarSettings } from 'qbm';
 import { RoleService } from '../role.service';
 
 @Component({
   selector: 'imx-primary-memberships',
   templateUrl: './primary-memberships.component.html',
-  styleUrls: ['./primary-memberships.component.scss', '../sidesheet.scss'],
+  styleUrls: ['./primary-memberships.component.scss', '../sidesheet.scss', './role-sidesheet-tabs.scss'],
 })
 export class PrimaryMembershipsComponent implements OnInit {
   public dstSettings: DataSourceToolbarSettings;
@@ -72,15 +72,15 @@ export class PrimaryMembershipsComponent implements OnInit {
 
   private async navigate(): Promise<void> {
     this.busyService.show();
-    const entitySchema = this.membershipService.getPrimaryMembershipSchema(this.ownershipInfo);
+    const entitySchema = this.membershipService.getPrimaryMembershipSchema(this.ownershipInfo.TableName);
     this.displayColumns = [
       entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
-      entitySchema.Columns['PrimaryMemberSince']];
+      entitySchema.Columns.PrimaryMemberSince];
 
     try {
       this.dstSettings = {
-        dataSource: await this.membershipService.getPrimaryMemberships(this.ownershipInfo, this.entity.GetKeys()[0], this.navigationState),
-        entitySchema: entitySchema,
+        dataSource: await this.membershipService.getPrimaryMemberships(this.ownershipInfo.TableName, this.entity.GetKeys()[0], this.navigationState),
+        entitySchema,
         navigationState: this.navigationState,
         displayedColumns: this.displayColumns,
       };

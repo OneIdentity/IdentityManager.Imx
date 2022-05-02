@@ -35,11 +35,11 @@ export class WorkflowDataWrapper {
   }) {}
 
   public canEscalateDecision(decisionLevel: number): boolean {
-    const workflowStep = this.data.WorkflowSteps.Entities.find(step =>
+    const workflowStep = this.data?.WorkflowSteps?.Entities?.find(step =>
       step.Columns.LevelNumber.Value === decisionLevel
     )?.Columns;
 
-    return workflowStep != null && workflowStep.EscalationSteps.Value !== 0;
+    return (workflowStep?.EscalationSteps?.Value ?? 0) !== 0;
   }
 
   public canDenyDecision(userUid: string, decisionLevel: number): boolean {

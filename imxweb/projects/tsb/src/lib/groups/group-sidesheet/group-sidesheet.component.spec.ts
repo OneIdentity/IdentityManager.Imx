@@ -32,7 +32,7 @@ import { EuiCoreModule, EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA }
 
 import { GroupSidesheetComponent } from './group-sidesheet.component';
 import { PortalTargetsystemUnsGroupServiceitem } from 'imx-api-tsb';
-import { CdrModule, ElementalUiConfigService, EntityColumnStub, SystemInfoService } from 'qbm';
+import { CdrModule, ElementalUiConfigService, EntityColumnStub, ExtService, SystemInfoService } from 'qbm';
 import { GroupsService } from '../groups.service';
 import { DeHelperService } from '../../de-helper.service';
 import { TsbTestBed } from '../../test/tsb-test-bed.spec';
@@ -55,7 +55,7 @@ class MockObjectAttestationComponent {
   template: ''
 })
 export class ServiceItemEditFormStubComponent {
-  saveTags() {}
+  saveTags() { }
 }
 
 describe('GroupSidesheetComponent', () => {
@@ -64,11 +64,11 @@ describe('GroupSidesheetComponent', () => {
 
   let saveChangesSpy: jasmine.Spy;
 
-  const configService= {
-    getConfig: jasmine.createSpy('getConfig').and.returnValue( Promise.resolve({
+  const configService = {
+    getConfig: jasmine.createSpy('getConfig').and.returnValue(Promise.resolve({
       OwnershipConfig: {
         EditableFields: {
-          AccProduct : [],
+          AccProduct: [],
           testTable: []
         }
       }
@@ -164,7 +164,7 @@ describe('GroupSidesheetComponent', () => {
         provide: EuiSidesheetRef,
         useValue: {
           closeClicked: () => new Subject(),
-          close: __ => {}
+          close: __ => { }
         }
       },
       {
@@ -193,7 +193,8 @@ describe('GroupSidesheetComponent', () => {
       {
         provide: ProjectConfigurationService,
         useValue: configService
-      }
+      },
+      ExtService,
     ]
   });
 
@@ -240,11 +241,11 @@ describe('GroupSidesheetComponent', () => {
   });
 
   describe('onDeleteGroupMembers() tests', () => {
-    it('should make a call to the groupMembersComponent deleteMembers() method', async() => {
+    it('should make a call to the groupMembersComponent deleteMembers() method', async () => {
       const mockGroupMembersComponent: any = {
         deleteMembers: jasmine.createSpy('deleteMembers'),
         unsubscribeMembership: jasmine.createSpy('unsubscribeMembership')
-       };
+      };
       component.groupMembersComponent = mockGroupMembersComponent;
       await component.onDeleteGroupMembers('unsubscribe');
       expect(mockGroupMembersComponent.unsubscribeMembership).toHaveBeenCalled();

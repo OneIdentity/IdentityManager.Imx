@@ -1,7 +1,5 @@
 <ng-container *ngIf="types">
-  <h1 mat-dialog-title translate>#LDS#Heading Request Entitlements</h1>
-  <div mat-dialog-content>
-
+  <div eui-sidesheet-content>
     <mat-form-field class="request-entitlement-type-selector">
       <mat-label>{{'#LDS#Select the type of entitlement to add' | translate}}</mat-label>
       <mat-select (selectionChange)="optionSelected($event.value)" [(ngModel)]="selectedType">
@@ -16,13 +14,10 @@
       (selectionChanged)="selectionChanged($event)"></imx-fk-candidates>
   </div>
 
-  <div mat-dialog-actions>
+  <div eui-sidesheet-actions color="white">
     <button *ngIf="selectedItems?.length > 0" mat-stroked-button type="button" (click)="fkSelector.clearSelection()"
       data-imx-identifier="requests-selector-clear-selection">
       <span translate>#LDS#Clear selection</span>
-    </button>
-    <button mat-stroked-button mat-dialog-close data-imx-identifier="requests-selector-cancel-action">
-      <span translate>#LDS#Cancel</span>
     </button>
     <button *ngIf="data?.isMultiValue" mat-raised-button color="primary" [disabled]="selectedItems?.length === 0"
       (click)="applySelection()" data-imx-identifier="requests-selector-apply-selection">

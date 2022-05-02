@@ -40,6 +40,7 @@ import { AccountsModule } from './accounts/accounts.module';
 import { DataExplorerGroupsComponent } from './groups/groups.component';
 import { GroupsModule } from './groups/groups.module';
 import { TsbNamespaceAdminGuardService } from './guards/tsb-namespace-admin-guard.service';
+import { ReportButtonExtModule } from './report-button-ext/report-button-ext.module';
 
 const routes: Routes = [
   {
@@ -70,7 +71,8 @@ const routes: Routes = [
     MatIconModule,
     MatListModule,
     TileModule,
-    TranslateModule
+    TranslateModule,
+    ReportButtonExtModule
   ],
   providers: [
     TsbNamespaceAdminGuardService

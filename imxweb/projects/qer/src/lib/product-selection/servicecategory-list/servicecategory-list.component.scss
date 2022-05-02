@@ -1,7 +1,6 @@
 :host {
   display: flex;
   align-items: center;
-  min-height: 80px;
 }
 
 div {
@@ -20,6 +19,6 @@ button.imx-button {
 }
 
 .imx-select-category {
-  padding: 12px 10px 0 10px;
+  padding: 0 10px 0 10px;
   width: 300px;
 }

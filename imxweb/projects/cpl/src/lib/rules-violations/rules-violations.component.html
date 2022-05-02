@@ -1,0 +1,81 @@
+<div class="imx-rules-violations-page">
+  <div class="heading-wrapper">
+    <h1 class="mat-headline">
+      {{ '#LDS#Heading Rule Violations' | translate }}
+    </h1>
+    <div class="alert-wrapper">
+      <eui-alert class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true">
+        <span>{{ infoAlertText | translate }}</span>
+      </eui-alert>
+    </div>
+  </div>
+  <div class="imx-table-container" *ngIf="dstWrapper && dstSettings">
+    <imx-data-source-toolbar #dst [options]="['search', 'filter', 'groupBy']" [settings]="dstSettings"
+      (search)="getData({ search: $event })" (navigationStateChanged)="getData($event)"
+      data-imx-identifier="rules-violations-dst">
+    </imx-data-source-toolbar>
+    <imx-data-table #dataTable [dst]="dst" class="imx-rules-violations-table" [detailViewVisible]="false" mode="manual"
+      [selectable]="true" [showSelectedItemsMenu]="false" (selectionChanged)="onSelectionChanged($event)"
+      [groupData]="groupedData"
+      (groupDataChanged)="onGroupingChange($event)"
+      data-imx-identifier="rules-violations-datatable">
+      <imx-data-table-column data-imx-identifier="rules-violations-table-column-UidPerson"
+        [entityColumn]="dstSettings.entitySchema?.Columns.UID_Person">
+      </imx-data-table-column>
+      <imx-data-table-column data-imx-identifier="rules-violations-table-column-UID_NonCompliance"
+        [entityColumn]="dstSettings.entitySchema?.Columns.UID_NonCompliance">
+      </imx-data-table-column>
+      <imx-data-table-column data-imx-identifier="rules-violations-table-column-state"
+        [entityColumn]="dstSettings.entitySchema?.Columns.State">
+        <ng-template let-item>
+          {{ item?.stateBadge?.caption }}
+        </ng-template>
+      </imx-data-table-column>
+      <imx-data-table-generic-column columnName="decision" [columnLabel]="'#LDS#Decision' | translate"
+        data-imx-identifier="rules-violations-table-column-decision">
+        <ng-template let-item>
+          <div class="imx-decision">
+            <button mat-stroked-button (click)="actionService.approve([item])"
+              data-imx-identifier="rules-violations-table-row-button-approve">
+              {{ '#LDS#Grant exception' | translate }}
+            </button>
+            <button mat-stroked-button (click)="actionService.deny([item])"
+              data-imx-identifier="rules-violations-table-row-button-deny">
+              {{ '#LDS#Deny exception' | translate }}
+            </button>
+          </div>
+        </ng-template>
+      </imx-data-table-generic-column>
+      <imx-data-table-generic-column columnName="actions">
+        <ng-template let-item>
+          <button mat-button color="primary" (click)="viewDetails(item)"
+            data-imx-identifier="rules-violations-table-row-button-view-details">
+            {{'#LDS#Details' | translate}}
+          </button>
+        </ng-template>
+      </imx-data-table-generic-column>
+    </imx-data-table>
+    <imx-data-source-paginator data-imx-identifier="rules-violations-paginator" [dst]="dst">
+    </imx-data-source-paginator>
+  </div>
+
+  <div class="imx-button-bar">
+    <p class="imx-selected-items">
+      <span>
+        {{ '#LDS#Selected items' | translate }}
+      </span>
+      <eui-badge data-imx-identifier="rules-violations-selection-badge" class="imx-badge" color="orange">
+        {{selectedRulesViolations?.length > 0 ? selectedRulesViolations.length : 0}}
+      </eui-badge>
+    </p>
+    <div class="imx-menu-spacer"></div>
+    <button mat-stroked-button (click)="actionService.approve(selectedRulesViolations)"
+      data-imx-identifier="rules-violations-button-approve" [disabled]="!selectedRulesViolations.length">
+      {{ '#LDS#Grant exception' | translate }}
+    </button>
+    <button mat-stroked-button (click)="actionService.deny(selectedRulesViolations)"
+      data-imx-identifier="rules-violations-button-deny" [disabled]="!selectedRulesViolations.length">
+      {{ '#LDS#Deny exception' | translate }}
+    </button>
+  </div>
+</div>

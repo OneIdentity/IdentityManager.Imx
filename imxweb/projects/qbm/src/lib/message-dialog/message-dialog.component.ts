@@ -33,7 +33,7 @@ import { MessageDialogResult } from './message-dialog-result.enum';
 @Component({
   selector: 'imx-message-dialog',
   templateUrl: './message-dialog.component.html',
-  styles: []
+  styleUrls: ['./message-dialog.component.scss']
 })
 export class MessageDialogComponent {
   public readonly MessageDialogResult = MessageDialogResult; // Enables use of this Enum in Angular Templates.

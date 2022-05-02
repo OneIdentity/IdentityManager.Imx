@@ -25,7 +25,6 @@
  */
 
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -35,11 +34,10 @@ import { CollectionLoadParameters, DisplayColumns, TypedEntity, ValType } from '
 import {
   ClassloggerService,
   DataSourceToolbarSettings,
-  MessageDialogComponent,
-  MessageDialogResult,
   UserMessageService,
   DataTableComponent,
   DataSourceWrapper,
+  ConfirmationService,
 } from 'qbm';
 import { PickCategoryCreateComponent } from './pick-category-create/pick-category-create.component';
 import { PickCategorySidesheetComponent } from './pick-category-sidesheet/pick-category-sidesheet.component';
@@ -61,7 +59,7 @@ export class PickCategoryComponent implements OnInit, OnDestroy {
   constructor(
     private readonly pickCategoryService: PickCategoryService,
     private readonly sideSheet: EuiSidesheetService,
-    private readonly dialog: MatDialog,
+    private readonly confirmationService: ConfirmationService,
     private readonly translate: TranslateService,
     private readonly messageService: UserMessageService,
     private readonly logger: ClassloggerService
@@ -114,7 +112,7 @@ export class PickCategoryComponent implements OnInit, OnDestroy {
   public async viewDetails(pickCategory: PortalPickcategory): Promise<void> {
     if (pickCategory) {
       const result = await this.sideSheet.open(PickCategorySidesheetComponent, {
-        title: await this.translate.get('#LDS#Heading Edit Sample Data').toPromise(),
+        title: await this.translate.get('#LDS#Heading Edit Sample').toPromise(),
         headerColour: 'iris-blue',
         panelClass: 'imx-sidesheet',
         padding: '0',
@@ -131,24 +129,16 @@ export class PickCategoryComponent implements OnInit, OnDestroy {
     }
     else {
       this.messageService.subject.next({
-        text: '#LDS#You cannot edit the sample data. The sample data does not exist (anymore). Please reload the page.'
+        text: '#LDS#You cannot edit the sample. The sample does not exist (anymore). Please reload the page.'
       });
     }
   }
 
   public async delete(): Promise<void> {
-    const dialogRef = this.dialog.open(MessageDialogComponent, {
-      data: {
-        ShowOk: true,
-        ShowCancel: true,
-        Title: await this.translate.get('#LDS#Heading Delete Sample Data').toPromise(),
-        Message: await this.translate.get('#LDS#Are you sure you want to delete the sample data?').toPromise()
-      },
-      panelClass: 'imx-messageDialog'
-    });
-
-    const result = await dialogRef.afterClosed().toPromise();
-    if (result === MessageDialogResult.OkResult) {
+    if (await this.confirmationService.confirm({
+      Title: '#LDS#Heading Delete Sample',
+      Message: '#LDS#Are you sure you want to delete the sample?'
+    })) {
       if (await this.pickCategoryService.deletePickCategories(this.selectedPickCategoryItems) > 0) {
         await this.getData();
         this.table?.clearSelection();
@@ -162,7 +152,7 @@ export class PickCategoryComponent implements OnInit, OnDestroy {
 
     if (newPickCategory) {
       const result = await this.sideSheet.open(PickCategoryCreateComponent, {
-        title: await this.translate.get('#LDS#Heading Create Sample Data').toPromise(),
+        title: await this.translate.get('#LDS#Heading Create Sample').toPromise(),
         headerColour: 'iris-blue',
         panelClass: 'imx-sidesheet',
         padding: '0',
@@ -180,7 +170,7 @@ export class PickCategoryComponent implements OnInit, OnDestroy {
     }
     else {
       this.messageService.subject.next({
-        text: '#LDS#The sample data could not be created. Please reload the page and try again.'
+        text: '#LDS#The sample could not be created. Please reload the page and try again.'
       });
     }
   }

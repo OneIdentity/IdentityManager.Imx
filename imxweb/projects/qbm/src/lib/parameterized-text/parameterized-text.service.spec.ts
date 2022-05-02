@@ -128,6 +128,23 @@ describe('ParameterizedTextService', () => {
     expect(actual).toEqual(expected);
   });
 
+  it('should replace text with empty parameters', () => {
+    const parameterizedText = 'Here is a missing parameter: \"%p1%\"';
+
+    const expected = [
+      { value: 'Here is a missing parameter: ' },
+      { value: '', isParameter: true }
+    ];
+
+    const actual = service.createTextTokens({
+      value: parameterizedText,
+      marker: { start: '"%', end: '%"' },
+      getParameterValue: name => ""
+    });
+
+    expect(actual).toEqual(expected);
+  });
+
   it('should match text without parameters', () => {
     const parameterizedText = 'text with missing parameters ';
 

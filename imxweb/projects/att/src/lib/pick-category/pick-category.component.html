@@ -6,24 +6,23 @@
     <div class="alert-wrapper">
       <eui-alert class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true">
         <span>
-          {{'#LDS#You can perform attestations only for a subset of identities, for example, if attesting all identities would take too long. Sample data contains identities that you can use to perform such an attestation sample. Here you can manage sample data. Additionally, you can edit existing sample data and assign additional identities.' | translate }}
+          {{'#LDS#You can perform attestations only for a subset of identities, for example, if attesting all identities would take too long. Samples contain identities that you can use to perform such a sample attestation. Here you can manage samples. Additionally, you can edit existing samples and assign additional identities.' | translate }}
         </span>
       </eui-alert>
     </div>
   </div>
   <div class="imx-table-container" *ngIf="dstWrapper && dstSettings">
-    <imx-data-source-toolbar #dst [hiddenElements]="['filter', 'groupBy', 'settings', 'selectedViewGroup']"
+    <imx-data-source-toolbar #dst [options]="['search']"
       [settings]="dstSettings" (search)="getData({ search: $event })" (navigationStateChanged)="getData($event)"
       data-imx-identifier="pick-category-dst">
     </imx-data-source-toolbar>
     <imx-data-table #dataTable [dst]="dst" class="imx-pickcategory-table" [detailViewVisible]="false" mode="manual"
       [selectable]="true" [showSelectedItemsMenu]="false" (selectionChanged)="onSelectionChanged($event)"
       data-imx-identifier="pick-category-datatable">
-      <imx-data-table-column data-imx-identifier="pick-category-table-column-display"
-        [entityColumn]="dstWrapper.propertyDisplay" [entitySchema]="dstSettings.entitySchema">
+      <imx-data-table-column data-imx-identifier="pick-category-table-column-display" [entityColumn]="dstWrapper.propertyDisplay">
       </imx-data-table-column>
       <imx-data-table-column data-imx-identifier="pick-category-table-column-isManual"
-        [entityColumn]="dstSettings.entitySchema?.Columns.IsManual" [entitySchema]="dstSettings.entitySchema">
+        [entityColumn]="dstSettings.entitySchema?.Columns.IsManual">
       </imx-data-table-column>
       <imx-data-table-generic-column columnName="viewDetailsButton">
         <ng-template let-prod>
@@ -41,7 +40,7 @@
   <div class="imx-button-bar">
     <p class="imx-selected-items">
       <span>
-        {{ '#LDS#Selected sample data' | translate }}
+        {{ '#LDS#Selected samples' | translate }}
       </span>
       <eui-badge data-imx-identifier="roles-secondary-memberships-selection-badge" class="imx-badge" color="orange">
         {{selectedPickCategoryItems?.length > 0 ? selectedPickCategoryItems.length : 0}}
@@ -54,7 +53,7 @@
     </button>
     <button mat-raised-button color="primary" data-imx-identifier="pick-category-button-create-new"
       (click)="createNewPickCategory()">
-      {{'#LDS#Create sample data' | translate}}
+      {{'#LDS#Create sample' | translate}}
     </button>
   </div>
 </div>

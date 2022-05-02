@@ -10,9 +10,12 @@
   </mat-tab>
   <mat-tab [label]="'#LDS#Workflow' | translate">
     <div class="imx-request-history">
-      <imx-decision-history [approverContainer]="approverContainer" [workflow]="workflow">
-      </imx-decision-history>
+      <imx-decision-history [approverContainer]="approverContainer" [workflow]="workflow"> </imx-decision-history>
     </div>
+  </mat-tab>
+
+  <mat-tab [label]="'#LDS#Heading Compliance Violations' | translate" *ngIf="extensions && extensions.length > 0">
+    <ng-template matTabContent><imx-ext [id]="ruleViolationDetailId" [properties]="{'pwoId': request.GetEntity().GetKeys()[0], 'request': request}"></imx-ext></ng-template>
   </mat-tab>
 
   <!-- TODO later

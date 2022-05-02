@@ -30,6 +30,7 @@ import { MatCheckboxDefaultOptions, MAT_CHECKBOX_DEFAULT_OPTIONS } from '@angula
 @Component({
   selector: 'imx-filter-tile',
   templateUrl: './filter-tile.component.html',
+  styleUrls: ['./filter-tile.component.scss'],
   providers: [
     {provide: MAT_CHECKBOX_DEFAULT_OPTIONS, useValue: { clickAction: 'noop' } as MatCheckboxDefaultOptions}
   ]

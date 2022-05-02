@@ -1,7 +1,6 @@
 @import "~@elemental-ui/core/src/styles/_palette.scss";
 
 :host {
-
   .imx-masthead-app-name {
     display: inline-block;
     margin-left: 10px;
@@ -13,7 +12,6 @@
   }
 
   .imx-masthead--controls {
-
     button[mat-button] {
       &:not(.imx-masthead-user-button) {
         padding: 0;
@@ -30,4 +28,15 @@
       }
     }
   }
+}
+
+/* hide the logo inside the masthead if needed */
+::ng-deep eui-masthead.no-logo eui-logo {
+  display: none;
+}
+
+.custom-logo {
+  margin-left: -16px;
+  max-height: 50px;
+  max-width: 300px;
 }

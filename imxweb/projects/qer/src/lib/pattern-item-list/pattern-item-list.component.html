@@ -1,0 +1,89 @@
+<imx-data-source-toolbar
+  #dst
+  [settings]="dstSettings"
+  (search)="onSearch($event)"
+  [keywords]="keywords"
+  (viewSelectionChanged)="onViewSelectionChanged($event)"
+  [options]="['search', 'filter', 'selectedViewGroup']"
+  (navigationStateChanged)="getData($event)"
+  data-imx-identifier="pattern-item-dst"  
+  [alwaysVisible]="true"
+  [initalView]="dataSourceView.selected"
+  [itemStatus]="status"
+>
+<imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
+</imx-data-source-toolbar>
+
+<div class="imx-table-container" *ngIf="!isLoading">
+  <imx-data-tiles
+    #dataTiles
+    *ngIf="dataSourceView.selected === 'cardlist'"
+    height="150px"
+    [dst]="dst"
+    (selectionChanged)="onSelectionChanged($event)"
+    [useActionMenu]="false"
+    fallbackIcon="request"
+    [selectable]="true"
+    [actions]="[
+      { name: 'details', description: '#LDS#Details' | translate },
+      { name: 'edit', description: '#LDS#Add to cart' | translate }
+    ]"
+    [titleObject]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
+    [subtitleObject]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
+    (actionSelected)="handleAction($event)"
+  >
+  </imx-data-tiles>
+  <imx-data-table
+    *ngIf="dataSourceView.selected === 'table'"
+    [dst]="dst"
+    [detailViewVisible]="false"
+    [selectable]="true"
+    mode="manual"
+    fallbackIcon="DefaultTypeNameImage"
+    (selectionChanged)="onSelectionChanged($event)"
+    data-imx-identifier="pattern-item-list-datatable"
+    [showSelectedItemsMenu]="false"
+  >
+    <imx-data-table-column
+      [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
+      columnLabel="{{ '#LDS#Request template' | translate }}"
+      data-imx-identifier="pattern-item-list-datatable-table"
+    >
+      <ng-template let-prod>
+        <div data-imx-identifier="pattern-item-list-datatable-display">{{ prod.GetEntity().GetDisplay() }}</div>
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-generic-column columnName="badges" [columnLabel]="''">
+      <ng-template let-prod>
+        <eui-badge *ngIf="prod.IsPublicPattern.value">
+          {{badgeContent.isPublic | translate}}
+        </eui-badge>
+        <eui-badge color="orange" *ngIf="!(prod.IsPublicPattern.value)">
+          {{badgeContent.isPrivate | translate}}
+        </eui-badge>
+      </ng-template>
+    </imx-data-table-generic-column>
+
+    <imx-data-table-generic-column columnName="addCartButton" [columnLabel]="''">
+      <ng-template let-prod>
+        <button mat-button color="primary" (click)="bubbleShowDetails(prod)" data-imx-identifier="pattern-item-list-datatable-row-button-show-details">
+          {{ '#LDS#Details' | translate }}
+        </button>
+        <button mat-button color="primary" (click)="addItemToCart.emit(prod)" data-imx-identifier="pattern-item-list-datatable-row-button-add-to-cart">
+          {{ '#LDS#Add request template products to cart' | translate }}
+        </button>
+      </ng-template>
+    </imx-data-table-generic-column>
+  </imx-data-table>
+</div>
+<imx-data-source-paginator [dst]="dst" *ngIf="!isLoading"></imx-data-source-paginator>
+
+<ng-template #customToolbarTemplate>
+  <div class="imx-toolbar-template">
+    <mat-radio-group [(ngModel)]="filterType" (change)="onFilterChanged()">
+      <mat-radio-button *ngFor="let filter of filterTypes" [value]="filter.type">
+        {{ filter.display | translate }}
+      </mat-radio-button>
+    </mat-radio-group>
+  </div>
+</ng-template>

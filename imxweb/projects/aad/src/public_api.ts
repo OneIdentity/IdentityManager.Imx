@@ -30,3 +30,10 @@
 
 export { AadConfigModule } from './lib/aad-config.module';
 export { ApiService } from './lib/api.service';
+export { AadPermissionsService } from './lib/admin/aad-permissions.service';
+export { AadUserSubscriptionsComponent } from './lib/azure-ad/aad-user/aad-user-subscriptions.component';
+export { AadUserDeniedPlansComponent } from './lib/azure-ad/aad-user/aad-user-denied-plans.component';
+export { AadGroupSubscriptionsComponent } from './lib/azure-ad/aad-group/aad-group-subscriptions.component';
+export { AadGroupDeniedPlansComponent } from './lib/azure-ad/aad-group/aad-group-denied-plans.component';
+export { AzureAdModule } from './lib/azure-ad/azure-ad.module';
+export { LicenceOverviewButtonComponent} from './lib/aad-extension/licence-overview-button/licence-overview-button.component'

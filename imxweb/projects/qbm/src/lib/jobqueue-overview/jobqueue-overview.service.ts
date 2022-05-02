@@ -26,11 +26,13 @@
 
 import { ErrorHandler, Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { EntityCollectionChangeData, EntityData } from 'imx-qbm-dbts';
 import { interval, Subscription } from 'rxjs';
+
 import { ClassloggerService } from '../classlogger/classlogger.service';
 import { AppConfigService } from '../appConfig/appConfig.service';
 import { imx_SessionService } from '../session/imx-session.service';
+import { EventStreamConfig } from 'imx-api-qbm';
+import { EntityCollectionChangeData, EntityData } from 'imx-qbm-dbts';
 import _ from 'lodash';
 
 export interface JobQueueGroups {
@@ -56,12 +58,12 @@ export interface JobQueueDataSlice {
 export class JobQueueOverviewService {
   // External values
   public isAvailable = false;
+  public isAvailablePromise: Promise<void>;
   public queueNames: string[] = [];
   public totalStreamName: string;
 
   // Config Params
-  public samplingRate = 5; // Frequency of sampling, in seconds
-  public historyDuration = 300; // Duration of history, in seconds
+  public configParams: EventStreamConfig;
 
   private stream: EventSource;
   private entities = {};
@@ -76,10 +78,21 @@ export class JobQueueOverviewService {
     public translateService: TranslateService,
     private logger: ClassloggerService,
     private errorHandler: ErrorHandler
-  ) {}
+  ) {
+    this.translateService.get('#LDS#All queues').subscribe((trans: string) => (this.totalStreamName = trans));
+    this.isAvailablePromise = new Promise((resolve, reject) => {
+      const promiseInterval = setInterval(() => {
+        if (this.isAvailable) {
+          resolve();
+          clearInterval(promiseInterval);
+        }
+      });
+    });
+  }
 
   public async setUp(): Promise<void> {
-    this.totalStreamName = await this.translateService.get('#LDS#All Queues').toPromise();
+    // Grab config params
+    this.configParams = await this.session.Client.opsupport_streamconfig_get();
 
     // Setup connection and event triggers
     this.stream = new EventSource(this.appConfigService.BaseUrl + '/opsupport/queue/overview/stream', {
@@ -88,7 +101,6 @@ export class JobQueueOverviewService {
 
     this.stream.onopen = () => {
       this.logger.debug(this, 'Persistent stream has been created 👍');
-      this.isAvailable = true;
     };
 
     this.stream.onmessage = (evt) => {
@@ -98,12 +110,14 @@ export class JobQueueOverviewService {
 
     this.stream.onerror = (err) => {
       this.logger.error('JobQueueOverview: An error occured in data stream: ', err);
+      this.isAvailable = false;
     };
-    const routine = interval(this.samplingRate * 1000);
+    const routine = interval(this.configParams.RefreshIntervalSeconds * 1000);
     this.routineSubscription = routine.subscribe(() => this.jobLoop());
   }
 
   public updateValues(changeData: EntityCollectionChangeData): void {
+    // Maintain current state of entities
     let uid: string;
     let name: string;
     // Decision tree for messages
@@ -142,13 +156,14 @@ export class JobQueueOverviewService {
     this.entities[name] = {};
     for (const [key, value] of Object.entries(entity.Columns)) {
       if (key.includes('Count')) {
-          this.entities[name][key] = isTotal ? 0 : value.Value;
-        }
+        this.entities[name][key] = isTotal ? 0 : value.Value;
+      }
     }
     // Check if name is already in queue list, prevents total queue from being duped
     if (!this.queueNames.includes(name)) {
       this.queueNames.push(name);
     }
+    this.isAvailable = true;
   }
 
   public updateEntites(uid: string, name: string, entity: object): void {
@@ -176,6 +191,8 @@ export class JobQueueOverviewService {
   }
 
   public jobLoop(): void {
+    // Maintain the internal table of data
+
     // Check if the session state is logged out, shutdown and exit if so
     if (this.session.SessionState.IsLoggedOut) {
       this.shutdown();
@@ -202,7 +219,7 @@ export class JobQueueOverviewService {
     }
 
     // Loop through queues to form new table
-    this.queueNames.forEach(queue => {
+    this.queueNames.forEach((queue) => {
       const groups = this.computeGroups(queue);
       incomingTable.push(groups);
     });
@@ -230,7 +247,7 @@ export class JobQueueOverviewService {
     if (this.axisTimes.length > 1) {
       // Check the furthest point in time is sufficiently far to cull
       const now = new Date().getTime();
-      if (now - this.axisTimes[0].getTime() > this.historyDuration * 1000) {
+      if (now - this.axisTimes[0].getTime() > this.configParams.HistorySeconds * 1000) {
         this.table.shift();
         this.axisTimes.shift();
       }
@@ -247,6 +264,10 @@ export class JobQueueOverviewService {
 
     slice.Time = this.axisTimes;
     const queueIndex = this.queueNames.findIndex((e) => e === queue);
+    // Safeguard that the queue wasnt found
+    if (queueIndex === -1) {
+      return slice;
+    }
     this.axisTimes.forEach((e, timeIndex) => {
       for (const [name, value] of Object.entries(this.table[timeIndex][queueIndex])) {
         // Append to array or initialize
@@ -275,7 +296,7 @@ export class JobQueueOverviewService {
   public shutdown(): void {
     // Destroy connections and clean data
     this.stream.close();
-    this.routineSubscription.unsubscribe();
+    this.routineSubscription?.unsubscribe();
 
     this.queueNames = [];
     this.isAvailable = false;

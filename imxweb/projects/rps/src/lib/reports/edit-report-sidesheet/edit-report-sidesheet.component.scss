@@ -1,0 +1,25 @@
+.eui-sidesheet-content {
+  display: flex;
+  flex-direction: column;
+}
+
+:host {
+  .eui-sidesheet-actions {
+    .justify-start {
+      margin-right: auto;
+    }
+
+    button:not(:last-of-type):not(.justify-start) {
+      margin-right: 10px;
+    }
+  }
+}
+
+eui-alert {
+  display: block;
+  margin-bottom: 1em;
+}
+
+mat-card {
+  margin-bottom: 1em;
+}

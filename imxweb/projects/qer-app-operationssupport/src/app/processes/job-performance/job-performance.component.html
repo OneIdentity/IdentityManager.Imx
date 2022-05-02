@@ -1,5 +1,5 @@
 <h1 class="mat-headline">
-  {{'#LDS#Processing performance' | translate}} 
+  {{'#LDS#Processing performance' | translate}}
 </h1>
 <div class="imx-content-header">
   <mat-form-field>
@@ -11,25 +11,22 @@
   </mat-form-field>
 </div>
 <div class="imx-table-container">
-  <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings"  (search)="onSearch($event)" [hiddenElements]="['settings', 'selectedViewGroup']"
+  <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings"  (search)="onSearch($event)" [options]="['search', 'filter', 'groupBy']"
     (navigationStateChanged)="getData($event)">
     <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
   </imx-data-source-toolbar>
   <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual">
-    <imx-data-table-column [entityColumn]="entitySchemaJobPerformance?.Columns.TaskName"
-      [entitySchema]="entitySchemaJobPerformance">
+    <imx-data-table-column [entityColumn]="entitySchemaJobPerformance?.Columns.TaskName">
       <ng-template let-data>
         {{ data.TaskName.Column.GetDisplayValue() }}
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaJobPerformance?.Columns.ComponentClass"
-      [entitySchema]="entitySchemaJobPerformance">
+    <imx-data-table-column [entityColumn]="entitySchemaJobPerformance?.Columns.ComponentClass">
       <ng-template let-data>
         {{ data.ComponentClass.Column.GetDisplayValue() }}
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaJobPerformance?.Columns.CountPerMinute"
-      [entitySchema]="entitySchemaJobPerformance">
+    <imx-data-table-column [entityColumn]="entitySchemaJobPerformance?.Columns.CountPerMinute">
       <ng-template let-data>
         {{ data.CountPerMinute.Column.GetDisplayValue() }}
       </ng-template>

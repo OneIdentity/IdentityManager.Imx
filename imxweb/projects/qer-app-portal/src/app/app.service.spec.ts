@@ -33,7 +33,7 @@ import { BehaviorSubject, of } from 'rxjs';
 
 import { AppConfigService, imx_SessionService, ImxTranslationProviderService, AuthenticationService } from 'qbm';
 import { AppService } from './app.service';
-import { PluginLoaderService } from './plugins/plugin-loader.service';
+import { PluginLoaderService } from 'qbm';
 
 describe('AppService', () => {
   class Mocks {
@@ -55,9 +55,7 @@ describe('AppService', () => {
     };
 
     appConfigService = {
-      client: {
-        imx_config_get: jasmine.createSpy('imx_config_get').and.returnValue(Promise.resolve({ProductName: null}))
-      },
+      getImxConfig: jasmine.createSpy('getImxConfig').and.returnValue(Promise.resolve({ProductName: null})),
       init: jasmine.createSpy('init'),
       Config: { Translation: {} }
     };

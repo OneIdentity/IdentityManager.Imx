@@ -1,0 +1,37 @@
+.alert-container {
+  margin-bottom: 1em;
+}
+
+.captcha-container {
+  display: flex;
+
+  input {
+    flex: 1 1 auto;
+    width: inherit;
+  }
+
+  imx-captcha {
+    padding-right: 1em;
+    height: 34px;
+  }
+}
+
+.eui-sidesheet-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.eui-sidesheet-actions {
+  .justify-start {
+    margin-right: auto;
+  }
+
+  button:not(:last-of-type):not(.justify-start) {
+    margin-right: 10px;
+  }
+}
+
+.errormessages {
+  display: block;
+  margin: 1em 0 1em 0;
+}

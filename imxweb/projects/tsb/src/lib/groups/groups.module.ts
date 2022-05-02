@@ -31,7 +31,7 @@ import { RouterModule } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { DataSourceToolbarModule, DataTableModule, CdrModule, LdsReplaceModule, DataTreeModule, ExtModule } from 'qbm';
+import { DataSourceToolbarModule, DataTableModule, CdrModule, LdsReplaceModule, DataTreeModule, ExtModule, DynamicTabsModule } from 'qbm';
 
 import { GroupSidesheetComponent } from './group-sidesheet/group-sidesheet.component';
 import { GroupMembersComponent } from './group-sidesheet/group-members/group-members.component';
@@ -40,7 +40,8 @@ import { ChildSystemEntitlementsComponent } from './group-sidesheet/child-system
 import { NoDataModule } from '../no-data/no-data.module';
 import { DataFiltersModule } from '../data-filters/data-filters.module';
 import { ProductOwnerSidesheetComponent } from './product-owner-sidesheet/product-owner-sidesheet.component';
-import { ObjectAttestationModule, OwnerControlModule, ServiceItemsEditFormModule } from 'qer';
+import { OwnerControlModule, ServiceItemsEditFormModule } from 'qer';
+import { IdentityRoleMembershipsModule } from 'qer';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,7 @@ import { ObjectAttestationModule, OwnerControlModule, ServiceItemsEditFormModule
     GroupSidesheetComponent,
     GroupMembersComponent,
     ChildSystemEntitlementsComponent,
-    ProductOwnerSidesheetComponent,
+    ProductOwnerSidesheetComponent
   ],
   imports: [
     CommonModule,
@@ -68,7 +69,8 @@ import { ObjectAttestationModule, OwnerControlModule, ServiceItemsEditFormModule
     DataFiltersModule,
     NoDataModule,
     DataTreeModule,
-    ObjectAttestationModule
+    DynamicTabsModule,
+    IdentityRoleMembershipsModule
   ],
   exports: [
     DataExplorerGroupsComponent,

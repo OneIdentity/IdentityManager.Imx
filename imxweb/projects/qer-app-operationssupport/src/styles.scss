@@ -5,7 +5,7 @@ $source_sans_pro_font_path: "~@elemental-ui/core/assets/Source_Sans_Pro";
 
 @import '~@elemental-ui/core/src/styles/core.scss';
 
-@import "./assets/variables";
+@import "variables";
 
 /* #region Grid styles*/
 
@@ -61,7 +61,7 @@ $source_sans_pro_font_path: "~@elemental-ui/core/assets/Source_Sans_Pro";
 
 .mat-checkbox-checked.mat-accent .mat-checkbox-background,
 .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
-  background-color: $Imx_Checkbox !important;
+  background-color: $iris-tint !important;
 }
 
 .mat-ripple-element {
@@ -89,7 +89,7 @@ $source_sans_pro_font_path: "~@elemental-ui/core/assets/Source_Sans_Pro";
   .mat-card-title {
     font-weight: 600;
     font-size: 24px;
-    color: $Imx_Title_Color;
+    color: $gunmetal;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
@@ -100,14 +100,14 @@ $source_sans_pro_font_path: "~@elemental-ui/core/assets/Source_Sans_Pro";
     height: 50px;
     font-weight: 400 !important;
     font-size: 14px;
-    color: $Imx_Darker_Text_Color;
+    color: $black-6;
   }
 
   mat-card-actions {
     text-transform: uppercase;
     font-size: 14px;
     letter-spacing: .5px;
-    color: $QBM_Primary_Blue;
+    color: $iris-blue;
     margin: 0 !important;
 
     .mat-button {
@@ -139,8 +139,8 @@ $source_sans_pro_font_path: "~@elemental-ui/core/assets/Source_Sans_Pro";
 .tableHeader {
   font-size: 24px;
   font-weight: bold;
-  background-color: $VI_Common_Color_ColorBase3;
-  color: $VI_Common_Color_ColorBase1;
+  background-color: $iris-blue;
+  color: $white;
 }
 
 .imx-ops-tile {
@@ -167,7 +167,7 @@ $source_sans_pro_font_path: "~@elemental-ui/core/assets/Source_Sans_Pro";
   display: block;
   position: fixed;
   flex-direction: none;
-  background-color: $VI_Common_Color_ColorBase1;
+  background-color: $white;
 }
 
 .imx-ops-tile-large {
@@ -196,23 +196,23 @@ $source_sans_pro_font_path: "~@elemental-ui/core/assets/Source_Sans_Pro";
   background-color: #efefef;
   margin: 0;
   padding: .5rem;
-  color: $VI_Common_Color_ColorBase2;
+  color: $black;
 }
 
 .imx-ops-tile h2 {
   font-size: 2em;
-  background-color: $VI_Common_Color_ColorBase1;
+  background-color: $white;
   margin: 0;
   padding: .5rem;
-  color: $VI_Common_Color_ColorBase3;
+  color: $iris-blue;
 }
 
 .imx-ops-tile-large h2 {
   font-size: 2em;
-  background-color: $VI_Common_Color_ColorBase1;
+  background-color: $white;
   margin: 0;
   padding: .5rem;
-  color: $VI_Common_Color_ColorBase3;
+  color: $iris-blue;
 }
 
 .imx-ops-tile:hover {
@@ -238,46 +238,6 @@ $source_sans_pro_font_path: "~@elemental-ui/core/assets/Source_Sans_Pro";
   margin: 5px;
 }
 
-
-a.imx-StartPageLink {
-  display: inline-block;
-  font-size: 24px;
-  margin-bottom: -10px;
-}
-
-a.imx-StartPageLink:hover {
-  cursor: pointer;
-  text-decoration: none;
-}
-
-a.imx-StartPageLink > i {
-  color: $VI_Common_Color_ColorBase3;
-}
-
-.imx-ops-StatusCritical {
-  width: 20px;
-  height: 20px;
-  margin-right: 10px;
-  display: inline-block;
-  /* background-image: url('res.axd?dojoFile=qui/qui/img/status/ic_status_error_20.png');*/
-}
-
-.imx-ops-StatusWarning {
-  width: 20px;
-  height: 20px;
-  margin-right: 10px;
-  display: inline-block;
-  /*background-image: url('res.axd?dojoFile=qui/qui/img/status/ic_status_warning_20.png');*/
-}
-
-.imx-ops-StatusOK {
-  width: 20px;
-  height: 20px;
-  margin-right: 10px;
-  display: inline-block;
-  /*background-image: url('res.axd?dojoFile=qui/qui/img/status/ic_status_check_green_20.png');*/
-}
-
 .imx-ops-PasscodeButtonBar {
   clear: both;
   width: auto;
@@ -300,7 +260,7 @@ a.imx-StartPageLink > i {
 }
 
 .imx-colorbase3 {
-  color: $VI_Common_Color_ColorBase3;
+  color: $iris-blue;
 }
 
 .imx-underlined {
@@ -355,7 +315,7 @@ imx-service-availability .mat-card {
 
     span:first-child {
       text-transform: uppercase;
-      color: $Imx_Light_Text_Color;
+      color: $black-7;
       font-size: 14px;
       margin-bottom: 5px;
     }
@@ -370,7 +330,7 @@ imx-service-availability .mat-card {
 /*#endregion*/
 
 /* #region SystemOverview styles */
-$tresholdExceededColor: #f4770b;
+$tresholdExceededColor: $corbin-orange;
 
 imx-system-overview {
   display: block;
@@ -428,7 +388,7 @@ imx-system-overview {
   }
 
   .imx-system-actions {
-    color: $QBM_Primary_Blue;
+    color: $iris-blue;
     font-weight: 600;
     font-size: 15px;
     text-transform: uppercase;
@@ -442,7 +402,7 @@ imx-system-overview {
   }
 
   .imx-treshold-exceeded {
-    color: $QBM_Primary_Red;
+    color: $phoenix-red;
     font-weight: 600;
     font-size: 14px;
   }
@@ -452,7 +412,7 @@ imx-system-overview {
     font-size: 15px;
 
     .eui-icon {
-      color: $Imx_Warning_Orange;
+      color: $corbin-orange;
       padding-right: 10px;
     }
   }
@@ -498,7 +458,7 @@ imx-object-history {
     }
 
     .mat-form-field-flex {
-      background-color: $QBM_Primary_White;
+      background-color: $white;
       padding-left: 6px;
     }
   }
@@ -513,7 +473,7 @@ imx-object-history {
     padding: 30px 0;
     border-radius: 3px;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
-    background-color: $VI_Common_Color_ColorBase1;
+    background-color: $white;
   }
 }
 
@@ -555,7 +515,7 @@ imx-object-history {
 .greenCheck {
   margin-right: .5em;
   line-height: 20px;
-  color: $VI_Common_Color_Button_Success;
+  color: $aspen-green;
 }
 
 .warningSign {
@@ -567,7 +527,7 @@ imx-object-history {
 .errorSign {
   line-height: 20px;
   margin-right: .5em;
-  color: $VI_Common_Color_Button_Danger;
+  color: $phoenix-red;
 }
 
 /*#endregion*/

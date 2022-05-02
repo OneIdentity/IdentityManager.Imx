@@ -12,7 +12,6 @@
   flex-direction: column;
   flex: 1 1 auto;
   overflow-y: auto;
-  padding: 32px;
 
   .imx-heading-wrapper {
     display: flex;
@@ -42,7 +41,7 @@
   align-items: center;
   background-color: $white;
   padding: 16px 32px;
-  margin: 16px 32px;
+  margin-top: 16px;
 
   button:not(:last-of-type) {
     margin-right: 10px;

@@ -26,12 +26,20 @@
 
 import { Component, OnInit, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
-import { ColumnDependentReference, BaseCdr, ClassloggerService, TabControlHelper, SnackBarService, ElementalUiConfigService } from 'qbm';
+import {
+  ColumnDependentReference,
+  BaseCdr,
+  ClassloggerService,
+  TabControlHelper,
+  SnackBarService,
+  ElementalUiConfigService,
+  TabItem,
+  ExtService
+} from 'qbm';
 import { DbObjectKey } from 'imx-qbm-dbts';
 import { EuiLoadingService, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { AccountSidesheetData } from '../accounts.models';
 import { IdentitiesService } from 'qer';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { AccountsService } from '../accounts.service';
 import { EuiDownloadOptions } from '@elemental-ui/core';
@@ -51,6 +59,10 @@ export class AccountSidesheetComponent implements OnInit {
   public initialAccountManagerValue: string;
   public reportDownload: EuiDownloadOptions;
   public neverConnectFormControl = new FormControl();
+  public parameters: { objecttable: string; objectuid: string; };
+
+  public dynamicTabs: TabItem[] = [];
+
 
   constructor(
     formBuilder: FormBuilder,
@@ -62,9 +74,15 @@ export class AccountSidesheetComponent implements OnInit {
     private readonly elementalUiConfigService: ElementalUiConfigService,
     private readonly identitiesService: IdentitiesService,
     private readonly accountsService: AccountsService,
-    private readonly reports: AccountsReportsService
+    private readonly reports: AccountsReportsService,
+    private readonly tabService: ExtService,
   ) {
     this.detailsFormGroup = new FormGroup({ formArray: formBuilder.array([]) });
+
+    this.parameters = {
+      objecttable: sidesheetData.unsDbObjectKey?.TableName,
+      objectuid: sidesheetData.unsDbObjectKey?.Keys.join(',')
+    };
 
     this.reportDownload = {
       ... this.elementalUiConfigService.Config.downloadOptions,
@@ -87,7 +105,7 @@ export class AccountSidesheetComponent implements OnInit {
       try {
         await this.selectedAccount.GetEntity().Commit(true);
         this.detailsFormGroup.markAsPristine();
-        this.snackbar.openAtTheBottom({ key: '#LDS#The user account has been successfully saved.' });
+        this.snackbar.open({ key: '#LDS#The user account has been successfully saved.' });
         this.sidesheet.close(true);
       } finally {
         this.unsavedSyncChanges = false;
@@ -132,6 +150,8 @@ export class AccountSidesheetComponent implements OnInit {
     }
   }
 
+
+
   private async setup(): Promise<void> {
     /**
      * Resolve an issue where the mat-tab navigation arrows could appear on first load
@@ -155,6 +175,10 @@ export class AccountSidesheetComponent implements OnInit {
     if (this.selectedAccount.isNeverConnectManualColumn) {
       this.cdrList.push(new BaseCdr(this.selectedAccount.isNeverConnectManualColumn));
     }
+
+    this.dynamicTabs = (await this.tabService.getFittingComponents<TabItem>('accountSidesheet',
+    (ext) =>  ext.inputData.checkVisibility(this.parameters)))
+    .sort((tab1: TabItem, tab2: TabItem) => tab1.sortOrder - tab2.sortOrder);
 
     this.setupIdentityManagerSync();
   }
@@ -188,4 +212,6 @@ export class AccountSidesheetComponent implements OnInit {
 
     return undefined;
   }
+
+
 }

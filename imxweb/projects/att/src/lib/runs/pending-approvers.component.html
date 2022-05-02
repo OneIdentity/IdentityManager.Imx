@@ -1,22 +1,33 @@
 <div class="attestationRun-pendingapprovers-content">
-<eui-alert *ngIf="showHelper" class="helper-alert" type="info" condensed="true" [colored]="true"
-   [dismissable]="true" (dismissed)="onHelperDismissed()">
-   <span translate>#LDS#Here you can get an overview of attestors who still have to approve attestation cases in the selected attestation run. Additionally, you can select attestors and send them reminders.</span>
-</eui-alert>
+   <eui-alert *ngIf="showHelper" class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true"
+      (dismissed)="onHelperDismissed()">
+      <span translate>#LDS#Here you can get an overview of attestors who still have to approve attestation cases in the selected attestation run. Additionally, you can select attestors and send them reminders.</span>
+   </eui-alert>
 
-<mat-card *ngIf="dstSettings">
-   <imx-data-source-toolbar #dst [settings]="dstSettings" [hidden]="true">
-   </imx-data-source-toolbar>
-   <div class="imx-table-container">
-      <imx-data-table [dst]="dst" detailViewVisible="false" [selectable]="true"
-         (selectionChanged)="onSelectionChanged($event)" data-imx-identifier="approvers-table">
-      </imx-data-table>
-   </div>
+   <mat-card *ngIf="dstSettings">
+      <imx-data-source-toolbar #dst [settings]="dstSettings" [hidden]="true">
+      </imx-data-source-toolbar>
+      <div class="imx-table-container">
+         <imx-data-table [dst]="dst" detailViewVisible="false" [selectable]="true" mode="manual"
+            (selectionChanged)="onSelectionChanged($event)" data-imx-identifier="approvers-table">
+            <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.UID_PersonHead"
+               data-imx-identifier="pending-approvers-table-column-UID_PersonHead">
+            </imx-data-table-column>
+            <imx-data-table-column columnLabel="{{'#LDS#Pending' | translate}}" align='center'
+               [entityColumn]="dstSettings.entitySchema.Columns.PendingCases"
+               data-imx-identifier="pending-approvers-table-column-PendingCases">
+            </imx-data-table-column>
+            <imx-data-table-column columnLabel="{{'#LDS#Closed' | translate}}" align='center'
+               [entityColumn]="dstSettings.entitySchema.Columns.ClosedCases"
+               data-imx-identifier="pending-approvers-table-column-ClosedCases">
+            </imx-data-table-column>
+         </imx-data-table>
+      </div>
+   </mat-card>
+</div>
+<mat-card class="imx-button-bar">
+  <button mat-raised-button color="primary" data-imx-identifier="run-approvers-button-send-reminder"
+    [disabled]="!selected.length" (click)="sendReminder.emit(selected)">
+    {{ '#LDS#Send reminder' | translate }}
+  </button>
 </mat-card>
-</div>
-<div class="imx-button-bar">
-   <button mat-raised-button color="primary" data-imx-identifier="run-approvers-button-send-reminder"
-      [disabled]="!selected.length" (click)="sendReminder.emit(selected)">
-      {{ '#LDS#Send reminder' | translate }}
-   </button>
-</div>

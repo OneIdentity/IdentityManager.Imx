@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, EventEmitter, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
@@ -39,21 +39,26 @@ import { ForeignKeySelection } from '../../fk-advanced-picker/./foreign-key-sele
 import { LdsReplacePipe } from '../../lds-replace/lds-replace.pipe';
 import { MultiValueService } from '../../multi-value/multi-value.service';
 import { FkHierarchicalDialogComponent } from '../../fk-hierarchical-dialog/fk-hierarchical-dialog.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'imx-edit-fk-multi',
   templateUrl: './edit-fk-multi.component.html',
   styleUrls: ['./edit-fk-multi.component.scss']
 })
-export class EditFkMultiComponent implements CdrEditor, OnInit {
+export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
   public readonly control = new FormControl();
 
   public readonly columnContainer = new EntityColumnContainer<string>();
 
   public readonly valueHasChanged = new EventEmitter<any>();
   public loading = false;
+  private isWriting = false;
+
+  private currentValueStruct: ValueStruct<string>;
 
   private isHierarchical: boolean;
+  private readonly subscribers: Subscription[] = [];
 
 
   /**
@@ -68,6 +73,10 @@ export class EditFkMultiComponent implements CdrEditor, OnInit {
     private readonly ldsReplace: LdsReplacePipe,
     private readonly multiValueProvider: MultiValueService
   ) { }
+
+  public ngOnDestroy(): void {
+    this.subscribers.forEach(s => s.unsubscribe());
+  }
 
   public async ngOnInit(): Promise<void> {
     this.loading = true;
@@ -86,16 +95,34 @@ export class EditFkMultiComponent implements CdrEditor, OnInit {
   public async bind(cdref: ColumnDependentReference): Promise<void> {
     if (cdref && cdref.column) {
       this.columnContainer.init(cdref);
+      this.currentValueStruct = {
+        DataValue: this.columnContainer.value,
+        DisplayValue: this.columnContainer.displayValue
+      };
       this.control.setValue(
-        await this.multiValueToDisplay({
-          DataValue: this.columnContainer.value,
-          DisplayValue: this.columnContainer.displayValue
-        }),
+        await this.multiValueToDisplay(this.currentValueStruct),
         { emitEvent: false }
       );
       if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
         this.control.setValidators(control => control.value == null || control.value.length === 0 ? { required: true } : null);
       }
+
+      this.subscribers.push(this.columnContainer.subscribe(async () => {
+        if(this.isWriting) {return;}
+        if (this.currentValueStruct.DataValue !== this.columnContainer.value) {
+          this.logger.trace(this, `Control (${this.columnContainer.name}) set to new value:`,
+            this.columnContainer.value, this.control.value);
+          this.currentValueStruct = {
+            DataValue: this.columnContainer.value,
+            DisplayValue: this.columnContainer.displayValue
+          };
+          this.control.setValue(
+            await this.multiValueToDisplay(this.currentValueStruct),
+            { emitEvent: false }
+          );
+        }
+        this.valueHasChanged.emit(this.currentValueStruct);
+      }));
       this.logger.trace(this, 'Control initialized');
     } else {
       this.logger.error(this, 'The Column Dependent Reference is undefined');
@@ -109,7 +136,7 @@ export class EditFkMultiComponent implements CdrEditor, OnInit {
   public async editAssignment(): Promise<void> {
     const dialogRef = this.sidesheet.open(this.isHierarchical ? FkHierarchicalDialogComponent : FkAdvancedPickerComponent, {
       title: this.ldsReplace.transform(await this.translateService.get('#LDS#Heading Edit {0}').toPromise(),
-      await this.translateService.get(this.columnContainer?.display).toPromise()),
+        await this.translateService.get(this.columnContainer?.display).toPromise()),
       headerColour: 'iris-blue',
       panelClass: 'imx-sidesheet',
       padding: '0',
@@ -130,7 +157,7 @@ export class EditFkMultiComponent implements CdrEditor, OnInit {
           return;
         }
 
-        const value = selection.candidates && selection.candidates.length > 0 ?
+        this.currentValueStruct = selection.candidates && selection.candidates.length > 0 ?
           {
             DataValue: this.multiValueProvider.getMultiValue(selection.candidates.map(v => v.DataValue)),
             DisplayValue: this.multiValueProvider.getMultiValue(selection.candidates.map(v => v.DisplayValue))
@@ -140,10 +167,10 @@ export class EditFkMultiComponent implements CdrEditor, OnInit {
             DisplayValue: undefined
           };
 
-        this.control.setValue(await this.multiValueToDisplay(value), { emitEvent: false });
+        this.control.setValue(await this.multiValueToDisplay(this.currentValueStruct), { emitEvent: false });
         this.control.markAsDirty();
 
-        await this.writeValue(value);
+        await this.writeValue(this.currentValueStruct);
       } else {
         this.logger.debug(this, 'dialog cancel');
       }
@@ -161,7 +188,6 @@ export class EditFkMultiComponent implements CdrEditor, OnInit {
       return;
     }
 
-
     try {
       if (this.columnContainer.value === value.DataValue &&
         this.columnContainer.displayValue === value.DisplayValue) {
@@ -170,24 +196,28 @@ export class EditFkMultiComponent implements CdrEditor, OnInit {
 
       this.loading = true;
       this.logger.debug(this, 'writeValue - updateCdrValue...');
+      this.isWriting = true;
       await this.columnContainer.updateValueStruct(value);
       this.loading = false;
     } catch (e) {
       this.logger.error(this, e);
     } finally {
-      const valueAfterWrite = await this.multiValueToDisplay({
-        DataValue: this.columnContainer.value,
-        DisplayValue: this.columnContainer.displayValue
-      });
+      this.isWriting = false;
+
       this.loading = false;
-      if (this.control.value !== valueAfterWrite) {
+      if (this.currentValueStruct.DataValue !== this.columnContainer.value) {
+        this.currentValueStruct = {
+          DataValue: this.columnContainer.value,
+          DisplayValue: this.columnContainer.displayValue
+        };
+
+        const valueAfterWrite = await this.multiValueToDisplay(this.currentValueStruct);
         this.control.setValue(valueAfterWrite, { emitEvent: false });
         this.control.markAsDirty();
         this.logger.debug(this, 'writeValue - form control value is set to', this.control.value);
       }
     }
-
-    this.valueHasChanged.emit(value);
+    this.valueHasChanged.emit(this.currentValueStruct);
   }
 
   private async multiValueToDisplay(value: ValueStruct<string>): Promise<string> {

@@ -31,109 +31,126 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { EuiCoreModule, EuiLoadingService } from '@elemental-ui/core';
 import { LoggerTestingModule } from 'ngx-logger/testing';
-import { of } from 'rxjs';
 
-import { clearStylesFromDOM, MessageDialogResult } from 'qbm';
+import { clearStylesFromDOM, ConfirmationService } from 'qbm';
 import { ShoppingCartForLaterComponent } from './shopping-cart-for-later.component';
 import { CartItemsService } from '../cart-items.service';
 
 @Component({
-    selector: 'imx-cart-items',
-    template: '<p>MockItShopCartitemsComponent</p>'
-  })
+  selector: 'imx-cart-items',
+  template: '<p>MockItShopCartitemsComponent</p>'
+})
 class MockItShopCartitemsComponent {
   @Input() public shoppingCart: any;
-  @Input() public forLater:any;
+  @Input() public forLater: any;
   @Output() public dataChange = new EventEmitter<any>();
 }
 
 describe('ShoppingCartForLaterComponent', () => {
-    let component: ShoppingCartForLaterComponent;
-    let fixture: ComponentFixture<ShoppingCartForLaterComponent>;
+  let component: ShoppingCartForLaterComponent;
+  let fixture: ComponentFixture<ShoppingCartForLaterComponent>;
 
-    const forLaterData = [
-      { UID_ShoppingCartItemParent: {value: 'this is a child'} },
-      { UID_ShoppingCartItemParent: {value: ''} }
-    ]
-  
-    const cartItemsServiceStub =  {
-      removeItems: jasmine.createSpy('removeItems').and.returnValue(Promise.resolve()),
-      getItemsForCart: jasmine.createSpy('getItemsForCart').and.returnValue(Promise.resolve({ totalCount: 2, Data: forLaterData }))
-    };
+  const forLaterData = [
+    { UID_ShoppingCartItemParent: { value: 'this is a child' } },
+    { UID_ShoppingCartItemParent: { value: '' } }
+  ]
 
-    configureTestSuite(() => {
-        TestBed.configureTestingModule({
-            imports: [
-              EuiCoreModule,
-              MatCardModule,
-              MatMenuModule,
-              MatButtonModule,
-              MatDividerModule,
-              LoggerTestingModule
-            ],
-            declarations: [
-                ShoppingCartForLaterComponent,
-                MockItShopCartitemsComponent],
-            providers: [
-                {
-                    provide: MatDialog,
-                    useValue: {
-                      open: jasmine.createSpy('open').and.returnValue({ afterClosed: () => of(MessageDialogResult.YesResult) })
-                    }
-                },
-                {
-                    provide: EuiLoadingService,
-                    useValue: {
-                      show: jasmine.createSpy('show'),
-                      hide: jasmine.createSpy('hide')
-                    }
-                },
-                {
-                    provide: CartItemsService,
-                    useValue: cartItemsServiceStub
-                },
-                {
-                  provide: Router,
-                  useValue: {
-                    navigate: jasmine.createSpy('navigate')
-                  }
-                }
-            ]
-        });
+  const cartItemsServiceStub = {
+    removeItems: jasmine.createSpy('removeItems').and.returnValue(Promise.resolve()),
+    getItemsForCart: jasmine.createSpy('getItemsForCart').and.returnValue(Promise.resolve({ totalCount: 2, Data: forLaterData }))
+  };
+
+  let confirm = true;
+  const mockConfirmationService = {
+    confirm: jasmine.createSpy('confirm')
+      .and.callFake(() => Promise.resolve(confirm))
+  }
+
+  configureTestSuite(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        EuiCoreModule,
+        MatCardModule,
+        MatMenuModule,
+        MatButtonModule,
+        MatDividerModule,
+        LoggerTestingModule
+      ],
+      declarations: [
+        ShoppingCartForLaterComponent,
+        MockItShopCartitemsComponent],
+      providers: [
+        {
+          provide: ConfirmationService,
+          useValue: mockConfirmationService
+        },
+        {
+          provide: EuiLoadingService,
+          useValue: {
+            show: jasmine.createSpy('show'),
+            hide: jasmine.createSpy('hide')
+          }
+        },
+        {
+          provide: CartItemsService,
+          useValue: cartItemsServiceStub
+        },
+        {
+          provide: Router,
+          useValue: {
+            navigate: jasmine.createSpy('navigate')
+          }
+        }
+      ]
     });
+  });
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(ShoppingCartForLaterComponent);
-        component = fixture.componentInstance;
-        cartItemsServiceStub.removeItems.calls.reset();
-        cartItemsServiceStub.getItemsForCart.calls.reset();
-      });
-        
-      afterAll(() => {
-        clearStylesFromDOM();
-      });
+  beforeEach(() => {
+    fixture = TestBed.createComponent(ShoppingCartForLaterComponent);
+    component = fixture.componentInstance;
+    cartItemsServiceStub.removeItems.calls.reset();
+    cartItemsServiceStub.getItemsForCart.calls.reset();
+    mockConfirmationService.confirm.calls.reset();
+  });
 
-      it('should create', () => {
-        expect(component).toBeTruthy();
-      });
+  afterAll(() => {
+    clearStylesFromDOM();
+  });
 
-      it('gets data, after the view is initialized', async ()=> {
-         await component.ngAfterViewInit();
-         expect(component.shoppingCart.totalCount).toEqual(2);
-      });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-      it('gets data', async () => {
-        await component.getData();
-        expect(component.shoppingCart.totalCount).toEqual(2);
-      });
+  it('gets data, after the view is initialized', async () => {
+    await component.ngAfterViewInit();
+    expect(component.shoppingCart.totalCount).toEqual(2);
+  });
 
-      it('removes items', async () => {
+  it('gets data', async () => {
+    await component.getData();
+    expect(component.shoppingCart.totalCount).toEqual(2);
+  });
+
+  describe('removes items', () => {
+    for (const testcase of [
+      { confirm: true },
+      { confirm: false }
+    ]) {
+      it(`${testcase.confirm ? 'should' : ' shouldn\'t'} be started, because the user ${testcase.confirm ? 'has' : 'has not'} confirmed the dialog`, 
+      async () => {
+        confirm = testcase.confirm;
         await component.getData();
         await component.clearForLaterList();
-        expect(cartItemsServiceStub.removeItems).toHaveBeenCalledWith([forLaterData[1]]);
+
+        if(testcase.confirm) {
+          expect(cartItemsServiceStub.removeItems).toHaveBeenCalledWith([forLaterData[1]]);
+        } else {
+          expect(cartItemsServiceStub.removeItems).not.toHaveBeenCalled();
+        }  
       });
+    }
+  });
 });

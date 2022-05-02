@@ -31,7 +31,7 @@ export interface AttestationCaseAction {
   /**
    * The entity, that is used by the bulk editor
    */
-  typedEntity: TypedEntity<any>;
+  typedEntity: TypedEntity;
 
   uiData?: AttestationCaseUiData;
 

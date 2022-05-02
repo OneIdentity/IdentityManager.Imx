@@ -57,7 +57,8 @@ const mockfkProviderItem = {
   columnName: 'test-column',
   fkTableName: 'test-table',
   parameterNames: [],
-  load: () => Promise.resolve(undefined)
+  load: () => Promise.resolve(undefined),
+  getDataModel:() => Promise.resolve({})
 } as FkProviderItem;
 
 const mockEntityWithFk = {

@@ -36,7 +36,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -46,20 +45,18 @@ import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 
 import { DataSourceToolbarModule } from '../data-source-toolbar/data-source-toolbar.module';
 import { DataTableComponent } from './data-table.component';
-import { DataTableDetailComponent } from './data-table-detail.component';
-import { DataTableDetailHeaderComponent } from './data-table-detail-header.component';
 import { DataTableColumnComponent } from './data-table-column.component';
 import { DataTableGenericColumnComponent } from './data-table-generic-column.component';
 import { SelectionListComponent } from './selection-list/selection-list.component';
 import { DateModule } from '../date/date.module';
 import { DataTableCellComponent } from './data-table-cell/data-table-cell.component';
+import { DataTableDisplayCellComponent } from './data-table-display-cell/data-table-display-cell.component';
 
 @NgModule({
   declarations: [
     DataTableCellComponent,
+    DataTableDisplayCellComponent,
     DataTableComponent,
-    DataTableDetailComponent,
-    DataTableDetailHeaderComponent,
     DataTableColumnComponent,
     DataTableGenericColumnComponent,
     SelectionListComponent
@@ -79,7 +76,6 @@ import { DataTableCellComponent } from './data-table-cell/data-table-cell.compon
     MatButtonModule,
     MatMenuModule,
     MatDividerModule,
-    MatSidenavModule,
     MatCardModule,
     MatToolbarModule,
     MatDialogModule,
@@ -89,7 +85,6 @@ import { DataTableCellComponent } from './data-table-cell/data-table-cell.compon
   exports: [
     DataTableComponent,
     DataTableColumnComponent,
-    DataTableDetailComponent,
     DataTableGenericColumnComponent
   ]
 })

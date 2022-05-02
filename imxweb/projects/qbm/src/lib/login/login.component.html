@@ -1,12 +1,15 @@
 <div class="imx-loginPage">
   <div class="imx-loginFormcontainer">
-    <div>
+    <div *ngIf="!logoUrl">
       <eui-logo size="72"></eui-logo>
+    </div>
+    <div *ngIf="logoUrl">
+      <img class="custom-logo" [src]="logoUrl">
     </div>
     <h1 data-imx-identifier="product-name-title">{{ product.name }}
       <br>{{ title }}
     </h1>
-    <imx-usermessage panelClass="imx-small-message"></imx-usermessage>
+    <imx-usermessage class="usermessage" panelClass="imx-small-message"></imx-usermessage>
     <div *ngIf="sessionState?.isOAuth;else loginMask" class="imx-loginButtonpanel">
       <button data-imx-identifier="logout-oauth-button" mat-button type="button" class="imx-button"
         (click)="logoutOAuth()">{{'#LDS#OAuth logout' | translate }}</button>

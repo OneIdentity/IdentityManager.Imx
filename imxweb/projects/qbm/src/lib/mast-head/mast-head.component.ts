@@ -29,7 +29,6 @@ import { Component, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
 import { AppConfigService } from '../appConfig/appConfig.service';
@@ -37,8 +36,7 @@ import { AboutComponent } from '../about/About.component';
 import { AuthenticationService } from '../authentication/authentication.service';
 import { ISessionState } from '../session/session-state';
 import { MastHeadService } from './mast-head.service';
-import { MessageDialogResult } from '../message-dialog/message-dialog-result.enum';
-import { MessageDialogComponent } from '../message-dialog/message-dialog.component';
+import { ConfirmationService } from '../confirmation/confirmation.service';
 
 /**
  * Masthead of IMX web applications. It can contain dynamic menus or buttons, emitting menus/menu itmes when selected.
@@ -108,11 +106,13 @@ export class MastHeadComponent implements OnDestroy {
   public sessionState: ISessionState;
   private readonly subscriptions: Subscription[] = [];
 
+  public logoUrl: string;
+
   constructor(
     public readonly appConfig: AppConfigService,
     private readonly router: Router,
-    private readonly translate: TranslateService,
     private readonly dialog: MatDialog,
+    private readonly confirmationService: ConfirmationService,
     private readonly busyService: EuiLoadingService,
     private readonly mastHeadService: MastHeadService,
     private readonly authentication: AuthenticationService
@@ -120,6 +120,14 @@ export class MastHeadComponent implements OnDestroy {
     this.subscriptions.push(this.authentication.onSessionResponse.subscribe((sessionState: ISessionState) =>
       this.sessionState = sessionState
     ));
+
+    // apply custom logo from configuration
+    this.appConfig.getImxConfig().then(config => {
+      if (config.CompanyLogoUrl) {
+        // make relative URL absolute if needed
+        this.logoUrl = new URL(config.CompanyLogoUrl, this.appConfig.BaseUrl).href;
+      }
+    });
   }
 
   public get hasDocumentationConfig(): boolean {
@@ -145,48 +153,36 @@ export class MastHeadComponent implements OnDestroy {
     this.router.navigate([this.appConfig.Config.routeConfig.start], { queryParams: {} });
   }
 
-    /**
-   * Opens the About view.
-   */
-     public openAboutDialog(): void {
-      this.dialog.open(AboutComponent, { panelClass: 'imx-AboutPanel' });
-    }
+  /**
+ * Opens the About view.
+ */
+  public openAboutDialog(): void {
+    this.dialog.open(AboutComponent, { panelClass: 'imx-AboutPanel' });
+  }
 
-    /**
-     * Logs out and kills the session.
-     */
-    public async logout(): Promise<void> {
-      if (await this.confirmLogout()) {
-        let overlayRef: OverlayRef;
-        setTimeout(() => (overlayRef = this.busyService.show()));
-        try {
-          await this.authentication.logout();
-        } finally {
-          setTimeout(() => this.busyService.hide(overlayRef));
-        }
+  /**
+   * Logs out and kills the session.
+   */
+  public async logout(): Promise<void> {
+    if (await this.confirmationService.confirm({
+      Title: '#LDS#Log off',
+      Message: '#LDS#Are you sure you want to log off?',
+      identifier: 'confirm-logout-'
+    })) {
+      let overlayRef: OverlayRef;
+      setTimeout(() => (overlayRef = this.busyService.show()));
+      try {
+        await this.authentication.logout();
+      } finally {
+        setTimeout(() => this.busyService.hide(overlayRef));
       }
     }
+  }
 
-    /**
-     * Logs out and kills the session.
-     */
-    public navigateToDocumentation(): void {
-      this.mastHeadService.openDocumentationLink();
-    }
-
-    private async confirmLogout(): Promise<boolean> {
-      const result = await this.dialog.open(MessageDialogComponent, {
-        data: {
-          ShowOk: true,
-          ShowCancel: true,
-          Title: await this.translate.get('#LDS#Log off').toPromise(),
-          Message: await this.translate.get('#LDS#Are you sure you want to log off?').toPromise(),
-          identifier: 'confirm-logout-'
-        },
-        panelClass: 'imx-messageDialog'
-      }).afterClosed().toPromise();
-
-      return result === MessageDialogResult.OkResult ? true : false;
-    }
-
+  /**
+   * Logs out and kills the session.
+   */
+  public navigateToDocumentation(): void {
+    this.mastHeadService.openDocumentationLink();
+  }
 }

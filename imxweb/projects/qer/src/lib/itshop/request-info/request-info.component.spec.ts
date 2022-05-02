@@ -31,7 +31,7 @@ import { configureTestSuite } from 'ng-bullet';
 import { LoggerTestingModule } from 'ngx-logger/testing';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { clearStylesFromDOM } from 'qbm';
+import { clearStylesFromDOM, ExtService } from 'qbm';
 import { ProjectConfig, QerProjectConfig } from 'imx-api-qer';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
 import { RequestInfoComponent } from './request-info.component';
@@ -49,6 +49,10 @@ class MockDecisionInfo {
 describe('RequestInfoComponent', () => {
 
   let projectConfig: ProjectConfig & QerProjectConfig
+
+  const extServiceStub = {
+    Registry: jasmine.createSpy('Registry')
+  };
 
   const projectConfigurationServiceStub = {
     getConfig: jasmine.createSpy('getConfig').and.callFake(() => Promise.resolve(projectConfig))
@@ -77,6 +81,10 @@ describe('RequestInfoComponent', () => {
         MatCardModule
       ],
       providers: [
+        {
+          provide: ExtService,
+          useValue: extServiceStub
+        },
         {
           provide: ProjectConfigurationService,
           useValue: projectConfigurationServiceStub

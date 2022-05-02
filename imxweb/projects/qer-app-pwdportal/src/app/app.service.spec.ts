@@ -31,7 +31,7 @@ import { LoggerTestingModule } from 'ngx-logger/testing';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, of } from 'rxjs';
 
-import { AppConfigService, AuthenticationService, imx_SessionService, ImxTranslationProviderService } from 'qbm';
+import { AppConfigService, AuthenticationService, imx_SessionService, ImxTranslationProviderService, PluginLoaderService } from 'qbm';
 import { AppService } from './app.service';
 
 describe('AppService', () => {
@@ -43,6 +43,7 @@ describe('AppService', () => {
       setDefaultLang: jasmine.createSpy('setDefaultLang'),
       get: x => { return { toPromise: () => Promise.resolve(x) }; },
       use: jasmine.createSpy('use').and.returnValue(of({})),
+      onLangChange: { subscribe: () => {}},
     };
 
     translationProvider = {
@@ -56,11 +57,13 @@ describe('AppService', () => {
     };
 
     appConfigService = {
-      client: {
-        imx_config_get: jasmine.createSpy('imx_config_get').and.returnValue(Promise.resolve({ProductName: null}))
-      },
+      getImxConfig: jasmine.createSpy('getImxConfig').and.returnValue(Promise.resolve({ProductName: null})),
       init: jasmine.createSpy('init'),
       Config: { Translation: {} }
+    };
+    
+    pluginLoader = {
+      loadModules: jasmine.createSpy('loadModules')
     };
 
     authentication = {
@@ -74,7 +77,7 @@ describe('AppService', () => {
       this.translate.use.calls.reset();
       this.title.setTitle.calls.reset();
       this.appConfigService.init.calls.reset();
-      this.appConfigService.client.imx_config_get.calls.reset();
+      this.appConfigService.getImxConfig.calls.reset();
       this.translationProvider.init.calls.reset();
     }
 
@@ -115,6 +118,10 @@ describe('AppService', () => {
         {
           provide: ImxTranslationProviderService,
           useValue: mocks.translationProvider
+        },        
+        {
+          provide: PluginLoaderService,
+          useValue: mocks.pluginLoader
         },
         {
           provide: AuthenticationService,

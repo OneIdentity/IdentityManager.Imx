@@ -43,8 +43,8 @@ import { FkSelectorComponent } from './fk-selector.component';
 import { IForeignKeyInfo } from 'imx-qbm-dbts';
 
 const fkInfo = [
-  { TableName: 'testtable1', ColumnName: 'testcolumn1', Get: _ => undefined },
-  { TableName: 'testtable2', ColumnName: 'testcolumn2', Get: _ => undefined }
+  { TableName: 'testtable1', ColumnName: 'testcolumn1', Get: _ => undefined, GetDataModel: _ => ({ Filters: [] }), GetFilterTree: _ => ({ Elements: [] }) },
+  { TableName: 'testtable2', ColumnName: 'testcolumn2', Get: _ => undefined, GetDataModel: _ => ({ Filters: [] }), GetFilterTree: _ => ({ Elements: [] }) }
 ];
 
 [
@@ -52,75 +52,75 @@ const fkInfo = [
   { fkRelations: [], expectedMetadataCall: 0 },
   { fkRelations: undefined, expectedMetadataCall: 0 }
 ].forEach(testcase =>
-describe('FkSelectorComponent', () => {
-  let component: FkSelectorComponent
-  let fixture: ComponentFixture<FkSelectorComponent>;
+  describe('FkSelectorComponent', () => {
+    let component: FkSelectorComponent
+    let fixture: ComponentFixture<FkSelectorComponent>;
 
-  const metadataServiceStub = {
-    tables: {},
-    update: jasmine.createSpy('update')
-  };
+    const metadataServiceStub = {
+      tables: {},
+      update: jasmine.createSpy('update')
+    };
 
-  configureTestSuite(() => {
-    TestBed.configureTestingModule({
-      declarations: [
-        FkSelectorComponent
-      ],
-      imports: [
-        FormsModule,
-        MatButtonModule,
-        MatInputModule,
-        MatSelectModule,
-        MatTableModule,
-        MatPaginatorModule,
-        MatRadioModule,
-        LoggerTestingModule
-      ],
-      providers: [
-        {
-          provide: MAT_DIALOG_DATA,
-          useValue: {
-            fkRelations: testcase.fkRelations,
-            displayValue: 'some title'
-          }
-        },
-        {
-          provide: MetadataService,
-          useValue: metadataServiceStub
-        },
-        {
-          provide: MatDialogRef,
-          useValue: {}
-        },
-        {
-          provide: EuiLoadingService,
-          useValue: {
-            show: () => {},
-            hide: () => {}
-          }
-        },
-      ]
+    configureTestSuite(() => {
+      TestBed.configureTestingModule({
+        declarations: [
+          FkSelectorComponent
+        ],
+        imports: [
+          FormsModule,
+          MatButtonModule,
+          MatInputModule,
+          MatSelectModule,
+          MatTableModule,
+          MatPaginatorModule,
+          MatRadioModule,
+          LoggerTestingModule
+        ],
+        providers: [
+          {
+            provide: MAT_DIALOG_DATA,
+            useValue: {
+              fkRelations: testcase.fkRelations,
+              displayValue: 'some title'
+            }
+          },
+          {
+            provide: MetadataService,
+            useValue: metadataServiceStub
+          },
+          {
+            provide: MatDialogRef,
+            useValue: {}
+          },
+          {
+            provide: EuiLoadingService,
+            useValue: {
+              show: () => { },
+              hide: () => { }
+            }
+          },
+        ]
+      });
     });
-  });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(FkSelectorComponent);
-    component = fixture.componentInstance;
-  });
+    beforeEach(() => {
+      fixture = TestBed.createComponent(FkSelectorComponent);
+      component = fixture.componentInstance;
+    });
 
 
-  afterAll(() => {
-    clearStylesFromDOM();
-  });
+    afterAll(() => {
+      clearStylesFromDOM();
+    });
 
-  it('should call update meta data on init', fakeAsync(() => {
-    component.data = {fkRelations: testcase.fkRelations as IForeignKeyInfo[]}
-    fixture.detectChanges();
+    it('should call update meta data on init', fakeAsync(() => {
+      component.data = { fkRelations: testcase.fkRelations as unknown as IForeignKeyInfo[] }
+      fixture.detectChanges();
 
-    tick(Infinity);
+      tick(Infinity);
 
-    expect(metadataServiceStub.update).toHaveBeenCalledTimes(testcase.expectedMetadataCall);
+      expect(metadataServiceStub.update).toHaveBeenCalledTimes(testcase.expectedMetadataCall);
+    }));
+
+
   }));
-
-  
-}));

@@ -1,0 +1,45 @@
+<h1 class="mat-headline">
+  {{ '#LDS#Heading Compliance Rules' | translate }}
+</h1>
+<div class="imx-table-container">
+  <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['search', 'filter']"
+    (search)="navigate({search: $event})" (navigationStateChanged)="navigate($event)">
+  </imx-data-source-toolbar>
+  <div class="imx-table-container" *ngIf="dstSettings">
+    <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual" data-imx-identifier="rules-table">
+      <imx-data-table-column [entityColumn]="ruleSchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
+        data-imx-identifier="rules-table-column-Display">
+        <ng-template let-item>
+          <div data-imx-identifier="rules-table-display">{{ item.GetEntity().GetDisplay() }}</div>
+          <div subtitle data-imx-identifier="rules-table-description">{{ item.Description.Column.GetDisplayValue() }}
+          </div>
+        </ng-template>
+      </imx-data-table-column>
+
+      <imx-data-table-generic-column align="center" columnName="cases" data-imx-identifier="rules-table-column-Count"
+        [columnLabel]="'#LDS#Rule violations' | translate">
+        <ng-template let-rule>
+          {{rule.CountOpen.value + rule.CountClosed.value }}
+        </ng-template>
+      </imx-data-table-generic-column>
+
+      <imx-data-table-column align="center" [entityColumn]="ruleSchema.Columns.CountOpen"
+        data-imx-identifier="rules-table-column-CountOpen">
+      </imx-data-table-column>
+
+      <imx-data-table-column align="center" [entityColumn]="ruleSchema.Columns.IsInActive"
+        data-imx-identifier="rules-table-column-IsInActive">
+      </imx-data-table-column>
+
+      <imx-data-table-generic-column columnName="details" [columnLabel]="" data-imx-identifier="rules-table-column-Details">
+        <ng-template let-rule>
+          <button mat-button color="primary" data-imx-identifier="runs-button-show-details" (click)="showDetails(rule)"
+            title="{{ '#LDS#Details' | translate }}">
+            {{ '#LDS#Details' | translate }}
+          </button>
+        </ng-template>
+      </imx-data-table-generic-column>
+    </imx-data-table>
+  </div>
+  <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+</div>

@@ -1,0 +1,74 @@
+<h1 class="mat-headline">{{'#LDS#Heading Assign an Owner for a Device' | translate}}</h1>
+
+<mat-vertical-stepper *ngIf="canClaimDevice; else policyDeactivated" [linear]="true"
+  (selectionChange)="stepChange($event)" #stepper>
+  <mat-step [stepControl]="deviceForm" label="{{'#LDS#Select a device' | translate}}" data-imx-identifier="claim-device-device-step"
+    [editable]="!ownerAssigned">
+    <form [formGroup]="deviceForm">
+      <imx-cdr-editor [cdr]="deviceCdr"
+        (controlCreated)="deviceForm.addControl(deviceCdr.column.ColumnName, $event)"></imx-cdr-editor>
+    </form>
+
+    <button *ngIf="deviceForm" [disabled]="deviceForm.invalid" mat-stroked-button matStepperNext
+    data-imx-identifier="claim-device-device-step-button-next"
+      (click)="loadSuggestedOwners()">{{ '#LDS#Next' | translate }}</button>
+  </mat-step>
+
+  <mat-step [stepControl]="ownerForm" [editable]="!ownerAssigned" data-imx-identifier="claim-device-owner-step">
+    <ng-template matStepLabel>
+      <ng-container *ngIf="deviceCdr.column.GetDisplayValue(); else disabledDisplay">
+        {{ '#LDS#Specify the owner for the device "{0}".' | translate |
+        ldsReplace:deviceCdr.column.GetDisplayValue() }}
+      </ng-container>
+      <ng-template #disabledDisplay>
+        {{ '#LDS#Specify the owner' | translate }}
+      </ng-template>
+    </ng-template>
+
+    <p>
+      {{ '#LDS#Here you can claim ownership of the device. If you are not the owner of the device, you can specify the actual owner (who will be notified and must confirm the ownership).' | translate }}
+    </p>
+
+    <mat-radio-group data-imx-identifier="claim-device-owner-options" *ngIf="ownershipOptions?.length > 1" (change)="ownerCandidateListChange($event)">
+      <mat-radio-button *ngFor="let option of ownershipOptions; let i = index" [value]="option"
+      [attr.data-imx-identifier]="'claim-device-option-' + option.title" [checked]="i === 0">
+        {{ option.title | translate }}
+      </mat-radio-button>
+    </mat-radio-group>
+
+    <form [formGroup]="ownerForm">
+      <imx-cdr-editor *ngIf="ownerCdr" [cdr]="ownerCdr"
+        (controlCreated)="ownerForm.addControl(ownerCdr.column.ColumnName, $event)"></imx-cdr-editor>
+    </form>
+
+    <button class="imx-button-previous" data-imx-identifier="claim-device-owner-step-button-back" mat-stroked-button matStepperPrevious>{{'#LDS#Previous' | translate}}</button>
+    <button *ngIf="ownerForm" data-imx-identifier="claim-device-owner-step-button-next" [disabled]="ownerForm.invalid" mat-stroked-button (click)="assignOwner()"
+      matStepperNext>{{'#LDS#Next' | translate}}</button>
+  </mat-step>
+
+  <mat-step [editable]="!ownerAssigned" data-imx-identifier="claim-device-assign-step">
+    <ng-template matStepLabel>
+      <ng-container *ngIf="deviceCdr.column.GetDisplayValue() && ownerDisplay; else disabledDisplay">
+        {{ '#LDS#Assign ownership for the device "{0}" to "{1}".' | translate |
+        ldsReplace:deviceCdr.column.GetDisplayValue():ownerDisplay }}
+      </ng-container>
+      <ng-template #disabledDisplay>
+        {{ '#LDS#Assign ownership' | translate }}
+      </ng-template>
+    </ng-template>
+
+    <div *ngIf="ownerAssigned" class="imx-owner-assigned">
+      <p *ngIf="!ownerCdr">
+        {{ '#LDS#Your changes have been successfully saved. It may take some time for the changes to take effect.' | translate }}
+      </p>
+      <p *ngIf="ownerCdr">
+        {{ '#LDS#Your changes have been successfully saved. The new owner has to confirm the ownership for the changes to take effect.' | translate }}
+      </p>
+      <button mat-stroked-button data-imx-identifier="claim-device-assign-step-button-submit" (click)="resetForms();stepper.reset()">{{ '#LDS#Assign another device' | translate }}</button>
+    </div>
+  </mat-step>
+</mat-vertical-stepper>
+
+<ng-template #policyDeactivated>
+  <p>{{ '#LDS#You cannot currently assign owners for devices. The device ownership attestation policy is deactivated.' | translate}}</p>
+</ng-template>

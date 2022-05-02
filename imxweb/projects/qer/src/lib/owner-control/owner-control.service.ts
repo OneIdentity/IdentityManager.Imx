@@ -97,6 +97,8 @@ export class OwnerControlService {
             parameters.withProperties,
             parameters.search
           ),
+        getDataModel: async () => ({}),
+        getFilterTree: async () => ({ Elements: [] })
       },
     ]);
   }

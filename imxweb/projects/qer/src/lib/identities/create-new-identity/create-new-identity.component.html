@@ -1,0 +1,87 @@
+<div eui-sidesheet-content>
+  <mat-card>
+    <form class="imx-form" [formGroup]="identityForm">
+      <mat-accordion>
+        <mat-expansion-panel  data-imx-identifier="create-new-identity-expansion-unique" [expanded]="true" *ngIf="cdrListPersonal.length > 0">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{ '#LDS#Unique data' | translate }}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <imx-cdr-editor *ngFor="let cdr of cdrListIdentifier" (readOnlyChanged)="update(cdr,cdrListIdentifier)" [cdr]="cdr"
+            (valueChange)="checkValues(cdr.column.ColumnName)" (controlCreated)="identityForm.addControl(cdr.column.ColumnName, $event)">
+          </imx-cdr-editor>
+          <eui-alert class="imx-info" *ngIf="accountIsOff>0" type="error" condensed="true" [colored]="true">
+            <div class="imx-flex-alert">
+              <div>
+                <p translate>#LDS#There is already an identity linked to this central user account.</p>
+                <p translate>#LDS#You cannot create the identity using the specified central user account. Please enter a different name for the central user account.</p>
+              </div>
+              <button data-imx-identifier="create-new-identity-button-duplicated-account" mat-button color="primary" class="imx-alert-button" (click)="showDuplicates('account')">
+                {{'#LDS#View identities' |translate}}
+              </button>
+            </div>
+          </eui-alert>
+
+          <eui-alert class="imx-info" *ngIf="nameIsOff>0" type="warning" condensed="true" [colored]="true">
+            <div class="imx-flex-alert">
+              <div>
+                <p translate>#LDS#There is at least one identity with the same first and last name.</p>
+                <p translate>#LDS#You can view these identities or proceed.</p>
+              </div>
+              <button mat-button color="primary" data-imx-identifier="create-new-identity-button-duplicated-name" class="imx-alert-button" (click)="showDuplicates('name')">
+                {{'#LDS#View identities' |translate}}
+              </button>
+            </div>
+          </eui-alert>
+
+          <eui-alert class="imx-info" *ngIf="mailIsOff>0" type="warning" condensed="true" [colored]="true">
+            <div class="imx-flex-alert">
+              <div>
+                <p translate>#LDS#There is at least one identity with the same email address.</p>
+                <p translate>#LDS#You can view these identities, change the email address, or proceed.</p>
+              </div>
+              <button mat-button color="primary" data-imx-identifier="create-new-identity-button-duplicated-mail" class="imx-alert-button" (click)="showDuplicates('mail')">
+                {{'#LDS#View identities' |translate}}
+              </button>
+            </div>
+          </eui-alert>
+        </mat-expansion-panel>
+        <mat-expansion-panel data-imx-identifier="create-new-identity-expansion-personal"  *ngIf="cdrListPersonal.length > 0">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{ '#LDS#Personal data' | translate }}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <imx-cdr-editor *ngFor="let cdr of cdrListPersonal" (readOnlyChanged)=update(cdr,cdrListPersonal)  [cdr]="cdr" (controlCreated)="identityForm.addControl(cdr.column.ColumnName, $event)">
+          </imx-cdr-editor>
+        </mat-expansion-panel>
+        <mat-expansion-panel *ngIf="cdrListOrganizational.length > 0" data-imx-identifier="create-new-identity-expansion-organisation" >
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{ '#LDS#Organizational information' | translate }}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <imx-cdr-editor *ngFor="let cdr of cdrListOrganizational" [cdr]="cdr" (readOnlyChanged)=update(cdr,cdrListOrganizational) 
+            (controlCreated)="identityForm.addControl(cdr.column.ColumnName, $event)"> </imx-cdr-editor>
+        </mat-expansion-panel>
+        <mat-expansion-panel *ngIf="cdrListLocality.length > 0" data-imx-identifier="create-new-identity-expansion-location" >
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{ '#LDS#Location information' | translate }}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <imx-cdr-editor *ngFor="let cdr of cdrListLocality" [cdr]="cdr" (readOnlyChanged)=update(cdr,cdrListLocality) (controlCreated)="identityForm.addControl(cdr.column.ColumnName, $event)">
+          </imx-cdr-editor>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </form>
+  </mat-card>
+</div>
+<div eui-sidesheet-actions color="white">
+  <button data-imx-identifier="create-new-identity-button-save" (click)="submit()"
+    [disabled]="accountIsOff || identityForm.invalid || !identityForm.dirty" mat-raised-button type="button"
+    color="primary">
+    {{ '#LDS#Create' | translate }}
+  </button>
+</div>

@@ -47,8 +47,6 @@ import { configureTestSuite } from 'ng-bullet';
 import { ValType, IClientProperty, TypedEntity, GroupInfo, IEntity } from 'imx-qbm-dbts';
 import { DataSourceToolbarSettings } from 'qbm';
 import { DataTableComponent } from './data-table.component';
-import { DataTableDetailComponent } from './data-table-detail.component';
-import { DataTableDetailHeaderComponent } from './data-table-detail-header.component';
 import { ImxTranslationProviderService } from '../translation/imx-translation-provider.service';
 import { mockDSTColumns } from '../testing/dst-mock-help.spec';
 import { clearStylesFromDOM } from '../testing/clear-styles.spec';
@@ -80,6 +78,7 @@ const entities = entityKeys.map(keys => new MockDSTTypedEntity(keys));
 class MockDataSourceToolbarComponent {
   @Input() public settings: DataSourceToolbarSettings;
   @Output() public settingsChanged = new EventEmitter<DataSourceToolbarSettings>();
+  @Output() public shownColumnsSelectionChanged = new EventEmitter<IClientProperty[]>();
 
   selectionChanged = new Subject();
 
@@ -146,8 +145,6 @@ describe('DataTableComponent', () => {
       ],
       declarations: [
         DataTableComponent,
-        DataTableDetailComponent,
-        DataTableDetailHeaderComponent,
         MockDataSourceToolbarComponent,
         TestHostComponent],
       providers: [
@@ -190,20 +187,6 @@ describe('DataTableComponent', () => {
     expect(component.dst.settingsChanged.observers.length).toEqual(1);
     component.ngOnDestroy();
     expect(component.dst.settingsChanged.observers.length).toEqual(0);
-  });
-
-  it('should open and close detail view', () => {
-    spyOn(component.detailViewOpenChanged, 'emit');
-
-    fixture.detectChanges();
-
-    component.onDetailOpenedChanged(true);
-    expect(component.detailViewOpen).toEqual(true);
-
-    component.onDetailOpenedChanged(false);
-    expect(component.detailViewOpen).toEqual(false);
-
-    expect(component.detailViewOpenChanged.emit).toHaveBeenCalledTimes(2);
   });
 
   it('should return the names of the displayed columns', () => {

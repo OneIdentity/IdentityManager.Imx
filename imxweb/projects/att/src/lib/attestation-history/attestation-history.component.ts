@@ -29,7 +29,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } 
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
-import { CompareOperator, DisplayColumns, EntitySchema, FilterType, TypedEntity, IClientProperty, ValType, FilterData } from 'imx-qbm-dbts';
+import { CompareOperator, DisplayColumns, EntitySchema, FilterType, TypedEntity, IClientProperty, ValType, FilterData, DataModel } from 'imx-qbm-dbts';
 import {
   DataSourceItemStatus,
   DataSourceToolbarFilter,
@@ -67,11 +67,12 @@ export class AttestationHistoryComponent implements OnInit, OnDestroy {
   @Output() public selectionChanged = new EventEmitter<AttestationHistoryCase[]>();
 
   private filterOptions: DataSourceToolbarFilter[] = [];
+  private dataModel: DataModel;
 
   private navigationState: AttestationCaseLoadParameters;
 
   private groupData: DataSourceToolbarGroupData;
-  private readonly displayedColumns: IClientProperty[];
+  private displayedColumns: IClientProperty[];
   private readonly subscriptions: Subscription[] = [];
   @ViewChild(DataTableComponent) private readonly table: DataTableComponent<TypedEntity>;
 
@@ -86,14 +87,7 @@ export class AttestationHistoryComponent implements OnInit, OnDestroy {
     private readonly messageService: UserMessageService
   ) {
     this.entitySchema = attestationCaseService.attestationCaseSchema;
-    this.displayedColumns = [
-      this.entitySchema.Columns.UiText,
-      this.entitySchema.Columns.AttestationState,
-      {
-        ColumnName: 'viewDetailsButton',
-        Type: ValType.String
-      }
-    ];
+
     this.subscriptions.push(this.attestationAction.applied.subscribe(() => {
       this.getData();
       this.table?.clearSelection();
@@ -101,20 +95,35 @@ export class AttestationHistoryComponent implements OnInit, OnDestroy {
   }
 
   public async ngOnInit(): Promise<void> {
+    this.displayedColumns = [
+      this.entitySchema.Columns.UiText,
+      this.entitySchema.Columns.AttestationState,
+      {
+        ColumnName: 'viewDetailsButton',
+        Display: await this.translator.get('#LDS#Details').toPromise(),
+        Type: ValType.String
+      }
+    ];
     this.navigationState = { ...this.parameters, ...{ PageSize: this.settingsService.DefaultPageSize, StartIndex: 0, OrderBy: 'ToSolveTill asc' } };
 
     let busyIndicator: OverlayRef;
     setTimeout(() => busyIndicator = this.busyService.show());
     try {
-      const dataModel = await this.historyService.getDataModel(
+      this.dataModel = await this.historyService.getDataModel(
         this.parameters?.objecttable, this.parameters?.objectuid, this.parameters?.filter);
-      this.filterOptions = dataModel.Filters;
+      this.filterOptions = this.dataModel.Filters;
       this.groupData = createGroupData(
-        dataModel,
+        this.dataModel,
         parameters => {
           const uidpolicy = this.filterOptions.find(elem => elem.Name === 'uidpolicy')?.CurrentValue;
           const risk = this.filterOptions.find(elem => elem.Name === 'risk')?.CurrentValue;
           const state = this.filterOptions.find(elem => elem.Name === 'state')?.CurrentValue;
+          let withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
+            .map(elem => elem.Property.ColumnName).join(',');
+
+          if (withProperties === '') {
+            withProperties = undefined;
+          }
           return this.historyService.getGroupInfo({
             ...{
               PageSize: this.navigationState.PageSize,
@@ -122,6 +131,7 @@ export class AttestationHistoryComponent implements OnInit, OnDestroy {
               objecttable: this.parameters?.objecttable,
               objectuid: this.parameters?.objectuid,
               groupFilter: this.parameters?.filter,
+              withProperties,
               risk,
               state,
               uidpolicy
@@ -186,7 +196,8 @@ export class AttestationHistoryComponent implements OnInit, OnDestroy {
           groupData: this.groupData,
           displayedColumns: this.displayedColumns,
           entitySchema: this.entitySchema,
-          navigationState
+          navigationState,
+          dataModel: this.dataModel
         };
       } else {
         this.dstSettings = undefined;

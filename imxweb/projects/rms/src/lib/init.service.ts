@@ -26,10 +26,12 @@
 
 import { Injectable } from '@angular/core';
 import { Router, Route } from '@angular/router';
+import { RoleExtendedDataWrite } from 'imx-api-qer';
 
-import { PortalAdminRoleEset, PortalRespEset } from 'imx-api-rms';
+import { PortalAdminRoleEset, PortalPersonRolemembershipsEset, PortalRespEset } from 'imx-api-rms';
+import { EntitySchema, ExtendedTypedEntityCollection, TypedEntity, WriteExtTypedEntity, CollectionLoadParameters } from 'imx-qbm-dbts';
 import { DynamicMethodService, ImxTranslationProviderService, imx_SessionService, MenuService } from 'qbm';
-import { DataExplorerRegistryService, RoleService, RolesOverviewComponent } from 'qer';
+import { DataExplorerRegistryService, IdentityRoleMembershipsService, RoleService, RolesOverviewComponent } from 'qer';
 import { EsetDataModel } from './eset-data-model';
 import { EsetEntitlements } from './eset-entitlements';
 import { EsetMembership } from './eset-membership';
@@ -49,13 +51,40 @@ export class InitService {
     private readonly dynamicMethodSvc: DynamicMethodService,
     private readonly dataExplorerRegistryService: DataExplorerRegistryService,
     private readonly menuService: MenuService,
-    private readonly roleService: RoleService
+    private readonly roleService: RoleService,
+    private readonly identityRoleMembershipService: IdentityRoleMembershipsService
   ) { }
 
   public onInit(routes: Route[]): void {
     this.addRoutes(routes);
 
+    // wrapper class for interactive and interactive_byid methods
+    class ApiWrapper {
+
+      constructor(private getByIdApi: {
+        GetSchema(): EntitySchema,
+        Get_byid(id: string): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>>
+      }) { }
+
+      Get(): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>> {
+        throw new Error("Creation of new system roles is not yet supported.");
+      }
+
+      GetSchema() { return this.getByIdApi.GetSchema(); }
+
+      async Get_byid(id: string): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>> {
+        const data = await this.getByIdApi.Get_byid(id);
+        const result: ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown> = {
+          ...data,
+          Data: data.Data.map(d => { return new WriteExtTypedEntity<RoleExtendedDataWrite>(d.GetEntity()) })
+        };
+        return result;
+      }
+    }
+
     this.roleService.targetMap.set(this.esetTag, {
+      canBeSplitTarget: false,
+      canBeSplitSource: false,
       table: this.esetTag,
       respType: PortalRespEset,
       resp: this.api.typedClient.PortalRespEset,
@@ -69,15 +98,39 @@ export class InitService {
           parameter?.withProperties,
           parameter?.search,
           parameter?.risk,
-          parameter.esetType
+          parameter.esettype
         )
       },
       adminSchema: this.api.typedClient.PortalAdminRoleEset.GetSchema(),
       dataModel: new EsetDataModel(this.api),
-      interactiveResp: this.api.typedClient.PortalRespEsetInteractive_byid,
-      interactiveAdmin: this.api.typedClient.PortalAdminRoleEsetInteractive_byid,
+      interactiveResp: new ApiWrapper(
+        this.api.typedClient.PortalRespEsetInteractive_byid
+      ),
+      interactiveAdmin: new ApiWrapper(
+        this.api.typedClient.PortalAdminRoleEsetInteractive_byid
+      ),
       entitlements: new EsetEntitlements(this.api, this.dynamicMethodSvc, this.translator),
       membership: new EsetMembership(this.api, this.session, this.translator)
+    });
+
+    this.identityRoleMembershipService.addTarget({
+      table: this.esetTag,
+      type: PortalPersonRolemembershipsEset,
+      entitySchema: this.api.typedClient.PortalPersonRolemembershipsEset.GetSchema(),
+      controlInfo: {
+        label: '#LDS#Menu Entry System roles',
+        index: 80,
+      },
+      get: async (parameter: CollectionLoadParameters) => this.api.client.portal_person_rolememberships_ESet_get(
+          parameter?.uidPerson,
+          parameter?.OrderBy,
+          parameter?.StartIndex,
+          parameter?.PageSize,
+          parameter?.filter,
+          parameter?.withProperties,
+          parameter?.search
+        ),
+      withAnalysis: true
     });
 
     this.setupMenu();

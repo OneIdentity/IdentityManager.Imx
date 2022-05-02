@@ -45,6 +45,7 @@ import { CartItemsService } from './cart-items.service';
 import { UserModelService } from '../user/user-model.service';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
 import { ItshopService } from '../itshop/itshop.service';
+import { ItshopPatternCreateService } from '../itshop-pattern/itshop-pattern-create-sidesheet/itshop-pattern-create.service';
 
 @Component({
     selector: 'imx-cart-items',
@@ -99,6 +100,10 @@ describe('ShoppingCartComponent', () => {
 
     const userModelServiceStub = {
         reloadPendingItems: jasmine.createSpy('ReloadPendingItems')
+    }
+
+    const patterCreateServiceStub = {
+      createItshopPatternFromShoppingCart: jasmine.createSpy('createItshopPatternFromShoppingCart').and.callThrough(),
     }
 
     let config : any = {
@@ -156,6 +161,10 @@ describe('ShoppingCartComponent', () => {
                 {
                     provide: CartItemsService,
                     useValue: cartItemsServiceStub
+                },
+                {
+                  provide: ItshopPatternCreateService,
+                  useValue: patterCreateServiceStub
                 },
                 {
                     provide: UserModelService,

@@ -192,7 +192,7 @@ export class FilterElementModel {
   }
 
   public static buildCommaSeparatedList(value: string): string {
-    return value.split(MultiValueProperty.DefaultSeparator).map(elem => `'${elem}'`).join(',');
+    return value ? value.split(MultiValueProperty.DefaultSeparator).map(elem => `'${elem}'`).join(',') : '';
   }
 
   private static replaceAll(str: string, oldValue: string, newValue: string): string {

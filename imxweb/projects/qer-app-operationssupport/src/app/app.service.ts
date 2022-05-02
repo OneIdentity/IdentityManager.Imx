@@ -36,11 +36,17 @@ import {
   CdrRegistryService,
   ImxTranslationProviderService,
   imx_SessionService,
-  AuthenticationService
+  AuthenticationService,
+  PluginLoaderService
 } from 'qbm';
 import { SystemOverviewComponent } from './information/system-overview/system-overview.component';
 import { environment } from '../environments/environment';
 import { TypedClient } from 'imx-api-qbm';
+
+import * as QBM from 'qbm';
+import * as QER from 'qer';
+
+declare var SystemJS: any;
 
 @Injectable({
   providedIn: 'root'
@@ -56,6 +62,7 @@ export class AppService {
     public readonly registry: CdrRegistryService,
     public readonly resolver: ComponentFactoryResolver,
     private readonly extService: ExtService,
+    private readonly pluginLoader: PluginLoaderService,
     private readonly authentication: AuthenticationService
   ) { }
 
@@ -63,19 +70,17 @@ export class AppService {
   public async init(): Promise<void> {
     await this.config.init(environment.clientUrl);
 
-    const imxConfig = await this.config.client.imx_config_get();
-    const name = imxConfig.ProductName  || Globals.QIM_ProductNameFull;
-    const title = `${name} ${this.config.Config.Title}`;
-    this.logger.debug(this, `Set page title to ${title}`);
-    this.title.setTitle(title);
-
     this.translateService.addLangs(this.config.Config.Translation.Langs);
     const browserCulture = this.translateService.getBrowserCultureLang();
     this.logger.debug(this, `Set ${browserCulture} as default language`);
     this.translateService.setDefaultLang(browserCulture);
     await this.translateService.use(browserCulture).toPromise();
 
-    this.config.Config.Title = await this.translateService.get('#LDS#Heading Operations Support Web Portal').toPromise();
+    this.translateService.onLangChange.subscribe(() => {
+      this.setTitle();
+    });
+
+    this.setTitle();
 
     this.authentication.onSessionResponse.subscribe(sessionState => this.translationProvider.init(sessionState?.culture));
 
@@ -84,6 +89,19 @@ export class AppService {
     });
 
     this.session.TypedClient = new TypedClient(this.config.v2client, this.translationProvider);
+
+    SystemJS.set('qbm', SystemJS.newModule(QBM));
+    SystemJS.set('qer', SystemJS.newModule(QER));
+
+    await this.pluginLoader.loadModules(environment.appName);
+  }
+
+  private async setTitle(): Promise<void> {
+    const imxConfig = await this.config.getImxConfig();
+    const name = imxConfig.ProductName || Globals.QIM_ProductNameFull;
+    this.config.Config.Title = await this.translateService.get('#LDS#Heading Operations Support Web Portal').toPromise();
+    const title = `${name} ${this.config.Config.Title}`;
+    this.title.setTitle(title);
   }
 
   public static init(app: AppService): () => Promise<any> {

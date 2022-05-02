@@ -26,8 +26,9 @@
 
 import { Injectable } from '@angular/core';
 
-import { EntityCollectionData, EntityWriteData, MethodDescriptor, TimeZoneInfo } from 'imx-qbm-dbts';
+import { EntityCollectionData, EntityWriteData, InteractiveEntityData, InteractiveEntityWriteData, MethodDescriptor, TimeZoneInfo } from 'imx-qbm-dbts';
 import { DynamicCollectionLoadParameters } from './dynamic-collection-load-parameters.interface';
+import { InteractiveParameter } from './interactive-parameter.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -78,27 +79,18 @@ export class MethodDescriptorService {
     };
   }
 
-  /** Builds a method descriptor for a PUT  method. */
-  public put(path: string, inputParameterName: EntityWriteData): MethodDescriptor<EntityCollectionData> {
-    return this.putorpost('PUT', path, inputParameterName);
-  }
-
-  /** Builds a method descriptor for a POST method. */
-  public post(path: string, inputParameterName: EntityWriteData): MethodDescriptor<EntityCollectionData> {
-    return this.putorpost('POST', path, inputParameterName);
-  }
-
-  private putorpost(method: 'PUT' | 'POST', path: string, inputParameterName: EntityWriteData): MethodDescriptor<EntityCollectionData> {
+  public getInteractive(path: string, parameter: InteractiveParameter): MethodDescriptor<InteractiveEntityData> {
     return {
       path,
       parameters: [
         {
-          name: 'inputParameterName',
-          value: inputParameterName,
-          in: 'body'
+          name: parameter.name,
+          value: parameter.value,
+          required: true,
+          in: 'path'
         },
       ],
-      method: method,
+      method: 'GET',
       headers: {
         'imx-timezone': TimeZoneInfo.get(),
       },
@@ -106,6 +98,37 @@ export class MethodDescriptorService {
       observe: 'response',
       responseType: 'json'
     };
+  }
+
+  /** Builds a method descriptor for a PUT  method. */
+  public put(path: string, inputParameterName: EntityWriteData): MethodDescriptor<EntityCollectionData> {
+    return this.putorpost('PUT', path, inputParameterName);
+  }
+
+  public putInteractive(path: string, inputParameterName: InteractiveEntityWriteData): MethodDescriptor<InteractiveEntityData> {
+    return {
+        path,
+        parameters: [
+            {
+                name: 'inputParameterName',
+                value: inputParameterName,
+                required: true,
+                in: 'body'
+            },
+        ],
+        method: 'PUT',
+        headers: {
+            'imx-timezone': TimeZoneInfo.get(),
+        },
+        credentials: 'include',
+        observe: 'response',
+        responseType: 'json'
+    };
+}
+
+  /** Builds a method descriptor for a POST method. */
+  public post(path: string, inputParameterName: EntityWriteData): MethodDescriptor<EntityCollectionData> {
+    return this.putorpost('POST', path, inputParameterName);
   }
 
   public delete(path: string, pathParameters: { [name: string]: any }): MethodDescriptor<any> {
@@ -124,6 +147,26 @@ export class MethodDescriptorService {
       path,
       parameters,
       method: 'DELETE',
+      headers: {
+        'imx-timezone': TimeZoneInfo.get(),
+      },
+      credentials: 'include',
+      observe: 'response',
+      responseType: 'json'
+    };
+  }
+
+  private putorpost(method: 'PUT' | 'POST', path: string, inputParameterName: EntityWriteData): MethodDescriptor<EntityCollectionData> {
+    return {
+      path,
+      parameters: [
+        {
+          name: 'inputParameterName',
+          value: inputParameterName,
+          in: 'body'
+        },
+      ],
+      method,
       headers: {
         'imx-timezone': TimeZoneInfo.get(),
       },

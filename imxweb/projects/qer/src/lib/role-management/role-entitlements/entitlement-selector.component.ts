@@ -24,15 +24,16 @@
  *
  */
 
-import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, Inject, ViewChild } from '@angular/core';
+import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { RoleAssignmentData } from 'imx-api-qer';
 import { EntityCollectionData, FkProviderItem, IEntity, TypedEntity } from 'imx-qbm-dbts';
+import { FkCandidatesComponent } from 'qbm';
 import { RoleService } from '../role.service';
 
-export interface SelectedEntitlements {
+export interface SelectedEntitlement {
   assignmentType: RoleAssignmentData;
-  entities: IEntity[];
+  entity: IEntity;
 }
 
 @Component({
@@ -43,24 +44,28 @@ export interface SelectedEntitlements {
 export class EntitlementSelectorComponent {
 
   public selectedItems: TypedEntity[] = [];
+  public selectedType: RoleAssignmentData;
+  public data;
 
+  private fkEntity: IEntity;
+  private fk: FkProviderItem;
   private empty: EntityCollectionData = {
     TotalCount: 0,
     Entities: []
   };
 
-  public selectedType: RoleAssignmentData;
-
   constructor(
-    public readonly dialogRef: MatDialogRef<EntitlementSelectorComponent, SelectedEntitlements>,
+    public readonly dialogRef: EuiSidesheetRef,
     private readonly roleService: RoleService,
-    @Inject(MAT_DIALOG_DATA) private sidesheetData: {
+    @Inject(EUI_SIDESHEET_DATA) private sidesheetData: {
       entitlementTypes: RoleAssignmentData[],
       roleEntity: IEntity
     }
   ) {
     this.ReinitData();
   }
+
+  @ViewChild(FkCandidatesComponent) private fkCandidatesComponent: FkCandidatesComponent;
 
   public get types(): RoleAssignmentData[] {
     return this.sidesheetData.entitlementTypes;
@@ -70,32 +75,13 @@ export class EntitlementSelectorComponent {
     this.selectedItems = items;
   }
 
-  public data;
-  private fkEntity: IEntity;
-  private fk: FkProviderItem;
-
-  /** Sets the data object to trigger the changes event on the Fk candidate selector*/
-  private ReinitData() {
-    this.data = {
-      get: parameters => {
-        if (!this.fk) {
-          return this.empty;
-        }
-        const fkObj = {};
-        fkObj[this.selectedType.RoleFk] = this.sidesheetData.roleEntity.GetKeys()[0];
-        return this.fk.load(this.fkEntity, { ...parameters, ...fkObj })
-      },
-      hasSearchParameter: true,
-      isMultiValue: true
-    };
-  }
-
-  public async optionSelected(newType: RoleAssignmentData) {
+  public async optionSelected(newType: RoleAssignmentData): Promise<void> {
     this.selectedType = newType;
     this.fkEntity = this.roleService.createEntitlementAssignmentEntity(this.sidesheetData.roleEntity, newType);
     this.fk = this.fkEntity.GetFkCandidateProvider().getProviderItem(newType.EntitlementFk, newType.TableName);
     this.ReinitData();
     this.selectedItems = [];
+    this.fkCandidatesComponent.clearSelection();
   }
 
 
@@ -103,16 +89,43 @@ export class EntitlementSelectorComponent {
     if (selected) {
       this.selectedItems = [selected];
     }
-    this.dialogRef.close({
-      assignmentType: this.selectedType,
-      entities: this.selectedItems.map(t => t.GetEntity())
+    const result: SelectedEntitlement[] = this.selectedItems.map(item => {
+      return {
+        assignmentType: this.selectedType,
+        entity: item.GetEntity()
+      };
     });
+    this.dialogRef.close(result);
   }
 
-  public GetLdsNoData() {
+  public GetLdsNoData(): string {
     if (this.selectedType) {
       return null; // use fallback nodata text
     }
-    return "#LDS#Select the type of entitlement that you want to assign to this role.";
+    return '#LDS#Select the type of entitlement that you want to assign to this role.';
+  }
+
+  /**
+   * Sets the data object to trigger the changes event on the Fk candidate selector
+   */
+  private ReinitData(): void {
+    this.data = {
+      get: parameters => {
+        if (!this.fk) {
+          return this.empty;
+        }
+        const fkObj = {};
+        fkObj[this.selectedType.RoleFk] = this.sidesheetData.roleEntity.GetKeys()[0];
+        return this.fk.load(this.fkEntity, { ...parameters, ...fkObj });
+      },
+      GetFilterTree: parentKey => {
+        if (!this.fk) {
+          return { Elements: [] };
+        }
+        return this.fk.getFilterTree(this.fkEntity, parentKey);
+      },
+      hasSearchParameter: true,
+      isMultiValue: true
+    };
   }
 }

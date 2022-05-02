@@ -1,0 +1,39 @@
+<div class="heading-wrapper">
+  <h1 *ngIf="showTitle" class="mat-headline">
+    {{'#LDS#Heading Entitlement Loss' | translate}}
+  </h1>
+  <div class="alert-wrapper">
+    <eui-alert class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="false">
+      <span>
+        {{'#LDS#Here you can get an overview of all entitlements that will be withdrawn if the attestation case is denied.' | translate }}
+      </span>
+    </eui-alert>
+  </div>
+</div>
+<mat-card class="imx-attestation-case-loss-preview">
+  <table mat-table [dataSource]="lossPreviewItems">
+    <ng-container matColumnDef="Display">
+      <th mat-header-cell *matHeaderCellDef>{{ lossPreviewDisplayKeys.Display | translate }}</th>
+      <td mat-cell class="table-row-tall" *matCellDef="let row">
+        <div>
+          {{ row?.Display }}
+        </div>
+        <div subtitle class="table-subtitle">
+          {{row?.Table}}
+        </div>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="ObjectDisplay">
+      <th mat-header-cell *matHeaderCellDef>{{ lossPreviewDisplayKeys.ObjectDisplay | translate }}</th>
+      <td mat-cell *matCellDef="let row">
+        {{row?.ObjectDisplay}}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="Person">
+      <th mat-header-cell *matHeaderCellDef>{{ lossPreviewDisplayKeys.Person | translate }}</th>
+      <td mat-cell *matCellDef="let row">{{ row?.Person }}</td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="lossPreviewHeaders"></tr>
+    <tr mat-row *matRowDef="let row; columns: lossPreviewHeaders;"></tr>
+  </table>
+</mat-card>

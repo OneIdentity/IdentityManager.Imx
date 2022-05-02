@@ -75,6 +75,20 @@
   }
 }
 
+.imx-start-time-panel{
+  display: flex;
+  flex-direction: row;
+  .imx-title-label {
+    font-size: 14px;
+    margin: 0 10px 14px 0;
+    
+  }
+  eui-icon{
+    color: $iris-blue;
+  }
+}
+
+
 @media screen and (max-width: 480px) {
   .attestation-schedule-sidesheet {
     &__tab-content {

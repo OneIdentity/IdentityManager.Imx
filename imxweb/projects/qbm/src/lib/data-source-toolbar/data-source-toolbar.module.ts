@@ -34,14 +34,20 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { MatListModule } from '@angular/material/list';
 
 import { DataSourceToolbarComponent } from './data-source-toolbar.component';
 import { DataSourcePaginatorComponent } from './data-source-paginator.component';
 import { DataSourceToolbarCustomComponent } from './data-source-toolbar-custom.component';
 import { DataTreeModule } from '../data-tree/data-tree.module';
+import { FilterTreeComponent } from './filter-tree/filter-tree.component';
+import { LdsReplaceModule } from '../lds-replace/lds-replace.module';
+import { AdditionalInfosComponent } from './additional-infos/additional-infos.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatChipsModule } from '@angular/material/chips';
 
 @NgModule({
-  declarations: [DataSourceToolbarComponent, DataSourcePaginatorComponent, DataSourceToolbarCustomComponent],
+  declarations: [DataSourceToolbarComponent, DataSourcePaginatorComponent, DataSourceToolbarCustomComponent, FilterTreeComponent, AdditionalInfosComponent],
   imports: [
     CommonModule,
     EuiCoreModule,
@@ -52,8 +58,12 @@ import { DataTreeModule } from '../data-tree/data-tree.module';
     MatTooltipModule,
     MatPaginatorModule,
     MatButtonToggleModule,
+    MatChipsModule,
+    MatListModule,
+    DragDropModule,
     TranslateModule,
-    DataTreeModule
+    DataTreeModule,
+    LdsReplaceModule
   ],
   exports: [DataSourceToolbarComponent, DataSourcePaginatorComponent, DataSourceToolbarCustomComponent],
 })

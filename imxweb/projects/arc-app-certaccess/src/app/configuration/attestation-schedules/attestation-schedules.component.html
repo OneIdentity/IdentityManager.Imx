@@ -17,7 +17,8 @@
 
     <div class="imx-table-container">
       <imx-data-source-toolbar #dst [settings]="dstSettings"
-        [hiddenElements]="['groupBy', 'settings', 'selectedViewGroup']" [hiddenFilters]="['namespace']"
+        [options]="['search', 'filter']"
+        [hiddenFilters]="['namespace']"
         [searchBoxText]="'#LDS#Search' | translate" (navigationStateChanged)="onNavigationStateChanged($event)"
         (search)="onSearch($event)"></imx-data-source-toolbar>
 

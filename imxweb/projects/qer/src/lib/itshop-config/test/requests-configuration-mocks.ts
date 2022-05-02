@@ -36,7 +36,7 @@ const mockEntityColumn = {
   ColumnName: '',
   GetMetadata: () => {
     return {
-      CanEdit: () =>  false,
+      CanEdit: () => false,
       GetDisplay: () => '',
       GetMinLength: () => 0
     };
@@ -56,7 +56,9 @@ const mockfkProviderItem = {
   columnName: 'test-column',
   fkTableName: 'test-table',
   parameterNames: [],
-  load: () => Promise.resolve(undefined)
+  load: () => Promise.resolve(undefined),
+  getDataModel: () => Promise.resolve({}),
+  getFilterTree: async () => ({})
 } as FkProviderItem;
 
 const mockEntityWithFk = {

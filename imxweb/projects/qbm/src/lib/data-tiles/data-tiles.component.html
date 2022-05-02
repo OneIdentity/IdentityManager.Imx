@@ -11,6 +11,7 @@
   (badgeClicked)="onBadgeClicked($event)"
   [titleObject]="titleObject"
   [subtitleObject]="subtitleObject"
+  [additionalSubtitleObjects]="additionalSubtitleObjects"
   [actions]="actions"
   (actionSelected)="onActionSelected($event)"
   data-imx-identifier="datatiles-child"
@@ -18,7 +19,9 @@
   [width]="width"
   [height]="height">
 </imx-data-tile>
-<span *ngIf="dst?.settings?.dataSource == null || dst?.settings?.dataSource.totalCount == 0">
-  {{ noItemsFoundText ? noItemsFoundText : '#LDS#No items found.' | translate }}
-</span>
+
+<div class="imx-data-tiles-no-results" *ngIf="dst?.settings?.dataSource == null || dst?.settings?.dataSource.totalCount == 0">
+  <eui-icon [icon]="dst?.searchCurrenltyApplied || dst?.filtersCurrentlyApplied ? noMatchingDataIcon : noDataIcon"></eui-icon>
+  <p [translate]="dst?.searchCurrenltyApplied || dst?.filtersCurrentlyApplied  ? noItemsMatchText : noItemsFoundText"></p>
+</div>
 

@@ -1,0 +1,30 @@
+<div class="imx-content">
+  <mat-card class="imx-rule-violation-table-container">
+    <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['search']"
+      (navigationStateChanged)="onNavigationStateChanged($event)" (search)="onSearch($event)"></imx-data-source-toolbar>
+    <div class="imx-rule-violation-table">
+      <imx-data-table [dst]="dst" detailViewVisible="false" data-imx-identifier="identity-rule-violations-table"
+        mode="manual">
+        <imx-data-table-column [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+          <ng-template let-item>
+            <div>{{ item.GetEntity().GetDisplay() }}</div>
+            <div *ngIf="item.GetEntity().GetDisplay() !== item.GetEntity().GetDisplayLong()" subtitle>
+              {{ item.GetEntity().GetDisplayLong() }}
+            </div>
+          </ng-template>
+        </imx-data-table-column>
+        <imx-data-table-column *ngFor="let displayColumn of displayedColumns" [entityColumn]="displayColumn">
+        </imx-data-table-column>
+
+        <imx-data-table-generic-column columnName="actions">
+          <ng-template let-dataItem>
+            <button mat-button color="primary" [disabled]="!dataItem.HasMitigation.value"
+              [attr.data-imx-identifier]="'identity-rule-violations-' + dataItem.GetEntity().GetKeys().join(',')"
+              (click)="onShowDetails(dataItem)">{{'#LDS#View mitigating controls' |translate}}</button>
+          </ng-template>
+        </imx-data-table-generic-column>
+      </imx-data-table>
+      <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+    </div>
+  </mat-card>
+</div>

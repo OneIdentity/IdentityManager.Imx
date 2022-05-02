@@ -28,7 +28,7 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import { Injectable } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { PortalServiceitems } from 'imx-api-qer';
+import { PortalServiceitems, PortalServiceitemsInteractive_byid } from 'imx-api-qer';
 import { CollectionLoadParameters, ExtendedTypedEntityCollection, EntitySchema } from 'imx-qbm-dbts';
 import { DynamicMethodService, GenericTypedEntity } from 'qbm';
 import { QerApiService } from '../qer-api-client.service';
@@ -54,7 +54,7 @@ export class ServiceItemsEditService {
     return this.qerClient.typedClient.PortalServiceitems.Get(parameters);
   }
 
-  public async getServiceItem(serviceItemUid: string): Promise<PortalServiceitems> {
+  public async getServiceItem(serviceItemUid: string): Promise<PortalServiceitemsInteractive_byid> {
     const serviceItemCollection = await this.qerClient.typedClient.PortalServiceitemsInteractive_byid.Get_byid(serviceItemUid);
 
     if (serviceItemCollection == null || serviceItemCollection.Data == null || serviceItemCollection.Data.length === 0) {

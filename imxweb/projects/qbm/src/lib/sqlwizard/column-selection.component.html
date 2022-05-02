@@ -1,0 +1,5 @@
+<div class="mat-form-field-wrapper">
+    <eui-select *ngIf="dataReady" [formControl]="formControl" [label]="'#LDS#Property' | translate"
+        (selectionChange)="selectionChange($event.value)" [hideClearButton]="true" [filterFunction]="filter"
+        [options]="options"></eui-select>
+</div>

@@ -24,7 +24,8 @@
  *
  */
 
-import { TypedEntity, TypedEntityCollectionData, CollectionLoadParameters, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
+import { TypedEntity, TypedEntityCollectionData, CollectionLoadParameters, EntitySchema, IClientProperty, DataModel } from 'imx-qbm-dbts';
+import { FilterTreeParameter } from './data-model/filter-tree-parameter';
 import { DataSourceToolbarFilter } from './data-source-toolbar-filters.interface';
 import { DataSourceToolbarGroupData } from './data-source-toolbar-groups.interface';
 
@@ -65,4 +66,18 @@ export interface DataSourceToolbarSettings {
    * If undefined, no group by options will be visible
    */
   groupData?: DataSourceToolbarGroupData;
+
+  /**
+   * An array of additional data.
+   */
+  extendedData?: any[];
+
+  /* An object, that provides information for building a filter tree
+   */
+  filterTree?: FilterTreeParameter;
+
+  /**
+   * The datamodel property that supports additional table and list information
+   */
+  dataModel?: DataModel;
 }

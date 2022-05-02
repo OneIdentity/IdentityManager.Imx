@@ -19,15 +19,16 @@
   <ng-container *ngIf="settings?.dataSource && selectedTable">
     <imx-data-source-toolbar #dst [hidden]="!selectedTable.hasSearchParameter" [settings]="settings"
       (navigationStateChanged)="loadTableData($event)" [preSelection]="preselectedEntities"
-      [hiddenElements]="['filter', 'groupBy', 'settings', 'selectedViewGroup']" (search)="search($event)"
+      (filterTreeSelectionChanged)="filterByTree($event)"
+      [options]="['search','filterTree','filter', 'settings']"
+      (search)="search($event)"
       data-imx-identifier="cdr-fkadvancedpicker-dst">
     </imx-data-source-toolbar>
     <div class="imx-table-container">
       <imx-data-table [dst]="dst" mode="manual" [detailViewVisible]="false" [selectable]="data.isMultiValue"
         (selectionChanged)="selectionChanged($event)" [showSelectedItemsMenu]="false"
         data-imx-identifier="cdr-fkadvancedpicker-datatable">
-        <imx-data-table-column [entityColumn]="settings.entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-          [entitySchema]="settings.entitySchema">
+        <imx-data-table-column [entityColumn]="settings.entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
           <ng-template let-item>
             <div>{{ item?.GetEntity().GetDisplay() }}</div>
           </ng-template>

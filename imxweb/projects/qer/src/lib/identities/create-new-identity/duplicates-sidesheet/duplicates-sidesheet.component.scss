@@ -1,0 +1,17 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+:host {
+  background-color: $asher-gray;
+
+  .imx-table-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    overflow: hidden;
+
+    > span {
+      margin-bottom: 10px;
+      display: block;
+    }
+  }
+}

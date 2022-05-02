@@ -24,37 +24,57 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatMomentDateModule, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
 
-import { ShortDatePipe } from './short-date.pipe';
+import { A11yModule } from '@angular/cdk/a11y';
+import { OverlayModule} from '@angular/cdk/overlay';
+
+import { MatButtonModule } from '@angular/material/button';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+import { EuiCoreModule } from '@elemental-ui/core';
+
+import { TranslateModule } from '@ngx-translate/core';
+
 import { DateComponent } from './date/date.component';
+import { CalendarComponent } from './date/calendar/calendar.component';
+import { TimePickerComponent } from './date/time-picker/time-picker.component';
+import { ShortDatePipe } from './short-date.pipe';
 
 @NgModule({
   declarations: [
     ShortDatePipe,
-    DateComponent
+    DateComponent,
+    CalendarComponent,
+    TimePickerComponent
   ],
   exports: [
     DateComponent,
     ShortDatePipe
   ],
   imports: [
+    A11yModule,
     CommonModule,
+    EuiCoreModule,
     FormsModule,
+    MatButtonModule,
     MatDatepickerModule,
+    MatDividerModule,
+    MatIconModule,
     MatMomentDateModule,
     MatFormFieldModule,
     MatInputModule,
     MatProgressSpinnerModule,
+    OverlayModule,
     ReactiveFormsModule,
     TranslateModule
   ],

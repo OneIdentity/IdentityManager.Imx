@@ -25,7 +25,6 @@
  */
 
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -36,11 +35,10 @@ import {
   BaseCdr,
   ClassloggerService,
   ColumnDependentReference,
+  ConfirmationService,
   DataSourceToolbarSettings,
   DataSourceWrapper,
   DataTableComponent,
-  MessageDialogComponent,
-  MessageDialogResult,
 } from 'qbm';
 import { PickCategorySelectIdentitiesComponent } from '../pick-category-select-identities/pick-category-select-identities.component';
 import { PickCategoryService } from '../pick-category.service';
@@ -66,7 +64,7 @@ export class PickCategorySidesheetComponent implements OnInit {
       pickCategory: PortalPickcategory
     },
     private readonly sidesheet: EuiSidesheetService,
-    private readonly dialog: MatDialog,
+    private readonly confirmationService: ConfirmationService,
     private readonly pickCategoryService: PickCategoryService,
     private readonly translate: TranslateService,
     private readonly logger: ClassloggerService
@@ -108,7 +106,7 @@ export class PickCategorySidesheetComponent implements OnInit {
 
   public async assignPickedItems(): Promise<void> {
     const selection = await this.sidesheet.open(PickCategorySelectIdentitiesComponent, {
-      title: await this.translate.get("#LDS#Heading Select Identities").toPromise(),
+      title: await this.translate.get('#LDS#Heading Select Identities').toPromise(),
       headerColour: 'iris-blue',
       padding: '0px',
       width: '700px',
@@ -123,19 +121,10 @@ export class PickCategorySidesheetComponent implements OnInit {
   }
 
   public async removePickedItems(): Promise<void> {
-    const dialogRef = this.dialog.open(MessageDialogComponent, {
-      data: {
-        ShowOk: true,
-        ShowCancel: true,
-        Title: await this.translate.get('#LDS#Heading Remove Identities').toPromise(),
-        Message: await this.translate.get('#LDS#Are you sure you want to remove the selected identities?').toPromise()
-      },
-      panelClass: 'imx-messageDialog'
-    });
-
-    const result = await dialogRef.afterClosed().toPromise();
-    if (result === MessageDialogResult.OkResult) {
-
+    if (await this.confirmationService.confirm({
+      Title: '#LDS#Heading Remove Identities',
+      Message: '#LDS#Are you sure you want to remove the selected identities?'
+    })) {
       if (await this.pickCategoryService.deletePickedItems(this.uidPickCategory, this.selectedPickedItems) > 0) {
         await this.getData();
         this.table?.clearSelection();

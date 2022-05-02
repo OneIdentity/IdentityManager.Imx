@@ -29,6 +29,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { configureTestSuite } from 'ng-bullet';
 
 import { clearStylesFromDOM } from 'qbm';
+import { UserService } from '../user/user.service';
 import { DashboardComponent } from './dashboard.component';
 
 @Component({
@@ -67,6 +68,17 @@ describe('DashboardComponent', () => {
         MockNotificationsComponent,
         MockServiceIssuesComponent,
         MockServiceReportComponent
+      ],
+      providers: [
+        {
+          provide: UserService,
+          useValue: {
+            getGroups: jasmine.createSpy('getGroups').and.returnValue({
+              Uid: 'QER_4_OperationsSupport',
+              Name: 'QER_4_OperationsSupport'
+            })
+          }
+        }
       ]
     });
   });

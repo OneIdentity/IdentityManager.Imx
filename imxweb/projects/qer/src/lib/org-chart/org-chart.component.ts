@@ -24,53 +24,59 @@
  *
  */
 
-import { Component, Input, OnInit } from "@angular/core";
-import { PortalPersonOrgdata } from "imx-api-qer";
-import { QerApiService } from "../qer-api-client.service";
+import { Component, Input, OnInit } from '@angular/core';
+import { EuiLoadingService } from '@elemental-ui/core';
+import { PortalPersonOrgdata } from 'imx-api-qer';
+import { QerApiService } from '../qer-api-client.service';
 
 @Component({
-  templateUrl: "./org-chart.component.html",
+  templateUrl: './org-chart.component.html',
   selector: 'imx-orgchart',
-  styleUrls: ['./org-chart.component.scss']
+  styleUrls: ['./org-chart.component.scss'],
 })
 export class OrgChartComponent implements OnInit {
-
-  constructor(private readonly apiService: QerApiService) {
-  }
+  constructor(private readonly apiService: QerApiService, private readonly busyService: EuiLoadingService) {}
 
   @Input() uidPerson: string;
   data: {
-    self: PortalPersonOrgdata,
-    peers: PortalPersonOrgdata[],
-    managers: PortalPersonOrgdata[],
-    reports: PortalPersonOrgdata[]
-  }
+    self: PortalPersonOrgdata;
+    peers: PortalPersonOrgdata[];
+    managers: PortalPersonOrgdata[];
+    reports: PortalPersonOrgdata[];
+  };
 
   baseUrl: string;
   maxNumberDisplay = 32;
 
   public isNotDisplayingAll(): boolean {
-    return this.data
-      && (this.data.peers.length >= this.maxNumberDisplay
-        || this.data.managers.length >= this.maxNumberDisplay
-        || this.data.reports.length >= this.maxNumberDisplay);
+    return (
+      this.data &&
+      (this.data.peers.length >= this.maxNumberDisplay ||
+        this.data.managers.length >= this.maxNumberDisplay ||
+        this.data.reports.length >= this.maxNumberDisplay)
+    );
   }
 
   async ngOnInit() {
-
     const limitOptions = { PageSize: this.maxNumberDisplay };
-    // Peers, Managers, Reports
-    const peers = this.apiService.typedClient.PortalPersonOrgdata.Get("peers", this.uidPerson, limitOptions);
-    const managers = this.apiService.typedClient.PortalPersonOrgdata.Get("managers", this.uidPerson, limitOptions);
-    const self = this.apiService.typedClient.PortalPersonOrgdata.Get("self", this.uidPerson);
-    const reports = this.apiService.typedClient.PortalPersonOrgdata.Get("reports", this.uidPerson, limitOptions);
 
-    this.data = {
-      managers: (await managers).Data,
-      self: (await self).Data[0],
-      peers: (await peers).Data,
-      reports: (await reports).Data
-    };
+    const loaderRef = this.busyService.show();
+
+    try {
+      // Peers, Managers, Reports
+      const peers = this.apiService.typedClient.PortalPersonOrgdata.Get('peers', this.uidPerson, limitOptions);
+      const managers = this.apiService.typedClient.PortalPersonOrgdata.Get('managers', this.uidPerson, limitOptions);
+      const self = this.apiService.typedClient.PortalPersonOrgdata.Get('self', this.uidPerson);
+      const reports = this.apiService.typedClient.PortalPersonOrgdata.Get('reports', this.uidPerson, limitOptions);
+
+      this.data = {
+        managers: (await managers).Data,
+        self: (await self).Data[0],
+        peers: (await peers).Data,
+        reports: (await reports).Data,
+      };
+    } finally {
+      this.busyService.hide(loaderRef);
+    }
   }
-
 }

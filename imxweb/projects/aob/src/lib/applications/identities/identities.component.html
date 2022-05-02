@@ -1,6 +1,6 @@
 <imx-data-source-toolbar #dst
   data-imx-identifier="identity-dst"
-  [hiddenElements]="['filter', 'groupBy', 'settings']"
+  [options]="['search', 'selectedViewGroup']"
   [settings]="dstSettings"
   [initalView]="selectedView"
   (search)="onSearch($event)"
@@ -17,13 +17,11 @@
   <imx-data-table-column
     data-imx-identifier="identity-column-default-display"
     [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-    [entitySchema]="entitySchema"
-    data-imx-identifier=""></imx-data-table-column>
+    data-imx-identifier="identity-data-default"></imx-data-table-column>
   <imx-data-table-column
     data-imx-identifier="identity-column-default-email"
     [entityColumn]="entitySchema?.Columns['DefaultEmailAddress']"
-    [entitySchema]="entitySchema"
-    data-imx-identifier=""></imx-data-table-column>
+    data-imx-identifier="identity-data-email"></imx-data-table-column>
 </imx-data-table>
 <imx-data-tiles *ngIf="selectedView === 'cardlist'"
   data-imx-identifier="identity-tiles"

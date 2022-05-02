@@ -39,8 +39,8 @@ import { IEntity, IEntityColumn } from 'imx-qbm-dbts';
 import { Approval } from '../approval';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
 import { QerApiService } from '../../qer-api-client.service';
-import { JustificationService } from '../../itshop/justification.service';
-import { JustificationType } from '../../itshop/justification-type.enum';
+import { JustificationService } from '../../justification/justification.service';
+import { JustificationType } from '../../justification/justification-type.enum';
 
 describe('WorkflowActionService', () => {
   let service: WorkflowActionService;

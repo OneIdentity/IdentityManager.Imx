@@ -26,7 +26,7 @@
 
 import { Injectable } from '@angular/core';
 import { Router, Route } from '@angular/router';
-import { DynamicMethodService, ExtService } from 'qbm';
+import { DynamicMethodService, ExtService, TabItem } from 'qbm';
 import { RequestableEntitlementType, RequestableEntitlementTypeService } from 'qer';
 import { RpsApiService } from './rps-api-client.service';
 import { SubscriptionsComponent } from './subscriptions/subscriptions.component';
@@ -45,13 +45,20 @@ export class InitService {
 
   public onInit(routes: Route[]): void {
     this.addRoutes(routes);
-
-    this.extService.register('SubscriptionsComponent', { instance: SubscriptionsComponent });
+    this.extService.register('profile', {
+      instance: SubscriptionsComponent,
+      inputData: {
+        id: 'subscriptions',
+        label: '#LDS#Heading Report Subscriptions',
+        checkVisibility: async _ => true
+      },
+      SortOrder: 0
+    } as TabItem);
 
     this.entlTypeService.Register(async () => [
-      new RequestableEntitlementType("RPSReport",
+      new RequestableEntitlementType('RPSReport',
         this.apiService.apiClient,
-        "UID_RPSReport",
+        'UID_RPSReport',
         this.dynamicMethodService)
     ]);
   }

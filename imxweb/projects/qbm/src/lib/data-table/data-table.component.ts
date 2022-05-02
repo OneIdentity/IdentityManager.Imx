@@ -58,6 +58,7 @@ import { DataTableGenericColumnComponent } from './data-table-generic-column.com
 import { DataSourceToolbarComponent } from '../data-source-toolbar/data-source-toolbar.component';
 import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
 import { DataTableGroupedData } from './data-table-groups.interface';
+import { RowHighlight } from './data-table-row-highlight.interface';
 
 /**
  * A data table component with a detail view specialized on typed entities.
@@ -67,7 +68,6 @@ import { DataTableGroupedData } from './data-table-groups.interface';
  *
  * @example
  * A simple example of a data table, a DST and a paginator.
- * Checkout other components in this module and the datasource toolbar module for further examples.
  *
  * <imx-data-source-toolbar #dst [settings]="mySettings"></imx-data-source-toolbar>
  * <imx-data-table
@@ -101,12 +101,6 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
    * Not to be confused with the 'selection' property.
    */
   public highlightedEntity: TypedEntity;
-
-  /**
-   * @ignore Used internally in components template.
-   * Indicates if the detail view is expanded or not.
-   */
-  public detailViewOpen = false;
 
   /**
    * @ignore Used internally in components template.
@@ -154,6 +148,8 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
    */
   @Input() public displayedColumns: IClientProperty[] = [];
 
+  public additional: IClientProperty[] = [];
+
   /**
    * The entity schema of the typed entity.
    */
@@ -177,6 +173,8 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
    * Used to pass manual generic columns through to nested data-tables for group by functionality
    */
   @Input() public parentManualGenericColumns?: QueryList<DataTableGenericColumnComponent>;
+
+  @Input() public additionalColumns: IClientProperty[];
 
   /**
    * Indicates, if multiselect is enabled.
@@ -242,14 +240,15 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
   @Input() public groupedTableHasFiltersApplied?: boolean;
 
   /**
+   * Provide a functional filter that returns a boolean to apply the background color from imx-data-table-row-conditional class
+   * Example: filter: (row: AttestationCase) => {return row.hasHighlightProperty}
+   */
+  @Input() public highlightRowFilter?: RowHighlight;
+
+  /**
    * An emitted event that contains information on the group that was selected/interacted with
    */
   @Output() public groupDataChanged = new EventEmitter<string>();
-
-  /**
-   * An emitted event indicating, if the detail view is open or not.
-   */
-  @Output() public detailViewOpenChanged = new EventEmitter<boolean>();
 
   /**
    * An emitted event that contains the highlighted typed entity after a user has selected a row in the table.
@@ -305,9 +304,12 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
    * Does most of the initializing stuff.
    */
   public ngAfterViewInit(): void {
-
     setTimeout(async () => {
+
       if (this.dst && this.dst.settings) {
+        this.additional = this.dst.shownClientProperties
+        .filter(elem => this.dst.settings.displayedColumns.find(disp => disp.ColumnName === elem.ColumnName) == null);
+
         this.settings = this.dst.settings;
         await this.dstHasChanged();
       }
@@ -319,7 +321,7 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
    *
    * Listens for changes of data table inputs e.g. checks it the datasource has changed.
    */
-  public ngOnChanges(changes: SimpleChanges): void {
+  public async ngOnChanges(changes: SimpleChanges): Promise<void> {
 
     if (changes.mode && changes.mode.currentValue) {
       if (this.mode === 'auto') {
@@ -330,6 +332,7 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
     }
 
     if (changes.dst && changes.dst.currentValue) {
+
       this.subscriptions.push(this.dst.settingsChanged.subscribe(async (value: DataSourceToolbarSettings) => {
         if (this.dst.dataSourceHasChanged) {
           this.settings = value;
@@ -340,6 +343,12 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
       this.subscriptions.push(this.dst.selectionChanged.subscribe((event: SelectionChange<TypedEntity>) =>
         this.selectionChanged.emit(event.source.selected)
       ));
+
+      this.subscriptions.push(this.dst.shownColumnsSelectionChanged.subscribe(async value => {
+        this.additional = value
+          .filter(elem => this.dst.settings.displayedColumns.find(disp => disp.ColumnName === elem.ColumnName) == null);
+        await this.dstHasChanged();
+      }));
     }
   }
 
@@ -361,22 +370,12 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
   public clearSelection(): void {
     this.dst.clearSelection();
   }
-
   /**
    * @ignore Used internally in components template.
    * Open the selection dialog
    */
   public onOpenSelectionDialog(): void {
     this.dst.showSelectedItems();
-  }
-
-  /**
-   * @ignore Used internally in components template.
-   * Listens if the detail view is expandend or closed and emitts an event.
-   */
-  public onDetailOpenedChanged(newState: boolean): void {
-    this.detailViewOpen = newState;
-    this.detailViewOpenChanged.emit(this.detailViewOpen);
   }
 
   public numOfSelectedItemsOnPage(): number {
@@ -428,6 +427,14 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
 
     // Always emit a changed event (even if the same row was selected), to allow any listners to decide whether to act or not
     this.highlightedEntityChanged.emit(this.highlightedEntity);
+  }
+
+  public isHighlight(entity: TypedEntity): boolean {
+    if (!this.highlightRowFilter) {
+      // Value is null
+      return false;
+    }
+    return this.highlightRowFilter.filter(entity);
   }
 
   /**
@@ -532,8 +539,12 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
    * Some settings of DST has changed. Check changes.
    */
   private async dstHasChanged(): Promise<void> {
+    // TODO: hier die additional columns berücksichtigen?
     if (this.settings && this.settings.entitySchema) {
       this.entitySchema = this.settings.entitySchema;
+      this.manualColumns.forEach((item: DataTableColumnComponent<any>) => {
+        item.entitySchema = this.entitySchema;
+      });
     }
 
     if (this.settings && this.settings.dataSource) {
@@ -571,7 +582,7 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
       this.columnDefs.forEach(colDef => this.table.removeColumnDef(colDef));
     }
 
-    if (this.dst.dataSourceChanged && this.mode === 'manual') {
+    if ((this.dst.dataSourceChanged || this.dst.shownColumnsSelectionChanged) && this.mode === 'manual') {
       if (this.manualColumns == null && this.manualGenericColumns == null) {
         return;
       }
@@ -598,10 +609,15 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
           this.columnDefs.push(column.columnDef);
         });
       }
+
     }
 
-    if (this.settings && this.settings.displayedColumns) {
-      this.displayedColumns = this.settings.displayedColumns;
+    if (this.dst && this.dst.shownClientProperties.length > 0) {
+      this.displayedColumns = this.dst.shownClientProperties;
+    } else {
+      if (this.settings && this.settings.displayedColumns) {
+        this.displayedColumns = this.settings.displayedColumns;
+      }
     }
 
     if ((this.displayedColumns == null || this.displayedColumns.length === 0) && this.entitySchema) {

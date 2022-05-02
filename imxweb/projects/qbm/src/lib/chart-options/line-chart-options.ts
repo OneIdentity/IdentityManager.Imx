@@ -24,7 +24,7 @@
  *
  */
 
-import { ChartOptions, LineOptions, ChartTypes } from 'billboard.js';
+import { ChartOptions, LineOptions, ChartTypes, areaSpline, area, spline, line, zoom } from 'billboard.js';
 import { XAxisInformation } from './x-axis-information';
 import { YAxisInformation } from './y-axis-information';
 
@@ -62,6 +62,11 @@ export class LineChartOptions {
   public colorArea = true;
 
   public size: {width: number, height: number};
+
+  /**
+   * Set padding as a constant for timeseries
+   */
+  public padding: { left: number, right: number, unit?: string}
 
   /**
    * An optional function for getting a tooltip
@@ -105,7 +110,7 @@ export class LineChartOptions {
         contents: this.tooltip,
       },
       spline: { interpolation: { type: 'monotone-x' } },
-      zoom: { enabled: this.canZoom },
+      zoom: { enabled: this.canZoom, type: 'drag'},
       point: { show: this.showPoints },
       axis: {
         x: this.xAxisInformation.getAxisConfiguration(),
@@ -116,11 +121,12 @@ export class LineChartOptions {
         y: {
           lines: this.additionalLines,
         }
-      }
+      },
+      padding: this.padding
     };
   }
 
   private getType(): ChartTypes {
-    return this.colorArea ? (this.useCurvedLines ? 'area-spline' : 'area') : (this.useCurvedLines ? 'spline' : 'line');
+    return this.colorArea ? (this.useCurvedLines ? areaSpline() : area()) : (this.useCurvedLines ? spline() : line());
   }
 }

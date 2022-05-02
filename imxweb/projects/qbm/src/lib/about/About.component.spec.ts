@@ -154,9 +154,7 @@ describe('AboutComponent', () => {
         {
           provide: AppConfigService,
           useValue: {
-            client: {
-              imx_config_get: jasmine.createSpy('imx_config_get').and.returnValue(Promise.resolve({ProductName: null}))
-            }
+            getImxConfig: jasmine.createSpy('getImxConfig').and.returnValue(Promise.resolve({ProductName: null}))
           }
         },
         {

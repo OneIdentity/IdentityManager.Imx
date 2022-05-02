@@ -30,6 +30,7 @@ import { configureTestSuite } from 'ng-bullet';
 import { IEntity, IReadValue } from 'imx-qbm-dbts';
 import { clearStylesFromDOM } from 'qbm';
 import { AttestationDisplayComponent } from './attestation-display.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('AttestationDisplayComponent', () => {
   let component: AttestationDisplayComponent;
@@ -39,7 +40,8 @@ describe('AttestationDisplayComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         AttestationDisplayComponent
-      ]
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     });
   });
 

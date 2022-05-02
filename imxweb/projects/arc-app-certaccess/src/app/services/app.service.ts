@@ -38,6 +38,7 @@ import {
 import { environment } from '../../environments/environment';
 import { EuiSplashScreenService } from '@elemental-ui/core';
 import { DashboardPluginComponent } from '../dashboard-plugin/dashboard-plugin.component';
+import { OpsWebLinkPluginComponent } from '../dashboard-plugin/opsweblink-plugin.component';
 
 @Injectable({
   providedIn: 'root',
@@ -60,6 +61,7 @@ export class AppService {
   public async init(): Promise<void> {
     this.showSplash();
     try {
+      await this.config.init(environment.clientUrl);
       const title = `${'One Identity Starling -'} ${this.config.Config.Title}`;
       this.logger.debug(this, `Set page title to ${title}`);
       this.title.setTitle(title);
@@ -74,6 +76,10 @@ export class AppService {
 
       // register dashboard to show number of frozen jobs
       this.extService.register('Dashboard-SmallTiles', { instance: DashboardPluginComponent });
+
+      // register tile with link top opsweb
+      this.extService.register('Dashboard-LargeTiles', { instance: OpsWebLinkPluginComponent });
+
     } catch (error) {
       this.logger.error(this, error);
     }

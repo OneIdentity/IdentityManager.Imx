@@ -26,9 +26,10 @@
 
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule, Router } from '@angular/router';
+
 import { RouteGuardService } from 'qbm';
-import { AdminGuardService } from './services/admin-guard.service';
 import { RequestsComponent } from 'qer';
+import { AdminGuardService } from './services/admin-guard.service';
 
 const routes: Routes = [
   {

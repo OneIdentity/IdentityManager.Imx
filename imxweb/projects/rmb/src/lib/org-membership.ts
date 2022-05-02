@@ -24,35 +24,39 @@
  *
  */
 
-import { CollectionLoadParameters, ExtendedTypedEntityCollection, TypedEntity, EntityCollectionData, EntitySchema, IEntity } from "imx-qbm-dbts";
-import { IRoleMembershipType } from "qer";
-import { DynamicMethod, ImxTranslationProviderService, imx_SessionService } from "qbm";
-import { RmbApiService } from "./rmb-api-client.service";
+import { CollectionLoadParameters, ExtendedTypedEntityCollection, TypedEntity, EntityCollectionData, EntitySchema, IEntity, DataModel } from 'imx-qbm-dbts';
+import { IRoleMembershipType } from 'qer';
+import { DynamicMethod, ImxTranslationProviderService, imx_SessionService } from 'qbm';
+import { RmbApiService } from './rmb-api-client.service';
 
 // do not inherit from BaseMembership because classes cannot inherit across modules :-(
 
 export class OrgMembership implements IRoleMembershipType {
+
+  public supportsDynamicMemberships = true;
+  private readonly schemaPaths: Map<string, string> = new Map();
+
+  private readonly basePath = 'portal/roles/config/membership/Org';
+
   constructor(
     private readonly api: RmbApiService,
     private readonly session: imx_SessionService,
     private readonly translator: ImxTranslationProviderService
   ) {
-    this.schemaPaths.set('get', `portal/roles/config/membership/Org/{UID_Org}`);
-    this.schemaPaths.set('candidates', `portal/roles/config/membership/Org/{UID_Org}/UID_Person/candidates`);
+    this.schemaPaths.set('get', `${this.basePath}/{UID_Org}`);
+    this.schemaPaths.set('candidates', `${this.basePath}/{UID_Org}/UID_Person/candidates`);
   }
-
-  private readonly schemaPaths: Map<string, string> = new Map();
 
   public async get(id: string, navigationState?: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
     const api = new DynamicMethod(
       this.schemaPaths.get('get'),
-      `/portal/roles/config/membership/Org/${id}`,
+      `/${this.basePath}/${id}`,
       this.api.apiClient,
       this.session,
       this.translator
     );
 
-    return await api.Get(navigationState);
+    return api.Get(navigationState);
   }
 
   public getSchema(key: string): EntitySchema {
@@ -60,7 +64,7 @@ export class OrgMembership implements IRoleMembershipType {
   }
 
   public GetUidPerson(entity: IEntity) {
-    return entity.GetColumn("UID_Person").GetValue();
+    return entity.GetColumn('UID_Person').GetValue();
   }
 
   public async getCandidates(
@@ -69,24 +73,38 @@ export class OrgMembership implements IRoleMembershipType {
   ): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
     const api = new DynamicMethod(
       this.schemaPaths.get('candidates'),
-      `/portal/roles/config/membership/Org/${id}/UID_Person/candidates`,
+      `/${this.basePath}/${id}/UID_Person/candidates`,
       this.api.apiClient,
       this.session,
       this.translator
     );
 
-    return await api.Get(navigationState);
+    return api.Get(navigationState);
+  }
+
+  public async getCandidatesDataModel(id: string): Promise<DataModel> {
+    const dynamicMethod = new DynamicMethod(
+      this.schemaPaths.get('candidates'),
+      `/${this.basePath}/${id}/UID_Person/candidates`,
+      this.api.apiClient,
+      this.session,
+      this.translator
+    );
+    return dynamicMethod.getDataModei();
   }
 
   public async delete(role: string, identity: string): Promise<EntityCollectionData> {
-    return await this.api.client.portal_roles_config_membership_Org_delete(role, identity);
+    return this.api.client.portal_roles_config_membership_Org_delete(role, identity);
   }
 
   public hasPrimaryMemberships(): boolean {
     return true;
   }
 
-  public getPrimaryMembers(uid: string, navigationstate: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<TypedEntity, any>> {
+  public getPrimaryMembers(
+    uid: string,
+    navigationstate: CollectionLoadParameters
+  ): Promise<ExtendedTypedEntityCollection<TypedEntity, any>> {
     return this.api.typedClient.PortalRolesConfigOrgPrimarymembers.Get(uid, navigationstate);
   }
 

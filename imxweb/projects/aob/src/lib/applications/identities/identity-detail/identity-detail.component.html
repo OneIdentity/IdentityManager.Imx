@@ -1,14 +1,14 @@
 <imx-data-source-toolbar #dst
   data-imx-identifier="identity-detail-dst"
-  [hiddenElements]="['filter', 'groupBy', 'settings', 'selectedViewGroup']"
+  [options]="['search']"
   [settings]="dstSettings"
   (search)="onSearch($event)"
   (navigationStateChanged)="onNavigationStateChanged($event)">
 </imx-data-source-toolbar>
 <imx-data-table data-imx-identifier="identity-detail-data-table" [dst]="dst" [detailViewVisible]="false" mode="manual">
-  <imx-data-table-column data-imx-identifier="identity-detail-column-default-display" [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" [entitySchema]="entitySchema" data-imx-identifier=""></imx-data-table-column>
-  <imx-data-table-column data-imx-identifier="identity-detail-column-order-state" [entityColumn]="entitySchema?.Columns['OrderState']" [entitySchema]="entitySchema" data-imx-identifier=""></imx-data-table-column>
-  <imx-data-table-column data-imx-identifier="identity-detail-column-valid-until" [entityColumn]="entitySchema?.Columns['ValidUntil']" [entitySchema]="entitySchema" data-imx-identifier="" columnLabel="">
+  <imx-data-table-column data-imx-identifier="identity-detail-column-default-display" [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"></imx-data-table-column>
+  <imx-data-table-column data-imx-identifier="identity-detail-column-order-state" [entityColumn]="entitySchema?.Columns['OrderState']"></imx-data-table-column>
+  <imx-data-table-column data-imx-identifier="identity-detail-column-valid-until" [entityColumn]="entitySchema?.Columns['ValidUntil']" columnLabel="">
     <ng-template let-item>
       <div *ngIf="item.ValidUntil.value" class="imx-badge-container">
         <eui-badge>

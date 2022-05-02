@@ -3,15 +3,18 @@
 :host {
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  overflow: hidden;
+  flex: 1 1 auto;
   min-height: 100%;
   background-color: mat-color($asher-gray-palette, 100);
 }
+
 
 .imx-application-details-content {
   display: flex;
   flex-wrap: wrap;
   padding: 16px 24px;
+  overflow: auto;
 
   > .mat-card {
     background-color: transparent;
@@ -24,6 +27,9 @@
 
   .mat-button {
     vertical-align: middle;
+    padding: 0 2px;
+    min-width: 0;
+    margin-left: 5px;
 
     ::ng-deep .mat-button-wrapper {
       vertical-align: text-bottom;
@@ -54,6 +60,25 @@
       margin-bottom: 15px;
     }
   }
+}
+
+.imx-button-area{
+  background-color: transparent;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+
+  
+  .justify-start{
+    margin-right: auto;
+    justify-self: start;
+  }
+
+  .imx-additional-actions{
+    margin-right: 5px;
+    margin-left: 5px;
+  }
+  
 }
 
 .imx-application-property-multi {
@@ -94,6 +119,8 @@ li {
     }
   }
 }
+
+
 
 .mat-dialog-content {
   flex: 1;
@@ -243,7 +270,7 @@ li {
   user-select: none;
 }
 
-::ng-deep body .mat-dialog-container {
+:host ::ng-deep body .mat-dialog-container {
   display: flex;
   flex-direction: column;
 }

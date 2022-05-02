@@ -62,13 +62,12 @@
       (click)="actionService.revokeDelegations([data.pwo])">
       {{ '#LDS#Withdraw additional approver' | translate }}
     </button>
-    <!-- TODO #ADO FD 250607
+
   <button mat-stroked-button *ngIf="data.pwo.canEscalateDecision"
     data-imx-identifier="approvals-sidesheet-button-escalate-approval"
     title="{{ '#LDS#Escalates the approval for this request' | translate }}" (click)="actionService.escalateDecisions([data.pwo])">
     {{'#LDS#Escalate approval' | translate}}
   </button>
-  -->
     <!-- TODO later
     <button mat-stroked-button
     data-imx-identifier="approvals-sidesheet-button-change-priority"

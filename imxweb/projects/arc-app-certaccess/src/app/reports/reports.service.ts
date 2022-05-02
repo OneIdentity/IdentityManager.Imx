@@ -54,7 +54,7 @@ export class ReportsService {
     const options: CollectionLoadParameters = {
       PageSize: this.settingService.DefaultPageSize,
       StartIndex: 0,
-      parentKey: '',
+      ParentKey: '',
     };
 
     if (search) {

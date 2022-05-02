@@ -66,7 +66,8 @@ describe('AttestationDecisionComponent', () => {
             get: jasmine.createSpy('get').and.returnValue(Promise.resolve({})),
             getDataModel: jasmine.createSpy('getDataModel').and.returnValue(Promise.resolve({
               Properties: [],
-              GroupInfo: []
+              GroupInfo: [],
+              Filters: []
             })),
             createGroupData: (__1, __2) => undefined
           }
@@ -139,11 +140,11 @@ describe('AttestationDecisionComponent', () => {
     clearStylesFromDOM();
   });
 
-  it('inits the attestation cases table', fakeAsync(() => {
+  it('inits the attestation cases table', async() => {
     fixture.detectChanges();
 
-    tick();
+    await component.ngOnInit();
 
     expect(component.dstSettings).toBeDefined();
-  }));
+  });
 });

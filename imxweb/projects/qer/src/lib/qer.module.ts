@@ -53,6 +53,8 @@ import { QerService } from './qer.service';
 import { PasscodeViewerComponent } from './ops/passcodeViewer.component';
 import { ServiceItemsModule } from './service-items/service-items.module';
 import { ServiceItemsService } from './service-items/service-items.service';
+import { PatternItemsModule } from './pattern-item-list/pattern-items.module';
+import { PatternItemService } from './pattern-item-list/pattern-item.service';
 import { SourceDetectiveModule } from './sourcedetective/sourcedetective.module';
 import { StarlingComponent } from './starling/starling.component';
 import { StartComponent } from './wport/start/start.component';
@@ -91,6 +93,7 @@ const routes: Routes = [
     TranslateModule,
     FormsModule,
     ServiceItemsModule,
+    PatternItemsModule,
     ReactiveFormsModule,
     EuiCoreModule,
     EuiMaterialModule,
@@ -118,6 +121,7 @@ const routes: Routes = [
       multi: true,
     },
     ServiceItemsService,
+    PatternItemService
   ],
 })
 export class QerModule {
@@ -125,12 +129,16 @@ export class QerModule {
     logger: ClassloggerService,
     private readonly config: AppConfigService,
     @Inject('environment') private readonly environment,
-    @Inject('appConfigJson') private readonly appConfigJson) {
+    @Inject('appConfigJson') private readonly appConfigJson
+  ) {
     logger.info(this, '▶️ QerModule loaded');
 
-    this.config.init2(this.environment.clientUrl, this.appConfigJson);
-    (async () => {
-      await this.config.loadSchema2();
-    })();
+    if (this.environment.appName === 'arc-app-certaccess') {
+      this.config.initSynchronous(this.environment.clientUrl, this.appConfigJson);
+
+      (async () => {
+        await this.config.loadSchema();
+      })();
+    }
   }
 }

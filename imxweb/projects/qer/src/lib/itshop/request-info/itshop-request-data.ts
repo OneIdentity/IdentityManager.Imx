@@ -24,7 +24,8 @@
  *
  */
 
-import { ParameterData, PwoData, PwoExtendedData } from 'imx-api-qer';
+import { PwoData, PwoExtendedData } from 'imx-api-qer';
+import { ParameterData } from 'imx-qbm-dbts';
 
 export class ItshopRequestData {
   public readonly parameters: ParameterData[] = [];

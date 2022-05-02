@@ -30,7 +30,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { PortalRules } from 'imx-api-cpl';
 import { ICartItemCheck } from 'imx-api-qer';
 import { DetailsView } from 'qer';
-import { CartItemViolationDetailsComponent } from '../cart-item-violation-details/cart-item-violation-details.component';
+import { ComplianceViolationDetailsComponent } from '../../request/compliance-violation-details/compliance-violation-details.component';
 import { ItemValidatorService } from '../item-validator.service';
 
 @Component({
@@ -79,7 +79,7 @@ export class CartItemComplianceCheckComponent implements DetailsView, AfterViewI
   }
 
   public async onOpenDetails(): Promise<void> {
-    this.sidesheetService.open(CartItemViolationDetailsComponent, {
+    this.sidesheetService.open(ComplianceViolationDetailsComponent, {
       title: await this.translateService.get('#LDS#Heading View Rule Violation Details').toPromise(),
       width: '800px',
       bodyColour: 'asher-gray',
@@ -91,7 +91,7 @@ export class CartItemComplianceCheckComponent implements DetailsView, AfterViewI
 }
 
 export interface ApplicableRule {
-  rule: PortalRules;
+  rule?: PortalRules;
   violationDetail: ViolationDetail;
 }
 

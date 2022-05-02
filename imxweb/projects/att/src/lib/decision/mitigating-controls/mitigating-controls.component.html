@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>{{ '#LDS#Heading Edit Mitigating Controls' | translate}}</h2>
+<mat-dialog-content>
+  <form [formGroup]="formGroup">
+    <imx-cdr-editor data-imx-identifier="mitigation-controls-column-cdr" [cdr]="mitigatingControlCdr" (controlCreated)="formGroup.addControl('mcontrol', $event)">
+    </imx-cdr-editor>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button data-imx-identifier="mitigation-controls-button-cancel" mat-stroked-button mat-dialog-close>{{'#LDS#Cancel' |
+    translate}}</button>
+  <button color="primary" data-imx-identifier="mitigation-controls-button-apply" mat-raised-button [mat-dialog-close]="true"
+    [disabled]="!formGroup.dirty" cdkFocusInitial>
+    {{'#LDS#Save' | translate}}
+  </button>
+</mat-dialog-actions>

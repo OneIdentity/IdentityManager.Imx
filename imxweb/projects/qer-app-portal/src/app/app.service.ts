@@ -29,10 +29,22 @@ import { Title } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 
 import { Globals } from 'imx-qbm-dbts';
-import { AppConfigService, imx_SessionService, CdrRegistryService, ImxTranslationProviderService, ClassloggerService, AuthenticationService } from 'qbm';
+import {
+  AppConfigService,
+  imx_SessionService,
+  CdrRegistryService,
+  ImxTranslationProviderService,
+  ClassloggerService,
+  AuthenticationService,
+  PluginLoaderService
+} from 'qbm';
 import { environment } from '../environments/environment';
 import { TypedClient } from 'imx-api-qbm';
-import { PluginLoaderService } from './plugins/plugin-loader.service';
+
+import * as QBM from 'qbm';
+import * as QER from 'qer';
+
+declare var SystemJS: any;
 
 @Injectable({
   providedIn: 'root'
@@ -54,8 +66,8 @@ export class AppService {
   public async init(): Promise<void> {
     await this.config.init(environment.clientUrl);
 
-    const imxConfig = await this.config.client.imx_config_get();
-    const name = imxConfig.ProductName  || Globals.QIM_ProductNameFull;
+    const imxConfig = await this.config.getImxConfig();
+    const name = imxConfig.ProductName || Globals.QIM_ProductNameFull;
     const title = `${name} ${this.config.Config.Title}`;
     this.logger.debug(this, `Set page title to ${title}`);
     this.title.setTitle(title);
@@ -69,6 +81,9 @@ export class AppService {
     this.authentication.onSessionResponse.subscribe(sessionState => this.translationProvider.init(sessionState?.culture));
 
     this.session.TypedClient = new TypedClient(this.config.v2client, this.translationProvider);
+
+    SystemJS.set('qbm', SystemJS.newModule(QBM));
+    SystemJS.set('qer', SystemJS.newModule(QER));
 
     await this.pluginLoader.loadModules(environment.appName);
   }

@@ -104,10 +104,10 @@ export class TreeDatasource {
   }
 
   /** Loads more elements and adds them to the tree */
-  public async loadMore(node: TreeNode, parentKey: string, startIndex: number): Promise<void> {
+  public async loadMore(node: TreeNode, ParentKey: string, startIndex: number): Promise<void> {
     node.isLoading = true;
     try {
-      const newData = await this.dataService.getData(false, { parentKey, StartIndex: startIndex });
+      const newData = await this.dataService.getData(false, { ParentKey, StartIndex: startIndex });
       const nodes = this.dataService.createSortedNodes(newData.entities, node.level);
 
       if (nodes.length === 0) {
@@ -115,10 +115,10 @@ export class TreeDatasource {
       }
 
       if (newData.canLoadMore) {
-        nodes.push(new TreeNode(undefined, parentKey + 'more', 'more', node.level, false, false, true));
+        nodes.push(new TreeNode(undefined, ParentKey + 'more', 'more', node.level, false, false, true));
       }
 
-      if (!parentKey) { // root nodes
+      if (!ParentKey) { // root nodes
         this.data.splice(-1, 1, ...nodes);
       } else { // child nodes
         const index = this.data.indexOf(node);

@@ -31,7 +31,7 @@ import { ArcApiService } from '../../services/arc-api-client.service';
 import { DataIssues } from './data-issues.models';
 import { fakeAsync, flush } from '@angular/core/testing';
 import { ApiService } from 'att';
-import { QerApiService } from 'qer';
+import { QerApiService, QerPermissionsService } from 'qer';
 
 describe('DataIssuesService', () => {
   let service: DataIssuesService;
@@ -76,6 +76,12 @@ describe('DataIssuesService', () => {
       {
         provide: ApiService,
         useValue: mockAttApiClient,
+      },
+      {
+        provide: QerPermissionsService,
+        useValue: {
+          isPersonAdmin: jasmine.createSpy('isPersonAdmin').and.returnValue(Promise.resolve(true))
+        }
       },
       DataIssuesService,
     ],

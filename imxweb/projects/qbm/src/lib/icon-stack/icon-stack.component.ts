@@ -29,7 +29,7 @@ import { Component, Input } from '@angular/core';
 @Component({
   selector: 'imx-icon-stack',
   templateUrl: './icon-stack.component.html',
-  styles: []
+  styleUrls: ['./icon-stack.component.scss']
 })
 export class IconStackComponent  {
 

@@ -1,0 +1,37 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+.risk-tree-invisible {
+  display: none;
+}
+
+.risk-tree ul,
+.risk-tree li {
+  margin-top: 0;
+  margin-bottom: 0;
+  list-style-type: none;
+}
+
+eui-alert {
+  margin-bottom: 1em;
+  display: block;
+}
+
+.risk-display {
+  flex-grow: 1;
+  display: flex;
+}
+
+.smalltext {
+  font-size: smaller;
+  font-style: italic;
+  color: $black-9;
+}
+
+.risk-number {
+  margin-left: 1em;
+  font-style: italic;
+}
+
+.risk-text {
+  flex-grow: 1;
+}

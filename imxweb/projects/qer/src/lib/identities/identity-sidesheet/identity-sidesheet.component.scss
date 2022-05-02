@@ -1,12 +1,10 @@
 @import "~@elemental-ui/core/src/styles/_palette.scss";
 
-.marked-for-delete {
-  margin-left: 10px;
-  display: inline-flex;
-}
-
-.imx-object-attestation {
-  height: 100%;
+.imx-helper-alert {
+  width: 100%;
+  ::ng-deep .eui-alert {
+    margin-bottom: 20px;
+  }
 }
 
 .imx-security-badge {

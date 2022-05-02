@@ -54,34 +54,49 @@ import { AttestationDecisionAction, AttestationDecisionLoadParameters } from './
 import { ApiService } from '../api.service';
 import { createGroupData } from '../datamodel/datamodel-helper';
 import { AttestationFeatureGuardService } from '../attestation-feature-guard.service';
-
+import { EntitlementLossDto } from 'imx-api-att';
+import { LossPreviewDialogComponent } from './loss-preview-dialog/loss-preview-dialog.component';
+import { LossPreview } from './loss-preview.interface';
 @Component({
   templateUrl: './attestation-decision.component.html',
-  styleUrls: ['./attestation-decision.component.scss']
+  styleUrls: ['./attestation-decision.component.scss'],
 })
 export class AttestationDecisionComponent implements OnInit, OnDestroy {
   public dstSettings: DataSourceToolbarSettings;
   public selectedCases: AttestationCase[] = [];
   public userUid: string;
 
-  public get canReRouteDecision(): boolean { return this.selectedCases.every(item => item.canRerouteDecision(this.userUid)); }
-  public get canAddApprover(): boolean { return this.selectedCases.every(item => item.canAddApprover(this.userUid)); }
-  public get canWithdrawAddApprover(): boolean { return this.selectedCases.every(item => item.canWithdrawAddApprover(this.userUid)); }
-  public get canDelegateDecision(): boolean { return this.selectedCases.every(item => item.canDelegateDecision(this.userUid)); }
-  public get canDenyApproval(): boolean { return this.selectedCases.every(item => item.canDenyApproval(this.userUid)); }
-
-  public get canPerformActions(): boolean {
-    return this.selectedCases.length > 0 && (
-      this.canWithdrawAddApprover
-      || this.canAddApprover
-      || this.canDelegateDecision
-      || this.canDenyApproval
-      || this.canReRouteDecision);
+  public get canReRouteDecision(): boolean {
+    return this.selectedCases.every((item) => item.canRerouteDecision(this.userUid));
+  }
+  public get canAddApprover(): boolean {
+    return this.selectedCases.every((item) => item.canAddApprover(this.userUid));
+  }
+  public get canWithdrawAddApprover(): boolean {
+    return this.selectedCases.every((item) => item.canWithdrawAddApprover(this.userUid));
+  }
+  public get canDelegateDecision(): boolean {
+    return this.selectedCases.every((item) => item.canDelegateDecision(this.userUid));
+  }
+  public get canDenyApproval(): boolean {
+    return this.selectedCases.every((item) => item.canDenyApproval(this.userUid));
   }
 
+  public get canPerformActions(): boolean {
+    return (
+      this.selectedCases.length > 0 &&
+      (this.canWithdrawAddApprover || this.canAddApprover || this.canDelegateDecision || this.canDenyApproval || this.canReRouteDecision)
+    );
+  }
+  public isUserEscalationApprover = false;
+  public mitigatingControlsPerViolation: boolean;
+
   public groupedData: { [key: string]: DataTableGroupedData } = {};
+  public allLossPreviewItems: EntitlementLossDto[];
+  public lossPreview: LossPreview;
 
   private approvalThreshold: number;
+  private autoRemovalScope: boolean;
   private navigationState: AttestationDecisionLoadParameters;
   private filterOptions: DataSourceToolbarFilter[] = [];
   private groupData: DataSourceToolbarGroupData;
@@ -101,25 +116,33 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
     private readonly translate: TranslateService,
     private readonly attService: ApiService,
     private readonly attFeatureService: AttestationFeatureGuardService,
+    private dialog: MatDialog,
     settingsService: SettingsService,
     authentication: AuthenticationService
   ) {
     this.collectionLoadParameters = { PageSize: settingsService.DefaultPageSize, StartIndex: 0, OrderBy: 'ToSolveTill asc' };
     this.navigationState = this.collectionLoadParameters;
-    this.subscriptions.push(this.attestationAction.applied.subscribe(() => {
-      this.getData();
-      this.table.clearSelection();
-    }));
-    this.subscriptions.push(authentication.onSessionResponse.subscribe(sessionState => this.userUid = sessionState?.UserUid));
+    this.subscriptions.push(
+      this.attestationAction.applied.subscribe(() => {
+        this.getData();
+        this.table.clearSelection();
+      })
+    );
+    this.subscriptions.push(authentication.onSessionResponse.subscribe((sessionState) => (this.userUid = sessionState?.UserUid)));
 
-    this.attFeatureService.getAttestationConfig().then(config => {
+    this.attFeatureService.getAttestationConfig().then((config) => {
       this.isUserEscalationApprover = config.IsUserInChiefApprovalTeam;
-    })
+      this.mitigatingControlsPerViolation = config.MitigatingControlsPerViolation;
+    });
   }
 
-  public isUserEscalationApprover: boolean = false;
+  get isMobile(): boolean {
+    return document.body.offsetWidth <= 768;
+  }
 
-  public get viewEscalation() { return this.attestationCases.isChiefApproval; }
+  public get viewEscalation(): boolean {
+    return this.attestationCases.isChiefApproval;
+  }
   public set viewEscalation(val: boolean) {
     this.attestationCases.isChiefApproval = val;
 
@@ -133,13 +156,23 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
 
   public async ngOnInit(): Promise<void> {
     let busyIndicator: OverlayRef;
-    setTimeout(() => busyIndicator = this.busyService.show());
+    setTimeout(() => (busyIndicator = this.busyService.show()));
 
     try {
-      this.approvalThreshold = (await this.attService.client.portal_attestation_config_get()).ApprovalThreshold;
+      const config = await this.attService.client.portal_attestation_config_get();
+      this.approvalThreshold = config.ApprovalThreshold;
+      this.autoRemovalScope = config.AutoRemovalScope;
+      this.lossPreview = {
+        LossPreviewItems: [],
+        LossPreviewHeaders: ['Display', 'ObjectDisplay', 'Person'],
+        LossPreviewDisplayKeys: {
+          Display: '#LDS#Entitlement loss',
+          ObjectDisplay: '#LDS#Affected object',
+          Person: '#LDS#Affected identity',
+        },
+      };
 
       await this.initDataModel();
-
     } finally {
       setTimeout(() => this.busyService.hide(busyIndicator));
     }
@@ -149,26 +182,80 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
     this.handleDecision();
   }
 
-  private async initDataModel() {
+  public async initDataModel(): Promise<void> {
     const dataModel = await this.attestationCases.getDataModel();
 
     this.filterOptions = dataModel.Filters;
 
     this.groupData = createGroupData(
       dataModel,
-      parameters => this.attestationCases.getGroupInfo({
-        ...{
-          PageSize: this.collectionLoadParameters.PageSize,
-          StartIndex: 0
-        },
-        ...parameters
-      }),
+      (parameters) =>
+        this.attestationCases.getGroupInfo({
+          ...{
+            PageSize: this.collectionLoadParameters.PageSize,
+            StartIndex: 0,
+          },
+          ...parameters,
+        }),
       []
     );
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
+  }
+
+  public isNewLoss(loss: EntitlementLossDto): boolean {
+    return this.allLossPreviewItems.indexOf(loss) === -1 ? true : false;
+  }
+
+  public async openLossDialog(func: string, cases: AttestationCase[]): Promise<void> {
+    if (!this.autoRemovalScope) {
+      // We can skip accumulation and go ahead with handle
+      this.attestationAction[func](cases);
+      return;
+    }
+    let busyIndicator: OverlayRef;
+    setTimeout(() => (busyIndicator = this.busyService.show()));
+    try {
+      // Accumulate all losses
+      this.allLossPreviewItems = [];
+      await Promise.all(
+        cases.map(async (selectedCase) => {
+          const selectedLosses = await this.attestationCases.getLossPreviewEntities(selectedCase);
+          selectedLosses.forEach((loss) => {
+            if (this.isNewLoss(loss)) {
+              this.allLossPreviewItems.push(loss);
+            }
+          });
+        })
+      );
+    } finally {
+      setTimeout(() => this.busyService.hide(busyIndicator));
+    }
+    if (this.allLossPreviewItems.length === 0) {
+      // There are no losses, go ahead with handle
+      this.attestationAction[func](cases);
+      return;
+    }
+    // There are losses, show them
+    this.lossPreview.LossPreviewItems = this.allLossPreviewItems;
+    const selection = await this.dialog
+      .open(LossPreviewDialogComponent, {
+        width: this.isMobile ? '90vw' : '60vw',
+        maxWidth: this.isMobile ? '90vw' : '80vw',
+        height: '60vh',
+        maxHeight: '60vh',
+        panelClass: 'imx-loss-preview-dialog-wrapper',
+        data: this.lossPreview,
+      })
+      .afterClosed()
+      .toPromise();
+
+    if (selection) {
+      // Handle function
+      this.attestationAction[func](cases);
+    }
   }
 
   public async search(search: string): Promise<void> {
@@ -181,12 +268,12 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
     }
 
     let busyIndicator: OverlayRef;
-    setTimeout(() => busyIndicator = this.busyService.show());
+    setTimeout(() => (busyIndicator = this.busyService.show()));
 
     try {
       const dataSource = await this.attestationCases.get({
         Escalation: this.attestationCases.isChiefApproval,
-        ...this.navigationState
+        ...this.navigationState,
       });
       const entitySchema = this.attestationCases.attestationApproveSchema;
       this.dstSettings = {
@@ -199,17 +286,17 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
           entitySchema.Columns.UiText,
           {
             ColumnName: 'badges',
-            Type: ValType.String
+            Type: ValType.String,
           },
           {
             ColumnName: 'decision',
-            Type: ValType.String
+            Type: ValType.String,
           },
           {
             ColumnName: 'edit',
-            Type: ValType.String
-          }
-        ]
+            Type: ValType.String,
+          },
+        ],
       };
     } finally {
       setTimeout(() => this.busyService.hide(busyIndicator));
@@ -227,7 +314,7 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
         displayedColumns: this.dstSettings.displayedColumns,
         dataSource: groupedData.data,
         entitySchema: this.dstSettings.entitySchema,
-        navigationState: groupedData.navigationState
+        navigationState: groupedData.navigationState,
       };
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
@@ -243,23 +330,31 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
     let approvers: Approvers;
 
     let busyIndicator: OverlayRef;
-    setTimeout(() => busyIndicator = this.busyService.show());
+    setTimeout(() => (busyIndicator = this.busyService.show()));
 
     try {
-      attestationCaseWithPolicy = (await this.attestationCases.get({
-        Escalation: this.viewEscalation,
-        uidpolicy: attestationCase.UID_AttestationPolicy.value,
-        filter: [{
-          ColumnName: 'UID_AttestationCase',
-          Type: FilterType.Compare,
-          CompareOp: CompareOperator.Equal,
-          Value1: attestationCase.GetEntity().GetKeys()[0]
-        }]
-      })).Data[0];
+      attestationCaseWithPolicy = (
+        await this.attestationCases.get({
+          Escalation: this.viewEscalation,
+          uidpolicy: attestationCase.UID_AttestationPolicy.value,
+          filter: [
+            {
+              ColumnName: 'UID_AttestationCase',
+              Type: FilterType.Compare,
+              CompareOp: CompareOperator.Equal,
+              Value1: attestationCase.GetEntity().GetKeys()[0],
+            },
+          ],
+        })
+      ).Data[0];
+      // Add additional violation data to this case
+      attestationCaseWithPolicy.data.CanSeeComplianceViolations = attestationCase.data.CanSeeComplianceViolations;
+      attestationCaseWithPolicy.data.ComplianceViolations = attestationCase.data.ComplianceViolations;
 
       if (attestationCaseWithPolicy && !['approved', 'denied'].includes(attestationCaseWithPolicy.AttestationState.value)) {
         approvers = await this.attestationCases.getApprovers(attestationCaseWithPolicy);
       }
+      this.lossPreview.LossPreviewItems = await this.attestationCases.getLossPreviewEntities(attestationCase);
     } finally {
       setTimeout(() => this.busyService.hide(busyIndicator));
     }
@@ -267,20 +362,24 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
     if (attestationCaseWithPolicy) {
       this.sidesheet.open(AttestationCaseComponent, {
         title: await this.translate.get('#LDS#Heading View Attestation Case Details').toPromise(),
+        bodyColour: 'asher-gray',
         headerColour: 'iris-blue',
         panelClass: 'imx-sidesheet',
         padding: '0',
-        width: '600px',
+        width: this.lossPreview.LossPreviewItems.length > 0 ? '768px' : '700px',
         testId: 'attestation-case-sidesheet',
         data: {
           case: attestationCaseWithPolicy,
           approvers,
-          approvalThreshold: this.approvalThreshold
-        }
+          approvalThreshold: this.approvalThreshold,
+          autoRemovalScope: this.autoRemovalScope,
+          lossPreview: this.lossPreview,
+          mitigatingControlsPerViolation: this.mitigatingControlsPerViolation
+        },
       });
     } else {
       this.messageService.subject.next({
-        text: '#LDS#You cannot edit the item because the item does not exist. Please reload the page.'
+        text: '#LDS#You cannot edit the item because the item does not exist. Please reload the page.',
       });
     }
   }
@@ -324,8 +423,12 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
         data: {
           ShowOk: true,
           Title: await this.translate.get('#LDS#Heading Cannot Find Attestation Case').toPromise(),
-          Message: await this.translate.get('#LDS#The attestation case does not exist (anymore). To view all attestation cases, close this page and reopen the Pending Attestions page.').toPromise(),
-        }
+          Message: await this.translate
+            .get(
+              '#LDS#The attestation case does not exist (anymore). To view all attestation cases, close this page and reopen the Pending Attestions page.'
+            )
+            .toPromise(),
+        },
       });
       return;
     }
@@ -341,7 +444,7 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
         this.attestationAction.denyDecisions(this.dstSettings.dataSource.Data as AttestationCase[]);
         break;
       case AttestationDecisionAction.showcase:
-        this.edit((this.dstSettings.dataSource.Data[0]) as AttestationCase);
+        this.edit(this.dstSettings.dataSource.Data[0] as AttestationCase);
         break;
     }
   }

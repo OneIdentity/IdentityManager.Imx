@@ -27,12 +27,21 @@
 import { Injectable } from '@angular/core';
 import { Router, Route } from '@angular/router';
 
-import { PortalAdminRoleOrg, PortalRespOrg } from 'imx-api-rmb';
-import { QerApiService, RoleService, BaseTreeEntitlement, DataExplorerRegistryService, RolesOverviewComponent } from 'qer';
+import { PortalAdminRoleOrg, PortalPersonRolemembershipsOrg, PortalRespOrg } from 'imx-api-rmb';
+import {
+  QerApiService,
+  RoleService,
+  BaseTreeEntitlement,
+  DataExplorerRegistryService,
+  RolesOverviewComponent,
+  IdentityRoleMembershipsService
+} from 'qer';
 import { DynamicMethodService, ImxTranslationProviderService, imx_SessionService, MenuService } from 'qbm';
 import { OrgMembership } from './org-membership';
 import { RmbApiService } from './rmb-api-client.service';
 import { OrgDataModel } from './org-data-model';
+import { EntitySchema, ExtendedTypedEntityCollection, WriteExtTypedEntity, CollectionLoadParameters } from 'imx-qbm-dbts';
+import { RoleExtendedDataWrite } from 'imx-api-qer';
 
 
 @Injectable({ providedIn: 'root' })
@@ -49,14 +58,39 @@ export class InitService {
     private readonly dynamicMethodService: DynamicMethodService,
     private readonly dataExplorerRegistryService: DataExplorerRegistryService,
     private readonly menuService: MenuService,
-    private readonly roleService: RoleService
+    private readonly roleService: RoleService,
+    private readonly identityRoleMembershipService: IdentityRoleMembershipsService
   ) {
   }
 
   public onInit(routes: Route[]): void {
     this.addRoutes(routes);
 
+
+    // wrapper class for interactive and interactive_byid methods
+    class ApiWrapper {
+
+      constructor(private getApi: {
+        GetSchema(): EntitySchema,
+        Get(): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>>
+      }, private getByIdApi: {
+        Get_byid(id: string): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>>
+      }) { }
+
+      Get(): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>> {
+        return this.getApi.Get();
+      }
+
+      GetSchema() { return this.getApi.GetSchema(); }
+
+      Get_byid(id: string): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>> {
+        return this.getByIdApi.Get_byid(id);
+      }
+    }
+
     this.roleService.targetMap.set(this.orgTag, {
+      canBeSplitTarget: true,
+      canBeSplitSource: true,
       table: this.orgTag,
       respType: PortalRespOrg,
       resp: this.api.typedClient.PortalRespOrg,
@@ -69,18 +103,45 @@ export class InitService {
           parameter?.filter,
           parameter?.withProperties,
           parameter?.search,
-          parameter?.parentKey,
+          parameter?.ParentKey,
           parameter?.risk,
           parameter?.orgroot
         )
       },
       adminSchema: this.api.typedClient.PortalAdminRoleOrg.GetSchema(),
       dataModel: new OrgDataModel(this.api),
-      interactiveResp: this.api.typedClient.PortalRespOrgInteractive_byid,
-      interactiveAdmin: this.api.typedClient.PortalAdminRoleOrgInteractive_byid,
+      interactiveResp: new ApiWrapper(
+        this.api.typedClient.PortalRespOrgInteractive,
+        this.api.typedClient.PortalRespOrgInteractive_byid
+      ),
+      interactiveAdmin: new ApiWrapper(
+        this.api.typedClient.PortalAdminRoleOrgInteractive,
+        this.api.typedClient.PortalAdminRoleOrgInteractive_byid,
+      ),
       entitlements: new BaseTreeEntitlement(this.qerApi, this.session, this.dynamicMethodService, this.translator,
         this.orgTag, e => e.GetColumn('UID_OrgRoot').GetValue()),
       membership: new OrgMembership(this.api, this.session, this.translator)
+    });
+
+
+    this.identityRoleMembershipService.addTarget({
+      table: this.orgTag,
+      type: PortalPersonRolemembershipsOrg,
+      entitySchema: this.api.typedClient.PortalPersonRolemembershipsOrg.GetSchema(),
+      controlInfo: {
+        label: '#LDS#Menu Entry Business roles',
+        index: 70,
+      },
+      get: async (parameter: CollectionLoadParameters) => this.api.client.portal_person_rolememberships_Org_get(
+          parameter?.uidPerson,
+          parameter?.OrderBy,
+          parameter?.StartIndex,
+          parameter?.PageSize,
+          parameter?.filter,
+          parameter?.withProperties,
+          parameter?.search
+        ),
+      withAnalysis: true
     });
 
     this.setupMenu();

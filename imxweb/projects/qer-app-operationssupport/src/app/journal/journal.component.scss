@@ -1,9 +1,10 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
 :host {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   flex-grow: 1;
-  max-width: 1200px;
 }
 
 .imx-table-container {
@@ -40,7 +41,18 @@
 }
 
 .imx-icon-column {
-  margin-right: 40px;
+  margin-right: 20px;
+  .imx-warning-icon {
+    color: $corbin-orange;
+  }
+  .imx-error-icon {
+    color: $phoenix-red;
+  }
+}
+
+div[subtitle] {
+  font-size: smaller;
+  color: $black-9;
 }
 
 .mat-column-MessageType {
@@ -64,7 +76,6 @@
 .mat-column-HostName {
   max-width: 300px;
 }
-
 
 .imx-refresh-button {
   margin-right: 5px;

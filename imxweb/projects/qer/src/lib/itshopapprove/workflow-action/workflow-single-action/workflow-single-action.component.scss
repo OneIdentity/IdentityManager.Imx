@@ -1,0 +1,16 @@
+// Create a config with the default typography levels.
+// see: https://material.angular.io/guide/typography
+@import "~@angular/material/theming";
+$config: mat-typography-config();
+
+mat-card-content {
+  overflow: hidden;
+}
+
+mat-card-title {
+  font-size: mat-font-size($config, subheading-2);
+}
+
+mat-card-subtitle {
+  font-size: mat-font-size($config, subheading-1);
+}

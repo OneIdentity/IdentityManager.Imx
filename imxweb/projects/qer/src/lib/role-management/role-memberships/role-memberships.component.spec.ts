@@ -67,7 +67,8 @@ describe('RoleMembershipsComponent', () => {
         {
           provide: RoleService,
           useValue: {
-            canHavePrimaryMemberships: _ => true
+            canHavePrimaryMemberships: _ => true,
+            canHaveDynamicMemberships: _ => false,
           }
         },
       ]

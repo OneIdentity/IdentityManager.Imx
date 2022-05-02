@@ -28,9 +28,9 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatButtonToggleChange } from '@angular/material/button-toggle';
-import { MatDialog } from '@angular/material/dialog';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
+
 import { PortalTargetsystemUnsDirectmembers, PortalTargetsystemUnsGroupServiceitem, PortalTargetsystemUnsNestedmembers } from 'imx-api-tsb';
 import {
   CollectionLoadParameters,
@@ -41,8 +41,12 @@ import {
   ValType
 } from 'imx-qbm-dbts';
 import {
-  DataSourceToolbarSettings, DataTableComponent, FkAdvancedPickerComponent, isIE,
-  MessageDialogComponent, MessageDialogResult, SettingsService, SnackBarService
+  ConfirmationService,
+  DataSourceToolbarSettings,
+  DataTableComponent,
+  FkAdvancedPickerComponent,
+  SettingsService,
+  SnackBarService
 } from 'qbm';
 import { SourceDetectiveSidesheetComponent, SourceDetectiveSidesheetData, SourceDetectiveType } from 'qer';
 import { DbObjectKeyBase } from '../../../target-system/db-object-key-wrapper.interface';
@@ -98,12 +102,12 @@ export class GroupMembersComponent implements OnInit {
   constructor(
     private readonly busyService: EuiLoadingService,
     private readonly snackBarService: SnackBarService,
-    private sidesheet: EuiSidesheetService,
+    private readonly sidesheet: EuiSidesheetService,
     private readonly groupsService: GroupsService,
-    private readonly dialogService: MatDialog,
+    private readonly confirmationService: ConfirmationService,
     private readonly membershipService: NewMembershipService,
     private readonly translate: TranslateService,
-    private settingsService: SettingsService,
+    private readonly settingsService: SettingsService,
   ) {
     this.entitySchemaGroupDirectMemberships = groupsService.UnsGroupDirectMembersSchema;
     this.entitySchemaGroupNestedMemberships = groupsService.UnsGroupNestedMembersSchema;
@@ -171,6 +175,7 @@ export class GroupMembersComponent implements OnInit {
 
   public async onToggleChanged(change: MatButtonToggleChange): Promise<void> {
     this.selectedMembershipView = change.value;
+    this.selectedItems = [];
     if (this.selectedMembershipView === 'direct') {
       return this.onDirectNavigationStateChanged({ PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 });
     }
@@ -194,50 +199,32 @@ export class GroupMembersComponent implements OnInit {
   }
 
   public async deleteMembers(): Promise<void> {
-
-    const dialogRef = this.dialogService.open(MessageDialogComponent, {
-      data: {
-        ShowOk: true,
-        ShowCancel: true,
-        Title: await this.translate.get('#LDS#Heading Delete Memberships').toPromise(),
-        Message: await this.translate.get
-          ('#LDS#The deletion of memberships may take some time. The displayed data may differ from the actual state.').toPromise(),
-      },
-      panelClass: 'imx-messageDialog'
-    });
-
-    const result = await dialogRef.afterClosed().toPromise();
-
-    if (result !== 0) {
-      return;
-    }
-
-    this.handleOpenLoader();
-
-    try {
-      await this.groupsService.deleteGroupMembers(
-        this.unsGroupDbObjectKey,
-        this.selectedItems.map(i => i.GetEntity().GetColumn('UID_UNSAccount').GetValue())
-      );
-      this.membersTable.clearSelection();
-      this.snackBarService.open({ key: '#LDS#The memberships have been successfully removed.' }, '#LDS#Close');
-      await this.navigateDirect();
-    } finally {
-      this.handleCloseLoader();
+    if (await this.confirmationService.confirm({
+      Title: '#LDS#Heading Delete Memberships',
+      Message: '#LDS#The deletion of memberships may take some time. The displayed data may differ from the actual state. Are you sure you want to delete the selected memberships?',
+      identifier: 'group-members-confirm-delete-memberships'
+    })) {
+      this.handleOpenLoader();
+      try {
+        await this.groupsService.deleteGroupMembers(
+          this.unsGroupDbObjectKey,
+          this.selectedItems.map(i => i.GetEntity().GetColumn('UID_UNSAccount').GetValue())
+        );
+        this.membersTable.clearSelection();
+        this.snackBarService.open({ key: '#LDS#The memberships have been successfully removed.' }, '#LDS#Close');
+        await this.navigateDirect();
+      } finally {
+        this.handleCloseLoader();
+      }
     }
   }
 
-
   public async requestMembership(serviceItem: PortalTargetsystemUnsGroupServiceitem): Promise<void> {
-    let title = '';
-
-    title = await this.translate.get(`#LDS#Heading Select Identities`).toPromise();
-
     const sidesheetRef = this.sidesheet.open(FkAdvancedPickerComponent, {
-      title,
+      title: await this.translate.get(`#LDS#Heading Select Identities`).toPromise(),
       headerColour: 'blue',
       padding: '0px',
-      width: isIE() ? '60%' : `max(600px, '60%')`,
+      width: 'max(600px, 60%)',
       icon: 'usergroup',
       data: {
         fkRelations: this.membershipService.getFKRelation(),
@@ -268,21 +255,11 @@ export class GroupMembersComponent implements OnInit {
       this.membersTable.clearSelection();
       return;
     }
-
-    const dialogRef = this.dialogService.open(MessageDialogComponent, {
-      data: {
-        ShowOk: true,
-        ShowCancel: true,
-        Title: await this.translate.get('#LDS#Heading Unsubscribe Memberships').toPromise(),
-        Message: await this.translate.get
-          ('#LDS#Are you sure you want to unsubscribe the selected memberships?').toPromise(),
-      },
-      panelClass: 'imx-messageDialog'
-    });
-
-    const result = await dialogRef.afterClosed().toPromise();
-
-    if (result === MessageDialogResult.OkResult) {
+    if (await this.confirmationService.confirm({
+      Title: '#LDS#Heading Unsubscribe Memberships',
+      Message: '#LDS#Are you sure you want to unsubscribe the selected memberships?',
+      identifier: 'group-members-confirm-unsubscribe-membership'
+    })) {
       this.handleOpenLoader();
       try {
         await Promise.all(this.selectedItems.map((entity => this.membershipService.unsubscribeMembership(entity))));
@@ -367,7 +344,7 @@ export class GroupMembersComponent implements OnInit {
 
   public LdsDirectlyAssignedHint = "#LDS#Here you can get an overview of members assigned to the system entitlement itself.";
 
-  public LdsIndirectlyAssignedHint = "#LDS#Here you can get an overview of members not assigned to the system entitlement itself, but to a parent or child system entitlement.";
+  public LdsIndirectlyAssignedHint = "#LDS#Here you can get an overview of members not assigned to the system entitlement itself, but to a child system entitlement.";
 
   public LdsDirectlyAssigned = "#LDS#Direct memberships";
 

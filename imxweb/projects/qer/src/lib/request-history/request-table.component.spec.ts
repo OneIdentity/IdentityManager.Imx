@@ -33,7 +33,7 @@ import { EuiCoreModule, EuiLoadingService, EuiSidesheetService } from '@elementa
 import { configureTestSuite } from 'ng-bullet';
 import { of, Subject } from 'rxjs';
 
-import { clearStylesFromDOM, imx_SessionService, ImxTranslationProviderService } from 'qbm';
+import { clearStylesFromDOM, imx_SessionService, ImxTranslationProviderService, ExtService } from 'qbm';
 import { RequestHistoryService } from './request-history.service';
 import { RequestTableComponent } from './request-table.component';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
@@ -95,21 +95,25 @@ describe('RequestTableComponent', () => {
   let component: RequestTableComponent;
   let fixture: ComponentFixture<RequestTableComponent>;
 
-  function createRequestItem(data: { key?: string, parentKey?: string } = {}) {
+  function createRequestItem(data: { key?: string, ParentKey?: string } = {}) {
     return {
-      UID_PersonWantsOrgParent: { value: data.parentKey },
+      UID_PersonWantsOrgParent: { value: data.ParentKey },
       GetEntity: () => ({
         GetKeys: () => [data.key]
       })
     };
   }
 
+  const extServiceStub = {
+    Registry: jasmine.createSpy('Registry')
+  };
+
   const euiLoadingServiceStub = {
     hide: jasmine.createSpy('hide'),
     show: jasmine.createSpy('show')
   };
 
-  let getRequestsResult = { totalCount: 0, Data: [] };
+  let getRequestsResult = { totalCount: 0, Data: [], extendedData: [] };
 
   const requestServiceStub = {
     PortalItshopRequestsSchema: PortalItshopRequests.GetEntitySchema(),
@@ -150,6 +154,10 @@ describe('RequestTableComponent', () => {
         MatMenuModule
       ],
       providers: [
+        {
+          provide: ExtService,
+          useValue: extServiceStub
+        },
         {
           provide: EuiSidesheetService,
           useValue: sideSheetTestHelper.servicestub
@@ -207,7 +215,7 @@ describe('RequestTableComponent', () => {
     fixture.detectChanges();
 
     requestServiceStub.getRequests.calls.reset();
-    getRequestsResult = { totalCount: 0, Data: [] };
+    getRequestsResult = { totalCount: 0, Data: [], extendedData: [] };
     sideSheetTestHelper.reset();
   });
 
@@ -225,7 +233,7 @@ describe('RequestTableComponent', () => {
     {
       description: 'with data for sorting',
       indata: [
-        createRequestItem({ key: '1', parentKey: '2' }),
+        createRequestItem({ key: '1', ParentKey: '2' }),
         createRequestItem({ key: '2' })
       ],
       expectedKeys: ['2','1']
@@ -233,8 +241,8 @@ describe('RequestTableComponent', () => {
     {
       description: 'with data for sorting',
       indata: [
-        createRequestItem({ key: '3', parentKey: '1' }),
-        createRequestItem({ key: '1', parentKey: '2' }),
+        createRequestItem({ key: '3', ParentKey: '1' }),
+        createRequestItem({ key: '1', ParentKey: '2' }),
         createRequestItem({ key: '2' })
       ],
       expectedKeys:  ['2','1','3']
@@ -242,7 +250,7 @@ describe('RequestTableComponent', () => {
     {
       description: 'with data for sorting and elements with parents not in the result set',
       indata: [
-        createRequestItem({ key: '1', parentKey: '0' }),
+        createRequestItem({ key: '1', ParentKey: '0' }),
         createRequestItem({ key: '2' })
       ],
       expectedKeys: ['1','2']
@@ -250,8 +258,8 @@ describe('RequestTableComponent', () => {
     {
       description: 'with data for sorting and elements with parents not in the result set',
       indata: [
-        createRequestItem({ key: '3', parentKey: '1' }),
-        createRequestItem({ key: '1', parentKey: '0' }),
+        createRequestItem({ key: '3', ParentKey: '1' }),
+        createRequestItem({ key: '1', ParentKey: '0' }),
         createRequestItem({ key: '2' })
       ],
       expectedKeys: ['1','3','2']
@@ -259,17 +267,17 @@ describe('RequestTableComponent', () => {
     {
       description: 'with data for sorting and elements with parents not in the result set',
       indata: [
-        createRequestItem({ key: '4', parentKey: '2' }),
-        createRequestItem({ key: '5', parentKey: '2' }),
-        createRequestItem({ key: '3', parentKey: '1' }),
-        createRequestItem({ key: '1', parentKey: '0' }),
+        createRequestItem({ key: '4', ParentKey: '2' }),
+        createRequestItem({ key: '5', ParentKey: '2' }),
+        createRequestItem({ key: '3', ParentKey: '1' }),
+        createRequestItem({ key: '1', ParentKey: '0' }),
         createRequestItem({ key: '2' })
       ],
       expectedKeys: ['2', '5', '4', '1', '3']
     }
   ]) {
     it(`can call getData ${testcase.description}`, async () => {
-      getRequestsResult = testcase.indata ? { totalCount: testcase.indata.length, Data: testcase.indata } : undefined;
+      getRequestsResult = testcase.indata ? { totalCount: testcase.indata.length, Data: testcase.indata, extendedData: []} : undefined;
       await component.getData();
       if (testcase.expectedKeys != null) {
         testcase.expectedKeys.forEach((key, index) =>
@@ -314,7 +322,7 @@ describe('RequestTableComponent', () => {
   });
 
   it('is searching', async () => {
-    getRequestsResult = { totalCount: 0, Data: [] };
+    getRequestsResult = { totalCount: 0, Data: [], extendedData: [] };
 
     await component.onSearch('test');
 

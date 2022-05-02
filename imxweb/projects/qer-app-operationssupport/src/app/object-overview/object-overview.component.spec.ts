@@ -32,7 +32,8 @@ import { configureTestSuite } from 'ng-bullet';
 import { LoggerTestingModule } from 'ngx-logger/testing';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { imx_SessionService, OpsupportDbObjectService, MetadataService, ImxTranslationProviderService, clearStylesFromDOM } from 'qbm';
+import { FeatureConfigService } from 'qer';
+import { imx_SessionService, OpsupportDbObjectService, MetadataService, ImxTranslationProviderService, clearStylesFromDOM, AuthenticationService, ISessionState } from 'qbm';
 import { ObjectOverviewComponent } from './object-overview.component';
 import { QueueJobsService } from '../processes/jobs/queue-jobs.service';
 import { TranslationProviderServiceSpy } from '../test-utilities/imx-translation-provider.service.spy.spec';
@@ -40,6 +41,7 @@ import { RoutingMock } from '../test-utilities/router-mock.spec';
 import { SessionServiceSpy } from '../test-utilities/imx-session.service.spy.spec';
 import { ObjectOverviewService } from './object-overview.service';
 import { PersonJobQueueInfo } from './person-job-queue-Info';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'imx-ext',
@@ -56,7 +58,7 @@ describe('ObjectOverviewComponent', () => {
 
   const dummyJobQueueInfo = {
     Ready2EXE: { value: 'Frozen' },
-    ErrorMessages: { value: 'ErrorMessages', Column: {GetDisplayValue: ()=> 'ErrorMessages'} },
+    ErrorMessages: { value: 'ErrorMessages', Column: { GetDisplayValue: () => 'ErrorMessages' } },
     UID_Job: { value: 'UID_Test' }
   } as PersonJobQueueInfo;
   let routerSpy: RoutingMock = new RoutingMock();
@@ -141,6 +143,20 @@ describe('ObjectOverviewComponent', () => {
         {
           provide: ImxTranslationProviderService,
           useValue: new TranslationProviderServiceSpy()
+        },
+        {
+          provide: FeatureConfigService,
+          useValue: {
+            getFeatureConfig: jasmine.createSpy('getFeatureConfig').and.returnValue(Promise.resolve({
+              EnableSetPasswords: true
+            }))
+          }
+        },
+        {
+          provide: AuthenticationService,
+          useValue:{
+            onSessionResponse: new Subject<ISessionState>(),
+          }
         }
       ]
     });
@@ -193,8 +209,9 @@ describe('ObjectOverviewComponent', () => {
     expect(routerSpy.navigate).toHaveBeenCalledWith(['start']);
   });
 
-  it('should check if the passcode have to be hide', () => {
+  it('should check if the passcode have to be hide', async() => {
+    await component.ngOnInit();
     expect(component.objectKey.TableName).toEqual('person');
-    expect(component.showPassCodeTab()).toEqual(component.objectKey.TableName === 'person');
+    expect(component.showPassCodeTab).toEqual(component.objectKey.TableName === 'person');
   });
 });

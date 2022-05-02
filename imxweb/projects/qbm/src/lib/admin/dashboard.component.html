@@ -28,6 +28,12 @@
                         [ngClass]="{'snavigation-item--selected': selectedPage === 'config'}">
                         {{'#LDS#Configuration'|translate}}
                     </div>
+
+                    <div class="snavigation-item" (click)="selectPage('packages')"
+                        [ngClass]="{'snavigation-item--selected': selectedPage === 'packages'}">
+                        {{'#LDS#Packages' | translate}}
+                    </div>
+
                 </div>
             </div>
         </mat-sidenav>
@@ -38,6 +44,8 @@
             </ng-container>
 
             <imx-config *ngIf="selectedPage === 'config'"></imx-config>
+
+            <imx-packages *ngIf="selectedPage === 'packages'"></imx-packages>
 
             <!-- for later 
             <imx-cache [appId]="'portal'" *ngIf="selectedPage === 'caches'"></imx-cache>

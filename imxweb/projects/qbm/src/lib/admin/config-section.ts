@@ -29,7 +29,10 @@ import { ConfigSettingData } from 'imx-api-qbm';
 export class ConfigSection {
   constructor(public readonly Title: string,
     public readonly Description: string,
-    public readonly Keys: KeyData[]) { }
+    public readonly Keys: KeyData[],
+    /** Returns the configuration nodes that support adding a new setting. */
+    public readonly SettingsSupportingAdd: KeyData[]) {
+  }
 }
 
 export interface KeyData extends ConfigSettingData {

@@ -24,12 +24,12 @@
  *
  */
 
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, Injector, OnInit, ViewChild } from '@angular/core';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { OwnershipInformation } from 'imx-api-qer';
 import { IEntity } from 'imx-qbm-dbts';
 import { RoleService } from '../role.service';
-import { ConfirmationService, TabControlHelper } from 'qbm';
+import { ConfirmationService, ExtService, TabControlHelper, TabItem } from 'qbm';
 import { MatTabGroup } from '@angular/material/tabs';
 
 @Component({
@@ -39,6 +39,8 @@ import { MatTabGroup } from '@angular/material/tabs';
 })
 export class RoleDetailComponent implements OnInit {
   @ViewChild('tabs') public tabs: MatTabGroup;
+  public dynamicTabs: TabItem[] = [];
+  public parameters: { tablename: string; entity: IEntity };
 
   private canClose = true;
 
@@ -53,8 +55,14 @@ export class RoleDetailComponent implements OnInit {
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly roleService: RoleService,
     private readonly membershipService: RoleService,
-    private readonly confirm: ConfirmationService
+    private readonly confirm: ConfirmationService,
+    private readonly tabService: ExtService
   ) {
+
+    this.parameters = {
+      tablename: this.data.ownershipInfo.TableName,
+      entity: this.data.entity
+    };
     this.roleService.dataDirtySubject.subscribe((flag) => {
       this.canClose = !flag;
     });
@@ -70,22 +78,24 @@ export class RoleDetailComponent implements OnInit {
     });
   }
 
-  public ngOnInit(): void {
+  public async ngOnInit(): Promise<void> {
     /**
      * Resolve an issue where the mat-tab navigation arrows could appear on first load
      */
     setTimeout(() => {
       TabControlHelper.triggerResizeEvent();
     });
+    this.dynamicTabs = (await this.tabService.getFittingComponents<TabItem>('roleOverview',
+      (ext) =>  ext.inputData.checkVisibility(this.parameters)))
+      .sort((tab1: TabItem, tab2: TabItem) => tab1.sortOrder - tab2.sortOrder);
 
   }
 
   public canHaveMemberships(): boolean {
-    return this.membershipService.canHaveMemberships(this.data.ownershipInfo);
+    return this.membershipService.canHaveMemberships(this.data.ownershipInfo.TableName);
   }
 
   public canHaveEntitlements(): boolean {
-    return this.membershipService.canHaveEntitlements(this.data.ownershipInfo);
+    return this.membershipService.canHaveEntitlements(this.data.ownershipInfo.TableName);
   }
-
 }

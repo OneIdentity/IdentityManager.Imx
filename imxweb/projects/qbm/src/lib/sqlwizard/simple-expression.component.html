@@ -1,0 +1,31 @@
+<imx-sqlwizard-columnselection class="column-selector" [node]="expr"></imx-sqlwizard-columnselection>
+
+<ng-container *ngIf="expr.Property">
+    &nbsp;
+    <mat-form-field appearance="outline" class="operator-select" *ngIf="expr.Property.Type != ValType.Bool">
+        <mat-label>{{ '#LDS#Operator' | translate }}</mat-label>
+        <mat-select [(ngModel)]="expr.Data.Operator" (selectionChange)="operatorChanged()">
+            <mat-option *ngFor="let opr of expr.Property.Operators" [value]="opr.Type">{{opr.Label}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+    &nbsp;
+
+    <div class="value-list" *ngIf="isArray(expr.Data.Value)">
+        <div class="value-box" *ngFor="let elem of expr.Data.Value; let idx = index; trackBy:trackByFn">
+            <imx-sqlwizard-singlevalue [expr]="expr" mode="array" [index]="idx"></imx-sqlwizard-singlevalue>
+            <button mat-icon-button [attr.aria-label]="'#LDS#Delete' | translate"
+                data-imx-identifier="simple-exp-button-delete-element" (click)="delete(idx)">
+                <eui-icon icon="delete"></eui-icon>
+            </button>
+        </div>
+        <div>
+            <button data-imx-identifier="simple-exp-button-add-element" mat-raised-button color="primary"
+                (click)="addNew()">{{'#LDS#Add new value' | translate }}</button>
+        </div>
+    </div>
+
+    <ng-container *ngIf="!isArray(expr.Data.Value)">
+        <imx-sqlwizard-singlevalue [expr]="expr"></imx-sqlwizard-singlevalue>
+    </ng-container>
+</ng-container>

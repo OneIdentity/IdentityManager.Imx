@@ -1,40 +1,21 @@
-<ng-container *ngIf="data.customValidation">
-  <mat-error *ngIf="formGroup?.invalid">
-    {{ data.customValidation.message | translate }}
-  </mat-error>
-</ng-container>
-<p *ngIf="data.description">{{ data.description | translate }}</p>
-<form [formGroup]="formGroup" class="imx-request-content">
-  <imx-bulk-editor data-imx-identifier="request-parameters-editor" class="imx-bulk-editor"
-    [entities]="requests"
-    [hideButtons]="true"
-    (validationStateChanged)="validateItem($event)"
-    (controlCreated)="formGroup.addControl('request-parameters', $event)">
-  </imx-bulk-editor>
-  <div class="imx-request-parameters">
-    <imx-cdr-editor *ngIf="data.actionParameters.uidPerson" [cdr]="data.actionParameters.uidPerson"
-      (controlCreated)="formGroup.addControl('uidPerson', $event)"
-      data-imx-identifier="workflow-action-property-uidPerson">
-    </imx-cdr-editor>
-    <imx-cdr-editor *ngIf="data.actionParameters.validFrom" [cdr]="data.actionParameters.validFrom"
-      (controlCreated)="formGroup.addControl('validFrom', $event)"
-      data-imx-identifier="workflow-action-property-validFrom">
-    </imx-cdr-editor>
-    <imx-cdr-editor *ngIf="data.actionParameters.validUntil" [cdr]="data.actionParameters.validUntil"
-      (controlCreated)="formGroup.addControl('validUntil', $event)"
-      data-imx-identifier="workflow-action-property-validUntil">
-    </imx-cdr-editor>
-    <imx-decision-reason
-      [reasonStandard]="data.actionParameters.justification"
-      [reasonFreetext]="data.actionParameters.reason"
-      (controlCreated)="formGroup.addControl('reason', $event)"
-      data-imx-identifier="workflow-action-property-reason">
-    </imx-decision-reason>
-  </div>
-</form>
-<div class="imx-button-bar">
-  <button data-imx-identifier="workflow-action-button-save" mat-raised-button color="primary"
-    (click)="sideSheetRef.close(true)" *ngIf="formGroup" [disabled]="formGroup.invalid">
+<div eui-sidesheet-content color="white">
+  <form [formGroup]="formGroup" class="imx-request-content">
+    <ng-container *ngIf="data.customValidation">
+      <mat-error *ngIf="formGroup?.invalid">
+        {{ data.customValidation.message | translate }}
+      </mat-error>
+    </ng-container>
+    <p *ngIf="data.description">{{ data.description | translate }}</p>
+    <ng-container *ngIf="data.requests.length > 1">
+      <imx-workflow-multi-action [formGroup]="formGroup" [data]="data"></imx-workflow-multi-action>
+    </ng-container>
+    <ng-container *ngIf="data.requests.length === 1">
+      <imx-workflow-single-action [formGroup]="formGroup" [data]="data"></imx-workflow-single-action>
+    </ng-container>
+  </form>
+</div>
+<div eui-sidesheet-actions color="white">
+  <button data-imx-identifier="workflow-action-button-save" mat-raised-button color="primary" (click)="sideSheetRef.close(true)" *ngIf="formGroup" [disabled]="formGroup.invalid">
     {{ '#LDS#Save' | translate }}
   </button>
 </div>

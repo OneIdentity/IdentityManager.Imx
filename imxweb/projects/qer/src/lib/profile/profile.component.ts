@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, ErrorHandler, Inject, OnDestroy } from '@angular/core';
+import { Component, ErrorHandler, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
@@ -32,7 +32,15 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import { DOCUMENT } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { AuthenticationService, ColumnDependentReference, ConfirmationService, ISessionState, SnackBarService, ExtService } from 'qbm';
+import {
+  AuthenticationService,
+  ColumnDependentReference,
+  ConfirmationService,
+  ISessionState,
+  SnackBarService,
+  TabItem,
+  ExtService
+} from 'qbm';
 import { IEntity } from 'imx-qbm-dbts';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
 import { MailInfoType, MailSubscriptionService } from './mailsubscription.service';
@@ -43,8 +51,9 @@ import { PersonService } from '../person/person.service';
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss']
 })
-export class ProfileComponent implements OnDestroy {
+export class ProfileComponent implements OnInit, OnDestroy {
   public get userUid(): string { return (this.selectedIdentity?.GetKeys() ?? []).join(''); }
+  public dynamicTabs: TabItem[] = [];
 
   public identities: IEntity[];
   public selectedIdentity: IEntity;
@@ -53,8 +62,6 @@ export class ProfileComponent implements OnDestroy {
   public hasMailSubscriptions: boolean;
   public form: FormGroup;
   public cdrList: ColumnDependentReference[] = [];
-
-  public subscriptionComponentRegistered = false;
 
   public readonly confirmChange = {
     check: () => this.form.pristine || this.confirmation.confirmLeaveWithUnsavedChanges()
@@ -74,8 +81,8 @@ export class ProfileComponent implements OnDestroy {
     @Inject(DOCUMENT) private document: Document,
     private readonly authentication: AuthenticationService,
     private readonly activatedRoute: ActivatedRoute,
-    private readonly extService: ExtService,
     private readonly router: Router,
+    private readonly tabService: ExtService,
     private readonly confirmation: ConfirmationService
   ) {
     this.subscriptions.push(this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
@@ -84,7 +91,10 @@ export class ProfileComponent implements OnDestroy {
       }
     }));
 
-    this.subscriptionComponentRegistered = !!this.extService.Registry.SubscriptionsComponent?.slice(-1)[0];
+  }
+
+  public async ngOnInit(): Promise<void> {
+    this.dynamicTabs = this.tabService.Registry.profile as TabItem[];
   }
 
   public ngOnDestroy(): void {
@@ -183,4 +193,7 @@ export class ProfileComponent implements OnDestroy {
       setTimeout(() => this.busy.hide(overlayRef));
     }
   }
+
+  public LdsMultipleIdentities = '#LDS#Here you can manage personal data, organizational information, and location information of the selected identity.';
+  public LdsSingleIdentities = '#LDS#Here you can manage your personal data, organizational information, and location information and change the language of the user interface.';
 }

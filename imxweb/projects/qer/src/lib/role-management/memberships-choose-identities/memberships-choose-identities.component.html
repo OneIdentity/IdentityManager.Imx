@@ -1,7 +1,7 @@
 <imx-data-source-toolbar #dst
 data-imx-identifier="role-select-identities-dst"
 [settings]="dstSettings"
-[hiddenElements]="['settings', 'selectedViewGroup']"
+[options]="['search', 'filter', 'groupBy', 'settings']"
 [searchBoxText]="'#LDS#Search' | translate"
 (navigationStateChanged)="onNavigationStateChanged($event)"
 (search)="onSearch($event)"></imx-data-source-toolbar>
@@ -13,18 +13,23 @@ data-imx-identifier="role-select-identities-dst"
   mode="manual"
   [selectable]="true"
   [showSelectionInfo]="false"
+  [showSelectedItemsMenu]="false"
   (selectionChanged)="onSelectionChanged($event)">
-  <imx-data-table-column
-    width="70%"
-    [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-    [entitySchema]="entitySchema">
-  </imx-data-table-column>
+  <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" 
+  data-imx-identifier="role-select-identities-column-display">
+    <ng-template let-item>
+      <div data-imx-identifier="role-select-identities-datatable-display">{{ item.GetEntity().GetDisplay() }}</div>
+      <div subtitle data-imx-identifier="role-select-identities-datatable-description">
+        {{ getSubtitle(item, dst.additionalListElements) }}
+      </div>
+    </ng-template>
+</imx-data-table-column>
 </imx-data-table>
 <imx-data-source-paginator data-imx-identifier="role-select-identities-paginator" [dst]="dst"></imx-data-source-paginator>
 <div class="imx-button-bar">
   <p class="imx-selected-items">
     <span>
-      {{'#LDS#Selected identites' | translate}}
+      {{'#LDS#Selected identities' | translate}}
     </span>
     <eui-badge data-imx-identifier="role-select-identities-selection-badge" class="imx-badge" color="orange">{{dataTable.numOfSelectedItems}}</eui-badge>
   </p>

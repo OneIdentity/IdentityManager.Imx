@@ -28,7 +28,10 @@ import { TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { configureTestSuite } from 'ng-bullet';
 import { ExtService } from 'qbm';
+import { IdentityRoleMembershipsService } from 'qer';
+import { ApiService } from './api.service';
 import { InitService } from './init.service';
+import { RoleComplianceViolationsService } from './role-compliance-violations/role-compliance-violations.service';
 
 describe('InitService', () => {
   let service: InitService;
@@ -47,6 +50,21 @@ describe('InitService', () => {
         },
         {
           provide: Router,
+          useValue: {}
+        },
+        {
+          provide: RoleComplianceViolationsService,
+          useValue: {
+            getRoleComplianceViolations: jasmine.createSpy('getRoleComplianceViolations').and
+              .returnValue(Promise.resolve({}))
+          }
+        },
+        {
+          provide: ApiService,
+          useValue: {}
+        },
+        {
+          provide: IdentityRoleMembershipsService,
           useValue: {}
         }
       ]

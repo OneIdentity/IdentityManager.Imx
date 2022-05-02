@@ -9,7 +9,7 @@
 
   <imx-data-source-toolbar #dst
     [settings]="dstSettings"
-    [hiddenElements]="['groupBy', 'settings', 'selectedViewGroup']"
+    [options]="['search', 'filter', 'filterTree', 'settings']"
     [hiddenFilters]="['namespace']"
     [searchBoxText]="'#LDS#Search' | translate"
     (navigationStateChanged)="onNavigationStateChanged($event)"
@@ -35,13 +35,12 @@
   <div *ngIf="!dataExplorerFilters.showTsSyncStatus" class="imx-data-explorer-content">
     <div class="data-explorer-table">
       <imx-data-table [dst]="dst" (highlightedEntityChanged)="onAccountChanged($event)" detailViewVisible="false" mode="manual">
-        <imx-data-table-column [entityColumn]="entitySchemaUnsAccount?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-          [entitySchema]="entitySchemaUnsAccount">
+        <imx-data-table-column [entityColumn]="entitySchemaUnsAccount?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
         </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchemaUnsAccount?.Columns.UID_Person" [entitySchema]="entitySchemaUnsAccount">
+        <imx-data-table-column [entityColumn]="entitySchemaUnsAccount?.Columns.UID_Person">
         </imx-data-table-column>
         <imx-data-table-column align="center"
-          [entityColumn]="entitySchemaUnsAccount?.Columns.AccountDisabled" [entitySchema]="entitySchemaUnsAccount">
+          [entityColumn]="entitySchemaUnsAccount?.Columns.AccountDisabled">
         </imx-data-table-column>
         <imx-data-table-generic-column alignHeader="center" alignContent="center"
           [columnName]="entitySchemaUnsAccount?.Columns.XMarkedForDeletion.ColumnName">

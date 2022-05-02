@@ -30,9 +30,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
-import { MessageDialogComponent, LdsReplacePipe } from 'qbm';
+import { MessageDialogComponent, LdsReplacePipe, ConfirmationService } from 'qbm';
 import { PasswordresetPasswordquestions } from 'imx-api-qer';
 import { QerApiService } from '../qer-api-client.service';
+import { Title } from '@angular/platform-browser';
 
 // ToDo later: Komponente einbinden und anpassen
 @Component({
@@ -48,10 +49,11 @@ export class PasswordQueryComponent implements OnInit {
     public readonly translate: TranslateService,
     private readonly qerApiService: QerApiService,
     public readonly ldsReplace: LdsReplacePipe,
+    private readonly confirmationService: ConfirmationService,
     private snackBar: MatSnackBar,
     private dialogService: MatDialog,
     private router: Router
-  ) {}
+  ) { }
 
   public async ngOnInit(): Promise<void> {
     this.questions = (await this.qerApiService.typedClient.PasswordresetPasswordquestions.Get({ PageSize: 1024 })).Data;
@@ -105,39 +107,31 @@ export class PasswordQueryComponent implements OnInit {
       this.snackBar.open(
         await await this.translate.get('#LDS#You have successfully updated your password questions and answers.').toPromise()
       );
+      // TODO: use routeConfig.start from AppConfig
       this.router.navigate(['start']);
     }
   }
 
   public async UnlockQuestion(q: PasswordresetPasswordquestions): Promise<void> {
-    this.dialogService.open(MessageDialogComponent, {
-      data: {
-        OnYes: async () => {
-          //  call customizer method unlock for the current
-          await this.qerApiService.client.passwordreset_passwordquestions_unlock_post(q.GetEntity().GetKeys()[0]);
-          // TODO: later client-side set IsLocked=false, or reload?
-        },
-        ShowYesNo: true,
-        Title: await this.translate.get('#LDS#Unlock password question').toPromise(),
-        Message: await this.translate.get('#LDS#Are you sure you want to unlock this password question?').toPromise(),
-      },
-      panelClass: 'imx-messageDialog',
-    });
+    if (await this.confirmationService.confirm({
+      Title: '#LDS#Unlock password question',
+      Message: '#LDS#Are you sure you want to unlock this password question?'
+    })) {
+      //  call customizer method unlock for the current
+      await this.qerApiService.client.passwordreset_passwordquestions_unlock_post(q.GetEntity().GetKeys()[0]);
+      // TODO: later client-side set IsLocked=false, or reload?
+    }
   }
 
   public async Delete(x: PasswordresetPasswordquestions): Promise<void> {
     if (this.questions.filter((m) => m.IsLocked.value).length > this.requiredQuestions) {
-      this.dialogService.open(MessageDialogComponent, {
-        data: {
-          OnYes: () => {
-            // TODO later x.Delete();
-          },
-          ShowYesNo: true,
-          Title: await this.translate.get('#LDS#Delete password question').toPromise(),
-          Message: await this.translate.get('#LDS#Are you sure you want to delete this password question?').toPromise(),
-        },
-        panelClass: 'imx-messageDialog',
-      });
+
+      if (await this.confirmationService.confirm({
+        Title: '#LDS#Delete password question',
+        Message: '#LDS#Are you sure you want to delete this password question?'
+      })) {
+        // TODO later x.Delete();
+      }
     } else {
       this.dialogService.open(MessageDialogComponent, {
         data: {

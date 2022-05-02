@@ -95,6 +95,12 @@ export class DataTileComponent implements OnInit {
   @Input() public titleObject: IClientProperty;
 
   /**
+   * A list of properties, that should be displayed as an additional subtitle
+   */
+  @Input() public additionalSubtitleObjects: IClientProperty[] = [];
+
+
+  /**
    * The property of the typed entity that will be used as the subtitle of the tile.
    */
   @Input() public subtitleObject: IClientProperty;
@@ -151,7 +157,7 @@ export class DataTileComponent implements OnInit {
    */
   @Output() public selectionChanged = new EventEmitter<TypedEntity>();
 
-  @Output() public badgeClicked = new EventEmitter<{entity: TypedEntity, badge: DataTileBadge}>();
+  @Output() public badgeClicked = new EventEmitter<{ entity: TypedEntity, badge: DataTileBadge }>();
 
   /**
    * A icon button that indicates if the tile is selected.
@@ -200,6 +206,12 @@ export class DataTileComponent implements OnInit {
     return this.typedEntity.GetEntity().GetColumn(colName).GetDisplayValue();
   }
 
+
+  public getAdditionalColumnText(): string {
+    return this.additionalSubtitleObjects.map(elem =>
+      this.typedEntity.GetEntity().GetColumn(elem.ColumnName).GetDisplayValue()).join('; ');
+  }
+
   public getDefaultTypeNameImage() {
     return `imx-table-${this.typedEntity.GetEntity().TypeName}-large`;
   }
@@ -220,7 +232,7 @@ export class DataTileComponent implements OnInit {
   }
 
   public onBadgeClick(badge: DataTileBadge): void {
-    this.badgeClicked.emit({entity: this.typedEntity, badge: badge});
+    this.badgeClicked.emit({ entity: this.typedEntity, badge: badge });
   }
 
   /**

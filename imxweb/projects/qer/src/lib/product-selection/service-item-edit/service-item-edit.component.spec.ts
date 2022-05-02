@@ -24,13 +24,13 @@
  *
  */
 
-import { Component, Input, Output } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, Input, Output } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { configureTestSuite } from 'ng-bullet';
 import { of } from 'rxjs';
 
-import { clearStylesFromDOM } from 'qbm';
+import { clearStylesFromDOM, ConfirmationService } from 'qbm';
 import { ServiceItemEditComponent } from './service-item-edit.component';
 
 @Component({
@@ -39,19 +39,28 @@ import { ServiceItemEditComponent } from './service-item-edit.component';
 })
 class MockBulkPropertyEditorComponent {
   @Input() public entities: any;
-  @Output() public saveItem: any;
-  @Output() public skipItem: any;
+  @Output() public saveItem: any = new EventEmitter<any>();
+  @Output() public skipItem: any = new EventEmitter<any>();
 }
 
 describe('ServiceItemEditComponent', () => {
   let component: ServiceItemEditComponent;
   let fixture: ComponentFixture<ServiceItemEditComponent>;
-  
+
+  let confirm = true;
+  const mockConfirmationService = {
+    confirm: jasmine.createSpy('confirm')
+      .and.callFake(() => Promise.resolve(confirm))
+  }
+
   configureTestSuite(() => {
     TestBed.configureTestingModule({
       declarations: [
         MockBulkPropertyEditorComponent,
         ServiceItemEditComponent
+      ],
+      schemas: [
+        CUSTOM_ELEMENTS_SCHEMA
       ],
       providers: [
         {
@@ -75,6 +84,10 @@ describe('ServiceItemEditComponent', () => {
             closeClicked: () => of(null),
             close: jasmine.createSpy('close')
           }
+        },
+        {
+          provide: ConfirmationService,
+          useValue: mockConfirmationService
         }
       ]
     });
@@ -85,7 +98,7 @@ describe('ServiceItemEditComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
-  
+
   afterAll(() => {
     clearStylesFromDOM();
   });

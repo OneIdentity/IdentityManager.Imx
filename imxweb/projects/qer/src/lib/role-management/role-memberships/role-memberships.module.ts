@@ -39,6 +39,9 @@ import { PrimaryMembershipsComponent } from './primary-memberships.component';
 import { RemoveMembershipComponent } from './remove-membership.component';
 import { RoleMembershipsComponent } from './role-memberships.component';
 import { SecondaryMembershipsComponent } from './secondary-memberships.component';
+import { SqlWizardModule } from 'qbm';
+import { DynamicRoleComponent } from './dynamic-role.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -47,6 +50,7 @@ import { SecondaryMembershipsComponent } from './secondary-memberships.component
     PrimaryMembershipsComponent,
     SecondaryMembershipsComponent,
     RemoveMembershipComponent,
+    DynamicRoleComponent,
     ExcludedMembershipsComponent,
     NotRequestableMembershipsComponent
   ],
@@ -60,11 +64,13 @@ import { SecondaryMembershipsComponent } from './secondary-memberships.component
     EuiCoreModule,
     EuiMaterialModule,
     LdsReplaceModule,
+    MatProgressSpinnerModule,
     DataSourceToolbarModule,
     DataTableModule,
     DataTilesModule,
     DataTreeModule,
     SourceDetectiveModule,
+    SqlWizardModule,
   ],
   exports: [
     RoleMembershipsComponent

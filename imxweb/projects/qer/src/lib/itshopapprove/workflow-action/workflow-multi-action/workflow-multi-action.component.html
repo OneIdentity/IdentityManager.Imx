@@ -1,0 +1,52 @@
+<mat-card>
+  <mat-card-title>{{ '#LDS#Heading General Settings' | translate }}</mat-card-title>
+  <mat-card-subtitle>{{ '#LDS#Here you can make settings that are applied to each selected product.' | translate }}</mat-card-subtitle>
+  <mat-card-content>
+    <div class="imx-request-parameters">
+      <imx-cdr-editor
+        *ngIf="data.actionParameters.uidPerson"
+        [cdr]="data.actionParameters.uidPerson"
+        (controlCreated)="formGroup.addControl('uidPerson', $event)"
+        data-imx-identifier="workflow-action-property-uidPerson"
+      >
+      </imx-cdr-editor>
+      <imx-cdr-editor
+        *ngIf="data.actionParameters.validFrom"
+        [cdr]="data.actionParameters.validFrom"
+        (controlCreated)="formGroup.addControl('validFrom', $event)"
+        data-imx-identifier="workflow-action-property-validFrom"
+      >
+      </imx-cdr-editor>
+      <imx-cdr-editor
+        *ngIf="data.actionParameters.validUntil"
+        [cdr]="data.actionParameters.validUntil"
+        (controlCreated)="formGroup.addControl('validUntil', $event)"
+        data-imx-identifier="workflow-action-property-validUntil"
+      >
+      </imx-cdr-editor>
+      <imx-decision-reason
+        [reasonStandard]="data.actionParameters.justification"
+        [reasonFreetext]="data.actionParameters.reason"
+        (controlCreated)="formGroup.addControl('reason', $event)"
+        data-imx-identifier="workflow-action-property-reason"
+      >
+      </imx-decision-reason>
+    </div>
+  </mat-card-content>
+</mat-card>
+<eui-alert type="info" dismissable="true" colored="true" condensed="true">
+  <eui-alert-header>{{ '#LDS#Heading Individual Settings' | translate }}</eui-alert-header>
+  <eui-alert-content>{{
+    '#LDS#Here you can see all products you have selected. You can make individual settings for specific products if applicable.' | translate
+  }}</eui-alert-content>
+</eui-alert>
+
+<imx-bulk-editor
+  data-imx-identifier="request-parameters-editor"
+  class="imx-bulk-editor"
+  [entities]="requests"
+  [hideButtons]="true"
+  (validationStateChanged)="validateItem($event)"
+  (controlCreated)="formGroup.addControl('request-parameters', $event)"
+>
+</imx-bulk-editor>

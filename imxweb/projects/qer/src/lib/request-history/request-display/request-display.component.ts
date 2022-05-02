@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, OnInit, ComponentFactoryResolver, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, ComponentFactoryResolver, ViewChild, Input, OnChanges, SimpleChanges, ComponentRef } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
 
 import { PortalItshopRequests } from 'imx-api-qer';
@@ -36,11 +36,16 @@ import { ExtDirective } from 'qbm';
   template: `<ng-template imxExtd></ng-template>`,
   selector: 'imx-request-display'
 })
-export class RequestDisplayComponent implements OnInit {
+export class RequestDisplayComponent implements OnInit, OnChanges {
 
   @ViewChild(ExtDirective, { static: true }) public readonly directive: ExtDirective;
   @Input() public readonly isReadOnly: boolean;
   @Input() public readonly personWantsOrg: PortalItshopRequests;
+  @Input() public additionalText: string;
+
+
+  private instance: any;
+
 
   constructor(
     private readonly componentFactoryResolver: ComponentFactoryResolver,
@@ -49,16 +54,33 @@ export class RequestDisplayComponent implements OnInit {
   ) {
   }
 
+  public ngOnChanges(changes: SimpleChanges): void {
+    if (changes.additionalText) {
+      const type = this.personWantsOrg.DisplayType.value;
+      const selectedProvider = this.requestDisplayService.getType(type);
+      this.logger.trace('Getting request display component for ' + type);
+      if (selectedProvider) {
+        this.directive.viewContainerRef.clear();
+        this.instance = this.directive.viewContainerRef
+          .createComponent(this.componentFactoryResolver.resolveComponentFactory(selectedProvider));
+        this.instance.instance.isReadOnly = this.isReadOnly;
+        this.instance.instance.personWantsOrg = this.personWantsOrg;
+        this.instance.instance.additionalText = this.additionalText;
+      }
+    }
+  }
+
   public ngOnInit(): void {
     const type = this.personWantsOrg.DisplayType.value;
     const selectedProvider = this.requestDisplayService.getType(type);
     this.logger.trace('Getting request display component for ' + type);
     if (selectedProvider) {
       this.directive.viewContainerRef.clear();
-      const instance = this.directive.viewContainerRef
+      this.instance = this.directive.viewContainerRef
         .createComponent(this.componentFactoryResolver.resolveComponentFactory(selectedProvider));
-      instance.instance.isReadOnly = this.isReadOnly;
-      instance.instance.personWantsOrg = this.personWantsOrg;
+      this.instance.instance.isReadOnly = this.isReadOnly;
+      this.instance.instance.personWantsOrg = this.personWantsOrg;
+      this.instance.instance.additionalText = this.additionalText;
     }
   }
 }

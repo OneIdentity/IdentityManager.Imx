@@ -28,8 +28,9 @@ import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { PortalPersonAll } from 'imx-api-qer';
-import { DisplayColumns, EntitySchema } from 'imx-qbm-dbts';
+import { DisplayColumns, EntitySchema, ValType } from 'imx-qbm-dbts';
 import { DataSourceToolbarSettings } from 'qbm';
+import { NotRequestableMembershipsEntity } from './not-requestable-memberships-entity';
 
 @Component({
   selector: 'imx-not-requestable-memberships',
@@ -42,21 +43,25 @@ export class NotRequestableMembershipsComponent {
   public dstSettings: DataSourceToolbarSettings;
   constructor(
     @Inject(MAT_DIALOG_DATA) public readonly data: {
-      inactiveIdentities: PortalPersonAll[],
+      notRequestableMemberships: NotRequestableMembershipsEntity[],
       entitySchema: EntitySchema,
       membershipName: string
     },
   ) {
 
     const displayedColumns = [
-      data.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]
+      data.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
+      {
+        ColumnName: 'errorMessage',
+        Type: ValType.String
+      }
     ];
 
     this.dstSettings = {
       displayedColumns,
       dataSource: {
-        Data: data.inactiveIdentities,
-        totalCount: data.inactiveIdentities.length
+        Data: data.notRequestableMemberships,
+        totalCount: data.notRequestableMemberships.length
       },
       entitySchema: data.entitySchema,
       navigationState: {}

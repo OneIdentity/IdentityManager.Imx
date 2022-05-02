@@ -1,0 +1,8 @@
+<eui-badge color="gray" *ngIf="val == 0">
+  {{ '#LDS#Not assigned' | translate }}
+</eui-badge>
+<ng-container *ngFor="let o of origins">
+  <eui-badge color="green" *ngIf="hasBit(o)">
+    {{ getCaption(o) }}
+  </eui-badge>
+</ng-container>

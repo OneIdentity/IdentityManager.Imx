@@ -33,7 +33,7 @@ import { Subscription } from 'rxjs';
 import { ITShopConfig, PortalServicecategories, PortalShopServiceitems } from 'imx-api-qer';
 import { IEntity } from 'imx-qbm-dbts';
 
-import { isIE, SearchResultAction, SettingsService, SnackBarService } from 'qbm';
+import { isIE, SettingsService, SnackBarService } from 'qbm';
 import { ServiceCategoriesService } from './service-categories.service';
 import { ServiceCategoryTreeDatabase } from './service-category-tree-database';
 import { ServiceCategoryChangedType } from './service-category-changed.enum';
@@ -48,9 +48,6 @@ import { ServiceItemsService } from '../service-items/service-items.service';
 })
 export class ServiceCategoriesComponent implements OnDestroy {
   public selectedEntities: IEntity[] = [];
-
-  public readonly searchResultAction: SearchResultAction;
-
 
   public treeDatabase: ServiceCategoryTreeDatabase;
   public hasData = true;
@@ -73,7 +70,6 @@ export class ServiceCategoriesComponent implements OnDestroy {
     private readonly snackBar: SnackBarService,
     private readonly errorHandler: ErrorHandler
   ) {
-    this.searchResultAction = { action: async (entity) => this.onServiceCategorySelected(entity), caption: '#LDS#Edit' };
     this.initializeTree();
   }
 
@@ -118,7 +114,7 @@ export class ServiceCategoriesComponent implements OnDestroy {
           const config = await this.projectConfig.getConfig();
           this.config = {
             itshopConfig: config.ITShopConfig,
-            serviceCategoryEditableFields: config.OwnershipConfig.EditableFields["AccProductGroup"],
+            serviceCategoryEditableFields: config.OwnershipConfig.EditableFields.AccProductGroup,
             hasAccproductparamcategoryCandidates: await this.serviceCategoriesProvider.hasAccproductparamcategoryCandidates()
           };
         } finally {

@@ -1,6 +1,5 @@
-@import '~@elemental-ui/core/src/styles/_palette.scss';
-@import '../../../../../shared/assets/variables.scss';
-@import './tile-variables.scss';
+@import "variables.scss";
+@import "./tile-variables.scss";
 
 // TODO: Cleanup. Do we need all classed?
 
@@ -12,7 +11,7 @@
 
 .addon-tile .imx-generic-tile-caption {
   padding: 0px 10px;
-  text-align: left
+  text-align: left;
 }
 
 .imx-generic-tile-iconfont {
@@ -55,7 +54,7 @@
 }
 
 .imx-generic-tile.dashboard h4 {
-  font-size: .8em;
+  font-size: 0.8em;
   line-height: 1.2em;
   margin-top: -8px;
   color: $black-b;
@@ -70,7 +69,6 @@ section.imx-generic-tile.addon-tile > .mat-card > a {
 .imx-generic-tile.addon-tile h1 {
   font-size: 1.05em;
 }
-
 
 .imx-flex-header {
   display: flex;
@@ -106,7 +104,7 @@ section.imx-generic-tile.addon-tile > .mat-card > a {
 
 .imx-generic-tile-content.large-overview {
   padding: 10px 0px 0px 10px;
-  width: 100%
+  width: 100%;
 }
 
 .imx-generic-tile-content.large-overview > span {
@@ -141,7 +139,7 @@ section.imx-generic-tile.addon-tile > .mat-card > a {
 }
 
 .addon-tile .mat-card {
-  height: 120px;  
+  height: 120px;
   width: $tile-width;
   padding: 0;
   cursor: auto;
@@ -153,7 +151,7 @@ section.imx-generic-tile.addon-tile > .mat-card > a {
 }
 
 .overview .mat-card {
-  height: 175px;  
+  height: 175px;
   width: $tile-width;
   cursor: auto;
   overflow: auto;
@@ -162,7 +160,7 @@ section.imx-generic-tile.addon-tile > .mat-card > a {
 
 .dashboard .mat-card {
   height: 245px;
-  display:flex;
+  display: flex;
   width: $tile-width;
   cursor: auto;
   overflow: auto;
@@ -256,7 +254,7 @@ section.imx-generic-tile.dashboard > .mat-card {
     position: relative;
     font-size: 0.75em;
     padding: 2px 0px 2px 18px;
-    flex:1;
+    flex: 1;
     margin: 0 15px 15px 0;
     display: flex;
     flex-direction: column;
@@ -270,16 +268,16 @@ section.imx-generic-tile.dashboard > .mat-card {
   max-width: 350px;
   padding: 10px;
   word-break: break-all;
-  overflow: auto
+  overflow: auto;
 }
 
-.imx-generic-tile a[data-imx-identifier=tile-link] {
+.imx-generic-tile a[data-imx-identifier="tile-link"] {
   transition-property: all;
   transition-duration: 0.15s;
   height: 100%;
 }
 
-.imx-generic-tile.large-overview a[data-imx-identifier=tile-link] {
+.imx-generic-tile.large-overview a[data-imx-identifier="tile-link"] {
   height: auto;
 }
 
@@ -295,14 +293,13 @@ section.imx-generic-tile.dashboard > .mat-card {
   font-size: 1.05em;
 }
 
- /** TODO (TFS 805997)
+/** TODO (TFS 805997)
 .highlighted .imx-generic-tile-iconfont { 
  color: $VI_Common_Color_Badge_Warning; 
 }
 */
 
 @media #{$IMX_Mediaquery_Smartphone} {
-
   section.imx-generic-tile.large-overview {
     display: inline-table;
     max-width: 300px;
@@ -322,7 +319,6 @@ section.imx-generic-tile.dashboard > .mat-card {
   .addon-tile .imx-generic-tile-value {
     height: unset;
   }
-
 }
 
 @media #{$IMX_Mediaquery_Smartphone} {
@@ -331,5 +327,33 @@ section.imx-generic-tile.dashboard > .mat-card {
     width: 45%;
     margin-right: 0.75em;
     margin-bottom: 1em;
+  }
+}
+
+.IconImage {
+  padding-right: 6px;
+  vertical-align: middle;
+  border-width: 0;
+}
+
+.IconImage a:link {
+  text-decoration: none;
+  color: $VI_Common_Color_Font_Secondary;
+  outline: none;
+}
+
+:host ::ng-deep {
+  .imx-mobile-mobileonly {
+    display: none;
+  }
+
+  @media #{$IMX_Mediaquery_Smartphone} {
+    .imx-mobile-nomobile {
+      display: none !important;
+    }
+
+    .imx-mobile-mobileonly {
+      display: block;
+    }
   }
 }

@@ -47,7 +47,7 @@ import { AttestationComponent } from './attestation/attestation.component';
 import { AttestationHistoryModule } from '../attestation-history/attestation-history.module';
 import { RunsGridComponent } from './runs-grid/runs-grid.component';
 import { CaseChartComponent } from './case-chart/case-chart.component';
-import { AttestationExtComponent } from './attestation/attestation-ext/attestation-ext.component';
+import { AttestationWrapperComponent } from './attestation/attestation-wrapper/attestation-wrapper.component';
 
 @NgModule({
   declarations: [
@@ -60,7 +60,7 @@ import { AttestationExtComponent } from './attestation/attestation-ext/attestati
     AttestationComponent,
     RunsGridComponent,
     CaseChartComponent,
-    AttestationExtComponent
+    AttestationWrapperComponent
   ],
   imports: [
     CommonModule,
@@ -83,7 +83,7 @@ import { AttestationExtComponent } from './attestation/attestation-ext/attestati
   exports: [
     RunsComponent,
     RunsGridComponent,
-    AttestationExtComponent
+    AttestationWrapperComponent
   ]
 })
 export class AttestationRunsModule { }

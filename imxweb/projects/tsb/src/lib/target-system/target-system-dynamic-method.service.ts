@@ -42,7 +42,7 @@ export class TargetSystemDynamicMethodService {
     private readonly metadata: MetadataService
   ) { }
 
-  public async getCollection<TEntity extends TypedEntity<TExtendedDataWrite>, TExtendedData = any, TExtendedDataWrite = any>(
+  public async getCollection<TEntity extends TypedEntity, TExtendedData = any>(
     type: new (e: IEntity) => TEntity,
     tableName: string,
     parameters: DynamicCollectionLoadParameters = {}
@@ -51,7 +51,20 @@ export class TargetSystemDynamicMethodService {
     return this.dynamicMethod.get(this.tsbClient.apiClient, { type, path }, parameters);
   }
 
-  public async get<TEntity extends TypedEntity<TExtendedDataWrite>, TExtendedData = any, TExtendedDataWrite = any>(
+  public async getById<TEntity extends TypedEntity, TExtendedData = any>(
+    type: new (e: IEntity) => TEntity,
+    dbObjectKeyWrapper: DbObjectKeyWrapper
+  ): Promise<TypedEntity> {
+    const key = dbObjectKeyWrapper.dbObjectKey.Keys[0];
+    const tableName = dbObjectKeyWrapper.dbObjectKey.TableName.toLowerCase();
+    const path = '/portal/targetsystem/' + tableName + '/interactive';
+
+    return (await this.dynamicMethod.getInteractive(this.tsbClient.apiClient, { type, key, path }, {
+      name: dbObjectKeyWrapper.columnName, value: key
+    })).Data[0];
+  }
+
+  public async get<TEntity extends TypedEntity, TExtendedData = any>(
     type: new (e: IEntity) => TEntity,
     dbObjectKeyWrapper: DbObjectKeyWrapper
   ): Promise<TEntity> {
@@ -66,7 +79,7 @@ export class TargetSystemDynamicMethodService {
       Value1: dbObjectKeyWrapper.dbObjectKey.Keys[0]
     }];
 
-    return (await this.getCollection<TEntity, TExtendedData, TExtendedDataWrite>(
+    return (await this.getCollection<TEntity, TExtendedData>(
       type, dbObjectKeyWrapper.dbObjectKey.TableName, { filter }
     ))?.Data[0];
   }

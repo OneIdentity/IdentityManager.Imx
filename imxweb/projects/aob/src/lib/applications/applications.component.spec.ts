@@ -68,7 +68,8 @@ describe('ApplicationsComponent', () => {
     reload: jasmine.createSpy('reload').and.callFake((id) => Promise.resolve(
       id === findApplicationResult.UID_AOBApplication.value ? findApplicationResult : undefined
     )),
-    onApplicationCreated: new Subject<PortalApplicationNew>()
+    onApplicationCreated: new Subject<PortalApplicationNew>(),
+    onApplicationDeleted: new Subject<PortalApplicationNew>()
   };
 
   const euiLoadingServiceStub = {

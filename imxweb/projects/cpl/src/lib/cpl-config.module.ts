@@ -26,39 +26,66 @@
 
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
-import { Routes, RouterModule } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-
+import { MatListModule } from '@angular/material/list';
+import { Routes, RouterModule } from '@angular/router';
 import { EuiCoreModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
+
 import { ClassloggerService, RouteGuardService } from 'qbm';
 import { InitService } from './init.service';
 import { TilesModule } from 'qer';
 import { DashboardPluginComponent } from './dashboard-plugin/dashboard-plugin.component';
 import { CartItemComplianceCheckComponent } from './item-validator/cart-item-compliance-check/cart-item-compliance-check.component';
-import { CartItemViolationDetailsComponent } from './item-validator/cart-item-violation-details/cart-item-violation-details.component';
+import { RulesComponent } from './rules/rules.component';
+import { ComplianceRulesGuardService } from './guards/compliance-rules-guard.service';
+import { IdentityRuleViolationsModule } from './identity-rule-violations/identity-rule-violations.module';
+import { RulesViolationsModule } from './rules-violations/rules-violations.module';
+import { RulesViolationsComponent } from './rules-violations/rules-violations.component';
+import { ComplianceViolationDetailsComponent } from './request/compliance-violation-details/compliance-violation-details.component';
+import { WorkflowViolationDetailsComponent } from './request/workflow-violation-details/workflow-violation-details.component';
 
-const routes: Routes = [];
+const routes: Routes = [
+  {
+    path: 'compliance/rules',
+    component: RulesComponent,
+    canActivate: [RouteGuardService, ComplianceRulesGuardService],
+    resolve: [RouteGuardService],
+  },
+  {
+    path: 'compliance/rulesviolations/approve',
+    component: RulesViolationsComponent,
+    canActivate: [RouteGuardService],
+    resolve: [RouteGuardService]
+  },
+];
 
 @NgModule({
-  declarations: [DashboardPluginComponent, CartItemComplianceCheckComponent, CartItemViolationDetailsComponent],
+  declarations: [
+    DashboardPluginComponent,
+    CartItemComplianceCheckComponent,
+    ComplianceViolationDetailsComponent,
+    WorkflowViolationDetailsComponent,
+  ],
   imports: [
     CommonModule,
-    TilesModule,
-    RouterModule.forChild(routes),
-    MatIconModule,
-    MatListModule,
+    EuiCoreModule,
     MatButtonModule,
     MatExpansionModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
+    MatListModule,
+    RouterModule.forChild(routes),
+    RulesViolationsModule,
+    TilesModule,
     TranslateModule,
     EuiCoreModule,
+    IdentityRuleViolationsModule
   ],
 })
 export class CplConfigModule {

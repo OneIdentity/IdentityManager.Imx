@@ -1,14 +1,13 @@
 <div eui-sidesheet-content>
   <mat-card class="imx-sidesheet-content">
     <imx-data-source-toolbar #dst [settings]="dstSettings"
-      [hiddenElements]="[ 'groupBy', 'settings', 'selectedViewGroup']" (navigationStateChanged)="navigate($event)"
+      [options]="['search', 'filter']" (navigationStateChanged)="navigate($event)"
       (search)="search($event)" data-imx-identifier="typed-entity-candidates-dst">
     </imx-data-source-toolbar>
     <div class="imx-table-container">
       <imx-data-table [dst]="dst" mode="manual" [detailViewVisible]="false" [selectable]="false"
         data-imx-identifier="typed-entity-candidates-datatable">
-        <imx-data-table-column [entityColumn]="entitySchemaCandidates?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-          [entitySchema]="entitySchemaCandidates" columnLabel="">
+        <imx-data-table-column [entityColumn]="entitySchemaCandidates?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" columnLabel="">
           <ng-template let-item>
             <div>{{ item.GetEntity().GetDisplay() }}</div>
             <div *ngIf="(this.data.tables && this.data.tables.length > 1)" subtitle>{{ getTable(item) }}</div>

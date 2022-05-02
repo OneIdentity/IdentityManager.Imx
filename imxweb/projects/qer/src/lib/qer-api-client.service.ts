@@ -43,6 +43,8 @@ export class QerApiService {
     return this.c;
   }
 
+  public readonly v2Client: V2Client;
+
   public get apiClient(): ApiClient {
     return this.config.apiClient;
   }
@@ -57,7 +59,8 @@ export class QerApiService {
       // Use schema loaded by QBM client
       const schemaProvider = config.client;
       this.c = new Client(this.config.apiClient, schemaProvider);
-      this.tc = new TypedClient(new V2Client(this.config.apiClient, schemaProvider), this.translationProvider);
+      this.v2Client = new V2Client(this.config.apiClient, schemaProvider);
+      this.tc = new TypedClient(this.v2Client, this.translationProvider);
     } catch (e) {
       this.logger.error(this, e);
     }

@@ -28,6 +28,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { RouterModule } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
@@ -36,14 +37,17 @@ import { DataSourceToolbarModule, DataTableModule, CdrModule, EntityModule, Bulk
 import { AttestationDecisionComponent } from './attestation-decision.component';
 import { AttestationCaseComponent } from './attestation-case.component';
 import { AttestationActionComponent } from '../attestation-action/attestation-action.component';
-import { ItshopModule } from 'qer';
+import { JustificationModule } from 'qer';
 import { DecisionHistoryItemComponent } from './decision-history-item/decision-history-item.component';
 import { ApproversComponent } from './approvers/approvers.component';
 import { EntityPropertyEditorComponent } from '../entity-property-editor/entity-property-editor.component';
 import { AttestationDisplayModule } from '../attestation-display/attestation-display.module';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AttestationSnapshotModule } from '../attestation-snapshot/attestation-snapshot.module';
-
+import { LossPreviewDialogComponent } from './loss-preview-dialog/loss-preview-dialog.component';
+import { LossPreviewTableComponent } from './loss-preview-table/loss-preview-table.component';
+import { DecisionComplianceViolationComponent } from './decision-compliance-violation/decision-compliance-violation.component';
+import { MitigatingControlsComponent } from './mitigating-controls/mitigating-controls.component';
 @NgModule({
   declarations: [
     AttestationCaseComponent,
@@ -51,7 +55,11 @@ import { AttestationSnapshotModule } from '../attestation-snapshot/attestation-s
     AttestationActionComponent,
     DecisionHistoryItemComponent,
     ApproversComponent,
-    EntityPropertyEditorComponent
+    EntityPropertyEditorComponent,
+    LossPreviewDialogComponent,
+    LossPreviewTableComponent,
+    DecisionComplianceViolationComponent,
+    MitigatingControlsComponent
   ],
   imports: [
     AttestationSnapshotModule,
@@ -60,7 +68,7 @@ import { AttestationSnapshotModule } from '../attestation-snapshot/attestation-s
     EntityModule,
     EuiCoreModule,
     EuiMaterialModule,
-    ItshopModule,
+    JustificationModule,
     TranslateModule,
     DataSourceToolbarModule,
     DataTableModule,
@@ -70,9 +78,10 @@ import { AttestationSnapshotModule } from '../attestation-snapshot/attestation-s
     MatTooltipModule,
     ReactiveFormsModule,
     BulkPropertyEditorModule,
-    AttestationDisplayModule
+    AttestationDisplayModule,
+    MatExpansionModule
   ],
-  exports:[ 
+  exports: [
     DecisionHistoryItemComponent,
     ApproversComponent
   ]

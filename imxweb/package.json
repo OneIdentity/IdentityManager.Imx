@@ -8,7 +8,7 @@
     "build:watch": "ng build --watch",
     "build:watch:dynamic": "ng build --watch --configuration dynamic",
     "build:app": "ng build --aot --configuration production",
-    "build:app:debug": "ng build --configuration production",
+    "build:app:debug": "ng build --configuration production --source-map true",
     "build:lib": "ng build --configuration production",
     "build:lib:debug": "ng build",
     "test": "ng test --code-coverage --browsers Chrome",
@@ -26,7 +26,7 @@
     "doc:qer-opssupport": "cd projects/qer-app-operationssupport && compodoc -p tsconfig.app.json",
     "doc:qer-portal": "cd projects/qer-app-portal && compodoc -p tsconfig.app.json",
     "doc:arc-governance": "cd projects/arc-app-certaccess && compodoc -p tsconfig.app.json",
-    "postshrinkwrap": "json -I -f .\\package-lock.json -e \"delete this.dependencies['imx-qbm-dbts']; delete this.dependencies['imx-api-qbm']; delete this.dependencies['imx-api-dpr']; delete this.dependencies['imx-api-arc']; delete this.dependencies['imx-api-tsb']; delete this.dependencies['imx-api-aob']; delete this.dependencies['imx-api-qer']; delete this.dependencies['imx-api-rps'], delete this.dependencies['imx-api-cpl'], delete this.dependencies['imx-api-pol'], delete this.dependencies['imx-api-aad'], delete this.dependencies['imx-api-o3t'], delete this.dependencies['imx-api-rmb'], delete this.dependencies['imx-api-rms'], delete this.dependencies['imx-api-att']\""
+    "postshrinkwrap": "json -I -f .\\package-lock.json -e \"delete this.dependencies['imx-qbm-dbts']; delete this.dependencies['imx-api-qbm']; delete this.dependencies['imx-api-dpr']; delete this.dependencies['imx-api-arc']; delete this.dependencies['imx-api-tsb']; delete this.dependencies['imx-api-aob']; delete this.dependencies['imx-api-qer']; delete this.dependencies['imx-api-rps'], delete this.dependencies['imx-api-cpl'], delete this.dependencies['imx-api-pol'], delete this.dependencies['imx-api-aad'], delete this.dependencies['imx-api-o3t'], delete this.dependencies['imx-api-rmb'], delete this.dependencies['imx-api-rms'], delete this.dependencies['imx-api-att'], delete this.dependencies['imx-api-uci']\""
   },
   "private": true,
   "dependencies": {
@@ -46,7 +46,7 @@
     "@ngx-translate/core": "^11.0.1",
     "@ngx-translate/http-loader": "^4.0.0",
     "applicationinsights-js": "^1.0.21",
-    "billboard.js": "^1.8.0",
+    "billboard.js": "^3.1.3",
     "chap-timeline": "^2.9.2",
     "core-js": "^2.6.9",
     "element-resize-detector": "^1.1.13",
@@ -112,6 +112,7 @@
     "imx-api-rms": "file:imx-modules/imx-api-rms.tgz",
     "imx-api-rps": "file:imx-modules/imx-api-rps.tgz",
     "imx-api-tsb": "file:imx-modules/imx-api-tsb.tgz",
+    "imx-api-uci": "file:imx-modules/imx-api-uci.tgz",
     "imx-qbm-dbts": "file:imx-modules/imx-qbm-dbts.tgz"
   }
 }

@@ -29,7 +29,7 @@ import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@element
 import { Subscription } from 'rxjs';
 import { OverlayRef } from '@angular/cdk/overlay';
 
-import { CollectionLoadParameters, CompareOperator, DbObjectKey, FilterType, IEntity, IForeignKeyInfo, TypedEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, CompareOperator, DataModelFilter, DbObjectKey, FilterTreeData, FilterType, IEntity, IForeignKeyInfo, TypedEntity } from 'imx-qbm-dbts';
 import { MetadataService } from '../base/metadata.service';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 import { ConfirmationService } from '../confirmation/confirmation.service';
@@ -37,6 +37,9 @@ import { DataTreeComponent } from '../data-tree/data-tree.component';
 import { ForeignKeyPickerData } from '../fk-advanced-picker/foreign-key-picker-data.interface';
 import { HierarchicalFkDatabase } from './hierarchical-fk-database';
 import { HierarchicalCandidate } from './hierarchical-candidate';
+import { MatRadioChange } from '@angular/material/radio';
+import { MatSelectChange } from '@angular/material/select';
+import { DataTreeWrapperComponent } from '../data-tree-wrapper/data-tree-wrapper.component';
 
 @Component({
   selector: 'imx-fk-hierarchical-dialog',
@@ -47,11 +50,13 @@ import { HierarchicalCandidate } from './hierarchical-candidate';
 export class FkHierarchicalDialogComponent implements OnInit, OnDestroy {
 
   public readonly hierarchyService: HierarchicalFkDatabase;
-  @ViewChild(DataTreeComponent) public fkTree: DataTreeComponent;
+  @ViewChild(DataTreeWrapperComponent) public fkTree: DataTreeWrapperComponent;
 
   public selectedEntities: IEntity[] = [];
+  public filters: DataModelFilter[] = [];
 
   public entitySchema = HierarchicalCandidate.GetEntitySchema();
+  public filterTree: (parentkey: string) => Promise<FilterTreeData>;
 
   private isChanged = false;
   private closeClickSubscription: Subscription;
@@ -75,6 +80,8 @@ export class FkHierarchicalDialogComponent implements OnInit, OnDestroy {
     if (data.fkRelations) {
       this.hierarchyService.fkTable = data.fkRelations.find(fkr => fkr.TableName === data.selectedTableName) || data.fkRelations[0];
     }
+
+    this.filterTree = async (parent) => this.hierarchyService.fkTable.GetFilterTree(parent);
   }
 
   public ngOnDestroy(): void {
@@ -83,13 +90,14 @@ export class FkHierarchicalDialogComponent implements OnInit, OnDestroy {
 
   public async ngOnInit(): Promise<void> {
     await this.getPreselectedEntities();
+    this.filters = (await this.hierarchyService.fkTable.GetDataModel()).Filters;
   }
 
   /**
    * @ignore
    */
   public async tableChanged(): Promise<void> {
-    this.fkTree.reload();
+    this.fkTree?.reload();
   }
 
   public clearSelection(): void {

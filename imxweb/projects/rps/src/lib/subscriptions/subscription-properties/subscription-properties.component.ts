@@ -63,7 +63,6 @@ export class SubscriptionPropertiesComponent implements OnInit, OnChanges {
     this.cdrList = this.subscription == null ? [] : this.subscription.getCdrs(this.displayedColumns);
 
     this.subscriptionParameterFormArray.clear();
-    this.subscription?.calculateParameterColumns();
     this.parameterCdrList = this.subscription == null ? [] : this.subscription.getParameterCdr();
 
     this.withSeparateParameterList = this.withTitles || this.parameterCdrList.length > 0;
@@ -72,7 +71,6 @@ export class SubscriptionPropertiesComponent implements OnInit, OnChanges {
   public valueHasChanged(name: any): void {
     if (this.subscription.columnsWithParameterReload.indexOf(name) !== -1) {
       this.subscriptionParameterFormArray.clear();
-      this.subscription.calculateParameterColumns();
       this.parameterCdrList = this.subscription.getParameterCdr();
     }
   }

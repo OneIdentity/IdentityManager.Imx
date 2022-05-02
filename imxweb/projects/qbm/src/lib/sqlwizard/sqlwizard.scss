@@ -1,0 +1,90 @@
+.column-selector {
+  flex-grow: 1;
+  padding-top: 0.25em;
+}
+
+.operator {
+  padding: 0 1em;
+}
+
+.operator,
+.operator-select {
+  display: inline-block;
+}
+
+li {
+  padding: 0;
+  margin: 0;
+}
+
+.operand {
+  display: flex;
+  flex-grow: 1;
+  flex-shrink: 1;
+  align-items: center;
+}
+
+.expression {
+  display: flex;
+}
+
+.logical-operator {
+  display: flex;
+  width: 50px;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}
+
+.add-expression-row {
+  margin: 0.5em 0;
+  display: flex;
+}
+
+.remove-btn {
+  margin-left: 1em;
+  margin-top: 0.25em;
+}
+
+.date-diff-value {
+  width: 80px;
+}
+
+.relative-date {
+  display: flex;
+}
+
+mat-radio-button {
+  margin-right: 1em;
+}
+
+/* undo Elemental UI fix */
+::ng-deep .mat-form-field-wrapper,
+::ng-deep mat-form-field.ng-untouched .mat-form-field-wrapper,
+::ng-deep mat-form-field.ng-valid .mat-form-field-wrapper {
+  padding-bottom: 0;
+}
+
+::ng-deep .mat-form-field-infix .mat-select-trigger {
+  vertical-align: middle;
+
+  .mat-select-arrow-wrapper {
+    vertical-align: bottom;
+  }
+}
+
+imx-sqlwizard-singlevalue {
+  display: flex;
+  flex-grow: 2;
+}
+
+.auto-flex {
+  flex: auto;
+}

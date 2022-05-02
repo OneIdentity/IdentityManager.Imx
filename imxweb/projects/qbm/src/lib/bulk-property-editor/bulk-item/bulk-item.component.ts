@@ -39,7 +39,7 @@ import { BulkItemIcon } from './bulk-item-icon';
 export class BulkItemComponent implements OnInit {
   public get icon(): BulkItemIcon { return this.icons[this.bulkItem?.status]; }
 
-  public iconStyle = {}
+  public iconStyle = {};
 
   @ViewChild('panel') public panel: MatExpansionPanel;
 
@@ -141,6 +141,6 @@ export class BulkItemComponent implements OnInit {
       visible = true;
     }
 
-    visible ? this.iconStyle = {'visibility': 'visible'} : this.iconStyle = {'visibility': 'hidden'};
+    visible ? this.iconStyle = {visibility: 'visible'} : this.iconStyle = {visibility: 'hidden'};
   }
 }

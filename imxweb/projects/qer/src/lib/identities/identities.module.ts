@@ -40,21 +40,26 @@ import {
   DataSourceToolbarModule,
   DataTableModule,
   DataTreeModule,
+  DynamicTabsModule,
   ExtModule,
   LdsReplaceModule,
   MenuItem,
   MenuService,
+  ObjectHistoryModule,
   RouteGuardService
 } from 'qbm';
 import { DataExplorerIdentitiesComponent } from './identities.component';
 import { IdentitiesService } from './identities.service';
 import { IdentitySidesheetComponent } from './identity-sidesheet/identity-sidesheet.component';
 import { IdentitiesReportsService } from './identities-reports.service';
-import { IdentityMembershipsComponent } from './identity-memberships/identity-memberships.component';
-import { ObjectAttestationModule } from '../object-attestation/object-attestation.module';
 import { isPersonAdmin } from '../admin/qer-permissions-helper';
-import { PersonAdminGuardService } from '../guards/person-admin-guard.service';
+import { RiskModule } from '../risk/risk.module';
 import { DataExplorerRegistryService } from '../data-explorer-view/data-explorer-registry.service';
+import { AssignmentsComponent } from './identity-sidesheet/assignments/assignments.component';
+import { IdentityRoleMembershipsModule } from './identity-sidesheet/identity-role-memberships/identity-role-memberships.module';
+import { OrgChartModule } from '../org-chart/org-chart.module';
+import { CreateNewIdentityComponent } from './create-new-identity/create-new-identity.component';
+import { DuplicatesSidesheetComponent } from './create-new-identity/duplicates-sidesheet/duplicates-sidesheet.component';
 
 const routes: Routes = [
   {
@@ -70,7 +75,9 @@ const routes: Routes = [
   declarations: [
     DataExplorerIdentitiesComponent,
     IdentitySidesheetComponent,
-    IdentityMembershipsComponent
+    AssignmentsComponent,
+    CreateNewIdentityComponent,
+    DuplicatesSidesheetComponent
   ],
   imports: [
     CommonModule,
@@ -87,15 +94,23 @@ const routes: Routes = [
     DataTableModule,
     LdsReplaceModule,
     DataTreeModule,
-    ObjectAttestationModule,
+    ObjectHistoryModule,
     ExtModule,
+    RiskModule,
+    DynamicTabsModule,
+    OrgChartModule,
+    IdentityRoleMembershipsModule,
     RouterModule.forChild(routes),
   ],
   providers: [
     IdentitiesService,
     IdentitiesReportsService
   ],
-  exports: [DataExplorerIdentitiesComponent]
+  exports: [DataExplorerIdentitiesComponent],
+  entryComponents: [
+    CreateNewIdentityComponent,
+    DuplicatesSidesheetComponent
+  ]
 })
 export class IdentitiesModule {
   constructor(

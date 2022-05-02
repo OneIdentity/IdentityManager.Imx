@@ -27,12 +27,14 @@
 import { Component } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
-import { ConfigSettingType } from 'imx-api-qbm';
+import { ConfigNodeData, ConfigSettingType } from 'imx-api-qbm';
 import { AppConfigService } from '../appConfig/appConfig.service';
 import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
+import { AddConfigSidesheetComponent } from './add-config-sidesheet.component';
 import { ApplyConfigSidesheetComponent } from './apply-config-sidesheet.component';
 import { KeyData } from './config-section';
 import { ConfigService } from './config.service';
+import { ConvertConfigSidesheetComponent } from './convert-config-sidesheet.component';
 
 @Component({
   templateUrl: "./config.component.html",
@@ -121,7 +123,7 @@ export class ConfigComponent {
   public getValuePreview(conf: KeyData): string {
     var d = conf.Value + "";
     if (d.length > 30)
-      d = d.substr(0, 30) + "...";
+      d = d.substring(0, 30) + "...";
     return d;
   }
 
@@ -137,6 +139,17 @@ export class ConfigComponent {
     this.configSvc.revertAll(isGlobal);
   }
 
+  public async openConvertSidesheet(): Promise<void> {
+    this.sidesheet.open(ConvertConfigSidesheetComponent, {
+      title: await this.translate.get('#LDS#Heading Convert Locally Customized Settings to Global Settings').toPromise(),
+      headerColour: 'iris-blue',
+      panelClass: 'imx-sidesheet',
+      padding: '0',
+      width: '600px',
+      testId: 'admin-congert-config-sidesheet'
+    });
+  }
+
   public async openApplySidesheet(): Promise<void> {
     this.sidesheet.open(ApplyConfigSidesheetComponent, {
       title: await this.translate.get('#LDS#Heading Apply Configuration').toPromise(),
@@ -147,5 +160,17 @@ export class ConfigComponent {
       testId: 'admin-apply-config-sidesheet'
     });
 
+  }
+
+  public async add(): Promise<void> {
+    this.sidesheet.open(AddConfigSidesheetComponent, {
+      title: await this.translate.get('#LDS#Heading Create Configuration Key').toPromise(),
+      headerColour: 'iris-blue',
+      panelClass: 'imx-sidesheet',
+      bodyColour: 'asher-gray',
+      padding: '0',
+      width: '600px',
+      testId: 'admin-add-config-sidesheet'
+    });
   }
 }

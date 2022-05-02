@@ -26,7 +26,6 @@
 
 import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, Input, EventEmitter, Output, OnChanges, SimpleChanges, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
@@ -36,9 +35,8 @@ import {
   DataSourceToolbarSettings,
   SnackBarService,
   ClassloggerService,
-  MessageDialogResult,
-  MessageDialogComponent,
-  DataTableComponent
+  DataTableComponent,
+  ConfirmationService
 } from 'qbm';
 import { DisplayColumns, EntitySchema, IClientProperty, TypedEntity, ValType } from 'imx-qbm-dbts';
 import { CartItemEditComponent } from '../cart-item-edit/cart-item-edit.component';
@@ -82,7 +80,7 @@ export class CartItemsComponent implements OnInit, OnChanges {
   private selectedItems: PortalCartitem[] = [];
 
   constructor(
-    private readonly dialogService: MatDialog,
+    private readonly confirmationService: ConfirmationService,
     private readonly busyService: EuiLoadingService,
     private readonly cartItemsService: CartItemsService,
     private readonly logger: ClassloggerService,
@@ -200,10 +198,7 @@ export class CartItemsComponent implements OnInit, OnChanges {
     try {
       await this.cartItemsService.moveToCart(this.selectedItems);
 
-      this.snackBarService.open(
-        { key: '#LDS#The selected products have been moved to your shopping cart.' },
-        '#LDS#Close'
-      );
+      this.snackBarService.open({ key: '#LDS#The selected products have been moved to your shopping cart.' });
     } finally {
       setTimeout(() => this.busyService.hide());
       this.router.navigate(['/shoppingcart/']);
@@ -215,10 +210,7 @@ export class CartItemsComponent implements OnInit, OnChanges {
     try {
       await this.cartItemsService.moveToLater(this.selectedItems);
 
-      this.snackBarService.open(
-        { key: '#LDS#The selected products have been moved to your Saved for Later list.' },
-        '#LDS#Close'
-      );
+      this.snackBarService.open({ key: '#LDS#The selected products have been moved to your Saved for Later list.' });
     } finally {
       setTimeout(() => this.busyService.hide());
       this.dataChange.emit(true);
@@ -250,9 +242,13 @@ export class CartItemsComponent implements OnInit, OnChanges {
     );
   }
 
-  public itemsCanBeMoved(allowOptional: boolean = false): boolean {
+  public haveSelectedItems(): boolean {
     return this.selectedItems != null &&
-      this.selectedItems.length > 0 &&
+      this.selectedItems.length > 0;
+  }
+
+  public itemsCanBeMoved(allowOptional: boolean = false): boolean {
+    return this.haveSelectedItems() &&
       this.selectedItems.every(item => this.itemCanBeMoved(item, allowOptional));
   }
 
@@ -370,20 +366,11 @@ export class CartItemsComponent implements OnInit, OnChanges {
       '#LDS#The product has been successfully removed from your Saved for Later list.' :
       '#LDS#The selected products have been successfully removed from your Saved for Later list.';
 
-    const dialogRef = this.dialogService.open(
-      MessageDialogComponent,
-      {
-        data: {
-          ShowYesNo: true,
-          Title: await this.translateService.get(this.forLater ? dialogTitleWatchList : dialogTitleShoppingCart).toPromise(),
-          Message: await this.translateService.get(this.forLater ? askForConfirmationWatchList : askForConfirmationShoppingCart).toPromise()
-        },
-        panelClass: 'imx-messageDialog'
-      });
-
-    const result = await dialogRef.beforeClosed().toPromise();
-
-    if (result === MessageDialogResult.YesResult) {
+    if (await this.confirmationService.confirm({
+      Title: this.forLater ? dialogTitleWatchList : dialogTitleShoppingCart,
+      Message: this.forLater ? askForConfirmationWatchList : askForConfirmationShoppingCart,
+      identifier: this.forLater ? 'cartitems-watchlist-delete' : 'cartitems-shoppingcart-delete'
+    })) {
       let overlayRef: OverlayRef;
       setTimeout(() => overlayRef = this.busyService.show());
       try {

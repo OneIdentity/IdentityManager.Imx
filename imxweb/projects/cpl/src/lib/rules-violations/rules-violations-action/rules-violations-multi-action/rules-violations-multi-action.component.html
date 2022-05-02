@@ -1,0 +1,31 @@
+<mat-card>
+  <mat-card-title>
+    {{ '#LDS#Heading General Settings' | translate }}
+  </mat-card-title>
+  <mat-card-subtitle>
+    {{ '#LDS#Here you can make settings that are applied to each selected rule violation.' | translate }}
+  </mat-card-subtitle>
+  <mat-card-content>
+    <div class="imx-rules-violations-parameters">
+      <imx-cdr-editor *ngFor="let cdr of columns; let i = index" [cdr]="cdr"
+        (controlCreated)="onFormControlCreated(cdr.column.ColumnName + '_' + i, $event)"
+        [attr.data-imx-identifier]="'rules-violations-multi-action-' + cdr.column.ColumnName + '-' + i">
+      </imx-cdr-editor>
+    </div>
+  </mat-card-content>
+</mat-card>
+<mat-card class="imx-list">
+  <mat-card-title>
+    {{ '#LDS#Selected rules violations' | translate }}
+  </mat-card-title>
+  <mat-list #list>
+    <mat-list-item *ngFor="let ruleViolationApproval of data?.rulesViolationsApprovals">
+      <div mat-line>
+        {{ ruleViolationApproval?.GetEntity()?.GetDisplay() }}
+      </div>
+      <div mat-line class="imx-list-item-subtitle">
+        {{ ruleViolationApproval?.stateBadge?.caption }}
+      </div>
+    </mat-list-item>
+  </mat-list>
+</mat-card>

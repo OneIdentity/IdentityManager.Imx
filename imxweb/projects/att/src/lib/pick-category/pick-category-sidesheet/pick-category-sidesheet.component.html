@@ -4,7 +4,7 @@
   </mat-card>
   <mat-card class="imx-table-container" *ngIf="dstWrapper && dstSettings">
     <span>{{'#LDS#Assigned identities' | translate}}</span>
-    <imx-data-source-toolbar #dst [hiddenElements]="['filter', 'groupBy', 'settings', 'selectedViewGroup']"
+    <imx-data-source-toolbar #dst [options]="['search']"
       [settings]="dstSettings" (search)="getData({ search: $event })" (navigationStateChanged)="getData($event)"
       data-imx-identifier="pick-category-sidesheet-dst">
     </imx-data-source-toolbar>
@@ -14,7 +14,7 @@
       noDataText="{{(data.pickCategory?.IsManual?.value ? '#LDS#There are currently no identities assigned.' : '#LDS#The associated identities are calculated automatically.')}}"
       noMatchingDataText="#LDS#There are no matching identities.">
       <imx-data-table-column data-imx-identifier="pick-category-sidesheet-table-column-display"
-        [entityColumn]="dstWrapper.propertyDisplay" [entitySchema]="dstSettings.entitySchema">
+        [entityColumn]="dstWrapper.propertyDisplay">
       </imx-data-table-column>
     </imx-data-table>
     <imx-data-source-paginator data-imx-identifier="pick-category-sidesheet-paginator" [dst]="dst">

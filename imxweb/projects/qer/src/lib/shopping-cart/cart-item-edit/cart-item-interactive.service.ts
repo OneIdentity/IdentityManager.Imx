@@ -29,7 +29,6 @@ import { PortalCartitemInteractive } from 'imx-api-qer';
 
 import { TypedEntity } from 'imx-qbm-dbts';
 import { ExtendedEntityWrapper } from '../../parameter-data/extended-entity-wrapper.interface';
-import { ParameterDataService } from '../../parameter-data/parameter-data.service';
 import { QerApiService } from '../../qer-api-client.service';
 import { CartItemFkService } from './cart-item-fk.service';
 import { RequestParametersService } from './request-parameters.service';
@@ -42,7 +41,6 @@ export class CartItemInteractiveService {
     private readonly qerClient: QerApiService,
     private readonly fkService: CartItemFkService,
     private readonly requestParametersService: RequestParametersService,
-    private readonly parameterDataService: ParameterDataService
   ) { }
 
   public async getExtendedEntity(entityReference: string): Promise<ExtendedEntityWrapper<PortalCartitemInteractive>> {

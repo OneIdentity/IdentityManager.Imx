@@ -24,17 +24,17 @@
  *
  */
 
-import { Component, OnDestroy, Inject, Injector, OnInit } from '@angular/core';
+import { OverlayRef } from '@angular/cdk/overlay';
+import { Component, OnDestroy, Inject, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, FormControl } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { Router } from '@angular/router';
 import { EuiLoadingService, EuiSidesheetService, EUI_SIDESHEET_DATA, EuiDownloadOptions, EuiSidesheetRef } from '@elemental-ui/core';
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Subscription } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 
 import { IdentitiesService } from '../identities.service';
-import { PortalAdminPerson, PortalPersonReportsInteractive, QerProjectConfig } from 'imx-api-qer';
+import { FeatureConfig, PortalAdminPerson, PortalPersonReportsInteractive, QerProjectConfig } from 'imx-api-qer';
 import {
   ColumnDependentReference,
   ClassloggerService,
@@ -42,19 +42,18 @@ import {
   TabControlHelper,
   SnackBarService,
   ElementalUiConfigService,
-  MessageDialogComponent,
-  MessageDialogResult,
   AuthenticationService,
-  MetadataService,
+  SystemInfoService,
+  ConfirmationService,
+  TabItem,
   ExtService
 } from 'qbm';
-import { CollectionLoadParameters, DisplayColumns } from 'imx-qbm-dbts';
+import { DbObjectKey, DisplayColumns } from 'imx-qbm-dbts';
 import { IdentitiesReportsService } from '../identities-reports.service';
 import { PasscodeService } from '../../ops/passcode.service';
 import { QerApiService } from '../../qer-api-client.service';
-import { Router } from '@angular/router';
-import { IdentityRoleMembershipsService } from './identity-role-memberships/identity-role-memberships.service';
-import { IdentityMembershipsParameters } from '../identity-memberships/identity-memberships-parameters.interface';
+import { RiskAnalysisSidesheetComponent } from '../../risk/riskanalysis-sidesheet.component';
+import { FeatureConfigService } from '../../admin/feature-config.service';
 
 @Component({
   selector: 'imx-identity-sidesheet',
@@ -69,20 +68,16 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
   public cdrListLocality: ColumnDependentReference[] = [];
   public valueChanges$: Subscription;
   public reportDownload: EuiDownloadOptions;
-
+  public managedReportDownload: EuiDownloadOptions;
   public readonly parameters: { objecttable: string; objectuid: string; };
-  public readonly uidPerson: string;
-  public hideAttestationTab = false;
-  public hideAccountsTab = false;
-  public hideGroupsTab = false;
-  public roleParameter: IdentityMembershipsParameters;
-  public groupParameter: IdentityMembershipsParameters;
-
+  public canAnalyzeRisk = false;
   public isActiveFormControl = new FormControl();
   public isSecurityIncidentFormControl = new FormControl();
+  public dynamicTabs: TabItem[] = [];
 
   private readonly subscriptions: Subscription[] = [];
   private currentUserUid: string;
+  private featureConfig: FeatureConfig;
 
   constructor(
     formBuilder: FormBuilder,
@@ -99,17 +94,28 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
     private readonly snackbar: SnackBarService,
     private readonly sidesheet: EuiSidesheetService,
     private readonly sidesheetRef: EuiSidesheetRef,
-    private readonly dialogService: MatDialog,
-    private readonly translate: TranslateService,
+    private readonly confirmationService: ConfirmationService,
     private readonly passcodeService: PasscodeService,
     private readonly api: QerApiService,
     private readonly router: Router,
+    private readonly systemInfoService: SystemInfoService,
+    private readonly translate: TranslateService,
     private readonly extService: ExtService,
-    private readonly injector: Injector,
-    private readonly metadataService: MetadataService,
-    private readonly roleMembershipsService: IdentityRoleMembershipsService,
-    authentication: AuthenticationService
+    private readonly featureConfigService: FeatureConfigService,
+    authentication: AuthenticationService,
+    confirm: ConfirmationService
   ) {
+
+    this.subscriptions.push(this.sidesheetRef.closeClicked().subscribe(async (result) => {
+      if (this.detailsFormGroup.dirty) {
+        const close = await confirm.confirmLeaveWithUnsavedChanges();
+        if (close) {
+          this.sidesheetRef.close();
+        }
+      } else {
+        this.sidesheetRef.close(result);
+      }
+    }));
 
     this.subscriptions.push(
       authentication.onSessionResponse.subscribe((sessionState) =>
@@ -117,27 +123,24 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
       )
     );
 
-    this.detailsFormGroup = new FormGroup({ formArray: formBuilder.array([]) });
+    this.detailsFormGroup = new FormGroup({});
     this.reportDownload = {
       ... this.elementalUiConfigService.Config.downloadOptions,
       url: this.reports.personsReport(30, this.data.selectedIdentity.GetEntity().GetKeys()[0]),
     };
 
-    this.parameters = {
-      objecttable: PortalPersonReportsInteractive.GetEntitySchema().TypeName,
-      objectuid: data.selectedIdentity.GetEntity().GetKeys()[0]
+    this.managedReportDownload = {
+      ... this.elementalUiConfigService.Config.downloadOptions,
+      url: this.reports.personsManagedReport(30, this.data.selectedIdentity.GetEntity().GetKeys()[0]),
     };
 
-    const accountsComponent = this.extService.Registry.AccountsExtComponent?.slice(-1)[0];
-    if (!accountsComponent) {
-      this.hideAccountsTab = true;
-    } else {
-      this.uidPerson = data.selectedIdentity.GetEntity().GetKeys()[0];
-    }
-  }
+    this.parameters = {
+      objecttable: PortalPersonReportsInteractive.GetEntitySchema().TypeName,
+      objectuid: data.selectedIdentity.GetEntity().GetKeys()[0],
+    };
 
-  get formArray(): FormArray {
-    return this.detailsFormGroup.get('formArray') as FormArray;
+    this.systemInfoService.get().then(i => this.canAnalyzeRisk = i.PreProps.includes('RISKINDEX')
+      && data.selectedIdentity.RiskIndexCalculated.value > 0);
   }
 
   get isIdentityMarkedForDelete(): boolean {
@@ -153,12 +156,11 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
   }
 
   public get canGeneratePasscode(): boolean {
-    return this.data.selectedIdentity.UID_PersonHead.value === this.currentUserUid;
+    return this.featureConfig?.EnableSetPasswords && this.data.selectedIdentity.UID_PersonHead.value === this.currentUserUid;
   }
 
   public async ngOnInit(): Promise<void> {
-    this.setup();
-    return this.setupMembershipTabs();
+    return this.setup();
   }
 
   public ngOnDestroy(): void {
@@ -169,19 +171,25 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
 
-  public attestationControlCreated(attestationServiceAvailable: boolean): void {
-    this.hideAttestationTab = !attestationServiceAvailable;
-  }
-
   public cancel(): void {
     this.closeSidesheet();
   }
 
   public async initiateDelete(): Promise<void> {
-    const result = await this.identities.deleteIdentity(this.data.selectedIdentity.GetEntity().GetKeys()[0]);
-    if (result) {
-      this.snackbar.openAtTheBottom({ key: '#LDS#The identity will be deleted. This may take some time.' });
-      this.closeSidesheet();
+    if (await this.confirmationService.confirm({
+      Title: '#LDS#Heading Delete Identity',
+      Message: '#LDS#Are you sure you want to delete the identity?'
+    })) {
+      const overlayRef = this.busyService.show();
+      try {
+        const result = await this.identities.deleteIdentity(this.data.selectedIdentity.GetEntity().GetKeys()[0]);
+        if (result) {
+          this.snackbar.open({ key: '#LDS#The identity will be deleted. This may take some time.' });
+          this.closeSidesheet();
+        }
+      } finally {
+        this.busyService.hide(overlayRef);
+      }
     }
   }
 
@@ -192,7 +200,7 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
       try {
         await this.data.selectedIdentity.GetEntity().Commit(true);
         this.detailsFormGroup.markAsPristine();
-        this.snackbar.openAtTheBottom({ key: '#LDS#The changes have been successfully saved.' });
+        this.snackbar.open({ key: '#LDS#The changes have been successfully saved.' });
         this.closeSidesheet();
       } finally {
         this.busyService.hide(overlayRef);
@@ -201,25 +209,19 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
   }
 
   public async onIsSecurityIncidentToggleChanged(toggleChange: MatSlideToggleChange): Promise<void> {
-    const message = this.data.selectedIdentity.IsSecurityIncident.value ? '#LDS#Are you sure this identity does not pose a security risk anymore?' :
-      '#LDS#Are you sure this identity poses a security risk?';
-    const title = this.data.selectedIdentity.IsSecurityIncident.value ? '#LDS#Heading Resolve Security Risk' :
-      '#LDS#Heading Mark Identity as Security Risk';
+    const message = this.data.selectedIdentity.IsSecurityIncident.value
+      ? '#LDS#Are you sure this identity does not pose a security risk anymore?'
+      : '#LDS#Are you sure this identity poses a security risk?';
+    const title = this.data.selectedIdentity.IsSecurityIncident.value
+      ? '#LDS#Heading Resolve Security Risk'
+      : '#LDS#Heading Mark Identity as Security Risk';
 
-    const dialogRef = this.dialogService.open(
-      MessageDialogComponent,
-      {
-        data: {
-          ShowYesNo: true,
-          Title: await this.translate.get(title).toPromise(),
-          Message: await this.translate.get(message).toPromise()
-        },
-        panelClass: 'imx-messageDialog'
-      }
-    );
+    const result = await this.confirmationService.confirm({
+      Title: title,
+      Message: message
+    });
 
-    const result = await dialogRef.afterClosed().toPromise();
-    if (result == null || result === MessageDialogResult.NoResult) {
+    if (!result) {
       this.isSecurityIncidentFormControl.setValue(!toggleChange.checked);
       return;
     }
@@ -232,6 +234,16 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
     if (this.data.selectedIdentity.IsInActive.GetMetadata().CanEdit()) {
       this.data.selectedIdentity.IsInActive.value = value;
     }
+  }
+
+  public async analyzeRisk(): Promise<void> {
+    this.sidesheet.open(RiskAnalysisSidesheetComponent, {
+      title: await this.translate.get('#LDS#Heading Analyze Risk').toPromise(),
+      headerColour: 'blue',
+      padding: '0px',
+      width: '60%',
+      data: { objectKey: new DbObjectKey('Person', this.data.selectedIdentity.GetEntity().GetKeys()[0]).ToXmlString() }
+    });
   }
 
   public async generatePasscode(): Promise<void> {
@@ -269,17 +281,25 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
     } finally {
       this.busyService.hide();
       this.sidesheetRef.close();
-      this.snackbar.open({ key: '#LDS#The assignment of the manager has been successfully added to your shopping cart.' })
+      this.snackbar.open({ key: '#LDS#The assignment of the manager has been successfully added to your shopping cart.' });
       this.router.navigate(['shoppingcart']);
     }
 
+  }
+
+  public update(cdr: ColumnDependentReference, list: ColumnDependentReference[]): void {
+    const index = list.findIndex(elem => elem.column.ColumnName === cdr.column.ColumnName);
+    if (index === -1) { return; }
+
+    this.detailsFormGroup.removeControl(cdr.column.ColumnName);
+    list.splice(index, 1, new BaseCdr(cdr.column));
   }
 
   private closeSidesheet(): void {
     this.sidesheet.close();
   }
 
-  private setup(): void {
+  private async setup(): Promise<void> {
     /**
      * Resolve an issue where the mat-tab navigation arrows could appear on first load
      */
@@ -296,7 +316,7 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
       // Handle the IsInActive column outside the context of a CDR editor so the UI can invert the meaning to make more sense to the user
       // This should be inversed on the api data response at some point, but until then we handle it in the UI
       this.isActiveFormControl.setValue(!this.data.selectedIdentity.IsInActive.value);
-      this.formArray.push(this.isActiveFormControl);
+      this.detailsFormGroup.addControl(this.data.selectedIdentity.IsInActive.Column.ColumnName, this.isActiveFormControl);
 
     } else {
       const personalColumns = this.data.projectConfig.PersonConfig.VI_Employee_MasterData_Attributes;
@@ -310,46 +330,20 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
     }
 
     this.isSecurityIncidentFormControl.setValue(this.data.selectedIdentity.IsSecurityIncident.value);
-    this.formArray.push(this.isSecurityIncidentFormControl);
+    this.detailsFormGroup.addControl(
+      this.data.selectedIdentity.IsSecurityIncident.Column.ColumnName, this.isSecurityIncidentFormControl);
 
-  }
 
-
-  private async setupMembershipTabs(): Promise<void> {
-    await this.metadataService.update(['UNSAccountInUNSGroup', 'AERole']);
-    const roleSchema = this.roleMembershipsService.PortalPersonRolemembershipsAerole;
-    this.roleParameter = {
-      display: this.metadataService.tables.AERole.Display,
-      entitySchema: roleSchema,
-      displayedColumns: [roleSchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
-      roleSchema.Columns.XOrigin,
-      roleSchema.Columns.XDateInserted,
-      roleSchema.Columns.OrderState,
-      roleSchema.Columns.ValidUntil],
-      getData: (navigation: CollectionLoadParameters) =>
-        this.roleMembershipsService.getAeroleMemberships(this.data.selectedIdentity.GetEntity().GetKeys()[0], navigation)
-    };
-
-    const groupService = this.extService.Registry.IdentityGroupMembershipService?.slice(-1)[0];
-    if (!groupService) {
-      this.hideGroupsTab = true;
-    } else {
-      const serviceInstance = this.injector.get(groupService.instance);
-      const groupSchema = serviceInstance.personGroupmembershipsSchema;
-
-      this.groupParameter = {
-        display: this.metadataService.tables.UNSAccountInUNSGroup.Display,
-        entitySchema: groupSchema,
-        displayedColumns: [groupSchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
-        groupSchema.Columns.UID_UNSAccount,
-        groupSchema.Columns.XOrigin,
-        groupSchema.Columns.XDateInserted,
-        groupSchema.Columns.OrderState,
-        groupSchema.Columns.ValidUntil],
-        getData: (navigation: CollectionLoadParameters) =>
-          serviceInstance.getGroupMemberships(this.data.selectedIdentity.GetEntity().GetKeys()[0], navigation)
-      };
+    this.busyService.show();
+    try {
+      this.featureConfig = await this.featureConfigService.getFeatureConfig();
+      this.dynamicTabs = (await this.extService.getFittingComponents<TabItem>('identitySidesheet',
+        (ext) => ext.inputData.checkVisibility(this.parameters)))
+        .sort((tab1: TabItem, tab2: TabItem) => tab1.sortOrder - tab2.sortOrder);
+    } finally {
+      this.busyService.hide();
     }
   }
+
 }
 

@@ -32,7 +32,7 @@ import { ActivatedRoute } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
-import { AppConfigService, CdrModule, clearStylesFromDOM } from 'qbm';
+import { AppConfigService, AuthenticationService, CdrModule, clearStylesFromDOM, ElementalUiConfigService, ExtService, ISessionState } from 'qbm';
 import { DataExplorerIdentitiesComponent } from './identities.component';
 import { IdentitiesService } from './identities.service';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
@@ -40,6 +40,8 @@ import { TypedEntityCollectionData, CollectionLoadParameters } from 'imx-qbm-dbt
 import { PortalPersonAll, PortalAdminPerson, PortalPersonReports, PortalPersonReportsInteractive } from 'imx-api-qer';
 import { IdentitesTestBed } from './test/identities-test-bed.spec';
 import { IdentitiesCommonTestData } from './test/common-test-mocks.spec';
+import { QerPermissionsService } from '../admin/qer-permissions.service';
+import { IdentitiesReportsService } from './identities-reports.service';
 
 
 
@@ -95,6 +97,7 @@ describe('DataExplorerIdentitiesComponent', () => {
       this.afterClosedResult = false;
     }
   }();
+
 
 
   IdentitesTestBed.configureTestingModule({
@@ -154,9 +157,38 @@ describe('DataExplorerIdentitiesComponent', () => {
           userIsAdmin: jasmine.createSpy('userIsAdmin').and.returnValue(Promise.resolve(true))
         }
       },
+      {
+        provide: AuthenticationService,
+        useValue: {
+          onSessionResponse: new Subject<ISessionState>(),
+        }
+      }
+      ,
+      {
+        provide: QerPermissionsService,
+        useValue: {
+          isPersonManager: jasmine.createSpy('isPersonManager').and.returnValue(Promise.resolve(true))
+        }
+      }
+      ,
+      {
+        provide: ElementalUiConfigService,
+        useValue: {
+          Config: { downloadOptions: {url:''} }
+        }
+      }
+      ,
+      {
+        provide: IdentitiesReportsService,
+        useValue: {
+          personsManagedReport: jasmine.createSpy('personsManagedReport').and.returnValue('')
+        }
+      },
+      ExtService
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
   });
+
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DataExplorerIdentitiesComponent);
@@ -172,14 +204,7 @@ describe('DataExplorerIdentitiesComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  it(`should run in admin mode`, async () => {
-
-    await component.ngOnInit();
-
-    expect(component.isAdmin).toBe(true);
-  });
-
+  
   it('should change navigation state', async () => {
     await component.onNavigationStateChanged(navigationState);
     expect(component.navigationState).toEqual(navigationState);

@@ -60,6 +60,7 @@ import { ShoppingCartSubmitWarningsDialog } from './shopping-cart-submit-warning
 import { ShoppingCartValidationDetailModule } from '../shopping-cart-validation-detail/shopping-cart-validation-detail.module';
 import { UserModule } from '../user/user.module';
 import { RequestsFeatureGuardService } from '../requests-feature-guard.service';
+import { ItshopPatternModule } from '../itshop-pattern/itshop-pattern.module';
 
 const routes: Routes = [
   {
@@ -103,6 +104,7 @@ const routes: Routes = [
     FormsModule,
     EuiCoreModule,
     EuiMaterialModule,
+    ItshopPatternModule,
     ParameterizedTextModule,
     QbmModule,
     ReactiveFormsModule,

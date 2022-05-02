@@ -23,7 +23,7 @@
  * THIS SOFTWARE OR ITS DERIVATIVES.
  *
  */
-import { OnDestroy, Component, EventEmitter } from '@angular/core';
+import { OnDestroy, Component, EventEmitter, ErrorHandler } from '@angular/core';
 import { AbstractControl, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -31,6 +31,7 @@ import { CdrEditor } from './cdr-editor.interface';
 import { ColumnDependentReference } from './column-dependent-reference.interface';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 import { EntityColumnContainer } from './entity-column-container';
+import { ServerError } from '../base/server-error';
 
 @Component({ template: '' })
 export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
@@ -44,13 +45,22 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
   public readonly valueHasChanged = new EventEmitter<any>();
 
   public isBusy = false;
+  public lastError: ServerError;
 
   private readonly subscribers: Subscription[] = [];
+  private isWriting = false;
 
-  public constructor(protected readonly logger: ClassloggerService) { }
+
+  public constructor(protected readonly logger: ClassloggerService, protected readonly errorHandler?: ErrorHandler) { }
 
   public ngOnDestroy(): void {
     this.subscribers.forEach(s => s.unsubscribe());
+  }
+
+  public get validationErrorMessage(): string {
+    if (this.control.errors?.generalError) {
+      return this.lastError.toString();
+    }
   }
 
 
@@ -68,11 +78,14 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
 
       // bind to entity change event
       this.subscribers.push(this.columnContainer.subscribe(() => {
+        if (this.isWriting) { return; }
+
         if (this.control.value !== this.columnContainer.value) {
-          this.logger.trace(this, 'Control set to new value');
+          this.logger.trace(this, `Control (${this.columnContainer.name}) set to new value:`,
+            this.columnContainer.value, this.control.value);
           this.setControlValue();
-          this.valueHasChanged.emit(this.control.value);
         }
+        this.valueHasChanged.emit(this.control.value);
       }));
 
       this.logger.trace(this, 'Control initialized');
@@ -84,7 +97,7 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
   private setControlValue(): void {
     this.control.setValue(this.columnContainer.value, { emitEvent: false });
     if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
-      this.logger.debug(this, 'value is required');
+      this.logger.debug(this, `A value for column "${this.columnContainer.name}" is required`);
       this.control.setValidators(Validators.required);
     }
   }
@@ -106,13 +119,17 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
     }
 
     this.isBusy = true;
+    this.isWriting = true;
     try {
       this.logger.debug(this, 'writeValue - PutValue...');
       await this.columnContainer.updateValue(value);
     } catch (e) {
+      this.lastError = e;
       this.logger.error(this, e);
+      this.control.setErrors({ generalError: true });
     } finally {
       this.isBusy = false;
+      this.isWriting = false;
       if (this.control.value !== this.columnContainer.value) {
         this.control.setValue(this.columnContainer.value, { emitEvent: false });
         this.logger.debug(this, 'form control value is set to', this.control.value);

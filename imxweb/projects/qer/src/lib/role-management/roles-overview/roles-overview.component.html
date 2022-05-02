@@ -4,13 +4,13 @@
 
 <ng-container *ngIf="!useTree">
   <imx-data-source-toolbar #dst data-imx-identifier="roles-overview-data-source-toolbar" [settings]="dstSettings"
-    [hiddenElements]="['settings', 'selectedViewGroup']" [searchBoxText]="'#LDS#Search' | translate"
+    [options]="['search', 'filter', 'groupBy']" [searchBoxText]="'#LDS#Search' | translate"
     (navigationStateChanged)="onNavigationStateChanged($event)" (search)="onSearch($event)">
   </imx-data-source-toolbar>
   <imx-data-table #dataTable data-imx-identifier="roles-overview-data-table" [dst]="dst" detailViewVisible="false"
     mode="manual">
     <imx-data-table-column *ngIf="entitySchema"
-      [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" [entitySchema]="entitySchema">
+      [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
       <ng-template let-item>
         <div>
           {{ item?.GetEntity()?.GetDisplay() }}
@@ -40,8 +40,12 @@
   </div>
   <div class="imx-card-content">
     <imx-data-tree-wrapper data-imx-identifier="roles-overview-data-tree" [database]="treeDatabase"
-      [filters]="filterOptions" [entitySchema]="entitySchema" (nodeSelected)="onNodeSelected($event)"
-      [searchResultAction]="searchResultAction">
+    [withSelectedNodeHighlight]="false" [filters]="filterOptions">
+      <ng-template let-entity>
+        <button class="imx-edit-role-button" mat-button color="primary"
+        [attr.data-imx-identifier]="'roles-overview-edit-element-button-' + entity.GetKeys().join('-')"
+        (click)="onNodeSelected(entity)">{{'#LDS#Edit' |translate}}</button>
+      </ng-template>
     </imx-data-tree-wrapper>
   </div>
 </mat-card>

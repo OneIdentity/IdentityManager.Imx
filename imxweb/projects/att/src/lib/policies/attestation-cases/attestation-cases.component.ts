@@ -26,13 +26,11 @@
 
 import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { TranslateService } from '@ngx-translate/core';
 
 import { PortalAttestationFilterMatchingobjects } from 'imx-api-att';
-import { CollectionLoadParameters, IClientProperty, DisplayColumns, ValType, EntitySchema } from 'imx-qbm-dbts';
-import { ClassloggerService, DataSourceToolbarSettings, MessageDialogComponent, MessageDialogResult, SettingsService, SnackBarService } from 'qbm';
+import { CollectionLoadParameters, IClientProperty, DisplayColumns, ValType, EntitySchema, DataModel } from 'imx-qbm-dbts';
+import { ClassloggerService, ConfirmationService, DataSourceToolbarSettings, SettingsService, SnackBarService } from 'qbm';
 import { PolicyService } from '../policy.service';
 import { AttestationCasesComponentParameter } from './attestation-cases-component-parameter.interface';
 
@@ -52,6 +50,7 @@ export class AttestationCasesComponent implements OnInit {
 
   private navigationState: CollectionLoadParameters;
   private displayedColumns: IClientProperty[];
+  private dataModel: DataModel;
 
   constructor(
     public readonly sidesheetRef: EuiSidesheetRef,
@@ -59,15 +58,14 @@ export class AttestationCasesComponent implements OnInit {
     private readonly policyService: PolicyService,
     private readonly busyService: EuiLoadingService,
     private readonly snackbar: SnackBarService,
-    private readonly translate: TranslateService,
-    private readonly dialogService: MatDialog,
+    private readonly confirmationService: ConfirmationService,
     settingsService: SettingsService,
     private readonly logger: ClassloggerService) {
-    this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0, parentKey: '' };
+    this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0, ParentKey: '' };
     this.entitySchemaPolicy = policyService.AttestationMatchingObjectsSchema;
     this.displayedColumns = [
       this.entitySchemaPolicy.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]
-    ]
+    ];
 
     if (data.canCreateRuns) {
       this.displayedColumns.push({
@@ -78,6 +76,14 @@ export class AttestationCasesComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
+    let overlayRef: OverlayRef;
+    setTimeout(() => overlayRef = this.busyService.show());
+    try {
+      this.dataModel = await this.policyService.getDataModel();
+    } finally {
+      setTimeout(async () => { this.busyService.hide(overlayRef); });
+    }
+
     return this.navigate();
   }
 
@@ -93,17 +99,13 @@ export class AttestationCasesComponent implements OnInit {
   public async createRun(data: PortalAttestationFilterMatchingobjects[]): Promise<void> {
 
     const count = data.length > 0 ? data.length : this.dstSettings.dataSource.totalCount;
-
     if (count <= 1000 || await this.confirmCreation()) {
       let overlayRef: OverlayRef;
       setTimeout(() => overlayRef = this.busyService.show());
 
       try {
-
-
         await this.policyService.createAttestationRun(this.data.uidpolicy,
           data.map(elem => elem.Key.value));
-
 
         this.logger.trace(this, 'attestation run created for', this.data.uidpolicy, data.map(elem => elem.Key.value));
 
@@ -125,6 +127,12 @@ export class AttestationCasesComponent implements OnInit {
 
     try {
 
+      const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
+        .map(elem => elem.Property.ColumnName).join(',');
+      if (withProperties != null && withProperties !== '') {
+        this.navigationState.withProperties = withProperties;
+      }
+
       const datasource = await this.policyService.getObjectsForFilter(this.data.uidobject,
         this.data.uidPickCategory,
         { Elements: this.data.filter, ConcatenationType: this.data.concat }, this.navigationState);
@@ -133,7 +141,8 @@ export class AttestationCasesComponent implements OnInit {
         displayedColumns: this.displayedColumns,
         dataSource: datasource,
         entitySchema: this.entitySchemaPolicy,
-        navigationState: this.navigationState
+        navigationState: this.navigationState,
+        dataModel: this.dataModel
       };
 
       this.logger.debug(this, 'matching objects table navigated to', this.navigationState);
@@ -142,19 +151,10 @@ export class AttestationCasesComponent implements OnInit {
     }
   }
 
-
   private async confirmCreation(): Promise<boolean> {
-    const dialogRef = this.dialogService.open(MessageDialogComponent, {
-      data: {
-        ShowOk: true,
-        ShowCancel: true,
-        Title: await this.translate.get('#LDS#Heading Start Attestation').toPromise(),
-        Message: await this.translate.get('#LDS#You have selected more than 1000 objects. Are you sure you want to start the attestation for all objects?').toPromise(),
-      },
-      panelClass: 'imx-messageDialog'
+    return this.confirmationService.confirm({
+      Title: '#LDS#Heading Start Attestation',
+      Message: '#LDS#You have selected more than 1000 objects. Are you sure you want to start the attestation for all objects?'
     });
-    return await dialogRef.beforeClosed().toPromise() === MessageDialogResult.OkResult ? true : false;
   }
-
-
 }

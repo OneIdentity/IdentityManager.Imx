@@ -43,12 +43,13 @@ import { ApplicationDetailsComponent } from './application-details.component';
 import { EntitlementsService } from '../../entitlements/entitlements.service';
 import { ShopsService } from '../../shops/shops.service';
 import { PortalEntitlement, PortalApplication, PortalShops, PortalApplicationusesaccount } from 'imx-api-aob';
-import { clearStylesFromDOM, SnackBarService } from 'qbm';
+import { clearStylesFromDOM, ConfirmationService, SnackBarService } from 'qbm';
 import { AccountsService } from '../../accounts/accounts.service';
 import { LifecycleActionComponent } from '../../lifecycle-actions/lifecycle-action.component';
 import { LifecycleAction } from '../../lifecycle-actions/lifecycle-action.enum';
 import { ApplicationsService } from '../applications.service';
 import { AobApiService } from '../../aob-api-client.service';
+import { AobPermissionsService } from '../../permissions/aob-permissions.service';
 
 @Component({
   selector: 'imx-user',
@@ -119,25 +120,28 @@ describe('ApplicationDetailsComponent', () => {
       {
         Ident_AOBEntitlement: { value: 'test1' },
         UID_AOBApplication: { value: 'abcd' },
-        IsInActive: { value: true }
+        IsInActive: { value: true },
+        ActivationDate: {value: ''}
       },
       {
         Ident_AOBEntitlement: { value: 'test2' },
         UID_AOBApplication: { value: 'abcd' },
-        IsInActive: { value: false }
-      }
-      ,
+        IsInActive: { value: false },
+        ActivationDate: {value: ''}
+      },
       {
         Ident_AOBEntitlement: { value: 'test3' },
         UID_AOBApplication: { value: 'abcd' },
-        IsInActive: { value: true }
+        IsInActive: { value: true },
+        ActivationDate: {value: ''}
       },
       {
         Ident_AOBEntitlement: { value: 'test4' },
         UID_AOBApplication: { value: 'abcde' },
-        IsInActive: { value: true }
+        IsInActive: { value: true },
+        ActivationDate: {value: ''}
       }
-    ] as PortalEntitlement[];
+    ] as unknown as PortalEntitlement[];
 
   const mockEntitlementsService = {
     get: jasmine.createSpy('get').and.returnValue(Promise.resolve({ totalCount: entities.length, Data: entities })),
@@ -178,7 +182,7 @@ describe('ApplicationDetailsComponent', () => {
       },
       AuthenticationRoot: {
         value: null,
-        GetMetadata: () => ({ })
+        GetMetadata: () => ({})
       },
       GetEntity: () => ({ GetDisplay: () => 'some other' })
     } as PortalApplication;
@@ -255,6 +259,18 @@ describe('ApplicationDetailsComponent', () => {
         {
           provide: AccountsService,
           useValue: accountsServiceStub
+        },
+        {
+          provide: AobPermissionsService,
+          useValue: {
+            isAobApplicationAdmin: jasmine.createSpy('isAobApplicationAdmin').and.returnValue(Promise.resolve(true))
+          }
+        },
+        {
+          provide: ConfirmationService,
+          useValue: {
+            confirm: jasmine.createSpy('confirm').and.returnValue(Promise.resolve(true))
+          }
         }
       ]
     });
@@ -308,7 +324,7 @@ describe('ApplicationDetailsComponent', () => {
     {
       description: 'published application',
       value: {
-        IsInActive: { value: false, GetMetadata: (_) => { return { CanEdit: () => true }}},
+        IsInActive: { value: false, GetMetadata: (_) => { return { CanEdit: () => true } } },
         ActivationDate: {
           value: new Date(Date.now()), GetMetadata: (_) => { return { CanEdit: () => true } }
         }
@@ -318,7 +334,7 @@ describe('ApplicationDetailsComponent', () => {
     {
       description: 'unpublished application',
       value: {
-        IsInActive: { value: true, GetMetadata: (_) => { return { CanEdit: () => true } }},
+        IsInActive: { value: true, GetMetadata: (_) => { return { CanEdit: () => true } } },
         ActivationDate: {
           value: null, GetMetadata: (_) => { return { CanEdit: () => true } }
         }
@@ -328,7 +344,7 @@ describe('ApplicationDetailsComponent', () => {
     {
       description: 'application to be published in the future',
       value: {
-        IsInActive: { value: true, GetMetadata: (_) => { return { CanEdit: () => true } }},
+        IsInActive: { value: true, GetMetadata: (_) => { return { CanEdit: () => true } } },
         ActivationDate: {
           value: new Date(Date.now() + 300), GetMetadata: (_) => { return { CanEdit: () => true } }
         }
@@ -346,7 +362,7 @@ describe('ApplicationDetailsComponent', () => {
     {
       description: 'published application',
       value: {
-        IsInActive: { value: false , GetMetadata: (_) => { return { CanEdit: () => true } }},
+        IsInActive: { value: false, GetMetadata: (_) => { return { CanEdit: () => true } } },
         ActivationDate: {
           value: new Date(Date.now()), GetMetadata: (_) => { return { CanEdit: () => true } }
         }
@@ -356,7 +372,7 @@ describe('ApplicationDetailsComponent', () => {
     {
       description: 'unpublished application',
       value: {
-        IsInActive: { value: true , GetMetadata: (_) => { return { CanEdit: () => true } }},
+        IsInActive: { value: true, GetMetadata: (_) => { return { CanEdit: () => true } } },
         ActivationDate: {
           value: null, GetMetadata: (_) => { return { CanEdit: () => true } }
         }
@@ -393,7 +409,7 @@ describe('ApplicationDetailsComponent', () => {
       const applicationStub = {
         IsInActive: { value: true },
         ActivationDate: { value: null },
-        UID_AOBApplication: {value: ''},
+        UID_AOBApplication: { value: '' },
         GetEntity: () => ({
           GetDisplay: () => 'name1'
         })

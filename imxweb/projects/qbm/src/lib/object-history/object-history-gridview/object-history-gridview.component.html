@@ -1,0 +1,31 @@
+<div *ngIf="dataCollection" class="imx-history-table-content">
+  <div class ="imx-history-table-content">
+    <mat-table [dataSource]="dataCollection.Data">
+      <ng-container *ngFor="let columnDef of columnDefs" [matColumnDef]="columnDef.id">
+        <mat-header-cell class="imx_ColumnHeader" *matHeaderCellDef>{{ columnDef.getTitle() }}</mat-header-cell>
+        <mat-cell class="imx_ColumnCell" *matCellDef="let row">
+          <div *ngIf="columnDef.id === 'LongDisplay' && isPropertyChange(row); else simpleLongDisplay">
+            <span [attr.aria-description]="'#LDS#Old value' | translate">
+              <ng-container *ngIf="! isEmpty(row.OldValue); else emptyValue">{{row.OldValue}}</ng-container>
+            </span>
+            <br><span [attr.aria-description]="row.ChangeType">&darr;</span>
+            <br>
+            <span [attr.aria-description]="'#LDS#New value' | translate">
+              <ng-container *ngIf="! isEmpty(columnDef.getValue(row)); else emptyValue">{{columnDef.getValue(row)}}</ng-container>
+            </span>
+            <ng-template #emptyValue><i>({{'#LDS#No value'| translate}})</i></ng-template>
+          </div>
+          <ng-template #simpleLongDisplay>
+            {{ columnDef.getValue(row) }}
+          </ng-template>
+        </mat-cell>
+      </ng-container>
+      <mat-header-row class="imx_MatTableHeaderRow" *matHeaderRowDef="columns sticky: true"></mat-header-row>
+      <mat-row class="imx_MatTableRow" *matRowDef="let row; columns: columns; "></mat-row>
+    </mat-table>
+  </div>
+  <mat-paginator [hidden]="paginatorConfig.hidden" [pageSize]="paginatorConfig.size" [pageSizeOptions]="paginatorConfig.sizeOptions"
+    [showFirstLastButtons]="paginatorConfig.showFirstLastButtons" [length]="dataCollection.totalCount" [pageIndex]="paginatorConfig.index"
+    (page)="handlePage($event)">
+  </mat-paginator>
+</div>

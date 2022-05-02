@@ -1,110 +1,121 @@
-  <mat-sidenav-container>
-    <mat-sidenav-content>
-      <button *ngIf="showSelectedItemsMenu && selectable && numOfSelectedItems" mat-flat-button class="imx-data-table-selection-info mat-caption"
-        (click)="onOpenSelectionDialog()" data-imx-identifier="datatable-button-show-selected">
-        {{'#LDS#Selected items' | translate}} ({{ numOfSelectedItems }})
-      </button>
+<button
+  *ngIf="showSelectedItemsMenu && selectable && numOfSelectedItems"
+  mat-flat-button
+  class="imx-data-table-selection-info mat-caption"
+  (click)="onOpenSelectionDialog()"
+  data-imx-identifier="datatable-button-show-selected"
+>
+  {{ '#LDS#Selected items' | translate }} ({{ numOfSelectedItems }})
+</button>
 
-      <div *ngIf="isGroupingApplied" class="imx-data-table-grouped">
+<div *ngIf="isGroupingApplied" class="imx-data-table-grouped">
+  <table mat-table matSort [dataSource]="groupedDataSource" data-imx-identifier="datatable-table-groupedby">
+    <ng-container matColumnDef="Display">
+      <th mat-header-cell *matHeaderCellDef scope="col">
+        <span translate>#LDS#Grouped by:</span>
+        <span class="spaced-left">{{ dst?.settings?.groupData?.currentGrouping?.display }}</span>
+      </th>
+      <td mat-cell *matCellDef="let grouping" (click)="onGroupExpanded(grouping)">
+        <span *ngIf="grouping && grouping.Display">{{ grouping?.Display[0].Display || '' }}</span>
+        <eui-icon icon="collapsedown" *ngIf="grouping?.Count > 0 && !groupData[grouping?.Display[0].Display]?.isExpanded"></eui-icon>
+        <eui-icon icon="collapseup" *ngIf="groupData[grouping?.Display[0].Display]?.isExpanded"></eui-icon>
+        <div
+          [@groupExpand]="groupData[grouping?.Display[0].Display]?.isExpanded ? 'expanded' : 'collapsed'"
+          (click)="$event.stopPropagation()"
+          [ngClass]="{ 'group-row-expanded': groupData[grouping?.Display[0].Display]?.isExpanded }"
+        >
+          <imx-data-source-toolbar
+            #nestedDst
+            [settings]="groupData[grouping?.Display[0].Display]?.settings"
+            [itemStatus]="dst.itemStatus"
+            (navigationStateChanged)="onNavigationStateChanged(grouping?.Display[0].Display, $event)"
+          ></imx-data-source-toolbar>
 
-        <table mat-table matSort [dataSource]="groupedDataSource" data-imx-identifier="datatable-table-groupedby">
-          <ng-container matColumnDef="Display">
-            <th mat-header-cell *matHeaderCellDef scope="col">
-              <span translate>#LDS#Grouped by:</span>
-              <span class="spaced-left">{{ dst?.settings?.groupData?.currentGrouping?.display }}</span>
-            </th>
-            <td mat-cell *matCellDef="let grouping" (click)="onGroupExpanded(grouping)">
-              <span *ngIf="grouping && grouping.Display">{{ grouping?.Display[0].Display || ''}}</span>
-              <eui-icon icon="collapsedown" *ngIf="grouping?.Count > 0 && !groupData[grouping?.Display[0].Display]?.isExpanded"></eui-icon>
-              <eui-icon icon="collapseup" *ngIf="groupData[grouping?.Display[0].Display]?.isExpanded"></eui-icon>
-              <div [@groupExpand]="groupData[grouping?.Display[0].Display]?.isExpanded ? 'expanded' : 'collapsed'"
-              (click)="$event.stopPropagation()" [ngClass]="{'group-row-expanded': groupData[grouping?.Display[0].Display]?.isExpanded}">
-                <imx-data-source-toolbar #nestedDst
-                [settings]="groupData[grouping?.Display[0].Display]?.settings"
-                [hiddenElements]="['search', 'filter', 'groupby', 'settings', 'selectedViewGroup']"
-                [itemStatus]="dst.itemStatus"
-                (navigationStateChanged)="onNavigationStateChanged(grouping?.Display[0].Display, $event)"></imx-data-source-toolbar>
-
-                <imx-data-table [dst]="nestedDst" (highlightedEntityChanged)="highlightRow($event)"
-                  detailViewVisible="false" [mode]="mode" [selectable]="selectable" (selectionChanged)="selectionInGroupChanged($event, grouping?.Display[0].Display)"
-                  [parentManualColumns]="manualColumns" [parentManualGenericColumns]="manualGenericColumns"
-                  [noDataText]="noDataText" [noDataIcon]="noDataIcon" [noMatchingDataText]="noMatchingDataText"
-                  [noMatchingDataIcon]="noMatchingDataIcon" [groupedTableHasFiltersApplied]="dst?.filtersCurrentlyApplied">
-                </imx-data-table>
-                <imx-data-source-paginator [dst]="nestedDst"></imx-data-source-paginator>
-              </div>
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="groupDisplayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: groupDisplayedColumns"></tr>
-        </table>
-
-      </div>
-
-        <table mat-table [dataSource]="dataSource" matSort data-imx-identifier="datatable-table"
-          [ngClass]="{'imx-data-table__hidden': isGroupingApplied || !dst?.dataSourceHasData }">
-
-          <ng-container *ngIf="selectable" matColumnDef="select" class="imx-data-table-column-select">
-            <ng-container *ngIf="showSelectAllOption">
-              <th mat-header-cell *matHeaderCellDef sticky>
-                <mat-checkbox
-                  *ngIf="selectable"
-                  [disabled]="numOfSelectableRows === 0"
-                  (change)="$event ? toggleSelection() : null"
-                  [checked]="numOfSelectedItemsOnPage() > 0 && allSelected()"
-                  [indeterminate]="numOfSelectedItemsOnPage() > 0 && !allSelected()"
-                  data-imx-identifier="datatable-checkbox-select-all">
-                </mat-checkbox>
-              </th>
-            </ng-container>
-            <ng-container *ngIf="!showSelectAllOption">
-              <th mat-header-cell *matHeaderCellDef sticky></th>
-            </ng-container>
-            <td mat-cell *matCellDef="let row, index as i;">
-              <mat-checkbox
-                [disabled]="!isSelectable(row)"
-                (click)="$event.stopPropagation()"
-                (change) ="$event.checked ? checked(row) : unChecked(row)"
-                [checked] ="isChecked(row)"
-                [attr.data-imx-identifier]="'datatable-checkbox-select-row' + i">
-              </mat-checkbox>
-            </td>
-          </ng-container>
-
-          <ng-container *ngIf="mode === 'auto'">
-            <ng-container [matColumnDef]="column.ColumnName" *ngFor="let column of displayedColumns">
-              <th mat-header-cell *matHeaderCellDef>{{ translateProvider.GetColumnDisplay(column.ColumnName, entitySchema) }}</th>
-              <td mat-cell *matCellDef="let entity">
-                <imx-data-table-cell [entity]="entity" [property]="column"></imx-data-table-cell>
-              </td>
-            </ng-container>
-          </ng-container>
-
-          <ng-container *ngIf="mode === 'manual'">
-            <ng-content></ng-content>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="getNamesOfDisplayedColumns(); sticky: true"></tr>
-          <tr mat-row *matRowDef="let row; columns: getNamesOfDisplayedColumns()" (click)="highlightRow(row)" [ngClass]="{ 'imx-data-table-row-highlighted': highlightedEntity === row }"></tr>
-
-        </table>
-
-        <div class="imx-data-table-no-results" *ngIf="!dst?.dataSourceHasData && !isGroupingApplied">
-
-          <eui-icon [icon]="dst?.searchCurrenltyApplied || dst?.filtersCurrentlyApplied || groupedTableHasFiltersApplied ? noMatchingDataIcon : noDataIcon"></eui-icon>
-          <p [translate]="dst?.searchCurrenltyApplied || dst?.filtersCurrentlyApplied || groupedTableHasFiltersApplied ? noMatchingDataText :  noDataText"></p>
+          <imx-data-table
+            [dst]="nestedDst"
+            (highlightedEntityChanged)="highlightRow($event)"
+            [mode]="mode"
+            [selectable]="selectable"
+            (selectionChanged)="selectionInGroupChanged($event, grouping?.Display[0].Display)"
+            [parentManualColumns]="manualColumns"
+            [parentManualGenericColumns]="manualGenericColumns"
+            [noDataText]="noDataText"
+            [noDataIcon]="noDataIcon"
+            [noMatchingDataText]="noMatchingDataText"
+            [noMatchingDataIcon]="noMatchingDataIcon"
+            [groupedTableHasFiltersApplied]="dst?.filtersCurrentlyApplied"
+          >
+          </imx-data-table>
+          <imx-data-source-paginator [dst]="nestedDst"></imx-data-source-paginator>
         </div>
+      </td>
+    </ng-container>
 
-    </mat-sidenav-content>
+    <tr mat-header-row *matHeaderRowDef="groupDisplayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: groupDisplayedColumns"></tr>
+  </table>
+</div>
 
-    <mat-sidenav *ngIf="!detailViewOpen"  mode="side" position="end" [opened]="detailViewVisible" [disableClose]="true">
-        <imx-data-table-detail-header [detailOpened]="detailViewOpen" [title]="detailViewTitle" (detailOpenedChanged)="onDetailOpenedChanged($event)"></imx-data-table-detail-header>
-    </mat-sidenav>
+<table mat-table [dataSource]="dataSource" matSort data-imx-identifier="datatable-table" [ngClass]="{ 'imx-data-table__hidden': isGroupingApplied || !dst?.dataSourceHasData }">
+  <ng-container *ngIf="selectable" matColumnDef="select" class="imx-data-table-column-select">
+    <ng-container *ngIf="showSelectAllOption">
+      <th mat-header-cell *matHeaderCellDef sticky>
+        <mat-checkbox
+          *ngIf="selectable"
+          [disabled]="numOfSelectableRows === 0"
+          (change)="$event ? toggleSelection() : null"
+          [checked]="numOfSelectedItemsOnPage() > 0 && allSelected()"
+          [indeterminate]="numOfSelectedItemsOnPage() > 0 && !allSelected()"
+          data-imx-identifier="datatable-checkbox-select-all"
+        >
+        </mat-checkbox>
+      </th>
+    </ng-container>
+    <ng-container *ngIf="!showSelectAllOption">
+      <th mat-header-cell *matHeaderCellDef sticky></th>
+    </ng-container>
+    <td mat-cell *matCellDef="let row; index as i">
+      <mat-checkbox
+        [disabled]="!isSelectable(row)"
+        (click)="$event.stopPropagation()"
+        (change)="$event.checked ? checked(row) : unChecked(row)"
+        [checked]="isChecked(row)"
+        [attr.data-imx-identifier]="'datatable-checkbox-select-row' + i"
+      >
+      </mat-checkbox>
+    </td>
+  </ng-container>
 
-    <mat-sidenav *ngIf="detailViewOpen" mode="side" position="end" [opened]="detailViewVisible" class="imx-data-table-detail-opened" [disableClose]="true">
-      <imx-data-table-detail-header [detailOpened]="detailViewOpen" [title]="detailViewTitle" (detailOpenedChanged)="onDetailOpenedChanged($event)"></imx-data-table-detail-header>
-      <ng-content select="imx-data-table-detail"></ng-content>
-    </mat-sidenav>
+  <ng-container *ngIf="mode === 'auto'">
+    <ng-container [matColumnDef]="column.ColumnName" *ngFor="let column of displayedColumns; let i = index">
+      <th mat-header-cell *matHeaderCellDef>{{ translateProvider.GetColumnDisplay(column.ColumnName, entitySchema) }}</th>
+      <td mat-cell *matCellDef="let entity">
+        <imx-data-table-display-cell *ngIf="i === 0" [entity]="entity" [property]="column" [propertiesforSubtitle]="dst?.additionalListElements"></imx-data-table-display-cell>
+        <imx-data-table-cell *ngIf="i > 0"  [entity]="entity" [property]="column"></imx-data-table-cell>
+      </td>
+    </ng-container>
+  </ng-container>
 
-  </mat-sidenav-container>
+  <ng-container *ngIf="mode === 'manual'">
+    <ng-content></ng-content>
+     <ng-container [matColumnDef]="column.ColumnName" *ngFor="let column of additional">
+      <th mat-header-cell *matHeaderCellDef>{{ translateProvider.GetColumnDisplay(column.ColumnName, entitySchema) }}</th>
+      <td mat-cell *matCellDef="let entity">
+        <imx-data-table-cell [entity]="entity" [property]="column"></imx-data-table-cell>
+      </td>
+    </ng-container>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="getNamesOfDisplayedColumns(); sticky: true"></tr>
+  <tr
+    mat-row
+    *matRowDef="let row; columns: getNamesOfDisplayedColumns()"
+    (click)="highlightRow(row)"
+    [ngClass]="{ 'imx-data-table-row-highlighted': highlightedEntity === row, 'imx-data-table-row-conditional': isHighlight(row) && !(highlightedEntity === row)}"
+  ></tr>
+</table>
+
+<div class="imx-data-table-no-results" *ngIf="!dst?.dataSourceHasData && !isGroupingApplied">
+  <eui-icon [icon]="dst?.searchCurrenltyApplied || dst?.filtersCurrentlyApplied || groupedTableHasFiltersApplied ? noMatchingDataIcon : noDataIcon"></eui-icon>
+  <p [translate]="dst?.searchCurrenltyApplied || dst?.filtersCurrentlyApplied || groupedTableHasFiltersApplied ? noMatchingDataText : noDataText"></p>
+</div>

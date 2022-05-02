@@ -37,7 +37,7 @@ import {
   SettingsService
 } from 'qbm';
 import { IDataExplorerComponent } from 'qer';
-import { CollectionLoadParameters, IClientProperty, DisplayColumns, DbObjectKey, EntitySchema, CompareOperator, FilterType } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, IClientProperty, DisplayColumns, DbObjectKey, EntitySchema, CompareOperator, FilterType, DataModel } from 'imx-qbm-dbts';
 import { AccountsService } from './accounts.service';
 import { AccountSidesheetComponent } from './account-sidesheet/account-sidesheet.component';
 import { DeHelperService } from '../de-helper.service';
@@ -80,6 +80,7 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
   private authorityDataDeleted$: Subscription;
   private tableName: string;
   private busyIndicator: OverlayRef;
+  private dataModel: DataModel;
 
   constructor(
     public translateProvider: ImxTranslationProviderService,
@@ -103,8 +104,15 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
       this.entitySchemaUnsAccount.Columns.AccountDisabled,
       this.entitySchemaUnsAccount.Columns.XMarkedForDeletion,
     ];
-    this.filterOptions = await this.accountsService.getFilterOptions();
+    let overlayRef: OverlayRef;
+    setTimeout(() => (overlayRef = this.busyService.show()));
 
+    try {
+      this.filterOptions = await this.accountsService.getFilterOptions();
+      this.dataModel = await this.accountsService.getDataModel();
+    } finally {
+      setTimeout(() => this.busyService.hide(overlayRef));
+    }
     if (this.applyIssuesFilter && !this.issuesFilterMode) {
       const orphanedFilter = this.filterOptions.find((f) => {
         return f.Name === 'orphaned';
@@ -157,7 +165,7 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
       data = {
         unsAccountId: unsAccount.UID_UNSAccount.value,
         unsDbObjectKey,
-        selectedAccount: await this.accountsService.getAccount(unsDbObjectKey),
+        selectedAccount: await this.accountsService.getAccountInteractive(unsDbObjectKey, 'UID_UNSAccount'),
         tableName: this.tableName
       };
     } finally {
@@ -196,6 +204,12 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
         ColumnName: 'UID_Person',
         Value1: this.uidPerson
       }];
+
+      const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
+        .map(elem => elem.Property.ColumnName).join(',');
+      if (withProperties != null && withProperties !== '') {
+        this.navigationState.withProperties = withProperties;
+      }
       const data = await this.accountsService.getAccounts(getParams);
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
@@ -203,6 +217,18 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
         entitySchema: this.entitySchemaUnsAccount,
         navigationState: this.navigationState,
         filters: this.filterOptions,
+        filterTree: {
+          filterMethode: async (parentkey) => {
+            return this.accountsService.getFilterTree({
+              parentkey,
+              container: getParams.container,
+              system: getParams.system,
+              filter: getParams.filter
+            });
+          },
+          multiSelect: true
+        },
+        dataModel: this.dataModel
       };
       this.tableName = data.tableName;
       this.logger.debug(this, `Head at ${data.Data.length + this.navigationState.StartIndex} of ${data.totalCount} item(s)`);

@@ -1,0 +1,11 @@
+<div class="dialog-table-wrapper">
+  <imx-loss-preview-table [lossPreview]="lossPreview" [showTitle]="true"></imx-loss-preview-table>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-stroked-button mat-dialog-close data-imx-identifier="loss-preview-dialog-button-cancel">
+    {{ '#LDS#Cancel' | translate }}
+  </button>
+  <button mat-raised-button color="warn" (click)="onDeny()" cdkFocusInitial data-imx-identifier="loss-preview-dialog-button-deny">
+    {{ '#LDS#Deny' | translate }}
+  </button>
+</div>

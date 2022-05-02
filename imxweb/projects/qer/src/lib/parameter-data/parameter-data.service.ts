@@ -25,18 +25,24 @@
  */
 
 import { Injectable } from '@angular/core';
-import { ParameterData } from 'imx-api-qer';
-
-import { EntityCollectionData, EntityWriteDataColumn, FkProviderItem, IClientProperty, IEntity, IEntityColumn, TypedEntity } from 'imx-qbm-dbts';
-import { ReadWriteEntityColumn } from 'imx-qbm-dbts/dist/ReadWriteEntityColumn';
+import {
+  ParameterData,
+  WriteExtTypedEntity,
+  EntityCollectionData, EntityWriteDataColumn, FkProviderItem, IClientProperty, IEntity, IEntityColumn, FilterTreeData,
+} from 'imx-qbm-dbts';
 import { ClassloggerService, EntityService } from 'qbm';
 import { ExtendedCollectionData, ExtendedDataWrapper } from './extended-collection-data.interface';
 import { ParameterCategoryColumn } from './parameter-category-column.interface';
 import { ParameterCategory } from './parameter-category.interface';
+import { ParameterContainer } from './parameter-container';
 import { ParameterDataContainer } from './parameter-data-container';
 import { ParameterDataFkProviderItem } from './parameter-data-fk-provider-item';
 import { ParameterDataLoadParameters } from './parameter-data-load-parameters.interface';
 import { ParameterDataWrapper } from './parameter-data-wrapper.interface';
+
+// todo: move to QBM!
+
+type CategoryParameterWrite = { [id: string]: EntityWriteDataColumn[][] };
 
 @Injectable({
   providedIn: 'root'
@@ -72,12 +78,14 @@ export class ParameterDataService {
   public createExtendedDataWrapper<TData>(
     entity: IEntity,
     extendedCollectionData: ExtendedCollectionData<TData>,
-    getCandidates: (loadParameters: ParameterDataLoadParameters) => Promise<EntityCollectionData>
+    getCandidates: (loadParameters: ParameterDataLoadParameters) => Promise<EntityCollectionData>,
+    getFilterTree: (loadParameters:ParameterDataLoadParameters) => Promise<FilterTreeData>
   ): ExtendedDataWrapper<TData> {
     const parameterWrapper = this.createContainer(
       entity,
       extendedCollectionData,
-      getCandidates
+      getCandidates,
+      getFilterTree
     );
 
     return {
@@ -128,45 +136,45 @@ export class ParameterDataService {
     return columns;
   }
 
+  /** Builds a set of entity columns for a simple array of parameters. */
+  public createInteractiveParameterColumns(
+    parameters: ParameterData[],
+    getFkProviderItems: (parameter: ParameterData) => FkProviderItem[],
+    typedEntity: WriteExtTypedEntity<ParameterData[][]>
+  ): IEntityColumn[] {
+    const columns: IEntityColumn[] = [];
+    const container = new ParameterContainer(this.entityService, getFkProviderItems, this.logger, typedEntity);
+
+    typedEntity.onChangeExtendedDataRead(() => {
+      // new parameters from server --> sync local entity
+      const newParameters: ParameterData[] = typedEntity.extendedDataRead[0];
+
+      newParameters.forEach(parameter => {
+        container.update(parameter.Property.ColumnName, parameter);
+        // TODO: remove parameters not returned by the server
+      });
+    });
+
+    parameters.forEach(parameter => {
+      const extendedDataGenerator = newValue => [[{
+        Name: parameter.Property.ColumnName,
+        Value: newValue
+      }]];
+      const column = container.add(parameter.Property.ColumnName, parameter, extendedDataGenerator);
+      columns.push(column);
+    });
+
+    return columns;
+  }
+
+  /** Builds a set of entity columns for parameters, when parameters are organized in categories. */
   public createInteractiveParameterCategoryColumns(
     parameterCategories: ParameterCategory[],
     getFkProviderItems: (parameter: ParameterData) => FkProviderItem[],
-    typedEntity: TypedEntity
+    typedEntity: WriteExtTypedEntity<CategoryParameterWrite>
   ): ParameterCategoryColumn[] {
     const columns = [];
-
-    const parameterObjects = new Map<string, ParameterData & { column: ReadWriteEntityColumn }>();
-
-    parameterCategories.forEach(category =>
-      category.parameters.forEach(parameter => {
-        const column = <ReadWriteEntityColumn>this.entityService.createLocalEntityColumn(
-          parameter.Property,
-          getFkProviderItems(parameter),
-          parameter.Value,
-          async (oldValue, newValue) => {
-
-            // a single value has changed -> update extendedData to send to server
-            const extendedData = {};
-
-            extendedData[category.name] = [[{
-              Name: parameter.Property.ColumnName,
-              Value: newValue
-            }]];
-
-            typedEntity.extendedData = extendedData;
-          }
-        );
-        // save parameter for later use
-        parameterObjects.set(category.name + "_" + parameter.Property.ColumnName, {
-          ...parameter,
-          column: column
-        });
-        columns.push({
-          parameterCategoryName: category.name,
-          column: column
-        });
-      })
-    );
+    const container = new ParameterContainer(this.entityService, getFkProviderItems, this.logger, typedEntity);
 
     typedEntity.onChangeExtendedDataRead(() => {
       // new parameters from server --> sync local entity
@@ -175,22 +183,30 @@ export class ParameterDataService {
       newCategories.forEach(category =>
         category.parameters.forEach(parameter => {
           const lookupKey = category.name + "_" + parameter.Property.ColumnName;
-          // save parameter for later use
-          const existingParameter = parameterObjects.get(lookupKey);
-          if (existingParameter) {
-            this.logger.trace(this, "updating parameter " + lookupKey);
-            // assign new value and metadata
-            Object.assign(existingParameter.Property, parameter.Property);
-            existingParameter.column.apply(parameter.Value);
-          }
-          else {
-            // TODO: add parameters not previously known
-            this.logger.warn(this, "Not updating unknown parameter " + lookupKey);
-          }
-
+          container.update(lookupKey, parameter);
           // TODO: remove parameters not returned by the server
         }));
     });
+
+    parameterCategories.forEach(category =>
+      category.parameters.forEach(parameter => {
+
+        const extendedDataGenerator = newValue => {
+          const extendedData: CategoryParameterWrite = {};
+          extendedData[category.name] = [[{
+            Name: parameter.Property.ColumnName,
+            Value: newValue
+          }]];
+          return extendedData;
+        };
+
+        const column = container.add(category.name + "_" + parameter.Property.ColumnName, parameter, extendedDataGenerator);
+        columns.push({
+          parameterCategoryName: category.name,
+          column: column
+        });
+      })
+    );
 
     return columns;
   }
@@ -198,7 +214,8 @@ export class ParameterDataService {
   public createContainer<TData>(
     entity: IEntity,
     extendedCollectionData: ExtendedCollectionData<TData>,
-    getCandidates: (loadParameters: ParameterDataLoadParameters) => Promise<EntityCollectionData>
+    getCandidates: (loadParameters: ParameterDataLoadParameters) => Promise<EntityCollectionData>,
+    getFilterTree: (loadParameters:ParameterDataLoadParameters) => Promise<FilterTreeData>
   ): ParameterDataContainer {
     if (extendedCollectionData?.Parameters == null) {
       return undefined;
@@ -216,7 +233,8 @@ export class ParameterDataService {
             this.createItems(
               entity,
               parameterData.Property,
-              loadParameters => getCandidates(loadParameters)
+              loadParameters => getCandidates(loadParameters),
+              treeParameters => getFilterTree(treeParameters)
             ),
             parameterData.Value
           ))
@@ -230,7 +248,8 @@ export class ParameterDataService {
   public createParameterColumns(
     entity: IEntity,
     parameters: ParameterData[],
-    getCandidates: (loadParameters: ParameterDataLoadParameters) => Promise<EntityCollectionData>
+    getCandidates: (loadParameters: ParameterDataLoadParameters) => Promise<EntityCollectionData>,
+    getFilterTree: (loadParameters:ParameterDataLoadParameters) => Promise<FilterTreeData>
   ): IEntityColumn[] {
     return parameters.map(parameterData =>
       this.entityService.createLocalEntityColumn(
@@ -238,7 +257,8 @@ export class ParameterDataService {
         this.createItems(
           entity,
           parameterData.Property,
-          loadParameters => getCandidates(loadParameters)
+          loadParameters => getCandidates(loadParameters),
+          treeparameters =>getFilterTree(treeparameters)
         ),
         parameterData.Value
       )
@@ -248,17 +268,18 @@ export class ParameterDataService {
   private createItems(
     entity: IEntity,
     property: IClientProperty,
-    getCandidates: (loadParameters: ParameterDataLoadParameters) => Promise<EntityCollectionData>
+    getCandidates: (loadParameters: ParameterDataLoadParameters) => Promise<EntityCollectionData>,
+    getFilterTree: (loadParameters:ParameterDataLoadParameters) => Promise<FilterTreeData>
   ): FkProviderItem[] {
     if (property.FkRelation) {
       return [
-        new ParameterDataFkProviderItem(property.ColumnName, property.FkRelation.ParentTableName, entity, getCandidates)
+        new ParameterDataFkProviderItem(property.ColumnName, property.FkRelation.ParentTableName, entity, getCandidates , getFilterTree)
       ];
     }
 
     if (property.ValidReferencedTables) {
       return property.ValidReferencedTables.map(parentTableRef =>
-        new ParameterDataFkProviderItem(property.ColumnName, parentTableRef.TableName, entity, getCandidates)
+        new ParameterDataFkProviderItem(property.ColumnName, parentTableRef.TableName, entity, getCandidates , getFilterTree)
       );
     }
 

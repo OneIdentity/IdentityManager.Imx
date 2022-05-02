@@ -36,6 +36,7 @@ export class BadgeTileComponent extends TileComponent {
   @Input() public caption: string;
   @Input() public value: string;
   @Input() public identifier: string;
+  @Input() public tooltip: string;
 
   @Output() public actionClick: EventEmitter<any> = new EventEmitter();
 

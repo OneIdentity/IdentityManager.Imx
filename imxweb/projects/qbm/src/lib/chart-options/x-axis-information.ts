@@ -24,10 +24,9 @@
  *
  */
 
-import { XAxisConfiguration, XTickConfiguration } from 'billboard.js';
+import { xAxisConfiguration, XTickConfiguration } from 'billboard.js';
 
 export class XAxisInformation {
-
   /**
    * gets the values for the x axis
    */
@@ -59,16 +58,21 @@ export class XAxisInformation {
   /**
    * Gets XAxisConfiguration object using 'values' 'dataType' and 'tickConfiguration'
    */
-  public getAxisConfiguration(): XAxisConfiguration {
-    let tickType: string;
+  public getAxisConfiguration(): xAxisConfiguration {
+    let tickType: 'category' | 'indexed' | 'log' | 'timeseries';
     switch (this.dataType) {
-      case 'string': tickType = 'category'; break;
-      case 'date': tickType = 'timeseries'; break;
-      default: tickType = 'indexed';
+      case 'string':
+        tickType = 'category';
+        break;
+      case 'date':
+        tickType = 'timeseries';
+        break;
+      default:
+        tickType = 'indexed';
     }
     return {
       type: tickType,
-      tick: this.tickConfiguration
+      tick: this.tickConfiguration,
     };
   }
 }

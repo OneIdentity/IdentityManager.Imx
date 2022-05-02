@@ -24,14 +24,13 @@
  *
  */
 
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, ContentChild, EventEmitter, Input, OnChanges, Output, SimpleChanges, TemplateRef } from '@angular/core';
 import { MatSelectionListChange } from '@angular/material/list';
 import { PageEvent } from '@angular/material/paginator';
 
 import { CollectionLoadParameters, IEntity } from 'imx-qbm-dbts';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
 import { TreeDatabase } from '../tree-database';
-import { SearchResultAction } from './search-result-action.interface';
 
 @Component({
   selector: 'imx-data-tree-search-results',
@@ -67,8 +66,10 @@ export class DataTreeSearchResultsComponent implements OnChanges {
   @Input() public database: TreeDatabase;
 
   @Input() public navigationState: CollectionLoadParameters;
+  
+  @Input() public withSelectedNodeHighlight: boolean;
 
-  @Input() public action: SearchResultAction;
+  @ContentChild(TemplateRef, { static: true }) public templateRef: TemplateRef<any>;
 
   /** @ignore list of options, that are shown as selected */
   public selectedOptions: IEntity[] = [];
@@ -80,6 +81,7 @@ export class DataTreeSearchResultsComponent implements OnChanges {
   public paginatorPageSize = 25;
 
   public loading = true;
+  public selectedEntity: IEntity;
 
   /**
    * Event, that will fire when the a node was selected and emitting a list of
@@ -101,7 +103,7 @@ export class DataTreeSearchResultsComponent implements OnChanges {
   /** @ignore compares two items of the mat-selection-list */
   public compareFunction = (o1: any, o2: any) => {
     this.logger.log(this, 'compare', o1, o2);
-    return TreeDatabase.getId(o1) === TreeDatabase.getId(o2);
+    return this.getId(o1) === this.getId(o2);
   }
 
   /**
@@ -123,14 +125,13 @@ export class DataTreeSearchResultsComponent implements OnChanges {
 
   /** @ignore updates the selection list an emits the according events */
   public onSelectionChanged(selection: MatSelectionListChange): void {
-    if (this.withMultiSelect) {
-      this.updateSelectedEntities(selection.options[0].value, selection.options[0].selected);
-      this.checkedNodesChanged.emit();
-    } else {
-      if (this.action == null) {  // if the component is single select and an action is set, it replaces the nodeSelected event
-        this.nodeSelected.emit(selection.options[0].value);
-      }
-    }
+    this.updateSelectedEntities(selection.options[0].value, selection.options[0].selected);
+    this.checkedNodesChanged.emit();
+  }
+
+  public resultClicked(entity: IEntity): void {
+    this.selectedEntity = entity;
+    this.nodeSelected.emit(entity);
   }
 
   /**
@@ -157,14 +158,14 @@ export class DataTreeSearchResultsComponent implements OnChanges {
   /** @ignore checks, if an element is selected or not */
   public isSelected(value: IEntity): boolean {
     if (this.withMultiSelect) { return false; }
-    return this.selectedEntities.some(elem => TreeDatabase.getId(elem) === TreeDatabase.getId(value));
+    return this.selectedEntities.some(elem => this.getId(elem) === this.getId(value));
   }
 
   private updateSelectedEntities(current: IEntity, checked: boolean): void {
     if (checked) {
       this.selectedEntities.push(current);
     } else {
-      const index = this.selectedEntities.findIndex(elem => TreeDatabase.getId(elem) === TreeDatabase.getId(current));
+      const index = this.selectedEntities.findIndex(elem => this.getId(elem) === this.getId(current));
       this.selectedEntities.splice(index, 1);
     }
   }
@@ -172,9 +173,12 @@ export class DataTreeSearchResultsComponent implements OnChanges {
   private entityIsChecked(entity: IEntity): boolean {
     this.logger.log(this, 'Keys',
       this.selectedEntities,
-      TreeDatabase.getId(entity), this.selectedEntities.some(elem => TreeDatabase.getId(entity) === TreeDatabase.getId(elem)));
-    return this.selectedEntities.some(elem => TreeDatabase.getId(entity) === TreeDatabase.getId(elem));
+      this.getId(entity), this.selectedEntities.some(elem => this.getId(entity) === this.getId(elem)));
+    return this.selectedEntities.some(elem => this.getId(entity) === this.getId(elem));
   }
 
+  private getId(entity: IEntity): string {
+    return this.database ?  this.database.getId(entity) : entity.GetKeys()[0]; 
+   }
 
 }

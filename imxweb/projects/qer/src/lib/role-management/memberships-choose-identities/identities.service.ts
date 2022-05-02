@@ -25,9 +25,10 @@
  */
 
 import { Injectable } from '@angular/core';
-import { OwnershipInformation, PortalPersonAll } from 'imx-api-qer';
+import { PortalPersonAll } from 'imx-api-qer';
 import {
   CollectionLoadParameters,
+  DataModel,
   DataModelFilter,
   EntitySchema,
   ExtendedTypedEntityCollection,
@@ -36,6 +37,7 @@ import {
 } from 'imx-qbm-dbts';
 import { QerApiService } from '../../qer-api-client.service';
 import { RoleService } from '../role.service';
+import { NotRequestableMembershipsEntity } from './not-requestable-memberships/not-requestable-memberships-entity';
 
 @Injectable({
   providedIn: 'root',
@@ -51,11 +53,11 @@ export class IdentitiesService {
   }
 
   public async getIdentities(navigationState?: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<PortalPersonAll, unknown>> {
-    return await this.api.typedClient.PortalPersonAll.Get(navigationState);
+    return this.api.typedClient.PortalPersonAll.Get(navigationState);
   }
 
   public async getIdentity(id: string): Promise<any> {
-    return await this.api.typedClient.PortalPersonUid.Get(id);
+    return this.api.typedClient.PortalPersonUid.Get(id);
   }
 
   public async getCandidates(
@@ -77,16 +79,19 @@ export class IdentitiesService {
     return builder.buildReadWriteEntities(candidates, PortalPersonAll.GetEntitySchema());
   }
 
+  public async getDataModel(): Promise<DataModel> {
+    return this.api.client.portal_person_all_datamodel_get(null);
+  }
   public async getFilterOptions(): Promise<DataModelFilter[]> {
-    return (await this.api.client.portal_person_all_datamodel_get(null)).Filters;
+    return (await this.getDataModel()).Filters;
   }
 
-  public async addMemberships(ownershipInfo: OwnershipInformation, members: TypedEntity[], id: string): Promise<TypedEntity[]> {
-    if (!this.roles.exists(ownershipInfo)) {
+  public async addMemberships(tableName: string, members: TypedEntity[], id: string): Promise<TypedEntity[]> {
+    if (!this.roles.exists(tableName)) {
       return members;
     }
 
-    const failedDueToInactivity = [];
+    const notRequestableMemberships: NotRequestableMembershipsEntity[] = [];
 
     for (const member of members) {
       const entity = this.api.typedClient.PortalCartitem.createEntity();
@@ -99,13 +104,14 @@ export class IdentitiesService {
         await this.api.typedClient.PortalCartitem.Post(entity);
       }
       catch (exception) {
-        if (exception?.dataItems.length && exception.dataItems[0].Number === 6053002) {
-          failedDueToInactivity.push(member);
+        // 6053005 == The membership cannot be requested for this identity.
+        if (exception?.dataItems.length && exception.dataItems[0].Number === 6053005) {
+          notRequestableMemberships.push(new NotRequestableMembershipsEntity(member.GetEntity(), exception.dataItems[0]));
         } else {
           throw exception;
         }
       }
     }
-    return failedDueToInactivity;
+    return notRequestableMemberships;
   }
 }

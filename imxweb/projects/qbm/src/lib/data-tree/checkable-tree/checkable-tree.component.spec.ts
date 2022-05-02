@@ -274,7 +274,7 @@ describe('CheckableTreeComponent', () => {
       component.checklistSelection = new SelectionModel<TreeNode>(testcase.isMulti);
       component.selectedEntities = testcase.selected;
 
-      component.updateCheckedTreeNodes(testcase.nodesForCheck, true);
+      component.updateCheckedTreeNodes(testcase.nodesForCheck);
 
       if (testcase.isMulti) {
 

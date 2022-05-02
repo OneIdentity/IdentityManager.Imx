@@ -33,6 +33,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AdminGroupsComponent } from './admin-groups/admin-groups.component';
 import { AdminMembersComponent } from './admin-members/admin-members.component';
 import { RouterModule, Routes } from '@angular/router';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { FeatureAvailabiltyComponent } from './feature-availabilty/feature-availabilty.component';
 import { AttestationSchedulesComponent } from './attestation-schedules/attestation-schedules.component';
 import { AttestationScheduleSidesheetComponent } from './attestation-schedules/attestation-schedule-sidesheet/attestation-schedule-sidesheet.component';
@@ -61,6 +62,21 @@ const routes: Routes = [
 ];
 
 
+import { MomentDateAdapter } from '@angular/material-moment-adapter';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+
+export const EUI_DATE_FORMATS = {
+  parse: {
+    dateInput: ['LL', 'L'],
+  },
+  display: {
+    dateInput: 'LL',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
+
 @NgModule({
   declarations: [
     AdminGroupsComponent,
@@ -80,10 +96,15 @@ const routes: Routes = [
     TranslateModule,
     DataSourceToolbarModule,
     DataTableModule,
+    MatTooltipModule,
     LdsReplaceModule,
     FkAdvancedPickerModule,
     RouterModule.forChild(routes),
   ],
+  providers: [
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_DATE_FORMATS, useValue: EUI_DATE_FORMATS }
+  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class ConfigurationModule {}
+export class ConfigurationModule { }

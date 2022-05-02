@@ -46,7 +46,7 @@
 
         <mat-step data-imx-identifier="imx-delegation-step-3" [editable]="!completed" [stepControl]="rolesForm">
             <ng-template matStepLabel>
-                {{'#LDS#Select the role membership/responsibility you want to delegate' | translate}}
+                {{'#LDS#Select the role memberships/responsibilities you want to delegate' | translate}}
             </ng-template>
             <div class="imx-global-elements" *ngIf="isGlobalDelegation">
                 <p>
@@ -115,8 +115,8 @@
                                 *ngFor="let delegateable of delegateableItems" [value]="delegateable"
                                 [attr.data-imx-identifier]="'imx-delegation-step-2-role'+ delegateable.GetEntity().GetKeys().join(',')">
                                 <div>
-                                    <span *ngIf="delegateable.TargetType.value != 'Person'">{{delegateable.GetEntity().GetDisplay()}}</span>
-                                    <span *ngIf="delegateable.TargetType.value == 'Person'">{{delegateable.TargetObjectKey.Column.GetDisplayValue()}}</span> / {{delegateable.TargetType.Column.GetDisplayValue()}}
+                                    <span>{{delegateable.TargetObjectKey.Column.GetDisplayValue()}}</span>
+                                    <span *ngIf="delegateable.TargetType.value != 'Person'"> ({{delegateable.TargetType.Column.GetDisplayValue()}})</span>
                                 </div>
                                 <div class="subtext">
                                     ({{delegateable.Criteria.Column.GetDisplayValue()}})

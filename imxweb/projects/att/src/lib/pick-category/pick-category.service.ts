@@ -85,7 +85,7 @@ export class PickCategoryService {
       deletedObjects = (await this.bulkDeletePickCategories(pickCategories)).length;
       if (deletedObjects > 0) {
         this.snackbar.open({
-          key: '#LDS#{0} sample data have been successfully deleted.',
+          key: '#LDS#{0} samples have been successfully deleted.',
           parameters: [deletedObjects]
         }, '#LDS#Close');
       }
@@ -200,7 +200,7 @@ export class PickCategoryService {
     }
 
     this.snackbar.open({
-      key: '#LDS#The sample data has been successfully created.',
+      key: '#LDS#The sample has been successfully created.',
       parameters: [pickCategory.GetEntity().GetDisplay()]
     }, '#LDS#Close');
 

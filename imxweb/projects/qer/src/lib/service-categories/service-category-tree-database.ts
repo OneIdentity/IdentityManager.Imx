@@ -46,7 +46,7 @@ export class ServiceCategoryTreeDatabase extends TreeDatabase {
     this.canSearch = true;
   }
 
-  public async getData(showLoading: boolean, parameters: CollectionLoadParameters = { parentKey: '' })
+  public async getData(showLoading: boolean, parameters: CollectionLoadParameters = { ParentKey: '' })
     : Promise<TreeNodeResultParameter> {
     let entities: TreeNodeResultParameter;
     let overlayRef: OverlayRef;
@@ -58,7 +58,6 @@ export class ServiceCategoryTreeDatabase extends TreeDatabase {
         PageSize: this.settings.DefaultPageSize,
         StartIndex: 0,
         ...parameters,
-        ParentKey: parameters.parentKey
       };
 
       const serviceCategories: TypedEntityCollectionData<PortalServicecategories>

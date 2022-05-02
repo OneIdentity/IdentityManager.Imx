@@ -24,12 +24,12 @@
  *
  */
 
-import { Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import { Component, ContentChild, EventEmitter, Input, OnChanges, Output, TemplateRef, ViewChild } from '@angular/core';
 
-import { CollectionLoadParameters, EntitySchema, IEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, EntitySchema, FilterTreeData, IEntity } from 'imx-qbm-dbts';
+import { FilterTreeParameter } from '../data-source-toolbar/data-model/filter-tree-parameter';
 import { DataSourceToolbarFilter } from '../data-source-toolbar/data-source-toolbar-filters.interface';
 import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
-import { SearchResultAction } from '../data-tree/data-tree-search-results/search-result-action.interface';
 import { DataTreeComponent } from '../data-tree/data-tree.component';
 import { TreeDatabase } from '../data-tree/tree-database';
 
@@ -43,7 +43,6 @@ export class DataTreeWrapperComponent implements OnChanges {
   public dstSettings: DataSourceToolbarSettings;
 
   @Input() public database: TreeDatabase;
-  @Input() public searchResultAction: SearchResultAction;
   @Input() public entitySchema: EntitySchema;
   @Input() public filters: DataSourceToolbarFilter[];
   @Input() public emptyNodeCaption: string;
@@ -51,8 +50,12 @@ export class DataTreeWrapperComponent implements OnChanges {
   @Input() public noDataText = '#LDS#No data';
   @Input() public noDataIcon = 'table';
   @Input() public withMultiSelect: boolean;
+  @Input() public withSelectedNodeHighlight = true;
+  @Input() public filterTree: FilterTreeParameter;
 
   @ViewChild('tree') public treeControl: DataTreeComponent;
+
+  @ContentChild(TemplateRef, { static: true }) public templateRef: TemplateRef<any>;
 
   @Output() public nodeSelected = new EventEmitter<IEntity>();
   @Output() public checkedNodesChanged = new EventEmitter();
@@ -64,7 +67,8 @@ export class DataTreeWrapperComponent implements OnChanges {
       dataSource: { Data: [], totalCount: 0, IsLimitReached: false }, // wird über die database geregelt, darf halt nur nicht leer sein
       entitySchema: this.entitySchema,
       navigationState: this.navigationStateTree,
-      filters: this.filters
+      filters: this.filters,
+      filterTree: this.filterTree
     };
   }
 
@@ -93,5 +97,15 @@ export class DataTreeWrapperComponent implements OnChanges {
     this.database.reloadData();
     this.treeControl?.reload();
   }
+
+  public reload(): void {
+    this.treeControl?.reload();
+  }
+
+  /** clears all selected nodes for the tree and listings */
+  public clearSelection(): void {
+    this.treeControl?.clearSelection();
+  }
+
 
 }

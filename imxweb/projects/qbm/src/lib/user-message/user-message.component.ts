@@ -49,6 +49,9 @@ export class UserMessageComponent implements AfterContentInit, OnDestroy {
 
   @Input() public panelClass: 'imx-message' | 'imx-small-message' = 'imx-message';
 
+  /** Identifier for the target property of messages. */
+  @Input() public target: string;
+
   /**
    * @ignore
    * The message, displayed as header of the ElementalUI alert component
@@ -60,12 +63,18 @@ export class UserMessageComponent implements AfterContentInit, OnDestroy {
   constructor(private readonly messageService: UserMessageService, private readonly logger: ClassloggerService) {
     this.logger.debug(this, 'init user message component');
     this.subscriptions.push(this.messageService.subject.subscribe(message => {
+
       this.logger.debug(this, 'message received:', message);
       this.message = message;
       if (this.alert) {
-        this.alert.isDismissed = message == null;
+        this.alert.isDismissed = !this.isForMe();
       }
     }));
+  }
+
+  private isForMe() {
+    // is there a message, and is the message for this target?
+    return this.message != null && this.target == this.message.target;
   }
 
   /**
@@ -73,7 +82,7 @@ export class UserMessageComponent implements AfterContentInit, OnDestroy {
    * Dismisses the ElementalUI alert component on startup, if the message is empty
    */
   public ngAfterContentInit(): void {
-    this.alert.isDismissed = this.message == null;
+    this.alert.isDismissed = !this.isForMe();
     this.logger.debug(this, 'initializing alert');
   }
 

@@ -55,7 +55,7 @@ export class HierarchicalFkDatabase extends TreeDatabase {
   }
 
   /** implements the getData methode of TreeDataBase */
-  public async getData(showLoading: boolean, parameters: CollectionLoadParameters = { parentKey: '' /* first level */ })
+  public async getData(showLoading: boolean, parameters: CollectionLoadParameters = { ParentKey: '' /* first level */ })
     : Promise<TreeNodeResultParameter> {
     if (!this.fkTable) {
       return { entities: [], canLoadMore: false, totalCount: 0 };
@@ -64,7 +64,6 @@ export class HierarchicalFkDatabase extends TreeDatabase {
     const opts = {
       PageSize: 25,
       StartIndex: 0,
-      ParentKey: parameters.parentKey,
       ...parameters
     };
 

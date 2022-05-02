@@ -66,7 +66,6 @@ export class RunsService {
   }
 
   public async getGroupInfo(parameters: RunsLoadParameters): Promise<GroupInfo[]> {
-    console.log('parameters', parameters);
     return this.attService.client.portal_attestation_run_group_get(
       parameters.by,
       parameters.def,

@@ -27,8 +27,7 @@
 import { TestBed } from '@angular/core/testing';
 import { configureTestSuite } from 'ng-bullet';
 
-import { ParameterData } from 'imx-api-qer';
-import { IEntityColumn } from 'imx-qbm-dbts';
+import { ParameterData, IEntityColumn } from 'imx-qbm-dbts';
 import { ClassloggerService, EntityService } from 'qbm';
 import { ParameterDataService } from './parameter-data.service';
 

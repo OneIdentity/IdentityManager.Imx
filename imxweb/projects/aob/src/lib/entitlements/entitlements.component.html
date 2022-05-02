@@ -5,7 +5,8 @@
     <!-- Datasource Toolbar -->
     <imx-data-source-toolbar #dst [settings]="dstSettings" (navigationStateChanged)="getData(false, $event)"
       (viewSelectionChanged)="viewSelectionChanged($event)" (groupingChanged)="onGroupingChanged($event)"
-      [hiddenElements]="['search', 'filter', 'groupBy', 'settings']" [itemStatus]="status">
+      [options]="['selectedViewGroup']"
+      [itemStatus]="status">
       <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
     </imx-data-source-toolbar>
 
@@ -14,14 +15,20 @@
       <imx-data-table #table [dst]="dst" [selectable]="true" (highlightedEntityChanged)="editEntitlement($event)"
         (selectionChanged)="onSelectionChanged($event)" mode="manual" class="mat-elevation-z2 imx-aob-data-container"
         [detailViewVisible]="false">
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns['Ident_AOBEntitlement']"
-          [entitySchema]="entitySchema">
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns['Ident_AOBEntitlement']">
           <ng-template let-data>
             <div>{{ data.Ident_AOBEntitlement.Column.GetDisplayValue() }}</div>
             <div subtitle>{{ data.Description.Column.GetDisplayValue() }}</div>
           </ng-template>
         </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns['UID_AERoleOwner']" [entitySchema]="entitySchema">
+        <imx-data-table-generic-column columnName="type" columnLabel="{{'#LDS#Type' | translate }}">
+          <ng-template let-data>
+            <div>
+              {{getType(data)}}
+            </div>
+          </ng-template>
+        </imx-data-table-generic-column>
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns['UID_AERoleOwner']">
         </imx-data-table-column>
         <imx-data-table-generic-column columnName="assigned" columnLabel="{{'#LDS#Assigned' | translate }}">
           <ng-template let-data>
@@ -46,7 +53,7 @@
 
     <!-- Data Tiles -->
     <ng-container *ngIf="selectedView === 'cardlist'">
-      <imx-data-tiles class="imx-aob-data-container" [dst]="dst" selectable="true"
+      <imx-data-tiles #tiles class="imx-aob-data-container" [dst]="dst" selectable="true"
         (selectionChanged)="onSelectionChanged($event)" [contentTemplate]="cardContentTemplate"
         [titleObject]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
         [subtitleObject]="entitySchema?.Columns['Description']" icon="key"

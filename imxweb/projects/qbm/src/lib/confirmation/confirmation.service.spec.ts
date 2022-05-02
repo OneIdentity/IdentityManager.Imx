@@ -80,5 +80,25 @@ describe('ConfirmationService', () => {
   
     }));
   }
+
+  for (const testcase of [
+    { result: MessageDialogResult.YesResult, expect: true },
+    { result: MessageDialogResult.NoResult, expect: false }
+  ]) {
+    it('confirmed something', fakeAsync(() => {
+      service = TestBed.inject(ConfirmationService);
+      result = testcase.result;
+  
+      service.confirm({
+        Title: 'Title',
+        Message: 'Message',
+        identifier: 'Identifier'
+      }).then(
+        res => expect(res).toEqual(testcase.expect)
+      );
+      tick(1000);
+  
+    }));
+  }
   
 });

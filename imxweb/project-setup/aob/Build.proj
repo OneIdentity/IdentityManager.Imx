@@ -8,12 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<SetupFiles Include="..\..\projects\aob\karma.conf.js"/>
-		<SetupFiles Include="..\..\projects\aob\ng-package.json"/>
-		<SetupFiles Include="..\..\projects\aob\package.json"/>
-		<SetupFiles Include="..\..\projects\aob\README.md"/>
-		<SetupFiles Include="..\..\projects\aob\tsconfig.lib.json"/>
-		<SetupFiles Include="..\..\projects\aob\tsconfig.spec.json"/>
+		<SetupFiles Include="..\..\projects\aob\*.*" Exclude="..\..\projects\aob\Build.proj"/>
 		<SetupFiles Include="..\..\projects\aob\src\**\*.*"/>
 	</ItemGroup>
 

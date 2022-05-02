@@ -42,24 +42,31 @@ export class ItemEditService {
     private readonly translateService: TranslateService
   ) { }
 
-  public async openEditor(cartItems: ExtendedEntityWrapper<PortalCartitemInteractive>[]): Promise<BulkItem[]> {
-    const data = cartItems.map(item => ({
-      entity: item.typedEntity,
-      properties: item.parameterCategoryColumns.map(item => new BaseCdr(item.column)),
-      additionalInfo: item.typedEntity.UID_PersonOrdered.Column.GetDisplayValue(),
+  public async openEditor(cartItems: ExtendedEntityWrapper<PortalCartitemInteractive>[])
+    : Promise<{ submit: boolean, bulkItems: BulkItem[] }> {
+    const bulkItems = cartItems.map(cartItem => ({
+      entity: cartItem.typedEntity,
+      properties: cartItem.parameterCategoryColumns.map(item => new BaseCdr(item.column)),
+      additionalInfo: cartItem.typedEntity.UID_PersonOrdered.Column.GetDisplayValue(),
       status: BulkItemStatus.unknown
     }));
 
-    await this.sidesheetService.open(
+    const submit = await this.sidesheetService.open(
       ServiceItemEditComponent,
       {
         title: await this.translateService.get('#LDS#Heading Request Details').toPromise(),
         width: '750px',
         headerColour: 'iris-blue',
-        data,
-        disableClose: true
+        bodyColour: 'asher-gray',
+        padding: '0px',
+        data: bulkItems,
+        testId: 'service-item-edit-sidesheet',
+        disableClose: true,
       }).afterClosed().toPromise();
 
-    return data;
+    return {
+      bulkItems,
+      submit
+    };
   }
 }

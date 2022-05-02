@@ -30,7 +30,7 @@ import { EuiLoadingService, EuiSidesheetConfig, EuiSidesheetService } from '@ele
 import { TranslateService } from '@ngx-translate/core';
 
 import { DataSourceToolbarSettings, ClassloggerService, SettingsService, DataSourceWrapper, DataTableGroupedData } from 'qbm';
-import { CollectionLoadParameters } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DataModel } from 'imx-qbm-dbts';
 import { PersonConfig, PortalPersonAll } from 'imx-api-qer';
 
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';

@@ -49,7 +49,9 @@ export class MetadataService {
    * @param tableName The names of the tables to update
    */
   public async updateNonExisting(tableNames: string[]): Promise<void> {
-    return this.update(tableNames.filter(tableName => this.tables[tableName] == null));
+    // Use a Set to obtain unique values
+    const uniqueSet = Array.from(new Set(tableNames.filter(tableName => this.tables[tableName] == null)));
+    return this.update(uniqueSet);
   }
 
   /**

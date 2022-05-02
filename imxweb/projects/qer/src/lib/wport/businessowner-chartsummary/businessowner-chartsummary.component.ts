@@ -102,7 +102,8 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
       title: selectedIdentity.GetEntity().GetDisplay(),
       headerColour: 'iris-blue',
       padding: '0px',
-      width: 'max(700px, 60%)',
+      disableClose: true,
+      width: 'max(700px, 70%)',
       icon: 'contactinfo',
       testId: 'identity-sidesheet',
       data: {

@@ -5,16 +5,20 @@
         <div class="governance-sidesheet__tab-content-body">
           <mat-card>
             <form [formGroup]="detailsFormGroup">
-              <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="formArray.push($event)"></imx-cdr-editor>
-
-              <div *ngIf="accountManagerIsEditable && linkedIdentitiesManager && (!identityManagerMatchesAccountManager || unsavedSyncChanges)">
-                <eui-alert type="info" condensed="true" [colored]="true" *ngIf="initialAccountManagerValue && (!identityManagerMatchesAccountManager || unsavedSyncChanges)">
-                  <span translate>#LDS#The manager assigned to this user account differs from the manager assigned to the listed identity.</span>
+              <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="formArray.push($event)">
+              </imx-cdr-editor>
+              <div
+                *ngIf="accountManagerIsEditable && linkedIdentitiesManager && (!identityManagerMatchesAccountManager || unsavedSyncChanges)">
+                <eui-alert type="info" condensed="true" [colored]="true"
+                  *ngIf="initialAccountManagerValue && (!identityManagerMatchesAccountManager || unsavedSyncChanges)">
+                  <span translate>#LDS#The manager assigned to this user account differs from the manager assigned to
+                    the listed identity.</span>
                 </eui-alert>
                 <eui-alert type="info" condensed="true" [colored]="true" *ngIf="!initialAccountManagerValue">
                   <span translate>#LDS#There is no manager assigned to this user account.</span>
                 </eui-alert>
-                <mat-slide-toggle [checked]="identityManagerMatchesAccountManager" (change)="syncToIdentityManager($event)">
+                <mat-slide-toggle [checked]="identityManagerMatchesAccountManager"
+                  (change)="syncToIdentityManager($event)">
                   <span translate>#LDS#Synchronize the user account's manager with the listed identity</span>
                 </mat-slide-toggle>
               </div>
@@ -29,7 +33,8 @@
             <button mat-button (click)="cancel()">
               <span translate>#LDS#Cancel</span>
             </button>
-            <button mat-flat-button color="primary" (click)="save()" [disabled]="detailsFormGroup.pristine || detailsFormGroup.invalid">
+            <button mat-flat-button color="primary" (click)="save()"
+              [disabled]="detailsFormGroup.pristine || detailsFormGroup.invalid">
               <span translate>#LDS#Save</span>
             </button>
           </div>
@@ -41,10 +46,25 @@
       <div class="governance-sidesheet__tab-content">
         <div class="governance-sidesheet__tab-content-body">
           <mat-card>
-            <imx-data-explorer-groups [unsAccountIdFilter]="sidesheetData.unsAccountId" sidesheetWidth="55%"></imx-data-explorer-groups>
+            <imx-data-explorer-groups [unsAccountIdFilter]="sidesheetData.unsAccountId" sidesheetWidth="55%">
+            </imx-data-explorer-groups>
           </mat-card>
         </div>
       </div>
     </mat-tab>
+
+    <ng-container *ngFor="let tab of dynamicTabs">
+      <mat-tab [imxDataProvider]="parameters"  [label]="tab.inputData.label | translate">
+        <ng-template matTabContent>
+          <div class="governance-sidesheet__tab-content">
+            <div class="governance-sidesheet__tab-content-body">
+              <ng-container *ngComponentOutlet="tab.instance"></ng-container>
+            </div>
+          </div>
+        </ng-template>
+      </mat-tab>
+    </ng-container>
+
   </mat-tab-group>
+
 </div>

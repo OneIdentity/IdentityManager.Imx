@@ -11,14 +11,13 @@
         <h2 mat-caption>
             {{data.subtitle}}
         </h2>
-        <imx-data-source-toolbar #dst [settings]="dstSettings" [hidden]="true"
+        <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['settings']"
             (navigationStateChanged)="onNavigationStateChanged($event)">
         </imx-data-source-toolbar>
 
         <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual" [selectable]="data.canCreateRuns"
             (selectionChanged)="onSelectionChanged($event)">
-            <imx-data-table-column [entityColumn]="entitySchemaPolicy?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-                [entitySchema]="entitySchemaPolicy">
+            <imx-data-table-column [entityColumn]="entitySchemaPolicy?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
                 <ng-template let-data>
                     <div imxTitle>{{ data.GetEntity().GetDisplay() }}</div>
                     <div *ngIf="data.GetEntity().GetDisplay() !== data.GetEntity().GetDisplayLong()" subtitle>
@@ -36,7 +35,7 @@
     </mat-card>
 </div>
 <div eui-sidesheet-actions color="white" *ngIf="data.canCreateRuns">
-    <button class="justify-start" mat-stroked-button data-imx-identifier="matching-objects-button-run-all" 
+    <button class="justify-start" mat-stroked-button data-imx-identifier="matching-objects-button-run-all"
         title="{{ '#LDS#Creates attestation cases for all objects.' | translate }}" (click)="createRun([])">
         {{ '#LDS#Start attestations for all' | translate }}
     </button>

@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Output, EventEmitter, Input, OnDestroy, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Output, EventEmitter, Input, OnDestroy, ViewChild, OnChanges, SimpleChanges, ContentChild, TemplateRef } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
@@ -35,8 +35,6 @@ import { ClassloggerService } from '../classlogger/classlogger.service';
 import { TreeSelectionListComponent } from './tree-selection-list/tree-selection-list.component';
 import { CheckableTreeComponent } from './checkable-tree/checkable-tree.component';
 import { DataTreeSearchResultsComponent } from './data-tree-search-results/data-tree-search-results.component';
-import { SearchResultAction } from './data-tree-search-results/search-result-action.interface';
-
 
 @Component({
   selector: 'imx-data-tree',
@@ -61,6 +59,7 @@ export class DataTreeComponent implements OnChanges, OnDestroy {
    */
   @Input() public noDataIcon = 'table';
 
+  @Input() public withSelectedNodeHighlight: boolean;
 
   /** currently selected entities */
   @Input() public selectedEntities: IEntity[] = [];
@@ -74,9 +73,9 @@ export class DataTreeComponent implements OnChanges, OnDestroy {
   /** determines whether the control allows multiselect or not  */
   @Input() public withMultiSelect: boolean;
 
-  @Input() public searchResultAction: SearchResultAction;
-
   @Input() public navigationState: CollectionLoadParameters;
+
+  @Input() public hideSelection = false;
 
   /**
    * Event, that will fire when the a node was selected and emitting a list of
@@ -95,6 +94,8 @@ export class DataTreeComponent implements OnChanges, OnDestroy {
   /** @ignore the search resulst */
   @ViewChild(DataTreeSearchResultsComponent) public searchResults: DataTreeSearchResultsComponent;
 
+  @ContentChild(TemplateRef, { static: true }) public templateRef: TemplateRef<any>;
+
   private subscriptions: Subscription[] = [];
 
   constructor(
@@ -106,7 +107,7 @@ export class DataTreeComponent implements OnChanges, OnDestroy {
 
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
     if (changes.database) {
-      this.hasTreeData = (await this.database.getData(true, { PageSize: -1 })).totalCount > 0;
+      this.hasTreeData = true; // because of 298890: (await this.database.getData(true, { PageSize: -1 })).totalCount > 0;
     }
   }
 
@@ -128,6 +129,7 @@ export class DataTreeComponent implements OnChanges, OnDestroy {
 
   /** clears all selected nodes for the tree and listings */
   public clearSelection(): void {
+    this.selectedEntities = [];
     this.simpleTree?.clearSelection();
     this.searchResults?.clearSelection();
   }
@@ -135,7 +137,6 @@ export class DataTreeComponent implements OnChanges, OnDestroy {
   /** reloads data for the tree and the result list */
   public reload(): void {
     this.simpleTree?.reload();
-    this.searchResults?.reload();
   }
 
   /** @ignore opens a side sheet containing the  {@link TreeSelectionListComponent|selected elements} */

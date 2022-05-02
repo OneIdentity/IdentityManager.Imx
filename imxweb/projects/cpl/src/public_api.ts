@@ -30,3 +30,7 @@
 
 export { CplConfigModule } from './lib/cpl-config.module';
 export { ApiService } from './lib/api.service';
+export { RulesModule } from './lib/rules/rules.module';
+export { RoleComplianceViolationsModule } from './lib/role-compliance-violations/role-compliance-violations.module';
+export { RequestRuleViolation } from './lib/request/request-rule-violation';
+export { RequestRuleViolationDetail } from './lib/request/request-rule-violation-detail';

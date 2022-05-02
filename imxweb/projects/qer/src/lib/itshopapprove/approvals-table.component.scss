@@ -14,6 +14,7 @@
 .imx-table-container {
   flex-grow: 1;
   overflow: auto;
+  margin-top: 10px;
 }
 
 .imx-button-bar {
@@ -29,6 +30,8 @@
 .imx-decision {
   > * {
     margin-right: 5px;
+    margin-bottom: 3px;
+    margin-top: 3px;
   }
 }
 
@@ -58,4 +61,12 @@
   /* so that the tooltip on the toggle is centered */
   flex-grow: 0;
   display: inline;
+}
+
+imx-data-source-toolbar {
+  margin: 8px 0;
+}
+
+.imx-badge-container {
+  margin: 5px 5px 5px 0;
 }

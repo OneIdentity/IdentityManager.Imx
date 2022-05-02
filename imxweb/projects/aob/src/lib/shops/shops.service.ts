@@ -45,7 +45,7 @@ export class ShopsService {
     private readonly apiProvider: ApiClientService
   ) { }
 
-  public async get(parameters: CollectionLoadParameters = { parentKey: '' }): Promise<TypedEntityCollectionData<PortalShops>> {
+  public async get(parameters: CollectionLoadParameters = { ParentKey: '' }): Promise<TypedEntityCollectionData<PortalShops>> {
     this.logger.debug(this, 'get');
     return this.apiProvider.request(() => this.aobClient.typedClient.PortalShops.Get(parameters));
   }
@@ -84,7 +84,7 @@ export class ShopsService {
     await this.apiProvider.request(async () => {
       for (const shop of shops) {
         await this.aobClient.client.
-          portal_applicationinshop_put(application.UID_AOBApplication.value, shop.UID_ITShopOrg.value, undefined);
+          portal_applicationinshop_put(application.UID_AOBApplication.value, shop.UID_ITShopOrg.value, []);
         count++;
       }
     });

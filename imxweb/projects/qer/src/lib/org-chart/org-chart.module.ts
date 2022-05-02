@@ -47,7 +47,8 @@ import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
     IdentityComponent
   ],
   exports: [
-    OrgChartComponent
+    OrgChartComponent,
+    IdentityComponent
   ]
 })
 export class OrgChartModule {

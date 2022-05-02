@@ -12,14 +12,14 @@
     </div>
   </div>
   <div class="imx-table-container" *ngIf="dstWrapper && dstSettings">
-    <imx-data-source-toolbar #dst [hiddenElements]="['filter', 'groupBy', 'settings', 'selectedViewGroup']"
+    <imx-data-source-toolbar #dst [options]="['search', 'settings']"
       [settings]="dstSettings" (search)="getData({ search: $event })" (navigationStateChanged)="getData($event)"
       data-imx-identifier="service-items-dst">
     </imx-data-source-toolbar>
     <imx-data-table #dataTable [dst]="dst" class="imx-pickcategory-table" [detailViewVisible]="false" mode="manual"
       [showSelectedItemsMenu]="false" data-imx-identifier="service-items-datatable">
       <imx-data-table-column data-imx-identifier="service-items-table-column-display"
-        [entityColumn]="dstWrapper.propertyDisplay" [entitySchema]="dstSettings.entitySchema">
+        [entityColumn]="dstWrapper.propertyDisplay">
       </imx-data-table-column>
       <imx-data-table-generic-column columnName="Requestable" [columnLabel]="'#LDS#Requestable' | translate"
         data-imx-identifier="service-items-table-column-IsInActive">

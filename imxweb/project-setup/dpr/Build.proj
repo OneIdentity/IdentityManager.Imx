@@ -1,0 +1,18 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
+
+	<PropertyGroup>
+		<ComponentDir>imxweb\project-setup\dpr</ComponentDir>
+		<PathPrefix>projects\dpr\</PathPrefix>
+		<SyncFilesInModuleInfo>true</SyncFilesInModuleInfo>
+		<ModuleDir>$(VI_PROJECTDIR)\DPR</ModuleDir>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<SetupFiles Include="..\..\projects\dpr\*.*" Exclude="..\..\projects\dpr\Build.proj"/>
+		<SetupFiles Include="..\..\projects\dpr\src\**\*.*"/>
+	</ItemGroup>
+
+	<!-- getting default part of build file -->
+	<Import Project="$(VI_PROJECTDIR)\Build\Includes\Build_Folder.targets"/>
+
+</Project>

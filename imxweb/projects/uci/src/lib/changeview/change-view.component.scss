@@ -1,0 +1,13 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+.subtitle {
+  font-size: smaller;
+  color: $black-9;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.state-badge {
+  vertical-align: middle;
+}

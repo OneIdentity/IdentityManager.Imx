@@ -29,6 +29,7 @@
 .imx-toolbar {
   display: flex;
   justify-content: flex-end;
+  margin-top: 20px;
 
   button {
     margin-left: 10px;
@@ -54,4 +55,8 @@
 .imx-shoppingcart-top-right-container {
   flex-grow: 1;
   margin-left: 20px;
+}
+
+.LabelBlock {
+  display: block;
 }

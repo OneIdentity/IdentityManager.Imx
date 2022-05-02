@@ -29,6 +29,7 @@ import { Injectable } from '@angular/core';
 import { ApiClient, EntityData, ExtendedTypedEntityCollection, TypedEntity } from 'imx-qbm-dbts';
 import { DynamicCollectionLoadParameters } from './dynamic-collection-load-parameters.interface';
 import { DynamicMethodTypeWrapper } from './dynamic-method-type-wrapper.interface';
+import { InteractiveParameter } from './interactive-parameter.interface';
 import { MethodDescriptorService } from './method-descriptor.service';
 import { TypedEntityBuilderService } from './typed-entity-builder.service';
 
@@ -41,7 +42,7 @@ export class DynamicMethodService {
     private readonly typedEntityBuilder: TypedEntityBuilderService,
   ) { }
 
-  public async get<TEntity extends TypedEntity<TExtendedDataWrite>, TExtendedData = any, TExtendedDataWrite = any>(
+  public async get<TEntity extends TypedEntity, TExtendedData = any>(
     apiClient: ApiClient,
     typeWrapper: DynamicMethodTypeWrapper<TEntity>,
     parameters: DynamicCollectionLoadParameters = {}
@@ -55,7 +56,21 @@ export class DynamicMethodService {
     );
   }
 
-  public createEntity<TEntity extends TypedEntity<TExtendedDataWrite>, TExtendedData = any, TExtendedDataWrite = any>(
+  public async getInteractive<TEntity extends TypedEntity, TExtendedData = any>(
+    apiClient: ApiClient,
+    typeWrapper: DynamicMethodTypeWrapper<TEntity>,
+    parameters: InteractiveParameter
+  ): Promise<ExtendedTypedEntityCollection<TypedEntity, TExtendedData>> {
+    const data = await apiClient.processRequest(this.methodDescriptor.getInteractive(typeWrapper.path + '/' + typeWrapper.key, parameters));
+
+    return this.typedEntityBuilder.buildInteractiveEntities(
+      apiClient,
+      typeWrapper,
+      data
+    );
+  }
+
+  public createEntity<TEntity extends TypedEntity, TExtendedData = any>(
     apiClient: ApiClient,
     typeWrapper: DynamicMethodTypeWrapper<TEntity>,
     initialData?: EntityData
@@ -63,7 +78,7 @@ export class DynamicMethodService {
     const entity = this.typedEntityBuilder.createEntity(apiClient, typeWrapper, initialData);
     return {
       Data: [entity],
-      totalCount: 1,      
+      totalCount: 1,
     };
   }
 

@@ -2,13 +2,14 @@
   <mat-card-content>
     <div class="imx-table-container">
       <imx-data-source-toolbar #dst [settings]="dstSettings" data-imx-identifier="subscriptions-table-toolbar"
-        [hiddenElements]="['filter', 'groupBy', 'settings', 'selectedViewGroup']" (search)="onSearch($event)"
+        [options]="['search']"
+        (search)="onSearch($event)"
         (navigationStateChanged)="onNavigationStateChanged($event)">
       </imx-data-source-toolbar>
 
       <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual" data-imx-identifier="subscriptions-table">
         <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-          columnLabel="{{'#LDS#Subscription' | translate}}" [entitySchema]="entitySchema">
+          columnLabel="{{'#LDS#Subscription' | translate}}">
         </imx-data-table-column>
         <imx-data-table-generic-column columnName="edit" columnLabel="">
           <ng-template let-subscription>
@@ -46,6 +47,10 @@
     </div>
   </mat-card-content>
   <mat-card-actions align="end">
+    <button [disabled]="!canAddSubscription" mat-raised-button (click)="viewReport()" color="primary"
+      data-imx-identifier="subscriptions-view-report">
+      {{'#LDS#View a report' | translate}}    
+    </button>
     <button [disabled]="!canAddSubscription" mat-raised-button (click)="createSubscription()" color="primary"
       data-imx-identifier="subscriptions-create-new-subscription">
       {{'#LDS#Add subscription' | translate}}

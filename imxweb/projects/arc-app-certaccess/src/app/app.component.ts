@@ -77,6 +77,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private featureSettings$: Subscription;
   private qerUserConfig: UserConfig;
   private attConfig: AttestationConfig;
+  private isDelegationEnable: boolean;
 
   constructor(
     public readonly session: imx_SessionService,
@@ -108,21 +109,21 @@ export class AppComponent implements OnInit, OnDestroy {
     // configure request shop terminology
     requestsService.LdsSpecifyMembers = '#LDS#Here you can specify who can request the products assigned to the request shop.';
     requestsService.LdsMembersByDynamicRole = '#LDS#Here you can see the members that are originally assigned to the request shop by a dynamic role but have been excluded. Additionally, you can add these excluded members back to the request shop by removing the exclusion.';
-    requestsService.LdsMembersRemoved = '#LDS#The members have been successfully removed from the request shop. It may take some time for the changes to take effect.';  
-    requestsService.LdsMembersAdded = '#LDS#The members have been successfully added to the request shop. It may take some time for the changes to take effect.';  
+    requestsService.LdsMembersRemoved = '#LDS#The members have been successfully removed from the request shop. It may take some time for the changes to take effect.';
+    requestsService.LdsMembersAdded = '#LDS#The members have been successfully added to the request shop. It may take some time for the changes to take effect.';
     requestsService.LdsMembersUpdated = '#LDS#The request shop members have been successfully updated.';
     requestsService.LdsShopDetails = '#LDS#Here you can edit the details of the request shop, specify an approval policy, and specify who is authorized to approve attestation cases for the request shop. The attestor and approval policy specified here are used for all shelves where this is not specified.';
     requestsService.LdsDeleteShop = '#LDS#Delete request shop';
     requestsService.LdsShopHasBeenDeleted = '#LDS#The request shop has been successfully deleted.';
-    requestsService.LdsShopHasBeenCreated = '#LDS#The request shop has been successfully created.';  
-    requestsService.LdsShopHasBeenSaved = '#LDS#The request shop has been successfully saved.';  
-    requestsService.LdsShopEntitlements = '#LDS#Here you can specify which products can be requested. Attestors and approval policies specified for individual products are used instead of any that are defined on either the shelf or the request shop.';  
+    requestsService.LdsShopHasBeenCreated = '#LDS#The request shop has been successfully created.';
+    requestsService.LdsShopHasBeenSaved = '#LDS#The request shop has been successfully saved.';
+    requestsService.LdsShopEntitlements = '#LDS#Here you can specify which products can be requested. Attestors and approval policies specified for individual products are used instead of any that are defined on either the shelf or the request shop.';
     requestsService.LdsNoShops = '#LDS#There are currently no request shops.';
     requestsService.LdsNoMatchingShops = '#LDS#There are no matching request shops.';
     requestsService.LdsHeadingCreateShop = '#LDS#Heading Create Request Shop';
     requestsService.LdsHeadingEditShop = '#LDS#Heading Edit Request Shop';
     requestsService.LdsHeadingShops = '#LDS#Heading Request Shops';
-    requestsService.LdsShopExplanation = '#LDS#A request shop is the top element in the hierarchical structure required for requesting products. Here you can setup and manage request shops. For each request shop you can specify which products can be requested (through shelves) and who can request them.';  
+    requestsService.LdsShopExplanation = '#LDS#A request shop is the top element in the hierarchical structure required for requesting products. Here you can setup and manage request shops. For each request shop you can specify which products can be requested (through shelves) and who can request them.';
     requestsService.LdsShelfExplanation = '#LDS#Here you can manage shelves assigned to the request shop. For each shelf you can edit the details and specify which products can be requested.';
     requestsService.LdsCreateShop = '#LDS#Create request shop';
 
@@ -354,7 +355,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
     const userIsAdmin = this.userGroups.find((group) => {
       const groupName = group.Name ? group.Name.toUpperCase() : '';
-      return groupName === 'SIM_4_OPAADMIN' || groupName === 'VI_4_NAMESPACEADMIN_ADS' || groupName === 'SIM_BASEDATA_USERINTERFACE';
+      return groupName === 'SIM_4_OPAADMIN'
+        || groupName === 'VI_4_NAMESPACEADMIN_ADS'
+        || groupName === 'SIM_BASEDATA_USERINTERFACE'
+        || groupName === 'AAD_4_NAMESPACEADMIN_AZUREAD';
     });
 
     const userIsShopAdmin = this.userGroups.find((group) => {
@@ -368,19 +372,25 @@ export class AppComponent implements OnInit, OnDestroy {
     });
 
     if (!this.isBootstrapUser) {
-      this.addNavMenuItem('#LDS#Responsibilities', '', [
+
+      const respItems = [
         {
-          text: '#LDS#Menu Entry Assign ownership',
+          text: '#LDS#Menu Entry System entitlement ownership',
           url: 'claimgroup',
-        },
-      ]);
+        }
+      ];
+
+      if (this.isDelegationEnable) {
+        respItems.push({ text: '#LDS#Menu Entry Delegation', url: 'delegation' });
+      }
+
+      this.addNavMenuItem('#LDS#Responsibilities', '', respItems);
     }
 
     const dataExplorerItems = [];
     const setupItems = [];
     if (userIsAdmin) {
       dataExplorerItems.push({ text: '#LDS#Menu Entry Data Explorer', url: '/data/explorer' });
-
     }
 
     if (!this.isBootstrapUser) {
@@ -424,6 +434,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
     if (!seenUpgradeNotice) {
       const info = await this.systemInfo.get();
+
+      this.isDelegationEnable = info
+        && info.PreProps.includes('ITSHOP')
+        && info.PreProps.includes('DELEGATION');
 
       if (info && info.UpdatePhase > 0) {
         this.translate

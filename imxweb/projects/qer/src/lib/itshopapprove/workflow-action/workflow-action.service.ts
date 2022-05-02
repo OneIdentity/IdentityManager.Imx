@@ -38,8 +38,8 @@ import { PersonService } from '../../person/person.service';
 import { Approval } from '../approval';
 import { ApprovalsService } from '../approvals.service';
 import { QerApiService } from '../../qer-api-client.service';
-import { JustificationService } from '../../itshop/justification.service';
-import { JustificationType } from '../../itshop/justification-type.enum';
+import { JustificationService } from '../../justification/justification.service';
+import { JustificationType } from '../../justification/justification-type.enum';
 import { WorkflowActionEditWrapper } from './workflow-action-edit-wrapper.interface';
 import { WorkflowActionParameters } from './workflow-action-parameters.interface';
 
@@ -355,6 +355,7 @@ export class WorkflowActionService {
     const result = await this.sideSheet.open(WorkflowActionComponent, {
       title: await this.translate.get(config.title).toPromise(),
       headerColour: config.headerColour ?? 'iris-blue',
+      bodyColour: 'asher-gray',
       padding: '10px',
       width: '600px',
       testId: 'workflow-action',

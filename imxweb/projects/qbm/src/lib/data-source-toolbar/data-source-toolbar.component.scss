@@ -71,6 +71,20 @@
   &.imx-filters-menu {
     padding: 0 8px;
   }
+
+  &.imx-filter-tree-menu {
+    padding: 10px;
+    width: 600px;
+    min-width: 600px;
+  }
+}
+
+
+
+.imx-filter-tree-dialog
+> .mat-dialog-container {
+  display: flex;
+  flex-direction: column;
 }
 
 .mat-menu-content {
@@ -145,6 +159,7 @@
 .imx-warning-icon {
   color: $corbin-orange;
 }
+
 
 @media only screen and (max-width: 768px) {
   .imx-data-source-toolbar-container {

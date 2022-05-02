@@ -1,0 +1,20 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
+
+	<PropertyGroup>
+		<ComponentDir>imxweb\project-setup\uci</ComponentDir>
+		<PathPrefix>projects\uci\</PathPrefix>
+		<SyncFilesInModuleInfo>true</SyncFilesInModuleInfo>
+		<ModuleDir>$(VI_PROJECTDIR)\UCI</ModuleDir>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<SetupFiles Include="..\..\projects\uci\karma.conf.js"/>
+		<SetupFiles Include="..\..\projects\uci\package.json"/>
+		<SetupFiles Include="..\..\projects\uci\tsconfig.spec.json"/>
+		<SetupFiles Include="..\..\projects\uci\src\**\*.*"/>
+	</ItemGroup>
+
+	<!-- getting default part of build file -->
+	<Import Project="$(VI_PROJECTDIR)\Build\Includes\Build_Folder.targets"/>
+
+</Project>

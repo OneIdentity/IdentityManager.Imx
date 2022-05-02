@@ -47,6 +47,10 @@ import { CartItemInteractiveService } from './cart-item-edit/cart-item-interacti
 
 @Injectable()
 export class CartItemsService {
+
+  public get PortalCartitemSchema(): EntitySchema {
+    return this.qerClient.typedClient.PortalCartitem.GetSchema();
+  }
   constructor(
     private readonly qerClient: QerApiService,
     private readonly logger: ClassloggerService,
@@ -56,10 +60,6 @@ export class CartItemsService {
     private readonly parameterDataService: ParameterDataService,
     private readonly cartItemInteractive: CartItemInteractiveService
   ) { }
-
-  public get PortalCartitemSchema(): EntitySchema {
-    return this.qerClient.typedClient.PortalCartitem.GetSchema();
-  }
 
   public async getItemsForCart(uidShoppingCart?: string): Promise<ExtendedTypedEntityCollection<PortalCartitem, CartItemDataRead>> {
     return this.get([{
@@ -86,6 +86,7 @@ export class CartItemsService {
 
     const addedItems: { [uidAccProduct: string]: PortalCartitem } = {};
     const cartitemReferences: string[] = [];
+    const cartItemsWithoutParams: PortalCartitem[] = [];
 
     for (const requestableServiceItemForPerson of requestableServiceItemsForPersons) {
       const cartItem = this.qerClient.typedClient.PortalCartitem.createEntity();
@@ -114,19 +115,18 @@ export class CartItemsService {
 
         if (hasParameters) {
           cartitemReferences.push(cartItemCollection.Data[index].GetEntity().GetKeys().join(''));
+        } else {
+          cartItemsWithoutParams.push(cartItemCollection.Data[index]);
         }
       }
     }
     let result = false;
 
     if (cartitemReferences.length > 0) {
-      result = await this.editItems(cartitemReferences);
-    }
-
-    if (result) {
+      result = await this.editItems(cartitemReferences, cartItemsWithoutParams);
       return result;
     } else {
-      return requestableServiceItemsForPersons.length > cartitemReferences.length;
+      return requestableServiceItemsForPersons.length > 0;
     }
   }
 
@@ -166,6 +166,15 @@ export class CartItemsService {
     return this.cartItemInteractive.getExtendedEntity(entityReference);
   }
 
+  public getAssignmentText(cartItem: PortalCartitem): string {
+    let display = cartItem.Assignment.Column.GetDisplayValue();
+    for (const columnName of Object.keys(PortalCartitem.GetEntitySchema().Columns)) {
+      display = display.replace(`%${columnName}%`, cartItem.GetEntity().GetColumn(columnName).GetDisplayValue());
+    }
+
+    return display;
+  }
+
   private async get(filter?: FilterData[]): Promise<ExtendedTypedEntityCollection<PortalCartitem, CartItemDataRead>> {
     return this.qerClient.typedClient.PortalCartitem.Get({ PageSize: 1048576, filter });
   }
@@ -184,7 +193,7 @@ export class CartItemsService {
     }
   }
 
-  private async editItems(entityReferences: string[]): Promise<boolean> {
+  private async editItems(entityReferences: string[], cartItemsWithoutParams: PortalCartitem[]): Promise<boolean> {
     setTimeout(() => this.busyIndicator.hide());
 
     const cartItems = await Promise.all(entityReferences.map(entityReference =>
@@ -192,34 +201,26 @@ export class CartItemsService {
     ));
 
     const results = await this.itemEditService.openEditor(cartItems);
-    let savedItems = false
-
-    for (let item of results) {
-
+    for (const item of results.bulkItems) {
       try {
         const found = cartItems.find(x => x.typedEntity.GetEntity().GetKeys()[0] === item.entity.GetEntity().GetKeys()[0]);
         if (item.status === BulkItemStatus.saved) {
           await this.save(found);
           this.logger.debug(this, `${found.typedEntity.GetEntity().GetDisplay} saved`);
-          savedItems = true;
         } else {
           await this.removeItems([found.typedEntity]);
           this.logger.debug(this, `${found.typedEntity.GetEntity().GetDisplay} removed`);
         }
       } catch (e) {
-        this.logger.error(this, e.message)
+        this.logger.error(this, e.message);
       }
     }
 
-    return savedItems;
-  }
-
-  public getAssignmentText(cartItem: PortalCartitem): string {
-    let display = cartItem.Assignment.Column.GetDisplayValue();
-    for (const columnName of Object.keys(PortalCartitem.GetEntitySchema().Columns)) {
-      display = display.replace(`%${columnName}%`, cartItem.GetEntity().GetColumn(columnName).GetDisplayValue());
+    if (!results.submit) {
+      this.logger.debug(this, `The user aborts this "add to cart"-action. So we have to delete all cartitems without params from shopping cart too.`);
+      await this.removeItems(cartItemsWithoutParams);
     }
 
-    return display;
+    return results.submit;
   }
 }

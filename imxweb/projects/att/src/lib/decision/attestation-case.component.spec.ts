@@ -24,18 +24,20 @@
  *
  */
 
-import { Component, Input } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, Input } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
-import { EuiSidesheetRef, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EuiLoadingService, EuiSidesheetRef, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { configureTestSuite } from 'ng-bullet';
 import { of, Subject } from 'rxjs';
 
-import { AuthenticationService, clearStylesFromDOM } from 'qbm';
+import { AuthenticationService, clearStylesFromDOM, SnackBarService } from 'qbm';
 import { AttestationActionService } from '../attestation-action/attestation-action.service';
 import { AttestationCaseComponent } from './attestation-case.component';
 import { AttestationCasesService } from './attestation-cases.service';
 import { TranslateService } from '@ngx-translate/core';
+import { LossPreview } from './loss-preview.interface';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'imx-approvers',
@@ -47,11 +49,16 @@ export class MockApproversComponent {
 
 describe('AttestationCaseComponent', () => {
   let historyTypedEntities = [];
+  const lossPreview: LossPreview = {
+    LossPreviewItems: [],
+    LossPreviewHeaders: [],
+    LossPreviewDisplayKeys: {}
+  }
 
   const sidesheetData = new class {
     testinput = {
       approvalThreshold: undefined,
-      peerGroupFactor: undefined
+      peerGroupFactor: undefined,
     };
 
     get case() {
@@ -69,6 +76,8 @@ describe('AttestationCaseComponent', () => {
       };
     }
     get approvalThreshold() { return this.testinput.approvalThreshold; }
+    get autoRemovalScope() { return true; }
+    get lossPreview() {return lossPreview };
   }();
 
   configureTestSuite(() => {
@@ -76,6 +85,9 @@ describe('AttestationCaseComponent', () => {
       declarations: [
         AttestationCaseComponent,
         MockApproversComponent
+      ],
+      schemas: [
+        CUSTOM_ELEMENTS_SCHEMA
       ],
       imports: [
         MatCardModule
@@ -120,7 +132,27 @@ describe('AttestationCaseComponent', () => {
           useValue: {
             onSessionResponse: new Subject()
           }
+        },
+        {
+          provide: EuiLoadingService,
+          useValue: {
+            hide: jasmine.createSpy('hide'),
+            show: jasmine.createSpy('show')
+          }
+        },
+        {
+          provide: SnackBarService,
+          useValue: {
+            open: jasmine.createSpy('open')
+          }
+        },
+        {
+          provide: MatDialog,
+          useValue: {
+            open: jasmine.createSpy('open').and.returnValue({ afterClosed: () => of(true) }),
+          }
         }
+
       ]
     })
   });

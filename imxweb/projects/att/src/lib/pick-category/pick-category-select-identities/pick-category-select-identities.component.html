@@ -11,7 +11,7 @@
   <div eui-sidesheet-actions color="white" *ngIf="!embeddedMode">
     <p class="imx-selected-items">
       <span>
-        {{'#LDS#Selected identites' | translate}}
+        {{'#LDS#Selected identities' | translate}}
       </span>
       <eui-badge data-imx-identifier="pick-category-select-identities-badge" class="imx-badge" color="orange">
         {{selection?.length > 0 ? selection.length : 0}}
@@ -27,7 +27,8 @@
 <ng-template #table>
   <ng-container *ngIf="dstWrapper && dstSettings">
     <imx-data-source-toolbar #dst data-imx-identifier="pick-category-select-identities-dst" [settings]="dstSettings"
-      [hiddenElements]="['settings', 'selectedViewGroup']" [searchBoxText]="'#LDS#Search' | translate"
+      [options]="['search', 'filter', 'groupBy']"
+      [searchBoxText]="'#LDS#Search' | translate"
       (navigationStateChanged)="getData($event)" (search)="getData({ search: $event, StartIndex: 0 })">
     </imx-data-source-toolbar>
 
@@ -35,7 +36,7 @@
       detailViewVisible="false" mode="manual" [selectable]="true" [showSelectedItemsMenu]="false"
       (selectionChanged)="onSelectionChanged($event)">
       <imx-data-table-column data-imx-identifier="pick-category-select-identities-table-column-display"
-        [entityColumn]="dstWrapper.propertyDisplay" [entitySchema]="dstSettings.entitySchema">
+        [entityColumn]="dstWrapper.propertyDisplay">
       </imx-data-table-column>
     </imx-data-table>
     <imx-data-source-paginator data-imx-identifier="pick-category-select-identities-paginator" [dst]="dst">

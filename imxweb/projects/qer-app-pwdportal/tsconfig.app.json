@@ -9,6 +9,6 @@
     "src/polyfills.ts"
   ],
   "include": [
-    "projects/qer-app-pwdPortal/src/**/*.d.ts"
+    "projects/qer-app-pwdportal/src/**/*.d.ts"
   ]
 }

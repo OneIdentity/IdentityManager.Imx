@@ -32,7 +32,9 @@ import {
   FilterType,
   CompareOperator,
   DataModelFilter,
-  EntitySchema
+  EntitySchema,
+  FilterTreeData,
+  DataModel
 } from 'imx-qbm-dbts';
 import {
   PortalTargetsystemUnsGroup,
@@ -43,7 +45,7 @@ import {
   PortalTargetsystemUnsNestedmembers,
   PortalRespUnsgroup
 } from 'imx-api-tsb';
-import { GetGroupsOptionalParameters } from './groups.models';
+import { GroupsFilterTreeParameters, GetGroupsOptionalParameters } from './groups.models';
 import { TsbApiService } from '../tsb-api-client.service';
 import { GroupTypedEntity } from './group-typed-entity';
 import { TargetSystemDynamicMethodService } from '../target-system/target-system-dynamic-method.service';
@@ -74,6 +76,16 @@ export class GroupsService {
     return this.tsbClient.typedClient.PortalTargetsystemUnsNestedmembers.GetSchema();
   }
 
+  public async getFilterTree(options: GroupsFilterTreeParameters): Promise<FilterTreeData> {
+    return this.tsbClient.client.portal_targetsystem_uns_group_filtertree_get(
+      options.uid_unsaccount, //uid_unsaccount
+      options.container, //container
+      options.system, //system
+      undefined, // filter
+      options.parentkey // parentKey
+    );
+  }
+
   public async getGroups(navigationState: GetGroupsOptionalParameters): Promise<TypedEntityCollectionData<PortalTargetsystemUnsGroup>> {
     return this.tsbClient.typedClient.PortalTargetsystemUnsGroup.Get(navigationState);
   }
@@ -84,6 +96,10 @@ export class GroupsService {
 
   public async getGroupDetails(dbObjectKey: DbObjectKeyBase): Promise<GroupTypedEntity> {
     return this.dynamicMethod.get(GroupTypedEntity, { dbObjectKey });
+  }
+
+  public async getGroupDetailsInteractive(dbObjectKey: DbObjectKeyBase, columnName: string): Promise<GroupTypedEntity> {
+    return (await this.dynamicMethod.getById(GroupTypedEntity, { dbObjectKey, columnName })) as GroupTypedEntity;
   }
 
   public async getGroupServiceItem(key: string): Promise<PortalTargetsystemUnsGroupServiceitem> {
@@ -152,6 +168,11 @@ export class GroupsService {
       : (await this.tsbClient.client.portal_resp_unsgroup_datamodel_get(undefined)).Filters;
   }
 
+  public async getDataModel(forAdmin: boolean): Promise<DataModel> {
+    return forAdmin ? this.tsbClient.client.portal_targetsystem_uns_group_datamodel_get(undefined)
+      : this.tsbClient.client.portal_resp_unsgroup_datamodel_get(undefined);
+  }
+
   public async updateMultipleOwner(uidAccProducts: string[], uidPerson: { uidPerson?: string; uidRole?: string; }): Promise<string> {
     let confirmMessage = '#LDS#The product owner has been successfully assigned.';
     try {
@@ -162,7 +183,7 @@ export class GroupsService {
             UidPerson: uidPerson.uidPerson,
             CopyAllMembers: true,
           };
-          confirmMessage += ' It may take some time for the changes to take effect.';
+          confirmMessage = '#LDS#The product owner has been successfully assigned. It may take some time for the changes to take effect.';
         } else {
           product.extendedData = undefined;
         }

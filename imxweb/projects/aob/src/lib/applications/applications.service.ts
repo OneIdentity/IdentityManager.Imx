@@ -47,6 +47,7 @@ import { ApplicationCreateComponent } from './application-create/application-cre
 })
 export class ApplicationsService {
   public readonly onApplicationCreated = new Subject<string>();
+  public readonly onApplicationDeleted = new Subject<string>();
 
   private badgePublished: DataTileBadge;
   private badgeKpiErrors: DataTileBadge;
@@ -212,6 +213,13 @@ export class ApplicationsService {
     } else {
       this.snackbar.open({ key: '#LDS#The creation of the application has been canceled.' });
     }
+  }
+
+
+  public async deleteApplication(uid: string): Promise<void> {
+    await this.aobClient.client.portal_application_delete(uid);
+
+    this.onApplicationDeleted.next(uid);
   }
 
   private isPublished(application: PortalApplication): boolean {

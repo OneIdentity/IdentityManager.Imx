@@ -1,23 +1,15 @@
 <ng-container *ngIf="selectedIdentity">
-  <div class="imx-top-container">
-    <h1 class="mat-headline" translate>#LDS#Heading Profile Settings</h1>
 
-    <eui-alert class="imx-helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true">
-      <span translate *ngIf="!(identities?.length > 1)"
-        >#LDS#Here you can manage your personal data, organizational information, and location information and change the language of the user interface.</span
-      >
-      <span translate *ngIf="identities?.length > 1">#LDS#Here you can manage personal data, organizational information, and location information of the selected identity.</span>
-    </eui-alert>
+  <h1 class="mat-headline" translate>#LDS#Heading Profile Settings</h1>
 
-    <imx-identity-select
-      [entities]="identities"
-      [preselectedEntity]="selectedIdentity"
-      (selectionChange)="onSelectIdentity($event)"
-      [confirmChange]="confirmChange"
-      data-imx-identifier="edit-profile-select-identity"
-    >
-    </imx-identity-select>
-  </div>
+  <eui-alert class="imx-helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true">
+    <span *ngIf="!(identities?.length > 1)">{{ LdsSingleIdentities | translate }}</span>
+    <span *ngIf="identities?.length > 1">{{ LdsMultipleIdentities | translate }}</span>
+  </eui-alert>
+
+  <imx-identity-select [entities]="identities" [preselectedEntity]="selectedIdentity"
+    (selectionChange)="onSelectIdentity($event)" [confirmChange]="confirmChange"
+    data-imx-identifier="edit-profile-select-identity"></imx-identity-select>
 
   <mat-tab-group *ngIf="!mailToBeUnsubscribed; else unsubscribeDisplay" #profileTabs>
     <mat-tab label="{{ '#LDS#Heading Main Data' | translate }}" data-imx-identifier="profile-main-data">
@@ -54,9 +46,13 @@
     <mat-tab label="{{ '#LDS#Heading Password Questions' | translate }}" data-imx-identifier="profile-password-questions">
       <imx-password-questions componentId="profile-password-questions"></imx-password-questions>
     </mat-tab>
-    <mat-tab label="{{ '#LDS#Heading Report Subscriptions' | translate }}" data-imx-identifier="edit-profile-tab-report-subscriptions" *ngIf="subscriptionComponentRegistered">
-      <imx-ext id="SubscriptionsComponent" class="imx-subscriptions-tab"></imx-ext>
-    </mat-tab>
+    <ng-container *ngFor="let tab of dynamicTabs">
+      <mat-tab [label]="tab.inputData.label | translate">
+        <ng-template matTabContent>
+            <ng-container *ngComponentOutlet="tab.instance"></ng-container>
+        </ng-template>
+      </mat-tab>
+    </ng-container>
   </mat-tab-group>
 
   <ng-template #unsubscribeDisplay>

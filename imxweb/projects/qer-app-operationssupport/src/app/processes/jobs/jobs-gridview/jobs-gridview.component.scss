@@ -1,21 +1,32 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
 :host {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   flex-grow: 1;
   max-width: 1200px;
+  overflow: hidden;
 }
 
 .imx-table-container {
   flex: 1 1 auto;
-  height: calc(100% - 50px);
   display: flex;
   flex-direction: column;
+  overflow: auto;
 
   > :nth-child(2) {
     flex: 1 1 auto;
   }
+
+  ::ng-deep .mat-paginator {
+    margin-bottom: 0;
+  }
 }
+
+div[subtitle] {
+  font-size: smaller;
+  color: $black-9;
+}
+
 
 .imx-button-bar {
   display: flex;
@@ -30,4 +41,11 @@
 .imx-refresh-button {
   margin-right: 5px;
   height: 50px;
+}
+
+.mat-raised-button.rightButtonFloat {
+  clear: both;
+  width: auto;
+  float: right;
+  padding: 0 20px;
 }

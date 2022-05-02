@@ -1,0 +1,12 @@
+<imx-icon-tile data-imx-identifier="start-tile-go-to-osp" *ngIf="isAdmin"
+  [caption]="'#LDS#Heading Operations Support Web Portal' | translate"
+  [subtitle]="'#LDS#Perform typical operations support tasks.' | translate"
+  [identifier]="'go-to-osp-web-link'">
+  <ng-template #ActionTemplate>
+    <button mat-button color="primary" [attr.data-imx-identifier]="'imx-start-button-go-to-osp'"
+      (click)="goToOperations()">
+      <span>{{'#LDS#Open Operations Support Web Portal'| translate}}</span>
+      <eui-icon size="m" icon="forward"></eui-icon>
+    </button>
+  </ng-template>
+</imx-icon-tile>

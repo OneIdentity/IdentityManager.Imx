@@ -27,8 +27,7 @@
 import { TestBed } from '@angular/core/testing';
 import { configureTestSuite } from 'ng-bullet';
 
-import { ParameterData } from 'imx-api-qer';
-import { InteractiveEntityWriteData } from 'imx-qbm-dbts';
+import { ParameterData, InteractiveEntityWriteData } from 'imx-qbm-dbts';
 import { CartItemFkService } from './cart-item-fk.service';
 import { QerApiService } from '../../qer-api-client.service';
 

@@ -1,0 +1,70 @@
+@import "~@elemental-ui/core/src/styles/_palette.scss";
+
+.FilterIcon,
+.FilterIconChecked {
+  font-size: 60px;
+  flex-direction: column;
+  padding: 0 25px;
+  align-self: center;
+  text-align: center;
+}
+
+.FilterIcon::before {
+  font-size: 60px;
+}
+
+.FilterText,
+.FilterTextChecked {
+  flex-direction: column;
+  align-self: center;
+  font-size: 16px;
+  text-align: center;
+  overflow-wrap: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 100%;
+  vertical-align: middle;
+}
+
+.FilterCheckBox {
+  flex-direction: column;
+  padding: 0 25px;
+  align-self: center;
+  text-align: center;
+}
+
+.FilterContentClass,
+.FilterContentClassChecked {
+  display: flex;
+  height: 100%;
+  color: $black-6;
+}
+
+.FilterMatContent {
+  height: 100%;
+}
+
+.FilterContentClassChecked {
+  color: $white;
+}
+
+.FilterMatCardDiv {
+  width: 295px;
+  height: 100px;
+}
+
+.FilterMatCard {
+  height: 100%;
+  background-color: $white;
+}
+
+.FilterMatCardChecked {
+  height: 100%;
+  background-color: $iris-shade;
+}
+
+.FilterList {
+  padding-bottom: 10px;
+  max-height: 205px;
+  overflow: auto;
+}

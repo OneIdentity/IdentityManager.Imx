@@ -1,13 +1,4 @@
-<div class="data-explorer data-explorer--groups">
-  <imx-data-source-toolbar #dst
-    [settings]="dstSettings"
-    [hiddenElements]="['groupBy', 'settings', 'selectedViewGroup']"
-    [hiddenFilters]="['namespace']"
-    [searchBoxText]="'#LDS#Search' | translate"
-    (navigationStateChanged)="onNavigationStateChanged($event)"
-    (search)="onSearch($event)">
-  </imx-data-source-toolbar>
-
+<mat-card class="data-explorer data-explorer--groups">
 
   <div class="data-explorer-card-header">
     <div class="data-explorer-card-header-bg">
@@ -15,15 +6,24 @@
       <span translate>#LDS#Heading Teams</span>
     </div>
   </div>
+
+  <imx-data-source-toolbar #dst
+    [settings]="dstSettings"
+    [options]="['search', 'filter']"
+    [hiddenFilters]="['namespace']"
+    [searchBoxText]="'#LDS#Search' | translate"
+    (navigationStateChanged)="onNavigationStateChanged($event)"
+    (search)="onSearch($event)">
+  </imx-data-source-toolbar>
+
   <div class="data-explorer-table">
     <imx-data-table #dataTable [dst]="dst" (highlightedEntityChanged)="onTeamChanged($event)" detailViewVisible="false"
       [selectable]="false" mode="manual"
       data-imx-identifier="teams-tabledata-table">
       <imx-data-table-column [entityColumn]="entitySchemaTeams?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-        [entitySchema]="entitySchemaTeams" data-imx-identifier="teams-table-column-display">
+        data-imx-identifier="teams-table-column-display">
       </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchemaTeams?.Columns.UID_O3EUnifiedGroup"
-        [entitySchema]="entitySchemaTeams">
+      <imx-data-table-column [entityColumn]="entitySchemaTeams?.Columns.UID_O3EUnifiedGroup">
       </imx-data-table-column>
       <imx-data-table-generic-column alignHeader="center" alignContent="center"
         [columnName]="entitySchemaTeams.Columns.WebUrl.ColumnName"
@@ -39,4 +39,4 @@
   </div>
 
 
-</div>
+</mat-card>

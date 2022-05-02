@@ -49,4 +49,3 @@ export { GroupsReportsService as GroupsReportsService } from './lib/groups/group
 export { GroupSidesheetData } from './lib/groups/groups.models';
 export { ChildSystemEntitlementsComponent } from './lib/groups/group-sidesheet/child-system-entitlements/child-system-entitlements.component';
 export { AccountsExtComponent } from './lib/accounts/account-ext/accounts-ext.component';
-export { IdentityGroupMembershipService as GroupsPerIdentityService } from './lib/groups/identity-group-membership/identity-group-membership.service';

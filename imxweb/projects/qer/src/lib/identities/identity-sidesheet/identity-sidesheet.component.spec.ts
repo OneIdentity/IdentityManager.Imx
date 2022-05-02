@@ -35,7 +35,7 @@ import { of, Subject } from 'rxjs';
 
 import { IdentitySidesheetComponent } from './identity-sidesheet.component';
 import { IdentitiesService } from '../identities.service';
-import { CdrModule, clearStylesFromDOM, ExtService, IExtension, MessageDialogResult, MetadataService, ElementalUiConfigService, AppConfigService } from 'qbm';
+import { CdrModule, clearStylesFromDOM, ExtService, IExtension, MessageDialogResult, MetadataService, ElementalUiConfigService, AppConfigService, ConfirmationService, SystemInfoService } from 'qbm';
 import { PortalAdminPerson, PortalPersonRolemembershipsAerole } from 'imx-api-qer';
 import { IdentitesTestBed } from '../test/identities-test-bed.spec';
 import { IdentitiesCommonTestData } from '../test/common-test-mocks.spec';
@@ -61,9 +61,9 @@ describe('IdentitySidesheetComponent', () => {
       instance: {}
     } as IExtension],
     IdentityGroupMembershipService:
-    [{
-      instance: {}
-    } as IExtension],
+      [{
+        instance: {}
+      } as IExtension],
   };
 
   const adminPerson = {
@@ -97,6 +97,12 @@ describe('IdentitySidesheetComponent', () => {
     update: jasmine.createSpy('update')
   };
 
+  let confirm = true;
+  const mockConfirmationService = {
+    confirm: jasmine.createSpy('confirm')
+      .and.callFake(() => Promise.resolve(confirm))
+  }
+
   IdentitesTestBed.configureTestingModule({
     declarations: [
       IdentitySidesheetComponent,
@@ -109,6 +115,14 @@ describe('IdentitySidesheetComponent', () => {
         useValue: {
           client: {},
           apiClient: {}
+        }
+      },
+      {
+        provide: SystemInfoService,
+        useValue: {
+          get: () => Promise.resolve({
+            PreProps: []
+          })
         }
       },
       {
@@ -125,6 +139,10 @@ describe('IdentitySidesheetComponent', () => {
       {
         provide: EUI_SIDESHEET_DATA,
         useValue: sideSheetData
+      },
+      {
+        provide: ConfirmationService,
+        useValue: mockConfirmationService
       },
       {
         provide: MatDialog,
@@ -153,7 +171,7 @@ describe('IdentitySidesheetComponent', () => {
         provide: EuiSidesheetRef,
         useValue: {
           closeClicked: () => new Subject(),
-          close: __ => {}
+          close: __ => { }
         }
       },
       ExtService,
@@ -211,14 +229,27 @@ describe('IdentitySidesheetComponent', () => {
   });
 
   describe('initiateDelete() tests', () => {
-    it('should make a call to delete the identity and then open a snackbar and call closeSidesheet', async () => {
-      const snackbarSpy = spyOn(component['snackbar'], 'open');
-      const closeSidesheetSpy = spyOn<any>(component, 'closeSidesheet');
-      await component.initiateDelete();
-      expect(deleteIdentitySpy).toHaveBeenCalled();
-      expect(snackbarSpy).toHaveBeenCalled();
-      expect(closeSidesheetSpy).toHaveBeenCalled();
-    });
+    for (const testcase of [
+      { confirm: true, expect: true },
+      { confirm: false, expect: false }
+    ]) {
+      it('should make a call to delete the identity (if the user confirm the dialog) and then open a snackbar and call closeSidesheet', async () => {
+        confirm = testcase.confirm = true;
+        const snackbarSpy = spyOn(component['snackbar'], 'open');
+        const closeSidesheetSpy = spyOn<any>(component, 'closeSidesheet');
+        await component.initiateDelete();
+
+        if(testcase.confirm) {
+          expect(deleteIdentitySpy).toHaveBeenCalled();
+          expect(snackbarSpy).toHaveBeenCalled();
+          expect(closeSidesheetSpy).toHaveBeenCalled();
+        } else {
+          expect(deleteIdentitySpy).not.toHaveBeenCalled();
+          expect(snackbarSpy).not.toHaveBeenCalled();
+          expect(closeSidesheetSpy).not.toHaveBeenCalled();
+        }
+      });
+    }
   });
 
   describe('onIsActiveCheckChanged() tests', () => {

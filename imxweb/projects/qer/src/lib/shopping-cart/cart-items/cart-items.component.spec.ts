@@ -51,7 +51,7 @@ import { CartItemCloneService } from '../cart-item-edit/cart-item-clone.service'
 class MockDataSourceToolbarComponent {
   @Input() public entitySchema: any;
   @Input() public settings: any;
-  @Input() public hiddenElements: any;
+  @Input() public visibleOptions: any;
   @Input() itemStatus: any;
 }
 
@@ -75,8 +75,6 @@ class MockDataTableComponent {
   @Input() public entitySchema: any;
   @Input() public mode: any;
   @Input() public selectable: any;
-  @Input() public detailViewTitle: any;
-  @Input() public detailViewVisible: any;
 
   @Output() public tableStateChanged: any;
 }

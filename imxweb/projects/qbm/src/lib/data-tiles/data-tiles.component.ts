@@ -74,6 +74,8 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
    */
   @Input() public subtitleObject: IClientProperty;
 
+  public additionalSubtitleObjects: IClientProperty[] = [];
+
   /**
    * The icon will be shown if the image is not set or not available.
    */
@@ -98,7 +100,27 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
   /**
    * If present this text would be shown, if no items are found.  .
    */
-  @Input() public noItemsFoundText: string;
+  @Input() public noItemsFoundText = '#LDS#No data';
+
+  /**
+   * If present this text would be shown, if no items are found.  .
+   */
+  @Input() public noItemsMatchText = '#LDS#No matching data';
+
+
+  /**
+   * This icon will be displayed when there is no data on the datasource (and a search is not applied)
+   * Defaults to the 'table' icon when not supplied
+   */
+  @Input() public noDataIcon = 'table';
+
+  /**
+   * This icon will be displayed along with the 'noMatchingDataTranslationKey' text when a search or filter
+   * is applied but there is no data as a result
+   * Defaults to the 'search' icon when not supplied
+   */
+  @Input() public noMatchingDataIcon = 'search';
+
 
   /**
    * The width of a tile.
@@ -149,6 +171,10 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
       this.subscriptions.push(this.dst.selectionChanged.subscribe((event: SelectionChange<TypedEntity>) =>
         this.selectionChanged.emit(event.source.selected)
       ));
+
+      this.additionalSubtitleObjects = this.dst?.currentViewSettings?.AdditionalListColumns.map(
+        elem => this.dst.entitySchema.Columns[elem]
+      );
     }
   }
 

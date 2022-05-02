@@ -24,28 +24,82 @@
  *
  */
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
+import { TypedEntity } from 'imx-qbm-dbts';
+import { configureTestSuite } from 'ng-bullet';
 
+import { clearStylesFromDOM } from 'qbm';
+import { RoleService } from '../role.service';
 import { SecondaryMembershipsComponent } from './secondary-memberships.component';
 
 describe('SecondaryMembershipsComponent', () => {
   let component: SecondaryMembershipsComponent;
   let fixture: ComponentFixture<SecondaryMembershipsComponent>;
 
-  beforeEach(async(() => {
+  const euiLoadingServiceStub = {
+    hide: jasmine.createSpy('hide'),
+    show: jasmine.createSpy('show')
+  };
+
+  configureTestSuite(() => {
     TestBed.configureTestingModule({
-      declarations: [ SecondaryMembershipsComponent ]
+      declarations: [
+        SecondaryMembershipsComponent
+      ],
+      providers: [
+        {
+          provide: EuiSidesheetService,
+          useValue: {}
+        },
+        {
+          provide: RoleService,
+          useValue: {
+            GetUidPerson: jasmine.createSpy('GetUidPerson'),
+            getMemberships: jasmine.createSpy('getMemberships'),
+            getMembershipEntitySchema: jasmine.createSpy('getMembershipEntitySchema')
+
+          }
+        },
+        {
+          provide: EuiLoadingService,
+          useValue: euiLoadingServiceStub
+        }
+      ]
     })
-    .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
-    // fixture = TestBed.createComponent(SecondaryMembershipsComponent);
-    // component = fixture.componentInstance;
-    // fixture.detectChanges();
+    fixture = TestBed.createComponent(SecondaryMembershipsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+
+  afterAll(() => {
+    clearStylesFromDOM();
   });
 
   it('should create', () => {
-    // expect(component).toBeTruthy();
+    expect(component).toBeTruthy();
   });
+
+  for (const testcase of [
+    {
+      description: 'could click the delete-button, because one entity was selected',
+      selectedEntities: [{}] as TypedEntity[],
+      expectedResult: true
+    },
+    {
+      description: 'could not click the delete-button, because no entity was selected',
+      selectedEntities: [] as TypedEntity[],
+      expectedResult: false
+    }
+  ]) {
+    it(testcase.description, () => {
+      component['selectedEntities'] = testcase.selectedEntities;
+      expect(component.canDeleteAllSelected()).toBe(testcase.expectedResult);
+    })
+  }
+
 });

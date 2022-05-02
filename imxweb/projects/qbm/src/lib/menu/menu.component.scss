@@ -1,16 +1,50 @@
-@import '~@elemental-ui/core/src/styles/_palette.scss';
+@import "variables.scss";
 
-button.mat-menu-item:hover,
-button.mat-menu-item:focus {
-  background-color: $white !important;
-}
+:host {
+  background-color: $Imx_White-two;
 
-.mat-tab-nav-bar {
-  background-color: $white;
-
+  button.mat-menu-item,
+  div.mat-menu-content,
   .mat-tab-link {
-    font-size: 16px;
-    color: $black-6;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: $VI_Common_Color_Gray;
+    min-width: 10px !important;
+  }
+
+  .mat-tab-link,
+  .mat-tab-link:focus,
+  .mat-tab-link:hover {
+    text-decoration: none;
+  }
+
+  .mat-tab-link.mat-tab-label-active {
+    font-weight: bold;
+  }
+
+  span {
+    display: inline-block !important;
+  }
+
+  button.mat-menu-item {
+    box-sizing: border-box;
+  }
+  
+  button.mat-menu-item:hover,
+  button.mat-menu-item:focus {
+    background-color: $white !important;
+  }
+  
+  .mat-tab-nav-bar {
+    background-color: $white;
+  
+    .mat-tab-link {
+      font-size: 16px;
+      color: $black-6;
+    }
   }
 }
+
 

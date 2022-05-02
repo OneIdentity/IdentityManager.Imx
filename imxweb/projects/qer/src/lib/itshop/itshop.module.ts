@@ -33,12 +33,10 @@ import { MatListModule } from '@angular/material/list';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { ShelfSelectionComponent } from './shelf-selection.component';
-import { CdrModule, LdsReplaceModule } from 'qbm';
+import { CdrModule, ExtModule, LdsReplaceModule } from 'qbm';
 import { ItshopService } from './itshop.service';
 import { DecisionHistoryComponent } from './request-info/decision-history.component';
 import { RequestInfoComponent } from './request-info/request-info.component';
-import { DecisionReasonComponent } from './decision-reason/decision-reason.component';
-import { JustificationService } from './justification.service';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { NonRequestableItemsComponent } from './non-requestable-items/non-requestable-items.component';
 import { PeerGroupComponent } from './peer-group/peer-group.component';
@@ -49,12 +47,10 @@ import { ShelfService } from './shelf.service';
     DecisionHistoryComponent,
     RequestInfoComponent,
     ShelfSelectionComponent,
-    DecisionReasonComponent,
     NonRequestableItemsComponent,
     PeerGroupComponent
   ],
   exports: [
-    DecisionReasonComponent,
     RequestInfoComponent,
     PeerGroupComponent
   ],
@@ -69,12 +65,12 @@ import { ShelfService } from './shelf.service';
     EuiCoreModule,
     EuiMaterialModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ExtModule
   ],
   providers: [
     ItshopService,
-    ShelfService,
-    JustificationService
+    ShelfService
   ]
 })
 export class ItshopModule { }

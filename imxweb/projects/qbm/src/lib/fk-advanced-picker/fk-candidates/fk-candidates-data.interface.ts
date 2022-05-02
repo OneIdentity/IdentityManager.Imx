@@ -24,10 +24,11 @@
  *
  */
 
-import { CollectionLoadParameters, EntityCollectionData, TypedEntity, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, EntityCollectionData, FilterTreeData, TypedEntity, TypedEntityCollectionData } from 'imx-qbm-dbts';
 
 export interface FkCandidatesData {
   get: (parameters: CollectionLoadParameters) => Promise<EntityCollectionData>;
+  GetFilterTree?: (parentKey: string) => Promise<FilterTreeData>;
   getTyped?: (parameters: CollectionLoadParameters) => Promise<TypedEntityCollectionData<TypedEntity>>;
   hasSearchParameter: boolean;
   isMultiValue: boolean;

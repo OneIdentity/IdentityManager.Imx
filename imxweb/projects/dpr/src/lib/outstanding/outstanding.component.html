@@ -28,13 +28,12 @@
 
   </div>
 
-  <imx-data-source-toolbar #dst [settings]="dstSettings" (navigationStateChanged)="getData($event)"
-    [hiddenElements]="['search', 'groupBy', 'settings', 'selectedViewGroup']">
+  <imx-data-source-toolbar #dst [settings]="dstSettings" (navigationStateChanged)="getData($event)" [options]="['filter']">
   </imx-data-source-toolbar>
 
   <div class="scroll-container">
     <imx-data-table #dataTable [dst]="dst" [detailViewVisible]="false" [selectable]="true" [showSelectedItemsMenu]="false"
-      [entitySchema]="dstSettings.entitySchema" (selectionChanged)="selectionChanged($event)" mode="manual"
+      (selectionChanged)="selectionChanged($event)" mode="manual"
       [noDataText]="getNoDataText()" data-imx-identifier="outstanding-objects-table">
 
       <imx-data-table-generic-column columnName="Display" columnLabel="{{ '#LDS#Display name' | translate }}">
@@ -43,9 +42,9 @@
           <div class="object-type">{{ data.ObjectType.value }}</div>
         </ng-template>
       </imx-data-table-generic-column>
-      <imx-data-table-column [entityColumn]="schema?.Columns.LastLogEntry" [entitySchema]="schema">
+      <imx-data-table-column [entityColumn]="schema?.Columns.LastLogEntry">
       </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="schema?.Columns.LastMethodRun" [entitySchema]="schema">
+      <imx-data-table-column [entityColumn]="schema?.Columns.LastMethodRun">
       </imx-data-table-column>
     </imx-data-table>
   </div>

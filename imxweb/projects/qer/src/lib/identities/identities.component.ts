@@ -24,9 +24,11 @@
  *
  */
 
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { EuiSidesheetService, EuiLoadingService } from '@elemental-ui/core';
 import { OverlayRef } from '@angular/cdk/overlay';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { EuiSidesheetService, EuiLoadingService, EuiDownloadOptions } from '@elemental-ui/core';
+import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
 import {
@@ -36,9 +38,12 @@ import {
   DataSourceToolbarFilter,
   DataSourceToolbarGroupData,
   DataTableGroupedData,
-  SettingsService
+  SettingsService,
+  MessageDialogComponent,
+  AuthenticationService,
+  ElementalUiConfigService
 } from 'qbm';
-import { CollectionLoadParameters, IClientProperty, DisplayColumns, DataModelProperty, EntitySchema } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, IClientProperty, DisplayColumns, DataModelProperty, EntitySchema, DataModel } from 'imx-qbm-dbts';
 import { IdentitiesService } from './identities.service';
 import {
   PortalAdminPerson,
@@ -49,8 +54,10 @@ import {
 } from 'imx-api-qer';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
 import { IdentitySidesheetComponent } from './identity-sidesheet/identity-sidesheet.component';
-import { TranslateService } from '@ngx-translate/core';
 import { IDataExplorerComponent } from '../data-explorer-view/data-explorer-extension';
+import { IdentitiesReportsService } from './identities-reports.service';
+import { QerPermissionsService } from '../admin/qer-permissions.service';
+import { CreateNewIdentityComponent } from './create-new-identity/create-new-identity.component';
 
 @Component({
   selector: 'imx-data-explorer-identities',
@@ -75,6 +82,7 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
    */
   public dstSettings: DataSourceToolbarSettings;
 
+
   /**
    * Page size, start index, search and filtering options etc.
    */
@@ -90,6 +98,9 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
    */
   public selectedPersonDetail: PortalAdminPerson | PortalPersonReports;
 
+  public downloadOptions: EuiDownloadOptions;
+  public currentUser: string;
+
   public readonly entitySchemaPersonReports: EntitySchema;
   public readonly entitySchemaPerson: EntitySchema;
   public readonly entitySchemaAdminPerson: EntitySchema;
@@ -99,13 +110,16 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
   public data: any;
 
   public groupData: { [key: string]: DataTableGroupedData } = {};
+  public isManagerForPersons: boolean;
 
   private projectConfig: ProjectConfig;
   private displayedColumns: IClientProperty[] = [];
   private authorityDataDeleted$: Subscription;
+  private sessionResponse$: Subscription;
 
   private displayedInnerColumns: IClientProperty[] = [];
   private groupingInfo: DataSourceToolbarGroupData;
+  private dataModel: DataModel;
 
   constructor(
     public translateProvider: ImxTranslationProviderService,
@@ -113,8 +127,13 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
     private readonly busyService: EuiLoadingService,
     private readonly logger: ClassloggerService,
     private readonly configService: ProjectConfigurationService,
+    private readonly dialog: MatDialog,
     private readonly identitiesService: IdentitiesService,
     private readonly translate: TranslateService,
+    private readonly authService: AuthenticationService,
+    qerPermissionService: QerPermissionsService,
+    elementalUiConfigService: ElementalUiConfigService,
+    identityReports: IdentitiesReportsService,
     settingsService: SettingsService,
   ) {
     this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
@@ -122,6 +141,22 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
     this.entitySchemaPerson = identitiesService.personSchema;
     this.entitySchemaAdminPerson = identitiesService.adminPersonSchema;
     this.authorityDataDeleted$ = this.identitiesService.authorityDataDeleted.subscribe(() => this.navigate());
+
+    this.sessionResponse$ = this.authService.onSessionResponse.subscribe(async session => {
+      if (session.IsLoggedIn) {
+        this.currentUser = session.UserUid;
+        const overlay = this.busyService.show();
+        try{
+          this.isManagerForPersons = await qerPermissionService.isPersonManager();
+        } finally {
+          this.busyService.hide(overlay);
+        }
+        this.downloadOptions = {
+          ...elementalUiConfigService.Config.downloadOptions,
+          url: identityReports.personsManagedReport(30, session.UserUid)
+        };
+      }
+    });
   }
 
   get isMobile(): boolean {
@@ -135,6 +170,10 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
   public ngOnDestroy(): void {
     if (this.authorityDataDeleted$) {
       this.authorityDataDeleted$.unsubscribe();
+    }
+
+    if (this.sessionResponse$) {
+      this.sessionResponse$.unsubscribe();
     }
   }
 
@@ -160,6 +199,21 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
       this.logger.trace('New selected identity', identity);
       this.selectedPerson = identity;
       this.selectedPersonDetail = await this.getPersonDetails(this.selectedPerson.GetEntity().GetKeys()[0]);
+
+      if (!this.selectedPersonDetail) {
+        const dialogRef = this.dialog.open(MessageDialogComponent, {
+          data: {
+            ShowOk: true,
+            Title: await this.translate.get('#LDS#Heading Load Object').toPromise(),
+            Message: await this.translate.get('#LDS#The object cannot be loaded. The displayed data may differ from the actual state. The data will now be reloaded.').toPromise()
+          },
+          panelClass: 'imx-messageDialog'
+        });
+
+        await dialogRef.afterClosed().toPromise();
+        // reload data
+        return this.navigate();
+      }
       await this.viewIdentity(this.selectedPersonDetail);
     } finally {
       this.busyService.hide(overlayRef);
@@ -198,6 +252,24 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
     }
   }
 
+  public async createNewIdentity(): Promise<void> {
+    await this.sideSheet.open(CreateNewIdentityComponent, {
+      title: await this.translate.get('#LDS#Heading Create Identity').toPromise(),
+      headerColour: 'iris-blue',
+      bodyColour: 'asher-gray',
+      padding: '0px',
+      width: 'max(650px, 65%)',
+      disableClose: true,
+      testId: 'create-new-identity-sidesheet',
+      icon: 'contactinfo',
+      data: {
+        selectedIdentity: await this.identitiesService.createEmptyEntity(),
+        projectConfig: this.projectConfig      }
+    }).afterClosed().toPromise();
+
+    return this.navigate();
+  }
+
   private async init(): Promise<void> {
     this.projectConfig = await this.configService.getConfig();
     this.displayedColumns = [
@@ -221,11 +293,18 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
       this.entitySchemaPersonReports.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
     ];
 
-    const identityDataModel = this.isAdmin
+    let overlayRef: OverlayRef;
+    setTimeout(() => (overlayRef = this.busyService.show()));
+
+    try {
+    this.dataModel = this.isAdmin
       ? await this.identitiesService.getDataModelAdmin()
       : await this.identitiesService.getDataModelReport();
-    this.filterOptions = identityDataModel.Filters;
-    this.groupingOptions = this.getGroupableProperties(identityDataModel.Properties);
+    }finally{
+      setTimeout(() => (this.busyService.hide(overlayRef)));
+    }
+    this.filterOptions = this.dataModel.Filters;
+    this.groupingOptions = this.getGroupableProperties(this.dataModel.Properties);
 
     if (!this.isAdmin) {
       const indexActive = this.filterOptions.findIndex(elem => elem.Name === 'isinactive');
@@ -275,7 +354,8 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
         entitySchema: this.entitySchemaPersonReports,
         navigationState: this.navigationState,
         filters: this.filterOptions,
-        groupData: this.groupingInfo
+        groupData: this.groupingInfo,
+        dataModel: this.dataModel
       };
       this.logger.debug(this, `Head at ${data.Data.length + this.navigationState.StartIndex} of ${data.totalCount} item(s)`);
     } finally {
@@ -296,10 +376,11 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
 
   private async viewIdentity(identity: PortalAdminPerson | PortalPersonReportsInteractive): Promise<void> {
     await this.sideSheet.open(IdentitySidesheetComponent, {
-      title: await this.translate.get('#LDS#Heading View Identity Details').toPromise(),
+      title: await this.translate.get('#LDS#Heading Edit Identity').toPromise(),
       headerColour: 'blue',
       padding: '0px',
-      width: 'max(700px, 60%)',
+      disableClose: true,
+      width: 'max(700px, 70%)',
       icon: 'contactinfo',
       data: {
         isAdmin: this.isAdmin,

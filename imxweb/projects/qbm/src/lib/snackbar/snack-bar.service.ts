@@ -25,7 +25,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarConfig, MatSnackBarRef, TextOnlySnackBar } from '@angular/material/snack-bar';
 import { TranslateService } from '@ngx-translate/core';
 import { map } from 'rxjs/operators';
 
@@ -50,14 +50,15 @@ export class SnackBarService {
     private readonly ldsReplace: LdsReplacePipe
   ) { }
 
-  public open(messageText: TextContainer, actionText: string = this.actionDismissCaption, config?: MatSnackBarConfig): void {
+  public open(messageText: TextContainer, actionText: string = this.actionDismissCaption, config?: MatSnackBarConfig)
+    : MatSnackBarRef<TextOnlySnackBar> {
     this.translationProvider.get(messageText.key)
       .pipe(map((value: string) => messageText.parameters ? this.ldsReplace.transform(value, ...messageText.parameters) : value))
       .subscribe((value: string) => this.message = value);
 
     this.translationProvider.get(actionText).subscribe((value: string) => this.action = value);
 
-    this.snackbar.open(this.message, this.action, { ...this.defaultConfig, ...config });
+    return this.snackbar.open(this.message, this.action, { ...this.defaultConfig, ...config });
   }
 
   public openAtTheBottom(messageText: TextContainer): void {

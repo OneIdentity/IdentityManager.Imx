@@ -33,6 +33,7 @@ import { ValType, ValueRange } from 'imx-qbm-dbts';
 import { CdrEditor } from '../cdr-editor.interface';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
 import { EntityColumnContainer } from '../entity-column-container';
+import { ParsedHostBindings } from '@angular/compiler';
 
 @Component({
   selector: 'imx-date-range',
@@ -53,6 +54,8 @@ export class DateRangeComponent implements CdrEditor, OnDestroy {
   public isLoading = false;
 
   private readonly subscribers: Subscription[] = [];
+
+  private isWriting = false;
 
   public constructor(private readonly errorHandler: ErrorHandler) { }
 
@@ -76,12 +79,20 @@ export class DateRangeComponent implements CdrEditor, OnDestroy {
       }
 
       this.subscribers.push(this.dateFrom.valueChanges.subscribe(async value =>
-        this.writeValue({ from: value.toDate(), until: this.dateUntil.value.toDate() })
+        this.writeValue({ from: value?.toDate(), until: this.dateUntil.value?.toDate() })
       ));
 
       this.subscribers.push(this.dateUntil.valueChanges.subscribe(async value =>
-        this.writeValue({ from: this.dateFrom.value.toDate(), until: value.toDate() })
+        this.writeValue({ from: this.dateFrom.value?.toDate(), until: value?.toDate() })
       ));
+
+      this.subscribers.push(this.columnContainer.subscribe(() => {
+        if (this.isWriting) { return; }
+        if (this.control.value !== this.columnContainer.value) {
+          this.updateControlValues();
+        }
+        this.valueHasChanged.emit(this.control.value);
+      }));
     }
   }
 
@@ -100,15 +111,18 @@ export class DateRangeComponent implements CdrEditor, OnDestroy {
       return;
     }
 
-    this.control.setValue(valueRange, { emitEvent: false });
+    this.control.setValue(this.columnContainer.value, { emitEvent: false });
+    this.control.markAsDirty();
 
     try {
       this.isLoading = true;
+      this.isWriting = true;
       await this.columnContainer.updateValue(valueRange);
     } catch (error) {
       this.errorHandler.handleError(error);
     } finally {
       this.isLoading = false;
+      this.isWriting = false;
       if (this.control.value !== this.columnContainer.value) {
         this.updateControlValues();
       }
@@ -123,8 +137,10 @@ export class DateRangeComponent implements CdrEditor, OnDestroy {
     const valueRange = ValueRange.Parse(this.columnContainer.value);
 
     if (valueRange.success) {
-      this.dateFrom.setValue(moment(valueRange.result.Start), { emitEvent: false });
-      this.dateUntil.setValue(moment(valueRange.result.End), { emitEvent: false });
+      const from = valueRange.result.Start ? moment(valueRange.result.Start) : undefined;
+      const until = valueRange.result.End ? moment(valueRange.result.End) : undefined;
+      this.dateFrom.setValue(from, { emitEvent: true });
+      this.dateUntil.setValue(until, { emitEvent: true });
     }
   }
 }

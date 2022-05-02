@@ -37,4 +37,5 @@ export interface RequestParameterDataEntity {
   qerWorkingMethod?: string;
   parameterColumns: IEntityColumn[];
   GetEntity: () => IEntity;
+  complianceRuleViolation?: boolean
 }

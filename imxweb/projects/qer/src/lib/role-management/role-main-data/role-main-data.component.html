@@ -1,5 +1,5 @@
 <div class="imx-tab-content">
-  <div class="imx-tab-content-body">  
+  <div class="imx-tab-content-body">
     <mat-card>
       <form [formGroup]="formGroup">
         <ng-container *ngFor="let cdr of properties">
@@ -11,7 +11,18 @@
     </mat-card>
   </div>
   <mat-card class="imx-action-buttons">
+    <button [matMenuTriggerFor]="ToolbarButton1" mat-stroked-button data-imx-identifier="roles-main-button-actions">
+      <eui-icon icon="ellipsisvertical"></eui-icon>
+    </button>
+    <mat-menu #ToolbarButton1="matMenu">
+      <button mat-menu-item data-imx-identifier="roles-compare" (click)="openCompareSidesheet()" *ngIf="canCompare">
+        {{ '#LDS#Compare' | translate }}
+      </button>
+      <button mat-menu-item data-imx-identifier="roles-main-split" (click)="splitRole()" *ngIf="canSplitRole">
+        {{ '#LDS#Split' | translate }}
+      </button>
+    </mat-menu>
     <button data-imx-identifier="roles-main-save-button" mat-raised-button color="primary"
-    [disabled]="!formGroup.dirty || formGroup.invalid" (click)="onSave()"> {{ "#LDS#Save" | translate }}</button>
+      [disabled]="!formGroup.dirty || formGroup.invalid" (click)="onSave()"> {{ "#LDS#Save" | translate }}</button>
   </mat-card>
 </div>

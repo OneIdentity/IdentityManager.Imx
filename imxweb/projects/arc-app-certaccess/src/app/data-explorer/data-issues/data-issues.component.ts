@@ -58,7 +58,7 @@ export class DataIssuesComponent implements OnChanges {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.snackbar.openAtTheBottom({ key: '#LDS#An attestation to assign managers to identities has been started.' });
+        this.snackbar.open({ key: '#LDS#An attestation to assign managers to identities has been started.' });
       }
     });
   }

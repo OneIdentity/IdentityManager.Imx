@@ -36,6 +36,7 @@ import { AppComponent } from './app.component';
 import { AppConfigService, clearStylesFromDOM, ISessionState, AuthenticationService, MenuService, MenuFactory, imx_SessionService } from 'qbm';
 import { UserService } from './user/user.service';
 import { ProjectConfigurationService } from 'qer';
+import { FeatureConfigService } from 'qer';
 
 @Component({
   selector: 'imx-mast-head',
@@ -151,6 +152,14 @@ describe('AppComponent', () => {
           useValue: {
             Client: { opsupport_config_get: jasmine.createSpy('opsupport_config_get').and.returnValue({DefaultPageSize:20}) }
           }
+        },
+        {
+          provide: FeatureConfigService,
+          useValue: {
+            getFeatureConfig: jasmine.createSpy('getFeatureConfig').and.returnValue(Promise.resolve({
+              EnableSystemStatus:true
+            }))
+          }
         }
       ]
     });
@@ -178,7 +187,6 @@ describe('AppComponent', () => {
     const app = fixture.debugElement.componentInstance;
     await app.ngOnInit();
     expect(mockAuthenticationService.update).toHaveBeenCalled();
-    expect(menuServiceStub.addMenuFactories).toHaveBeenCalled();
   });
 
   it('should show the loading service while navigation', () => {

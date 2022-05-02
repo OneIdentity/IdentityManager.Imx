@@ -26,7 +26,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { ExtendedTypedEntityCollection, EntitySchema } from 'imx-qbm-dbts';
+import { ExtendedTypedEntityCollection, EntitySchema, DataModel } from 'imx-qbm-dbts';
 import {
   PortalItshopApproveRequests,
   OtherApproverInput,
@@ -76,6 +76,10 @@ export class ApprovalsService {
       ),
       extendedData: collection.extendedData
     };
+  }
+
+  public async getApprovalDataModel(): Promise<DataModel> {
+    return this.apiService.client.portal_itshop_approve_requests_datamodel_get(undefined);
   }
 
   public async recallDecision(pwo: PortalItshopApproveRequests, approver: RecallDecisionInput): Promise<any> {

@@ -30,7 +30,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatCardModule } from '@angular/material/card';
-import { MatOption } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatSelectModule } from '@angular/material/select';
@@ -38,7 +37,6 @@ import { EuiCoreModule } from '@elemental-ui/core';
 import { configureTestSuite } from 'ng-bullet';
 import { TranslateModule, TranslateLoader, TranslateFakeLoader } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
-import * as TypeMoq from 'typemoq';
 
 import { SearchBarComponent } from './searchbar.component';
 import { imx_ISearchService } from './iSearchService';
@@ -141,13 +139,15 @@ describe('SearchBarComponent', () => {
 
   it('trigger selectionChange-Event after select one item from the result dropdown', waitForAsync(() => {
     spyOn(component.selectionChange, 'emit');
-    const mock = TypeMoq.Mock.ofType<MatOption>();
-    const value = 'bla';
-    mock.setup((el: MatOption) => el.value).returns(() => value);
+    const expectedValue = 'bla';
 
-    const item = new MatAutocompleteSelectedEvent(null, mock.object);
-    component.handleSelection(item);
-    expect(component.selectionChange.emit).toHaveBeenCalledWith(value);
+    const selectedEventStub = {
+      option: {
+        value: expectedValue
+      }
+    } as MatAutocompleteSelectedEvent;
+    component.handleSelection(selectedEventStub);
+    expect(component.selectionChange.emit).toHaveBeenCalledWith(expectedValue);
   }));
 
   it('Build json string', () => {
@@ -176,31 +176,16 @@ describe('SearchBarComponent', () => {
     expect(component.autoCompleteIsFocused).toBeFalsy();
   }));
 
-  it('onSelectFocus opens panel', fakeAsync(() => {
-    const openPanelSpy = spyOn(component.autoCompleteTrigger, 'openPanel');
+  it('onSelectFocus', fakeAsync(() => {
     component.onSelectFocus();
     tick();
-    expect(openPanelSpy).toHaveBeenCalled();
+    expect(component['filterFocus']).toBeTruthy();
   }));
 
   it('onSelectLostFocus removes focus from filter', fakeAsync(() => {
     component.onSelectLostFocus();
     tick();
     expect(component.filterIsFocused).toBeFalsy();
-  }));
-
-  it('onAutocompleteClosed opens panel', fakeAsync(() => {
-    fixture.detectChanges();
-    component.onSelectFocus();
-    tick();
-    expect(component.filterIsFocused).toBeTruthy();
-    component.autoCompleteTrigger.closePanel(); // weil onSelectFocus() das Panel bereits öffnen würde
-
-    const openPanelSpy = spyOn(component.autoCompleteTrigger, 'openPanel');
-    openPanelSpy.calls.reset();
-    component.onAutocompleteClosed();
-    tick();
-    expect(openPanelSpy).toHaveBeenCalledTimes(1);
   }));
 
   it('subscribes to the searchTermStream subject', async () => {

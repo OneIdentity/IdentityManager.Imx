@@ -30,7 +30,6 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { configureTestSuite } from 'ng-bullet';
-import { TranslateModule } from '@ngx-translate/core';
 import { of, Subject } from 'rxjs';
 
 import { MastHeadComponent } from './mast-head.component';
@@ -39,6 +38,7 @@ import { clearStylesFromDOM } from '../testing/clear-styles.spec';
 import { AuthenticationService } from '../authentication/authentication.service';
 import { ISessionState } from '../session/session-state';
 import { MessageDialogResult } from '../message-dialog/message-dialog-result.enum';
+import { ConfirmationService } from '../confirmation/confirmation.service';
 
 describe('MastHeadComponent', () => {
   let component: MastHeadComponent;
@@ -65,14 +65,19 @@ describe('MastHeadComponent', () => {
     }
   }();
 
+  let confirm = true;
+  const mockConfirmationService = {
+    confirm: jasmine.createSpy('confirm')
+      .and.callFake(() => Promise.resolve(confirm))
+  }
+
   configureTestSuite(() => {
     TestBed.configureTestingModule({
       declarations: [MastHeadComponent],
       imports: [
         EuiCoreModule,
         EuiMaterialModule,
-        NoopAnimationsModule,
-        TranslateModule
+        NoopAnimationsModule
       ],
       providers: [
         {
@@ -84,8 +89,15 @@ describe('MastHeadComponent', () => {
           useValue: mockDialog
         },
         {
+          provide: ConfirmationService,
+          useValue: mockConfirmationService
+        },
+        {
           provide: AppConfigService,
-          useValue: { Config: { Title: '' } }
+          useValue: {
+            getImxConfig: () => Promise.resolve({}),
+            Config: { Title: '' }
+          }
         },
         {
           provide: AuthenticationService,
@@ -121,13 +133,13 @@ describe('MastHeadComponent', () => {
   });
 
   [
-    { result: MessageDialogResult.OkResult },
-    { result: MessageDialogResult.CancelResult },
+    { result: true },
+    { result: false },
   ].forEach(testcase => {
     it(`can logout with result ${testcase.result}`, async () => {
-      result = testcase.result;
+      confirm = testcase.result;
       await component.logout();
-      if (testcase.result === MessageDialogResult.OkResult) {
+      if (testcase.result) {
         expect(authenticationServiceStub.logout).toHaveBeenCalled();
       } else {
         expect(authenticationServiceStub.logout).not.toHaveBeenCalled();

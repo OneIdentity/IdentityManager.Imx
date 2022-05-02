@@ -1,16 +1,21 @@
-<imx-data-source-toolbar #dst [hiddenElements]="['groupBy', 'settings', 'selectedViewGroup']" [settings]="dstSettings"
+<imx-data-source-toolbar #dst [options]="['search', 'filter', 'settings']" [settings]="dstSettings"
   (search)="onSearch($event)" (navigationStateChanged)="getData($event)" data-imx-identifier="requests-history-dst">
 </imx-data-source-toolbar>
-<imx-data-table [dst]="dst" [detailViewVisible]="false" mode="manual" [selectable]="true"
-  (selectionChanged)="onSelectionChanged($event)" data-imx-identifier="requests-history-datatable">
-  <imx-data-table-column [entityColumn]="entitySchema?.Columns.DisplayOrg" [entitySchema]="entitySchema"
-    [columnLabel]="'#LDS#Product' | translate">
+<imx-data-table
+  [dst]="dst"
+  [detailViewVisible]="false"
+  mode="manual"
+  [selectable]="true"
+  (selectionChanged)="onSelectionChanged($event)"
+  data-imx-identifier="requests-history-datatable"
+>
+  <imx-data-table-column [entityColumn]="entitySchema?.Columns.DisplayOrg" [columnLabel]="'#LDS#Product' | translate">
     <ng-template let-pwo>
       <div class="imx-display-column">
         <div class="imx-placeholder" *ngIf="pwo.UID_PersonWantsOrgParent.value"></div>
         <div>
           <div *ngIf="pwo.UID_AccProduct.value">
-            <imx-request-display [personWantsOrg]="pwo" [isReadOnly]="isReadOnly"
+            <imx-request-display [additionalText]="getAdditionalText(pwo,dst.additionalListElements)" [personWantsOrg]="pwo" [isReadOnly]="isReadOnly"
               data-imx-identifier="imx-request-display">
             </imx-request-display>
           </div>
@@ -18,10 +23,7 @@
             {{ pwo.DisplayOrg.Column.GetDisplayValue() }}
           </div>
           <div class="imx-subtext" *ngIf="pwo.UID_PersonWantsOrgParent.value">
-            {{ (pwo.IsOptionalChild.value ?
-                '#LDS#Optional product' :
-                '#LDS#Mandatory product') | translate
-            }}
+            {{ (pwo.IsOptionalChild.value ? '#LDS#Optional product' : '#LDS#Mandatory product') | translate }}
           </div>
         </div>
       </div>
@@ -34,16 +36,21 @@
           {{ translateProvider.GetColumnDisplay('ValidUntil', entitySchema) + ': ' + (pwo.ValidUntil.value | shortDate) }}
         </eui-badge>
       </div>
+      <div *ngIf="pwo.complianceRuleViolation" class="imx-badge-container">
+        <eui-badge  color="orange">
+          {{ '#LDS#Compliance violation' | translate }}
+        </eui-badge>
+      </div>
     </ng-template>
   </imx-data-table-generic-column>
-  <imx-data-table-column [entityColumn]="entitySchema?.Columns.UiOrderState" [entitySchema]="entitySchema">
+  <imx-data-table-column [entityColumn]="entitySchema?.Columns.UiOrderState">
     <ng-template let-pwo>
-      <ng-container *ngIf="['OrderProduct','OrderProlongate'].includes(pwo.UiOrderState.value); else defaultDisplay">
-        {{ pwo.UiOrderState.value === 'OrderProlongate'
-            ? ('#LDS#Renewed' | translate) + ' ' +
-            ( pwo.ValidUntilProlongation.value
-              ? ('#LDS#until' | translate) + ' ' + (pwo.ValidUntilProlongation.value | shortDate)
-              : ('#LDS#unlimited' | translate))
+      <ng-container *ngIf="['OrderProduct', 'OrderProlongate'].includes(pwo.UiOrderState.value); else defaultDisplay">
+        {{
+          pwo.UiOrderState.value === 'OrderProlongate'
+            ? ('#LDS#Renewed' | translate) +
+              ' ' +
+              (pwo.ValidUntilProlongation.value ? ('#LDS#until' | translate) + ' ' + (pwo.ValidUntilProlongation.value | shortDate) : ('#LDS#unlimited' | translate))
             : ('#LDS#Requested' | translate)
         }}
       </ng-container>
@@ -52,56 +59,77 @@
       </ng-template>
     </ng-template>
   </imx-data-table-column>
-  <imx-data-table-column [entityColumn]="entitySchema?.Columns.OrderDate" [entitySchema]="entitySchema">
-  </imx-data-table-column>
+  <imx-data-table-column [entityColumn]="entitySchema?.Columns.OrderDate"> </imx-data-table-column>
   <imx-data-table-generic-column columnName="viewDetailsButton">
     <ng-template let-prod>
-      <button mat-button color="primary" (click)="viewDetails(prod)"
-        data-imx-identifier="requests-history-button-view-details">
-        {{'#LDS#Details' | translate}}
+      <button mat-button color="primary" (click)="viewDetails(prod)" data-imx-identifier="requests-history-button-view-details">
+        {{ '#LDS#Details' | translate }}
       </button>
     </ng-template>
   </imx-data-table-generic-column>
 </imx-data-table>
 <imx-data-source-paginator data-imx-identifier="requests-history-paginator" [dst]="dst"></imx-data-source-paginator>
 <div class="imx-button-bar" *ngIf="!isReadOnly">
-  <button mat-stroked-button data-imx-identifier="requests-history-button-actions"
-    title="{{ '#LDS#Actions' | translate }}" [matMenuTriggerFor]="actionsMenu" [disabled]="!canPerformActions">
-    <eui-icon icon='ellipsisvertical'></eui-icon>
+  <button
+    mat-stroked-button
+    data-imx-identifier="requests-history-button-actions"
+    title="{{ '#LDS#Actions' | translate }}"
+    [matMenuTriggerFor]="actionsMenu"
+    [disabled]="!canPerformActions"
+  >
+    <eui-icon icon="ellipsisvertical"></eui-icon>
   </button>
   <mat-menu data-imx-identifier="requests-history-actions-menu" #actionsMenu="matMenu">
-    <button mat-menu-item *ngIf="canProlongateRequest" data-imx-identifier="request-menu-renew-request"
-      (click)="actionService.prolongate(selectedItems)">
+    <button mat-menu-item *ngIf="canProlongateRequest" data-imx-identifier="request-menu-renew-request" (click)="actionService.prolongate(selectedItems)">
       {{ '#LDS#Renew product' | translate }}
     </button>
-    <button mat-menu-item *ngIf="canUnsubscribeRequest" data-imx-identifier="request-menu-unsubscribe-request"
-      (click)="actionService.unsubscribe(selectedItems)">
+    <button mat-menu-item *ngIf="canUnsubscribeRequest" data-imx-identifier="request-menu-unsubscribe-request" (click)="actionService.unsubscribe(selectedItems)">
       {{ '#LDS#Unsubscribe product' | translate }}
     </button>
-    <button mat-menu-item *ngIf="canWithdrawRequest" data-imx-identifier="request-detail-Withdraw-request"
-      (click)="actionService.withdrawRequest(selectedItems)">
-      {{'#LDS#Cancel request' | translate}}
+    <button mat-menu-item *ngIf="canWithdrawRequest" data-imx-identifier="request-detail-Withdraw-request" (click)="actionService.withdrawRequest(selectedItems)">
+      {{ '#LDS#Cancel request' | translate }}
     </button>
-    <button mat-menu-item *ngIf="canWithdrawDelegation" data-imx-identifier="request-detail-withdraw-delegation"
-      (click)="actionService.revokeDelegation(selectedItems, '#LDS#Heading Withdraw Delegation',
-      '#LDS#The delegations of approval for {0} requests have been successfully withdrawn.',
-      '#LDS#Withdraw delegations of approval for the following requests.')">
-      {{'#LDS#Withdraw delegation' | translate}}
+    <button
+      mat-menu-item
+      *ngIf="canWithdrawDelegation"
+      data-imx-identifier="request-detail-withdraw-delegation"
+      (click)="
+        actionService.revokeDelegation(
+          selectedItems,
+          '#LDS#Heading Withdraw Delegation',
+          '#LDS#The delegations of approval for {0} requests have been successfully withdrawn.',
+          '#LDS#Withdraw delegations of approval for the following requests.'
+        )
+      "
+    >
+      {{ '#LDS#Withdraw delegation' | translate }}
     </button>
-    <button mat-menu-item *ngIf="canWithdrawAdditionalApprover"
+    <button
+      mat-menu-item
+      *ngIf="canWithdrawAdditionalApprover"
       data-imx-identifier="request-detail-withdraw-additional-approver"
-      (click)="actionService.revokeDelegation(selectedItems, '#LDS#Heading Withdraw Additional Approver',
-      '#LDS#The additional approvers for {0} requests have been successfully withdrawn.',
-      '#LDS#Withdraw additional approvers for the following requests.')">
-      {{'#LDS#Withdraw additional approver' | translate}}
+      (click)="
+        actionService.revokeDelegation(
+          selectedItems,
+          '#LDS#Heading Withdraw Additional Approver',
+          '#LDS#The additional approvers for {0} requests have been successfully withdrawn.',
+          '#LDS#Withdraw additional approvers for the following requests.'
+        )
+      "
+    >
+      {{ '#LDS#Withdraw additional approver' | translate }}
     </button>
-    <button mat-menu-item *ngIf="canRecallLastQuestion" data-imx-identifier="request-detail-recall-last-question"
-      (click)="actionService.recallLastQuestion(selectedItems)">
-      {{'#LDS#Withdraw question' | translate}}
+    <button mat-menu-item *ngIf="canRecallLastQuestion" data-imx-identifier="request-detail-recall-last-question" (click)="actionService.recallLastQuestion(selectedItems)">
+      {{ '#LDS#Withdraw question' | translate }}
     </button>
-    <button mat-menu-item *ngIf="canRevokeHoldStatus" data-imx-identifier="request-detail-revoke-hold-status"
-      (click)="actionService.revokeHoldStatus(selectedItems)">
-      {{'#LDS#Revoke hold status' | translate}}
+    <button mat-menu-item *ngIf="canRevokeHoldStatus" data-imx-identifier="request-detail-revoke-hold-status" (click)="actionService.revokeHoldStatus(selectedItems)">
+      {{ '#LDS#Revoke hold status' | translate }}
     </button>
+
+    <button mat-menu-item *ngIf="canEscalateDecision" data-imx-identifier="request-detail-escalate-approval"
+      (click)="actionService.escalateDecisions(selectedItems)">
+      {{'#LDS#Escalate approval' | translate}}
+    </button>
+
   </mat-menu>
 </div>

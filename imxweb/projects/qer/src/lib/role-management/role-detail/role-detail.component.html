@@ -1,25 +1,31 @@
 <div class="roledetail-sidesheet">
   <mat-tab-group #tabs>
-    <mat-tab data-imx-identifier="roles-overview-tab-main" [label]="'#LDS#Main data' | translate" >
+    <mat-tab data-imx-identifier="roles-overview-tab-main" [label]="'#LDS#Heading Main Data' | translate">
       <ng-template matTabContent>
-        <imx-role-main-data #mainData
-          [item]="data.entity"
-          [editableFields]="data.editableFields"
-          [ownershipInfo]="data.ownershipInfo"
-          [isAdmin]="data.isAdmin"
-        ></imx-role-main-data>
+        <imx-role-main-data #mainData [item]="data.entity" [editableFields]="data.editableFields"
+          [ownershipInfo]="data.ownershipInfo" [isAdmin]="data.isAdmin"></imx-role-main-data>
       </ng-template>
     </mat-tab>
-    <mat-tab data-imx-identifier="roles-overview-tab-memberships" *ngIf="canHaveMemberships()" [label]="'#LDS#Memberships' | translate">
+    <mat-tab data-imx-identifier="roles-overview-tab-memberships" *ngIf="canHaveMemberships()"
+      [label]="'#LDS#Memberships' | translate">
       <ng-template matTabContent>
-        <imx-role-memberships #memberships [entity]="data.entity" [ownershipInfo]="data.ownershipInfo">
+        <imx-role-memberships #memberships [entity]="data.entity" [ownershipInfo]="data.ownershipInfo" [isAdmin]="data.isAdmin">
         </imx-role-memberships>
       </ng-template>
     </mat-tab>
-    <mat-tab data-imx-identifier="roles-overview-tab-entitlements" *ngIf="canHaveEntitlements()" [label]="'#LDS#Entitlements' | translate">
+    <mat-tab data-imx-identifier="roles-overview-tab-entitlements" *ngIf="canHaveEntitlements()"
+      [label]="'#LDS#Entitlements' | translate">
       <ng-template matTabContent>
         <imx-role-entitlements [entity]="data.entity" [ownershipInfo]="data.ownershipInfo"></imx-role-entitlements>
       </ng-template>
     </mat-tab>
+
+    <ng-container *ngFor="let tab of dynamicTabs">
+      <mat-tab [imxDataProvider]="parameters" [label]="tab.inputData.label | translate">
+        <ng-template matTabContent>
+          <ng-container *ngComponentOutlet="tab.instance"></ng-container>
+        </ng-template>
+      </mat-tab>
+    </ng-container>
   </mat-tab-group>
 </div>

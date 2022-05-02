@@ -200,6 +200,7 @@ export class RequestConfigMembersComponent implements OnInit {
       minHeight: '60vh',
       data: {
         get: parameters => fk.load(entity, parameters),
+        GetFilterTree: parentkey => fk.getFilterTree(entity, parentkey),
         hasSearchParameter: true,
         isMultiValue: true
       }

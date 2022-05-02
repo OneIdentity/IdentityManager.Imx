@@ -46,7 +46,9 @@ import {
   Paginator,
   UserMessageModule,
   QbmModule,
-  AuthenticationModule
+  AuthenticationModule,
+  ObjectHistoryApiService,
+  ObjectHistoryModule
 } from 'qbm';
 import {
   AddressbookModule,
@@ -59,7 +61,6 @@ import {
   QerModule,
   QpmIntegrationModule,
   RequestHistoryModule,
-  RiskanalysisModule,
   ServiceCategoriesModule,
   ServiceItemsEditModule,
   ShoppingCartModule,
@@ -67,7 +68,7 @@ import {
   ProfileModule,
   RequestConfigModule,
   RoleManangementModule,
-  HistoryModule
+  ItshopPatternModule
 } from 'qer';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -76,6 +77,7 @@ import { AppService } from './app.service';
 import { PortalStarlingService } from './portal-starling.service';
 import { environment } from '../environments/environment';
 import appConfigJson from '../appconfig.json';
+import { PortalHistoryService } from './portal-history.service';
 
 @NgModule({
   declarations: [
@@ -114,16 +116,16 @@ import appConfigJson from '../appconfig.json';
     UserMessageModule,
     DelegationModule,
     ShoppingCartModule,
+    ObjectHistoryModule,
     ObjectSheetModule,
     ObjectsheetPersonModule,
     ProductSelectionModule,
-    HistoryModule,
-    RiskanalysisModule,
     ApprovalsModule,
+    ItshopPatternModule,
     RequestConfigModule,
     RequestHistoryModule,
     ServiceCategoriesModule,
-    ServiceItemsEditModule,
+    ServiceItemsEditModule
   ],
   providers: [
     { provide: 'environment', useValue: environment },
@@ -141,6 +143,10 @@ import appConfigJson from '../appconfig.json';
     {
       provide: StarlingService,
       useClass: PortalStarlingService
+    },
+    {
+      provide: ObjectHistoryApiService,
+      useClass: PortalHistoryService
     },
     {
       provide: MatPaginatorIntl,

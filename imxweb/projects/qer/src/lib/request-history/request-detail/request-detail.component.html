@@ -1,12 +1,12 @@
 <div class="imx-request-detail">
-  <imx-requestinfo [isReadOnly]="data.isReadOnly" [request]="data.personWantsOrg"></imx-requestinfo>
+  <imx-requestinfo [isReadOnly]="data.isReadOnly" [request]="data.personWantsOrg" [userId]="data.userUid"></imx-requestinfo>
 
   <div *ngIf="allowedActionCount > 0" class="imx-button-bar">
-    <!-- TODO later  
+    <!-- TODO later
     <button mat-stroked-button *ngIf="data.personWantsOrg.ResendRequestAllowed.value"
       data-imx-identifier="request-detail-submit-again" (click)="submitAgain()">
       {{'#LDS#Submit again' | translate}}
-    </button> 
+    </button>
   -->
 
     <button mat-stroked-button *ngIf="data.personWantsOrg.canProlongate"
@@ -28,16 +28,16 @@
 
     <button mat-stroked-button
       *ngIf="data.personWantsOrg.canWithdrawDelegation && data.itShopConfig.VI_ITShop_OrderHistory_CancelOrder"
-      data-imx-identifier="request-detail-withdraw-delegation" (click)="actionService.revokeDelegation([data.personWantsOrg], '#LDS#Heading Withdraw Delegation', 
-    '#LDS#The delegations of approval for {0} requests have been successfully withdrawn.', 
+      data-imx-identifier="request-detail-withdraw-delegation" (click)="actionService.revokeDelegation([data.personWantsOrg], '#LDS#Heading Withdraw Delegation',
+    '#LDS#The delegations of approval for {0} requests have been successfully withdrawn.',
     '#LDS#Withdraw delegations of approval for the following requests.')">
       {{'#LDS#Withdraw delegation' | translate}}
     </button>
 
     <button mat-stroked-button
       *ngIf="data.personWantsOrg.canWithdrawAdditionalApprover && data.itShopConfig.VI_ITShop_OrderHistory_CancelOrder"
-      data-imx-identifier="request-detail-withdraw-additional-approver" (click)="actionService.revokeDelegation([data.personWantsOrg], '#LDS#Heading Withdraw Additional Approver', 
-    '#LDS#The additional approvers for {0} requests have been successfully withdrawn.', 
+      data-imx-identifier="request-detail-withdraw-additional-approver" (click)="actionService.revokeDelegation([data.personWantsOrg], '#LDS#Heading Withdraw Additional Approver',
+    '#LDS#The additional approvers for {0} requests have been successfully withdrawn.',
     '#LDS#Withdraw additional approvers for the following requests.')">
       {{'#LDS#Withdraw additional approver' | translate}}
     </button>
@@ -57,6 +57,12 @@
     <button mat-stroked-button data-imx-identifier="request-detail-recall-decision"
       (click)="actionService.recallDecision([data.personWantsOrg])" *ngIf="data.personWantsOrg.canRecallDecision">
       {{'#LDS#Undo approval decision' | translate}}
+    </button>
+
+    <button mat-stroked-button *ngIf="data.personWantsOrg.canEscalateDecision" data-imx-identifier="request-detail-escalate-approval"
+      title="{{ '#LDS#Escalates the approval for this request' | translate }}"
+      (click)="actionService.escalateDecisions([data.personWantsOrg])">
+    {{'#LDS#Escalate approval' | translate}}
     </button>
 
   </div>
