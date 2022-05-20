@@ -163,14 +163,7 @@ export class FkSelectorComponent implements OnInit {
           navigationState = { ...navigationState, ...newState };
         }
 
-        const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
-          .map(elem => elem.Property.ColumnName).join(',');
-        if (withProperties != null && withProperties !== '') {
-          navigationState.withProperties = withProperties;
-        }
-
         this.logger.debug(this, 'LoadTableData - loading with navigationState', navigationState);
-
         const displayedColumns = [
           DisplayColumns.DISPLAY_PROPERTY
         ];

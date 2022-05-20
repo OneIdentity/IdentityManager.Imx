@@ -209,28 +209,28 @@ export class LifecycleActionComponent implements OnDestroy, OnInit {
 
     const multipleEntitlements = this.data != null && this.data.elements != null && this.data.elements.length > 1;
     let dialogTitle = multipleEntitlements ? '#LDS#Heading Unassign {0} Application Entitlements' : '#LDS#Heading Unassign Application Entitlement';
-    let buttonText = multipleEntitlements ? '#LDS#Unassign application entitlements' : '#LDS#Unassign';
+    let buttonText = multipleEntitlements ? '#LDS#Unassign' : '#LDS#Unassign';
 
     if (this.data.type === 'AobApplication') {
       dialogTitle = multipleEntitlements ? '#LDS#Heading Delete {0} Applications' : '#LDS#Heading Delete Application';
-      buttonText = multipleEntitlements ? '#LDS#Delete applications' : '#LDS#Delete';
+      buttonText = multipleEntitlements ? '#LDS#Delete' : '#LDS#Delete';
     }
 
     if (this.isPublish()) {
       if (this.data.type === 'AobApplication') {
         dialogTitle = multipleEntitlements ? '#LDS#Heading Publish {0} Applications' : '#LDS#Heading Publish Application';
-        buttonText = multipleEntitlements ? '#LDS#Publish applications' : '#LDS#Publish';
+        buttonText = multipleEntitlements ? '#LDS#Publish' : '#LDS#Publish';
       } else {
         dialogTitle = multipleEntitlements ? '#LDS#Heading Publish {0} Application Entitlements' : '#LDS#Heading Publish Application Entitlement';
-        buttonText = multipleEntitlements ? '#LDS#Publish application entitlements' : '#LDS#Publish';
+        buttonText = multipleEntitlements ? '#LDS#Publish' : '#LDS#Publish';
       }
     } else if (this.isUnpublish()) {
       if (this.data.type === 'AobApplication') {
         dialogTitle = multipleEntitlements ? '#LDS#Heading Unpublish {0} Applications' : '#LDS#Heading Unpublish Application';
-        buttonText = multipleEntitlements ? '#LDS#Unpublish applications' : '#LDS#Unpublish';
+        buttonText = multipleEntitlements ? '#LDS#Unpublish' : '#LDS#Unpublish';
       } else {
         dialogTitle = multipleEntitlements ? '#LDS#Heading Unpublish {0} Application Entitlements' : '#LDS#Heading Unpublish Application Entitlement';
-        buttonText = multipleEntitlements ? '#LDS#Unpublish application entitlements' : '#LDS#Unpublish';
+        buttonText = multipleEntitlements ? '#LDS#Unpublish' : '#LDS#Unpublish';
       }
     }
 

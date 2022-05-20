@@ -5,7 +5,7 @@
       <span translate>#LDS#Identities</span>
     </div>
   </div>
-  <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['search', 'filter', 'groupBy']"
+  <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['search', 'filter', 'groupBy', 'settings']"
     [searchBoxText]="'#LDS#Search' | translate" (navigationStateChanged)="onNavigationStateChanged($event)"
     (search)="onSearch($event)"></imx-data-source-toolbar>
   <div class="data-explorer-table">

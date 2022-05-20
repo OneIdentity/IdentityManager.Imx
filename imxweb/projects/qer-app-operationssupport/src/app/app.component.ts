@@ -70,12 +70,8 @@ export class AppComponent implements OnInit, OnDestroy {
           const groupInfo = await this.userModelService.getGroups();
           this.menuItems = this.menuService.getMenuItems([], groupInfo.map(group => group.Name), true);
         }
-        else {
-          this.menuService.clearFactories();
-        }
       })
     );
-
 
     this.subscriptions.push(this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
       this.isLoggedIn = sessionState.IsLoggedIn;

@@ -156,11 +156,7 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
 
   private async navigate(): Promise<void> {
     this.busyService.show();
-    const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
-      .map(elem => elem.Property.ColumnName).join(',');
-    if (withProperties != null && withProperties !== '') {
-      this.navigationState.withProperties = withProperties;
-    }
+    
     try {
       this.dstSettings = {
         dataSource: await this.membershipService.getCandidates(
@@ -177,7 +173,8 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
         navigationState: this.navigationState,
         displayedColumns: this.displayColumns,
         filters: this.dataModel.Filters,
-        dataModel: this.dataModel
+        dataModel: this.dataModel,
+        identifierForSessionStore: 'membership-choose-identities'
       };
     } finally {
       this.busyService.hide();

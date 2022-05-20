@@ -26,6 +26,7 @@
         >
           <imx-data-source-toolbar
             #nestedDst
+            [additionalPropertiesForNavigation]="dst?.columnOptions?.getPropertiesForNavigation()"
             [settings]="groupData[grouping?.Display[0].Display]?.settings"
             [itemStatus]="dst.itemStatus"
             (navigationStateChanged)="onNavigationStateChanged(grouping?.Display[0].Display, $event)"
@@ -35,10 +36,12 @@
             [dst]="nestedDst"
             (highlightedEntityChanged)="highlightRow($event)"
             [mode]="mode"
+            [nested]="true"
             [selectable]="selectable"
             (selectionChanged)="selectionInGroupChanged($event, grouping?.Display[0].Display)"
             [parentManualColumns]="manualColumns"
             [parentManualGenericColumns]="manualGenericColumns"
+            [parentAdditionals]="dst?.additionalColumns"
             [noDataText]="noDataText"
             [noDataIcon]="noDataIcon"
             [noMatchingDataText]="noMatchingDataText"

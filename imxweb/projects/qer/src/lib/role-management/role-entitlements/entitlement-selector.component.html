@@ -15,7 +15,15 @@
   </div>
 
   <div eui-sidesheet-actions color="white">
-    <button *ngIf="selectedItems?.length > 0" mat-stroked-button type="button" (click)="fkSelector.clearSelection()"
+    <p class="imx-selected-items">
+      <span>
+        {{'#LDS#Selected entitlements' | translate}}
+      </span>
+      <eui-badge data-imx-identifier="roles-entitlements-selection-badge" class="imx-badge" color="orange">
+        {{selectedItems?.length}}</eui-badge>
+    </p>
+    <div class="imx-menu-spacer"></div>
+    <button class="imx-clear-button" [disabled]="selectedItems?.length === 0" mat-stroked-button type="button" (click)="fkSelector.clearSelection()"
       data-imx-identifier="requests-selector-clear-selection">
       <span translate>#LDS#Clear selection</span>
     </button>
@@ -23,5 +31,7 @@
       (click)="applySelection()" data-imx-identifier="requests-selector-apply-selection">
       <span translate>#LDS#Apply</span>
     </button>
+
+    <!--  -->
   </div>
 </ng-container>

@@ -38,7 +38,7 @@ import { AddressbookDetail } from './addressbook-detail/addressbook-detail.inter
 export class AddressbookService {
   constructor(private readonly personService: PersonService) { }
 
-  public async createDataSourceWrapper(columnNames: string[]): Promise<DataSourceWrapper> {
+  public async createDataSourceWrapper(columnNames: string[], identifier?: string): Promise<DataSourceWrapper> {
 
     const entitySchema = this.personService.schemaPersonAll;
 
@@ -55,7 +55,8 @@ export class AddressbookService {
         dataModel: await this.personService.getDataModel(),
         getGroupInfo: parameters => this.personService.getGroupInfo(parameters),
         groupingFilterOptions: ['withmanager', 'orphaned']
-      }
+      },
+      identifier
     );
   }
 

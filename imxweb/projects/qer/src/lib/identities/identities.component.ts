@@ -26,7 +26,7 @@
 
 import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, throwMatDialogContentAlreadyAttachedError } from '@angular/material/dialog';
 import { EuiSidesheetService, EuiLoadingService, EuiDownloadOptions } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -146,7 +146,7 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
       if (session.IsLoggedIn) {
         this.currentUser = session.UserUid;
         const overlay = this.busyService.show();
-        try{
+        try {
           this.isManagerForPersons = await qerPermissionService.isPersonManager();
         } finally {
           this.busyService.hide(overlay);
@@ -246,6 +246,8 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
         dataSource: groupData.data,
         entitySchema: this.entitySchemaPersonReports,
         navigationState: groupData.navigationState,
+        dataModel: this.dataModel,
+        identifierForSessionStore: 'identities-grouped'
       };
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
@@ -264,7 +266,8 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
       icon: 'contactinfo',
       data: {
         selectedIdentity: await this.identitiesService.createEmptyEntity(),
-        projectConfig: this.projectConfig      }
+        projectConfig: this.projectConfig
+      }
     }).afterClosed().toPromise();
 
     return this.navigate();
@@ -297,10 +300,10 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
     setTimeout(() => (overlayRef = this.busyService.show()));
 
     try {
-    this.dataModel = this.isAdmin
-      ? await this.identitiesService.getDataModelAdmin()
-      : await this.identitiesService.getDataModelReport();
-    }finally{
+      this.dataModel = this.isAdmin
+        ? await this.identitiesService.getDataModelAdmin()
+        : await this.identitiesService.getDataModelReport();
+    } finally {
       setTimeout(() => (this.busyService.hide(overlayRef)));
     }
     this.filterOptions = this.dataModel.Filters;
@@ -339,7 +342,7 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
             property: this.groupingOptions[0],
             getData: async () => (await this.identitiesService.getGroupedAllPerson(
               'IdentityType',
-              { PageSize: this.navigationState.PageSize, StartIndex: 0 }
+              { PageSize: this.navigationState.PageSize, StartIndex: 0, withProperties: this.navigationState.withProperties }
             )).filter(item => item.Count > 0)
           }]
         };
@@ -348,6 +351,7 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
       const data = this.isAdmin
         ? await this.identitiesService.getAllPersonAdmin(this.navigationState)
         : await this.identitiesService.getDirectReportsOfManager(this.navigationState);
+
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
         dataSource: data,
@@ -355,7 +359,8 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
         navigationState: this.navigationState,
         filters: this.filterOptions,
         groupData: this.groupingInfo,
-        dataModel: this.dataModel
+        dataModel: this.dataModel,
+        identifierForSessionStore: 'identities' + (this.isAdmin ? 'admin' : 'resp')
       };
       this.logger.debug(this, `Head at ${data.Data.length + this.navigationState.StartIndex} of ${data.totalCount} item(s)`);
     } finally {

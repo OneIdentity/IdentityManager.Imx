@@ -127,12 +127,6 @@ export class AttestationCasesComponent implements OnInit {
 
     try {
 
-      const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
-        .map(elem => elem.Property.ColumnName).join(',');
-      if (withProperties != null && withProperties !== '') {
-        this.navigationState.withProperties = withProperties;
-      }
-
       const datasource = await this.policyService.getObjectsForFilter(this.data.uidobject,
         this.data.uidPickCategory,
         { Elements: this.data.filter, ConcatenationType: this.data.concat }, this.navigationState);
@@ -142,7 +136,8 @@ export class AttestationCasesComponent implements OnInit {
         dataSource: datasource,
         entitySchema: this.entitySchemaPolicy,
         navigationState: this.navigationState,
-        dataModel: this.dataModel
+        dataModel: this.dataModel,
+        identifierForSessionStore: 'attestatation-cases'
       };
 
       this.logger.debug(this, 'matching objects table navigated to', this.navigationState);

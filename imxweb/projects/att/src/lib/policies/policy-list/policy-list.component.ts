@@ -341,13 +341,6 @@ export class PolicyListComponent implements OnInit {
     let overlayRef: OverlayRef;
     setTimeout(() => overlayRef = this.busyService.show());
     try {
-
-      const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
-        .map(elem => elem.Property.ColumnName).join(',');
-      if (withProperties != null && withProperties !== '') {
-        this.navigationState.withProperties = withProperties;
-      }
-
       const policies = await this.policyService.getPolicies(this.navigationState);
       this.logger.trace(this, 'interactive policy loaded', policies);
 
@@ -358,7 +351,8 @@ export class PolicyListComponent implements OnInit {
         groupData: this.groupData,
         entitySchema: this.entitySchemaPolicy,
         navigationState: this.navigationState,
-        dataModel: this.dataModel
+        dataModel: this.dataModel,
+        identifierForSessionStore: 'policy-list'
       };
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));

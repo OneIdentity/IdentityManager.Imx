@@ -116,7 +116,9 @@ export class ItshopPatternComponent implements OnInit, OnDestroy {
             Type: ValType.String
           }
         ],
-        entitySchema
+        entitySchema,
+        undefined,
+        'itshop-pattern'
       );
     } finally {
       this.patternService.handleCloseLoader();

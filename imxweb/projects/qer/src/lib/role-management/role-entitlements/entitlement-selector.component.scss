@@ -28,6 +28,20 @@
   }
 }
 
+.imx-selected-items {
+  justify-self: flex-start;
+  margin: 0;
+  line-height: 36px;
+}
+
+.imx-clear-button {
+  margin-right: 10px;
+}
+
+.imx-menu-spacer {
+  flex-grow: 1;
+}
+
 @media screen and (max-width: 480px) {
   .mat-dialog-actions {
     flex-direction: column-reverse;
