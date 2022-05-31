@@ -1,6 +1,6 @@
 <span> 
   {{ property.Type === ValType.Date 
-    ? (entity.GetEntity().GetColumn(property.ColumnName).GetValue() | shortDate )
-    : entity.GetEntity().GetColumn(property.ColumnName).GetDisplayValue() |translate
+    ? (column?.GetValue() | shortDate )
+    : column?.GetDisplayValue()
   }}
 </span>

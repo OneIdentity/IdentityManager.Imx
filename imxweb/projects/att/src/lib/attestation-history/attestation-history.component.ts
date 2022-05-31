@@ -118,12 +118,6 @@ export class AttestationHistoryComponent implements OnInit, OnDestroy {
           const uidpolicy = this.filterOptions.find(elem => elem.Name === 'uidpolicy')?.CurrentValue;
           const risk = this.filterOptions.find(elem => elem.Name === 'risk')?.CurrentValue;
           const state = this.filterOptions.find(elem => elem.Name === 'state')?.CurrentValue;
-          let withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
-            .map(elem => elem.Property.ColumnName).join(',');
-
-          if (withProperties === '') {
-            withProperties = undefined;
-          }
           return this.historyService.getGroupInfo({
             ...{
               PageSize: this.navigationState.PageSize,
@@ -131,7 +125,6 @@ export class AttestationHistoryComponent implements OnInit, OnDestroy {
               objecttable: this.parameters?.objecttable,
               objectuid: this.parameters?.objectuid,
               groupFilter: this.parameters?.filter,
-              withProperties,
               risk,
               state,
               uidpolicy
@@ -197,7 +190,8 @@ export class AttestationHistoryComponent implements OnInit, OnDestroy {
           displayedColumns: this.displayedColumns,
           entitySchema: this.entitySchema,
           navigationState,
-          dataModel: this.dataModel
+          dataModel: this.dataModel,
+          identifierForSessionStore: 'attestation-history'
         };
       } else {
         this.dstSettings = undefined;

@@ -25,7 +25,7 @@
  */
 
 import { SelectionChange } from '@angular/cdk/collections';
-import { Component, Input, OnChanges, SimpleChanges, OnInit, Output, EventEmitter, ViewEncapsulation, OnDestroy } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, OnInit, Output, EventEmitter, ViewEncapsulation, OnDestroy, Injector } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatButtonToggleChange } from '@angular/material/button-toggle';
 import { MatCheckboxChange } from '@angular/material/checkbox';
@@ -54,8 +54,7 @@ import { SelectionModelWrapper } from './selection-model-wrapper';
 import { SelectionListComponent } from '../data-table/selection-list/selection-list.component';
 import { DataSourceItemStatus } from './data-source-item-status.interface';
 import { FilterTreeComponent } from './filter-tree/filter-tree.component';
-import { AdditionalInfosComponent } from './additional-infos/additional-infos.component';
-import { StorageService } from '../storage/storage.service';
+import { ColumnOptions } from './column-options';
 
 /**
  * The Datasource toolbar (DST) consist internally of a datasource and a toolbar view,
@@ -85,8 +84,13 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
 
   public get numOfSelectableItems(): number { return this.internalDataSource.data.filter(item => this.itemStatus.enabled(item)).length; }
 
+  public get additionalColumns(): IClientProperty[] {
+    return this.columnOptions?.additionalColumns.concat(this.columnOptions.selectedOptionals) ?? [];
+  }
+
   public readonly selectionChanged = new Subject<SelectionChange<TypedEntity>>();
 
+  @Input() public additionalPropertiesForNavigation: string[] = [];
 
   /**
    * List of toolbar options, that should be visible.
@@ -246,6 +250,23 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
   @Output() public additionalListElementsChanged = new EventEmitter<IClientProperty[]>();
 
   /**
+   * the columnOptions used by the toolbar
+   */
+  public columnOptions: ColumnOptions;
+
+  public get additionalListElements(): IClientProperty[] {
+    return this.columnOptions?.additionalListElements ?? [];
+  }
+
+  public get optionalColumns(): IClientProperty[] {
+    return this.columnOptions?.optionalColumns ?? [];
+  }
+
+  public get shownClientProperties(): IClientProperty[] {
+    return this.columnOptions?.shownClientProperties ?? [];
+  }
+
+  /**
    * Used internally to manage the current search term
    * This will be triggered by a value change listner that fires just after a user stops typing
    */
@@ -298,22 +319,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
    */
   public hasViewSettings = false;
 
-  /**
-   * currently used view settings
-   */
-  public currentViewSettings: DataModelViewConfig;
 
-  /**
-   * A list of client properties, that are shown (default plus additional)
-   */
-  public shownClientProperties: IClientProperty[] = [];
-
-  public optionalColumns: IClientProperty[] = [];
-
-  /**
-   * A list of client properties, that should be shown in the main column
-   */
-  public additionalListElements: IClientProperty[] = [];
 
   /**
    * short description, which data type the filter tree filters
@@ -342,6 +348,11 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
   private readonly subscriptions: Subscription[] = [];
 
   /**
+   * list of subscriptions for columnOptions
+   */
+  private columnSubscriptions: Subscription[] = [];
+
+  /**
    * @ignore Used internally in components template.
    * Selection model that handles single and multiple selection in the data table.
    * Visually selections are represented by chekcboxes, which can be checked/unchecked.
@@ -354,7 +365,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
   constructor(
     public translateProvider: ImxTranslationProviderService,
     public readonly dialog: MatDialog,
-    private readonly store: StorageService
+    private readonly injector: Injector
   ) {
     this.subscriptions.push(this.selection.changed.subscribe((event: SelectionChange<TypedEntity>) => {
       if (!this.isUpdatingPreselection) {
@@ -389,7 +400,8 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
   }
 
   public get filtersCurrentlyApplied(): boolean {
-    return this.selectedFilters?.length > 0;
+    return this.selectedFilters?.length > 0
+      || this.currentFilterData?.length > 0;
   }
 
   /**
@@ -436,11 +448,13 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
 
         const filterItems = this.settings?.filterTree?.filterMethode ?
           await this.settings.filterTree?.filterMethode('') : { Elements: [] };
-        this.hasFilterTree = this.settings.filterTree && filterItems.Elements.length > 0;
+        this.hasFilterTree = this.settings.filterTree && filterItems?.Elements?.length > 0;
 
         if (this.settings?.dataModel) {
-          this.initViewSettings();
-          this.hasViewSettings = this.currentViewSettings && (this.optionalColumns.length > 0);
+          this.initColumnOptions();
+          this.hasViewSettings = this.columnOptions?.hasOptionalColumns;
+          this.updateEntitySchema();
+          this.settings.dataSource.Data.forEach(elem => elem.GetEntity().ApplySchema(this.settings.entitySchema));
         } else {
           this.hasViewSettings = false;
         }
@@ -718,7 +732,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
         preselection: this.currentFilterData.map(elem => elem),
         type: this.filterType
       },
-      panelClass: 'imx-filter-tree-dialog'
+      panelClass: 'imx-toolbar-dialog'
     }).afterClosed().toPromise();
     if (filterdata) {
       this.currentFilterData = filterdata;
@@ -731,29 +745,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
    *  Shows a dialog for adding/removing additional informations
    */
   public async updateAdditional(): Promise<void> {
-    const additional = this.currentViewSettings?.AdditionalTableColumns?.map(elem =>
-      this.entitySchema.Columns[elem]) || [];
-    const columns = [...this.settings.displayedColumns,
-    ...additional];
-    const result = await this.dialog.open(AdditionalInfosComponent, {
-      width: 'min(1200px,70%)',
-      autoFocus: false,
-      height: 'min(700px,70%)',
-      data: {
-        dataModel: this.settings.dataModel,
-        entitySchema: this.settings.entitySchema,
-        displayedColumns: columns,
-        additionalPropertyNames: this.optionalColumns,
-        preselectedProperties: [...this.shownClientProperties]
-      },
-      panelClass: 'imx-filter-tree-dialog'
-    }).afterClosed().toPromise();
-    if (result) {
-      this.shownClientProperties = result;
-      this.shownColumnsSelectionChanged.emit(result);
-      this.store.storeAdditionalProperties('columns-' + this.settings.entitySchema.Display,
-        this.shownClientProperties.map(elem => elem.ColumnName));
-    }
+    this.columnOptions?.updateAdditional();
   }
 
   /**
@@ -761,18 +753,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
    *  Resets additional columns and additional list elements
    */
   public resetView(): void {
-    if (this.currentViewSettings == null) { return; }
-
-    this.store.storeAdditionalProperties('list-elements-' + this.settings.entitySchema.Display, []);
-
-    const properties = [...this.settings.displayedColumns,
-    ...this.currentViewSettings.AdditionalTableColumns?.map(elem => this.entitySchema.Columns[elem]) || []] ;
-    this.shownClientProperties = properties;
-    this.shownColumnsSelectionChanged.emit(properties);
-    this.store.storeAdditionalProperties('columns-' + this.settings.entitySchema.Display,
-      [...this.settings.displayedColumns.map(col => col.ColumnName),
-      ...this.currentViewSettings.AdditionalTableColumns || []
-      ]);
+    this.columnOptions?.resetView();
   }
 
   /**
@@ -828,60 +809,48 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
    * @ignore Used internally
    * inits the view settings and adds additional columns to the entity schema
    */
-  private initViewSettings(): void {
-    this.currentViewSettings = this.settings.dataModel.Configurations?.
-      find(elem => elem.Id === this.settings.dataModel.DefaultConfigId);
-
-    const optional = this.settings.dataModel.Properties?.filter(elem => elem.IsAdditionalColumn).map(elem => elem.Property?.ColumnName);
-    const elements = optional;
-
-    if (this.currentViewSettings?.AdditionalTableColumns) {
-      elements.push(...this.currentViewSettings.AdditionalTableColumns);
-    }
-    if (this.currentViewSettings?.AdditionalListColumns) {
-      elements.push(...this.currentViewSettings.AdditionalListColumns);
+  private initColumnOptions(): void {
+    if (this.columnOptions &&
+      this.columnOptions.settings.dataModel === this.settings.dataModel
+    ) {
+      return;
     }
 
-    if (elements.length > 0) {
-      // hack for adding the new columns to to entitySchema
-      elements.forEach(element => {
-        (this.settings.entitySchema.Columns[element] as any) = this.settings.dataModel.Properties.
-          find(elem => elem.Property.ColumnName.toLocaleLowerCase() === element.toLocaleLowerCase()).Property;
+    this.columnOptions = new ColumnOptions(this.settings, this.injector);
+
+    if (this.columnSubscriptions.length > 0) {
+      this.columnSubscriptions.forEach(sub => sub.unsubscribe());
+      this.columnSubscriptions = [];
+    }
+
+    this.columnSubscriptions.push(this.columnOptions.shownColumnsSelectionChanged.subscribe(elem => {
+      this.shownColumnsSelectionChanged.emit(elem.properties);
+      const optionals = this.columnOptions.getPropertiesForNavigation();
+      this.additionalPropertiesForNavigation.forEach(prop => {
+        if (!optionals.includes(prop)) {
+          optionals.push(prop);
+        }
       });
-      this.entitySchema = this.settings.entitySchema;
-      this.settings.dataSource.Data.forEach(entity => entity.GetEntity().ApplySchema(this.settings.entitySchema));
+      const withProperties = (optionals.length === 0 ? undefined : optionals.join(','));
+      if (this.settings.navigationState.withProperties !== withProperties) {
+        this.settings.navigationState.withProperties = withProperties;
+        if (this.settings.groupData?.currentGrouping == null && elem.needsReload) {
+          this.navigationStateChanged.emit(this.settings.navigationState);
+        }
+      }
     }
+    ));
+    this.columnSubscriptions.push(this.columnOptions.additionalListElementsChanged.subscribe(elem =>
+      this.additionalListElementsChanged.emit(elem)));
 
-    this.optionalColumns = optional
-      .filter((value, index, categoryArray) =>
-        this.currentViewSettings?.AdditionalTableColumns?.find(aelem => value === aelem) == null
-        && categoryArray.indexOf(value) === index)
-      .map(elem => this.entitySchema.Columns[elem]);
-
-    if (this.shownClientProperties.length === 0) {
-      const current = this.currentViewSettings?.AdditionalTableColumns?.map(elem => this.entitySchema.Columns[elem]) || []
-      this.shownClientProperties = [...this.settings.displayedColumns,
-      ...current
-      ];
-    }
-
-    // preload settings from store
-    const columns = this.store.getAdditionalProperties('columns-' + this.settings.entitySchema.Display);
-    if (columns?.length > 0) {
-      this.shownClientProperties = columns.map(column => this.settings.entitySchema.Columns[column]
-        || this.settings.displayedColumns.find(elem => elem.ColumnName === column));
-      this.shownColumnsSelectionChanged.emit(this.shownClientProperties);
-    }
-    const lists = this.currentViewSettings?.AdditionalListColumns;
-    if (lists?.length > 0) {
-      this.additionalListElements = lists.map(elem => this.settings.entitySchema.Columns[elem]);
-      this.additionalListElementsChanged.emit(this.additionalListElements);
-    }
-
-    this.shownColumnsSelectionChanged.emit(this.shownClientProperties);
-
+    this.columnOptions.initColumnsAndAdditionalInformation();
   }
 
+  private updateEntitySchema(): void {
+    const newSchema = this.columnOptions.updateEntitySchema();
+    this.settings.entitySchema = newSchema;
+    this.entitySchema = newSchema;
+  }
 
   /**
    * @ignore Used internally in components template.

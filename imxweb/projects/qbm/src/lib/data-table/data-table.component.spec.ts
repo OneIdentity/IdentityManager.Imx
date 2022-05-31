@@ -235,7 +235,7 @@ describe('DataTableComponent', () => {
       expect(component.groupData[groupKey]).toEqual({
         data: undefined,
         settings: undefined,
-        navigationState: { PageSize: 25, StartIndex: 0, filter: mockGroup.Filters },
+        navigationState: { PageSize: 25, StartIndex: 0, filter: mockGroup.Filters, withProperties:undefined },
         isExpanded: true
       });
       expect(propagateNavSettingsSpy).toHaveBeenCalledWith(true);
@@ -306,7 +306,7 @@ describe('DataTableComponent', () => {
       expect(component.groupedDataSource).toBeDefined();
     });
 
-    it(`should setup the columnsDefs array and push them to the table if the mode is set to 'manual'`, () => {
+    it(`should setup the columnsDefs array and push them to the table if the mode is set to 'manual'`,() => {
       component.manualColumns = mockColumns as any;
       component.manualGenericColumns = mockGenericColumns as any;
       component['dstHasChanged']();

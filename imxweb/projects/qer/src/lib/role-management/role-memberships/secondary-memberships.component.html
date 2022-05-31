@@ -1,7 +1,7 @@
 <div class="imx-tab-content-body">
   <imx-data-source-toolbar #dst data-imx-identifier="roles-secondary-memberships-dst" [settings]="dstSettings"
     [searchBoxText]="'#LDS#Search' | translate" (navigationStateChanged)="onNavigationStateChanged($event)"
-    (search)="onSearch($event)" [itemStatus]="selectableStatus" [options]="['search', 'filter', 'groupBy', 'settings']">
+    (search)="onSearch($event)" [itemStatus]="selectableStatus" [options]="['search', 'filter', 'groupBy']">
   </imx-data-source-toolbar>
   <imx-data-table #dataTable data-imx-identifier="roles-secondary-memberships-table" [dst]="dst"
     detailViewVisible="false" mode="manual" [selectable]="true" [showSelectionInfo]="false"

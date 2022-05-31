@@ -31,7 +31,7 @@
             </mat-card>
 
             <div class="pwd-answer">
-                <input placeholder="{{'#LDS#Answer' | translate}}" type="password" [(ngModel)]="Answers[idx]"
+                <input placeholder="{{'#LDS#Answer' | translate}}" type="password" autocomplete="off" [(ngModel)]="Answers[idx]"
                     [attr.data-imx-identifier]="'pwd-answer'" [required]="true">
             </div>
 

@@ -80,4 +80,9 @@ export interface DataSourceToolbarSettings {
    * The datamodel property that supports additional table and list information
    */
   dataModel?: DataModel;
+
+  /**
+   * an optional identifier, that can be used to store settings
+   */
+  identifierForSessionStore?: string;
 }

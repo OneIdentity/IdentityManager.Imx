@@ -63,8 +63,6 @@ export class SecondaryMembershipsComponent implements OnInit {
 
   private selectedEntities: TypedEntity[] = [];
 
-  private dataModel: DataModel;
-
   constructor(
     private readonly sidesheet: EuiSidesheetService,
     private readonly membershipService: RoleService,
@@ -90,12 +88,6 @@ export class SecondaryMembershipsComponent implements OnInit {
 
     let overlayRef: OverlayRef;
     setTimeout(() => (overlayRef = this.busyService.show()));
-
-    try {
-      this.dataModel = await this.membershipService.getDataModel(this.ownershipInfo.TableName, this.isAdmin);
-    } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
-    }
 
     await this.navigate();
   }
@@ -203,18 +195,13 @@ export class SecondaryMembershipsComponent implements OnInit {
 
   private async navigate(): Promise<void> {
     this.busyService.show();
-    const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
-      .map(elem => elem.Property.ColumnName).join(',');
-    if (withProperties != null && withProperties !== '') {
-      this.navigationState.withProperties = withProperties;
-    }
+  
     try {
       this.dstSettings = {
         dataSource: await this.membershipService.getMemberships(this.ownershipInfo.TableName, this.entity.GetKeys()[0], this.navigationState),
         entitySchema: this.entitySchema,
         navigationState: this.navigationState,
-        displayedColumns: this.displayColumns,
-        dataModel: this.dataModel
+        displayedColumns: this.displayColumns
       };
     } finally {
       this.busyService.hide();

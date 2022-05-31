@@ -80,12 +80,6 @@ export class JournalComponent implements OnInit {
     let overlayRef: OverlayRef;
     setTimeout(() => overlayRef = this.busyService.show());
     try {
-
-      const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
-        .map(elem => elem.Property.ColumnName).join(',');
-      if (withProperties != null && withProperties !== '') {
-        this.navigationState.withProperties = withProperties;
-      }
       const journalEntries = await this.journalService.getItems(navigationState);
 
       this.dstSettings = {
@@ -94,7 +88,8 @@ export class JournalComponent implements OnInit {
         dataSource: journalEntries,
         entitySchema: this.entitySchemaJournal,
         navigationState: this.navigationState,
-        dataModel: this.dataModel
+        dataModel: this.dataModel,
+        identifierForSessionStore: 'journal'
       };
 
     } finally {

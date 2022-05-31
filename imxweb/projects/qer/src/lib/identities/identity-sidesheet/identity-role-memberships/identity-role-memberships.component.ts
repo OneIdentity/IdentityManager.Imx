@@ -50,6 +50,7 @@ export class IdentityRoleMembershipsComponent implements OnInit {
 
   private referrer: { objectuid: string; tablename: string; };
   private navigationState: CollectionLoadParameters;
+  private displayedColumnsWithDisplay: IClientProperty[];
 
 
   constructor(
@@ -73,11 +74,20 @@ export class IdentityRoleMembershipsComponent implements OnInit {
       this.entitySchema.Columns.OrderState,
       this.entitySchema.Columns.ValidUntil,
     ];
+
+    if (this.withActions) {
+      this.displayedColumns.push({ ColumnName: 'actions', Type: ValType.String });
+    }
+
+    this.displayedColumnsWithDisplay = [
+      ...[this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]],
+      ...this.displayedColumns
+    ];
   }
 
   public async ngOnInit(): Promise<void> {
     const overlay = this.busyService.show();
-    try{
+    try {
       await this.metadataService.update([this.referrer.tablename]);
     } finally {
       this.busyService.hide(overlay);
@@ -131,15 +141,8 @@ export class IdentityRoleMembershipsComponent implements OnInit {
         this.referrer.tablename,
         { ...this.navigationState, ...{ uidPerson: this.referrer.objectuid } });
 
-      const displayedColumns = this.displayedColumns;
-      displayedColumns.unshift(this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]);
-
-      if (this.withActions) {
-        displayedColumns.push({ ColumnName: 'actions', Type: ValType.String });
-      }
-
       this.dstSettings = {
-        displayedColumns,
+        displayedColumns: this.displayedColumnsWithDisplay,
         dataSource,
         entitySchema: this.entitySchema,
         navigationState: this.navigationState

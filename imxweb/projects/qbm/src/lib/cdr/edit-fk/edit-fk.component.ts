@@ -137,15 +137,17 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
 
   public async ngAfterViewInit(): Promise<void> {
     if (this.columnContainer && this.columnContainer.canEdit && this.viewport) {
-      this.viewport.renderedRangeStream.subscribe(async (range: ListRange) => {
-        if (range.end === (this.pageSize + this.parameters.StartIndex)) {
+      this.viewport.scrolledIndexChange.subscribe(async (value: number) => {
+        const range = this.viewport.getRenderedRange();
+        if (range.end >= this.parameters.StartIndex + this.pageSize) {
+          const tmpCandidates: Candidate[] = Object.assign([], this.candidates);
           this.parameters.StartIndex += this.pageSize;
 
-          const tmpCandidates = Object.assign([], this.candidates);
           await this.updateCandidates(this.parameters);
 
-          this.candidates.unshift(...tmpCandidates);
+          this.candidates = tmpCandidates.concat(this.candidates);
           this.changeDetectorRef.detectChanges();
+          this.viewport.scrollToIndex(value);
         }
       });
     }
@@ -162,6 +164,8 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
   }
 
   public async onOpened(): Promise<void> {
+    // Reset size
+    this.parameters.StartIndex = 0;
     await this.updateCandidates();
     if (this.viewport) {
       this.viewport.scrollToIndex(0);
@@ -360,7 +364,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
     if (this.selectedTable) {
       try {
         this.loading = true;
-        this.parameters = { ...{ StartIndex: 0, PageSize: this.pageSize }, ...newState };
+        this.parameters = { ...this.parameters, ...newState };
         const candidateCollection = await this.selectedTable.Get(this.parameters);
         // this.candidatesTotalCount = candidateCollection.TotalCount;
 

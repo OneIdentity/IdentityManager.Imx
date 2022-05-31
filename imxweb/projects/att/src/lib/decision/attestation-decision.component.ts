@@ -33,7 +33,7 @@ import { Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 
-import { CollectionLoadParameters, CompareOperator, FilterType, TypedEntity, ValType } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, CompareOperator, DataModel, FilterType, TypedEntity, ValType } from 'imx-qbm-dbts';
 import {
   AuthenticationService,
   DataSourceToolbarFilter,
@@ -99,6 +99,7 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
   private autoRemovalScope: boolean;
   private navigationState: AttestationDecisionLoadParameters;
   private filterOptions: DataSourceToolbarFilter[] = [];
+  private dataModel: DataModel;
   private groupData: DataSourceToolbarGroupData;
   private decisionAction: AttestationDecisionAction = AttestationDecisionAction.none;
   private readonly collectionLoadParameters;
@@ -183,12 +184,12 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
   }
 
   public async initDataModel(): Promise<void> {
-    const dataModel = await this.attestationCases.getDataModel();
+    this.dataModel = await this.attestationCases.getDataModel();
 
-    this.filterOptions = dataModel.Filters;
+    this.filterOptions = this.dataModel.Filters;
 
     this.groupData = createGroupData(
-      dataModel,
+      this.dataModel,
       (parameters) =>
         this.attestationCases.getGroupInfo({
           ...{
@@ -271,6 +272,9 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
     setTimeout(() => (busyIndicator = this.busyService.show()));
 
     try {
+      if (this.dataModel == null) {
+        this.dataModel = await this.attestationCases.getDataModel();
+      }
       const dataSource = await this.attestationCases.get({
         Escalation: this.attestationCases.isChiefApproval,
         ...this.navigationState,
@@ -281,6 +285,7 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
         entitySchema,
         navigationState: this.navigationState,
         filters: this.filterOptions,
+        dataModel: this.dataModel,
         groupData: this.groupData,
         displayedColumns: [
           entitySchema.Columns.UiText,
@@ -297,6 +302,7 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
             Type: ValType.String,
           },
         ],
+        identifierForSessionStore: 'attestation-decision'
       };
     } finally {
       setTimeout(() => this.busyService.hide(busyIndicator));

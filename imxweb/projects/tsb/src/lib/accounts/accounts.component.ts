@@ -37,7 +37,7 @@ import {
   SettingsService
 } from 'qbm';
 import { IDataExplorerComponent } from 'qer';
-import { CollectionLoadParameters, IClientProperty, DisplayColumns, DbObjectKey, EntitySchema, CompareOperator, FilterType, DataModel } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, IClientProperty, DisplayColumns, DbObjectKey, EntitySchema, CompareOperator, FilterType, DataModel, FilterData } from 'imx-qbm-dbts';
 import { AccountsService } from './accounts.service';
 import { AccountSidesheetComponent } from './account-sidesheet/account-sidesheet.component';
 import { DeHelperService } from '../de-helper.service';
@@ -55,8 +55,6 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
   @Input() public applyIssuesFilter = false;
   @Input() public issuesFilterMode: string;
   @Input() public targetSystemData?: PortalTargetsystemUnsSystem[];
-
-  @Input() public uidPerson: string;
 
   @ViewChild('dataExplorerFilters', { static: false }) public dataExplorerFilters: DataExplorerFiltersComponent;
 
@@ -187,6 +185,11 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
     await this.navigate();
   }
 
+  public async filterByTree(filters: FilterData[]): Promise<void> {
+    this.navigationState.filter = filters;
+    return this.navigate();
+  }
+
   private async navigate(): Promise<void> {
     this.handleOpenLoader();
     const getParams: GetAccountsOptionalParameters = this.navigationState;
@@ -198,18 +201,7 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
       const cUid = this.dataExplorerFilters.selectedContainerUid;
       getParams.system = tsUid ? tsUid : undefined;
       getParams.container = cUid ? cUid : undefined;
-      getParams.filter = this.uidPerson == null ? undefined : [{
-        CompareOp: CompareOperator.Equal,
-        Type: FilterType.Compare,
-        ColumnName: 'UID_Person',
-        Value1: this.uidPerson
-      }];
 
-      const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
-        .map(elem => elem.Property.ColumnName).join(',');
-      if (withProperties != null && withProperties !== '') {
-        this.navigationState.withProperties = withProperties;
-      }
       const data = await this.accountsService.getAccounts(getParams);
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
@@ -226,9 +218,10 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
               filter: getParams.filter
             });
           },
-          multiSelect: true
+          multiSelect: false
         },
-        dataModel: this.dataModel
+        dataModel: this.dataModel,
+        identifierForSessionStore: 'accounts'
       };
       this.tableName = data.tableName;
       this.logger.debug(this, `Head at ${data.Data.length + this.navigationState.StartIndex} of ${data.totalCount} item(s)`);

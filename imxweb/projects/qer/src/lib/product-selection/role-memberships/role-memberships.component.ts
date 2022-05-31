@@ -75,7 +75,9 @@ export class RoleMembershipsComponent implements OnChanges {
           Type: ValType.String
         }
       ],
-      entitySchema
+      entitySchema,
+      undefined,
+      'product-selection-role-membership'
     );
   }
 

@@ -184,12 +184,6 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
       this.navigationState = parameters;
     }
 
-    const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
-      .map(elem => elem.Property.ColumnName).join(',');
-    if (withProperties != null && withProperties !== '') {
-      this.navigationState.withProperties = withProperties;
-    }
-
     let busyIndicator: OverlayRef;
     setTimeout(() => (busyIndicator = this.busyService.show()));
 
@@ -271,7 +265,8 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
             Type: ValType.String,
           },
         ],
-        dataModel: this.dataModel
+        dataModel: this.dataModel,
+        identifierForSessionStore: 'approvals-table'
       };
     } else {
       this.dstSettings = undefined;

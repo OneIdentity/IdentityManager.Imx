@@ -131,13 +131,6 @@ export class RunsGridComponent implements OnInit {
 
     const entitySchema = this.attService.typedClient.PortalAttestationRun.GetSchema();
 
-
-    const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
-      .map(elem => elem.Property.ColumnName).join(',');
-    if (withProperties != null && withProperties !== '') {
-      this.navigationState.withProperties = withProperties;
-    }
-
     try {
       const data = await this.attService.typedClient.PortalAttestationRun.Get(this.navigationState);
       this.runs = data.Data;
@@ -160,7 +153,8 @@ export class RunsGridComponent implements OnInit {
         navigationState: this.navigationState,
         filters: this.filterOptions,
         dataModel: this.dataModel,
-        groupData: this.groupData
+        groupData: this.groupData,
+        identifierForSessionStore: 'runs-grid'
       };
 
       this.hasPendingAttestations = this.runs?.some(run => run.PendingCases.value > 0);

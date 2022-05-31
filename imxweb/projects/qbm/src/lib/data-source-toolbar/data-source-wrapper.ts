@@ -47,7 +47,8 @@ export class DataSourceWrapper<TEntity extends TypedEntity = TypedEntity, TExten
     private readonly getData: (parameters: CollectionLoadParameters) => Promise<ExtendedTypedEntityCollection<TEntity, TExtendedData>>,
     private readonly displayedColumns: IClientProperty[],
     private readonly entitySchema: EntitySchema,
-    dataModelWrapper?: DataModelWrapper
+    dataModelWrapper?: DataModelWrapper,
+    private readonly identifier?: string
   ) {
     this.propertyDisplay = this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME];
 
@@ -59,17 +60,10 @@ export class DataSourceWrapper<TEntity extends TypedEntity = TypedEntity, TExten
   }
 
   public async getDstSettings(parameters?: CollectionLoadParameters): Promise<DataSourceToolbarSettings> {
-    const optionals = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
-      .map(elem => elem.Property.ColumnName)?.join(',');
-
     this.parameters = {
       ...this.parameters,
       ...parameters
     };
-
-    if (optionals !== '') {
-      this.parameters.withProperties = optionals;
-    }
 
     const dataSource = await this.getData(this.parameters);
 
@@ -83,7 +77,8 @@ export class DataSourceWrapper<TEntity extends TypedEntity = TypedEntity, TExten
         navigationState: this.parameters,
         filters: this.filterOptions,
         groupData: this.groupData,
-        dataModel: this.dataModel
+        dataModel: this.dataModel,
+        identifierForSessionStore: this.identifier
       };
     }
 

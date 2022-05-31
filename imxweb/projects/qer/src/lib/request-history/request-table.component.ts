@@ -257,12 +257,6 @@ export class RequestTableComponent implements OnInit, AfterViewInit, OnDestroy {
       this.navigationState = newState;
     }
 
-    const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
-      .map(elem => elem.Property.ColumnName).join(',');
-    if (withProperties != null && withProperties !== '') {
-      this.navigationState.withProperties = withProperties;
-    }
-
     try {
       const data = await this.requestHistoryService.getRequests(this.userUid, this.navigationState);
       if (data) {
@@ -276,7 +270,8 @@ export class RequestTableComponent implements OnInit, AfterViewInit, OnDestroy {
           entitySchema: this.requestHistoryService.PortalItshopRequestsSchema,
           navigationState: this.navigationState,
           extendedData: data.extendedData.Data,
-          dataModel: this.dataModel
+          dataModel: this.dataModel,
+          identifierForSessionStore: 'request-table'
         };
 
         if (this.extensions && this.extensions[0]) {

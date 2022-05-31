@@ -45,6 +45,7 @@ import { LdsReplaceModule } from '../lds-replace/lds-replace.module';
 import { AdditionalInfosComponent } from './additional-infos/additional-infos.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatChipsModule } from '@angular/material/chips';
+import { ClassloggerModule } from '../classlogger/classlogger.module';
 
 @NgModule({
   declarations: [DataSourceToolbarComponent, DataSourcePaginatorComponent, DataSourceToolbarCustomComponent, FilterTreeComponent, AdditionalInfosComponent],
@@ -63,7 +64,8 @@ import { MatChipsModule } from '@angular/material/chips';
     DragDropModule,
     TranslateModule,
     DataTreeModule,
-    LdsReplaceModule
+    LdsReplaceModule,
+    ClassloggerModule
   ],
   exports: [DataSourceToolbarComponent, DataSourcePaginatorComponent, DataSourceToolbarCustomComponent],
 })
