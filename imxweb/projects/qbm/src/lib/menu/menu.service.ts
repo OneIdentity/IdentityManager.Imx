@@ -52,8 +52,11 @@ export class MenuService {
       .forEach(menu => {
         const existing = menu.id != null && menuItems.find(item => item.id === menu.id);
         if (existing) {
-          existing.items.splice(-1, 0, ...menu.items);
-          existing.items = this.sortMenuItems(existing.items);
+          if (existing.items) {
+            // Here only splice it there are items, otherwise this is a flat home button and it already exists
+            existing.items.splice(-1, 0, ...menu.items);
+            existing.items = this.sortMenuItems(existing.items);
+          }
         } else {
           menuItems.push(menu);
           menu.items = this.sortMenuItems(menu.items);

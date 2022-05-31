@@ -191,12 +191,6 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
       this.navigationState = newState;
     }
 
-    const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
-      .map(elem => elem.Property.ColumnName).join(',');
-    if (withProperties != null && withProperties !== '') {
-      this.navigationState.withProperties = withProperties;
-    }
-
     let overlayRef: OverlayRef;
     setTimeout(() => {
       overlayRef = this.busyService.show();
@@ -223,7 +217,8 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
           displayedColumns: this.displayedColumns,
           entitySchema: this.entitySchema,
           navigationState: this.navigationState,
-          dataModel: this.dataModel
+          dataModel: this.dataModel,
+          identifierForSessionStore: 'service-item-list'
         };
 
         this.peerGroupSize = data.extendedData?.PeerGroupSize;

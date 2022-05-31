@@ -26,7 +26,7 @@
 
 import { Component, Input } from '@angular/core';
 
-import { IClientProperty, TypedEntity, ValType } from 'imx-qbm-dbts';
+import { IClientProperty, IEntityColumn, TypedEntity, ValType } from 'imx-qbm-dbts';
 
 @Component({
   selector: 'imx-data-table-cell',
@@ -39,4 +39,13 @@ export class DataTableCellComponent {
 
   @Input() public entity: TypedEntity;
   @Input() public property: IClientProperty;
+
+
+  public get column(): IEntityColumn{
+    try{
+      return this.entity.GetEntity().GetColumn(this.property.ColumnName);
+    }catch {
+      return undefined;
+    }
+  }
 }

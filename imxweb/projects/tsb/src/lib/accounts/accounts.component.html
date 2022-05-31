@@ -13,6 +13,7 @@
     [hiddenFilters]="['namespace']"
     [searchBoxText]="'#LDS#Search' | translate"
     (navigationStateChanged)="onNavigationStateChanged($event)"
+    (filterTreeSelectionChanged)="filterByTree($event)"
     (search)="onSearch($event)"
     (customSelectedFilterRemoved)="dataExplorerFilters.onCustomFilterClearedExternally($event)">
     <div imx-data-source-toolbar-custom-filter (click)="$event.stopPropagation()">

@@ -49,6 +49,12 @@ imx-iconstack {
 .imx-notification-container {
   display: flex;
   flex-wrap: wrap;
+  margin-bottom: -10px;
+
+  >.imx-notification-card{
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
 }
 
 .notificationContentPane {

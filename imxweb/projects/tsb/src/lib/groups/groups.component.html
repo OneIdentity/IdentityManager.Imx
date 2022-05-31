@@ -7,9 +7,10 @@
     </div>
   </div>
 
-  <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['search', 'filter', 'filterTree']"
+  <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['search', 'filter', 'filterTree', 'settings']"
     [hiddenFilters]="['namespace']" [searchBoxText]="'#LDS#Search' | translate" [itemStatus]="itemStatus"
     (navigationStateChanged)="onNavigationStateChanged($event)" (search)="onSearch($event)"
+    (filterTreeSelectionChanged)="filterByTree($event)"
     (customSelectedFilterRemoved)="dataExplorerFilters.onCustomFilterClearedExternally($event)">
     <div imx-data-source-toolbar-custom-filter class="target-system-filter" (click)="$event.stopPropagation()">
       <imx-target-system-filter #dataExplorerFilters [targetSystemData]="targetSystemData"

@@ -24,6 +24,7 @@
  *
  */
 
+import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiLoadingService } from '@elemental-ui/core';
 
 import { CollectionLoadParameters, IEntity } from 'imx-qbm-dbts';
@@ -31,6 +32,9 @@ import { TreeDatabase } from './tree-database';
 import { TreeNodeResultParameter } from './tree-node-result-parameter.interface';
 
 export class EntityTreeDatabase extends TreeDatabase {
+
+  private busyIndicator: OverlayRef;
+
   constructor(
     private readonly getEntities: (parameters: CollectionLoadParameters) => Promise<IEntity[]>,
     private readonly busyService: EuiLoadingService
@@ -41,14 +45,21 @@ export class EntityTreeDatabase extends TreeDatabase {
   public async getData(showLoading: boolean, parameters: CollectionLoadParameters = {}): Promise<TreeNodeResultParameter> {
     let entities: IEntity[];
     if (showLoading) {
-      setTimeout(() => this.busyService.show());
+      if (!this.busyIndicator) {
+        setTimeout(() => (this.busyIndicator = this.busyService.show()));
+      }
     }
 
     try {
       entities = await this.getEntities(parameters);
     } finally {
       if (showLoading) {
-        setTimeout(() => this.busyService.hide());
+        if (this.busyIndicator) {
+          setTimeout(() => {
+            this.busyService.hide(this.busyIndicator);
+            this.busyIndicator = undefined;
+          });
+        }
       }
     }
 

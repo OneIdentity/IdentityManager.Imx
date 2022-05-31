@@ -34,7 +34,7 @@ import {
   SnackBarService
 } from 'qbm';
 import { IDataExplorerComponent } from 'qer';
-import { CollectionLoadParameters, IClientProperty, DisplayColumns, DbObjectKey, EntitySchema, DataModel } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, IClientProperty, DisplayColumns, DbObjectKey, EntitySchema, DataModel, FilterData } from 'imx-qbm-dbts';
 import {
   PortalTargetsystemUnsGroup,
   PortalTargetsystemUnsGroupServiceitem,
@@ -217,6 +217,11 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, IDataExpl
     await this.navigate();
   }
 
+  public async filterByTree(filters: FilterData[]): Promise<void> {
+    this.navigationState.filter = filters;
+    return this.navigate();
+  }
+
   public onGroupSelected(selected: PortalTargetsystemUnsGroup[]): void {
     this.selectedGroupsForUpdate = selected;
   }
@@ -315,9 +320,10 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, IDataExpl
             }
             );
           },
-          multiSelect: true
+          multiSelect: false
         },
-        dataModel: this.dataModel
+        dataModel: this.dataModel,
+        identifierForSessionStore: 'groups-main-grid' + (this.isAdmin ? 'admin' : 'resp')
       };
       this.logger.debug(this, `Head at ${data.Data.length + this.navigationState.StartIndex} of ${data.totalCount} item(s)`);
     } finally {

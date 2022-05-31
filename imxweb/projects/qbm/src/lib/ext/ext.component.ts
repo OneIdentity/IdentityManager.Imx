@@ -62,6 +62,7 @@ export class ExtComponent implements OnInit {
     extensions.forEach((element) => {
       const c = viewContainerRef.createComponent(this.componentFactoryResolver.resolveComponentFactory(element.instance));
       c.instance.referrer = this.referrer;
+      c.instance.inputData = element.inputData;
 
       if (this.properties) {
         for (let key in this.properties) {

@@ -29,7 +29,6 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSelectionListChange } from '@angular/material/list';
 import { DataModel, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
-import { FilterTreeComponent } from '../filter-tree/filter-tree.component';
 
 @Component({
   selector: 'imx-additional-infos',
@@ -39,6 +38,12 @@ import { FilterTreeComponent } from '../filter-tree/filter-tree.component';
 export class AdditionalInfosComponent implements OnInit {
 
   public possibleProperties: IClientProperty[];
+
+  public optionals: IClientProperty[];
+
+  public get result(): any {
+    return { all: this.data.preselectedProperties, optionals: this.optionals };
+  }
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public readonly data: {
@@ -57,6 +62,7 @@ export class AdditionalInfosComponent implements OnInit {
       .concat(this.data.displayedColumns)
       .sort((elem1, elem2) => AdditionalInfosComponent.compareNames(elem1, elem2));
 
+    this.optionals = this.data.preselectedProperties.filter(elem => this.isRemoveable(elem));
   }
 
   public drop(event: CdkDragDrop<string[]>): void {
@@ -75,16 +81,20 @@ export class AdditionalInfosComponent implements OnInit {
   public updateSelected(event: MatSelectionListChange): void {
     if (event.options[0].selected) {
       this.data.preselectedProperties.push(event.options[0].value);
+      this.optionals.push(event.options[0].value);
     } else {
-      const position = this.data.preselectedProperties.findIndex(elem => elem.ColumnName === event.options[0].value.ColumnName);
+      let position = this.data.preselectedProperties.findIndex(elem => elem.ColumnName === event.options[0].value.ColumnName);
       this.data.preselectedProperties.splice(position, 1);
+
+      position = this.optionals.findIndex(elem => elem.ColumnName === event.options[0].value.ColumnName);
+      this.optionals.splice(position, 1);
     }
   }
 
   public isRemoveable(property: IClientProperty): boolean {
     return this.data.displayedColumns.find(elem => elem.ColumnName === property.ColumnName) == null;
   }
-  
+
   private static compareNames(column1: IClientProperty, column2: IClientProperty): number {
     if (column1.Display == null || column2?.Display == null) {
       return column1.ColumnName?.localeCompare(column2.ColumnName);
