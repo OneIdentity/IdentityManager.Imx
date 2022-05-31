@@ -162,19 +162,21 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
    */
   @Input() public mode: 'auto' | 'manual' = 'auto';
 
+  @Input() public nested = false;
+
   /**
    * Optional input
    * Used to pass manual columns through to nested data-tables for group by functionality
    */
   @Input() public parentManualColumns?: QueryList<DataTableColumnComponent<T>>;
 
+  @Input() public parentAdditionals?: IClientProperty[] = [];
+
   /**
    * Optional input
    * Used to pass manual generic columns through to nested data-tables for group by functionality
    */
   @Input() public parentManualGenericColumns?: QueryList<DataTableGenericColumnComponent>;
-
-  @Input() public additionalColumns: IClientProperty[];
 
   /**
    * Indicates, if multiselect is enabled.
@@ -307,8 +309,7 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
     setTimeout(async () => {
 
       if (this.dst && this.dst.settings) {
-        this.additional = this.dst.shownClientProperties
-        .filter(elem => this.dst.settings.displayedColumns.find(disp => disp.ColumnName === elem.ColumnName) == null);
+
 
         this.settings = this.dst.settings;
         await this.dstHasChanged();
@@ -345,8 +346,6 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
       ));
 
       this.subscriptions.push(this.dst.shownColumnsSelectionChanged.subscribe(async value => {
-        this.additional = value
-          .filter(elem => this.dst.settings.displayedColumns.find(disp => disp.ColumnName === elem.ColumnName) == null);
         await this.dstHasChanged();
       }));
     }
@@ -486,7 +485,10 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
       }
       const groupData = this.groupData[groupingDisplay];
       if (!groupData.navigationState) {
-        groupData.navigationState = { PageSize: 25, StartIndex: 0, filter: group.Filters };
+        groupData.navigationState = {
+          PageSize: 25, StartIndex: 0, filter: group.Filters, withProperties:
+            this.dst?.settings?.navigationState?.withProperties
+        };
       }
       this.propagateNavigationSettingsToGroups(true);
       if (!groupData.data) {
@@ -582,13 +584,20 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
       this.columnDefs.forEach(colDef => this.table.removeColumnDef(colDef));
     }
 
+
     if ((this.dst.dataSourceChanged || this.dst.shownColumnsSelectionChanged) && this.mode === 'manual') {
+      this.displayedColumns = [];
+      this.additional = (this.dst == null || this.dst.additionalColumns?.length === 0)
+        ? this.parentAdditionals : this.dst.additionalColumns;
+
       if (this.manualColumns == null && this.manualGenericColumns == null) {
         return;
       }
+
       this.columnDefs = [];
 
       if (this.manualColumns && this.table) {
+
         let mcolumns = this.manualColumns;
         if (mcolumns.length === 0 && this.parentManualColumns) {
           mcolumns = this.parentManualColumns;
@@ -612,11 +621,12 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
 
     }
 
-    if (this.dst && this.dst.shownClientProperties.length > 0) {
-      this.displayedColumns = this.dst.shownClientProperties;
+    if (this.dst && this.dst.shownClientProperties?.filter(elem => elem != null)?.length > 0 && !this.nested) {
+      this.displayedColumns = this.dst.shownClientProperties.filter(elem => elem != null);
     } else {
       if (this.settings && this.settings.displayedColumns) {
-        this.displayedColumns = this.settings.displayedColumns;
+        this.displayedColumns = this.settings.displayedColumns
+          .concat(this.additional);
       }
     }
 
@@ -657,6 +667,7 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
           grouping.navigationState = JSON.parse(JSON.stringify(this.settings.navigationState));
           grouping.navigationState.filter = preservedGroupingFilter;
           grouping.navigationState.StartIndex = 0;
+          grouping.navigationState.withProperties = this.settings.navigationState.withProperties;
           if (!skipNavigationChange) {
             this.onNavigationStateChanged(key, grouping.navigationState);
           }

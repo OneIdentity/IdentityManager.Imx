@@ -135,7 +135,7 @@
       <span>{{ '#LDS#View settings' | translate }}</span>
     </button>
     <mat-divider></mat-divider> -->
-    <button mat-menu-item *ngIf="optionalColumns.length > 0"
+    <button mat-menu-item *ngIf="optionalColumns?.length > 0"
       (click)="updateAdditional()" data-imx-identifier="dst-menu-button-additional-table-columns">
       {{'#LDS#Additional columns' | translate}}
     </button>

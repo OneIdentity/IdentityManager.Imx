@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>{{(data.type === 'list' ? '#LDS#Additional information per entry' : '#LDS#Additional columns') |
+<h2 mat-dialog-title>{{(data.type === 'list' ? '#LDS#Heading Additional Information per Entry' : '#LDS#Heading Additional Columns') |
   translate}}</h2>
 <mat-dialog-content class="imx-dialog-content">
   <mat-card class="imx-element-chooser">
@@ -39,6 +39,6 @@
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button data-imx-identifier="additional-infos-button-cancel" mat-stroked-button mat-dialog-close>{{'#LDS#Cancel' | translate}}</button>
-  <button color="primary" data-imx-identifier="additional-infos-button-apply" mat-raised-button [mat-dialog-close]="data.preselectedProperties" cdkFocusInitial>{{'#LDS#Apply' |
+  <button color="primary" data-imx-identifier="additional-infos-button-apply" mat-raised-button [mat-dialog-close]="result" cdkFocusInitial>{{'#LDS#Apply' |
     translate}}</button>
 </mat-dialog-actions>

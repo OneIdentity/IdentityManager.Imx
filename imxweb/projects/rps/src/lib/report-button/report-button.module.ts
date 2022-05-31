@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,12 +24,21 @@
  *
  */
 
-/*
- * Public API Surface of rps
- */
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatMenuModule } from '@angular/material/menu';
+import { EuiCoreModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
 
-export { RpsConfigModule } from './lib/rps-config.module';
-export { SubscriptionsModule } from './lib/subscriptions/subscriptions.module';
-export { SubscriptionsComponent } from './lib/subscriptions/subscriptions.component';
-export { ReportButtonModule} from './lib/report-button/report-button.module';
-export { ReportButtonComponent} from './lib/report-button/report-button.component';
+import { ReportButtonComponent } from './report-button.component';
+@NgModule({
+  declarations: [ReportButtonComponent],
+  imports: [
+    CommonModule,
+    MatMenuModule,
+    EuiCoreModule,
+    TranslateModule
+  ],
+  exports: [ReportButtonComponent]
+})
+export class ReportButtonModule { }

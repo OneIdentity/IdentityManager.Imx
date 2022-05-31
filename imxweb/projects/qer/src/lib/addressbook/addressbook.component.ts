@@ -74,7 +74,7 @@ export class AddressbookComponent implements OnInit {
       this.personConfig = (await this.configService.getConfig()).PersonConfig;
 
       this.dstWrapper = await this.addressbookService.createDataSourceWrapper(
-        this.personConfig.VI_MyData_WhitePages_ResultAttributes
+        this.personConfig.VI_MyData_WhitePages_ResultAttributes, 'address-book'
       );
 
       this.dstSettings = await this.dstWrapper.getDstSettings({ PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 });

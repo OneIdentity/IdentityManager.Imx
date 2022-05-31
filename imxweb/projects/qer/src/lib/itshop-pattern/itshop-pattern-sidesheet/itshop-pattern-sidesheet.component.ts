@@ -84,7 +84,7 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
     private readonly patternService: ItshopPatternService,
     private readonly sideSheetRef: EuiSidesheetRef,
     private readonly logger: ClassloggerService,
-    confirmation: ConfirmationService
+    private confirmation: ConfirmationService
   ) {
     this.detailsFormGroup = new FormGroup({ formArray: formBuilder.array([]) });
 
@@ -161,8 +161,13 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
   }
 
   public async delete(): Promise<void> {
-    if (await this.patternService.delete([this.data.pattern])) {
-      this.sideSheetRef.close(ItShopPatternChangedType.Deleted);
+    if (await this.confirmation.confirm({
+      Title: '#LDS#Heading Delete Request Template',
+      Message: '#LDS#Are you sure you want to delete this request template?'
+    })) {
+      if (await this.patternService.delete([this.data.pattern])) {
+        this.sideSheetRef.close(ItShopPatternChangedType.Deleted);
+      }
     }
   }
 

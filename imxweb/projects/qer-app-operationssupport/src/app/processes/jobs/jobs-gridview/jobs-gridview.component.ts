@@ -182,13 +182,6 @@ export class JobsGridviewComponent implements OnInit {
     let overlayRef: OverlayRef;
     setTimeout(() => overlayRef = this.busyService.show());
     try {
-
-      const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
-        .map(elem => elem.Property.ColumnName).join(',');
-      if (withProperties != null && withProperties !== '') {
-        this.navigationState.withProperties = withProperties;
-      }
-
       const queuedJobs = await this.jobService.Get(navigationState);
 
       this.dstSettings = {
@@ -197,7 +190,8 @@ export class JobsGridviewComponent implements OnInit {
         entitySchema: this.entitySchemaJobs,
         navigationState: this.navigationState,
         filters: this.filters,
-        dataModel: this.dataModel
+        dataModel: this.dataModel,
+        identifierForSessionStore: 'jobs-gridview'
       };
 
     } finally {

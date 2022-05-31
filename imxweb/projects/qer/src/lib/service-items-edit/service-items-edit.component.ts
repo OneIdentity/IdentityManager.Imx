@@ -75,7 +75,9 @@ export class ServiceItemsEditComponent implements OnInit {
           Type: ValType.String
         }
       ],
-      entitySchema
+      entitySchema,
+      undefined,
+      'service-item-edit'
     );
   }
 

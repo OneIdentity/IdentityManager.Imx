@@ -50,7 +50,7 @@ export class StorageService {
     sessionStorage.setItem(key, 'true');
   }
 
-  public storeAdditionalProperties(key: string, values: string[]): void {
+  public storeProperties(key: string, values: string[]): void {
     if (values.length === 0) {
       sessionStorage.setItem(key, '');
     } else {
@@ -58,11 +58,15 @@ export class StorageService {
     }
   }
 
-  public getAdditionalProperties(key: string): string[] {
+  public getProperties(key: string): string[] {
     const text = sessionStorage.getItem(key);
     if (text == null || text === '') {
       return [];
     }
-    return text.split('|') ;
+    return text.split('|');
+  }
+
+  public removeKeys(...params: string[]): void {
+    params.forEach(key => sessionStorage.removeItem(key));
   }
 }

@@ -28,6 +28,8 @@ import { Injectable } from '@angular/core';
 import { Router, Route } from '@angular/router';
 import { DynamicMethodService, ExtService, TabItem } from 'qbm';
 import { RequestableEntitlementType, RequestableEntitlementTypeService } from 'qer';
+import { ReportButtonParameter } from './report-button/report-button-parameter';
+import { ReportButtonComponent } from './report-button/report-button.component';
 import { RpsApiService } from './rps-api-client.service';
 import { SubscriptionsComponent } from './subscriptions/subscriptions.component';
 
@@ -54,6 +56,17 @@ export class InitService {
       },
       SortOrder: 0
     } as TabItem);
+
+    const inputData: ReportButtonParameter = {
+      uidReport: 'CPL-77d3c04ac2084a968433ef7daf7e56ff',
+        caption: '#LDS#Compliance rule violations by direct reports',
+        preprop: ['COMPLIANCE'],
+        groups: ['VI_4_ALLMANAGER']
+    };
+    this.extService.register('identityReports', {
+      instance: ReportButtonComponent,
+      inputData
+    });
 
     this.entlTypeService.Register(async () => [
       new RequestableEntitlementType('RPSReport',

@@ -89,18 +89,13 @@ export class ChildSystemEntitlementsComponent implements OnInit {
         this.navigationState = newState;
       }
 
-      const withProperties = this.dataModel?.Properties?.filter(elem => elem.IsAdditionalColumn && elem.Property != null)
-        .map(elem => elem.Property.ColumnName).join(',');
-      if (withProperties != null && withProperties !== '') {
-        this.navigationState.withProperties = withProperties;
-      }
-
       this.groupsGroupMembershipData = await this.groupsService.getGroupsGroupMembers(this.groupId, this.navigationState);
       this.groupsDstSettings = {
         displayedColumns: this.groupDisplayedColumns,
         dataSource: this.groupsGroupMembershipData,
         entitySchema: this.entitySchemaUnsGroupMemberships,
-        navigationState: this.navigationState
+        navigationState: this.navigationState,
+        dataModel: this.dataModel
       };
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));

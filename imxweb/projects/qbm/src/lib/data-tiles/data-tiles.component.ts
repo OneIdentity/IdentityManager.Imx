@@ -172,9 +172,7 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
         this.selectionChanged.emit(event.source.selected)
       ));
 
-      this.additionalSubtitleObjects = this.dst?.currentViewSettings?.AdditionalListColumns.map(
-        elem => this.dst.entitySchema.Columns[elem]
-      );
+      this.additionalSubtitleObjects = this.dst?.additionalListElements;
     }
   }
 

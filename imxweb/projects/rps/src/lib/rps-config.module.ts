@@ -32,6 +32,7 @@ import { InitService } from './init.service';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { EditReportComponent } from './reports/edit-report.component';
 import { EditReportModule } from './reports/edit-report.module';
+import { ReportButtonModule } from './report-button/report-button.module';
 
 const routes: Routes = [
   {
@@ -46,6 +47,7 @@ const routes: Routes = [
   imports: [
     EditReportModule,
     SubscriptionsModule,
+    ReportButtonModule,
     RouterModule.forChild(routes)
   ]
 })

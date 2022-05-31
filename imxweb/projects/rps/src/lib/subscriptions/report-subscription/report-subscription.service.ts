@@ -106,7 +106,7 @@ export class ReportSubscriptionService {
       getDataModel: async () => ({}),
       getFilterTree: async (__entity, parentkey) => {
         return this.api.client.portal_subscription_interactive_parameter_candidates_filtertree_post(
-          columnName, fkTableName, parentkey,  subscription.InteractiveEntityWriteData
+          columnName, fkTableName, subscription.InteractiveEntityWriteData, { parentkey }
         );
       }
     };
