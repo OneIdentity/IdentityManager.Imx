@@ -8,10 +8,11 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
+        os: [windows-latest, ubuntu-latest]
         node-version: [14.x]
     
     steps:
@@ -26,22 +27,41 @@ jobs:
       run: |
         cd imxweb
         npm install
+        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
         npm run build qbm
+        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
         npm run build qer
+        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
         npm run build tsb
+        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
         npm run build att
+        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
         npm run build rms
+        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
         npm run build aad
+        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
         npm run build aob
+        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
         npm run build uci
+        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
         npm run build cpl
+        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
         npm run build dpr
+        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
         npm run build rmb
+        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
         npm run build rps
+        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
         npm run build o3t
+        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
         npm run build pol
+        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
         npm run build qer-app-portal
+        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
         npm run build qbm-app-landingpage
+        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
         npm run build qer-app-operationssupport
+        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
         npm run build qer-app-pwdportal
+        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
 
