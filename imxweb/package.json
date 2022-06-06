@@ -26,7 +26,7 @@
     "doc:qer-opssupport": "cd projects/qer-app-operationssupport && compodoc -p tsconfig.app.json",
     "doc:qer-portal": "cd projects/qer-app-portal && compodoc -p tsconfig.app.json",
     "doc:arc-governance": "cd projects/arc-app-certaccess && compodoc -p tsconfig.app.json",
-    "postshrinkwrap": "json -I -f .\\package-lock.json -e \"delete this.dependencies['imx-qbm-dbts']; delete this.dependencies['imx-api-qbm']; delete this.dependencies['imx-api-dpr']; delete this.dependencies['imx-api-arc']; delete this.dependencies['imx-api-tsb']; delete this.dependencies['imx-api-aob']; delete this.dependencies['imx-api-qer']; delete this.dependencies['imx-api-rps'], delete this.dependencies['imx-api-cpl'], delete this.dependencies['imx-api-pol'], delete this.dependencies['imx-api-aad'], delete this.dependencies['imx-api-o3t'], delete this.dependencies['imx-api-rmb'], delete this.dependencies['imx-api-rms'], delete this.dependencies['imx-api-att'], delete this.dependencies['imx-api-uci']\""
+    "postshrinkwrap": "json -I -f ./package-lock.json -e \"delete this.dependencies['imx-qbm-dbts']; delete this.dependencies['imx-api-qbm']; delete this.dependencies['imx-api-dpr']; delete this.dependencies['imx-api-arc']; delete this.dependencies['imx-api-tsb']; delete this.dependencies['imx-api-aob']; delete this.dependencies['imx-api-qer']; delete this.dependencies['imx-api-rps'], delete this.dependencies['imx-api-cpl'], delete this.dependencies['imx-api-pol'], delete this.dependencies['imx-api-aad'], delete this.dependencies['imx-api-o3t'], delete this.dependencies['imx-api-rmb'], delete this.dependencies['imx-api-rms'], delete this.dependencies['imx-api-att'], delete this.dependencies['imx-api-uci']\""
   },
   "private": true,
   "dependencies": {
