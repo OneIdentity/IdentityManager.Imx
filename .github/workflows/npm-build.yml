@@ -23,45 +23,79 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Build Angular projects
-      run: |
-        cd imxweb
-        npm install
-        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
-        npm run build qbm
-        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
-        npm run build qer
-        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
-        npm run build tsb
-        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
-        npm run build att
-        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
-        npm run build rms
-        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
-        npm run build aad
-        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
-        npm run build aob
-        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
-        npm run build uci
-        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
-        npm run build cpl
-        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
-        npm run build dpr
-        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
-        npm run build rmb
-        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
-        npm run build rps
-        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
-        npm run build o3t
-        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
-        npm run build pol
-        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
-        npm run build qer-app-portal
-        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
-        npm run build qbm-app-landingpage
-        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
-        npm run build qer-app-operationssupport
-        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
-        npm run build qer-app-pwdportal
-        if ( $LASTEXITCODE -ne 0 ) { exit 1 }
+    - name: Install packages
+      working-directory: ./imxweb
+      run: npm install
+
+    - name: Build qbm
+      working-directory: ./imxweb
+      run: npm run build qbm
+      
+    - name: Build qer
+      working-directory: ./imxweb
+      run: npm run build qer
+
+    - name: Build tsb
+      working-directory: ./imxweb
+      run: npm run build tsb
+
+    - name: Build att
+      working-directory: ./imxweb
+      run: npm run build att
+
+    - name: Build rms
+      working-directory: ./imxweb
+      run: npm run build rms
+
+    - name: Build aad
+      working-directory: ./imxweb
+      run: npm run build aad
+
+    - name: Build aob
+      working-directory: ./imxweb
+      run: npm run build aob
+
+    - name: Build uci
+      working-directory: ./imxweb
+      run: npm run build uci
+
+    - name: Build cpl
+      working-directory: ./imxweb
+      run: npm run build cpl
+
+    - name: Build dpr
+      working-directory: ./imxweb
+      run: npm run build dpr
+
+    - name: Build rmb
+      working-directory: ./imxweb
+      run: npm run build rmb
+
+    - name: Build rps
+      working-directory: ./imxweb
+      run: npm run build rps
+
+    - name: Build o3t
+      working-directory: ./imxweb
+      run: npm run build o3t
+
+    - name: Build pol
+      working-directory: ./imxweb
+      run: npm run build pol
+
+    - name: Build qer-app-portal
+      working-directory: ./imxweb
+      run: npm run build qer-app-portal
+
+    - name: Build qbm-app-landingpage
+      working-directory: ./imxweb
+      run: npm run build qbm-app-landingpage
+
+    - name: Build qer-app-operationssupport
+      working-directory: ./imxweb
+      run: npm run build qer-app-operationssupport
+
+    - name: Build qer-app-pwdportal    
+      working-directory: ./imxweb
+      run: npm run build qer-app-pwdportal
 
