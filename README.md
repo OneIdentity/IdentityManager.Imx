@@ -4,6 +4,12 @@
 
 ## Change log
 
+### June 7, 2022
+
+- Added clarification on the [branches](#branches-and-update-policy).
+- The `v82` branch has been updated with the contents of the 8.2.1 rollup package.
+- The build definition has been split into separate steps for each package.
+
 ### May 2, 2022
 
 The repository has been updated with the code changes for the Identity Manager 8.2.1 release.
@@ -15,6 +21,8 @@ This repository contains the source code for the HTML5 applications contained in
 It is a monorepo containing the Angular [workspace](https://angular.io/guide/workspace-config), which consists of apps and [libraries](https://angular.io/guide/libraries).
 
 By forking this repository, you may create customized versions of the projects and add them to your Identity Manager deployment.
+
+*Note*: A case-insensitive file system (Windows) is currently required to build the projects. Compatibility with case-sensitive file systems is coming soon.
 
 ## Workspace overview
 
@@ -35,6 +43,7 @@ Each Angular library and app belongs to a folder in the `projects` directory. Th
 |`cpl`|Angular plugin library|`qbm`, `qer`|
 |`dpr`|Angular plugin library|`qbm`|
 |`o3t`|Angular plugin library|`qbm`, `qer`, `tsb`|
+|`olg`|Angular plugin library|`qbm`, `qer`|
 |`pol`|Angular plugin library|`qbm`, `qer`|
 
 Each Angular library belongs to the Identity Manager module of the same name.
@@ -82,41 +91,9 @@ imxclient.exe run-apiserver -B
 
 The web apps will connect to the API Server using the URL defined in the application's `environment.ts` file. The default setting is `http://localhost:8182` which is the default URL that a local API Server will run on.
 
-## Hosting in Identity Manager
+## More information
 
-Follow these steps to host a package (such as `Html_qer-app-portal.zip`) in Identity Manager:
-
-- Download the build artefact package(s).
-- Start Software Loader.
-- Move the package into a subdirectory named `custom`.
-- Connect to the Identity Manager database.
-- Select "Upload files".
-- Select the `custom\Html_qer-app-portal.zip` file.
-- Assign the file to the API Server machine role.
-
-When a client makes a request for the URL `/html/qer-app-portal`, the API Server will look the following files in this order, using the first file which exists.
-1. `imxweb/custom/Html_qer-app-portal.zip`
-1. `imxweb/Html_qer-app-portal.zip`
-
-
-_Note_: The API Server adds support for customized packages with the 8.2.1 release.
-
-## Adding a plugin library
-
-Plugins are Angular libraries that are loaded dynamically at runtime. The set of plugins is managed by the API Server. Plugins are discovered by looking for files named `imx-plugin-config.json` in the program directory.
-
-This sample file declares that the plugin library `ccc` should be loaded in the `qer-app-portal` app. The name of the Angular module to instantiate is `CustomConfigModule`.
-
-``` json
-{
-  "qer-app-portal": [
-      {
-          "Container": "ccc",
-          "Name": "CustomConfigModule"
-      }
-  ]
-}
-```
+Please refer to the [HTML Development Guide](https://support.oneidentity.com/technical-documents/identity-manager/8.2.1/html5-development-guide#TOPIC-1801966) for step-by-step instructions on getting started.
 
 ## Branches and Update Policy
 
@@ -124,7 +101,8 @@ The following table shows the branches in this repository corresponding to each 
 
 |Branch|Product version|
 |-|-|
-|`master` / `v82`|Identity Manager 8.2.x|
+|`v82`|Identity Manager 8.2.x|
+|`master`|The `master` branch does not correspond to a supported version of Identity Manager. Do not use this branch for development purposes.|
 
 We plan to push updates for each minor and major product release, allowing developers to track source code changes from one version to the next. Occasionally we may also publish important bug fixes.
 
