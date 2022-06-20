@@ -1,5 +1,4 @@
 # Do not convert file endings for any files
-*  -text
 
 *.cs diff=csharp
 *.sh text eol=lf
