@@ -36,161 +36,175 @@ import { TranslateService } from '@ngx-translate/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
 
 @Component({
-	templateUrl: './split.component.html',
-	styleUrls: ['./split.component.scss']
+  templateUrl: './split.component.html',
+  styleUrls: ['./split.component.scss']
 })
 export class SplitComponent implements OnInit {
 
-	public splitItems: IRoleSplitItem[] = [];
-	public actions: UiActionData[] = [];
-	public newRoleType: string;
+  public splitItems: IRoleSplitItem[] = [];
+  public actions: UiActionData[] = [];
+  public newRoleType: string;
 
-	public candidateTables: {
-		tableName: string,
-		display: string
-	}[] = [];
-	public canChangeRoleType: boolean;
-	public newRole: IEntity;
-	public typedEntity: WriteExtTypedEntity<RoleExtendedDataWrite>;
-	public cdrList: ColumnDependentReference[] = [];
-	public uidActions: string[] = [];
-	public types: string[] = [];
-	public readonly newRoleFormGroup = new FormGroup({});
-	public busy = false;
+  public candidateTables: {
+    tableName: string,
+    display: string
+  }[] = [];
+  public canChangeRoleType: boolean;
+  public newRole: IEntity;
+  public typedEntity: WriteExtTypedEntity<RoleExtendedDataWrite>;
+  public cdrList: ColumnDependentReference[] = [];
+  public uidActions: string[] = [];
+  public types: string[] = [];
+  public readonly newRoleFormGroup = new FormGroup({});
+  public busy = false;
+  public isLoading = false;
 
-	public LdsSuccessMessage = '#LDS#Your changes have been saved. The changes may take a couple of minutes to take effect.';
+  public LdsSuccessMessage = '#LDS#The new object has been successfully created. It may take some time for the changes to take effect.';
+	public LdsInfoMessage = '#LDS#Specify the following properties for the new object.';
 
-	public LdsInfoMessage = '#LDS#Enter the following properties for the new role.';
-	constructor(
-		private readonly apiService: QerApiService,
-		private readonly busySvc: EuiLoadingService,
-		private readonly roleService: RoleService,
-		private readonly translate: TranslateService,
-		@Inject(EUI_SIDESHEET_DATA) private readonly sidesheetData: {
-			isAdmin: boolean;
-			roleType: string,
-			uidRole: string
-		},
-		private readonly cdref: ChangeDetectorRef,
-		private readonly snackbar: SnackBarService,
-		private readonly sidesheetRef: EuiSidesheetRef,
-		private readonly qerConfig: ProjectConfigurationService,
-		private readonly metadata: MetadataService
-	) { }
+  public noRoleText = '#LDS#There are no assignments for this role';
 
-	public async ngOnInit(): Promise<void> {
-		this.busy = true;
-		try {
-			this.types = [
-				await this.translate.get('#LDS#RoleSplitActionKeep').toPromise(),
-				await this.translate.get('#LDS#RoleSplitActionCopy').toPromise(),
-				await this.translate.get('#LDS#RoleSplitActionMove').toPromise()
-			];
-			const config = await this.qerConfig.getConfig();
-			const tableNames = this.roleService.getSplitTargets();
-			await this.metadata.updateNonExisting(tableNames);
-			this.candidateTables = tableNames
-				.map(t => {
-					return {
-						tableName: t,
-						display: this.metadata.tables[t].DisplaySingular
-					};
-				});
+  public noChangesText = '#LDS#There are no assignments for the new role.';
+  public noChangesTextLong = '#LDS#A new empty role will be created. All assignments will stay in the original role.';
 
-			this.canChangeRoleType = config.RoleMgmtConfig.Allow_Roles_Split_Different_Organisation_Type;
+  constructor(
+    private readonly apiService: QerApiService,
+    private readonly busySvc: EuiLoadingService,
+    private readonly roleService: RoleService,
+    private readonly translate: TranslateService,
+    @Inject(EUI_SIDESHEET_DATA) private readonly sidesheetData: {
+      isAdmin: boolean;
+      roleType: string,
+      uidRole: string
+    },
+    private readonly cdref: ChangeDetectorRef,
+    private readonly snackbar: SnackBarService,
+    private readonly sidesheetRef: EuiSidesheetRef,
+    private readonly qerConfig: ProjectConfigurationService,
+    private readonly metadata: MetadataService
+  ) { }
 
-			if (!this.canChangeRoleType) {
-				// pre-select role type
-				this.newRoleType = this.sidesheetData.roleType;
-				await this.roleTypeChanged();
-			}
-		} finally {
-			this.busy = false;
-		}
-	}
+  public async ngOnInit(): Promise<void> {
+    this.busy = true;
+    try {
+      this.types = [
+        await this.translate.get('#LDS#RoleSplitActionKeep').toPromise(),
+        await this.translate.get('#LDS#RoleSplitActionCopy').toPromise(),
+        await this.translate.get('#LDS#RoleSplitActionMove').toPromise()
+      ];
+      const config = await this.qerConfig.getConfig();
+      const tableNames = this.roleService.getSplitTargets();
+      await this.metadata.updateNonExisting(tableNames);
+      this.candidateTables = tableNames
+        .map(t => {
+          return {
+            tableName: t,
+            display: this.metadata.tables[t].DisplaySingular
+          };
+        });
 
-	public async loadSplitItems(): Promise<void> {
-		const b = this.busySvc.show();
-		try {
-			const items = await this.apiService.v2Client.portal_roles_split_get(this.sidesheetData.roleType, this.sidesheetData.uidRole,
-				this.newRoleType, this.newRole.GetKeys()[0]);
+      this.canChangeRoleType = config.RoleMgmtConfig.Allow_Roles_Split_Different_Organisation_Type;
 
-			await this.metadata.updateNonExisting(items.map(i => i.ObjectType));
+      if (!this.canChangeRoleType) {
+        // pre-select role type
+        this.newRoleType = this.sidesheetData.roleType;
+        await this.roleTypeChanged();
+      }
+    } finally {
+      this.busy = false;
+    }
+  }
 
-			// first load data and displays - then set local property, avoiding evaluation of table displays before they are loaded
-			this.splitItems = items;
-		} finally {
-			this.busySvc.hide(b);
-		}
-	}
+  public async loadSplitItems(): Promise<void> {
+    const b = this.busySvc.show();
+    try {
+      this.isLoading = true;
+      const items = await this.apiService.v2Client.portal_roles_split_get(this.sidesheetData.roleType, this.sidesheetData.uidRole,
+        this.newRoleType, this.newRole.GetKeys()[0]);
 
-	public getTableDisplay(name: string): string {
-		return this.metadata.tables[name].DisplaySingular;
-	}
+      await this.metadata.updateNonExisting(items.map(i => i.ObjectType));
 
-	public async roleTypeChanged() {
-		const b = this.busySvc.show();
-		try {
-			this.typedEntity = await this.roleService.getInteractiveNew(this.newRoleType, this.sidesheetData.isAdmin);
-			// set the source role
-			await this.typedEntity.setExtendedData({
-				RoleSplit: {
-					SourceRoleObjectKey: new DbObjectKey(this.sidesheetData.roleType, this.sidesheetData.uidRole).ToXmlString()
-				}
-			});
-			this.newRole = this.typedEntity.GetEntity();
-			this.cdrList = (await this.roleService.getEditableFields(this.newRoleType, this.newRole, true))
-				.map(columnName => new BaseCdr(this.newRole.GetColumn(columnName)));
-		} finally {
-			this.busySvc.hide(b);
-		}
-	}
+      // first load data and displays - then set local property, avoiding evaluation of table displays before they are loaded
+      this.splitItems = items;
+    } finally {
+      this.isLoading = false;
+      this.busySvc.hide(b);
+    }
+  }
 
-	public async WizardPage2_OnNext(): Promise<void> {
-		const b = this.busySvc.show();
-		try {
-			this.actions = await this.apiService.v2Client.portal_roles_split_post(this.sidesheetData.roleType, this.sidesheetData.uidRole,
-				this.newRoleType, this.newRole.GetKeys()[0], {
-				SplitItems: this.splitItems.map(i => {
-					return {
-						Item: i.Uid,
-						Type: i.SplitType
-					};
-				})
-			});
-			this.uidActions = this.actions.filter(a => a.IsActive).map(a => a.Id);
-		} finally {
-			this.busySvc.hide(b);
-		}
-	}
+  public getTableDisplay(name: string): string {
+    return this.metadata.tables[name].DisplaySingular;
+  }
 
-	public addControl(group: FormGroup, name: string, control: AbstractControl): void {
-		group.addControl(name, control);
-		this.cdref.detectChanges();
-	}
+  public async roleTypeChanged(): Promise<void> {
+    if (this.cdrList.length > 0) {
+      this.cdrList.forEach(elem =>
+        this.newRoleFormGroup.removeControl(elem.column.ColumnName));
+    }
+    const b = this.busySvc.show();
+    try {
+      this.typedEntity = await this.roleService.getInteractiveNew(this.newRoleType, this.sidesheetData.isAdmin);
+      // set the source role
+      await this.typedEntity.setExtendedData({
+        RoleSplit: {
+          SourceRoleObjectKey: new DbObjectKey(this.sidesheetData.roleType, this.sidesheetData.uidRole).ToXmlString()
+        }
+      });
+      this.newRole = this.typedEntity.GetEntity();
+      this.cdrList = (await this.roleService.getEditableFields(this.newRoleType, this.newRole, true))
+        .map(columnName => new BaseCdr(this.newRole.GetColumn(columnName)));
+    } finally {
+      this.busySvc.hide(b);
+    }
+  }
+
+  public async WizardPage2_OnNext(): Promise<void> {
+    const b = this.busySvc.show();
+    try {
+      this.isLoading = true;
+      this.actions = await this.apiService.v2Client.portal_roles_split_post(this.sidesheetData.roleType, this.sidesheetData.uidRole,
+        this.newRoleType, this.newRole.GetKeys()[0], {
+        SplitItems: this.splitItems.map(i => {
+          return {
+            Item: i.Uid,
+            Type: i.SplitType
+          };
+        })
+      });
+      this.uidActions = this.actions.filter(a => a.IsActive).map(a => a.Id);
+    } finally {
+      this.isLoading = false;
+      this.busySvc.hide(b);
+    }
+  }
+
+  public addControl(group: FormGroup, name: string, control: AbstractControl): void {
+    group.addControl(name, control);
+    this.cdref.detectChanges();
+  }
 
 
-	public async Execute(): Promise<void> {
-		const b = this.busySvc.show();
-		try {
-			// set extended data with the split information
-			await this.typedEntity.setExtendedData({
-				RoleSplit: {
-					ActionIds: this.uidActions,
-					SplitItems: this.splitItems.map(i => {
-						return {
-							Item: i.Uid,
-							Type: i.SplitType
-						};
-					})
-				}
-			});
-			this.newRole.Commit();
+  public async Execute(): Promise<void> {
+    const b = this.busySvc.show();
+    try {
+      // set extended data with the split information
+      await this.typedEntity.setExtendedData({
+        RoleSplit: {
+          ActionIds: this.uidActions,
+          SplitItems: this.splitItems.map(i => {
+            return {
+              Item: i.Uid,
+              Type: i.SplitType
+            };
+          })
+        }
+      });
+      this.newRole.Commit();
 
-			this.sidesheetRef.close(true);
-			this.snackbar.open({ key: this.LdsSuccessMessage });
-		} finally {
-			this.busySvc.hide(b);
-		}
-	}
+      this.sidesheetRef.close(true);
+      this.snackbar.open({ key: this.LdsSuccessMessage });
+    } finally {
+      this.busySvc.hide(b);
+    }
+  }
 }

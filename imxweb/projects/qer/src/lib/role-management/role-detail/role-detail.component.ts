@@ -43,6 +43,8 @@ export class RoleDetailComponent implements OnInit {
   public parameters: { tablename: string; entity: IEntity };
 
   private canClose = true;
+  private autoMembershipsValid = true;
+  private confirmIsOpen = false;
 
   constructor(
     @Inject(EUI_SIDESHEET_DATA)
@@ -66,9 +68,17 @@ export class RoleDetailComponent implements OnInit {
     this.roleService.dataDirtySubject.subscribe((flag) => {
       this.canClose = !flag;
     });
+    this.roleService.autoMembershipDirty$.subscribe((flag) => {
+      this.autoMembershipsValid = !flag;
+    })
     this.sidesheetRef.closeClicked().subscribe(async (result) => {
-      if (!this.canClose) {
-        const close = await this.confirm.confirmLeaveWithUnsavedChanges();
+      if (this.confirmIsOpen) {
+        return;
+      }
+      if (!this.canClose || !this.autoMembershipsValid) {
+        this.confirmIsOpen = true;
+        const close = await this.confirm.confirmLeaveWithUnsavedChanges(null, null, true);
+        this.confirmIsOpen = false;
         if (close) {
           this.sidesheetRef.close();
         }

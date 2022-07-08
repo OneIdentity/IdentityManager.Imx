@@ -55,6 +55,8 @@ export interface IRoleMembershipType {
 
   getSchema(key: string): EntitySchema;
 
+  GetUidRole(entity: IEntity): string;
+
   GetUidPerson(entity: IEntity): string;
 
   /** Returns a flag indicating whether primary memberships
@@ -97,6 +99,8 @@ export abstract class BaseMembership implements IRoleMembershipType {
   public GetUidPerson(entity: IEntity): string {
     return entity.GetColumn('UID_Person').GetValue();
   }
+
+  public abstract GetUidRole(entity: IEntity): string;
 
   /** Returns a flag indicating whether primary memberships
    * are possible for this role type.
@@ -171,6 +175,11 @@ export class LocalityMembership extends BaseMembership {
     return true;
   }
 
+
+  public GetUidRole(entity: IEntity): string {
+    return entity.GetColumn("UID_Locality").GetValue();
+  }
+
   public getPrimaryMembers(
     uid: string,
     navigationstate: CollectionLoadParameters
@@ -243,6 +252,10 @@ export class ProfitCenterMembership extends BaseMembership {
     return true;
   }
 
+  public GetUidRole(entity: IEntity): string {
+    return entity.GetColumn("UID_ProfitCenter").GetValue();
+  }
+
   public getPrimaryMembers(uid: string, navigationstate: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<any, any>> {
     return this.api.typedClient.PortalRolesConfigProfitcenterPrimarymembers.Get(uid, navigationstate);
   }
@@ -304,6 +317,10 @@ export class DepartmentMembership extends BaseMembership {
 
   public async delete(role: string, identity: string): Promise<EntityCollectionData> {
     return this.api.client.portal_roles_config_membership_Department_delete(role, identity);
+  }
+
+  public GetUidRole(entity: IEntity): string {
+    return entity.GetColumn("UID_Department").GetValue();
   }
 
   public hasPrimaryMemberships(): boolean {
@@ -376,6 +393,10 @@ export class AERoleMembership extends BaseMembership {
 
   public hasPrimaryMemberships(): boolean {
     return false;
+  }
+
+  public GetUidRole(entity: IEntity): string {
+    return entity.GetColumn("UID_AERole").GetValue();
   }
 
   public getPrimaryMembers(): Promise<ExtendedTypedEntityCollection<any, any>> {

@@ -30,7 +30,6 @@
     flex-direction: column;
     overflow: hidden;
     height: inherit;
-    max-width: 1200px;
   }
 
   .imx-policy-footer {
@@ -53,7 +52,6 @@
 
 .mat-toolbar {
   background-color: inherit;
-  max-width: 1200px;
   margin-left: 25px;
   margin-right: 0;
   margin-bottom: 40px;
@@ -83,7 +81,6 @@
   flex-direction: row;
   justify-content: flex-end;
   margin: 10px 0 0 0;
-  max-width: 1200px;
 }
 
 .imx-button-column {

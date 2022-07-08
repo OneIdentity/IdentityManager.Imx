@@ -24,7 +24,7 @@
  *
  */
 
-import { IForeignKeyInfo } from 'imx-qbm-dbts';
+import { IForeignKeyInfo, IWriteValue } from 'imx-qbm-dbts';
 
 export interface ForeignKeyPickerData {
     fkRelations: IForeignKeyInfo[];
@@ -32,4 +32,5 @@ export interface ForeignKeyPickerData {
     idList?: string[];
     isMultiValue?: boolean;
     isRequired?: boolean;
+    disabledIds?: string[];
 }

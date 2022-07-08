@@ -31,6 +31,8 @@ import { Subscription } from 'rxjs';
 
 import { AuthenticationService, ISessionState, MenuItem, SystemInfoService, MenuService, IeWarningService } from 'qbm';
 import { PendingItemsType, ProjectConfigurationService, UserModelService } from 'qer';
+import { QerProjectConfig } from 'imx-api-qer';
+import { ProjectConfig } from 'imx-api-qbm';
 
 @Component({
   selector: 'imx-root',
@@ -59,11 +61,11 @@ export class AppComponent implements OnInit, OnDestroy {
       this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
         this.isLoggedIn = sessionState.IsLoggedIn;
         if (this.isLoggedIn) {
-          projectConfig.getConfig();
+          const config: QerProjectConfig & ProjectConfig = await projectConfig.getConfig();
           this.pendingItems = await userModelService.getPendingItems();
           const groupInfo = await userModelService.getGroups();
           const systemInfo = await systemInfoService.get();
-          this.menuItems = menuService.getMenuItems(systemInfo.PreProps, groupInfo.map(group => group.Name));
+          this.menuItems = menuService.getMenuItems(systemInfo.PreProps, groupInfo.map(group => group.Name), false, config);
 
           ieWarningService.showIe11Banner();
         }

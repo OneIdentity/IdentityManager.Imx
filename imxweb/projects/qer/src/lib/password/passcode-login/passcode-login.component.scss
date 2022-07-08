@@ -26,6 +26,16 @@
 .buttonbar {
   margin-top: 1.5em;
   text-align: center;
+
+  .imx-next-button {
+    margin-left: 1em;
+    background-color: $VI_Common_Color_Blue_3;
+  }
+
+  .imx-next-button.mat-button-disabled {
+    background-color: $black-c;
+  }
+
 }
 
 .captcha-container {

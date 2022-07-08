@@ -24,9 +24,28 @@
  *
  */
 
-export interface ReportButtonParameter {
-  uidReport: string;
-  caption: string;
-  preprop?: string[];
-  groups?: string[];
+import { Injectable } from '@angular/core';
+import { CanActivate, Router } from '@angular/router';
+
+import { AppConfigService } from 'qbm';
+import { CplPermissionsService } from '../rules/admin/cpl-permissions.service';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class RuleViolationsGuardService implements CanActivate {
+  constructor(
+    private readonly permissionService: CplPermissionsService,
+    private readonly appConfig: AppConfigService,
+    private readonly router: Router
+  ) { }
+
+  public async canActivate(): Promise<boolean> {
+    const isExceptionAdmin = await this.permissionService.isExceptionAdmin();
+    if (!isExceptionAdmin) {
+      this.router.navigate([this.appConfig.Config.routeConfig.start], { queryParams: {} });
+      return false;
+    }
+    return isExceptionAdmin;
+  }
 }

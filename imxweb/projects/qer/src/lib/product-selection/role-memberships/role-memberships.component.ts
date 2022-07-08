@@ -50,8 +50,13 @@ export class RoleMembershipsComponent implements OnChanges {
 
   public dstSettings: DataSourceToolbarSettings;
   public isLoading = false;
+  public noDataText = "#LDS#No data";
 
   public readonly dstWrapper: DataSourceWrapper<PortalItshopPeergroupMemberships>;
+
+  public get options(): string[] {
+    return this.personPeerGroupUid ?? '' !== '' ? ['search', 'filter', 'settings'] : ['search', 'filter', 'settings', 'selectedViewGroup'];
+  }
 
   @ViewChild(DataSourceToolbarComponent) private readonly dst: DataSourceToolbarComponent;
 
@@ -81,6 +86,8 @@ export class RoleMembershipsComponent implements OnChanges {
     );
   }
 
+
+
   public async ngOnChanges(change: SimpleChanges): Promise<void> {
     if (change.referenceUser || change.personPeerGroupUid) {
       await this.getData();
@@ -96,6 +103,7 @@ export class RoleMembershipsComponent implements OnChanges {
 
     try {
       this.dstSettings = await this.dstWrapper.getDstSettings(newState);
+      this.dstWrapper.extendedData?.PeerGroupSize === 0 ? this.noDataText = '#LDS#Peer group is empty' : this.noDataText = '#LDS#No data';
     } finally {
       setTimeout(() => {
         this.busy.hide(overlayRef);

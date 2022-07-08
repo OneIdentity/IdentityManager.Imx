@@ -2,7 +2,7 @@
   <mat-toolbar color="primary" data-imx-identifier="masthead-toolbar">
     <mat-toolbar-row>
       <!-- custom logo-->
-      <img class="custom-logo" *ngIf="logoUrl" [src]="logoUrl">
+      <img class="custom-logo" *ngIf="logoUrl" [src]="logoUrl" data-imx-identifier="masthead-custom-logo" (click)="goHome()">
 
       <h1 class="imx-masthead-app-name" data-imx-identifier="masthead-button-goHome" (click)="goHome()">
         {{ appConfig?.Config?.Title }}

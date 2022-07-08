@@ -31,7 +31,7 @@ import { Subscription } from 'rxjs';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
 import { EntityColumnContainer } from '../entity-column-container';
-import { CdrEditor } from '../cdr-editor.interface';
+import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
 import { MultiValueService } from '../../multi-value/multi-value.service';
 
 /**
@@ -47,7 +47,7 @@ export class EditMultiValueComponent implements CdrEditor, OnDestroy {
 
   public readonly columnContainer = new EntityColumnContainer<string>();
 
-  public readonly valueHasChanged = new EventEmitter<any>();
+  public readonly valueHasChanged = new EventEmitter<ValueHasChangedEventArg>();
 
   private readonly subscribers: Subscription[] = [];
   private isWriting = false;
@@ -75,7 +75,7 @@ export class EditMultiValueComponent implements CdrEditor, OnDestroy {
         if (this.control.value !== this.columnContainer.value) {
           this.control.setValue(this.columnContainer.value);
         }
-        this.valueHasChanged.emit(this.control.value);
+        this.valueHasChanged.emit({value: this.control.value});
       }));
       this.subscribers.push(this.control.valueChanges.subscribe(async value => this.writeValue(this.fromTextArea(value))));
       this.logger.trace(this, 'Control initialized');
@@ -109,7 +109,7 @@ export class EditMultiValueComponent implements CdrEditor, OnDestroy {
       }
     }
 
-    this.valueHasChanged.emit(value);
+    this.valueHasChanged.emit({value, forceEmit: true});
   }
 
   private toTextArea(value: string): string {

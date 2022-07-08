@@ -210,6 +210,7 @@ export { SessionState } from './lib/session/session-state';
 export { SettingsService } from './lib/settings/settings-service';
 export { ShapeClickArgs } from './lib/hyperview/hyperview-types';
 export { ShortDatePipe } from './lib/date/short-date.pipe';
+export { LocalizedDatePipe } from './lib/date/localized-date.pipe';
 export { SnackBarService } from './lib/snackbar/snack-bar.service';
 export { SqlWizardApiService } from './lib/sqlwizard/sqlwizard-api.service';
 export { SqlWizardComponent } from './lib/sqlwizard/sqlwizard.component';

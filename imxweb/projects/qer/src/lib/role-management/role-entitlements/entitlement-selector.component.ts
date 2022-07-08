@@ -47,6 +47,8 @@ export class EntitlementSelectorComponent {
   public selectedType: RoleAssignmentData;
   public data;
 
+  @ViewChild(FkCandidatesComponent) private fkCandidatesComponent: FkCandidatesComponent;
+
   private fkEntity: IEntity;
   private fk: FkProviderItem;
   private empty: EntityCollectionData = {
@@ -65,8 +67,6 @@ export class EntitlementSelectorComponent {
     this.ReinitData();
   }
 
-  @ViewChild(FkCandidatesComponent) private fkCandidatesComponent: FkCandidatesComponent;
-
   public get types(): RoleAssignmentData[] {
     return this.sidesheetData.entitlementTypes;
   }
@@ -82,6 +82,7 @@ export class EntitlementSelectorComponent {
     this.ReinitData();
     this.selectedItems = [];
     this.fkCandidatesComponent.clearSelection();
+    this.fkCandidatesComponent.clearTreeFilter();
   }
 
 

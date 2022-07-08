@@ -25,6 +25,7 @@
  */
 
 import { Injectable } from '@angular/core';
+import { ProjectConfig } from 'imx-api-qbm';
 
 import { MenuFactory, MenuItem } from './menu-item/menu-item.interface';
 
@@ -42,11 +43,15 @@ export class MenuService {
     this.factories = [];
   }
 
-  public getMenuItems(preProps: string[], groups: string[], allowEmpty: boolean = false): MenuItem[] {
+  public getMenuItems(
+    preProps: string[],
+    groups: string[],
+    allowEmpty: boolean = false,
+    projectConfig?: ProjectConfig): MenuItem[] {
     const menuItems: MenuItem[] = [];
 
     this.factories
-      .map(factory => factory(preProps, groups))
+      .map(factory => factory(preProps, groups, projectConfig))
       .filter(menu => menu && (allowEmpty || (menu.items && menu.items.length > 0)))
       .sort((item1, item2) => this.compareMenuItems(item1, item2))
       .forEach(menu => {

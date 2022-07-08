@@ -4,14 +4,11 @@
   (search)="onSearch($event)"
   [keywords]="keywords"
   (viewSelectionChanged)="onViewSelectionChanged($event)"
-  [options]="['search', 'filter', 'selectedViewGroup','settings']"
-  (navigationStateChanged)="getData($event)"
-  data-imx-identifier="serviceitemlist-dst"
-  [initalView]="dataSourceView.selected"
-  [itemStatus]="status"
-  [alwaysVisible]="!referenceUserUid && !uidPersonPeerGroup"
->
-  <imx-data-source-toolbar-custom *ngIf="!referenceUserUid && !uidPersonPeerGroup" [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
+  [options]="options" (navigationStateChanged)="getData($event)"
+  data-imx-identifier="serviceitemlist-dst" [initalView]="dataSourceView.selected" [itemStatus]="status"
+  [alwaysVisible]="!referenceUserUid && !uidPersonPeerGroup">
+  <imx-data-source-toolbar-custom *ngIf="!referenceUserUid && !uidPersonPeerGroup"
+    [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
 </imx-data-source-toolbar>
 <div class="imx-table-container" *ngIf="!isLoading">
   <imx-data-tiles
@@ -22,7 +19,7 @@
     (selectionChanged)="onSelectionChanged($event)"
     (badgeClicked)="onBadgeClicked($event)"
     [useActionMenu]="false"
-    [noItemsFoundText]="'#LDS#No data'"
+    [noItemsFoundText]="noDataText"
     fallbackIcon="request"
     [selectable]="true"
     [actions]="[{ name: 'details', description: '#LDS#Details' | translate }, { name: 'edit', description: '#LDS#Add to cart' | translate }]"
@@ -37,7 +34,7 @@
     [dst]="dst"
     [detailViewVisible]="false"
     [selectable]="true"
-    [noDataText]="'#LDS#No data'"
+    [noDataText]="noDataText"
     mode="manual"
     fallbackIcon="DefaultTypeNameImage"
     (selectionChanged)="onSelectionChanged($event)"

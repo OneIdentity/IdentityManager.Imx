@@ -31,6 +31,7 @@ import { configureTestSuite } from 'ng-bullet';
 import { QerService } from './qer.service';
 import { TwoFactorAuthenticationService, ExtService, MenuService, MenuFactory } from 'qbm';
 import { ObjectSheetService } from './object-sheet/object-sheet.service';
+import { ProjectConfig } from 'imx-api-qbm';
 
 describe('QerService', () => {
   const twoFaRegisterSpy = jasmine.createSpy('register').and.callThrough();
@@ -49,7 +50,7 @@ describe('QerService', () => {
     }
 
     childMenus(preProps, groups) {
-      return this.menuFactories.map(factory => factory(preProps, groups));
+      return this.menuFactories.map(factory => factory(preProps, groups, {} as ProjectConfig));
     }
 
     readonly addMenuFactories = jasmine.createSpy('addMenuFactories').and.callFake((...factories: any[]) => {

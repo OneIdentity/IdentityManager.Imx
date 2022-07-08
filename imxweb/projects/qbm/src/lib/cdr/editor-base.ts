@@ -27,7 +27,7 @@ import { OnDestroy, Component, EventEmitter, ErrorHandler } from '@angular/core'
 import { AbstractControl, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
-import { CdrEditor } from './cdr-editor.interface';
+import { CdrEditor, ValueHasChangedEventArg } from './cdr-editor.interface';
 import { ColumnDependentReference } from './column-dependent-reference.interface';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 import { EntityColumnContainer } from './entity-column-container';
@@ -42,7 +42,7 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
 
   public readonly columnContainer = new EntityColumnContainer<T>();
 
-  public readonly valueHasChanged = new EventEmitter<any>();
+  public readonly valueHasChanged = new EventEmitter<ValueHasChangedEventArg>();
 
   public isBusy = false;
   public lastError: ServerError;
@@ -85,7 +85,7 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
             this.columnContainer.value, this.control.value);
           this.setControlValue();
         }
-        this.valueHasChanged.emit(this.control.value);
+        this.valueHasChanged.emit({value: this.control.value});
       }));
 
       this.logger.trace(this, 'Control initialized');
@@ -136,6 +136,6 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
       }
     }
 
-    this.valueHasChanged.emit(value);
+    this.valueHasChanged.emit({ value, forceEmit: true });
   }
 }

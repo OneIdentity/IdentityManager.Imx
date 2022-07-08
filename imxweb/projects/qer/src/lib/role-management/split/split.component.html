@@ -28,8 +28,10 @@
 			</div>
 		</ng-container>
 	</mat-step>
-	<mat-step label="{{'#LDS#Select assignments that should be copied or moved to the new role' | translate}}">
-
+	<mat-step label="{{'#LDS#Select assignments that should be copied or moved to the new object' | translate}}">
+		<eui-alert class="imx-top-alert" type="info" [condensed]="true" [colored]="true" *ngIf="splitItems.length === 0 && !isLoading">
+			{{noRoleText | translate}}
+		</eui-alert>
 		<div *ngFor="let item of splitItems" class="splititem">
 			<div class="item">
 				<div>{{ item.Display}}</div>
@@ -52,6 +54,15 @@
 	</mat-step>
 
 	<mat-step label="{{'#LDS#Review actions' | translate}}">
+
+		<eui-alert class="imx-top-alert" type="info" [condensed]="true" [colored]="true" *ngIf="actions.length === 0 && !isLoading">
+			<eui-alert-header>
+				{{noChangesText | translate}}
+			</eui-alert-header>
+			<eui-alert-content>
+				{{noChangesTextLong | translate}}
+			</eui-alert-content>
+		</eui-alert>
 
 		<mat-selection-list [(ngModel)]="uidActions">
 			<mat-list-option checkboxPosition="before" *ngFor="let action of actions" [value]="action.Id"

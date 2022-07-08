@@ -35,12 +35,12 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class ShortDatePipe implements PipeTransform {
 
-  private readonly browserCulture: string;
+  private readonly currentCulture: string;
 
   constructor(
     private readonly translateService: TranslateService,
   ) {
-    this.browserCulture = this.translateService.getBrowserCultureLang();
+    this.currentCulture = this.translateService.currentLang;
   }
 
   public transform(value: string): string {
@@ -51,7 +51,7 @@ export class ShortDatePipe implements PipeTransform {
     if (isNaN(timestamp)) {
       return value;
     }
-    return new Date(value).toLocaleDateString(this.browserCulture);
+    return new Date(value).toLocaleDateString(this.currentCulture);
 
   }
 }

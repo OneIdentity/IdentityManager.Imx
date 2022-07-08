@@ -38,7 +38,7 @@ import { MessageParameter } from '../message-dialog/message-parameter.interface'
 export class ConfirmationService {
   constructor(private readonly dialogService: MatDialog, private readonly translate: TranslateService) { }
 
-  public async confirmLeaveWithUnsavedChanges(title?: string, message?: string): Promise<boolean> {
+  public async confirmLeaveWithUnsavedChanges(title?: string, message?: string, disableClose?: boolean): Promise<boolean> {
     const dialogRef = this.dialogService.open(MessageDialogComponent, {
       data: {
         ShowYesNo: true,
@@ -48,6 +48,7 @@ export class ConfirmationService {
           .toPromise(),
       },
       panelClass: 'imx-messageDialog',
+      disableClose: disableClose
     });
     return (await dialogRef.beforeClosed().toPromise()) === MessageDialogResult.YesResult ? true : false;
   }

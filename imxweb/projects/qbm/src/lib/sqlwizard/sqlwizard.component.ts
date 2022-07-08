@@ -42,8 +42,6 @@ export class SqlWizardComponent implements OnInit, OnChanges {
 
     @Input() public tableName: string;
     @Input() public expression: SqlExpression;
-    /** If false, prevents the user from deleting the only expression node. */
-    @Input() public allowEmptyExpression: boolean;
     /** Alternate API service to use. */
     @Input() public apiService: SqlWizardApiService;
 
@@ -67,7 +65,7 @@ export class SqlWizardComponent implements OnInit, OnChanges {
             if (!svc) {
                 svc = this.apiSvc;
             }
-            const viewSettings = new SqlViewSettings(svc, this.tableName, this.expression, !this.allowEmptyExpression);
+            const viewSettings = new SqlViewSettings(svc, this.tableName, this.expression);
             // first prepare, then assign to local property
             await viewSettings.root.prepare();
             this.viewSettings = viewSettings;

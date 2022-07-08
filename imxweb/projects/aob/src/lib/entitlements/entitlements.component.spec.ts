@@ -622,12 +622,6 @@ describe('EntitlementsComponent', () => {
     expect(mockEntitlementsService.getEntitlementBadges).toHaveBeenCalled();
   });
 
-  it('updates the selectedview', async () => {
-    const dummyView = 'test'
-    await component.viewSelectionChanged(dummyView);
-    expect(component.selectedView).toBe(dummyView);
-  })
-
   it('provides grouping', () => {
     expect(() => {
       const clientProperties: IClientProperty = {

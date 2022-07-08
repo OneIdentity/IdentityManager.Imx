@@ -5,7 +5,7 @@
   </mat-card>
 </div>
 
-<div class="imx-dialog-actions">
+<div *ngIf="data?.isMultiValue" class="imx-dialog-actions">
   <div>
     <span>
       <button data-imx-identifier="cdr-fkadvancedpicker-button-show-selected" mat-button color="primary" (click)="showSelected(fkSelector?.selectedCandidates)">
@@ -15,11 +15,11 @@
     </span>
   </div>
   <!-- TODO: include MRU object picker, if there is a selected table name -->
-  <button color="primary" class="justify-start" *ngIf="data?.isMultiValue" [disabled]="fkSelector?.selectedCandidates?.length < 1" mat-stroked-button type="button"
+  <button color="primary" class="justify-start" [disabled]="fkSelector?.selectedCandidates?.length < 1" mat-stroked-button type="button"
     (click)="fkSelector.clearSelection()" data-imx-identifier="cdr-fkadvancedpicker-button-clear-selection">
     {{ '#LDS#Clear selection' | translate }}
   </button>
-  <button *ngIf="data?.isMultiValue" [disabled]="data?.isRequired && fkSelector?.selectedCandidates?.length < 1"
+  <button [disabled]="data?.isRequired && fkSelector?.selectedCandidates?.length < 1"
     mat-raised-button color="primary" (click)="applySelection()"
     data-imx-identifier="cdr-fkadvancedpicker-button-apply-selection">
     {{ '#LDS#Apply' | translate }}

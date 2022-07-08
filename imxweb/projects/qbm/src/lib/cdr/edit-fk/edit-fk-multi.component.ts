@@ -29,7 +29,7 @@ import { FormControl } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
 
-import { CdrEditor } from '../cdr-editor.interface';
+import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
 import { EntityColumnContainer } from '../entity-column-container';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
@@ -51,7 +51,7 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
 
   public readonly columnContainer = new EntityColumnContainer<string>();
 
-  public readonly valueHasChanged = new EventEmitter<any>();
+  public readonly valueHasChanged = new EventEmitter<ValueHasChangedEventArg>();
   public loading = false;
   private isWriting = false;
 
@@ -121,7 +121,7 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
             { emitEvent: false }
           );
         }
-        this.valueHasChanged.emit(this.currentValueStruct);
+        this.valueHasChanged.emit({value: this.currentValueStruct});
       }));
       this.logger.trace(this, 'Control initialized');
     } else {
@@ -217,7 +217,7 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
         this.logger.debug(this, 'writeValue - form control value is set to', this.control.value);
       }
     }
-    this.valueHasChanged.emit(this.currentValueStruct);
+    this.valueHasChanged.emit({value: this.currentValueStruct, forceEmit: true});
   }
 
   private async multiValueToDisplay(value: ValueStruct<string>): Promise<string> {

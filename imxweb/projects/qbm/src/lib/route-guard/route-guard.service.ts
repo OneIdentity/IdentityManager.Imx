@@ -27,13 +27,10 @@
 import { Injectable, ErrorHandler } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, CanDeactivate } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { MatDialog } from '@angular/material/dialog';
 
 import { imx_SessionService } from '../session/imx-session.service';
 import { AppConfigService } from '../appConfig/appConfig.service';
 import { ComponentCanDeactivate } from './component-can-deactivate.interface';
-import { MessageDialogComponent } from '../message-dialog/message-dialog.component';
-import { MessageDialogResult } from '../message-dialog/message-dialog-result.enum';
 import { OAuthService } from '../authentication/oauth.service';
 import { QueryParametersHandler } from '../base/query-parameters-handler';
 import { ClassloggerService } from '../classlogger/classlogger.service';
@@ -127,13 +124,14 @@ export class RouteGuardService implements CanActivate, CanDeactivate<ComponentCa
 
     try {
       let queryParamsHandler = new QueryParametersHandler(document.location.search, route);
-      const paramsContainsOAuth = queryParamsHandler.GetQueryParameters(this.oauthService.IsOAuthParameter) != null;
+      const oAuthQueryParams = queryParamsHandler.GetQueryParameters(this.oauthService.IsOAuthParameter);
+      const paramsContainsOAuth = oAuthQueryParams != null;
 
       if (lastLocation) {
         queryParamsHandler = new QueryParametersHandler(undefined, lastLocation.route, lastLocation.url);
       }
 
-      if (paramsContainsOAuth || lastLocation) {
+      if (paramsContainsOAuth && this.oauthService.hasRequiredOAuthParameter(oAuthQueryParams) || lastLocation) {
         this.logger.debug(this, 'resolve - navigate - queryParamsHandler', queryParamsHandler);
 
         this.router.navigate(

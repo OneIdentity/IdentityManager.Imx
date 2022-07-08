@@ -91,7 +91,7 @@
               {{ '#LDS#View saved for later list' | translate }}
             </button>
             <mat-divider></mat-divider>
-            <button [disabled]="!cartItems?.haveSelectedItems()" data-imx-identifier="shoppingcart-create-itshoppattern-button-selected-products"
+            <button *ngIf="canCreateRequestTemplates" [disabled]="!cartItems?.haveSelectedItems()" data-imx-identifier="shoppingcart-create-itshoppattern-button-selected-products"
               mat-menu-item (click)="createItshopPattern(selectedItems)">
               {{'#LDS#Create request template' | translate}}
             </button>

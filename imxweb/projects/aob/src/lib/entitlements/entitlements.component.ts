@@ -89,7 +89,6 @@ export class EntitlementsComponent implements OnChanges {
   public isUsedInDialog = false;
   public readonly entitySchema: EntitySchema;
   public readonly filter = new EntitlementFilter();
-  public selectedView: string;
 
   public isSystemRoleEnabled: boolean;
 
@@ -409,13 +408,6 @@ export class EntitlementsComponent implements OnChanges {
     if (data?.ObjectKeyElement?.value == null) { return ''; }
     const tableName = DbObjectKey.FromXml(data.ObjectKeyElement.value)?.TableName;
     return tableName != null && this.metadata.tables[tableName] ? this.metadata.tables[tableName]?.DisplaySingular : '';
-  }
-
-  /**
-   * Triggered action from the {@link DataSourceToolbar|DataSourceToolbar} after the view selection have changed.
-   */
-  public viewSelectionChanged(view: string): void {
-    this.selectedView = view;
   }
 
   private async addDirectEntitlements(candidates: TypedEntity[]): Promise<void> {

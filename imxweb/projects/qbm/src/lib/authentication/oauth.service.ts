@@ -43,6 +43,12 @@ export class OAuthService {
     return name === 'Module' || name === 'code' || name === 'Code' || name === 'state';
   }
 
+  public hasRequiredOAuthParameter(params: { [key: string]: any }): boolean {
+    const keys = Object.keys(params);
+    // both parameter are required "state" and "code" for OAuth
+    return keys.length > 0 && keys.includes('state') && (keys.includes('Code') || keys.includes('code'));
+  }
+
   public convertToOAuthLoginData(loginData: { [key: string]: any }): {
     Module: string,
     Code: string

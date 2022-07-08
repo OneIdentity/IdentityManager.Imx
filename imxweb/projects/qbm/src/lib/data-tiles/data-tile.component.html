@@ -36,7 +36,7 @@
         {{getTitleDisplayValue(subtitleObject.ColumnName)}}
       </div>
       <div *ngIf="additionalSubtitleObjects" 
-        [matTooltip]="getAdditionalColumnText">
+        [matTooltip]="getAdditionalColumnText()">
         {{getAdditionalColumnText()}}
       </div>
     </div>

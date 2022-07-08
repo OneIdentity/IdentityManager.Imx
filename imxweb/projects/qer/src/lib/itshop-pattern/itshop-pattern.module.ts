@@ -46,23 +46,24 @@ import { ItshopPatternSidesheetComponent } from './itshop-pattern-sidesheet/itsh
 import { ShopAdminGuardService } from '../guards/shop-admin-guard.service';
 import { isShopAdmin } from '../admin/qer-permissions-helper';
 import { ItshopPatternCreateSidesheetComponent } from './itshop-pattern-create-sidesheet/itshop-pattern-create-sidesheet.component';
+import { ProjectConfig } from 'imx-api-qbm';
+import { QerProjectConfig } from 'imx-api-qer';
+import { ItshopPatternGuardService } from '../guards/itshop-pattern-guard.service';
 
 const routes: Routes = [
   {
-    path: 'configuration/carttemplates',
+    path: 'configuration/requesttemplates',
     component: ItshopPatternComponent,
-    canActivate: [RouteGuardService, ShopAdminGuardService],
+    canActivate: [RouteGuardService, ShopAdminGuardService, ItshopPatternGuardService],
     resolve: [RouteGuardService]
   },
   {
     path: 'itshop/myrequesttemplates',
     component: ItshopPatternComponent,
-    canActivate: [RouteGuardService],
+    canActivate: [RouteGuardService, ItshopPatternGuardService],
     resolve: [RouteGuardService]
   }
 ];
-
-
 
 @NgModule({
   declarations: [
@@ -95,10 +96,11 @@ export class ItshopPatternModule {
 
   private setupMenu(): void {
     this.menuService.addMenuFactories(
-      (preProps: string[], groups: string[]) => {
+      (preProps: string[], groups: string[], projectConfig: QerProjectConfig & ProjectConfig) => {
         const items: MenuItem[] = [];
+        const requestTemplatesEnabled = projectConfig.ITShopConfig.VI_ITShop_ProductSelectionFromTemplate;
 
-        if (preProps.includes('ITSHOP')) {
+        if (preProps.includes('ITSHOP') && requestTemplatesEnabled) {
           items.push(
             {
               id: 'QER_Request_MyRequestTemplates',
@@ -121,15 +123,15 @@ export class ItshopPatternModule {
           items
         };
       },
-      (preProps: string[], groups: string[]) => {
+      (preProps: string[], groups: string[], projectConfig: QerProjectConfig & ProjectConfig) => {
         const items: MenuItem[] = [];
-
-        if (preProps.includes('ITSHOP') && isShopAdmin(groups)) {
+        const requestTemplatesEnabled = projectConfig.ITShopConfig.VI_ITShop_ProductSelectionFromTemplate;
+        if (preProps.includes('ITSHOP') && isShopAdmin(groups) && requestTemplatesEnabled) {
           items.push(
             {
               id: 'QER_Setup_Patterns',
               navigationCommands: {
-                commands: ['configuration', 'carttemplates']
+                commands: ['configuration', 'requesttemplates']
               },
               title: '#LDS#Menu Entry Request templates',
               sorting: '50-50',
@@ -149,7 +151,4 @@ export class ItshopPatternModule {
       },
     );
   }
-
-
-
 }

@@ -130,7 +130,8 @@ export class DelegationComponent implements OnInit, OnDestroy {
 
             this.subscriptions.push(this.authenticationservice.onSessionResponse.subscribe(async session => {
                 this.uidPerson = session.UserUid;
-                const role = await this.delegationService.getRoleClasses(this.uidPerson);
+                const role = (await this.delegationService.getRoleClasses(this.uidPerson))
+                    .filter(r => r.CountRolesOwned.value > 0);
                 this.roleClasses = role;
                 // pre-select all role classes
                 this.globalDelegation.UidOrgRoot = role.map(r => r.GetEntity().GetKeys()[0]);

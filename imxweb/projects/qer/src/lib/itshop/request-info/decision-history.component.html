@@ -9,7 +9,7 @@
               [attr.data-imx-identifier]="'workflow-step-title-'+i">{{
               step.approveHistory.DecisionType.Column.GetDisplayValue() }}</span>
               <span class="imx-spacing"> - </span>
-            <span *ngIf="step.approveHistory.XDateInserted.value">{{ step.approveHistory.XDateInserted.Column.GetDisplayValue() }}
+            <span *ngIf="step.approveHistory.XDateInserted.value">{{step.approveHistory.XDateInserted.value | localizedDate }}
             </span>
           </mat-card-title>
           <mat-card-subtitle class="imx-approveHistory-pwodecisionstep">

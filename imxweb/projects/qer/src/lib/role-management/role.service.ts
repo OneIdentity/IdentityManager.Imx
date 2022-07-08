@@ -65,6 +65,7 @@ import { BaseTreeEntitlement } from './role-entitlements/entitlement-handlers';
 })
 export class RoleService {
   public dataDirtySubject: Subject<boolean> = new Subject();
+  public autoMembershipDirty$: Subject<boolean> = new Subject();
   public readonly targetMap: Map<string, RoleObjectInfo> = new Map();
 
   protected readonly LocalityTag = 'Locality';
@@ -225,6 +226,10 @@ export class RoleService {
 
   public dataDirty(flag: boolean): void {
     this.dataDirtySubject.next(flag);
+  }
+
+  public autoMembershipDirty(flag: boolean): void {
+    this.autoMembershipDirty$.next(flag);
   }
 
   public exists(tableName: string): boolean {

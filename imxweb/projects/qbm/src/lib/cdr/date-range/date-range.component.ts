@@ -30,7 +30,7 @@ import { Subscription } from 'rxjs';
 import * as moment from 'moment-timezone';
 
 import { ValType, ValueRange } from 'imx-qbm-dbts';
-import { CdrEditor } from '../cdr-editor.interface';
+import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
 import { EntityColumnContainer } from '../entity-column-container';
 import { ParsedHostBindings } from '@angular/compiler';
@@ -49,7 +49,7 @@ export class DateRangeComponent implements CdrEditor, OnDestroy {
 
   public readonly columnContainer = new EntityColumnContainer<string>();
 
-  public readonly valueHasChanged = new EventEmitter<string>();
+  public readonly valueHasChanged = new EventEmitter<ValueHasChangedEventArg>();
 
   public isLoading = false;
 
@@ -91,7 +91,7 @@ export class DateRangeComponent implements CdrEditor, OnDestroy {
         if (this.control.value !== this.columnContainer.value) {
           this.updateControlValues();
         }
-        this.valueHasChanged.emit(this.control.value);
+        this.valueHasChanged.emit({ value: this.control.value });
       }));
     }
   }
@@ -128,7 +128,7 @@ export class DateRangeComponent implements CdrEditor, OnDestroy {
       }
     }
 
-    this.valueHasChanged.emit(this.columnContainer.value);
+    this.valueHasChanged.emit({ value: this.columnContainer.value, forceEmit: true });
   }
 
   private updateControlValues(): void {

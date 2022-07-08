@@ -96,7 +96,7 @@ export class ItshopPatternComponent implements OnInit, OnDestroy {
     this.patternService.handleOpenLoader();
     try {
       const route = this.activatedRoute.snapshot.routeConfig.path;
-      this.adminMode = await this.qerPermissionService.isShopAdmin() && route === 'configuration/carttemplates';
+      this.adminMode = await this.qerPermissionService.isShopAdmin() && route === 'configuration/requesttemplates';
 
       this.infoText = this.adminMode ? this.infoTextAdmin : this.infoTextUser;
 

@@ -169,7 +169,9 @@ export class LoginComponent implements OnInit, OnDestroy {
       provider = [];
     }
     for (const registeredProvider of this.authentication.authConfigProviders) {
-      provider.push(registeredProvider);
+      if (provider.length === 0 || provider.findIndex(prov => prov.name === registeredProvider.name) === -1) {
+        provider.push(registeredProvider);
+      }
     }
     this.configurationProviders = provider;
   }

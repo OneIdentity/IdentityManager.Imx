@@ -51,6 +51,7 @@ describe('ShortDatePipe', () => {
   beforeEach(() => {
     translateService = TestBed.get(TranslateService);
     browserLang = 'de';
+    translateService.currentLang = browserLang;
   });
 
   it('should create', () => {
@@ -67,6 +68,7 @@ describe('ShortDatePipe', () => {
   ]) {
     it(`should transform the ${testcase.description} date to a shortDate`, () => {
       browserLang = testcase.culture;
+      translateService.currentLang = browserLang;
 
       const pipe = new ShortDatePipe(translateService);
       expect(pipe.transform(testcase.date)).toBe(testcase.expected);
