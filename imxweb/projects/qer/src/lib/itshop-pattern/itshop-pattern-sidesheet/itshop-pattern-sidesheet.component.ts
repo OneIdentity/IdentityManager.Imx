@@ -28,7 +28,6 @@ import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
 import { PortalItshopPatternItem, PortalItshopPatternPrivate, } from 'imx-api-qer';
@@ -173,7 +172,8 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
 
   public async deleteProducts(): Promise<void> {
     if (await this.patternService.deleteProducts(this.selectedPatternItems)) {
-      await this.getData();
+      await this.getData();      
+      this.table?.clearSelection();
     }
   }
 

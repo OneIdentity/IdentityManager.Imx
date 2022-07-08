@@ -54,6 +54,7 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
   public selectedItshopCart: PortalItshopCart;
   public selectedItems: PortalCartitem[];
   public isEmpty: boolean;
+  public canCreateRequestTemplates: boolean;
 
   private itshopConfig: ITShopConfig;
 
@@ -75,6 +76,7 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
 
   public async ngOnInit(): Promise<void> {
     this.itshopConfig = (await this.projectConfig.getConfig()).ITShopConfig;
+    this.canCreateRequestTemplates = this.itshopConfig.VI_ITShop_ProductSelectionFromTemplate;
   }
 
   public async ngAfterViewInit(): Promise<void> {

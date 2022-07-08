@@ -62,7 +62,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   public hasMailSubscriptions: boolean;
   public form: FormGroup;
   public cdrList: ColumnDependentReference[] = [];
-
+  public canManagePasswordQuestions: boolean;
   public readonly confirmChange = {
     check: () => this.form.pristine || this.confirmation.confirmLeaveWithUnsavedChanges()
   };
@@ -95,6 +95,15 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   public async ngOnInit(): Promise<void> {
     this.dynamicTabs = this.tabService.Registry.profile as TabItem[];
+
+    let overlayRef: OverlayRef;
+    setTimeout(() => overlayRef = this.busy.show());
+    try {
+      const projectConfig = await this.projectConfig.getConfig();
+      this.canManagePasswordQuestions = projectConfig.PasswordConfig.VI_MyData_MyPassword_Visibility;
+    } finally {
+      setTimeout(() => this.busy.hide(overlayRef));
+    }
   }
 
   public ngOnDestroy(): void {

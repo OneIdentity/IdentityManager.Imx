@@ -27,16 +27,15 @@
 import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 
 import { MultiValue, ValueStruct } from 'imx-qbm-dbts';
-import { ColumnDependentReference, BaseCdr, ClassloggerService } from 'qbm';
+import { ColumnDependentReference, BaseCdr, ClassloggerService, MetadataService } from 'qbm';
 import { FilterChangedArgument } from './filter-changed-argument.interface';
 import { FilterElementModel } from './filter-element-model';
 
 @Component({
   templateUrl: './edit-generic.component.html',
-  selector: 'imx-edit-generic'
+  selector: 'imx-edit-generic',
 })
 export class EditGenericComponent implements OnChanges {
-
   public cdr: ColumnDependentReference;
 
   @Input() public filterElementModel: FilterElementModel;
@@ -44,19 +43,25 @@ export class EditGenericComponent implements OnChanges {
 
   @Output() public valueChanged = new EventEmitter<FilterChangedArgument>();
 
-  constructor(
-    private readonly logger: ClassloggerService
-  ) { }
+  constructor(private readonly logger: ClassloggerService, private readonly metaData: MetadataService) {}
 
-  public ngOnChanges(): void {
-    this.cdr = new BaseCdr(this.filterElementModel.columnForFilter);
+  public async ngOnChanges(): Promise<void>{
+    const tableName = this.filterElementModel.getTableName();
+    if (tableName == null) {
+      this.cdr = new BaseCdr(this.filterElementModel.columnForFilter);
+    } else {
+      await this.metaData.update([this.filterElementModel.getTableName()]);
+      this.cdr = new BaseCdr(this.filterElementModel.columnForFilter,
+        this.metaData.tables[this.filterElementModel.getTableName()]
+          .Columns[this.filterElementModel.getColumnName()].Display);
+    }
   }
 
   public async invokeValueChangedEvent(arg: ValueStruct<string>): Promise<void> {
     await this.filterElementModel.columnForFilter.PutValueStruct(arg);
     const data = {
       ParameterValue: FilterElementModel.buildCommaSeparatedList(this.filterElementModel.columnForFilter.GetValue()),
-      displays: MultiValue.FromString(this.filterElementModel.columnForFilter.GetDisplayValue()).GetValues()
+      displays: MultiValue.FromString(this.filterElementModel.columnForFilter.GetDisplayValue()).GetValues(),
     };
     this.logger.trace(this, 'valueChanged called with', data);
     this.valueChanged.emit(data);

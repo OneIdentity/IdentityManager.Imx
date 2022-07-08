@@ -31,6 +31,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, ValType } from 'imx-qbm-dbts';
 import { DataSourceToolbarSettings, DynamicTabDataProviderDirective, MetadataService, SettingsService } from 'qbm';
+import { RoleService } from '../../../role-management/role.service';
 import { SourceDetectiveSidesheetComponent, SourceDetectiveSidesheetData } from '../../../sourcedetective/sourcedetective-sidesheet.component';
 import { SourceDetectiveType } from '../../../sourcedetective/sourcedetective-type.enum';
 import { IdentityRoleMembershipsService } from './identity-role-memberships.service';
@@ -57,6 +58,7 @@ export class IdentityRoleMembershipsComponent implements OnInit {
     private readonly busyService: EuiLoadingService,
     private readonly metadataService: MetadataService,
     private readonly roleMembershipsService: IdentityRoleMembershipsService,
+    private readonly membershipService: RoleService,
     private readonly settingService: SettingsService,
     private readonly sidesheet: EuiSidesheetService,
     private readonly translate: TranslateService,
@@ -101,10 +103,11 @@ export class IdentityRoleMembershipsComponent implements OnInit {
 
     const uidPerson = this.referrer.objectuid;
 
+    const uidRole = this.membershipService.targetMap.get(this.referrer.tablename).membership.GetUidRole(entity.GetEntity());
     const data: SourceDetectiveSidesheetData = {
       UID_Person: uidPerson,
       Type: SourceDetectiveType.MembershipOfRole,
-      UID: entity.GetEntity().GetKeys()[0],
+      UID: uidRole,
       TableName: this.referrer.tablename
     };
     this.sidesheet.open(SourceDetectiveSidesheetComponent, {

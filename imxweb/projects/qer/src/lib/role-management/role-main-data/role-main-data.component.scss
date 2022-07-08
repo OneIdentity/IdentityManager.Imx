@@ -17,15 +17,26 @@ form {
 }
 
 .imx-tab-content {
-
   display: flex;
   flex-direction: column;
   height: 100%;
 
   .imx-tab-content-body {
-    flex: 1;
+    flex: 1 1 auto;
     padding: 32px;
+    overflow: hidden;
+    display: flex;
+    .mat-card {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  .imx-cdr-group {
+    flex: 1 1 auto;
     overflow: auto;
+    padding-right: 10px;
   }
   
   .imx-action-buttons {
@@ -40,6 +51,4 @@ form {
       margin-left: 1em;
     }
   }
-
 }
-

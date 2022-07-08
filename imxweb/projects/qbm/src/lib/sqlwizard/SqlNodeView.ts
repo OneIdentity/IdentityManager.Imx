@@ -34,8 +34,7 @@ export class SqlViewSettings {
     constructor(
         public readonly sqlWizardService: SqlWizardApiService,
         tableName: string,
-        rootExpression?: SqlExpression,
-        addEmpty?: boolean) {
+        rootExpression?: SqlExpression) {
         let expr = rootExpression;
         if (!expr) {
             expr = {
@@ -45,11 +44,6 @@ export class SqlViewSettings {
         }
 
         this.root = new SqlViewRoot(this, tableName, expr);
-
-        // add empty child node if there is none and empty is allowed
-        if ((!this.root.childViews || this.root.childViews.length < 1) && addEmpty === true) {
-            this.root.addChildNode();
-        }
     }
 }
 
@@ -142,12 +136,8 @@ export class SqlNodeView extends SqlViewBase implements ISqlNodeView {
         return !this.Property || this.Property.ColumnType == SqlColumnTypes.Normal;
     }
 
-    public canRemove(allowEmptyExpression = true): boolean {
-        if (allowEmptyExpression)
-            return true;
-        const expressions = this.Parent.Data.Expressions;
-        const index = expressions.indexOf(this.Data);
-        return index > -1 && expressions.length > 1;
+    public canRemove(): boolean {
+        return true;
     }
 
     public remove() {

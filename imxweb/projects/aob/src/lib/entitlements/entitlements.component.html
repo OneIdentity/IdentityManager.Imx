@@ -4,14 +4,15 @@
 
     <!-- Datasource Toolbar -->
     <imx-data-source-toolbar #dst [settings]="dstSettings" (navigationStateChanged)="getData(false, $event)"
-      (viewSelectionChanged)="viewSelectionChanged($event)" (groupingChanged)="onGroupingChanged($event)"
-      [options]="['selectedViewGroup']"
+      (groupingChanged)="onGroupingChanged($event)"
+      [alwaysVisible]="true"
+      [options]="['custom']"
       [itemStatus]="status">
       <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
     </imx-data-source-toolbar>
 
     <!-- Data Table -->
-    <ng-container *ngIf="selectedView === 'table'">
+    <ng-container>
       <imx-data-table #table [dst]="dst" [selectable]="true" (highlightedEntityChanged)="editEntitlement($event)"
         (selectionChanged)="onSelectionChanged($event)" mode="manual" class="mat-elevation-z2 imx-aob-data-container"
         [detailViewVisible]="false">
@@ -50,18 +51,6 @@
         </imx-data-table-generic-column>
       </imx-data-table>
     </ng-container>
-
-    <!-- Data Tiles -->
-    <ng-container *ngIf="selectedView === 'cardlist'">
-      <imx-data-tiles #tiles class="imx-aob-data-container" [dst]="dst" selectable="true"
-        (selectionChanged)="onSelectionChanged($event)" [contentTemplate]="cardContentTemplate"
-        [titleObject]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-        [subtitleObject]="entitySchema?.Columns['Description']" icon="key"
-        [actions]="[{ name: 'edit', description: '#LDS#View and edit' | translate}]"
-        (actionSelected)="editEntitlement($event.typedEntity)" [useActionMenu]="false">
-      </imx-data-tiles>
-    </ng-container>
-
     <imx-data-source-paginator class="mat-elevation-z2" [dst]="dst"></imx-data-source-paginator>
   </ng-container>
 </div>

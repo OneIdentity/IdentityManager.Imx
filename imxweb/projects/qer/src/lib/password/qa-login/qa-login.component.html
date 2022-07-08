@@ -17,8 +17,10 @@
     <div class="buttonbar">
         <button mat-raised-button (click)="captchaSvc.ReinitCaptcha()">{{
             '#LDS#Refresh image' | translate}}</button>
-        <button style="margin-left: 1em;" mat-raised-button [disabled]="!userName || !captchaSvc.Response"
-            (click)="LoadQuestions()">{{'#LDS#Next' | translate}}</button>
+        <button mat-raised-button color="primary" class="imx-next-button" [disabled]="!userName || !captchaSvc.Response"
+            (click)="LoadQuestions()">
+            {{'#LDS#Next' | translate}}
+        </button>
     </div>
 </div>
 

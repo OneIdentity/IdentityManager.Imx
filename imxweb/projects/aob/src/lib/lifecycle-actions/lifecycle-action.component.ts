@@ -30,6 +30,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { Platform } from '@angular/cdk/platform';
+import moment from 'moment-timezone';
 
 import { LdsReplacePipe, ClassloggerService, DataSourceToolbarSettings, MetadataService } from 'qbm';
 import { MetaTableData } from 'imx-api-qbm';
@@ -65,7 +66,7 @@ export class LifecycleActionComponent implements OnDestroy, OnInit {
   public tableDisplay: string;
 
   /** the mininum date for the datepicker */
-  public readonly minDate = new Date();
+  public readonly minDate: any;
 
   public publishFuture: boolean;
 
@@ -75,6 +76,14 @@ export class LifecycleActionComponent implements OnDestroy, OnInit {
   public readonly browserCulture: string;
 
   public whenToPublish: 'now' | 'future' = 'now';
+
+  public get dateString(): string {
+    return this.datepickerFormControl.value.toDate().toLocaleDateString(this.browserCulture);
+  }
+
+  public get timeString(): string {
+    return this.datepickerFormControl.value.toDate().toLocaleTimeString(this.browserCulture);
+  }
 
   private dataSource: TypedEntityCollectionData<TypedEntity>;
 
@@ -100,8 +109,10 @@ export class LifecycleActionComponent implements OnDestroy, OnInit {
 
     this.initCaptions();
 
+    const curDate = new Date();
+    curDate.setHours(24, 0, 0, 0);
     // set date to tomorrow
-    this.minDate.setHours(24, 0, 0, 0);
+    this.minDate = moment(curDate);
 
     this.datepickerFormControl = new FormControl(this.minDate, this.validateDate(this.minDate, () => this.publishFuture));
 
@@ -166,7 +177,7 @@ export class LifecycleActionComponent implements OnDestroy, OnInit {
   public submitData(): void {
     this.logger.debug(this, `Close the ${this.data.action} dialog for ${this.data.elements.length} ${this.data.type}(s).`);
     const result = this.data.action === LifecycleAction.Publish
-      ? { publishFuture: this.publishFuture, date: this.datepickerFormControl.value }
+      ? { publishFuture: this.publishFuture, date: this.datepickerFormControl.value.toDate() }
       : true;
     this.dialogRef.close(result);
   }
@@ -241,12 +252,12 @@ export class LifecycleActionComponent implements OnDestroy, OnInit {
       subscribe((trans: string) => this.actionButtonText = trans);
   }
 
-  private validateDate(minDate: Date, publishFuture: () => boolean): ValidatorFn {
+  private validateDate(minDate: any, publishFuture: () => boolean): ValidatorFn {
     return (control: AbstractControl): { [key: string]: boolean } | null => {
       if (!publishFuture()) {
         return null;
       }
-      if (!control.value || control.value.length > 0 || !(control.value as Date)) {
+      if (!control.value || control.value.length > 0) {
         return { invalidDate: true };
       }
       if (control.value < minDate) {

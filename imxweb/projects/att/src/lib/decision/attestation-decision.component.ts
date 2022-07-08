@@ -315,12 +315,13 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
 
     try {
       const groupedData = this.groupedData[groupKey];
-      groupedData.data = await this.attestationCases.get(groupedData.navigationState);
+      const navigationState = { ...groupedData.navigationState, Escalation: this.viewEscalation };
+      groupedData.data = await this.attestationCases.get(navigationState);
       groupedData.settings = {
         displayedColumns: this.dstSettings.displayedColumns,
         dataSource: groupedData.data,
         entitySchema: this.dstSettings.entitySchema,
-        navigationState: groupedData.navigationState,
+        navigationState,
       };
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));

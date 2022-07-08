@@ -1,31 +1,27 @@
 @import '~@elemental-ui/core/src/styles/_palette.scss';
 
-.mat-button-toggle-group {
-  margin: 32px 32px 10px 32px;
-  font-size: small;
-  display: flex;
-  flex-direction: row;
-  justify-items: flex-start;
-  overflow: inherit;
-  border: 0px solid transparent;
-
-  .mat-button-toggle-checked {
-    background-color: $iris-pastel;
-  }
-}
-
 :host {
   display: flex;
   flex-direction: column;
   overflow: auto;
   height: 100%;
+
+  .mat-tab-group {
+    padding-top: 20px;
+
+    ::ng-deep .mat-tab-header {
+      background-color: $asher-gray;
+      border-bottom: 0px;
+    }
+    ::ng-deep .mat-tab-label {
+      background-color: $white;
+    }
+  }
 }
 
 .imx-tab-content {
   display: flex;
   flex-direction: column;
   height: 100%;
-
-  
 }
 

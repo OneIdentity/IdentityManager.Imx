@@ -24,9 +24,36 @@
  *
  */
 
-export interface ReportButtonParameter {
-  uidReport: string;
-  caption: string;
-  preprop?: string[];
-  groups?: string[];
+import { Pipe, PipeTransform, Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+
+@Injectable({
+  providedIn: 'root'
+})
+@Pipe({
+  name: 'localizedDate',
+})
+export class LocalizedDatePipe implements PipeTransform {
+
+  private readonly currentCulture: string;
+
+  constructor(
+    private readonly translateService: TranslateService,
+  ) {
+    this.currentCulture = this.translateService.currentLang;
+  }
+
+  public transform(value: string | Date): string {
+    if (typeof value === 'string') {
+      if (!value || value.length === 0) {
+        return value;
+      }
+      const timestamp = Date.parse(value);
+      if (isNaN(timestamp)) {
+        return value;
+      }
+    }
+    return new Date(value).toLocaleString(this.currentCulture);
+
+  }
 }

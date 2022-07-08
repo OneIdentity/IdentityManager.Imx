@@ -29,7 +29,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { UrlValidatorService } from './url-validator.service';
-import { CdrEditor } from '../cdr-editor.interface';
+import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
 import { EntityColumnContainer } from '../entity-column-container';
 
@@ -42,7 +42,7 @@ export class EditUrlComponent implements CdrEditor, OnDestroy {
   public readonly control = new FormControl('', { updateOn: 'blur' });
 
   public readonly columnContainer = new EntityColumnContainer<string>();
-  public readonly valueHasChanged = new EventEmitter<any>();
+  public readonly valueHasChanged = new EventEmitter<ValueHasChangedEventArg>();
 
   private readonly subscribers: Subscription[] = [];
   private isWriting = false;
@@ -69,7 +69,7 @@ export class EditUrlComponent implements CdrEditor, OnDestroy {
         if (this.control.value !== this.columnContainer.value) {
           this.control.setValue(this.columnContainer.value, { emitEvent: false });
         }
-        this.valueHasChanged.emit(this.control.value);
+        this.valueHasChanged.emit({ value: this.control.value });
       }));
 
       this.control.setValidators(validators);
@@ -94,6 +94,7 @@ export class EditUrlComponent implements CdrEditor, OnDestroy {
       if (this.control.value !== this.columnContainer.value) {
         this.control.setValue(this.columnContainer.value, { emitEvent: false });
       }
+      this.valueHasChanged.emit({ value: this.control.value, forceEmit: true });
     }
   }
 }

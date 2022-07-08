@@ -103,10 +103,22 @@ import { ConfirmationService } from '../confirmation/confirmation.service';
 })
 export class MastHeadComponent implements OnDestroy {
 
-  public sessionState: ISessionState;
-  private readonly subscriptions: Subscription[] = [];
+  public get hasDocumentationConfig(): boolean {
+    return !!this.appConfig.Config.LocalDocPath;
+  }
 
+  public get isMobile(): boolean {
+    return document.body.offsetWidth <= 768;
+  }
+
+  public get isAuthenticated(): boolean {
+    return this.sessionState?.IsLoggedIn;
+  }
+
+  public sessionState: ISessionState;
   public logoUrl: string;
+
+  private readonly subscriptions: Subscription[] = [];
 
   constructor(
     public readonly appConfig: AppConfigService,
@@ -130,18 +142,6 @@ export class MastHeadComponent implements OnDestroy {
     });
   }
 
-  public get hasDocumentationConfig(): boolean {
-    return !!this.appConfig.Config.LocalDocPath;
-  }
-
-  public get isMobile(): boolean {
-    return document.body.offsetWidth <= 768;
-  }
-
-  public get isAuthenticated(): boolean {
-    return this.sessionState?.IsLoggedIn;
-  }
-
   public ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
@@ -154,8 +154,8 @@ export class MastHeadComponent implements OnDestroy {
   }
 
   /**
- * Opens the About view.
- */
+   * Opens the About view.
+   */
   public openAboutDialog(): void {
     this.dialog.open(AboutComponent, { panelClass: 'imx-AboutPanel' });
   }

@@ -31,7 +31,7 @@ import {
   DataSourceToolbarFilter,
   DataTableComponent,
   SettingsService,
-  SnackBarService
+  SnackBarService,
 } from 'qbm';
 import { IDataExplorerComponent } from 'qer';
 import { CollectionLoadParameters, IClientProperty, DisplayColumns, DbObjectKey, EntitySchema, DataModel, FilterData } from 'imx-qbm-dbts';
@@ -91,12 +91,11 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, IDataExpl
   public readonly itemStatus = {
     enabled: (item: PortalTargetsystemUnsGroup): boolean => {
       return item.UID_AccProduct?.value !== '';
-    }
+    },
   };
 
   private displayedColumns: IClientProperty[] = [];
   private authorityDataDeleted$: Subscription;
-  private busyIndicator: OverlayRef;
 
   private dataModel: DataModel;
 
@@ -109,7 +108,7 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, IDataExpl
     private readonly dataHelper: DeHelperService,
     private readonly translate: TranslateService,
     private readonly snackbar: SnackBarService,
-    private readonly settingsService: SettingsService,
+    private readonly settingsService: SettingsService
   ) {
     this.isAdmin = this.route.snapshot?.url[0]?.path === 'admin';
     this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
@@ -131,12 +130,12 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, IDataExpl
     }
 
     let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyService.show()));
 
     try {
-    this.filterOptions = await this.groupsService.getFilterOptions(this.isAdmin);
+      setTimeout(() => (overlayRef = this.busyService.show()));
+      this.filterOptions = await this.groupsService.getFilterOptions(this.isAdmin);
 
-    this.dataModel = await this.groupsService.getDataModel(this.isAdmin);
+      this.dataModel = await this.groupsService.getDataModel(this.isAdmin);
     }finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
@@ -184,9 +183,10 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, IDataExpl
     this.logger.trace(this, `New group selected`, group);
 
     let data: GroupSidesheetData;
+    let busy: OverlayRef;
 
-    this.handleOpenLoader();
     try {
+      setTimeout(() => (busy = this.busyService.show()));
       const objKey = DbObjectKey.FromXml(group.XObjectKey.value);
 
       const uidAccProduct = group.UID_AccProduct.value;
@@ -196,10 +196,10 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, IDataExpl
         unsGroupDbObjectKey: objKey,
         group: await this.groupsService.getGroupDetailsInteractive(objKey, 'UID_AccProduct'),
         groupServiceItem: await this.groupsService.getGroupServiceItem(uidAccProduct),
-        isAdmin: this.isAdmin
+        isAdmin: this.isAdmin,
       };
     } finally {
-      this.handleCloseLoader();
+      setTimeout(() => this.busyService.hide(busy));
     }
 
     this.viewGroup(data);
@@ -229,39 +229,46 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, IDataExpl
   public async bulkUpdateSelected(): Promise<void> {
     const updateData: EntityWriteDataBulk = {
       Keys: [],
-      Data: [{
-        Name: PortalTargetsystemUnsGroupServiceitem.GetEntitySchema().Columns.IsInActive.ColumnName,
-        // Inverse value as actual property is 'Not available'
-        Value: !this.requestableBulkUpdateCtrl.value
-      }]
+      Data: [
+        {
+          Name: PortalTargetsystemUnsGroupServiceitem.GetEntitySchema().Columns.IsInActive.ColumnName,
+          // Inverse value as actual property is 'Not available'
+          Value: !this.requestableBulkUpdateCtrl.value,
+        },
+      ],
     };
     return this.updateSelectedGroups(updateData);
   }
 
   public async bulkUpdateOwner(): Promise<void> {
-    const selectedOwner = await this.sideSheet.open(ProductOwnerSidesheetComponent, {
-      title: await this.translate.get('#LDS#Heading Assign Product Owner').toPromise(),
-      headerColour: 'green',
-      padding: '0px',
-      width: `max(650px, ${this.sidesheetWidth})`,
-      icon: 'usergroup',
-      data: await this.groupsService.getGroupServiceItem(this.selectedGroupsForUpdate[0].UID_AccProduct.value)
-    }).afterClosed().toPromise();
+    const selectedOwner = await this.sideSheet
+      .open(ProductOwnerSidesheetComponent, {
+        title: await this.translate.get('#LDS#Heading Assign Product Owner').toPromise(),
+        headerColour: 'green',
+        padding: '0px',
+        width: `max(650px, ${this.sidesheetWidth})`,
+        icon: 'usergroup',
+        data: await this.groupsService.getGroupServiceItem(this.selectedGroupsForUpdate[0].UID_AccProduct.value),
+      })
+      .afterClosed()
+      .toPromise();
 
     if (selectedOwner) {
       return this.updateOwnerForSelectedGroups(selectedOwner);
     }
   }
 
-  private async updateOwnerForSelectedGroups(selectedOwner: { uidPerson?: string, uidRole?: string }): Promise<void> {
+  private async updateOwnerForSelectedGroups(selectedOwner: { uidPerson?: string; uidRole?: string }): Promise<void> {
     let confirmMessage = '';
-    this.handleOpenLoader();
-
+    let busy: OverlayRef;
     try {
-      confirmMessage = await this.groupsService.updateMultipleOwner
-        (this.selectedGroupsForUpdate.map(elem => elem.UID_AccProduct.value), selectedOwner);
+      setTimeout(() => (busy = this.busyService.show()));
+      confirmMessage = await this.groupsService.updateMultipleOwner(
+        this.selectedGroupsForUpdate.map((elem) => elem.UID_AccProduct.value),
+        selectedOwner
+      );
     } finally {
-      this.handleCloseLoader();
+      setTimeout(() => this.busyService.hide(busy));
     }
 
     if (confirmMessage) {
@@ -277,22 +284,25 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, IDataExpl
         updateData.Keys.push([serviceItemUid]);
       }
     });
-    this.handleOpenLoader();
+    let busy: OverlayRef;
+
     try {
+      setTimeout(() => (busy = this.busyService.show()));
       await this.groupsService.bulkUpdateGroupServiceItems(updateData);
       await this.navigate();
       this.dataTable.clearSelection();
       this.requestableBulkUpdateCtrl.setValue(true, { emitEvent: false });
     } finally {
-      this.handleCloseLoader();
+      setTimeout(() => this.busyService.hide(busy));
     }
   }
 
   private async navigate(): Promise<void> {
-    this.handleOpenLoader();
+    let busy: OverlayRef;
     const getParams: GetGroupsOptionalParameters = this.navigationState;
 
     try {
+      setTimeout(() => (busy = this.busyService.show()));
       if (this.unsAccountIdFilter) {
         getParams.uid_unsaccount = this.unsAccountIdFilter;
       }
@@ -301,8 +311,10 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, IDataExpl
       getParams.system = tsUid ? tsUid : undefined;
       getParams.container = cUid ? cUid : undefined;
 
-      const data = this.isAdmin || this.unsAccountIdFilter ? // Wenn wir filtern, muss auch der Admin-Endpoint genutzt werden
-        await this.groupsService.getGroups(getParams) : await this.groupsService.getGroupsResp(getParams);
+      const data =
+        this.isAdmin || this.unsAccountIdFilter // Wenn wir filtern, muss auch der Admin-Endpoint genutzt werden
+          ? await this.groupsService.getGroups(getParams)
+          : await this.groupsService.getGroupsResp(getParams);
 
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
@@ -316,18 +328,17 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, IDataExpl
               parentkey,
               container: getParams.container,
               system: getParams.system,
-              uid_unsaccount: getParams.uid_unsaccount
-            }
-            );
+              uid_unsaccount: getParams.uid_unsaccount,
+            });
           },
-          multiSelect: false
+          multiSelect: false,
         },
         dataModel: this.dataModel,
-        identifierForSessionStore: 'groups-main-grid' + (this.isAdmin ? 'admin' : 'resp')
+        identifierForSessionStore: 'groups-main-grid' + (this.isAdmin ? 'admin' : 'resp'),
       };
       this.logger.debug(this, `Head at ${data.Data.length + this.navigationState.StartIndex} of ${data.totalCount} item(s)`);
     } finally {
-      this.handleCloseLoader();
+      setTimeout(() => this.busyService.hide(busy));
     }
   }
 
@@ -343,20 +354,5 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, IDataExpl
     });
     // After the sidesheet closes, reload the current data to refresh any changes that might have been made
     sidesheetRef.afterClosed().subscribe(() => this.navigate());
-  }
-
-  private handleOpenLoader(): void {
-    if (!this.busyIndicator) {
-      setTimeout(() => (this.busyIndicator = this.busyService.show()));
-    }
-  }
-
-  private handleCloseLoader(): void {
-    if (this.busyIndicator) {
-      setTimeout(() => {
-        this.busyService.hide(this.busyIndicator);
-        this.busyIndicator = undefined;
-      });
-    }
   }
 }

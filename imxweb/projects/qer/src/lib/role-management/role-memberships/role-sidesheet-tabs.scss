@@ -14,7 +14,7 @@
   justify-content: flex-end;
   align-items: center;
   background-color: $white;
-  padding: 16px 32px;
+  padding: 16px 27px 11px 32px;
   margin: 16px 32px;
 
   .imx-selected-items {
@@ -22,8 +22,9 @@
     margin: 0;
     line-height: 36px;
   }
-  > :not(:last-child){
+  > * {
     margin-right: 5px;
+    margin-bottom: 5px;
   }
 
   .imx-menu-spacer {

@@ -29,7 +29,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
-import { CdrEditor } from '../cdr-editor.interface';
+import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
 import { EntityColumnContainer } from '../entity-column-container';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
 import { Base64ImageService } from '../../images/base64-image.service';
@@ -51,7 +51,7 @@ export class EditImageComponent implements CdrEditor, OnDestroy {
   public readonly control = new FormControl(undefined);
 
   public readonly columnContainer = new EntityColumnContainer<string>();
-  public readonly valueHasChanged = new EventEmitter<any>();
+  public readonly valueHasChanged = new EventEmitter<ValueHasChangedEventArg>();
 
   public isLoading = false;
 
@@ -96,7 +96,7 @@ export class EditImageComponent implements CdrEditor, OnDestroy {
           this.logger.trace(this, 'Control set to new value');
           this.control.setValue(this.columnContainer.value, { emitEvent: false });
         }
-        this.valueHasChanged.emit(this.control.value);
+        this.valueHasChanged.emit({value: this.control.value});
       }));
     }
   }
@@ -147,6 +147,7 @@ export class EditImageComponent implements CdrEditor, OnDestroy {
         this.control.setValue(this.columnContainer.value, { emitEvent: false });
         this.logger.debug(this, 'form control value is set to', this.control.value);
       }
+      this.valueHasChanged.emit({value: this.control.value, forceEmit: true});
     }
 
     this.control.markAsDirty();

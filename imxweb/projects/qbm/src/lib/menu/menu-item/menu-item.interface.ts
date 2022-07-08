@@ -1,3 +1,4 @@
+import { ProjectConfig } from 'imx-api-qbm';
 import { NavigationCommandsMenuItem } from './navigation-commands-menu-item.interface';
 
 /*
@@ -54,4 +55,4 @@ export interface MenuItem {
 
 }
 
-export type MenuFactory = (preProps: string[], groups: string[]) => MenuItem;
+export type MenuFactory = (preProps: string[], groups: string[], projectConfig: ProjectConfig) => MenuItem;

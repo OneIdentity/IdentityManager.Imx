@@ -85,9 +85,9 @@ export class CartItemFkService {
         );
       },
       getDataModel: async () => ({}),
-      getFilterTree: async (entity, parentkey) => {
-        return this.qerClient.client.portal_itshop_requests_parameter_candidates_filtertree_post(
-          columnName, fkTableName, undefined, parentkey, entity.GetDiffData()
+      getFilterTree: async (__, parentkey) => {
+        return this.qerClient.v2Client.portal_cartitem_interactive_parameter_candidates_filtertree_post(
+          columnName, fkTableName, interactiveEntity.InteractiveEntityWriteData, { parentkey: parentkey }
         );
       }
     };

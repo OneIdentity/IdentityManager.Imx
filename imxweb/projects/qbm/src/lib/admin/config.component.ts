@@ -27,7 +27,7 @@
 import { Component } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
-import { ConfigNodeData, ConfigSettingType } from 'imx-api-qbm';
+import { ConfigSettingType } from 'imx-api-qbm';
 import { AppConfigService } from '../appConfig/appConfig.service';
 import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
 import { AddConfigSidesheetComponent } from './add-config-sidesheet.component';
@@ -84,6 +84,8 @@ export class ConfigComponent {
         StartIndex: 0
       }
     };
+
+    this.configSvc.filter.keywords = null;
 
     this.apiProjects = (await this.appConfigSvc.client.admin_projects_get()).map(x => x.AppId);
     if (this.apiProjects.length > 0) {

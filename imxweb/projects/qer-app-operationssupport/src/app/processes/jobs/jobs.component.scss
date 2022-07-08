@@ -2,7 +2,6 @@
   display: contents;
   max-height: 100%;
   flex: 1 1 auto;
-  max-width: 1200px;
   
   ::ng-deep .imx-table-container .imx-data-table-no-results {
     height: 100%;
@@ -15,7 +14,6 @@
 
 .imx-heading-wrapper {
   display: flex;
-  max-width: 1200px;
 
   .imx-helper-alert {
     display: flex;

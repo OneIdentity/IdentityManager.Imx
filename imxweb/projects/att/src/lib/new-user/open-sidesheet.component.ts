@@ -27,15 +27,18 @@
 import { Component } from '@angular/core';
 import { EuiSidesheetConfig, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
+
 import { NewUserComponent } from './new-user.component';
 
 @Component({
-  templateUrl: './open-sidesheet.component.html'
+  templateUrl: './open-sidesheet.component.html',
+  styleUrls: ['./open-sidesheet.component.scss']
 })
 export class OpenSidesheetComponent {
 
-  constructor(private readonly sidesheet: EuiSidesheetService,
-              private readonly translate: TranslateService) { }
+  constructor(
+    private readonly sidesheet: EuiSidesheetService,
+    private readonly translate: TranslateService) { }
 
   public async openSidesheet(): Promise<void> {
     const config: EuiSidesheetConfig = {
@@ -45,7 +48,7 @@ export class OpenSidesheetComponent {
       headerColour: 'blue',
       bodyColour: 'asher-gray',
       padding: '0px',
-      disableClose: false,
+      disableClose: true,
       testId: 'register-new-user',
     };
     this.sidesheet.open(NewUserComponent, config);

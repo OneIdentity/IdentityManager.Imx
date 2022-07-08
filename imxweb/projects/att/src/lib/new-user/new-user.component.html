@@ -1,36 +1,39 @@
 <div eui-sidesheet-content>
 
-    <mat-card class="contactCard">
-        <mat-card-content *ngIf="!busy">
-            <p translate>#LDS#Fill out the following fields.</p>
-            <form id="personalDataForm" [formGroup]="profileForm">
-                <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"
-                    (controlCreated)="profileForm.addControl(cdr.column.ColumnName, $event)"></imx-cdr-editor>
-            </form>
+  <mat-card class="contactCard">
+    <mat-card-content *ngIf="!busy">
+      <p translate>#LDS#Fill out the following fields.</p>
+      <form id="personalDataForm" [formGroup]="profileForm">
+        <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"
+          (controlCreated)="profileForm.addControl(cdr.column.ColumnName, $event)"></imx-cdr-editor>
+      </form>
 
-            <div class="alert-container">
-                <eui-alert type="info" [condensed]="true"><span>{{ LdsCaptchaInfo | translate }}</span>
-                </eui-alert>
-            </div>
+      <div class="alert-container">
+        <eui-alert type="info" [condensed]="true">
+          <span>{{ ldsCaptchaInfo | translate }}</span>
+        </eui-alert>
+      </div>
 
-            <div class="captcha-container">
-                <imx-captcha></imx-captcha>
+      <div class="captcha-container">
+        <imx-captcha></imx-captcha>
 
-                <input placeholder="{{'#LDS#Enter characters from the image' | translate}}" type="text"
-                    [(ngModel)]="captchaSvc.Response" [attr.data-imx-identifier]="'captcha-code'" [required]="true">
-            </div>
+        <input placeholder="{{'#LDS#Enter characters from the image' | translate}}" type="text"
+          [(ngModel)]="captchaSvc.Response" [attr.data-imx-identifier]="'captcha-code'" [required]="true">
+      </div>
 
-            <!-- error messages should appear here, and not on the main login
-            component, where they would be hidden by the sidesheet-->
-            <imx-usermessage class="errormessages" panelClass="imx-small-message" [target]="'sidesheet'"></imx-usermessage>
-        </mat-card-content>
-    </mat-card>
+      <!-- error messages should appear here, and not on the main login component, where they would be hidden by the sidesheet-->
+      <imx-usermessage class="errormessages" panelClass="imx-small-message" [target]="'sidesheet'"></imx-usermessage>
+    </mat-card-content>
+  </mat-card>
 </div>
 
 <div eui-sidesheet-actions color="white">
-    <button mat-raised-button (click)="captchaSvc.ReinitCaptcha()">{{
-        '#LDS#Refresh image' | translate}}</button>
+  <button mat-raised-button (click)="captchaSvc.ReinitCaptcha()">
+    {{ '#LDS#Refresh image' | translate}}
+  </button>
 
-    <button data-imx-identifier="save-button" mat-raised-button color="primary" [disabled]="profileForm.invalid"
-        (click)="Save()">{{'#LDS#Create account' | translate}}</button>
+  <button data-imx-identifier="save-button" mat-raised-button color="primary" [disabled]="profileForm.invalid"
+    (click)="save()">
+    {{'#LDS#Create account' | translate}}
+  </button>
 </div>

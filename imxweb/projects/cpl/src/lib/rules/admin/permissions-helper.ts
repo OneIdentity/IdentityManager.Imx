@@ -32,3 +32,7 @@ export function isCiso(groups: string[]): boolean {
 export function isRuleOwner(groups: string[]): boolean {
   return groups.find(item => item === 'vi_4_RULEADMIN_RESPONSIBLE') != null;
 }
+
+export function isExceptionAdmin(groups: string[]): boolean {
+  return groups.find(item => item === 'vi_4_RULEADMIN_EXCEPTION') != null;
+}

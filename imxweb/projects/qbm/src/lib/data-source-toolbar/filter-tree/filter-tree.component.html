@@ -5,7 +5,7 @@
   </imx-data-tree>
 </mat-dialog-content>
 
-<mat-dialog-actions>
+<mat-dialog-actions *ngIf="data?.filterTreeParameter?.multiSelect || currentlySelectedFilter?.length > 0">
   <div class="imx-current-filter" *ngIf="!data?.filterTreeParameter?.multiSelect && currentlySelectedFilter?.length > 0">
     <span>{{'#LDS#Selected item' |translate}}:</span>
     <span>{{currentlySelectedFilter[0].GetColumn('LongDisplay').GetValue()}}</span>

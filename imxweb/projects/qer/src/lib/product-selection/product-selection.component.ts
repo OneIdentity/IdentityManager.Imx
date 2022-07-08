@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTabChangeEvent, MatTabGroup } from '@angular/material/tabs';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -40,7 +40,7 @@ import {
   PortalItshopPeergroupMemberships,
   RequestableProductForPerson,
   QerProjectConfig,
-  PortalItshopPatternRequestable
+  PortalItshopPatternRequestable,
 } from 'imx-api-qer';
 
 import {
@@ -50,7 +50,7 @@ import {
   EntityService,
   BaseReadonlyCdr,
   BaseCdr,
-  AuthenticationService
+  AuthenticationService,
 } from 'qbm';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
 import { UserModelService } from '../user/user-model.service';
@@ -65,7 +65,6 @@ import { CategoryTreeComponent } from './servicecategory-list/category-tree.comp
 import { RoleMembershipsComponent } from './role-memberships/role-memberships.component';
 import { RecipientsWrapper } from './recipients-wrapper';
 import { ShelfService } from '../itshop/shelf.service';
-import { throwToolbarMixedModesError } from '@angular/material/toolbar';
 import { ProductDetailsSidesheetComponent } from './product-details-sidesheet/product-details-sidesheet.component';
 import { PatternDetailsSidesheetComponent } from './pattern-details-sidesheet/pattern-details-sidesheet.component';
 import { PatternItemService } from '../pattern-item-list/pattern-item.service';
@@ -75,12 +74,9 @@ import { PatternItemListComponent } from '../pattern-item-list/pattern-item-list
 @Component({
   templateUrl: './product-selection.component.html',
   styleUrls: ['./product-selection.component.scss'],
-  selector: 'imx-product-selection'
+  selector: 'imx-product-selection',
 })
 export class ProductSelectionComponent implements OnInit, OnDestroy {
-
-  @ViewChild('CallAction12') public tplCallAction12: TemplateRef<any>;
-  @ViewChild('Call4') public tplCall4: TemplateRef<any>;
   @ViewChild(ServiceitemListComponent) public serviceitemListComponent: ServiceitemListComponent;
   @ViewChild(PatternItemListComponent) public patternitemListComponent: PatternItemListComponent;
   @ViewChild(ServiceCategoryListComponent) public serviceCategoryListComponent: ServiceCategoryListComponent;
@@ -134,7 +130,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     private readonly entityService: EntityService,
     authentication: AuthenticationService
   ) {
-    this.authSubscription = authentication.onSessionResponse.subscribe(elem => {
+    this.authSubscription = authentication.onSessionResponse.subscribe((elem) => {
       this.userUid = elem.UserUid;
     });
   }
@@ -152,19 +148,14 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     recipientsProperty.FkRelation = this.qerClient.typedClient.PortalCartitem.GetSchema().Columns.UID_PersonOrdered.FkRelation;
 
     const dummyCartItemEntity = this.qerClient.typedClient.PortalCartitem.createEntity().GetEntity();
-    const fkProviderItems = this.qerClient.client.getFkProviderItems('portal/cartitem').map(item => ({
+    const fkProviderItems = this.qerClient.client.getFkProviderItems('portal/cartitem').map((item) => ({
       ...item,
       load: (_, parameters = {}) => item.load(dummyCartItemEntity, parameters),
-      getDataModel: async (entity) =>
-        item.getDataModel(entity),
-      getFilterTree: async (entity, parentKey) => item.getFilterTree(entity, parentKey)
+      getDataModel: async (entity) => item.getDataModel(entity),
+      getFilterTree: async (entity, parentKey) => item.getFilterTree(entity, parentKey),
     }));
 
-    const column = this.entityService.createLocalEntityColumn(
-      recipientsProperty,
-      fkProviderItems,
-      { Value: this.userUid }
-    );
+    const column = this.entityService.createLocalEntityColumn(recipientsProperty, fkProviderItems, { Value: this.userUid });
     this.recipients = new EntityValue(column);
 
     this.recipientsWrapper = new RecipientsWrapper(this.recipients);
@@ -180,15 +171,14 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
 
     this.searchString = this.activatedRoute.snapshot.paramMap.get('ProductSearchString');
     if (this.searchString) {
-
       /* user can pass product search string by URL parameter -> load the data with this search string
-      */
+       */
     }
 
     // preset recipient to the current user
     await this.recipients.Column.PutValueStruct({
       DataValue: this.userUid,
-      DisplayValue: await this.getPersonDisplay(this.userUid)
+      DisplayValue: await this.getPersonDisplay(this.userUid),
     });
 
     const uidPerson = this.activatedRoute.snapshot.paramMap.get('UID_Person');
@@ -196,7 +186,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     if (uidPerson) {
       await this.recipients.Column.PutValueStruct({
         DataValue: uidPerson,
-        DisplayValue: await this.getPersonDisplay(uidPerson)
+        DisplayValue: await this.getPersonDisplay(uidPerson),
       });
       // TODO in this case, CanRequestForSomebodyElse is false
     }
@@ -207,15 +197,9 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     this.canSelectFromTemplate = this.projectConfig.ITShopConfig.VI_ITShop_ProductSelectionFromTemplate;
     this.canSelectByRefUser = this.projectConfig.ITShopConfig.VI_ITShop_ProductSelectionByReferenceUser;
 
-    this.cartItemRecipients = new BaseCdr(
-      this.recipients.Column,
-      '#LDS#Recipients'
-    );
+    this.cartItemRecipients = new BaseCdr(this.recipients.Column, '#LDS#Recipients');
 
-    this.cartItemRecipientsReadonly = new BaseReadonlyCdr(
-      this.recipients.Column,
-      '#LDS#Target identities'
-    );
+    this.cartItemRecipientsReadonly = new BaseReadonlyCdr(this.recipients.Column, '#LDS#Target identities');
   }
 
   public openCategoryTree(): void {
@@ -227,8 +211,8 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
       data: {
         selectedServiceCategory: this.selectedCategory,
         recipients: this.recipients,
-        showImage: false
-      }
+        showImage: false,
+      },
     });
 
     sidesheetRef.afterClosed().subscribe((category: PortalShopCategories) => {
@@ -253,13 +237,8 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     return this.requesterSelected() && !this.uidaccproduct;
   }
 
-  public label5(): void {
-    this.dialogService.open(this.tplCall4);
-  }
-
-  public button1(): void {
-    // TODO
-    // this.router.navigate(['objectsheet', 'AccProduct', this.accProductSelected.GetEntity().GetKeys[0]]);
+  public getDataSourceView(): { selected: string } {
+    return this.uidPersonPeerGroup ? { selected: 'table' } : this.dataSourceView;
   }
 
   public showRequestsForRecipient(): void {
@@ -274,24 +253,26 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  public selectRequestTemplate(): void {
-    this.dialogService.open(this.tplCallAction12);
-  }
-
   public async selectReferenceUser(): Promise<void> {
-    const selection = await this.sideSheetService.open(FkAdvancedPickerComponent, {
-      title: await this.translate.get('#LDS#Heading Select Reference User').toPromise(),
-      padding: '0',
-      width: '600px',
-      headerColour: 'iris-blue',
-      testId: 'referenceUser-sidesheet',
-      data: {
-        displayValue: '',
-        fkRelations: this.qerClient.typedClient.PortalCartitem.createEntity()
-          .UID_PersonOrdered.GetMetadata().GetFkRelations(),
-        isMultiValue: false
-      }
-    }).afterClosed().toPromise();
+    const disabledIds =
+      this.recipients.Column?.GetValue()?.split('').length === 1 ? this.recipients.Column?.GetValue()?.split('') : undefined;
+
+    const selection = await this.sideSheetService
+      .open(FkAdvancedPickerComponent, {
+        title: await this.translate.get('#LDS#Heading Select Reference User').toPromise(),
+        padding: '0',
+        width: '600px',
+        headerColour: 'iris-blue',
+        testId: 'referenceUser-sidesheet',
+        data: {
+          displayValue: '',
+          fkRelations: this.qerClient.typedClient.PortalCartitem.createEntity().UID_PersonOrdered.GetMetadata().GetFkRelations(),
+          isMultiValue: false,
+          disabledIds: disabledIds,
+        },
+      })
+      .afterClosed()
+      .toPromise();
 
     if (selection && selection.candidates?.length > 0) {
       this.setReferenceUser(selection.candidates[0]);
@@ -347,34 +328,40 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
   }
 
   public async requestDetails(item: PortalShopServiceitems): Promise<void> {
-    await this.sideSheetService.open(ProductDetailsSidesheetComponent, {
-      title: await this.translate.get('#LDS#Heading View Product Details').toPromise(),
-      padding: '0px',
-      width: 'max(700px, 60%)',
-      headerColour: 'iris-blue',
-      bodyColour: 'asher-gray',
-      testId: 'product-details-sidesheet',
-      data: {
-        item,
-        projectConfig: this.projectConfig
-      }
-    }).afterClosed().toPromise();
+    await this.sideSheetService
+      .open(ProductDetailsSidesheetComponent, {
+        title: await this.translate.get('#LDS#Heading View Product Details').toPromise(),
+        padding: '0px',
+        width: 'max(700px, 60%)',
+        headerColour: 'iris-blue',
+        bodyColour: 'asher-gray',
+        testId: 'product-details-sidesheet',
+        data: {
+          item,
+          projectConfig: this.projectConfig,
+        },
+      })
+      .afterClosed()
+      .toPromise();
   }
 
   public async requestTemplateDetails(items: PortalShopServiceitems[]): Promise<void> {
-    await this.sideSheetService.open(PatternDetailsSidesheetComponent, {
-      title: await this.translate.get('#LDS#Heading View Request Template Details').toPromise(),
-      padding: '0px',
-      width: 'max(700px, 60%)',
-      headerColour: 'iris-blue',
-      bodyColour: 'asher-gray',
-      testId: 'template-details-sidesheet',
-      data: {
-        items,
-        projectConfig: this.projectConfig
-      }
-    }).afterClosed().toPromise();
-}
+    await this.sideSheetService
+      .open(PatternDetailsSidesheetComponent, {
+        title: await this.translate.get('#LDS#Heading View Request Template Details').toPromise(),
+        padding: '0px',
+        width: 'max(700px, 60%)',
+        headerColour: 'iris-blue',
+        bodyColour: 'asher-gray',
+        testId: 'template-details-sidesheet',
+        data: {
+          items,
+          projectConfig: this.projectConfig,
+        },
+      })
+      .afterClosed()
+      .toPromise();
+  }
 
   public async onAddItemsToCart(): Promise<void> {
     if (!this.selectedItems?.length && !this.selectedRoles?.length && !this.selectedTemplates.length) {
@@ -382,9 +369,9 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
         data: {
           ShowOk: true,
           Title: await this.translate.get('#LDS#Heading Add to Cart').toPromise(),
-          Message: await this.translate.get('#LDS#Please select at least one product you want to add to your shopping cart.').toPromise()
+          Message: await this.translate.get('#LDS#Please select at least one product you want to add to your shopping cart.').toPromise(),
         },
-        panelClass: 'imx-messageDialog'
+        panelClass: 'imx-messageDialog',
       });
       return;
     }
@@ -417,12 +404,12 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     if (arg.value === 'self') {
       await this.recipients.Column.PutValueStruct({
         DataValue: this.userUid,
-        DisplayValue: await this.getPersonDisplay(this.userUid)
+        DisplayValue: await this.getPersonDisplay(this.userUid),
       });
     } else {
       await this.recipients.Column.PutValueStruct({
         DataValue: '',
-        DisplayValue: ''
+        DisplayValue: '',
       });
     }
     this.onRecipientsChanged();
@@ -481,7 +468,11 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  private async orderSelected(serviceItems: PortalShopServiceitems[], templateItems: PortalItshopPatternRequestable[], roles?: PortalItshopPeergroupMemberships[]): Promise<void> {
+  private async orderSelected(
+    serviceItems: PortalShopServiceitems[],
+    templateItems: PortalItshopPatternRequestable[],
+    roles?: PortalItshopPeergroupMemberships[]
+  ): Promise<void> {
     if (this.recipients) {
       const recipientsUids = MultiValue.FromString(this.recipients.value).GetValues();
       const recipientsDisplays = MultiValue.FromString(this.recipients.Column.GetDisplayValue()).GetValues();
@@ -496,7 +487,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
             serviceItems,
             recipientsUids.map((uid, index) => ({
               DataValue: uid,
-              DisplayValue: recipientsDisplays[index]
+              DisplayValue: recipientsDisplays[index],
             }))
           );
         } finally {
@@ -507,7 +498,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
           if (hasItems) {
             setTimeout(() => this.busyIndicator.show());
             try {
-              savedItems = await this.cartItemsProvider.addItems(serviceItemsForPersons.filter(item => item.UidITShopOrg?.length > 0));
+              savedItems = await this.cartItemsProvider.addItems(serviceItemsForPersons.filter((item) => item.UidITShopOrg?.length > 0));
             } finally {
               setTimeout(() => this.busyIndicator.hide());
             }
@@ -515,14 +506,14 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
         }
       }
 
-      if (templateItems && templateItems.length > 0 ) {
+      if (templateItems && templateItems.length > 0) {
         let templateItemsForPersons: RequestableProductForPerson[];
         try {
           templateItemsForPersons = await this.patternItemsService.getPatternItemsForPersons(
             templateItems,
             recipientsUids.map((uid, index) => ({
               DataValue: uid,
-              DisplayValue: recipientsDisplays[index]
+              DisplayValue: recipientsDisplays[index],
             }))
           );
         } finally {
@@ -533,7 +524,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
           if (hasItems) {
             setTimeout(() => this.busyIndicator.show());
             try {
-              savedItems = await this.cartItemsProvider.addItems(templateItemsForPersons.filter(item => item.UidITShopOrg?.length > 0));
+              savedItems = await this.cartItemsProvider.addItems(templateItemsForPersons.filter((item) => item.UidITShopOrg?.length > 0));
             } finally {
               setTimeout(() => this.busyIndicator.hide());
             }
@@ -545,7 +536,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
         setTimeout(() => this.busyIndicator.show());
         try {
           await this.cartItemsProvider.addItemsFromRoles(
-            roles.map(item => item.XObjectKey.value),
+            roles.map((item) => item.XObjectKey.value),
             this.recipientsWrapper?.uids
           );
           savedItems = true;
@@ -557,7 +548,6 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
       if (savedItems) {
         this.router.navigate(['shoppingcart']);
       }
-
     }
   }
 

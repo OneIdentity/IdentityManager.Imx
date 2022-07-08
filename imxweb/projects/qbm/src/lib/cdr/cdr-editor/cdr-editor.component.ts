@@ -68,9 +68,12 @@ export class CdrEditorComponent implements OnChanges {
         this.isReadonly = this.cdr.isReadOnly();
         if (ref.instance.valueHasChanged) {
           ref.instance.valueHasChanged.subscribe(value => {
-            if ((value || '') !== (this.cdr.column.GetValue() || '')) {
-              this.valueChange.emit(value);
-            }
+            if (value?.forceEmit === true) {
+              this.valueChange.emit(value.value);
+            } else
+              if ((value.value || '') !== (this.cdr.column.GetValue() || '')) {
+                this.valueChange.emit(value.value);
+              }
             if (this.cdr.isReadOnly() !== this.isReadonly) {
               this.isReadonly = this.cdr.isReadOnly();
               this.readOnlyChanged.emit(this.isReadonly);

@@ -25,6 +25,7 @@
  */
 
 import { Component, Input } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { DecisionHistoryService } from '../decision-history.service';
 
 import { ApproverContainer } from './approver-container';
@@ -38,5 +39,8 @@ import { WorkflowHistoryItemWrapper } from './workflow-history-item-wrapper';
 export class DecisionHistoryComponent {
   @Input() public approverContainer: ApproverContainer;
   @Input() public workflow: WorkflowHistoryItemWrapper[];
-  constructor(public readonly decisionHistory: DecisionHistoryService) {}
+  constructor(
+    public readonly decisionHistory: DecisionHistoryService,
+    private readonly translate: TranslateService
+  ) { }
 }

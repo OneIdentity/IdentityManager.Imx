@@ -32,7 +32,6 @@ import { SelectecObjectsInfo } from '../selected-objects/selected-objects-info.i
 import { FilterElementColumnService } from './filter-element-column.service';
 
 export class FilterElementModel {
-
   public columnForFilter: IEntityColumn;
   public selectedObjectsSubject: BehaviorSubject<SelectecObjectsInfo> = new BehaviorSubject<SelectecObjectsInfo>(undefined);
 
@@ -69,7 +68,8 @@ export class FilterElementModel {
     public displays: string[],
     public readonly filterElement: PolicyFilterElement,
     private readonly uidAttestationObject: string,
-    private readonly columnFactory: FilterElementColumnService) {
+    private readonly columnFactory: FilterElementColumnService
+  ) {
     this.setColumnForFilter();
   }
 
@@ -83,21 +83,18 @@ export class FilterElementModel {
     this.recalculateMatching();
   }
 
-  private setColumnForFilter() {
-    this.columnForFilter = this.columnFactory.buildColumn(this.getParameterData(this.attestationSubType),
-      this.attestationSubType, this.parameterValue, this.getColumnDisplay(), this.displays, this.hasFk());
-
-  }
-
   public recalculateMatching(): void {
-    const data = this.filterErrors() == null ? {
-      policyFilter: {
-        ConcatenationType: 'OR',
-        Elements: [this.filterElement]
-      },
-      uidPickCategory: '',
-      uidAttestationObject: this.uidAttestationObject
-    } : undefined;
+    const data =
+      this.filterErrors() == null
+        ? {
+            policyFilter: {
+              ConcatenationType: 'OR',
+              Elements: [this.filterElement],
+            },
+            uidPickCategory: '',
+            uidAttestationObject: this.uidAttestationObject,
+          }
+        : undefined;
     this.selectedObjectsSubject.next(data);
   }
 
@@ -110,12 +107,21 @@ export class FilterElementModel {
   }
 
   public hasFk(): boolean {
-    return 'UID' === FilterElementModel.getRequiredParameterType(this.getParameterData(this.attestationSubType))
-      || this.policyFilterRequiresParameterName('DOMAIN');
+    return (
+      'UID' === FilterElementModel.getRequiredParameterType(this.getParameterData(this.attestationSubType)) ||
+      this.policyFilterRequiresParameterName('DOMAIN')
+    );
   }
 
-  public filterErrors(): ({ [key: string]: boolean } | null) {
+  public getColumnName(): string {
+    return this.getParameterData(this.attestationSubType)?.ColumnName;
+  }
 
+  public getTableName(): string {
+    return this.getParameterData(this.attestationSubType)?.TableName;
+  }
+
+  public filterErrors(): { [key: string]: boolean } | null {
     const subType = FilterElementModel.getRequiredParameterType(this.getParameterData(this.attestationSubType));
 
     if (this.attestationSubType == null || this.attestationSubType === '') {
@@ -130,18 +136,26 @@ export class FilterElementModel {
       return { lagerZero: true };
     }
 
-    if ('THRESHOLD' === subType &&
-      (parseFloat(this.parameterValue) < 0 || parseFloat(this.parameterValue) > 1)) {
+    if ('THRESHOLD' === subType && (parseFloat(this.parameterValue) < 0 || parseFloat(this.parameterValue) > 1)) {
       return { loweroutOfRange: true };
     }
 
-    if ('THRESHOLD' === subType && (
-      parseFloat(this.parameterValue2) < 0 || parseFloat(this.parameterValue2) > 1)) {
+    if ('THRESHOLD' === subType && (parseFloat(this.parameterValue2) < 0 || parseFloat(this.parameterValue2) > 1)) {
       return { upperoutOfRange: true };
     }
 
     return null;
+  }
 
+  private setColumnForFilter(): void {
+    this.columnForFilter = this.columnFactory.buildColumn(
+      this.getParameterData(this.attestationSubType),
+      this.attestationSubType,
+      this.parameterValue,
+      this.getColumnDisplay(),
+      this.displays,
+      this.hasFk()
+    );
   }
 
   private getColumnDisplay(): string {
@@ -160,7 +174,7 @@ export class FilterElementModel {
   }
 
   public static getParameterData(parameters: ParmData[], parameterType: string): ParmData {
-    const arr = parameters.filter(p => p.Uid === parameterType);
+    const arr = parameters.filter((p) => p.Uid === parameterType);
     if (arr.length !== 1) {
       return null;
     }
@@ -169,16 +183,26 @@ export class FilterElementModel {
   }
 
   public static getRequiredParameterType(w: ParmData): string {
-    if (w == null || w.RequiredParameter == null) { return ''; }
+    if (w == null || w.RequiredParameter == null) {
+      return '';
+    }
 
-    if (w.RequiredParameter === 'UID_ORIGIN') { return 'UID_ORIGIN'; }
-    if (w.RequiredParameter.startsWith('UID_')) { return 'UID'; }
+    if (w.RequiredParameter === 'UID_ORIGIN') {
+      return 'UID_ORIGIN';
+    }
+    if (w.RequiredParameter.startsWith('UID_')) {
+      return 'UID';
+    }
     return w.RequiredParameter;
   }
 
   public static getDefaultValue(parameterName: string, upper: boolean): string {
-    if (parameterName === 'UINT') { return upper ? '' : '0'; }
-    if (parameterName === 'THRESHOLD') { return upper ? '1' : '0'; }
+    if (parameterName === 'UINT') {
+      return upper ? '' : '0';
+    }
+    if (parameterName === 'THRESHOLD') {
+      return upper ? '1' : '0';
+    }
     return '';
   }
 
@@ -186,17 +210,20 @@ export class FilterElementModel {
     if (str === '') {
       return '';
     }
-    const seperated = this.replaceAll(
-      this.replaceAll(str, '\'', ''), ',', MultiValueProperty.DefaultSeparator);
+    const seperated = this.replaceAll(this.replaceAll(str, '\'', ''), ',', MultiValueProperty.DefaultSeparator);
     return seperated;
   }
 
   public static buildCommaSeparatedList(value: string): string {
-    return value ? value.split(MultiValueProperty.DefaultSeparator).map(elem => `'${elem}'`).join(',') : '';
+    return value
+      ? value
+          .split(MultiValueProperty.DefaultSeparator)
+          .map((elem) => `'${elem}'`)
+          .join(',')
+      : '';
   }
 
   private static replaceAll(str: string, oldValue: string, newValue: string): string {
     return str.split(oldValue).join(newValue);
   }
-
 }

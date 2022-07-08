@@ -25,7 +25,9 @@
  */
 
 import { Component, Input } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
+import { ValType } from 'imx-qbm-dbts';
 import { EntityColumnContainer } from '../entity-column-container';
 
 @Component({
@@ -36,4 +38,17 @@ import { EntityColumnContainer } from '../entity-column-container';
 export class ViewPropertyComponent {
   @Input() public columnContainer: EntityColumnContainer;
   @Input() public defaultValue: string;
+
+  constructor(
+    private translate: TranslateService
+  ) { }
+
+  public get displayedValue(): string {
+
+    if (this.columnContainer?.type === ValType.Date) {
+      const date: Date = new Date(this.columnContainer.value ?? this.defaultValue);
+      return date.toLocaleString(this.translate.currentLang);
+    }
+    return this.columnContainer?.displayValue || this.columnContainer?.value || this.defaultValue;
+  }
 }

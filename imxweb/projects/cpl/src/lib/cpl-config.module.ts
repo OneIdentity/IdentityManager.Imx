@@ -42,12 +42,13 @@ import { TilesModule } from 'qer';
 import { DashboardPluginComponent } from './dashboard-plugin/dashboard-plugin.component';
 import { CartItemComplianceCheckComponent } from './item-validator/cart-item-compliance-check/cart-item-compliance-check.component';
 import { RulesComponent } from './rules/rules.component';
-import { ComplianceRulesGuardService } from './guards/compliance-rules-guard.service';
+import { ComplianceViolationDetailsComponent } from './request/compliance-violation-details/compliance-violation-details.component';
+import { WorkflowViolationDetailsComponent } from './request/workflow-violation-details/workflow-violation-details.component';
 import { IdentityRuleViolationsModule } from './identity-rule-violations/identity-rule-violations.module';
 import { RulesViolationsModule } from './rules-violations/rules-violations.module';
 import { RulesViolationsComponent } from './rules-violations/rules-violations.component';
-import { ComplianceViolationDetailsComponent } from './request/compliance-violation-details/compliance-violation-details.component';
-import { WorkflowViolationDetailsComponent } from './request/workflow-violation-details/workflow-violation-details.component';
+import { ComplianceRulesGuardService } from './guards/compliance-rules-guard.service';
+import { RuleViolationsGuardService } from './guards/rule-violations-guard.service';
 
 const routes: Routes = [
   {
@@ -59,7 +60,7 @@ const routes: Routes = [
   {
     path: 'compliance/rulesviolations/approve',
     component: RulesViolationsComponent,
-    canActivate: [RouteGuardService],
+    canActivate: [RouteGuardService, RuleViolationsGuardService],
     resolve: [RouteGuardService]
   },
 ];

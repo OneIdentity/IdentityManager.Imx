@@ -31,7 +31,7 @@ import { Subscription } from 'rxjs';
 import { LimitedValueData } from 'imx-qbm-dbts';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
-import { CdrEditor } from '../cdr-editor.interface';
+import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
 import { EntityColumnContainer } from '../entity-column-container';
 import { MultiValueService } from '../../multi-value/multi-value.service';
 
@@ -48,7 +48,7 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
 
   public readonly columnContainer = new EntityColumnContainer<string>();
 
-  public readonly valueHasChanged = new EventEmitter<any>();
+  public readonly valueHasChanged = new EventEmitter<ValueHasChangedEventArg>();
 
   private readonly subscriptions: Subscription[] = [];
   private isWriting = false;
@@ -78,7 +78,7 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
         if (this.control.value !== this.columnContainer.value) {
           this.initValues();
         }
-        this.valueHasChanged.emit(this.columnContainer.value);
+        this.valueHasChanged.emit({value: this.columnContainer.value});
       }));
       this.logger.trace(this, 'Control initialized');
     } else {
@@ -116,7 +116,7 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
       return;
     }
 
-    this.valueHasChanged.emit(value);
+    this.valueHasChanged.emit({value, forceEmit: true});
 
     try {
       this.logger.debug(this, 'writeValue - updateCdrValue...');

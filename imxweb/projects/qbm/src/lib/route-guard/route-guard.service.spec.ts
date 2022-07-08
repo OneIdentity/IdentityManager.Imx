@@ -88,7 +88,10 @@ function createOAuthServiceStub(oauthParameters: string[] = []) {
       .createSpy('IsOAuthParameter')
       .and.callFake(
         (name: string) => oauthParameters.findIndex((param: string) => param === name) > -1
-      )
+      ),
+      hasRequiredOAuthParameter: jasmine
+      .createSpy('hasRequiredOAuthParameter')
+      .and.returnValue(true)
   };
 }
 

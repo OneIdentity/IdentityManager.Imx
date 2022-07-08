@@ -204,7 +204,7 @@ describe('LifecycleActionComponent', () => {
       component.data.elements = [];
       component.whenToPublish = testcase.whenToPublish as ('now' | 'future');
       component.submitData();
-      expect(mockMatDialogRef.close).toHaveBeenCalledWith({ publishFuture: testcase.expectedIsInActive, date: component.datepickerFormControl.value });
+      expect(mockMatDialogRef.close).toHaveBeenCalledWith({ publishFuture: testcase.expectedIsInActive, date: component.datepickerFormControl.value.toDate() });
     }));
 
   [

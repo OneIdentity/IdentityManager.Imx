@@ -15,7 +15,15 @@
   .imx-tab-content-body {
     flex: 1;
     padding: 32px;
-    overflow: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    :first-child {
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
   }
 
   .imx-action-buttons {

@@ -74,7 +74,7 @@ describe('ItshopPatternComponent', () => {
     isShopAdmin: jasmine.createSpy('isShopAdmin').and.callFake(() => isShopAdmin)
   };
 
-  let routeConfigPath = 'configuration/carttemplates';
+  let routeConfigPath = 'configuration/requesttemplates';
   const activatedRouteStub = {
     snapshot: {
       routeConfig: { path: routeConfigPath }
@@ -187,7 +187,7 @@ describe('ItshopPatternComponent', () => {
       patterServiceStub.getPublicPatterns.calls.reset();
       const state = { OrderBy: 'Ident_ShoppingCartPattern asc' };
       if (testcase.adminMode) {
-        routeConfigPath = 'configuration/carttemplates';
+        routeConfigPath = 'configuration/requesttemplates';
         isShopAdmin = true;
       } else {
         routeConfigPath = 'something else';

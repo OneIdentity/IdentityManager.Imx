@@ -108,6 +108,10 @@ export class FkSelectorComponent implements OnInit {
     this.loadTableData({ search: keywords });
   }
 
+  public amIDisabled(item: TypedEntity): boolean {
+    return this.data.disabledIds?.find( x => x === item.GetEntity().GetKeys()[0]) ? true : false;
+  }
+
   /**
    * @ignore
    */

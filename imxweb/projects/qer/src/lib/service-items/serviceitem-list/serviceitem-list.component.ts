@@ -25,11 +25,22 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, Input, Output, EventEmitter, AfterViewInit, OnChanges, SimpleChanges, ViewChild, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  AfterViewInit,
+  OnChanges,
+  SimpleChanges,
+  ViewChild,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { DataSourceToolbarSettings, DataSourceToolbarComponent, DataTileBadge, DataTileMenuItem, SettingsService, buildAdditionalElementsString } from 'qbm';
+import { DataSourceToolbarSettings, DataSourceToolbarComponent, DataTileBadge, DataTileMenuItem, SettingsService, buildAdditionalElementsString, MessageDialogComponent } from 'qbm';
 import {
   CollectionLoadParameters,
   DisplayColumns,
@@ -38,7 +49,7 @@ import {
   ValType,
   MultiValue,
   EntitySchema,
-  DataModel
+  DataModel,
 } from 'imx-qbm-dbts';
 import { ITShopConfig, PortalShopCategories, PortalShopServiceitems } from 'imx-api-qer';
 
@@ -46,6 +57,7 @@ import { ServiceItemsService } from '../service-items.service';
 import { ServiceItemInfoComponent } from '../service-item-info/service-item-info.component';
 import { ImageService } from '../../itshop/image.service';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'imx-serviceitem-list',
@@ -73,6 +85,7 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
   public DisplayColumns = DisplayColumns;
   public displayedColumns: IClientProperty[];
   public includeChildCategories: boolean;
+  public noDataText = "#LDS#No data";
   public readonly status = {
     getBadges: (prod: PortalShopServiceitems): DataTileBadge[] => {
       const result: DataTileBadge[] = [];
@@ -107,6 +120,10 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
   public peerGroupSize: number;
   public isLoading = false;
 
+  public get options(): string[] {
+    return this.uidPersonPeerGroup ?? '' !== '' ? ['search', 'filter', 'settings'] : ['search', 'filter', 'settings', 'selectedViewGroup'];
+  }
+
   @ViewChild(DataSourceToolbarComponent) private readonly dst: DataSourceToolbarComponent;
 
   private readonly badgeInfoText = '#LDS#Info';
@@ -121,7 +138,8 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
     private readonly dialog: MatDialog,
     private readonly image: ImageService,
     private readonly settingsService: SettingsService,
-    private readonly projectConfig: ProjectConfigurationService
+    private readonly projectConfig: ProjectConfigurationService,
+    private readonly translate: TranslateService
   ) {
     this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchema = serviceItemsProvider.PortalShopServiceItemsSchema;
@@ -218,10 +236,26 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
           entitySchema: this.entitySchema,
           navigationState: this.navigationState,
           dataModel: this.dataModel,
-          identifierForSessionStore: 'service-item-list'
+          identifierForSessionStore: 'service-item-list',
         };
 
         this.peerGroupSize = data.extendedData?.PeerGroupSize;
+
+        if(this.peerGroupSize === 0) {
+          this.noDataText = '#LDS#Peer group is empty';
+          this.dialog.open(MessageDialogComponent, {
+            data: {
+              ShowOk: true,
+              Title: await this.translate.get(this.noDataText).toPromise(),
+              Message: await this.translate
+                .get('#LDS#There are no result because you do not belong to a peer group')
+                .toPromise(),
+            },
+            panelClass: 'imx-messageDialog',
+          });
+        } else {
+          this.noDataText = '#LDS#No data';
+        }
       } else {
         this.dstSettings = undefined;
       }

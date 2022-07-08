@@ -219,6 +219,7 @@ export class ConfigService {
     const thisPath = path + node.Key;
     for (const n of node.Settings) {
       const searchTerms = [
+        ...displayPath.map(d => d?.toLowerCase()),
         n.Name?.toLowerCase(),
         n.Key?.toLowerCase(),
         n.Description?.toLowerCase()

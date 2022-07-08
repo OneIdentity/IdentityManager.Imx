@@ -91,6 +91,10 @@ export class EsetMembership implements IRoleMembershipType {
     return false;
   }
 
+  public GetUidRole(entity: IEntity): string {
+    return entity.GetColumn("UID_ESet").GetValue();
+  }
+
   public getPrimaryMembers(
     uid: string,
     navigationstate: CollectionLoadParameters

@@ -75,3 +75,18 @@
   overflow: auto;
 }
 
+.no-results {
+  text-align: center;
+  margin: 20px 0;
+
+  .eui-icon {
+    font-size: 100px;
+    color: rgba($black-c, 0.55);
+  }
+
+  p {
+    margin: 0;
+    font-size: 18px;
+    color: $black-9;
+  }
+}

@@ -30,87 +30,105 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
+
 import { RegisterPerson } from 'imx-api-att';
-import { BaseCdr, CaptchaService, ColumnDependentReference, ErrorService, ParameterizedText, UserMessageService } from 'qbm';
+import { BaseCdr, CaptchaService, ColumnDependentReference, ConfirmationService, ErrorService, ParameterizedText, UserMessageService } from 'qbm';
+
 import { ApiService } from '../api.service';
 import { ConfirmDialogComponent } from './confirm-dialog.component';
 
 @Component({
-    templateUrl: './new-user.component.html',
-    styleUrls: ['./new-user.component.scss']
+  templateUrl: './new-user.component.html',
+  styleUrls: ['./new-user.component.scss']
 })
 export class NewUserComponent implements OnInit, OnDestroy {
 
-    public readonly profileForm: FormGroup;
-    public busy = false;
-    public Person: RegisterPerson;
+  public readonly profileForm: FormGroup;
+  public busy = false;
+  public person: RegisterPerson;
 
-    public cdrList: ColumnDependentReference[] = [];
+  public cdrList: ColumnDependentReference[] = [];
 
-    public LdsCaptchaInfo = '#LDS#Please enter the characters from the image.';
-    public LdsAccountInfo = '#LDS#Your account "%CentralAccount%" has been successfully created and the email address "%DefaultEmailAddress%" has been assigned to the account. Once your account is approved, it will be activated.';
-    private disposable: () => void;
+  public ldsCaptchaInfo = '#LDS#Please enter the characters from the image.';
+  public ldsAccountInfo = '#LDS#Your account "%CentralAccount%" has been successfully created and the email address "%DefaultEmailAddress%" has been assigned to the account. Once your account is approved, it will be activated.';
 
-    constructor(private readonly attApiClient: ApiService,
-                public readonly captchaSvc: CaptchaService,
-                private readonly busyService: EuiLoadingService,
-                private readonly messageSvc: UserMessageService,
-                private readonly translate: TranslateService,
-                formBuilder: FormBuilder,
-                private readonly dialog: MatDialog,
-                errorService: ErrorService,
-                private readonly cd: ChangeDetectorRef,
-                private readonly sidesheetRef: EuiSidesheetRef,
-    ) {
-        this.profileForm = new FormGroup({ formArray: formBuilder.array([]) });
-        this.disposable = errorService.setTarget('sidesheet');
-    }
+  private disposable: () => void;
+  private readonly subscriptions: Subscription[] = [];
 
-    public ngOnDestroy(): void {
-        this.disposable();
-    }
+  constructor(
+    public readonly captchaSvc: CaptchaService,
+    private readonly attApiClient: ApiService,
+    private readonly busyService: EuiLoadingService,
+    private readonly cd: ChangeDetectorRef,
+    private readonly dialog: MatDialog,
+    private readonly sidesheetRef: EuiSidesheetRef,
+    private readonly messageSvc: UserMessageService,
+    private readonly translate: TranslateService,
+    errorService: ErrorService,
+    formBuilder: FormBuilder,
+    confirmation: ConfirmationService
+  ) {
+    this.profileForm = new FormGroup({ formArray: formBuilder.array([]) });
+    this.disposable = errorService.setTarget('sidesheet');
 
-    public async ngOnInit(): Promise<void> {
-        this.Person = this.attApiClient.typedClient.RegisterPerson.createEntity();
-
-        try {
-            const data = await this.attApiClient.client.register_config_get();
-            this.cdrList = data.WritablePropertiesForUnregisteredUsers
-                .map(colName => new BaseCdr(this.Person.GetEntity().GetColumn(colName)));
-        } finally {
-            this.busy = false;
-            this.cd.detectChanges();
+    this.subscriptions.push(this.sidesheetRef.closeClicked().subscribe(async (result) => {
+      if (!this.profileForm.pristine) {
+        const close = await confirmation.confirmLeaveWithUnsavedChanges();
+        if (close) {
+          this.sidesheetRef.close();
         }
+      } else {
+        this.sidesheetRef.close(result);
+      }
+    }));
+  }
+
+  public ngOnDestroy(): void {
+    this.subscriptions.forEach(s => s.unsubscribe());
+    this.disposable();
+  }
+  public async ngOnInit(): Promise<void> {
+    this.person = this.attApiClient.typedClient.RegisterPerson.createEntity();
+
+    try {
+      const data = await this.attApiClient.client.register_config_get();
+      this.cdrList = data.WritablePropertiesForUnregisteredUsers
+        .map(colName => new BaseCdr(this.person.GetEntity().GetColumn(colName)));
+    } finally {
+      this.busy = false;
+      this.cd.detectChanges();
     }
+  }
 
-    public async Save() {
-        // reset the error message
-        this.messageSvc.subject.next(undefined);
+  public async save(): Promise<void> {
+    // reset the error message
+    this.messageSvc.subject.next(undefined);
 
-        let overlayRef: OverlayRef;
-        setTimeout(() => overlayRef = this.busyService.show());
-        try {
-            // use response code
-            this.Person.extendedData = { Code: this.captchaSvc.Response };
-            this.captchaSvc.Response = '';
-            await this.Person.GetEntity().Commit(true);
-            this.profileForm.markAsPristine();
+    let overlayRef: OverlayRef;
+    setTimeout(() => overlayRef = this.busyService.show());
+    try {
+      // use response code
+      this.person.extendedData = { Code: this.captchaSvc.Response };
+      this.captchaSvc.Response = '';
+      await this.person.GetEntity().Commit(true);
+      this.profileForm.markAsPristine();
 
-            const template = await this.translate.get(this.LdsAccountInfo).toPromise();
-            const parameterizedText: ParameterizedText = {
-                value: template,
-                marker: { start: '"%', end: '%"' },
-                getParameterValue: columnName => this.Person.GetEntity().GetColumn(columnName).GetDisplayValue()
-            };
-            this.sidesheetRef.close();
-            this.disposable();
-            this.dialog.open(ConfirmDialogComponent, { data: parameterizedText });
+      const template = await this.translate.get(this.ldsAccountInfo).toPromise();
+      const parameterizedText: ParameterizedText = {
+        value: template,
+        marker: { start: '"%', end: '%"' },
+        getParameterValue: columnName => this.person.GetEntity().GetColumn(columnName).GetDisplayValue()
+      };
+      this.sidesheetRef.close();
+      this.disposable();
+      this.dialog.open(ConfirmDialogComponent, { data: parameterizedText });
 
-        } catch (e) {
-            throw e;
-        } finally {
-            this.captchaSvc.ReinitCaptcha();
-            setTimeout(() => this.busyService.hide(overlayRef));
-        }
+    } catch (e) {
+      throw e;
+    } finally {
+      this.captchaSvc.ReinitCaptcha();
+      setTimeout(() => this.busyService.hide(overlayRef));
     }
+  }
 }

@@ -67,6 +67,10 @@ export class OrgMembership implements IRoleMembershipType {
     return entity.GetColumn('UID_Person').GetValue();
   }
 
+  public GetUidRole(entity: IEntity): string {
+    return entity.GetColumn("UID_Org").GetValue();
+  }
+
   public async getCandidates(
     id: string,
     navigationState?: CollectionLoadParameters

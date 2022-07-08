@@ -47,11 +47,13 @@ import { RulesViolationsActionComponent } from './rules-violations-action/rules-
 import { JustificationModule } from 'qer';
 import { RulesViolationsMultiActionComponent } from './rules-violations-action/rules-violations-multi-action/rules-violations-multi-action.component';
 import { RulesViolationsSingleActionComponent } from './rules-violations-action/rules-violations-single-action/rules-violations-single-action.component';
+import { isExceptionAdmin } from '../rules/admin/permissions-helper';
+import { RuleViolationsGuardService } from '../guards/rule-violations-guard.service';
 const routes: Routes = [
   {
     path: 'compliance/rulesviolations/approve',
     component: RulesViolationsComponent,
-    canActivate: [RouteGuardService],
+    canActivate: [RouteGuardService, RuleViolationsGuardService],
     resolve: [RouteGuardService]
   }
 ];
@@ -95,7 +97,7 @@ export class RulesViolationsModule {
 
         const items: MenuItem[] = [];
 
-        if (preProps.includes('ITSHOP')) {
+        if (preProps.includes('ITSHOP') && isExceptionAdmin(groups)) {
           items.push(
             {
               id: 'CPL_Compliance_RulesViolations',

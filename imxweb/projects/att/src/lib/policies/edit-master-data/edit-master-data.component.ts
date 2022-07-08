@@ -149,7 +149,6 @@ export class EditMasterDataComponent implements OnInit, OnDestroy {
   }
 
   public async updateAttestation(): Promise<void> {
-    await this.policy.policy.Attestators.Column.PutValueStruct({ DataValue: '', DisplayValue: '' });
     this.objectProperties.Attestators.cdr = new BaseCdr(this.policy.policy.Attestators.Column);
     this.logger.debug(this, 'Attestator cdr updated');
   }

@@ -43,7 +43,7 @@
     <mat-tab label="{{ '#LDS#Heading Email Notifications' | translate }}" data-imx-identifier="profile-email" *ngIf="hasMailSubscriptions">
       <imx-mail-subscriptions [uidPerson]="userUid" [mailInfo]="mailInfo"></imx-mail-subscriptions>
     </mat-tab>
-    <mat-tab label="{{ '#LDS#Heading Password Questions' | translate }}" data-imx-identifier="profile-password-questions">
+    <mat-tab label="{{ '#LDS#Heading Password Questions' | translate }}" data-imx-identifier="profile-password-questions" *ngIf="canManagePasswordQuestions" >
       <imx-password-questions componentId="profile-password-questions"></imx-password-questions>
     </mat-tab>
     <ng-container *ngFor="let tab of dynamicTabs">

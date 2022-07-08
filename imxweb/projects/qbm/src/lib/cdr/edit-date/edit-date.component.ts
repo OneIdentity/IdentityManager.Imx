@@ -27,7 +27,7 @@
 import { Component, ErrorHandler, EventEmitter, OnDestroy } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { CdrEditor } from '../cdr-editor.interface';
+import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
 import * as moment from 'moment-timezone';
 
@@ -48,7 +48,7 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
 
   public readonly columnContainer = new EntityColumnContainer<Date>();
 
-  public readonly valueHasChanged = new EventEmitter<Date>();
+  public readonly valueHasChanged = new EventEmitter<ValueHasChangedEventArg>();
 
   public isBusy = false;
 
@@ -91,7 +91,7 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
         if (!this.isWriting) {
           this.logger.trace(this, 'Control set to new value');
           this.resetControlValue();
-          this.valueHasChanged.emit(this.control.value);
+          this.valueHasChanged.emit({value: this.control.value});
         }
       }));
 
@@ -141,7 +141,7 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
       this.resetControlValue();
     }
 
-    this.valueHasChanged.emit(this.columnContainer.value);
+    this.valueHasChanged.emit({value: this.columnContainer.value, forceEmit: true});
   }
 
 }

@@ -40,9 +40,6 @@ export class SingleExpressionComponent {
     @Input() public last: boolean;
     @Input() public viewSettings: SqlViewSettings;
 
-    /** If false, prevents the user from deleting the only expression node. */
-    @Input() public allowEmptyExpression: boolean;
-
     public LogOp = _logOp;
 
     public IsEmpty(): boolean {

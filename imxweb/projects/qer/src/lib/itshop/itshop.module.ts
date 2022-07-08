@@ -33,7 +33,7 @@ import { MatListModule } from '@angular/material/list';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { ShelfSelectionComponent } from './shelf-selection.component';
-import { CdrModule, ExtModule, LdsReplaceModule } from 'qbm';
+import { CdrModule, DateModule, ExtModule, LdsReplaceModule } from 'qbm';
 import { ItshopService } from './itshop.service';
 import { DecisionHistoryComponent } from './request-info/decision-history.component';
 import { RequestInfoComponent } from './request-info/request-info.component';
@@ -66,7 +66,8 @@ import { ShelfService } from './shelf.service';
     EuiMaterialModule,
     FormsModule,
     ReactiveFormsModule,
-    ExtModule
+    ExtModule,
+    DateModule
   ],
   providers: [
     ItshopService,
