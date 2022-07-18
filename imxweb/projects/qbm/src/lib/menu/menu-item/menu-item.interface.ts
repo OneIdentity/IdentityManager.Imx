@@ -1,3 +1,4 @@
+import { ProjectConfig } from 'imx-api-qbm';
 import { NavigationCommandsMenuItem } from './navigation-commands-menu-item.interface';
 
 /*
@@ -11,7 +12,7 @@ import { NavigationCommandsMenuItem } from './navigation-commands-menu-item.inte
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -54,4 +55,4 @@ export interface MenuItem {
 
 }
 
-export type MenuFactory = (preProps: string[], groups: string[]) => MenuItem;
+export type MenuFactory = (preProps: string[], groups: string[], projectConfig: ProjectConfig) => MenuItem;

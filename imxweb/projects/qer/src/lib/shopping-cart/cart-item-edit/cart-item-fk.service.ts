@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -74,20 +74,14 @@ export class CartItemFkService {
         return this.qerClient.client.portal_cartitem_interactive_parameter_candidates_post(
           columnName,
           fkTableName,
-          parameters.OrderBy,
-          parameters.StartIndex,
-          parameters.PageSize,
-          parameters.filter,
-          null,
-          parameters.search,
-          parameters.ParentKey,
-          interactiveEntity.InteractiveEntityWriteData
+          interactiveEntity.InteractiveEntityWriteData,
+          parameters
         );
       },
       getDataModel: async () => ({}),
-      getFilterTree: async (entity, parentkey) => {
-        return this.qerClient.client.portal_itshop_requests_parameter_candidates_filtertree_post(
-          columnName, fkTableName, undefined, parentkey, entity.GetDiffData()
+      getFilterTree: async (__, parentkey) => {
+        return this.qerClient.client.portal_cartitem_interactive_parameter_candidates_filtertree_post(
+          columnName, fkTableName, interactiveEntity.InteractiveEntityWriteData, { parentkey: parentkey }
         );
       }
     };

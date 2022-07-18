@@ -1,4 +1,4 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 :host {
   display: flex;
@@ -7,8 +7,16 @@
   flex-grow: 1;
 }
 
+.recommendation-approve-icon {
+  color: $aspen-green;
+}
+
+.recommendation-deny-icon {
+  color: $phoenix-red;
+}
+
 .escalation-approver-toggle {
-  margin: .5em;
+  margin: 0.5em;
 }
 
 .imx-table-container {
@@ -63,10 +71,10 @@
   display: inline;
 }
 
-imx-data-source-toolbar {
-  margin: 8px 0;
-}
-
 .imx-badge-container {
   margin: 5px 5px 5px 0;
+}
+
+imx-data-source-toolbar {
+  margin: 8px 0;
 }

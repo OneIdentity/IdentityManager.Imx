@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,14 +24,15 @@
  *
  */
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ComponentType } from '@angular/cdk/portal';
+import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { PortalShopConfigStructure } from 'imx-api-qer';
 import { CollectionLoadParameters, IClientProperty, DisplayColumns, EntitySchema } from 'imx-qbm-dbts';
 import { DataSourceToolbarSettings, DataSourceToolbarFilter, ClassloggerService, StorageService, HELPER_ALERT_KEY_PREFIX, SettingsService } from 'qbm';
-import { RequestShelfSidesheetComponent } from '../request-shelf-sidesheet/request-shelf-sidesheet.component';
 import { RequestsService } from '../requests.service';
+import { CREATE_SHELF_TOKEN } from './request-shelf-token';
 
 const helperAlertKey = `${HELPER_ALERT_KEY_PREFIX}_requestShopShelves`;
 
@@ -54,6 +55,7 @@ export class RequestShelvesComponent implements OnInit {
   private displayedColumns: IClientProperty[] = [];
 
   constructor(
+    @Inject(CREATE_SHELF_TOKEN) private shelfComponent: ComponentType<any>,
     private readonly sideSheet: EuiSidesheetService,
     private readonly logger: ClassloggerService,
     private readonly translate: TranslateService,
@@ -115,7 +117,8 @@ export class RequestShelvesComponent implements OnInit {
 
   private async viewRequestShelf(requestConfig: PortalShopConfigStructure, isNew: boolean = false): Promise<void> {
     const header = await this.translate.get(isNew ? '#LDS#Heading Create Shelf' : '#LDS#Heading Edit Shelf').toPromise();
-    const sidesheetRef = this.sideSheet.open(RequestShelfSidesheetComponent, {
+
+    const sidesheetRef = this.sideSheet.open(this.shelfComponent, {
       title: header,
       headerColour: 'iris-tint',
       padding: '0px',

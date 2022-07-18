@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,7 +33,7 @@ import { configureTestSuite } from 'ng-bullet';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { LoggerTestingModule } from 'ngx-logger/testing';
 
-import { clearStylesFromDOM, ImxTranslationProviderService } from 'qbm';
+import { clearStylesFromDOM, ImxTranslationProviderService, MetadataService } from 'qbm';
 import { PolicyService } from '../policy.service';
 import { EditGenericComponent } from './edit-generic.component';
 import { FilterElementModel } from './filter-element-model';
@@ -102,7 +102,13 @@ describe('EditGenericComponent', () => {
                 {
                     provide: FilterElementColumnService,
                     useValue: mockFactory
-                }
+                },
+                {
+                  provide: MetadataService,
+                  useValue: {
+                      updateTable: jasmine.createSpy('updateTable'),
+                  }
+              }
             ]
         });
     });

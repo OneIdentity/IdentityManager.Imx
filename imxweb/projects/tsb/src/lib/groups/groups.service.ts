@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -77,13 +77,7 @@ export class GroupsService {
   }
 
   public async getFilterTree(options: GroupsFilterTreeParameters): Promise<FilterTreeData> {
-    return this.tsbClient.client.portal_targetsystem_uns_group_filtertree_get(
-      options.uid_unsaccount, //uid_unsaccount
-      options.container, //container
-      options.system, //system
-      undefined, // filter
-      options.parentkey // parentKey
-    );
+    return this.tsbClient.client.portal_targetsystem_uns_group_filtertree_get(options);
   }
 
   public async getGroups(navigationState: GetGroupsOptionalParameters): Promise<TypedEntityCollectionData<PortalTargetsystemUnsGroup>> {

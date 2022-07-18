@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -59,8 +59,9 @@ import { RoleMembershipsComponent } from './role-memberships/role-memberships.co
 import { RequestsFeatureGuardService } from '../requests-feature-guard.service';
 import { ProductDetailsSidesheetComponent } from './product-details-sidesheet/product-details-sidesheet.component';
 import { PatternDetailsSidesheetComponent } from './pattern-details-sidesheet/pattern-details-sidesheet.component';
-import { ProductEntitlementsComponent } from './product-details-sidesheet/product-entitlements/product-entitlements.component';
+import { ProductEntitlementsComponent } from '../itshop/request-info/service-item-detail//product-entitlements/product-entitlements.component';
 import { PatternItemsModule } from '../pattern-item-list/pattern-items.module';
+import { OptionalItemsSidesheetComponent } from './optional-items-sidesheet/optional-items-sidesheet.component';
 
 const routes: Routes = [
   {
@@ -103,7 +104,7 @@ const routes: Routes = [
     RoleMembershipsComponent,
     ProductDetailsSidesheetComponent,
     PatternDetailsSidesheetComponent,
-    ProductEntitlementsComponent
+    OptionalItemsSidesheetComponent
   ],
   providers: [
     ProductSelectionService

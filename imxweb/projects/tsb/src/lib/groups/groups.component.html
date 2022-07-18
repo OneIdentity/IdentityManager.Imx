@@ -53,6 +53,16 @@
             </div>
           </ng-template>
         </imx-data-table-generic-column>
+        <imx-data-table-generic-column *ngIf="unsAccountIdFilter" alignHeader="center" alignContent="center"
+          columnName="action">
+          <ng-template let-item>
+            <button mat-button color="primary"
+              [attr.data-imx-identifier]="'groups-table-button-view-assignment-analysis' + item.GetEntity().GetKeys().join('_')"
+              [disabled]="!uidPerson" (click)="viewSource($event, item)">
+              {{'#LDS#View assignment analysis' |translate}}
+            </button>
+          </ng-template>
+        </imx-data-table-generic-column>
       </imx-data-table>
       <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
     </div>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,16 +31,19 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, ValType } from 'imx-qbm-dbts';
 import { DataSourceToolbarSettings, DynamicTabDataProviderDirective, MetadataService, SettingsService } from 'qbm';
-import { SourceDetectiveSidesheetComponent, SourceDetectiveSidesheetData } from '../../../sourcedetective/sourcedetective-sidesheet.component';
+import { RoleService } from '../../../role-management/role.service';
+import {
+  SourceDetectiveSidesheetComponent,
+  SourceDetectiveSidesheetData,
+} from '../../../sourcedetective/sourcedetective-sidesheet.component';
 import { SourceDetectiveType } from '../../../sourcedetective/sourcedetective-type.enum';
 import { IdentityRoleMembershipsService } from './identity-role-memberships.service';
 
 @Component({
   templateUrl: './identity-role-memberships.component.html',
-  styleUrls: ['./identity-role-memberships.component.scss']
+  styleUrls: ['./identity-role-memberships.component.scss'],
 })
 export class IdentityRoleMembershipsComponent implements OnInit {
-
   public dstSettings: DataSourceToolbarSettings;
   public readonly DisplayColumns = DisplayColumns;
   public displayedColumns: IClientProperty[];
@@ -48,21 +51,20 @@ export class IdentityRoleMembershipsComponent implements OnInit {
   public entitySchema: EntitySchema;
   public withActions: boolean;
 
-  private referrer: { objectuid: string; tablename: string; };
+  private referrer: { objectuid: string; tablename: string };
   private navigationState: CollectionLoadParameters;
   private displayedColumnsWithDisplay: IClientProperty[];
-
 
   constructor(
     private readonly busyService: EuiLoadingService,
     private readonly metadataService: MetadataService,
     private readonly roleMembershipsService: IdentityRoleMembershipsService,
+    private readonly membershipService: RoleService,
     private readonly settingService: SettingsService,
     private readonly sidesheet: EuiSidesheetService,
     private readonly translate: TranslateService,
     dataProvider: DynamicTabDataProviderDirective
   ) {
-
     this.referrer = dataProvider.data;
     this.entitySchema = this.roleMembershipsService.getSchema(this.referrer.tablename);
     this.withActions = this.roleMembershipsService.canAnalyseAssignment(this.referrer.tablename);
@@ -75,14 +77,10 @@ export class IdentityRoleMembershipsComponent implements OnInit {
       this.entitySchema.Columns.ValidUntil,
     ];
 
+    this.displayedColumnsWithDisplay = [...[this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]], ...this.displayedColumns];
     if (this.withActions) {
-      this.displayedColumns.push({ ColumnName: 'actions', Type: ValType.String });
+      this.displayedColumnsWithDisplay.push({ ColumnName: 'actions', Type: ValType.String });
     }
-
-    this.displayedColumnsWithDisplay = [
-      ...[this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]],
-      ...this.displayedColumns
-    ];
   }
 
   public async ngOnInit(): Promise<void> {
@@ -96,16 +94,15 @@ export class IdentityRoleMembershipsComponent implements OnInit {
     return this.getData();
   }
 
-
   public async onShowDetails(entity: TypedEntity): Promise<void> {
-
     const uidPerson = this.referrer.objectuid;
 
+    const uidRole = this.membershipService.targetMap.get(this.referrer.tablename).membership.GetUidRole(entity.GetEntity());
     const data: SourceDetectiveSidesheetData = {
       UID_Person: uidPerson,
       Type: SourceDetectiveType.MembershipOfRole,
-      UID: entity.GetEntity().GetKeys()[0],
-      TableName: this.referrer.tablename
+      UID: uidRole,
+      TableName: this.referrer.tablename,
     };
     this.sidesheet.open(SourceDetectiveSidesheetComponent, {
       title: await this.translate.get('#LDS#Heading View Assignment Analysis').toPromise(),
@@ -134,23 +131,18 @@ export class IdentityRoleMembershipsComponent implements OnInit {
 
   private async getData(): Promise<void> {
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
-
-      const dataSource = await this.roleMembershipsService.get(
-        this.referrer.tablename,
-        { ...this.navigationState, ...{ uidPerson: this.referrer.objectuid } });
+      const dataSource = await this.roleMembershipsService.get(this.referrer.tablename, this.referrer.objectuid, this.navigationState);
 
       this.dstSettings = {
         displayedColumns: this.displayedColumnsWithDisplay,
         dataSource,
         entitySchema: this.entitySchema,
-        navigationState: this.navigationState
+        navigationState: this.navigationState,
       };
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
   }
-
-
 }

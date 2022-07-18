@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,7 +35,7 @@ export { AdminRoutes } from './lib/admin/admin-routes';
 export { ApiClientAngularService } from './lib/api-client/api-client-angular.service';
 export { ApiClientFetch } from './lib/api-client/api-client-fetch';
 export { ApiClientService } from './lib/api-client/api-client.service';
-export { AppConfig } from './lib/appConfig/appConfig.interface';
+export { AppConfig } from './lib/appConfig/appconfig.interface';
 export { AppConfigService } from './lib/appConfig/appConfig.service';
 export { AuthConfigProvider } from './lib/authentication/auth-config-provider.interface';
 export { AuthenticationGuardService } from './lib/authentication/authentication-guard.service';
@@ -71,6 +71,7 @@ export { DataSourceToolbarComponent } from './lib/data-source-toolbar/data-sourc
 export { DataSourceToolbarCustomComponent } from './lib/data-source-toolbar/data-source-toolbar-custom.component';
 export { DataSourceToolbarModule } from './lib/data-source-toolbar/data-source-toolbar.module';
 export { DataSourceToolbarSettings } from './lib/data-source-toolbar/data-source-toolbar-settings';
+export { ClientPropertyForTableColumns } from './lib/data-source-toolbar/client-property-for-table-columns';
 export { DataSourceToolbarFilter, DataSourceToolbarSelectedFilter } from './lib/data-source-toolbar/data-source-toolbar-filters.interface';
 export {
   DataSourceToolbarGroupData, DataSourceToolBarGroup, DataSourceToolBarGroupingCategory
@@ -78,6 +79,8 @@ export {
 export { DataSourceItemStatus } from './lib/data-source-toolbar/data-source-item-status.interface';
 export { DataSourceWrapper } from './lib/data-source-toolbar/data-source-wrapper';
 export { FilterTreeParameter } from './lib/data-source-toolbar/data-model/filter-tree-parameter';
+export { FilterTreeDatabase } from './lib/data-source-toolbar/filter-tree/filter-tree-database';
+export { FilterTreeEntityWrapperService} from './lib/data-source-toolbar/filter-tree/filter-tree-entity-wrapper.service';
 export { DataTableColumnComponent } from './lib/data-table/data-table-column.component';
 export { DataTableComponent } from './lib/data-table/data-table.component';
 export { DataTableGenericColumnComponent } from './lib/data-table/data-table-generic-column.component';
@@ -130,7 +133,7 @@ export { FkContainer } from './lib/fk-container/fk-container';
 export { FkSelectionContainer } from './lib/select/fk-selection-container';
 export { GlobalErrorHandler } from './lib/base/global-error-handler';
 export { GroupMenuItem } from './lib/menu/menu-item/group-menu-item';
-export { Guid } from './lib/base/guid';
+export { Guid } from './lib/base/Guid';
 export { HvCell } from './lib/hyperview/hyperview-types';
 export { HvElement } from './lib/hyperview/hyperview-types';
 export { HyperviewComponent } from './lib/hyperview/hyperview.component';
@@ -210,7 +213,9 @@ export { SessionState } from './lib/session/session-state';
 export { SettingsService } from './lib/settings/settings-service';
 export { ShapeClickArgs } from './lib/hyperview/hyperview-types';
 export { ShortDatePipe } from './lib/date/short-date.pipe';
+export { LocalizedDatePipe } from './lib/date/localized-date.pipe';
 export { SnackBarService } from './lib/snackbar/snack-bar.service';
+export { SplashService } from './lib/splash/splash.service';
 export { SqlWizardApiService } from './lib/sqlwizard/sqlwizard-api.service';
 export { SqlWizardComponent } from './lib/sqlwizard/sqlwizard.component';
 export { SqlWizardModule } from './lib/sqlwizard/sqlwizard.module';
@@ -268,6 +273,7 @@ export { DynamicMethodService } from './lib/api-client/dynamic-method/dynamic-me
 export { DynamicCollectionLoadParameters } from './lib/api-client/dynamic-method/dynamic-collection-load-parameters.interface';
 export { InteractiveParameter } from './lib/api-client/dynamic-method/interactive-parameter.interface';
 
+
 export {
   BaseImxApiDataMock,
   BaseImxApiDtoMock,
@@ -275,6 +281,8 @@ export {
   CreateIEntityColumn,
   CreateIReadValue
 } from './lib/testing/base-imx-api-mock.spec';
+
+export { createGroupData } from './lib/data-source-toolbar/data-model/data-model-helper';
 export { EntityColumnStub } from './lib/testing/entity-column-stub.spec';
 export { EntitySchemaStub } from './lib/testing/entity-schema-stub.spec';
 

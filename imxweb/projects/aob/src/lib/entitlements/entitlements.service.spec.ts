@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -66,18 +66,22 @@ describe('EntitlementsService', () => {
           useValue: {
             typedClient: {
               PortalEntitlement: jasmine.createSpyObj('PortalEntitlement', {
-                createEntity: {
-                  ObjectKeyElement: {},
-                  UID_AOBApplication: {},
-                  IsInActive: {},
-                  GetEntity: () => ({
-                    Commit: () => undefined
-                  })
-                },
                 Get: Promise.resolve({
                   totalCount: mockEntitlementData.length,
                   Data: mockEntitlementData
                 })
+              }),
+              PortalEntitlementInteractive: jasmine.createSpyObj('PortalEntitlementInteractive', {
+                Get: Promise.resolve({
+                  Data: [{
+                    ObjectKeyElement: {},
+                    UID_AOBApplication: {},
+                    IsInActive: {},
+                    GetEntity: () => ({
+                      Commit: () => undefined
+                    })
+                  }]
+                }),
               }),
               PortalEntitlementcandidatesUnsgroup: jasmine.createSpyObj('PortalEntitlementcandidatesUnsgroup', {
                 Get: Promise.resolve({

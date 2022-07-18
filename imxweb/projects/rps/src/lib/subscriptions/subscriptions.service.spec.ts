@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -47,7 +47,7 @@ describe('SubscriptionsService', () => {
       PortalSubscriptionInteractive: {
         Get_byid: jasmine.createSpy('Get_byid')
       },
-      PortalSubscriptionInteractive_byid: {
+      PortalSubscriptioninteractive: {
         Get_byid: jasmine.createSpy('Get_byid')
       },
       PortalReports: {
@@ -71,7 +71,7 @@ describe('SubscriptionsService', () => {
   beforeEach(() => {
     apiServiceStub.typedClient.PortalSubscription.Get.calls.reset();
     apiServiceStub.typedClient.PortalSubscriptionInteractive.Get_byid.calls.reset();
-    apiServiceStub.typedClient.PortalSubscriptionInteractive_byid.Get_byid.calls.reset();
+    apiServiceStub.typedClient.PortalSubscriptionInteractive.Get_byid.calls.reset();
     apiServiceStub.typedClient.PortalReports.Get.calls.reset();
     apiServiceStub.client.portal_subscription_sendmail_post.calls.reset();
     apiServiceStub.client.portal_subscription_sendmailcc_post.calls.reset();
@@ -89,7 +89,7 @@ describe('SubscriptionsService', () => {
 
   it('can get single subscription', async () => {
     await service.getSubscriptionInteractive('uid');
-    expect(apiServiceStub.typedClient.PortalSubscriptionInteractive_byid.Get_byid).toHaveBeenCalledWith('uid');
+    expect(apiServiceStub.typedClient.PortalSubscriptionInteractive.Get_byid).toHaveBeenCalledWith('uid');
   });
 
   it('can delete a subscription', async () => {

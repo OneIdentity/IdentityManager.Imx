@@ -29,7 +29,7 @@
   <mat-hint>
     {{ fileFormatHint || valueWrapper?.hint | translate }}
   </mat-hint>
-  <mat-error *ngIf="!fileFormatHint?.length && !valueWrapper?.hint?.length && control?.errors?.required">
+  <mat-error *ngIf="!fileFormatHint?.length && !valueWrapper?.hint?.length && control?.errors?.['required']">
     {{ '#LDS#This field is mandatory.' | translate }}
   </mat-error>
 </mat-form-field>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -54,5 +54,13 @@ export class ExtService {
     }
     return ret;
   }
+  public async getFittingComponent<T extends IExtension>(key: string): Promise<T> {
+    if (this.registry[key]) {
+      return this.registry[key][0] as T;
+    } else {
+      return null;
+    }
+  }
+
 }
 

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -142,13 +142,11 @@ export class ServiceItemsEditFormComponent implements OnChanges, OnDestroy {
       const showTermsOfUseCdr = await this.serviceItemsEditService.hasTermsOfUseCancdidates();
       const showProductParamCategory = await this.serviceItemsEditService.hasAccproductparamcategoryCandidates();
       const showFunctionalArea = await this.serviceItemsEditService.hasFunctionalAreaCandidates();
-      const isStarlingTwoFactorConfigured = (await this.userModelService.getUserConfig()).IsStarlingTwoFactorConfigured;
       this.createCdrList(
         this.serviceItem.GetEntity(),
         showTermsOfUseCdr,
         showFunctionalArea,
-        showProductParamCategory,
-        isStarlingTwoFactorConfigured
+        showProductParamCategory
       );
     } finally {
       this.serviceItemsEditService.handleCloseLoader();
@@ -169,15 +167,13 @@ export class ServiceItemsEditFormComponent implements OnChanges, OnDestroy {
     entity: IEntity,
     showTermsOfUseCdr: boolean,
     showFunctionalArea: boolean,
-    showProductParamCategory: boolean,
-    isStarlingTwoFactorConfigured: boolean
+    showProductParamCategory: boolean
   ): void {
     this.editableServiceItemColumns
       .filter(name => !['IsInActive', 'UID_OrgRuler'].includes(name))
       .filter(name => name !== 'UID_QERTermsOfUse' || showTermsOfUseCdr)
       .filter(name => name !== 'UID_FunctionalArea' || showFunctionalArea)
       .filter(name => name !== 'UID_AccProductParamCategory' || showProductParamCategory)
-      .filter(name => name !== 'IsApproveRequiresMfa' || isStarlingTwoFactorConfigured)
       .map(columnName => {
         const column = this.tryGetColumn(entity, columnName);
         if (column != null) {

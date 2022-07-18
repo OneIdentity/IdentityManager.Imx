@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,13 +29,12 @@ import { MatTabChangeEvent } from '@angular/material/tabs';
 import { SafeUrl } from '@angular/platform-browser';
 
 import { Base64ImageService, ClassloggerService } from 'qbm';
+import { UserModelService } from 'qer';
 import { PortalApplication } from 'imx-api-aob';
 import { ApplicationsService } from './applications.service';
 import { ApplicationContent } from './application-content.interface';
-import { UserModelService } from 'qer';
 
 @Component({
-  selector: 'imx-application-detail',
   templateUrl: './application-detail.component.html',
   styleUrls: ['./application-detail.component.scss']
 })
@@ -65,9 +64,13 @@ export class ApplicationDetailComponent implements ApplicationContent, OnInit {
   }
 
   public async onSelectedTabChanged(event: MatTabChangeEvent): Promise<void> {
-    this.application = await this.applicationsProvider.reload(this.application.UID_AOBApplication.value);
+    await this.reloadApplication();
     this.selectedTabIndex = event.index;
     this.logger.debug(this, 'tab selected', event.tab.textLabel);
+  }
+
+  public async reloadApplication(): Promise<void> {
+    this.application = await this.applicationsProvider.reload(this.application.UID_AOBApplication.value);
   }
 
   public createApplication(): void {

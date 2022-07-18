@@ -11,7 +11,7 @@
       {{ columnContainer?.value?.length ? ('#LDS#Change' | translate) : ('#LDS#Assign' | translate) }}
     </button>
   </div>
-  <mat-error *ngIf="control.errors?.required">
+  <mat-error *ngIf="control.errors?.['required']">
     {{ '#LDS#This field is mandatory.' | translate }}
   </mat-error>
 </mat-form-field>

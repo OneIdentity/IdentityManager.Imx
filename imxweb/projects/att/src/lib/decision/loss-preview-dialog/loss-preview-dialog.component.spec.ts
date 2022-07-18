@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -44,9 +44,10 @@ describe('LossPreviewDialogComponent', () => {
   }
 
   configureTestSuite(() => {
-    TestBed.configureTestingModule({
-      declarations: [
-        LossPreviewDialogComponent
+     TestBed.configureTestingModule({
+      declarations: [ LossPreviewDialogComponent ],
+      schemas: [
+        CUSTOM_ELEMENTS_SCHEMA
       ],
       providers: [
         {
@@ -57,8 +58,7 @@ describe('LossPreviewDialogComponent', () => {
           provide: MAT_DIALOG_DATA,
           useValue: lossPreview
         }
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+      ]
     })
   });
 

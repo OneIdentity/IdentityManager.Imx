@@ -58,7 +58,7 @@
           class="mat-small">{{ (isApplication()
             ? '#LDS#The application will be published on {0} at {1} (your local time).'
             : '#LDS#The application entitlement will be published on {0} at {1} (your local time) if the application is published.')
-        | translate | ldsReplace:datepickerFormControl.value.toLocaleDateString(browserCulture):datepickerFormControl.value.toLocaleTimeString(browserCulture) }}</span>
+        | translate | ldsReplace: dateString : timeString }}</span>
       </form>
     </div>
   </div>

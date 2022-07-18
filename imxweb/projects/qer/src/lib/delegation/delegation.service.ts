@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -56,7 +56,7 @@ export class DelegationService {
   }
 
   public async getRoleClasses(uidUser: string): Promise<PortalDelegationsGlobalRoleclasses[]> {
-    return (await this.qerApiService.typedClient.PortalDelegationsGlobalRoleclasses.Get(uidUser)).Data;
+    return (await this.qerApiService.typedClient.PortalDelegationsGlobalRoleclasses.Get(uidUser, { PageSize: 1024 })).Data;
   }
 
   public async commitDelegations(reference: PortalDelegations, objectKeys: string[]): Promise<void> {

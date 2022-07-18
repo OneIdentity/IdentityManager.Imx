@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -52,15 +52,7 @@ export class ClaimDeviceService {
         ParentTableName: 'Hardware',
         ParentColumnName: 'XObjectKey'
       },
-      parameters => this.apiService.client.portal_claimdevice_devices_get(
-        parameters.OrderBy,
-        parameters.StartIndex,
-        parameters.PageSize,
-        parameters.filter,
-        null,
-        parameters.search,
-        ''
-      ),
+      parameters => this.apiService.client.portal_claimdevice_devices_get(parameters),
     );
 
     return new BaseCdr(column, '#LDS#Device' /* TODO: globalize */);
@@ -99,14 +91,7 @@ export class ClaimDeviceService {
   private async getOwnerCandidates(
     parameters: CollectionLoadParameters = {}
   ): Promise<EntityCollectionData> {
-    const collection = await this.apiService.client.portal_candidates_Person_get(
-      parameters.OrderBy,
-      parameters.StartIndex,
-      parameters.PageSize,
-      parameters.filter,
-      null,
-      parameters.search
-    );
+    const collection = await this.apiService.client.portal_candidates_Person_get(parameters);
 
     return collection;
   }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,13 +25,14 @@
  */
 
 import { TestBed } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { configureTestSuite } from 'ng-bullet';
+import { of, Subject } from 'rxjs';
 
-import { ClassloggerService, SnackBarService, UserMessageService } from 'qbm';
+import { ClassloggerService, MessageDialogResult, SnackBarService, UserMessageService } from 'qbm';
 import { QerApiService } from '../../qer-api-client.service';
 import { ItshopPatternCreateService } from './itshop-pattern-create.service';
-import { of, Subject } from 'rxjs';
 
 const commitSpy = jasmine.createSpy('Commit');
 
@@ -41,6 +42,13 @@ describe('ItshopPatternCreateService', () => {
   const euiLoadingServiceStub = {
     hide: jasmine.createSpy('hide'),
     show: jasmine.createSpy('show')
+  };
+
+  const dialogStub = {
+    open: jasmine.createSpy('open').and.returnValue({
+      beforeClosed: () => of(MessageDialogResult.YesResult),
+      afterClosed: () => of(MessageDialogResult.YesResult)
+    })
   };
 
   const qerApiServiceStub = {
@@ -74,6 +82,10 @@ describe('ItshopPatternCreateService', () => {
         {
           provide: EuiSidesheetService,
           useValue: sidesheetServiceStub
+        },
+        {
+          provide: MatDialog,
+          useValue: dialogStub
         },
         {
           provide: SnackBarService,

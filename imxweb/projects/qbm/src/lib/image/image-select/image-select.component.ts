@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { AbstractControl } from '@angular/forms';
+import { AbstractControl, FormControl } from '@angular/forms';
 
 import { Base64ImageService } from '../../images/base64-image.service';
 import { ValueWrapper } from '../../value-wrapper/value-wrapper';
@@ -36,6 +36,7 @@ import { ValueWrapper } from '../../value-wrapper/value-wrapper';
   styleUrls: ['./image-select.component.scss']
 })
 export class ImageSelectComponent {
+  // TODO: Check Upgrade
   @Input() public control: AbstractControl;
   @Input() public valueWrapper: ValueWrapper;
   @Input() public fileFormatHint: string;

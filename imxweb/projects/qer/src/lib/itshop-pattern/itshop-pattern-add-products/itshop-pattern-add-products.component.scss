@@ -1,0 +1,50 @@
+@import "@elemental-ui/core/src/styles/_palette.scss";
+
+:host {
+
+  eui-alert {
+    margin-bottom: 10px;
+  }
+
+  ::ng-deep imx-data-tiles {
+    padding-left: 10px;
+  }
+
+  ::ng-deep .mat-tab-body-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .eui-sidesheet-content {
+    display: flex;
+    flex-direction: column;
+
+    >.mat-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+  }
+
+  .eui-sidesheet-actions {
+    button:not(:last-of-type) {
+      margin-right: 10px;
+    }
+  }
+  .mat-radio-button {
+    height: 70px;
+    margin-right: 20px;
+  }
+
+  .imx-recipients {
+    height: 100px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .imx-align-self-base {
+    margin-right: 10px;
+    align-self: baseline;
+  }
+}

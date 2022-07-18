@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,12 +27,12 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EuiSidesheetRef, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { configureTestSuite } from 'ng-bullet';
 import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 
-import { ClassloggerService, clearStylesFromDOM, ConfirmationService } from 'qbm';
+import { ClassloggerService, clearStylesFromDOM, ConfirmationService, SnackBarService } from 'qbm';
 import { ItshopPatternService } from '../itshop-pattern.service';
 import { ItshopPatternSidesheetComponent } from './itshop-pattern-sidesheet.component';
 
@@ -80,6 +80,12 @@ describe('ItshopPatternSidesheetComponent', () => {
     getPatternItems:  jasmine.createSpy('getPatternItems').and.callThrough(),
   };
 
+  const sidesheetServiceStub = {
+    open: jasmine.createSpy('open').and.returnValue({
+      afterClosed: () => of({})
+    })
+  };
+
   configureTestSuite(() => {
     TestBed.configureTestingModule({
       declarations: [
@@ -103,6 +109,16 @@ describe('ItshopPatternSidesheetComponent', () => {
           useValue: mockSidesheetRef
         },
         {
+          provide: EuiSidesheetService,
+          useValue: sidesheetServiceStub
+        },
+        {
+          provide: SnackBarService,
+          useValue: {
+            open: jasmine.createSpy('open')
+          }
+        },
+        {
           provide: ConfirmationService,
           useValue: mockConfirmationService
         },
@@ -118,8 +134,7 @@ describe('ItshopPatternSidesheetComponent', () => {
           useValue: patterServiceStub
         },
       ]
-    })
-      .compileComponents();
+    });
   });
 
   beforeEach(() => {

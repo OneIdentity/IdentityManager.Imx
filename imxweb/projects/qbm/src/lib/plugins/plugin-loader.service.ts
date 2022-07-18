@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,14 +24,14 @@
  *
  */
 
-import { Injectable, Compiler, Injector, isDevMode } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, Injector, isDevMode, createNgModuleRef } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { NodeAppInfo, PlugInLib } from 'imx-api-qbm';
 
 import { imx_SessionService } from '../session/imx-session.service';
 import { ClassloggerService } from '../classlogger/classlogger.service';
-import { AppConfig } from '../appConfig/appConfig.interface';
+import { AppConfig } from '../appConfig/appconfig.interface';
 
 import * as AngularCore from '@angular/core';
 import * as AngularCommon from '@angular/common';
@@ -91,6 +91,8 @@ import * as ElementUICore from '@elemental-ui/core';
 import * as Rxjs from 'rxjs';
 import * as RxjsOperators from 'rxjs/operators';
 import * as BillboardJs from 'billboard.js';
+import * as tslibModule from 'tslib';
+import * as MomentTimezone from 'moment-timezone';
 
 declare var SystemJS: any;
 
@@ -105,14 +107,28 @@ export class PluginLoaderService {
     private readonly session: imx_SessionService,
     private readonly logger: ClassloggerService,
     private readonly httpClient: HttpClient,
-    private readonly compiler: Compiler,
     private readonly injector: Injector
-  ) { }
+  ) {
+    SystemJS.config({
+      meta: {
+        '*.mjs': {
+          babelOptions: {
+            es2015: false
+          }
+        }
+      },
+      map: {
+        'plugin-babel': 'systemjs-plugin-babel/plugin-babel.js',
+        'systemjs-babel-build': 'systemjs-plugin-babel/systemjs-babel-browser.js',
+      },
+      transpiler: 'plugin-babel',
+    });
+  }
 
   public async loadModules(appName: string): Promise<void> {
     const apps: NodeAppInfo[] = await this.session.Client.imx_applications_get();
 
-    this.appInfo = apps.filter(app => app.Name === appName)[0];
+    this.appInfo = apps.filter((app) => app.Name === appName)[0];
 
     this.logger.debug(this, `▶️ Found config section for ${this.appInfo.DisplayName}`);
 
@@ -123,47 +139,54 @@ export class PluginLoaderService {
 
     this.logger.debug(this, `▶️ Found ${this.appInfo.PlugIns.length} plugin(s)`);
 
-    const host = window.location.pathname.split('html')[0].slice(0, -1);
+    const host = window.location.href.split('html')[0];
     this.logger.debug(this, `💻 Host: ${host} `);
 
     let config: AppConfig;
 
     if (!isDevMode()) {
       config = (await this.httpClient.get('appconfig.json').toPromise()) as AppConfig;
+      this.importDependencies();
       this.logger.debug(this, '▶️  Config. PROD mode.', config);
     }
 
+    let moduleList = [];
+
     for (const plugin of this.appInfo.PlugIns) {
-      let container: any;
       this.logger.debug(this, `⚙️ Plugin: ${plugin.Container}`);
 
       try {
         if (isDevMode()) {
           this.logger.debug(this, '▶️ Importing module. DEV mode.');
-          container = await import(`html/${plugin.Container}/fesm2015/${plugin.Container}.js`);
+          moduleList.push(import(`html/${plugin.Container}/fesm2015/${plugin.Container}.mjs`));
         } else {
           this.logger.debug(this, '▶️ Importing module. PROD mode.');
-          const pluginUrl = `${host}/html/${plugin.Container}/bundles/${plugin.Container}.umd.js`;
-          container =
-            await this.importProdMode(pluginUrl);
+          moduleList.push(SystemJS.import(`${host}html/${plugin.Container}/fesm2015/${plugin.Container}.mjs`));
         }
 
-        this.logger.debug(this, '▶️ Compiling module');
-        const module = await this.compiler.compileModuleAndAllComponentsAsync(container[plugin.Name]);
-
-        this.logger.debug(this, '▶️ Creating module instance');
-        const elementModuleRef = module.ngModuleFactory.create(this.injector);
-
-        this.logger.debug(this, '▶️ Instance ready');
-        this.plugins.push(elementModuleRef.instance);
+        this.plugins.push(plugin);
       } catch (e) {
         this.logger.error(this, `💥 Loading of ${plugin.Name} (${plugin.Container}) failed with the following error: ${e.message}`);
       }
+    }
 
+    let modules = await Promise.allSettled(moduleList);
+    for (let i = 0; i < modules.length; i++) {
+      try {
+        let m = modules[i] as any;
+        let module = m.value[this.plugins[i].Name as any];
+        createNgModuleRef(module, this.injector);
+        this.logger.debug(this, '▶️ Instance ready');
+      } catch (e) {
+        this.logger.error(
+          this,
+          `💥 Loading of ${this.plugins[i].Name} (${this.plugins[i].Container}) failed with the following error: ${e.message}`
+        );
+      }
     }
   }
 
-  private async importProdMode(url: string): Promise<any> {
+  private importDependencies(): void {
     // Angular Modules
     SystemJS.set('@angular/core', SystemJS.newModule(AngularCore));
     SystemJS.set('@angular/common', SystemJS.newModule(AngularCommon));
@@ -225,11 +248,11 @@ export class PluginLoaderService {
     SystemJS.set('rxjs', SystemJS.newModule(Rxjs));
     SystemJS.set('rxjs/operators', SystemJS.newModule(RxjsOperators));
     SystemJS.set('billboard.js', SystemJS.newModule(BillboardJs));
+    SystemJS.set('tslib', SystemJS.newModule(tslibModule));
+    SystemJS.set('moment-timezone', SystemJS.newModule(MomentTimezone));
 
     // Our stuff
     SystemJS.set('imx-qbm-dbts', SystemJS.newModule(QBMDBTS));
     SystemJS.set('@elemental-ui/core', SystemJS.newModule(ElementUICore));
-
-    return SystemJS.import(url);
   }
 }

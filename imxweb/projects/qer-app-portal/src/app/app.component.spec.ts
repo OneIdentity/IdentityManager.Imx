@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,7 +34,7 @@ import { LoggerTestingModule } from 'ngx-logger/testing';
 import { Subject } from 'rxjs';
 
 import { AppComponent } from './app.component';
-import { AuthenticationService, ISessionState, clearStylesFromDOM, MenuService, SystemInfoService, IeWarningService } from 'qbm';
+import { AuthenticationService, ISessionState, clearStylesFromDOM, MenuService, SystemInfoService, IeWarningService, SplashService } from 'qbm';
 import { ProjectConfigurationService, UserModelService } from 'qer';
 
 @Component({
@@ -100,6 +100,12 @@ describe('AppComponent', () => {
     getMenuItems: jasmine.createSpy('getMenuItems').and.returnValue(Promise.resolve([])),
   };
 
+  const splashServiceStub = {
+    init: jasmine.createSpy('init'),
+    update: jasmine.createSpy('update'),
+    close: jasmine.createSpy('close'),
+  }
+
   configureTestSuite(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -133,6 +139,10 @@ describe('AppComponent', () => {
         {
           provide: EuiLoadingService,
           useValue: euiLoadingServiceStub,
+        },
+        {
+          provide: SplashService,
+          useValue: splashServiceStub
         },
         {
           provide: UserModelService,

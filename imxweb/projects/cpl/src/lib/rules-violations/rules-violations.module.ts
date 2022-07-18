@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -47,17 +47,22 @@ import { RulesViolationsActionComponent } from './rules-violations-action/rules-
 import { JustificationModule } from 'qer';
 import { RulesViolationsMultiActionComponent } from './rules-violations-action/rules-violations-multi-action/rules-violations-multi-action.component';
 import { RulesViolationsSingleActionComponent } from './rules-violations-action/rules-violations-single-action/rules-violations-single-action.component';
+import { ResolveComponent } from './resolve/resolve.component';
+import { MatStepperModule } from '@angular/material/stepper';
+import { isExceptionAdmin } from '../rules/admin/permissions-helper';
+import { RuleViolationsGuardService } from '../guards/rule-violations-guard.service';
 const routes: Routes = [
   {
     path: 'compliance/rulesviolations/approve',
     component: RulesViolationsComponent,
-    canActivate: [RouteGuardService],
+    canActivate: [RouteGuardService, RuleViolationsGuardService],
     resolve: [RouteGuardService]
   }
 ];
 
 @NgModule({
   declarations: [
+    ResolveComponent,
     RulesViolationsComponent,
     RulesViolationsDetailsComponent,
     RulesViolationsActionComponent,
@@ -74,6 +79,7 @@ const routes: Routes = [
     FormsModule,
     JustificationModule,
     MatCardModule,
+    MatStepperModule,
     ReactiveFormsModule,
     TranslateModule,
     RouterModule.forChild(routes),
@@ -95,7 +101,7 @@ export class RulesViolationsModule {
 
         const items: MenuItem[] = [];
 
-        if (preProps.includes('ITSHOP')) {
+        if (preProps.includes('ITSHOP') && isExceptionAdmin(groups)) {
           items.push(
             {
               id: 'CPL_Compliance_RulesViolations',

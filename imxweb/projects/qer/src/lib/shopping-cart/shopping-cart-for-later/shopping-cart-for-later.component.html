@@ -2,9 +2,12 @@
     {{ '#LDS#Heading Saved for Later' | translate }}
 </h1>
 
-<p class="imx-itshop-info">
+<eui-alert type="info" colored="true" condensed="true">
+  <span>
     {{ '#LDS#The following requests are currently in your saved for later list. Please use the actions menu to move the requests to the shopping cart.' | translate }}
-</p>
+  </span>
+</eui-alert>
+
 <div class="imx-itshop-content">
     <mat-card>
         <imx-cart-items #cartItems [shoppingCart]="shoppingCart" (dataChange)="getData()" (selectionChange)="selectionChanged($event)" [forLater]="true">

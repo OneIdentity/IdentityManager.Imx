@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,6 +32,7 @@ import { createGroupData } from './data-model/data-model-helper';
 import { DataSourceToolbarFilter } from './data-source-toolbar-filters.interface';
 import { DataSourceToolbarGroupData } from './data-source-toolbar-groups.interface';
 import { DataSourceToolbarSettings } from './data-source-toolbar-settings';
+import { ClientPropertyForTableColumns } from './client-property-for-table-columns';
 
 export class DataSourceWrapper<TEntity extends TypedEntity = TypedEntity, TExtendedData = any> {
   public readonly propertyDisplay: IClientProperty;
@@ -45,7 +46,7 @@ export class DataSourceWrapper<TEntity extends TypedEntity = TypedEntity, TExten
 
   constructor(
     private readonly getData: (parameters: CollectionLoadParameters) => Promise<ExtendedTypedEntityCollection<TEntity, TExtendedData>>,
-    private readonly displayedColumns: IClientProperty[],
+    private readonly displayedColumns: ClientPropertyForTableColumns[],
     private readonly entitySchema: EntitySchema,
     dataModelWrapper?: DataModelWrapper,
     private readonly identifier?: string

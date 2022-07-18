@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -125,21 +125,11 @@ export class ApplicationNavigationComponent implements OnInit {
   public async onSearch(keywords: string): Promise<void> {
     this.logger.debug(this, `Searching for: ${keywords}`);
 
+    this.navigationState.StartIndex = 0;
     if (keywords == null || keywords.length === 0) {
-      this.navigationState.StartIndex = 0;
-      this.navigationState.filter = null;
+      this.navigationState.search = null;
     } else {
-      // NOTE: This is not a real search, but filtering on the column Ident_AOBApplication.
-      // AobApplication is not searchable.
-      this.navigationState.StartIndex = 0;
-      this.navigationState.filter = [
-        {
-          ColumnName: this.entitySchema.Columns.Ident_AOBApplication.ColumnName,
-          Type: FilterType.Compare,
-          CompareOp: CompareOperator.Like,
-          Value1: `%${keywords}%`
-        }
-      ];
+      this.navigationState.search = keywords;
     }
 
     return this.getData(undefined, keywords);

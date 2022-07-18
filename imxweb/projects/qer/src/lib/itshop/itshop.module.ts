@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,7 +33,7 @@ import { MatListModule } from '@angular/material/list';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { ShelfSelectionComponent } from './shelf-selection.component';
-import { CdrModule, ExtModule, LdsReplaceModule } from 'qbm';
+import { CdrModule, DataSourceToolbarModule, DataTableModule, DateModule, ExtModule, LdsReplaceModule } from 'qbm';
 import { ItshopService } from './itshop.service';
 import { DecisionHistoryComponent } from './request-info/decision-history.component';
 import { RequestInfoComponent } from './request-info/request-info.component';
@@ -41,18 +41,23 @@ import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { NonRequestableItemsComponent } from './non-requestable-items/non-requestable-items.component';
 import { PeerGroupComponent } from './peer-group/peer-group.component';
 import { ShelfService } from './shelf.service';
-
+import { ServiceItemDetailComponent } from './request-info/service-item-detail/service-item-detail.component';
+import { ProductEntitlementsComponent } from './request-info/service-item-detail/product-entitlements/product-entitlements.component';
 @NgModule({
   declarations: [
     DecisionHistoryComponent,
     RequestInfoComponent,
     ShelfSelectionComponent,
     NonRequestableItemsComponent,
-    PeerGroupComponent
+    PeerGroupComponent,
+    ServiceItemDetailComponent,
+    ProductEntitlementsComponent
   ],
   exports: [
     RequestInfoComponent,
-    PeerGroupComponent
+    PeerGroupComponent,
+    ServiceItemDetailComponent,
+    ProductEntitlementsComponent
   ],
   imports: [
     CdrModule,
@@ -66,11 +71,14 @@ import { ShelfService } from './shelf.service';
     EuiMaterialModule,
     FormsModule,
     ReactiveFormsModule,
-    ExtModule
+    ExtModule,
+    DateModule,
+    DataTableModule,
+    DataSourceToolbarModule
   ],
   providers: [
     ItshopService,
     ShelfService
-  ]
+  ],
 })
 export class ItshopModule { }

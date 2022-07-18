@@ -1,0 +1,116 @@
+@mixin imx-flex-column-container {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin imx-flex-row-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.eui-sidesheet-content {
+  @include imx-flex-column-container();
+}
+
+.heading-wrapper {
+  @include imx-flex-row-container();
+  flex: 0 0 auto;
+
+  .helper-alert {
+    display: flex;
+    margin-bottom: 15px;
+  }
+
+  .alert-wrapper {
+    margin: 0 0 0 auto;
+    align-self: flex-end;
+    width: 50%;
+  }
+}
+
+:host {
+  @include imx-flex-column-container();
+  overflow: hidden;
+  height: inherit;
+  width: inherit;
+  max-width: 100%;
+}
+
+.imx-policyviolation-page {
+  background-color: inherit;
+  @include imx-flex-column-container();
+  overflow: hidden;
+
+  div.imx-table-container {
+    @include imx-flex-column-container();
+    overflow: hidden;
+    height: inherit;
+
+    .imx-policyviolation-table {
+      flex-grow: 1;
+      overflow: auto;
+
+      .imx-main-column {
+        max-width: 600px;
+        margin-right: 10px;
+      }
+
+      .imx-decision {
+        min-width: 210px;
+        > * {
+          margin-bottom: 3px;
+          margin-top: 3px;
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+
+  .imx-button-bar {
+    @include imx-flex-row-container();
+    margin-top: 20px;
+    flex: 0 0 auto;
+
+    .imx-badge {
+      background-color: inherit;
+
+      ::ng-deep .eui-badge-content {
+        font-size: 14px;
+        line-height: 14px;
+      }
+    }
+
+    .imx-selected-items {
+      margin: 0;
+      line-height: 36px;
+    }
+
+    button {
+      margin-left: 10px;
+    }
+
+    .imx-menu-spacer {
+      flex-grow: 1;
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .imx-rules-violations-page {
+    .heading-wrapper {
+      display: block;
+
+      .alert-wrapper {
+        margin: 0 0 20px 0;
+        width: 100%;
+      }
+    }
+  }
+}
+
+
+@media only screen and (max-width: 1024px) {
+  ::ng-deep .mat-column-decision {
+    display: none;
+  }
+}

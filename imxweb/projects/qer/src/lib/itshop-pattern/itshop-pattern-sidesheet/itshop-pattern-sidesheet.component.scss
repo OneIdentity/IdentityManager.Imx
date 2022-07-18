@@ -1,4 +1,4 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_palette.scss";
 
 @mixin imx-flex-column-container {
   display: flex;
@@ -11,6 +11,10 @@
 }
 
 :host {
+  ::ng-deep .mat-tab-body-content {
+    display: flex;
+  }
+
   .eui-badge ::ng-deep .eui-badge-content {
     font-size: 12px;
     line-height: 12px;

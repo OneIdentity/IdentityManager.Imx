@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -46,7 +46,7 @@ import {
   AuthenticationModule,
   RouteGuardService} from 'qbm';
 import { OutstandingModule } from 'dpr';
-import { ObjectSheetModule, QerModule, StarlingService } from 'qer';
+import { ObjectSheetModule, QerModule } from 'qer';
 import { AppRoutingModule } from './app-routing.module';
 import { SyncModule } from './sync/sync.module';
 import { ObjectOverviewModule } from './object-overview/object-overview.module';
@@ -59,7 +59,6 @@ import { SystemStatusModule } from './information/system-status/system-status.mo
 import { ProcessesModule } from './processes/processes.module';
 import { AppComponent } from './app.component';
 import { AppService } from './app.service';
-import { OpsupportStarlingService } from './opsupport-starling.service';
 import { environment } from '../environments/environment';
 import appConfigJson from '../appconfig.json';
 
@@ -123,10 +122,6 @@ import appConfigJson from '../appconfig.json';
     },
     RouteGuardService,
     OpsupportDbObjectService,
-    {
-      provide: StarlingService,
-      useClass: OpsupportStarlingService
-    },
   ],
   bootstrap: [AppComponent]
 })

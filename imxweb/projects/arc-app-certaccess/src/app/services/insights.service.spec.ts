@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,7 +33,7 @@ import { NavigationEnd } from '@angular/router';
 import { of } from 'rxjs';
 import { fakeAsync, flush } from '@angular/core/testing';
 
-describe('AppInsightsService', () => {
+xdescribe('AppInsightsService', () => {
   let service: AppInsightsService;
 
   let mockProjectConfigurationService = {

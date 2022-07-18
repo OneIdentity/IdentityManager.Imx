@@ -45,6 +45,47 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
     </ng-container>
+
+    <div class="imx-step-button">
+      <button mat-raised-button data-imx-identifier="compare-step-2-back" matStepperPrevious>{{'#LDS#Back' |
+        translate}}</button>
+      <button mat-raised-button data-imx-identifier="compare-step-2-next" (click)="loadMergeActions()" matStepperNext
+        [matTooltip]="LdsPrepareMergeExplanation | translate" color="primary">{{'#LDS#Preview merge' |
+        translate}}</button>
+    </div>
+  </mat-step>
+
+  <mat-step label="{{'#LDS#Review actions' | translate}}">
+
+    <mat-spinner *ngIf="busy"></mat-spinner>
+
+    <ng-container *ngIf="!busy">
+
+      <eui-alert class="imx-top-alert" type="info" [condensed]="true" [colored]="true"
+        *ngIf="mergeActions.length === 0">
+        <ng-container *ngIf="mergePreventingReason">{{mergePreventingReason}}</ng-container>
+        <ng-container *ngIf="!mergePreventingReason">{{noChangesText | translate}}</ng-container>
+      </eui-alert>
+
+      <eui-alert class="imx-top-alert" type="info" [condensed]="true" [colored]="true" *ngIf="mergeActions.length > 0">
+        {{LdsMergeExplanation | translate}}
+      </eui-alert>
+
+      <mat-selection-list [(ngModel)]="uidActions">
+        <mat-list-option checkboxPosition="before" *ngFor="let action of mergeActions" [value]="action.Id"
+          [disabled]="!action.CanExecute" [attr.data-imx-identifier]="'multi-select-action-' + action.Id">
+          <div>{{action.Display }}</div>
+          <div class="subtext">{{action.ObjectDisplay }}</div>
+        </mat-list-option>
+      </mat-selection-list>
+
+      <div class="imx-step-button">
+        <button mat-raised-button data-imx-identifier="compare-step-3-back" matStepperPrevious>{{'#LDS#Back' |
+          translate}}</button>
+        <button mat-raised-button data-imx-identifier="compare-step-3-next" color="primary" matStepperNext
+          [disabled]="uidActions.length === 0" (click)="Execute()">{{'#LDS#Merge' | translate}}</button>
+      </div>
+    </ng-container>
   </mat-step>
 
 </mat-vertical-stepper>

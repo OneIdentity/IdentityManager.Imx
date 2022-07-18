@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,7 +29,7 @@ import { NgModule, APP_INITIALIZER, ErrorHandler } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
-import { EuiMaterialModule } from '@elemental-ui/core';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule, TranslateLoader, MissingTranslationHandler } from '@ngx-translate/core';
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 
@@ -66,6 +66,7 @@ import appConfigJson from '../appconfig.json';
     AuthenticationModule,
     BrowserAnimationsModule,
     BrowserModule,
+    EuiCoreModule,
     EuiMaterialModule,
     HttpClientModule,
     MastHeadModule,

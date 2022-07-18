@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -75,7 +75,9 @@ export class RiskAnalysisComponent implements OnInit {
 
 			const serverRiskObjects = await this.qerApiService.client.portal_risk_analyze_get(key.TableName,
 				key.Keys[0],
-				false /* do not return functions that don't return to the calculated risk*/
+				{
+					IncludeZeroRisk: false /* do not return functions that don't return to the calculated risk*/
+				}
 			);
 
 			// enrich the server objects with client-side values

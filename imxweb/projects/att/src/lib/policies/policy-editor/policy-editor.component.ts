@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { AfterViewInit, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, ValidatorFn } from '@angular/forms';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
@@ -34,6 +34,8 @@ import { ClassloggerService } from 'qbm';
 import { FilterElementModel } from '../editors/filter-element-model';
 import { PolicyFilterElementComponent } from '../policy-filter-element/policy-filter-element.component';
 import { FilterModel } from './filter-model';
+import { SelectedObjectsComponent } from '../selected-objects/selected-objects.component';
+import { PolicyService } from '../policy.service';
 
 @Component({
   templateUrl: './policy-editor.component.html',
@@ -55,17 +57,24 @@ export class PolicyEditorComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() public filterModel: FilterModel;
   public isEnabled = true;
 
+  public get showWarning() {
+    return this.threshold > 0 && this.threshold < (this.totalCountControl?.countMatching ?? 0);
+  }
+
   @ViewChildren(PolicyFilterElementComponent) private matExpansionPanelQueryList: QueryList<PolicyFilterElementComponent>;
+  @ViewChild('totalCount') private totalCountControl: SelectedObjectsComponent
 
   private readonly concatenationType = 'concatenationType';
   private readonly filterControl = 'filterControl';
   private readonly filterParameter = 'filterParameter';
   private concatSubject: Subscription;
   private newExpansionPanelSubscrioption: Subscription;
+  private threshold = -1;
 
   constructor(
     private readonly busyService: EuiLoadingService,
     private cd: ChangeDetectorRef,
+    private readonly policyService:PolicyService,
     private readonly logger: ClassloggerService) {
 
     this.concatSubject = this.filterFormGroup.get(this.concatenationType).valueChanges.subscribe(elem => {
@@ -185,6 +194,7 @@ export class PolicyEditorComponent implements OnInit, OnDestroy, AfterViewInit {
     setTimeout(() => overlayRef = this.busyService.show());
     try {
       await this.filterModel.updateConfig();
+      this.threshold = await this.policyService.getCasesThreshold();
       this.logger.debug(this, 'parameter config updated');
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));

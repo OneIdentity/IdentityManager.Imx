@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -63,7 +63,8 @@ import {
   EntityModule,
   ImageModule,
   CdrModule,
-  DataTableModule
+  DataTableModule,
+  DateModule
 } from 'qbm';
 import { AobUserModule } from '../user/user.module';
 import { ApplicationPropertyModule } from '../application-property/application-property.module';
@@ -89,11 +90,11 @@ import { IdentityDetailComponent } from './identities/identity-detail/identity-d
     IdentityDetailComponent
   ],
   imports: [
+    CommonModule,
     ApplicationHyperviewModule,
     ApplicationPropertyModule,
     ClassloggerModule,
     ColumnInfoModule,
-    CommonModule,
     EntitlementsModule,
     EuiCoreModule,
     EuiMaterialModule,
@@ -111,6 +112,7 @@ import { IdentityDetailComponent } from './identities/identity-detail/identity-d
     SelectModule,
     MatDialogModule,
     QbmModule,
+    DateModule,
     ReactiveFormsModule,
     TranslateModule,
     AobUserModule,

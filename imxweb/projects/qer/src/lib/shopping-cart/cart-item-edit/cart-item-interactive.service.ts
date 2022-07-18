@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -44,7 +44,7 @@ export class CartItemInteractiveService {
   ) { }
 
   public async getExtendedEntity(entityReference: string): Promise<ExtendedEntityWrapper<PortalCartitemInteractive>> {
-    const collection = await this.qerClient.typedClient.PortalCartitemInteractive_byid.Get_byid(entityReference);
+    const collection = await this.qerClient.typedClient.PortalCartitemInteractive.Get_byid(entityReference);
 
     const index = 0;
 

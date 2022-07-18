@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -70,7 +70,7 @@ export class InitService {
       inputData:
       {
         id: 'userAccounts',
-        label: '#LDS#Heading User Accounts',
+        label: '#LDS#User accounts',
         checkVisibility: async _ => true
       }, sortOrder: 10
     } as TabItem);
@@ -80,18 +80,11 @@ export class InitService {
       entitySchema: this.tsbApiService.typedClient.PortalPersonGroupmemberships.GetSchema(),
       type: PortalPersonGroupmemberships,
       controlInfo: {
-        label: '#LDS#Heading System Entitlements',
+        label: '#LDS#System entitlements',
         index: 20
       },
-        get: async (parameter: any) => this.tsbApiService.client.portal_person_groupmemberships_get(
-          parameter?.uidPerson,
-          parameter?.OrderBy,
-          parameter?.StartIndex,
-          parameter?.PageSize,
-          parameter?.filter,
-          parameter?.withProperties,
-          parameter?.search
-        )
+      get: async (uidPerson:string, parameter: any) => this.tsbApiService.client.portal_person_groupmemberships_get(
+        uidPerson, parameter)
     });
 
     this.addRoutes(routes);

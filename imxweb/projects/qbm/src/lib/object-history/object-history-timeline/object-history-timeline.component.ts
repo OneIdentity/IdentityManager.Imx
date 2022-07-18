@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -63,7 +63,7 @@ export class ObjectHistoryTimelineComponent implements OnChanges {
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    if (changes && changes.historyData) {
+    if (changes && changes['historyData']) {
       this.timeline.setDateRange(this.getDate('min'), this.getDate('max'), false);
 
       this.refresh(this.historyData);

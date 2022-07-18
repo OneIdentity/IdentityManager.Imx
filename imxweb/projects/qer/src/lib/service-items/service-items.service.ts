@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -82,20 +82,26 @@ export class ServiceItemsService {
     return this.qerClient.client.portal_shop_serviceitems_datamodel_get(undefined);
   }
 
-  public async getServiceItemsForPersons(
+  public getServiceItemsForPersons(
     serviceItems: PortalShopServiceitems[],
     recipients: ValueStruct<string>[],
-    uidITShopOrg?: string
-  ): Promise<RequestableProductForPerson[]> {
-    return serviceItems.map(serviceItem =>
-      recipients.map(recipient => ({
-        UidPerson: recipient.DataValue,
-        UidITShopOrg: uidITShopOrg,
-        UidAccProduct: serviceItem.GetEntity().GetKeys()[0],
-        Display: serviceItem.GetEntity().GetDisplay(),
-        DisplayRecipient: recipient.DisplayValue
-      }))
-    ).reduce((a, b) => a.concat(b), []);
+    additionalArgs?: {
+      uidITShopOrg?: string
+    }
+  ): RequestableProductForPerson[] {
+    return serviceItems.map((serviceItem) => {
+      const key = serviceItem.GetEntity().GetKeys()[0];
+      return recipients.map(recipient => {
+        const requestableProductForPerson: RequestableProductForPerson = {
+          UidPerson: recipient.DataValue,
+          UidITShopOrg: additionalArgs?.uidITShopOrg,
+          UidAccProduct: key,
+          Display: serviceItem.GetEntity().GetDisplay(),
+          DisplayRecipient: recipient.DisplayValue
+        };
+        return requestableProductForPerson;
+      });
+    }).reduce((a, b) => a.concat(b), []);
   }
 
   public async updateServiceCategory(prev: TypedEntity[], current: TypedEntity[], serviceCategoryUid?: string): Promise<void> {
@@ -123,6 +129,7 @@ export class ServiceItemsService {
       }
     }
   }
+
 
   private async setServiceCategory(serviceItems: TypedEntity[], serviceCategoryUid?: string): Promise<void> {
     return this.qerClient.client.portal_serviceitems_bulk_put({

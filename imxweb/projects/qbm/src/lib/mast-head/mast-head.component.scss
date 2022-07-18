@@ -1,10 +1,11 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_palette.scss";
 
 :host {
   .imx-masthead-app-name {
     display: inline-block;
     margin-left: 10px;
     margin-right: 5px;
+    cursor: pointer;
   }
 
   .imx-masthead-space {
@@ -39,4 +40,5 @@
   margin-left: -16px;
   max-height: 50px;
   max-width: 300px;
+  cursor: pointer;
 }

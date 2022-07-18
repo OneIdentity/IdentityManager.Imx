@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -97,5 +97,8 @@ export class ItshopRequest extends PortalItshopRequests implements RequestParame
       property.value != null && property.value !== '' &&
       !this.parameterColumns.find(column => column.ColumnName === property.Column.ColumnName)
     ).map(property => new BaseReadonlyCdr(property.Column));
+
+    const document = new BaseReadonlyCdr(this.DocumentNumber.Column, '#LDS#Request number');
+    this.propertyInfo.splice(3, 0, document);
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,12 +30,13 @@ import { configureTestSuite } from 'ng-bullet';
 import { of } from 'rxjs';
 
 import { AttestationActionService } from './attestation-action.service';
-import { SnackBarService, EntityService, BaseCdr } from 'qbm';
+import { SnackBarService, EntityService, BaseCdr, ExtService } from 'qbm';
 import { AttestationCasesService } from '../decision/attestation-cases.service';
 import { JustificationService, PersonService } from 'qer';
 import { IEntityColumn } from 'imx-qbm-dbts';
 import { AttestationCase } from '../decision/attestation-case';
 import { AttestationWorkflowService } from './attestation-workflow.service';
+import { ApiService } from '../api.service';
 
 describe('AttestationActionService', () => {
   let service: AttestationActionService;
@@ -56,7 +57,7 @@ describe('AttestationActionService', () => {
         reason: 'some reason',
         justification: 'some justification'
       };
-  
+
       open(_dialogType, config: { data: any }) {
         return {
           afterClosed: () => {
@@ -65,12 +66,12 @@ describe('AttestationActionService', () => {
                 config.data.actionParameters[name].column.PutValue(this.testdata[name])
               );
             }
-      
+
             return of(this.result);
           }
         }
       }
-    }();  
+    }();
 
     readonly attestationCasesServiceStub = new class {
       readonly makeDecision = jasmine.createSpy('makeDecision');
@@ -89,6 +90,10 @@ describe('AttestationActionService', () => {
     TestBed.configureTestingModule({
       providers: [
         AttestationActionService,
+        {
+          provide: ApiService,
+          useValue: {}
+        },
         {
           provide: SnackBarService,
           useValue: {
@@ -128,6 +133,10 @@ describe('AttestationActionService', () => {
         },
         {
           provide: AttestationWorkflowService,
+          useValue: {}
+        },
+        {
+          provide: ExtService,
           useValue: {}
         }
       ]

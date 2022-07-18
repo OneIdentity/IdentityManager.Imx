@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,5 +31,4 @@ export interface TypedEntitySelectionData {
   display: string;
   selected: TypedEntity[];
   getTyped: (parameters: CollectionLoadParameters) => Promise<TypedEntityCollectionData<TypedEntity>>;
-  hasSearchParameter: boolean;
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -41,6 +41,7 @@ import { FilterModel } from './filter-model';
 import { IEntityColumn } from 'imx-qbm-dbts';
 import { FilterElementColumnService } from '../editors/filter-element-column.service';
 import { FilterElementModel } from '../editors/filter-element-model';
+import { PolicyService } from '../policy.service';
 
 
 @Component({
@@ -126,6 +127,12 @@ describe('PolicyEditorComponent', () => {
         {
           provide: EuiLoadingService,
           useValue: euiLoadingServiceStub
+        },
+        {
+          provide: PolicyService,
+          useValue: {
+            getCasesThreshold: jasmine.createSpy('getCasesThreshold').and.returnValue(Promise.resolve(99999))
+          }
         }
       ]
     });

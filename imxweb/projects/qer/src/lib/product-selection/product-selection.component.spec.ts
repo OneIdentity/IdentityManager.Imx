@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,7 +33,7 @@ import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { configureTestSuite } from 'ng-bullet';
 import { of } from 'rxjs';
 
-import { AuthenticationService, clearStylesFromDOM, EntityService, imx_SessionService } from 'qbm';
+import { AuthenticationService, clearStylesFromDOM, EntityService, imx_SessionService, SnackBarService } from 'qbm';
 import { ProductSelectionComponent } from './product-selection.component';
 import { ServiceItemsService } from '../service-items/service-items.service';
 import { CartItemsService } from '../shopping-cart/cart-items.service';
@@ -42,13 +42,15 @@ import { ProjectConfigurationService } from '../project-configuration/project-co
 import { UserModelService } from '../user/user-model.service';
 import { QerApiService } from '../qer-api-client.service';
 import { ProductSelectionService } from './product-selection.service';
-import { PortalShopCategories } from 'imx-api-qer';
+import { PortalShopCategories, PortalShopServiceitems } from 'imx-api-qer';
 import { ShelfService } from '../itshop/shelf.service';
 import { MatMenuModule } from '@angular/material/menu';
+import { DependencyService } from './optional-items-sidesheet/dependency.service';
+import { EntityValue, IEntityColumn } from 'imx-qbm-dbts';
 
 @Component({
   selector: 'imx-servicecategory-list',
-  template: '<p>MockServiceCategoryList</p>'
+  template: '<p>MockServiceCategoryList</p>',
 })
 class MockServiceCategoryList {
   @Input() selectedServiceCategory: any;
@@ -57,7 +59,7 @@ class MockServiceCategoryList {
 
 @Component({
   selector: 'imx-serviceitem-list',
-  template: '<p>MockServiceItemList</p>'
+  template: '<p>MockServiceItemList</p>',
 })
 class MockServiceItemList {
   @Input() selectedServiceCategory: any;
@@ -67,12 +69,12 @@ class MockServiceItemList {
   @Input() uidPersonPeerGroup: any;
   @Input() dataSourceView: any;
 
-  public resetKeywords(): void {};
+  public resetKeywords(): void {}
 }
 
 @Component({
   selector: 'imx-cdr-editor',
-  template: '<p>MockCdrEditor</p>'
+  template: '<p>MockCdrEditor</p>',
 })
 class MockCdrEditor {
   @Input() cdr: any;
@@ -81,155 +83,184 @@ class MockCdrEditor {
 describe('ProductSelectionComponent', () => {
   @Component({
     selector: `host-component`,
-    template: `<imx-product-selection></imx-product-selection>`
+    template: `<imx-product-selection></imx-product-selection>`,
   })
   class TestHostComponent {
     @ViewChild(ProductSelectionComponent)
     public componentUnderTestComponent: ProductSelectionComponent;
   }
 
+  function createColumn(name: string): IEntityColumn {
+    let value: any;
+    return {
+      ColumnName: name,
+      GetValue: () => value,
+      PutValue: (newValue) => (value = newValue),
+      GetDisplayValue: () => name,
+    } as IEntityColumn;
+  }
+
   let testHostComponent: TestHostComponent;
   let testHostFixture: ComponentFixture<TestHostComponent>;
 
-  const sideSheet = new class {
+  const dependencyServiceStub = {
+    checkForOptionalTree: jasmine.createSpy('checkForOptionalTree').and.returnValue(
+      Promise.resolve({
+        trees: [],
+        totalOptional: 1,
+      })
+    ),
+  };
+
+  const sideSheetHelper = new (class {
     result = undefined;
-    readonly open = (__, __0) => ({
-      afterClosed: () => of(this.result)
-    });
-  }();
+    readonly sideSheetStub = {
+      open: jasmine.createSpy('open').and.returnValue({
+        afterClosed: () => of(this.result),
+      }),
+    };
+  })();
 
   configureTestSuite(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        ProductSelectionComponent,
-        MockCdrEditor,
-        MockServiceCategoryList,
-        MockServiceItemList,
-        TestHostComponent
-      ],
-      imports: [
-        MatMenuModule,
-        MatCardModule
-      ],
+      declarations: [ProductSelectionComponent, MockCdrEditor, MockServiceCategoryList, MockServiceItemList, TestHostComponent],
+      imports: [MatMenuModule, MatCardModule],
       providers: [
         {
           provide: ServiceItemsService,
           useValue: {
-            get: jasmine.createSpy('get').and.returnValue(Promise.resolve())
-          }
+            get: jasmine.createSpy('get').and.returnValue(Promise.resolve()),
+            getServiceItemsForPersons: jasmine.createSpy('getServiceItemsForPersons').and.returnValue({}),
+          },
         },
         {
           provide: ProductSelectionService,
-          useValue: {}
+          useValue: {},
+        },
+        {
+          provide: DependencyService,
+          useValue: dependencyServiceStub,
         },
         {
           provide: CartItemsService,
           useValue: {
-            addItems: jasmine.createSpy('addItems').and.returnValue(Promise.resolve())
-          }
+            addItems: jasmine.createSpy('addItems').and.returnValue(Promise.resolve()),
+          },
         },
         {
           provide: ItshopService,
-          useValue: {}
+          useValue: {},
         },
         {
           provide: ShelfService,
-          useValue: {}
+          useValue: {},
         },
         {
           provide: MatDialog,
           useValue: {
-            open: jasmine.createSpy('open')
-          }
+            open: jasmine.createSpy('open'),
+          },
         },
         {
           provide: EuiSidesheetService,
-          useValue: sideSheet
+          useValue: sideSheetHelper.sideSheetStub,
         },
         {
           provide: Router,
           useValue: {
-            navigate: jasmine.createSpy('navigate')
-          }
+            navigate: jasmine.createSpy('navigate'),
+          },
         },
         {
           provide: EuiLoadingService,
           useValue: {
-            show: jasmine.createSpy('show')
-          }
+            show: jasmine.createSpy('show'),
+            hide: jasmine.createSpy('hide'),
+          },
         },
         {
           provide: ProjectConfigurationService,
           useValue: {
             getConfig: () => ({
-              ITShopConfig: {}
-            })
-          }
+              ITShopConfig: {
+                VI_ITShop_AddOptionalProductsOnInsert: false,
+              },
+              RiskThresholdHigh: 0,
+            }),
+          },
         },
         {
           provide: EntityService,
           useValue: {
             createLocalEntityColumn: (__0, __1, __2) => ({
               GetValue: () => undefined,
-              PutValueStruct: _ => {}
-            })
-          }
+              PutValueStruct: (_) => {},
+            }),
+          },
         },
         {
           provide: QerApiService,
           useValue: {
             client: {
-              getFkProviderItems: _ => []
+              getFkProviderItems: (_) => [],
             },
             typedClient: {
               PortalCartitem: {
                 createEntity: () => ({
                   UID_PersonOrdered: {
                     GetMetadata: () => ({
-                      GetFkRelations: () => undefined
-                    })
+                      GetFkRelations: () => undefined,
+                    }),
                   },
-                  GetEntity: () => ({ })
+                  GetEntity: () => ({}),
                 }),
-                GetSchema: () => ({ Columns: { UID_PersonOrdered: { FkRelation: {} } } })
+                GetSchema: () => ({ Columns: { UID_PersonOrdered: { FkRelation: {} } } }),
               },
               PortalPersonUid: {
-                Get: __ => ({ Data: [] })
-              }
-            }
-          }
+                Get: (__) => ({ Data: [] }),
+              },
+            },
+          },
         },
         {
           provide: UserModelService,
           useValue: {
-            getUserConfig: () => ({})
-          }
+            getUserConfig: () => ({}),
+          },
         },
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: { paramMap: { get: __ => undefined } }
-          }
+            snapshot: { paramMap: { get: (__) => undefined } },
+          },
         },
         {
           provide: imx_SessionService,
           useValue: {
-            getSessionState: () => ({})
-          }
+            getSessionState: () => ({}),
+          },
         },
         {
           provide: AuthenticationService,
           useValue: {
-            onSessionResponse: of({UserUid: 'userUid'})
-          }
-        }
-      ]
+            onSessionResponse: of({ UserUid: 'userUid' }),
+          },
+        },
+        {
+          provide: SnackBarService,
+          useValue: {},
+        },
+      ],
     });
   });
 
   beforeEach(() => {
     testHostFixture = TestBed.createComponent(TestHostComponent);
     testHostComponent = testHostFixture.componentInstance;
+
+    // Reset
+    sideSheetHelper.sideSheetStub.open.calls.reset();
+    dependencyServiceStub.checkForOptionalTree.calls.reset();
   });
 
   afterAll(() => {
@@ -245,7 +276,7 @@ describe('ProductSelectionComponent', () => {
     const someCategory = {} as PortalShopCategories;
     const someReferenceUser = {
       DataValue: 'some uid',
-      DisplayValue: 'some display'
+      DisplayValue: 'some display',
     };
 
     for (const testcase of [
@@ -254,22 +285,23 @@ describe('ProductSelectionComponent', () => {
       { selection: { candidates: [] }, expected: { selectedCategory: someCategory } },
       {
         selection: {
-          candidates: [someReferenceUser]
+          candidates: [someReferenceUser],
         },
         expected: {
           referenceUser: someReferenceUser,
-          selectedCategory: undefined
-        }
-      }
+          selectedCategory: undefined,
+        },
+      },
     ]) {
       it('can select reference user', async () => {
-        sideSheet.result = testcase.selection;
+        sideSheetHelper.result = testcase.selection;
 
         testHostFixture.detectChanges();
 
         const component = testHostComponent.componentUnderTestComponent;
 
         component.selectedCategory = someCategory;
+        component.recipients = new EntityValue(createColumn(''));
 
         await component.selectReferenceUser();
 
@@ -311,5 +343,34 @@ describe('ProductSelectionComponent', () => {
 
     //   expect(resetCategorySpy).toHaveBeenCalled();
     // });
+  });
+
+  describe('selecting optional', () => {
+    it('should not open sidesheet', async () => {
+      testHostFixture.detectChanges();
+      const component = testHostComponent.componentUnderTestComponent;
+      component.projectConfig = await component.projectConfigService.getConfig();
+      component.recipients = new EntityValue(createColumn(''));
+
+      const serviceItem: PortalShopServiceitems = jasmine.createSpyObj('serviceItem', ['']);
+      await component.addItemToCart(serviceItem);
+      expect(dependencyServiceStub.checkForOptionalTree).toHaveBeenCalledTimes(0);
+      expect(sideSheetHelper.sideSheetStub.open).toHaveBeenCalledTimes(0);
+    });
+
+    it('should open sidesheet', async () => {
+      // Setup values
+      testHostFixture.detectChanges();
+      const component = testHostComponent.componentUnderTestComponent;
+      component.projectConfig = await component.projectConfigService.getConfig();
+      component.projectConfig.ITShopConfig.VI_ITShop_AddOptionalProductsOnInsert = true;
+
+      component.recipients = new EntityValue(createColumn(''));
+
+      const serviceItem: PortalShopServiceitems = jasmine.createSpyObj('serviceItem', ['']);
+      await component.addItemToCart(serviceItem);
+      expect(dependencyServiceStub.checkForOptionalTree).toHaveBeenCalled();
+      expect(sideSheetHelper.sideSheetStub.open).toHaveBeenCalledTimes(1);
+    });
   });
 });

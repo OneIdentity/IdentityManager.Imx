@@ -1,0 +1,23 @@
+.imx-accept-terms-container {
+  overflow: auto;
+  white-space: pre-line;
+  max-height: 20vh;
+  margin-bottom: 10px;
+}
+
+.imx-accept-terms-list-heading {
+  margin: 20px 0 10px;
+}
+
+.imx-accept-terms-list-serviceitems {
+  margin-bottom: 30px;
+
+  >li {
+    list-style-type: initial;
+  }
+}
+
+.imx-accept-checkbox {
+  font-weight: bold;
+  height: 4em;
+}

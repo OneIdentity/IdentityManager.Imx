@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,11 +25,30 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, Input, Output, EventEmitter, AfterViewInit, OnChanges, SimpleChanges, ViewChild, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  AfterViewInit,
+  OnChanges,
+  SimpleChanges,
+  ViewChild,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { DataSourceToolbarSettings, DataSourceToolbarComponent, DataTileBadge, DataTileMenuItem, SettingsService, buildAdditionalElementsString } from 'qbm';
+import {
+  buildAdditionalElementsString,
+  DataSourceToolbarComponent,
+  DataSourceToolbarSettings,
+  DataTileBadge,
+  DataTileMenuItem,
+  MessageDialogComponent,
+  SettingsService,
+} from 'qbm';
 import {
   CollectionLoadParameters,
   DisplayColumns,
@@ -38,14 +57,14 @@ import {
   ValType,
   MultiValue,
   EntitySchema,
-  DataModel
+  DataModel,
 } from 'imx-qbm-dbts';
-import { ITShopConfig, PortalShopCategories, PortalShopServiceitems } from 'imx-api-qer';
+import { PortalShopCategories, PortalShopServiceitems } from 'imx-api-qer';
 
 import { ServiceItemsService } from '../service-items.service';
 import { ServiceItemInfoComponent } from '../service-item-info/service-item-info.component';
 import { ImageService } from '../../itshop/image.service';
-import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'imx-serviceitem-list',
@@ -61,10 +80,10 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
   @Input() public referenceUserUid: string;
   @Input() public uidPersonPeerGroup: string;
   @Input() public dataSourceView = { selected: 'cardlist' };
+  @Input() public itemActions: DataTileMenuItem[];
 
   @Output() public selectionChanged = new EventEmitter<PortalShopServiceitems[]>();
-  @Output() public addItemToCart = new EventEmitter<PortalShopServiceitems>();
-  @Output() public showDetails = new EventEmitter<PortalShopServiceitems>();
+  @Output() public handleAction = new EventEmitter<{ item: PortalShopServiceitems, name: string }>();
   @Output() public categoryRemoved = new EventEmitter<PortalShopCategories>();
   @Output() public readonly openCategoryTree = new EventEmitter<void>();
 
@@ -73,46 +92,26 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
   public DisplayColumns = DisplayColumns;
   public displayedColumns: IClientProperty[];
   public includeChildCategories: boolean;
+  public noDataText = '#LDS#No data';
   public readonly status = {
-    getBadges: (prod: PortalShopServiceitems): DataTileBadge[] => {
-      const result: DataTileBadge[] = [];
-      if (prod.IsRequestable.value === false) {
-        result.push({
-          content: this.badgeNotRequestableText,
-          color: 'red',
-        });
-      }
-
-      if (
-        prod.IsRequestable.value &&
-        (this.isValueContains(prod.OrderableStatus.value, ['PERSONHASOBJECT', 'PERSONHASASSIGNMENTORDER']) ||
-          this.isValueContains(prod.OrderableStatus.value, 'ASSIGNED') ||
-          this.isValueContains(prod.OrderableStatus.value, 'ORDER') ||
-          this.isValueContains(prod.OrderableStatus.value, 'NOTORDERABLE') ||
-          this.isValueContains(prod.OrderableStatus.value, 'CART'))
-      ) {
-        result.push({
-          content: this.badgeInfoText,
-          color: 'orange',
-        });
-      }
-
-      return result;
-    },
+    getBadges: (prod: PortalShopServiceitems): DataTileBadge[] => this.getBadges(prod),
     enabled: (prod: PortalShopServiceitems): boolean => {
       return prod.IsRequestable.value;
     },
-    getImage: async (prod: PortalShopServiceitems): Promise<Blob> => this.image.get(prod, this.itshopConfig),
+    getImagePath: async (prod: PortalShopServiceitems): Promise<string> => this.image.getPath(prod),
   };
   public peerGroupSize: number;
   public isLoading = false;
+
+  public get options(): string[] {
+    return this.uidPersonPeerGroup ?? '' !== '' ? ['search', 'filter', 'settings'] : ['search', 'filter', 'settings', 'selectedViewGroup'];
+  }
 
   @ViewChild(DataSourceToolbarComponent) private readonly dst: DataSourceToolbarComponent;
 
   private readonly badgeInfoText = '#LDS#Info';
   private readonly badgeNotRequestableText = '#LDS#Not requestable';
   private navigationState: CollectionLoadParameters;
-  private itshopConfig: ITShopConfig;
   private dataModel: DataModel;
 
   constructor(
@@ -120,15 +119,15 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
     private readonly serviceItemsProvider: ServiceItemsService,
     private readonly dialog: MatDialog,
     private readonly image: ImageService,
-    private readonly settingsService: SettingsService,
-    private readonly projectConfig: ProjectConfigurationService
+    private readonly translate: TranslateService,
+    settingsService: SettingsService,
   ) {
     this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchema = serviceItemsProvider.PortalShopServiceItemsSchema;
     this.displayedColumns = [
       this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
       {
-        ColumnName: 'addCartButton',
+        ColumnName: 'actions',
         Type: ValType.String,
       },
     ];
@@ -155,6 +154,7 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
       (changes.referenceUserUid && !changes.referenceUserUid.firstChange) ||
       (changes.uidPersonPeerGroup && !changes.uidPersonPeerGroup.firstChange)
     ) {
+      this.dst?.clearSelection();
       return this.getData({ StartIndex: 0 });
     }
   }
@@ -198,10 +198,6 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
     });
 
     try {
-      if (this.itshopConfig == null) {
-        this.itshopConfig = (await this.projectConfig.getConfig()).ITShopConfig;
-      }
-
       const data = await this.serviceItemsProvider.get({
         ...this.navigationState,
         UID_Person: this.recipients ? MultiValue.FromString(this.recipients.value).GetValues().join(',') : undefined,
@@ -218,10 +214,24 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
           entitySchema: this.entitySchema,
           navigationState: this.navigationState,
           dataModel: this.dataModel,
-          identifierForSessionStore: 'service-item-list'
+          identifierForSessionStore: 'service-item-list',
         };
 
         this.peerGroupSize = data.extendedData?.PeerGroupSize;
+
+        if (this.peerGroupSize === 0) {
+          this.noDataText = '#LDS#Heading Peer Group Is Empty';
+          this.dialog.open(MessageDialogComponent, {
+            data: {
+              ShowOk: true,
+              Title: await this.translate.get(this.noDataText).toPromise(),
+              Message: await this.translate.get('#LDS#You cannot view products of your peer group. Your peer group is empty.').toPromise(),
+            },
+            panelClass: 'imx-messageDialog',
+          });
+        } else {
+          this.noDataText = '#LDS#No data';
+        }
       } else {
         this.dstSettings = undefined;
       }
@@ -255,13 +265,8 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
     this.dataSourceView.selected = view;
   }
 
-  public handleAction(item: DataTileMenuItem): void {
-    if (item.name === 'edit') {
-      this.addItemToCart.emit(item.typedEntity as PortalShopServiceitems);
-    }
-    if (item.name === 'details') {
-      this.showDetails.emit(item.typedEntity as PortalShopServiceitems);
-    }
+  public emitAction(item: DataTileMenuItem, serviceItem?: PortalShopServiceitems): void {
+    this.handleAction.emit({ item: serviceItem ?? item.typedEntity as PortalShopServiceitems, name: item.name });
   }
 
   public async onRemoveChip(): Promise<void> {
@@ -282,5 +287,31 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
     this.keywords = '';
     this.dstComponent.keywords = '';
     this.dstComponent.searchControl.setValue('');
+  }
+
+  private getBadges(prod: PortalShopServiceitems): DataTileBadge[] {
+    const result: DataTileBadge[] = [];
+    if (prod.IsRequestable.value === false) {
+      result.push({
+        content: this.badgeNotRequestableText,
+        color: 'red',
+      });
+    }
+
+    if (
+      prod.IsRequestable.value &&
+      (this.isValueContains(prod.OrderableStatus.value, ['PERSONHASOBJECT', 'PERSONHASASSIGNMENTORDER']) ||
+        this.isValueContains(prod.OrderableStatus.value, 'ASSIGNED') ||
+        this.isValueContains(prod.OrderableStatus.value, 'ORDER') ||
+        this.isValueContains(prod.OrderableStatus.value, 'NOTORDERABLE') ||
+        this.isValueContains(prod.OrderableStatus.value, 'CART'))
+    ) {
+      result.push({
+        content: this.badgeInfoText,
+        color: 'orange',
+      });
+    }
+
+    return result;
   }
 }

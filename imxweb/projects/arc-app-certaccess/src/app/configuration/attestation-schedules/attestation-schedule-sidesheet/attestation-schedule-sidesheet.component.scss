@@ -1,4 +1,4 @@
-@import '~@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 .attestation-schedule-sidesheet {
   background-color: $asher-gray;
@@ -81,7 +81,7 @@
   .imx-title-label {
     font-size: 14px;
     margin: 0 10px 14px 0;
-    
+
   }
   eui-icon{
     color: $iris-blue;

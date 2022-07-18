@@ -1,0 +1,9 @@
+.mat-dialog-content{
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  .mat-table {
+    margin-top: 20px;
+  }
+}

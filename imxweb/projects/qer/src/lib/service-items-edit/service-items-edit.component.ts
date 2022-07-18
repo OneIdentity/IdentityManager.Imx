@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -68,7 +68,8 @@ export class ServiceItemsEditComponent implements OnInit {
         entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
         {
           ColumnName: 'Requestable',
-          Type: ValType.String
+          Type: ValType.String,
+          afterAdditionals: true
         },
         {
           ColumnName: 'viewDetailsButton',

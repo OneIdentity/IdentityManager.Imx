@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,7 +35,7 @@ export class OrgDataModel implements IRoleDataModel {
   ) { }
   public async getModel(filter: FilterData[], isAdmin: boolean): Promise<DataModel> {
     return isAdmin ?
-      this.api.client.portal_admin_role_org_datamodel_get(filter)
-      : this.api.client.portal_resp_org_datamodel_get(filter);
+      this.api.client.portal_admin_role_org_datamodel_get({ filter: filter })
+      : this.api.client.portal_resp_org_datamodel_get({ filter: filter });
   }
 }

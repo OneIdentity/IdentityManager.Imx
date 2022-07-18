@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTabChangeEvent, MatTabGroup } from '@angular/material/tabs';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -40,17 +40,20 @@ import {
   PortalItshopPeergroupMemberships,
   RequestableProductForPerson,
   QerProjectConfig,
-  PortalItshopPatternRequestable
+  PortalItshopPatternRequestable,
 } from 'imx-api-qer';
 
 import {
   ColumnDependentReference,
   FkAdvancedPickerComponent,
-  MessageDialogComponent,
   EntityService,
   BaseReadonlyCdr,
   BaseCdr,
-  AuthenticationService
+  AuthenticationService,
+  LdsReplacePipe,
+  DataTileMenuItem,
+  MessageDialogComponent,
+  SnackBarService,
 } from 'qbm';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
 import { UserModelService } from '../user/user-model.service';
@@ -65,22 +68,21 @@ import { CategoryTreeComponent } from './servicecategory-list/category-tree.comp
 import { RoleMembershipsComponent } from './role-memberships/role-memberships.component';
 import { RecipientsWrapper } from './recipients-wrapper';
 import { ShelfService } from '../itshop/shelf.service';
-import { throwToolbarMixedModesError } from '@angular/material/toolbar';
 import { ProductDetailsSidesheetComponent } from './product-details-sidesheet/product-details-sidesheet.component';
 import { PatternDetailsSidesheetComponent } from './pattern-details-sidesheet/pattern-details-sidesheet.component';
 import { PatternItemService } from '../pattern-item-list/pattern-item.service';
 import { PatternItemListComponent } from '../pattern-item-list/pattern-item-list.component';
+import { OptionalItemsSidesheetComponent } from './optional-items-sidesheet/optional-items-sidesheet.component';
+import { ServiceItemOrder } from './service-item-order.interface';
+import { DependencyService } from './optional-items-sidesheet/dependency.service';
 
 /** Main entry component for the product selection page. */
 @Component({
   templateUrl: './product-selection.component.html',
   styleUrls: ['./product-selection.component.scss'],
-  selector: 'imx-product-selection'
+  selector: 'imx-product-selection',
 })
 export class ProductSelectionComponent implements OnInit, OnDestroy {
-
-  @ViewChild('CallAction12') public tplCallAction12: TemplateRef<any>;
-  @ViewChild('Call4') public tplCall4: TemplateRef<any>;
   @ViewChild(ServiceitemListComponent) public serviceitemListComponent: ServiceitemListComponent;
   @ViewChild(PatternItemListComponent) public patternitemListComponent: PatternItemListComponent;
   @ViewChild(ServiceCategoryListComponent) public serviceCategoryListComponent: ServiceCategoryListComponent;
@@ -106,11 +108,35 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
   public displayProducts = true;
   public recipientType: 'self' | 'others' = 'self';
   public showTemplates = false;
+  public infoboxVisible = false;
+  public infoboxTooltip = '';
+  public projectConfig: QerProjectConfig;
+
+  public serviceItemActions: DataTileMenuItem[] = [
+    {
+      name: 'details',
+      description: '#LDS#Details',
+      useOnDisabledTile: true,
+    },
+    {
+      name: 'addToCart',
+      description: '#LDS#Add to cart',
+    },
+  ];
+
+  public patternItemActions: DataTileMenuItem[] = [
+    {
+      name: 'details',
+      description: '#LDS#Details',
+    },
+    {
+      name: 'addTemplateToCart',
+      description: '#LDS#Add to cart',
+    },
+  ];
+
   private authSubscription: Subscription;
-
   private userUid: string;
-
-  private projectConfig: QerProjectConfig;
 
   @ViewChild(RoleMembershipsComponent) private roles: RoleMembershipsComponent;
   @ViewChild(MatTabGroup) private tabControl: MatTabGroup;
@@ -120,27 +146,26 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     private qerClient: QerApiService,
     private router: Router,
     private dialogService: MatDialog,
-    private projectConfigService: ProjectConfigurationService,
+    public projectConfigService: ProjectConfigurationService,
     private userModelSvc: UserModelService,
     private activatedRoute: ActivatedRoute,
     private readonly personProvider: PersonService,
     private readonly busyIndicator: EuiLoadingService,
     private readonly serviceItemsProvider: ServiceItemsService,
     private readonly patternItemsService: PatternItemService,
+    private readonly optionalItemsService: DependencyService,
     private readonly cartItemsProvider: CartItemsService,
     private readonly shelfService: ShelfService,
     private readonly sideSheetService: EuiSidesheetService,
     private readonly productSelectionService: ProductSelectionService,
     private readonly entityService: EntityService,
+    private readonly ldsReplace: LdsReplacePipe,
+    private readonly snackbar: SnackBarService,
     authentication: AuthenticationService
   ) {
-    this.authSubscription = authentication.onSessionResponse.subscribe(elem => {
+    this.authSubscription = authentication.onSessionResponse.subscribe((elem) => {
       this.userUid = elem.UserUid;
     });
-  }
-
-  public ngOnDestroy(): void {
-    this.authSubscription.unsubscribe();
   }
 
   public async ngOnInit(): Promise<void> {
@@ -152,19 +177,14 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     recipientsProperty.FkRelation = this.qerClient.typedClient.PortalCartitem.GetSchema().Columns.UID_PersonOrdered.FkRelation;
 
     const dummyCartItemEntity = this.qerClient.typedClient.PortalCartitem.createEntity().GetEntity();
-    const fkProviderItems = this.qerClient.client.getFkProviderItems('portal/cartitem').map(item => ({
+    const fkProviderItems = this.qerClient.client.getFkProviderItems('portal/cartitem').map((item) => ({
       ...item,
       load: (_, parameters = {}) => item.load(dummyCartItemEntity, parameters),
-      getDataModel: async (entity) =>
-        item.getDataModel(entity),
-      getFilterTree: async (entity, parentKey) => item.getFilterTree(entity, parentKey)
+      getDataModel: async (entity) => item.getDataModel(entity),
+      getFilterTree: async (entity, parentKey) => item.getFilterTree(entity, parentKey),
     }));
 
-    const column = this.entityService.createLocalEntityColumn(
-      recipientsProperty,
-      fkProviderItems,
-      { Value: this.userUid }
-    );
+    const column = this.entityService.createLocalEntityColumn(recipientsProperty, fkProviderItems, { Value: this.userUid });
     this.recipients = new EntityValue(column);
 
     this.recipientsWrapper = new RecipientsWrapper(this.recipients);
@@ -180,15 +200,14 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
 
     this.searchString = this.activatedRoute.snapshot.paramMap.get('ProductSearchString');
     if (this.searchString) {
-
       /* user can pass product search string by URL parameter -> load the data with this search string
-      */
+       */
     }
 
     // preset recipient to the current user
     await this.recipients.Column.PutValueStruct({
       DataValue: this.userUid,
-      DisplayValue: await this.getPersonDisplay(this.userUid)
+      DisplayValue: await this.getPersonDisplay(this.userUid),
     });
 
     const uidPerson = this.activatedRoute.snapshot.paramMap.get('UID_Person');
@@ -196,7 +215,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     if (uidPerson) {
       await this.recipients.Column.PutValueStruct({
         DataValue: uidPerson,
-        DisplayValue: await this.getPersonDisplay(uidPerson)
+        DisplayValue: await this.getPersonDisplay(uidPerson),
       });
       // TODO in this case, CanRequestForSomebodyElse is false
     }
@@ -207,15 +226,13 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     this.canSelectFromTemplate = this.projectConfig.ITShopConfig.VI_ITShop_ProductSelectionFromTemplate;
     this.canSelectByRefUser = this.projectConfig.ITShopConfig.VI_ITShop_ProductSelectionByReferenceUser;
 
-    this.cartItemRecipients = new BaseCdr(
-      this.recipients.Column,
-      '#LDS#Recipients'
-    );
+    this.cartItemRecipients = new BaseCdr(this.recipients.Column, '#LDS#Recipients');
 
-    this.cartItemRecipientsReadonly = new BaseReadonlyCdr(
-      this.recipients.Column,
-      '#LDS#Target identities'
-    );
+    this.cartItemRecipientsReadonly = new BaseReadonlyCdr(this.recipients.Column, '#LDS#Target identities');
+  }
+
+  public ngOnDestroy(): void {
+    this.authSubscription.unsubscribe();
   }
 
   public openCategoryTree(): void {
@@ -227,8 +244,8 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
       data: {
         selectedServiceCategory: this.selectedCategory,
         recipients: this.recipients,
-        showImage: false
-      }
+        showImage: false,
+      },
     });
 
     sidesheetRef.afterClosed().subscribe((category: PortalShopCategories) => {
@@ -253,13 +270,8 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     return this.requesterSelected() && !this.uidaccproduct;
   }
 
-  public label5(): void {
-    this.dialogService.open(this.tplCall4);
-  }
-
-  public button1(): void {
-    // TODO
-    // this.router.navigate(['objectsheet', 'AccProduct', this.accProductSelected.GetEntity().GetKeys[0]]);
+  public getDataSourceView(): { selected: string } {
+    return this.uidPersonPeerGroup ? { selected: 'table' } : this.dataSourceView;
   }
 
   public showRequestsForRecipient(): void {
@@ -274,37 +286,50 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  public selectRequestTemplate(): void {
-    this.dialogService.open(this.tplCallAction12);
-  }
-
   public async selectReferenceUser(): Promise<void> {
-    const selection = await this.sideSheetService.open(FkAdvancedPickerComponent, {
-      title: await this.translate.get('#LDS#Heading Select Reference User').toPromise(),
-      padding: '0',
-      width: '600px',
-      headerColour: 'iris-blue',
-      testId: 'referenceUser-sidesheet',
-      data: {
-        displayValue: '',
-        fkRelations: this.qerClient.typedClient.PortalCartitem.createEntity()
-          .UID_PersonOrdered.GetMetadata().GetFkRelations(),
-        isMultiValue: false
-      }
-    }).afterClosed().toPromise();
+    const disabledIds =
+      this.recipients.Column?.GetValue()?.split('').length === 1 ? this.recipients.Column?.GetValue()?.split('') : undefined;
+
+    const selection = await this.sideSheetService
+      .open(FkAdvancedPickerComponent, {
+        title: await this.translate.get('#LDS#Heading Select Reference User').toPromise(),
+        padding: '0',
+        width: '600px',
+        headerColour: 'iris-blue',
+        testId: 'referenceUser-sidesheet',
+        data: {
+          displayValue: '',
+          fkRelations: this.qerClient.typedClient.PortalCartitem.createEntity().UID_PersonOrdered.GetMetadata().GetFkRelations(),
+          isMultiValue: false,
+          disabledIds: disabledIds,
+        },
+      })
+      .afterClosed()
+      .toPromise();
 
     if (selection && selection.candidates?.length > 0) {
       this.setReferenceUser(selection.candidates[0]);
     }
+
+    await this.updateInfoTooltip();
   }
 
   public setReferenceUser(user: ValueStruct<string>): void {
+    if (this.referenceUser?.DataValue === user?.DataValue) {
+      return;
+    }
+
     this.referenceUser = user;
+    this.selectedRoles = [];
     this.selectedCategory = undefined;
     this.uidPersonPeerGroup = undefined;
+    this.displayProducts = true;
+    if (this.tabControl) {
+      this.tabControl.selectedIndex = 0;
+    }
   }
 
-  public setPeerGroupPerson(uidPerson: string): void {
+  public async setPeerGroupPerson(uidPerson: string): Promise<void> {
     this.showTemplates = false;
     this.uidPersonPeerGroup = uidPerson;
     this.selectedCategory = undefined;
@@ -312,6 +337,8 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     if (uidPerson != null) {
       this.referenceUser = undefined;
     }
+
+    await this.updateInfoTooltip();
   }
 
   public cancelPeerOrReference(): void {
@@ -321,6 +348,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     this.selectedCategory = undefined;
     this.displayProducts = true;
     this.showTemplates = false;
+    this.infoboxVisible = false;
     if (this.tabControl) {
       this.tabControl.selectedIndex = 0;
     }
@@ -346,35 +374,27 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     this.selectedRoles = items;
   }
 
-  public async requestDetails(item: PortalShopServiceitems): Promise<void> {
-    await this.sideSheetService.open(ProductDetailsSidesheetComponent, {
-      title: await this.translate.get('#LDS#Heading View Product Details').toPromise(),
-      padding: '0px',
-      width: 'max(700px, 60%)',
-      headerColour: 'iris-blue',
-      bodyColour: 'asher-gray',
-      testId: 'product-details-sidesheet',
-      data: {
-        item,
-        projectConfig: this.projectConfig
-      }
-    }).afterClosed().toPromise();
+  public async handleServiceItemAction(action: { name: string; item: PortalShopServiceitems }): Promise<void> {
+    if (action.name === 'addToCart') {
+      this.addItemToCart(action.item);
+    }
+    if (action.name === 'details') {
+      this.requestDetails(action.item);
+    }
   }
 
-  public async requestTemplateDetails(items: PortalShopServiceitems[]): Promise<void> {
-    await this.sideSheetService.open(PatternDetailsSidesheetComponent, {
-      title: await this.translate.get('#LDS#Heading View Request Template Details').toPromise(),
-      padding: '0px',
-      width: 'max(700px, 60%)',
-      headerColour: 'iris-blue',
-      bodyColour: 'asher-gray',
-      testId: 'template-details-sidesheet',
-      data: {
-        items,
-        projectConfig: this.projectConfig
-      }
-    }).afterClosed().toPromise();
-}
+  public async handlePatternItemAction(action: {
+    name: string;
+    serviceItems?: PortalShopServiceitems[];
+    patternItem?: PortalItshopPatternRequestable;
+  }): Promise<void> {
+    if (action.name === 'details' && action.serviceItems) {
+      this.requestTemplateDetails(action.serviceItems);
+    }
+    if (action.name === 'addTemplateToCart' && action.patternItem) {
+      this.addTemplateToCart(action.patternItem);
+    }
+  }
 
   public async onAddItemsToCart(): Promise<void> {
     if (!this.selectedItems?.length && !this.selectedRoles?.length && !this.selectedTemplates.length) {
@@ -382,18 +402,58 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
         data: {
           ShowOk: true,
           Title: await this.translate.get('#LDS#Heading Add to Cart').toPromise(),
-          Message: await this.translate.get('#LDS#Please select at least one product you want to add to your shopping cart.').toPromise()
+          Message: await this.translate.get('#LDS#Please select at least one product you want to add to your shopping cart.').toPromise(),
         },
-        panelClass: 'imx-messageDialog'
+        panelClass: 'imx-messageDialog',
       });
       return;
     }
 
-    await this.orderSelected(this.selectedItems, this.selectedTemplates, this.selectedRoles);
+    const outgoingOrder: ServiceItemOrder = {
+      serviceItems: this.selectedItems,
+    };
+    if (this.projectConfig.ITShopConfig.VI_ITShop_AddOptionalProductsOnInsert) {
+      await this.openOptionalSideSheet(outgoingOrder);
+    }
   }
 
   public async addItemToCart(serviceItem: PortalShopServiceitems): Promise<void> {
-    this.orderSelected([serviceItem], undefined);
+    const outgoingOrder: ServiceItemOrder = {
+      serviceItems: [serviceItem],
+    };
+    if (this.projectConfig.ITShopConfig.VI_ITShop_AddOptionalProductsOnInsert) {
+      await this.openOptionalSideSheet(outgoingOrder);
+    }
+  }
+
+  public async openOptionalSideSheet(outgoingOrder: ServiceItemOrder): Promise<void> {
+    const serviceItemTree = await this.optionalItemsService.checkForOptionalTree(outgoingOrder.serviceItems, this.recipients);
+    if (serviceItemTree?.totalOptional > 0) {
+      const selectedOptionalOrder: ServiceItemOrder = await this.sideSheetService
+        .open(OptionalItemsSidesheetComponent, {
+          title: await this.translate.get('#LDS#Heading Optional Products').toPromise(),
+          padding: '0px',
+          width: 'max(700px, 60%)',
+          headerColour: 'iris-blue',
+          bodyColour: 'asher-gray',
+          testId: 'optional-items-sidesheet',
+          disableClose: true,
+          data: {
+            serviceItemTree,
+            projectConfig: this.projectConfig,
+          },
+        })
+        .afterClosed()
+        .toPromise();
+      if (selectedOptionalOrder) {
+        outgoingOrder.optionalItems = selectedOptionalOrder.optionalItems;
+        outgoingOrder.requestables = selectedOptionalOrder.requestables;
+      } else {
+        // Exited sidesheet
+        return;
+      }
+    }
+    await this.orderSelected(outgoingOrder, undefined);
   }
 
   public async addTemplateToCart(patternRequestable: PortalItshopPatternRequestable): Promise<void> {
@@ -417,15 +477,17 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     if (arg.value === 'self') {
       await this.recipients.Column.PutValueStruct({
         DataValue: this.userUid,
-        DisplayValue: await this.getPersonDisplay(this.userUid)
+        DisplayValue: await this.getPersonDisplay(this.userUid),
       });
     } else {
       await this.recipients.Column.PutValueStruct({
         DataValue: '',
-        DisplayValue: ''
+        DisplayValue: '',
       });
     }
-    this.onRecipientsChanged();
+    await this.onRecipientsChanged();
+
+    await this.updateInfoTooltip();
   }
 
   public async onRecipientsChanged(): Promise<void> {
@@ -433,12 +495,12 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
 
     if (this.serviceCategoryListComponent) {
       this.serviceitemListComponent.deselectAll();
-      this.serviceitemListComponent.getData();
+      await this.serviceitemListComponent.getData();
     }
 
     if (this.patternitemListComponent) {
       this.patternitemListComponent.deselectAll();
-      this.patternitemListComponent.getData();
+      await this.patternitemListComponent.getData();
     }
   }
 
@@ -471,6 +533,8 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     } else if (event.index === 1) {
       this.displayProducts = false;
     }
+
+    this.updateInfoTooltip();
   }
 
   public onTableChange(event: MatTabChangeEvent): void {
@@ -479,26 +543,124 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     } else if (event.index === 1) {
       this.showTemplates = true;
     }
+
+    this.updateInfoTooltip();
   }
 
-  private async orderSelected(serviceItems: PortalShopServiceitems[], templateItems: PortalItshopPatternRequestable[], roles?: PortalItshopPeergroupMemberships[]): Promise<void> {
+  public toggleInfobox(): void {
+    this.infoboxVisible = !this.infoboxVisible;
+  }
+
+  public async updateInfoTooltip(): Promise<void> {
+
+    this.infoboxTooltip = '';
+
+    if (this.referenceUser) {
+      if (this.displayProducts) {
+        this.infoboxTooltip = this.ldsReplace.transform(
+          await this.translate.get('#LDS#The following products are assigned to {0}.').toPromise(),
+          this.referenceUser.DisplayValue
+        );
+      } else {
+        this.infoboxTooltip = this.ldsReplace.transform(
+          await this.translate.get('#LDS#{0} is a member of the following organizational structures.').toPromise(),
+          this.referenceUser.DisplayValue
+        );
+      }
+    } else {
+      if (this.displayProducts) {
+        this.infoboxTooltip = this.ldsReplace.transform(
+          await this.translate.get('#LDS#Other identities of the peer group of {0} requested the following products.').toPromise(),
+          this.recipients.Column.GetDisplayValue()
+        );
+      } else {
+        this.infoboxTooltip = this.ldsReplace.transform(
+          await this.translate.get('#LDS#Other identities of the peer group of {0} are members of the following organizational structures.').toPromise(),
+          this.recipients.Column.GetDisplayValue()
+        );
+      }
+    }
+
+    if (this.displayProducts) {
+      this.infoboxTooltip += await this.translate.get('#LDS#Select the products you also want to request for the selected recipient.').toPromise();
+    } else {
+      this.infoboxTooltip += await this.translate.get('#LDS#Select the organizational structures in which the selected recipient should also be a member.').toPromise();
+    }
+  }
+
+  private async requestDetails(item: PortalShopServiceitems): Promise<void> {
+    await this.sideSheetService
+      .open(ProductDetailsSidesheetComponent, {
+        title: await this.translate.get('#LDS#Heading View Product Details').toPromise(),
+        padding: '0px',
+        width: 'max(700px, 60%)',
+        headerColour: 'iris-blue',
+        bodyColour: 'asher-gray',
+        testId: 'product-details-sidesheet',
+        data: {
+          item,
+          projectConfig: this.projectConfig,
+        },
+      })
+      .afterClosed()
+      .toPromise();
+  }
+
+  private async requestTemplateDetails(items: PortalShopServiceitems[]): Promise<void> {
+    await this.sideSheetService
+      .open(PatternDetailsSidesheetComponent, {
+        title: await this.translate.get('#LDS#Heading View Request Template Details').toPromise(),
+        padding: '0px',
+        width: 'max(700px, 60%)',
+        headerColour: 'iris-blue',
+        bodyColour: 'asher-gray',
+        testId: 'template-details-sidesheet',
+        data: {
+          items,
+          projectConfig: this.projectConfig,
+        },
+      })
+      .afterClosed()
+      .toPromise();
+  }
+
+  private copyShopInfoForDups(serviceItemsForPersons: RequestableProductForPerson[]): void {
+    // This function is used to copy info for the service items that were duplicated under different parents
+    const itemsWithItShop = serviceItemsForPersons.filter((item) => item.UidITShopOrg?.length > 0);
+    itemsWithItShop.map((itemWithItShop) => {
+      serviceItemsForPersons
+        .filter((item) => item.UidAccProduct === itemWithItShop.UidAccProduct)
+        .map((item) => (item.UidITShopOrg = itemWithItShop.UidITShopOrg));
+    });
+    return;
+  }
+
+  private async orderSelected(
+    outgoingOrder: ServiceItemOrder,
+    templateItems: PortalItshopPatternRequestable[],
+    roles?: PortalItshopPeergroupMemberships[]
+  ): Promise<void> {
     if (this.recipients) {
       const recipientsUids = MultiValue.FromString(this.recipients.value).GetValues();
       const recipientsDisplays = MultiValue.FromString(this.recipients.Column.GetDisplayValue()).GetValues();
 
-      let savedItems = false;
+      let savedItems = 0;
+      let possibleItems = 0;
 
-      if (serviceItems && serviceItems.length > 0) {
+      if (outgoingOrder?.serviceItems && outgoingOrder.serviceItems.length > 0) {
         setTimeout(() => this.busyIndicator.show());
         let serviceItemsForPersons: RequestableProductForPerson[];
         try {
-          serviceItemsForPersons = await this.serviceItemsProvider.getServiceItemsForPersons(
-            serviceItems,
+          serviceItemsForPersons = this.serviceItemsProvider.getServiceItemsForPersons(
+            outgoingOrder.serviceItems,
             recipientsUids.map((uid, index) => ({
               DataValue: uid,
-              DisplayValue: recipientsDisplays[index]
+              DisplayValue: recipientsDisplays[index],
             }))
           );
+          if (outgoingOrder?.requestables) {
+            serviceItemsForPersons.push(...outgoingOrder.requestables);
+          }
         } finally {
           setTimeout(() => this.busyIndicator.hide());
         }
@@ -507,7 +669,10 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
           if (hasItems) {
             setTimeout(() => this.busyIndicator.show());
             try {
-              savedItems = await this.cartItemsProvider.addItems(serviceItemsForPersons.filter(item => item.UidITShopOrg?.length > 0));
+              this.copyShopInfoForDups(serviceItemsForPersons);
+              const items = serviceItemsForPersons.filter((item) => item.UidITShopOrg?.length > 0);
+              possibleItems = items.length;
+              savedItems = await this.cartItemsProvider.addItems(items);
             } finally {
               setTimeout(() => this.busyIndicator.hide());
             }
@@ -515,14 +680,14 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
         }
       }
 
-      if (templateItems && templateItems.length > 0 ) {
+      if (templateItems && templateItems.length > 0) {
         let templateItemsForPersons: RequestableProductForPerson[];
         try {
           templateItemsForPersons = await this.patternItemsService.getPatternItemsForPersons(
             templateItems,
             recipientsUids.map((uid, index) => ({
               DataValue: uid,
-              DisplayValue: recipientsDisplays[index]
+              DisplayValue: recipientsDisplays[index],
             }))
           );
         } finally {
@@ -533,7 +698,9 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
           if (hasItems) {
             setTimeout(() => this.busyIndicator.show());
             try {
-              savedItems = await this.cartItemsProvider.addItems(templateItemsForPersons.filter(item => item.UidITShopOrg?.length > 0));
+              const items = templateItemsForPersons.filter((item) => item.UidITShopOrg?.length > 0);
+              possibleItems = items.length;
+              savedItems = await this.cartItemsProvider.addItems(items);
             } finally {
               setTimeout(() => this.busyIndicator.hide());
             }
@@ -545,19 +712,27 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
         setTimeout(() => this.busyIndicator.show());
         try {
           await this.cartItemsProvider.addItemsFromRoles(
-            roles.map(item => item.XObjectKey.value),
+            roles.map((item) => item.XObjectKey.value),
             this.recipientsWrapper?.uids
           );
-          savedItems = true;
+          possibleItems = roles.length;
+          savedItems = roles.length;
         } finally {
           setTimeout(() => this.busyIndicator.hide());
         }
       }
 
-      if (savedItems) {
-        this.router.navigate(['shoppingcart']);
+      if (savedItems !== possibleItems) {
+        this.snackbar.open({
+          key: savedItems === 0 ? '#LDS#No item was added to your shopping cart' : '#LDS#{0} of {1} items could not be added to your shopping cart',
+          parameters: [possibleItems - savedItems, possibleItems],
+        });
       }
-
+      if (savedItems > 0) {
+        this.router.navigate(['shoppingcart']);
+      } else {
+        this.onDeselectAll();
+      }
     }
   }
 

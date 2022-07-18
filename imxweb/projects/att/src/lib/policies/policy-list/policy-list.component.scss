@@ -1,4 +1,4 @@
-@import '~@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 :host {
     display: flex;
@@ -6,7 +6,7 @@
     overflow: hidden;
     height: inherit;
   }
-  
+
   imx-data-table {
     flex-grow: 2;
   }
@@ -16,7 +16,7 @@
     font-size: 14px;
     padding: 0 10px;
   }
-  
+
   :host ::ng-deep imx-data-table .mat-row .mat-cell {
     padding: 0 10px;
   }
@@ -24,20 +24,19 @@
   .imx-separate-menu-item {
     border-top: 1px solid $black-c;
   }
-  
+
   .imx-table-container {
     display: flex;
     flex-direction: column;
     overflow: hidden;
     height: inherit;
-    max-width: 1200px;
   }
 
   .imx-policy-footer {
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 10px; 
+    padding: 10px;
     border: 1px solid $black-c;
     min-height: 50px;
   }
@@ -53,7 +52,6 @@
 
 .mat-toolbar {
   background-color: inherit;
-  max-width: 1200px;
   margin-left: 25px;
   margin-right: 0;
   margin-bottom: 40px;
@@ -83,7 +81,6 @@
   flex-direction: row;
   justify-content: flex-end;
   margin: 10px 0 0 0;
-  max-width: 1200px;
 }
 
 .imx-button-column {

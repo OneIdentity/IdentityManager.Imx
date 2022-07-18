@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -154,7 +154,6 @@ export class EditApplicationComponent implements ApplicationContent {
         return this.shopsSelection.selected;
       },
       getTyped: parameters => this.shopsProvider.get(parameters),
-      hasSearchParameter: true
     };
   }
 
@@ -197,7 +196,6 @@ export class EditApplicationComponent implements ApplicationContent {
           return undefined;
         }
       },
-      hasSearchParameter: true
     };
   }
 

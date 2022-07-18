@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -103,7 +103,7 @@ export class ApplicationsService {
 
   public async reload(uidApplication: string): Promise<PortalApplicationInteractive> {
     return await this.apiProvider.request(
-      async () => (await this.aobClient.typedClient.PortalApplicationInteractive_byid.Get_byid(uidApplication)).Data[0]);
+      async () => (await this.aobClient.typedClient.PortalApplicationInteractive.Get_byid(uidApplication)).Data[0]);
   }
 
   public createNew(): PortalApplicationNew {

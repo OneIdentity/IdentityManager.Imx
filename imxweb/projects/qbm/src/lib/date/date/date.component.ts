@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,8 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { AbstractControl, FormControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 
-import * as moment from 'moment-timezone';
+import moment from 'moment-timezone';
+import { Moment } from 'moment-timezone';
 import { Subscription } from 'rxjs';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
 import { DateParser } from './date-parser';
@@ -46,21 +47,21 @@ import { DateParser } from './date-parser';
   styleUrls: ['./date.component.scss']
 })
 export class DateComponent implements OnInit, OnDestroy {
-// ######################################################################################################
-// INTERNAL REMARKS
-// This component utilizes three internal form fields
-// 1. a text form field bound to a text input - contains the text representation of the date (and time).
-// 2. a moment form field for the date part only bound to a calendar picker.
-// 3. a moment form field for the time part only bound to a time picker.
-//
-// @1: The text to date parsing logic (and vice versa) has been extracted to a separate DateParser class.
-// @2: The date picker is basically a wrapper around the material calendar.
-// @3: The time picker is basically a wrapper around the elemental time picker.
-//
-// Validation is done twice.
-// a) on the text input field within this form - simply necessary because this is the primary form field.
-// b) on the input control - necessary for proper integration into outside form validation.
-// ######################################################################################################
+  // ######################################################################################################
+  // INTERNAL REMARKS
+  // This component utilizes three internal form fields
+  // 1. a text form field bound to a text input - contains the text representation of the date (and time).
+  // 2. a moment form field for the date part only bound to a calendar picker.
+  // 3. a moment form field for the time part only bound to a time picker.
+  //
+  // @1: The text to date parsing logic (and vice versa) has been extracted to a separate DateParser class.
+  // @2: The date picker is basically a wrapper around the material calendar.
+  // @3: The time picker is basically a wrapper around the elemental time picker.
+  //
+  // Validation is done twice.
+  // a) on the text input field within this form - simply necessary because this is the primary form field.
+  // b) on the input control - necessary for proper integration into outside form validation.
+  // ######################################################################################################
 
   /**
    * The input form control holding the {@link https://momentjs.com/docs/|Moment} value to be displayed / edited.
@@ -111,7 +112,7 @@ export class DateComponent implements OnInit, OnDestroy {
    *
    * If true a time picker is accessible in addition to the calendar date picker.
    */
-  @Input() public withTime: true;
+  @Input() public withTime = true;
 
   /**
    * @ignore only public because of databinding in template
@@ -139,7 +140,7 @@ export class DateComponent implements OnInit, OnDestroy {
    *
    * internal shadow form control for the calendar date picker. Only holds the date part (i.e. without time).
    */
-  public shadowDate  = new FormControl();
+  public shadowDate = new FormControl();
 
   /**
    * @ignore only public because of databinding in template
@@ -153,7 +154,7 @@ export class DateComponent implements OnInit, OnDestroy {
    * the result of the internal shadow form control.
    * Useful to avoid unecessay update loop when writing back the value to the input control.
    */
-  private result: moment;
+  private result: Moment;
 
   /**
    * @ignore
@@ -189,15 +190,15 @@ export class DateComponent implements OnInit, OnDestroy {
   public get validationErrorKey(): string {
     const errors = this.shadowText.errors;
 
-    if (errors?.matDatepickerMin || errors?.matDatepickerMax) {
+    if (errors?.['matDatepickerMin'] || errors?.['matDatepickerMax']) {
       return '#LDS#The date you entered is outside of the allowed range.';
     }
 
-    if (errors?.matDatepickerParse) {
+    if (errors?.['matDatepickerParse']) {
       return '#LDS#The value you entered is not a valid date.';
     }
 
-    if (errors?.required) {
+    if (errors?.['required']) {
       return '#LDS#This field is mandatory.';
     }
 
@@ -233,7 +234,7 @@ export class DateComponent implements OnInit, OnDestroy {
    *  Bound internally to the click on the calendar icon button.
    */
   public toggleDatePickerOpen(event: Event): void {
-    this.isDatePickerOpen = ! this.isDatePickerOpen;
+    this.isDatePickerOpen = !this.isDatePickerOpen;
     event.stopPropagation();
   }
 
@@ -244,7 +245,7 @@ export class DateComponent implements OnInit, OnDestroy {
    *  Bound internally to the click on clock icon button.
    */
   public toggleTimePickerOpen(event: Event): void {
-    this.isTimePickerOpen = ! this.isTimePickerOpen;
+    this.isTimePickerOpen = !this.isTimePickerOpen;
     event.stopPropagation();
   }
 
@@ -276,6 +277,10 @@ export class DateComponent implements OnInit, OnDestroy {
     this.isTimePickerOpen = false;
   }
 
+  public focusout(): void {
+    this.handleShadowTimeChanged();
+  }
+
   /**
    * Sets up the validators.
    *
@@ -286,14 +291,14 @@ export class DateComponent implements OnInit, OnDestroy {
   public setupValidators(): void {
     const validators: ValidatorFn[] = [];
 
-    if (this.isValueRequired && ! this.isReadonly) {
+    if (this.isValueRequired && !this.isReadonly) {
       validators.push(Validators.required);
     }
 
     validators.push((control) => this.validateTextInDateRange(control.value as string));
 
     this.shadowText.setValidators(validators);
-    this.control.setValidators((control) => this.validateMomentInDateRange(control.value as moment));
+    this.control.setValidators((control) => this.validateMomentInDateRange(control.value as Moment));
   }
 
   /**
@@ -311,21 +316,24 @@ export class DateComponent implements OnInit, OnDestroy {
    * Returns the string representation of the current (internal) shadow pickers.
    */
   private getDateTextFromShadowDateTime(): string {
-    let value: moment;
+    let value: Moment;
 
     if (this.shadowDate.value) {
       const d = moment(this.shadowDate.value);
-      value = new moment({year: d.year(), month: d.month(), day: d.date()});
+      value = moment({year: d.year(), month: d.month(), day: d.date()});
     }
 
     if (this.shadowTime.value) {
       // Apply the time part to the given date part.
       // If no date has been set, use either min or today as date part.
       const t = moment(this.shadowTime.value);
-      value = value ?? (this.min ? new moment(this.min) : new moment());
+
+      // @ts-ignore
+      value = value ?? (this.min ? moment(this.min) : moment());
       value = value.hour(t.hour()).minute(t.minute());
     }
 
+    // @ts-ignore
     return this.parser.format(value);
   }
 
@@ -335,7 +343,7 @@ export class DateComponent implements OnInit, OnDestroy {
    * handler for when the value of the outside control changed
    */
   private handleControlChanged(): void {
-    const updatedValue = this.control.value as moment;
+    const updatedValue = this.control.value as Moment;
 
     if (updatedValue !== this.result) {
       this.result = updatedValue;
@@ -343,7 +351,7 @@ export class DateComponent implements OnInit, OnDestroy {
       this.updateShadowDate(this.control.value);
 
       if (this.withTime) {
-          this.updateShadowTime(this.control.value);
+        this.updateShadowTime(this.control.value);
       }
     }
   }
@@ -389,9 +397,9 @@ export class DateComponent implements OnInit, OnDestroy {
    *
    * updates the value of the internal date only shadow form
    */
-  private updateShadowDate(value: moment): void {
+  private updateShadowDate(value: Moment): void {
     const shadow = DateParser.asDateOnly(value);
-    this.shadowDate.setValue(shadow, {emitEvent: false});
+    this.shadowDate.setValue(shadow, { emitEvent: false });
   }
 
   /**
@@ -401,7 +409,7 @@ export class DateComponent implements OnInit, OnDestroy {
    */
   private updateShadowText(text: string): void {
     if (text !== this.shadowText.value) {
-      this.shadowText.setValue(text, {emitEvent: false});
+      this.shadowText.setValue(text, { emitEvent: false });
     }
   }
 
@@ -410,9 +418,9 @@ export class DateComponent implements OnInit, OnDestroy {
    *
    * upates the value of the internal time shadow form
    */
-  private updateShadowTime(value: moment): void {
+  private updateShadowTime(value: Moment): void {
     const shadow = DateParser.asTimeOnly(value);
-    this.shadowTime.setValue(shadow, {emitEvent: false});
+    this.shadowTime.setValue(shadow, { emitEvent: false });
   }
 
   /**
@@ -428,7 +436,7 @@ export class DateComponent implements OnInit, OnDestroy {
     // Since this component listens to that event it needs a way to detect its own change in order to avoid circles.
     // To achieve that the resulting value is stored in a separate member variable (this.result).
     this.result = this.parser.parseDateAndTimeString(dateAndTimeString);
-    this.control.setValue(this.result, {emitEvent: true});
+    this.control.setValue(this.result, { emitEvent: true });
     this.control.markAsDirty();
   }
 
@@ -447,17 +455,17 @@ export class DateComponent implements OnInit, OnDestroy {
    *
    * validation method: validates the moment representation of a date (and time)
    */
-  private validateMomentInDateRange(date: moment): ValidationErrors | null {
+  private validateMomentInDateRange(date: Moment): ValidationErrors | null {
     if (date && !date.isValid()) {
-      return {matDatepickerParse : true};
+      return { matDatepickerParse: true };
     }
 
     if (this.min && date < moment(this.min)) {
-      return {matDatepickerMin : true};
+      return { matDatepickerMin: true };
     }
 
     if (this.max && date > moment(this.max)) {
-      return {matDatepickerMax : true};
+      return { matDatepickerMax: true };
     }
   }
 

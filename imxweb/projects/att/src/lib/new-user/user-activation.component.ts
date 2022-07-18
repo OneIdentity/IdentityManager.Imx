@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,96 +34,96 @@ import { Subscription } from 'rxjs';
 import { ApiService } from '../api.service';
 
 @Component({
-	templateUrl: './user-activation.component.html',
-	styleUrls: ['./user-activation.component.scss']
+  templateUrl: './user-activation.component.html',
+  styleUrls: ['./user-activation.component.scss']
 })
-export class UserActivationComponent implements OnInit, OnDestroy {
+export class UserActivationComponent implements OnDestroy {
 
-	public missingCase = true;
+  public missingCase = true;
+  public busy = true;
+  public data: PersonActivationDto;
+  public ldsConfirmationText = '#LDS#Confirm your email address and activate your account or send the confirmation email again (if the passcode has expired) by clicking one of the following buttons.';
+  public ldsAlreadyCompleted = '#LDS#You already have completed the registration process. Please log in with your credentials. If you have forgotten your credentials, ask your manager for a passcode.';
+  public ldsRegistrationDenied = '#LDS#Your registration was denied.';
+  public ldsCompletionFailed = '#LDS#The registration process could not be completed. The submitted registration process could not be found. You may already have completed the registration process. Please log in with your credentials. If you have forgotten your credentials, ask your manager for a passcode.';
+  public ldsResendEmail = '#LDS#The registration process could not be completed. Please click "Send confirmation email again" and follow the instructions in the new confirmation email.';
+  public ldsSendAgain = '#LDS#Send confirmation email again';
+  public ldsLoadingProblems = '#LDS#This attestation case has already been approved or denied.';
+  public hasProblems = false; 
 
-	public busy = true;
+  private readonly subscription: Subscription;
+  private passcode: string;
 
-	public data: PersonActivationDto;
+  constructor(
+    private readonly attApiService: ApiService,
+    private readonly snackbar: SnackBarService,
+    route: ActivatedRoute,
+    private readonly authService: AuthenticationService,
+    private readonly translateService: TranslateService,
+    private readonly busyService: EuiLoadingService,
+    private readonly router: Router
+  ) {
+    this.subscription = route.queryParamMap.subscribe(async p => {
+      this.busy = true;
+      try {
+        const uidCase = p.get('aeweb_UID_AttestationCase');
+        this.missingCase = !uidCase;
+        if (this.missingCase) {
+          return;
+        }
+        this.passcode = p.get('aeweb_PassCode');
+        this.data = await this.attApiService.client.passwordreset_activation_init_post(uidCase);
 
-	public LdsConfirmationText = '#LDS#Confirm your email address and activate your account or send the confirmation email again (if the passcode has expired) by clicking one of the following buttons.';
+        const preferredCulture = this.data.Culture;
+        if (preferredCulture) {
+          // apply preferred culture
+          this.useCulture(preferredCulture);
+        }
+      } catch {
+        this.hasProblems = true;
+      } finally {
+        this.busy = false;
+      }
+    });
+  }
 
-	public LdsAlreadyCompleted = '#LDS#You already have completed the registration process. Please log in with your credentials. If you have forgotten your credentials, ask your manager for a passcode.';
+  public ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
+  }
 
-	public LdsRegistrationDenied = '#LDS#Your registration was denied.';
+  public async ReSendMail(): Promise<void> {
+    const overlayRef = this.busyService.show();
+    try {
+      await this.attApiService.client.passwordreset_activation_resendemail_post();
+      this.snackbar.open({ key: '#LDS#An email has been sent to your specified email address.' }, '#LDS#Close');
+    }
+    catch {
+      this.hasProblems = true;
+    } finally {
+      this.busyService.hide(overlayRef);
+    }
+  }
 
-	public LdsCompletionFailed = '#LDS#The registration process could not be completed. The submitted registration process could not be found. You may already have completed the registration process. Please log in with your credentials. If you have forgotten your credentials, ask your manager for a passcode.';
+  public async ConfirmEMail(): Promise<void> {
+    const overlayRef = this.busyService.show();
+    try {
+      await this.authService.processLogin(async () => {
+        const s = await this.attApiService.client.passwordreset_activation_confirm_post({
+          PassCode: this.passcode
+        });
+        return new SessionState(s);
+      });
+      this.snackbar.open({ key: '#LDS#Your account has been successfully activated.' }, '#LDS#Close');
 
-	public LdsResendEmail = '#LDS#The registration process could not be completed. Please click "Send confirmation email again" and follow the instructions in the new confirmation email.';
+      // forward to main page
+      this.router.navigate(['']);
+    } finally {
+      this.busyService.hide(overlayRef);
+    }
+  }
 
-	public LdsSendAgain = '#LDS#Send confirmation email again';
-	private readonly _subscription: Subscription;
-	private passcode: string;
-	constructor(private readonly attApiService: ApiService,
-		           private readonly snackbar: SnackBarService,
-		           route: ActivatedRoute,
-		           private readonly authService: AuthenticationService,
-		           private readonly translateService: TranslateService,
-		           private readonly busyService: EuiLoadingService,
-		           private readonly router: Router
-	) {
-		this._subscription = route.queryParamMap.subscribe(async p => {
-			this.busy = true;
-			try {
-				const uidCase = p.get('aeweb_UID_AttestationCase');
-				if (this.missingCase = !uidCase) {
-					return;
-				}
-				this.passcode = p.get('aeweb_PassCode');
-				this.data = await this.attApiService.client.passwordreset_activation_init_post(uidCase);
-
-				const preferredCulture = this.data.Culture;
-				if (preferredCulture) {
-					// apply preferred culture
-					this.useCulture(preferredCulture);
-				}
-			} finally {
-				this.busy = false;
-			}
-		});
-	}
-
-	public ngOnDestroy(): void {
-		this._subscription?.unsubscribe();
-	}
-
-	public async ngOnInit(): Promise<void> {
-	}
-
-	public async ReSendMail(): Promise<void> {
-		const overlayRef = this.busyService.show();
-		try {
-			await this.attApiService.client.passwordreset_activation_resendemail_post();
-			this.snackbar.open({ key: '#LDS#An email has been sent to your specified email address.' }, '#LDS#Close');
-		} finally {
-			this.busyService.hide(overlayRef);
-		}
-	}
-
-	public async ConfirmEMail(): Promise<void> {
-		const overlayRef = this.busyService.show();
-		try {
-			await this.authService.processLogin(async () => {
-				const s = await this.attApiService.client.passwordreset_activation_confirm_post({
-					PassCode: this.passcode
-				});
-				return new SessionState(s);
-			});
-			this.snackbar.open({ key: '#LDS#Your account has been successfully activated.' }, '#LDS#Close');
-
-			// forward to main page
-			this.router.navigate(['']);
-		} finally {
-			this.busyService.hide(overlayRef);
-		}
-	}
-
-	private async useCulture(culture: string): Promise<void> {
-		this.translateService.setDefaultLang(culture);
-		await this.translateService.use(culture).toPromise();
-	}
+  private async useCulture(culture: string): Promise<void> {
+    this.translateService.setDefaultLang(culture);
+    await this.translateService.use(culture).toPromise();
+  }
 }

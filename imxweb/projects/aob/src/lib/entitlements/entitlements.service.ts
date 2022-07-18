@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,8 +33,6 @@ import {
   PortalEntitlement,
   PortalApplication,
   EntitlementSystemRoleInput,
-  PortalCandidatesEset,
-  PortalEntitlementcandidatesEset
 } from 'imx-api-aob';
 import { EntitlementFilter } from './entitlement-filter';
 import { AobApiService } from '../aob-api-client.service';
@@ -71,6 +69,10 @@ export class EntitlementsService {
 
   public async get(parameters: CollectionLoadParameters = {}): Promise<TypedEntityCollectionData<PortalEntitlement>> {
     return this.apiProvider.request(() => this.aobClient.typedClient.PortalEntitlement.Get(parameters));
+  }
+
+  public async getInteractive(uid: string): Promise<TypedEntityCollectionData<PortalEntitlement>> {
+    return this.apiProvider.request(() => this.aobClient.typedClient.PortalEntitlementInteractive.Get_byid(uid));
   }
 
   public async addElementsToRole(entitlementSystemRoleInput: EntitlementSystemRoleInput): Promise<void> {
@@ -140,16 +142,7 @@ export class EntitlementsService {
   }
 
   public async reload(entitlement: PortalEntitlement): Promise<PortalEntitlement> {
-    const collection = await this.get({
-      filter: [
-        {
-          ColumnName: 'UID_AOBEntitlement',
-          Type: FilterType.Compare,
-          CompareOp: CompareOperator.Equal,
-          Value1: entitlement.UID_AOBEntitlement.value
-        }
-      ]
-    });
+    const collection = await this.getInteractive(entitlement.UID_AOBEntitlement.value);
 
     return collection && collection.Data && collection.Data.length > 0 ? collection.Data[0] : undefined;
   }
@@ -162,7 +155,7 @@ export class EntitlementsService {
 
     for (const candidate of candidates) {
       this.logger.debug(this, 'try to assign a new entitlement to application', application.UID_AOBApplication);
-      const entitlement = this.createNew(candidate, application.UID_AOBApplication);
+      const entitlement = await this.createNew(candidate, application.UID_AOBApplication);
       this.logger.info(this, 'try to assign a new entitlement to application', application.UID_AOBApplication);
 
       if (await this.tryCommit(entitlement)) {
@@ -243,11 +236,11 @@ export class EntitlementsService {
     return [];
   }
 
-  private createNew(
+  private async createNew(
     element: TypedEntity,
     uidAobApplication: IWriteValue<string>
-  ): PortalEntitlement {
-    const entitlement = this.aobClient.typedClient.PortalEntitlement.createEntity();
+  ): Promise<PortalEntitlement> {
+    const entitlement = (await this.aobClient.typedClient.PortalEntitlementInteractive.Get()).Data[0];
     entitlement.ObjectKeyElement.value = element.GetEntity().GetColumn('XObjectKey').GetValue(),
       entitlement.UID_AOBApplication.value = uidAobApplication.value;
     return entitlement;

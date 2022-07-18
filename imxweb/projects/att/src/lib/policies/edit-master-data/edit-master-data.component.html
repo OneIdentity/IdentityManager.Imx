@@ -44,6 +44,9 @@
                 <imx-cdr-editor [cdr]="objectProperties.Areas?.cdr" *ngIf="policy?.isComplienceFrameworkEnabled"
                     (controlCreated)="addControl($event, policy.policy.Areas.Column.ColumnName)">
                 </imx-cdr-editor>
+                <imx-cdr-editor [cdr]="objectProperties.UID_AttestationPolicyGroup?.cdr"
+                    (controlCreated)="addControl($event, policy.policy.UID_AttestationPolicyGroup?.Column.ColumnName)">
+                </imx-cdr-editor>
 
                 <imx-cdr-editor [cdr]="objectProperties.UID_QERPickCategory?.cdr"
                     (controlCreated)="addControl($event, policy.policy.UID_QERPickCategory.Column.ColumnName)"
@@ -52,11 +55,17 @@
                 <imx-cdr-editor [cdr]="objectProperties.UID_DialogCulture?.cdr"
                     (controlCreated)="addControl($event, policy.policy.UID_DialogCulture?.Column.ColumnName)">
                 </imx-cdr-editor>
+                <imx-cdr-editor [cdr]="objectProperties.IsShowElementsInvolved?.cdr"
+                    (controlCreated)="addControl($event, policy.policy.IsShowElementsInvolved?.Column.ColumnName)">
+                </imx-cdr-editor>
                 <imx-cdr-editor [cdr]="objectProperties.IsAutoCloseOldCases?.cdr"
                     (controlCreated)="addControl($event, policy.policy.IsAutoCloseOldCases.Column.ColumnName)">
                 </imx-cdr-editor>
-                <imx-cdr-editor *ngIf="isStarlingTwoFactorConfigured" [cdr]="objectProperties.IsApproveRequiresMfa?.cdr"
+                <imx-cdr-editor [cdr]="objectProperties.IsApproveRequiresMfa?.cdr"
                     (controlCreated)="addControl($event, policy.policy.IsApproveRequiresMfa.Column.ColumnName)">
+                </imx-cdr-editor>
+                <imx-cdr-editor [cdr]="objectProperties.LimitOfOldCases?.cdr"
+                    (controlCreated)="addControl($event, policy.policy.LimitOfOldCases.Column.ColumnName)">
                 </imx-cdr-editor>
             </mat-card>
             <imx-policy-editor [formGroup]="formGroup" [filterModel]="filterModel"></imx-policy-editor>

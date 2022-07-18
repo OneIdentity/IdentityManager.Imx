@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -49,7 +49,7 @@ export class imx_QBM_SearchService implements imx_ISearchService {
   public async search(term: string, tables: string): Promise<DbObjectInfo[]> {
     if (term === '') { return []; }
     try {
-      const result = await this.session.Client.opsupport_search_get(term, tables);
+      const result = await this.session.Client.opsupport_search_get({ term: term, tables: tables });
       if (result) {
         return result.filter((sro: SearchResultObject) => sro.Key != null)
                      .map((sro: SearchResultObject) => ({

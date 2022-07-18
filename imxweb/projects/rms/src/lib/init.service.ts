@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -58,7 +58,7 @@ export class InitService {
   public onInit(routes: Route[]): void {
     this.addRoutes(routes);
 
-    // wrapper class for interactive and interactive_byid methods
+    // wrapper class for interactive methods
     class ApiWrapper {
 
       constructor(private getByIdApi: {
@@ -90,24 +90,15 @@ export class InitService {
       resp: this.api.typedClient.PortalRespEset,
       adminType: PortalAdminRoleEset,
       admin: {
-        get: async (parameter: any) => this.api.client.portal_admin_role_eset_get(
-          parameter?.OrderBy,
-          parameter?.StartIndex,
-          parameter?.PageSize,
-          parameter?.filter,
-          parameter?.withProperties,
-          parameter?.search,
-          parameter?.risk,
-          parameter.esettype
-        )
+        get: async (parameter: any) => this.api.client.portal_admin_role_eset_get(parameter)
       },
       adminSchema: this.api.typedClient.PortalAdminRoleEset.GetSchema(),
       dataModel: new EsetDataModel(this.api),
       interactiveResp: new ApiWrapper(
-        this.api.typedClient.PortalRespEsetInteractive_byid
+        this.api.typedClient.PortalRespEsetInteractive
       ),
       interactiveAdmin: new ApiWrapper(
-        this.api.typedClient.PortalAdminRoleEsetInteractive_byid
+        this.api.typedClient.PortalAdminRoleEsetInteractive
       ),
       entitlements: new EsetEntitlements(this.api, this.dynamicMethodSvc, this.translator),
       membership: new EsetMembership(this.api, this.session, this.translator)
@@ -121,15 +112,9 @@ export class InitService {
         label: '#LDS#Menu Entry System roles',
         index: 80,
       },
-      get: async (parameter: CollectionLoadParameters) => this.api.client.portal_person_rolememberships_ESet_get(
-          parameter?.uidPerson,
-          parameter?.OrderBy,
-          parameter?.StartIndex,
-          parameter?.PageSize,
-          parameter?.filter,
-          parameter?.withProperties,
-          parameter?.search
-        ),
+      get: async (uidPerson: string, parameter: CollectionLoadParameters) => this.api.client.portal_person_rolememberships_ESet_get(
+          uidPerson,
+          parameter),
       withAnalysis: true
     });
 

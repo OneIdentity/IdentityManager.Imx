@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,7 +31,7 @@ import { EuiDownloadDirective, EuiLoadingService } from '@elemental-ui/core';
 
 import { OpsupportSyncJournal } from 'imx-api-dpr';
 import { EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings, ElementalUiConfigService, SettingsService } from 'qbm';
+import { DataSourceToolbarSettings, ElementalUiConfigService, ClientPropertyForTableColumns, SettingsService } from 'qbm';
 import { OpsSyncJournalParameters, SyncService } from '../sync.service';
 import { SyncSummaryService } from './sync-summary.service';
 
@@ -49,7 +49,7 @@ export class SyncJournalComponent implements OnInit {
   @ViewChild(EuiDownloadDirective) public directive: EuiDownloadDirective;
 
   private navigationState: OpsSyncJournalParameters;
-  private readonly displayedColumns: IClientProperty[];
+  private readonly displayedColumns: ClientPropertyForTableColumns[];
 
   constructor(
     private activeRoute: ActivatedRoute,
@@ -67,7 +67,8 @@ export class SyncJournalComponent implements OnInit {
       this.entitySchemaSyncInfo.Columns.ProjectionStartInfoDisplay,
       {
         ColumnName: 'actions',
-        Type: ValType.String
+        Type: ValType.String,
+        afterAdditionals: true
       }
     ];
   }
@@ -130,6 +131,8 @@ export class SyncJournalComponent implements OnInit {
         fileName = `${fileName}.pdf`;
       }
       const csvUrl = URL.createObjectURL(blob);
+
+      console.log(fileName);
 
       if (this.directive) {
         this.directive.downloadOptions = {

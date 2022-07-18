@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,7 +32,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CollectionLoadParameters, DbObjectKey, DisplayColumns, EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
 import { PortalRespUnsgroup } from 'imx-api-tsb';
 
-import { DataSourceToolbarFilter, DataSourceToolbarSettings, ClassloggerService, SettingsService } from 'qbm';
+import { DataSourceToolbarFilter, DataSourceToolbarSettings, ClassloggerService, SettingsService, ClientPropertyForTableColumns } from 'qbm';
 import { GroupsService, GroupSidesheetData, GroupSidesheetComponent } from 'tsb';
 import { UnsgroupsService } from './unsgroups.service';
 
@@ -55,7 +55,7 @@ export class UnsgroupsComponent implements OnInit {
   private filterOptions: DataSourceToolbarFilter[] = [];
   private busyIndicator: OverlayRef;
 
-  private readonly displayedColumns: IClientProperty[] = [];
+  private readonly displayedColumns: ClientPropertyForTableColumns[] = [];
 
   constructor(
     private readonly busyService: EuiLoadingService,
@@ -74,7 +74,8 @@ export class UnsgroupsComponent implements OnInit {
       this.entitySchema.Columns.Requestable,
       {
         ColumnName: 'edit',
-        Type: ValType.String
+        Type: ValType.String,
+        afterAdditionals: true
       }
     ];
   }

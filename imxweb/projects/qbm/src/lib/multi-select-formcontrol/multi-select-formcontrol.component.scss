@@ -1,4 +1,4 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_palette.scss";
 
 :host {
   margin-top: 10px;
@@ -28,7 +28,7 @@
     min-width: 280px;
     flex: 1;
     margin-bottom: 10px;
-  } 
+  }
 }
 
 .imx-multi-select-formcontrol-container {
@@ -97,9 +97,9 @@ eui-icon {
 }
 
 
-@media only screen and (max-width: 1024px) {  
+@media only screen and (max-width: 1024px) {
   :host > div {
     grid-column-start: 1;
     grid-column-end: 4;
-  }   
+  }
 }

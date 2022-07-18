@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,22 +33,24 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { RouterModule } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 
 import { DataSourceToolbarModule, DataTableModule, CdrModule, LdsReplaceModule, DataTreeModule, ExtModule, DynamicTabsModule } from 'qbm';
-
 import { DataExplorerAccountsComponent } from '../accounts/accounts.component';
 import { AccountSidesheetComponent } from '../accounts/account-sidesheet/account-sidesheet.component';
 import { DataFiltersModule } from '../data-filters/data-filters.module';
 import { NoDataModule } from '../no-data/no-data.module';
 import { GroupsModule } from '../groups/groups.module';
 import { AccountsExtComponent } from './account-ext/accounts-ext.component';
-import { MatCardModule } from '@angular/material/card';
+import { TargetSystemReportComponent } from './target-system-report/target-system-report.component';
 
 @NgModule({
   declarations: [
     DataExplorerAccountsComponent,
     AccountSidesheetComponent,
-    AccountsExtComponent
+    AccountsExtComponent,
+    TargetSystemReportComponent
   ],
   imports: [
     DataFiltersModule,
@@ -65,6 +67,7 @@ import { MatCardModule } from '@angular/material/card';
     MatIconModule,
     MatSidenavModule,
     MatCardModule,
+    MatButtonModule,
     TranslateModule,
     DataSourceToolbarModule,
     DataTableModule,

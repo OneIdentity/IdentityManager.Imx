@@ -20,6 +20,17 @@
       </ng-template>
     </mat-tab>
 
+    <mat-tab data-imx-identifier="roles-overview-tab-history" [label]="'#LDS#History' | translate">
+      <ng-template matTabContent>
+        <div class="imx-tab-content">
+          <div class="imx-tab-content-body">
+            <imx-object-history [objectType]="data.entity.TypeName" [viewMode]="'Grid'" [showTitle]="false"
+              [objectUid]="data.entity.GetKeys()[0]"></imx-object-history>
+          </div>
+        </div>
+      </ng-template>
+    </mat-tab>
+
     <ng-container *ngFor="let tab of dynamicTabs">
       <mat-tab [imxDataProvider]="parameters" [label]="tab.inputData.label | translate">
         <ng-template matTabContent>

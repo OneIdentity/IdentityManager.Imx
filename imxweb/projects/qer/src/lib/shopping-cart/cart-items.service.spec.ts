@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,7 +32,7 @@ import { LoggerTestingModule } from 'ngx-logger/testing';
 import { of } from 'rxjs';
 
 import { CartItemsService } from './cart-items.service';
-import { CheckMode, PortalCartitem } from 'imx-api-qer';
+import { CheckMode, PortalCartitem, RequestableProductForPerson } from 'imx-api-qer';
 import { TypedEntity } from 'imx-qbm-dbts';
 import { QerApiService } from '../qer-api-client.service';
 import { ParameterDataService } from '../parameter-data/parameter-data.service';
@@ -95,19 +95,19 @@ describe('CartItemsService', () => {
       this.items = this.items.filter(item => itemWithDescendants.find(child => child.key === item.key) == null);
     }
 
-    move(key: string, toCart: boolean): void {
+    move(key: string, opts: { tocart: boolean }): void {
       const itemWithDescendants = this.withDescendants(this.getItem(key));
       this.items.forEach(item => {
         if (itemWithDescendants.find(child => child.key === item.key)) {
-          if (toCart && item.cartKey) {
+          if (opts?.tocart && item.cartKey) {
             throw Error('item with key ' + key + ' already in cart');
           }
 
-          if (!toCart && item.cartKey == null) {
+          if (!opts?.tocart && item.cartKey == null) {
             throw Error('item with key ' + key + ' already in for later list');
           }
 
-          item.cartKey = toCart ? this.someCartKey : undefined;
+          item.cartKey = opts?.tocart ? this.someCartKey : undefined;
         }
       });
     }
@@ -163,8 +163,8 @@ describe('CartItemsService', () => {
           return Promise.resolve();
         }),
       portal_cartitem_move_post: jasmine.createSpy('portal_cartitem_move_post').and.
-        callFake((uid: string, toCart: boolean) => {
-          fakeServer.move(uid, toCart);
+        callFake((uid: string, opts: { tocart: boolean }) => {
+          fakeServer.move(uid, opts);
           return Promise.resolve({});
         }),
       portal_cart_submit_post: jasmine.createSpy('portal_cart_submit_post').and.returnValue(Promise.resolve(mockCheck))
@@ -284,14 +284,14 @@ describe('CartItemsService', () => {
   });
 
   it('has an add method', async () => {
-    const serviceItem = {
-      UID_AccProduct: 'p1',
+    const serviceItem: RequestableProductForPerson = {
+      UidAccProduct: 'p1',
       UidPerson: 'a',
       UidITShopOrg: 'shelf1',
     };
 
-    const serviceItemChild = {
-      UID_AccProduct: 'p2',
+    const serviceItemChild: RequestableProductForPerson = {
+      UidAccProduct: 'p2',
       UidPerson: 'a',
       UidITShopOrg: 'shelf1',
     };
@@ -303,6 +303,49 @@ describe('CartItemsService', () => {
     expect(qerApiStub.typedClient.PortalCartitem.Post).toHaveBeenCalledTimes(items.length);
   });
 
+  // TODO: Revist when cart has been restructured
+  // it ('sorts children to back items', async () => {
+  //   const serviceItem: RequestableProductForPerson = {
+  //     UidAccProduct: 'p1',
+  //     UidPerson: 'a',
+  //     UidITShopOrg: 'shelf1',
+  //     UidAccProductParent: 'p2'
+  //   };
+
+  //   const serviceItemChild: RequestableProductForPerson = {
+  //     UidAccProduct: 'p2',
+  //     UidPerson: 'a',
+  //     UidITShopOrg: 'shelf1',
+  //   };
+
+  //   spyOn<any>(service, 'editItems');
+  //   const items = [serviceItem, serviceItemChild];
+  //   await service.addItems(items);
+  //   expect(qerApiStub.typedClient.PortalCartitem.createEntity).toHaveBeenCalledTimes(items.length);
+  //   expect(qerApiStub.typedClient.PortalCartitem.Post).toHaveBeenCalledTimes(items.length);
+  // });
+
+  // it ('should abort since the parent is not here', async () => {
+  //   const serviceItem: RequestableProductForPerson = {
+  //     UidAccProduct: 'p1',
+  //     UidPerson: 'a',
+  //     UidITShopOrg: 'shelf1',
+  //     UidAccProductParent: 'not here'
+  //   };
+
+  //   const serviceItemChild: RequestableProductForPerson = {
+  //     UidAccProduct: 'p2',
+  //     UidPerson: 'a',
+  //     UidITShopOrg: 'shelf1',
+  //   };
+
+  //   spyOn<any>(service, 'editItems');
+  //   const items = [serviceItem, serviceItemChild];
+  //   await service.addItems(items);
+  //   expect(errorHandlerStub.handleError).toHaveBeenCalled();
+  //   expect(qerApiStub.typedClient.PortalCartitem.createEntity).toHaveBeenCalledTimes(0);
+  //   expect(qerApiStub.typedClient.PortalCartitem.Post).toHaveBeenCalledTimes(0);
+  // });
 
   [
     { doSave: true },

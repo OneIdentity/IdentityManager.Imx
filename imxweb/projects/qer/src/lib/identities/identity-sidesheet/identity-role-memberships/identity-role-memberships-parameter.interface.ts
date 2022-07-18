@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,7 +35,7 @@ export interface IdentityRoleMembershipsParameter {
   /**
    * a method, that provides the collection data
    */
-  get?: (navigationState?: CollectionLoadParameters) => Promise<EntityCollectionData>;
+  get?: (uidPerson: string, navigationState?: CollectionLoadParameters) => Promise<EntityCollectionData>;
 
   /**
    * the data type used for typed entity building

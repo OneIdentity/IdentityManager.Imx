@@ -1,1 +1,6 @@
 <!-- todo: add dashboard tiles -->
+<imx-badge-tile data-imx-identifier="pol-dashboard--plugin-badge-tile-violations-approvals"
+  [caption]="'#LDS#Heading Pending Policy Violations' | translate" *ngIf="0 < pendingItems?.OpenQERPolicyHasObject"
+  [value]="pendingItems?.OpenQERPolicyHasObject" [identifier]="'pol-rule-violation-approvals'"
+  (actionClick)="router.navigate(['compliance', 'policyviolations', 'approve'])">
+</imx-badge-tile>

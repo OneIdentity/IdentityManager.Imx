@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -46,6 +46,7 @@ export class EntitySelectComponent implements OnChanges, AfterContentInit {
   @Input() public entities: IEntity[];
 
   @Output() public controlCreated = new EventEmitter<AbstractControl>();
+
   @Output() public selectionChange = new EventEmitter<IEntity>();
 
   constructor() {
@@ -53,7 +54,7 @@ export class EntitySelectComponent implements OnChanges, AfterContentInit {
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    if (changes.entities || changes.display) {
+    if (changes['entities'] || changes['display']) {
       if (this.entities) {
         this.options = this.entities.map(entity => ({
           display: this.display?.primary ?
@@ -76,4 +77,10 @@ export class EntitySelectComponent implements OnChanges, AfterContentInit {
     return option.display.toString().toUpperCase().trim().includes(searchInputValue.toUpperCase().trim())
       || (option.displayDetail && option.displayDetail.toString().toUpperCase().trim().includes(searchInputValue.toUpperCase().trim()));
   }
+
+
+  // TODO: Check Upgrade
+  // public onChange(event: any): void {
+  //   this.selectionChange.emit(event.value);
+  // }
 }

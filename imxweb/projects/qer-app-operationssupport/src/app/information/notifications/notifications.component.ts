@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,7 +29,7 @@ import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
 import { NotificationsService } from './notifications.service';
 import { AppConfigService } from 'qbm';
-import { IssueItem } from '../service-Issues/service-issues.models';
+import { IssueItem } from '../service-issues/service-issues.models';
 
 @Component({
   selector: 'imx-notifications',

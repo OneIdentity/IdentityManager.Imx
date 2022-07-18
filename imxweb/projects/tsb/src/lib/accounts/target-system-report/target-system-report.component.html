@@ -1,0 +1,20 @@
+<div eui-sidesheet-content>
+  <eui-alert *ngIf="showHelperAlert" class="imx-helper-alert" type="info" [condensed]="true" [colored]="true"
+    [dismissable]="true" (dismissed)="onHelperDismissed()">
+    <div translate>
+      #LDS#Please choose a target system for the report.
+    </div>
+  </eui-alert>
+  <mat-card class="imx-content-card">
+    <imx-data-tree [withSelectedNodeHighlight]="true" data-imx-identifier="target-system-report-data-tree" #tree
+      [hideSelection]="true" *ngIf="database"
+      [withMultiSelect]="false"
+      [database]="database" (nodeSelected)="onNodeSelected($event)">
+    </imx-data-tree>
+  </mat-card>
+</div>
+<div eui-sidesheet-actions color="white">
+  <button [disabled]="selectedEntity == null" color="primary" mat-raised-button (click)="loadReport()">
+    {{'#LDS#Download report' |translate}}
+  </button>
+</div>

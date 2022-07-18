@@ -1,0 +1,27 @@
+<eui-alert *ngIf="showHelperAlert" class="imx-helper-alert" type="info" [condensed]="true" [colored]="true"
+  [dismissable]="true" (dismissed)="onHelperDismissed()">
+  <span translate>
+    {{helperText}}
+  </span>
+</eui-alert>
+<mat-card>
+  <imx-data-source-toolbar #dst data-imx-identifier="product-entitlements-dst" [settings]="dstSettings"
+    [searchBoxText]="'#LDS#Search' | translate" (navigationStateChanged)="navigate($event)" (search)="search($event)"
+    [options]="['search']">
+  </imx-data-source-toolbar>
+  <imx-data-table #dataTable data-imx-identifier="product-entitlements-table" [dst]="dst" detailViewVisible="false"
+    [noDataText]="'#LDS#There are currently no entitlements assigned.'|translate" mode="manual" [selectable]="false"
+    [showSelectionInfo]="false">
+    <imx-data-table-generic-column columnName="entitlementDisplay"
+      [columnLabel]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME].Display">
+      <ng-template let-item>
+        {{item.TargetEntitlement.Column.GetDisplayValue()}}
+      </ng-template>
+    </imx-data-table-generic-column>
+    <imx-data-table-column [entityColumn]="entitySchema?.Columns.TargetEntitlement">
+      <ng-template let-item>
+        <div>{{entitlementTypes.get(item.GetEntity().GetKeys().toString())}}</div>
+      </ng-template>
+    </imx-data-table-column>
+  </imx-data-table>
+</mat-card>

@@ -15,23 +15,24 @@
     <eui-alert class="helper-alert" condensed="true" [colored]="true" type="info" *ngIf="showHelperAlert
        && !sqlExpression.IsUnsupported" [dismissable]="true" (dismissed)="showHelperAlert = false">{{ LdsWizardInfo |
       translate }}</eui-alert>
+    <div class="imx-mat-card-container">
+      <mat-card>
+        <imx-sqlwizard *ngIf="!sqlExpression.IsUnsupported" tableName="Person" [expression]="sqlExpression.Expression">
+        </imx-sqlwizard>
 
-    <mat-card>
-      <imx-sqlwizard *ngIf="!sqlExpression.IsUnsupported" tableName="Person" [expression]="sqlExpression.Expression">
-      </imx-sqlwizard>
+        <ng-container *ngIf="cdrList.length > 0">
+          <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr">
+          </imx-cdr-editor>
+        </ng-container>
 
-      <ng-container *ngIf="cdrList.length > 0">
-        <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr">
-        </imx-cdr-editor>
-      </ng-container>
-
-      <div class="button-bar">
-        <button data-imx-identifier="button-dynamic-role-delete" mat-raised-button (click)="deleteDynamic()"
-          color="warn">{{ '#LDS#Delete'|translate}}</button>
-        <button data-imx-identifier="button-dynamic-role-save" mat-raised-button (click)="save()"
-          [disabled]="isConditionInvalid()" color="primary">{{ '#LDS#Save'|translate}}</button>
-      </div>
-    </mat-card>
+        <div class="button-bar">
+          <button data-imx-identifier="button-dynamic-role-delete" mat-raised-button (click)="deleteDynamic()"
+            color="warn">{{ '#LDS#Delete'|translate}}</button>
+          <button data-imx-identifier="button-dynamic-role-save" mat-raised-button (click)="save()"
+            [disabled]="isConditionInvalid()" color="primary">{{ '#LDS#Save'|translate}}</button>
+        </div>
+      </mat-card>
+    </div>
   </ng-container>
 
 </div>

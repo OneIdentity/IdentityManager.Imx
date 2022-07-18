@@ -1,0 +1,13 @@
+<div eui-sidesheet-content>
+<mat-card class="imx-content-card">
+  <imx-sqlwizard *ngIf="!data?.sqlExpression?.IsUnsupported" [tableName]="'UNSGroup'" [apiService]="svc" [expression]="data?.sqlExpression?.Expression" [allowEmptyExpression]="true">
+  </imx-sqlwizard>
+</mat-card>
+</div>
+<div eui-sidesheet-actions color="white">
+  <button class="justify-start" mat-stroked-button data-imx-identifier="entitlement-edit-auto-add-button-test-condition" (click)="showResults(false)">
+    {{'#LDS#Test condition' |translate}}
+  </button>
+  <button mat-raised-button color="primary" (click)="showResults(true)" data-imx-identifier="entitlement-edit-auto-add-button-save-condition">
+    {{'#LDS#Save condition' |translate}}</button>
+</div>

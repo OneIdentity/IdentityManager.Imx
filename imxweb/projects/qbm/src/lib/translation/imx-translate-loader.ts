@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,7 +38,7 @@ export class ImxTranslateLoader implements TranslateLoader {
   }
 
   private async getCaptionsLds(culture: string): Promise<{ [key: string]: string }> {
-    const translations = await this.session.Client.imx_multilanguage_getcaptions_get(culture);
+    const translations = await this.session.Client.imx_multilanguage_getcaptions_get({ cultureName: culture });
     const translationsLds: { [key: string]: string } = {};
     Object.keys(translations).forEach((key: string) => translationsLds['#LDS#' + key] = translations[key]);
     return translationsLds;

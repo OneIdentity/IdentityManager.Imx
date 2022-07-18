@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -89,6 +89,10 @@ export class EsetMembership implements IRoleMembershipType {
 
   public hasPrimaryMemberships(): boolean {
     return false;
+  }
+
+  public GetUidRole(entity: IEntity): string {
+    return entity.GetColumn("UID_ESet").GetValue();
   }
 
   public getPrimaryMembers(

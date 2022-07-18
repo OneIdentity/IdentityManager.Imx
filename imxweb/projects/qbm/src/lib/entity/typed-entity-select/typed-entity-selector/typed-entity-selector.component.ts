@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -41,6 +41,7 @@ export class TypedEntitySelectorComponent {
   public selectedItems: TypedEntity[];
   public selectedFkTable: IForeignKeyInfo;
 
+  // TODO: Check Upgrade
   public readonly fkRelationData: TypedEntityFkData;
 
   constructor(

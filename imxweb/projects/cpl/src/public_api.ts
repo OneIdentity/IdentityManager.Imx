@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,7 +30,7 @@
 
 export { CplConfigModule } from './lib/cpl-config.module';
 export { ApiService } from './lib/api.service';
-export { RulesModule } from './lib/rules/rules.module';
+export { RulesModule} from './lib/rules/rules.module';
+export { RequestRuleViolationDetail } from './lib/request/request-rule-violation-detail';
 export { RoleComplianceViolationsModule } from './lib/role-compliance-violations/role-compliance-violations.module';
 export { RequestRuleViolation } from './lib/request/request-rule-violation';
-export { RequestRuleViolationDetail } from './lib/request/request-rule-violation-detail';

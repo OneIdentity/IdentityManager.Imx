@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -125,7 +125,6 @@ export class AdminMembersComponent implements OnInit, OnDestroy {
       data: {
         get: (parameters: CollectionLoadParameters) => fk.load(entity, parameters),
         GetFilterTree: parentKey => fk.getFilterTree(entity, parentKey),
-        hasSearchParameter: fk.parameterNames.includes('search'),
         isMultiValue: true
       }
     }).afterClosed().toPromise();

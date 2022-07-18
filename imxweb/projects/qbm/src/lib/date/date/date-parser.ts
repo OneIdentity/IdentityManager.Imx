@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,8 @@
  */
 
 import { ClassloggerService } from '../../classlogger/classlogger.service';
-import * as moment from 'moment-timezone';
+import moment from 'moment-timezone';
+import { Moment } from 'moment-timezone';
 
 
 /**
@@ -67,14 +68,14 @@ export class DateParser {
    * @param logger The logger
    * @param withTime Whether the string should contain a time part.
    */
-  constructor(private logger: ClassloggerService, private withTime: boolean) {}
+  constructor(private logger: ClassloggerService, private withTime: boolean) { }
 
   /**
    * Returns the formatted value for a given date (and time).
    * @param date The date (and time).
    * @returns The string representation of the date (and time).
    */
-  public format(date: moment): string {
+  public format(date: Moment): string {
     return date?.format(this.fullFormat) ?? '';
   }
 
@@ -86,10 +87,10 @@ export class DateParser {
    * @param text The string representation
    * @returns A moment according to the date and time part.
    */
-  public parseDateAndTimeString(dateAndTimeString: string): moment {
+  public parseDateAndTimeString(dateAndTimeString: string): Moment {
     try {
 
-      if (! dateAndTimeString || dateAndTimeString.trim().length === 0) {
+      if (!dateAndTimeString || dateAndTimeString.trim().length === 0) {
         return undefined;
       }
 
@@ -99,33 +100,33 @@ export class DateParser {
         return moment.invalid();
       }
 
-      if (! this.withTime) {
+      if (!this.withTime) {
         return moment(date.format(DateParser.FORMAT_DATE), DateParser.FORMAT_DATE, true);
       }
 
       const time = DateParser.parseTime(dateAndTimeString);
-      if (! time.isValid()) {
-        this.logger.debug(this, `Invalid time: '${dateAndTimeString}' does not define a valid time.`);
-        return moment.invalid();
+      if (!time.isValid()) {
+        return moment(date.format(DateParser.FORMAT_DATEANDTIME), DateParser.FORMAT_DATEANDTIME, true);
       }
 
       // date and time have not necessarily been evaluated in 'strict' mode.
       // that's ok, but at least their separate values need to match the combined value then.
       const combined = moment(dateAndTimeString, DateParser.FORMAT_DATEANDTIME, false);
 
-      if (! combined.isValid()
-         || combined.year()    !== date.year()
-         || combined.month()   !== date.month()
-         || combined.date()    !== date.date()
-         || combined.hour()    !== time.hour()
-         || combined.seconds() !== time.seconds()) {
-          return moment.invalid();
+      if (!combined.isValid()
+        || combined.year() !== date.year()
+        || combined.month() !== date.month()
+        || combined.date() !== date.date()
+        || combined.hour() !== time.hour()
+        || combined.seconds() !== time.seconds()) {
+        return moment.invalid();
+
       }
 
       // We cannot simply parse the date and time string, since the moment.js documentation suggests
       // that this is not guaranteed to work in a pleasant manner.
       // So we create the moment with just the date parts we need (no milliseconds or so).
-      let m = moment({year: date.year(), month: date.month(), day: date.date(), hour: time.hour(), minute: time.minute()});
+      let m = moment({ year: date.year(), month: date.month(), day: date.date(), hour: time.hour(), minute: time.minute() });
 
       // Right now the moment instance is missing the right formatting information.
       // Reconstruction with the parsing constructor helps.
@@ -134,8 +135,8 @@ export class DateParser {
       return m;
 
     } catch (error) {
-        this.logger.debug(this, `Invalid date string '${dateAndTimeString}': ${error}`);
-        return moment('invalid');
+      this.logger.debug(this, `Invalid date string '${dateAndTimeString}': ${error}`);
+      return moment('invalid');
     }
   }
 
@@ -149,7 +150,7 @@ export class DateParser {
    * @param value a moment possibly containing more than date
    * @returns a clean date only moment
    */
-  public static asDateOnly(value: moment): moment {
+  public static asDateOnly(value: Moment): Moment {
     return value?.isValid() ? moment(moment(value).format(DateParser.FORMAT_DATE), DateParser.FORMAT_DATE, true) : undefined;
   }
 
@@ -163,7 +164,7 @@ export class DateParser {
    * @param value a moment possibly containing more than time
    * @returns a clean time only moment
    */
-  public static asTimeOnly(value: moment): moment {
+  public static asTimeOnly(value: Moment): Moment {
     return value?.isValid() ? moment(moment(value).format(DateParser.FORMAT_TIME), DateParser.FORMAT_TIME, true) : undefined;
   }
 
@@ -178,16 +179,19 @@ export class DateParser {
    * @param text The string representation
    * @returns A moment according to the date part.
    */
-     public static parseDate(text: string): moment {
+     public static parseDate(text: string): Moment {
       const s = (text ?? '').trim();
       let date = moment(s, DateParser.FORMAT_DATE, true);
 
-      if (!date.isValid()) {
+    if (!date.isValid()) {
 
         // maybe it's s.th. like 3/4/21 instead of 04/04/2021
         // we look for that.
         const generous = moment(s, DateParser.FORMAT_DATE, false);
-        if (generous.isValid() && (! generous.unusedInput || generous.unusedUnput.length === 0)) {
+
+        // TODO: Reactivate
+        // if (generous.isValid() && (! generous.unusedInput || generous.unusedInput.length === 0)) {
+        if (generous.isValid()) {
           date = generous;
         }
       }
@@ -195,42 +199,43 @@ export class DateParser {
       return date;
     }
 
-    /**
-     * Parses the time part of a string representation of a date (and time).
-     *
-     * This function is half-strict.
-     * The end of the string should be a strictly valid time but the start of the
-     * string doesn't care as long as it is clearly {@link SEPARATOR_BETWEEN_DATE_AND_TIME|separated}.
-     *
-     * If parsing fails the return value will not be undefined but {@link https://momentjs.com/docs/#/parsing/|invalid}.
-     * @param text The string representation
-     * @returns A moment according to the time part.
-     */
-    public static parseTime(text: string): moment {
-      const s = (text ?? '').trim();
-      let time = moment(s, DateParser.FORMAT_TIME, true);
 
-      // if invalid, maybe the time part is prefixed by a valid date?
-      if (! time.isValid() && DateParser.parseDate(s).isValid()) {
-          const separatorIndex = s.indexOf(DateParser.SEPARATOR_BETWEEN_DATE_AND_TIME);
+  /**
+   * Parses the time part of a string representation of a date (and time).
+   *
+   * This function is half-strict.
+   * The end of the string should be a strictly valid time but the start of the
+   * string doesn't care as long as it is clearly {@link SEPARATOR_BETWEEN_DATE_AND_TIME|separated}.
+   *
+   * If parsing fails the return value will not be undefined but {@link https://momentjs.com/docs/#/parsing/|invalid}.
+   * @param text The string representation
+   * @returns A moment according to the time part.
+   */
+  public static parseTime(text: string): Moment {
+    const s = (text ?? '').trim();
+    let time = moment(s, DateParser.FORMAT_TIME, true);
 
-          const suffix = separatorIndex > 0 ? s.substring(separatorIndex + 1).trim() : '';
-          if (suffix.length === 0) {
-            // if there is no suffix, there is no time
-            return moment.invalid();
-          } else {
-            // try to parse the rest as time - this could still be invalid though
-            time = moment(suffix, DateParser.FORMAT_TIME, false);
-          }
+    // if invalid, maybe the time part is prefixed by a valid date?
+    if (!time.isValid() && DateParser.parseDate(s).isValid()) {
+      const separatorIndex = s.indexOf(DateParser.SEPARATOR_BETWEEN_DATE_AND_TIME);
+
+      const suffix = separatorIndex > 0 ? s.substring(separatorIndex + 1).trim() : '';
+      if (suffix.length === 0) {
+        // if there is no suffix, there is no time
+        return moment.invalid();
+      } else {
+        // try to parse the rest as time - this could still be invalid though
+        time = moment(suffix, DateParser.FORMAT_TIME, false);
       }
-
-      // if still invalid, try being generous
-      if (! time.isValid()) {
-        time = moment(s, DateParser.FORMAT_TIME, false);
-      }
-
-      return time;
     }
+
+    // if still invalid, try being generous
+    if (!time.isValid()) {
+      time = moment(s, DateParser.FORMAT_TIME, false);
+    }
+
+    return time;
+  }
 
   /**
    * @ignore

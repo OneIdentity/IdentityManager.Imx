@@ -1,8 +1,13 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_palette.scss";
 
 eui-alert {
   margin-bottom: 1em;
   display: block;
+}
+
+.imx-top-alert {
+  display: block;
+  margin: 1em 0;
 }
 
 .splititem {

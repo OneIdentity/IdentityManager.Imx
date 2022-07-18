@@ -1,0 +1,30 @@
+@import "@elemental-ui/core/src/styles/_palette.scss";
+
+:host {
+  .eui-sidesheet-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .eui-sidesheet-actions.mat-card {
+    margin: 16px 32px;
+  }
+
+  .eui-badge ::ng-deep .eui-badge-content {
+    font-size: 12px;
+    line-height: 12px;
+    margin-bottom: 20px;
+  }
+
+  .imx-state-caption {
+    font-size: 12px;
+    color: $black-9;
+    padding-bottom: 5px;
+  }
+
+  .eui-sidesheet-actions {
+    button:not(:last-of-type) {
+      margin-right: 10px;
+    }
+  }
+}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -58,7 +58,7 @@ export class PersonService {
   constructor(private readonly qerClient: QerApiService, private readonly entityService: EntityService) { }
 
   public async getMasterdataInteractive(uid: string): Promise<TypedEntityCollectionData<PortalPersonMasterdata>> {
-    return this.qerClient.typedClient.PortalPersonMasterdataInteractive_byid.Get_byid(uid);
+    return this.qerClient.typedClient.PortalPersonMasterdataInteractive.Get_byid(uid);
   }
 
   public async getMasterdata(parameters: CollectionLoadParameters = {}): Promise<TypedEntityCollectionData<PortalPersonMasterdata>> {
@@ -74,7 +74,7 @@ export class PersonService {
   }
 
   public async getDataModel(filter?: FilterData[]): Promise<DataModel> {
-    return this.qerClient.client.portal_person_all_datamodel_get(filter);
+    return this.qerClient.client.portal_person_all_datamodel_get({ filter: filter });
   }
 
   public async getGroupInfo(parameters: PersonAllLoadParameters = {}): Promise<GroupInfo[]> {

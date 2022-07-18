@@ -19,7 +19,7 @@
                 <mat-slide-toggle class="custom-toggle" #toggle [formControl]="isActiveFormControl"
                   (change)="onIsActiveToggleChanged($event)"
                   [attr.data-imx-identifier]="'identity-sidesheet-toggle-for-column-' + data.selectedIdentity.IsInActive.Column.ColumnName">
-                  <span [translate]="toggle.checked ? '#LDS#Activated' : '#LDS#Deactivated'"></span>
+                  <span [translate]="toggle.checked ? '#LDS#Identity is active' : '#LDS#Identity is inactive'"></span>
                 </mat-slide-toggle>
 
                 <mat-slide-toggle class="custom-toggle" #incidentToggle [formControl]="isSecurityIncidentFormControl"

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -92,7 +92,7 @@ describe('IdentitiesReportsService', () => {
 
     service.personData();
 
-    expect(mockQerApiService.client.portal_candidates_Person_get).toHaveBeenCalledWith(undefined, 0, 20, undefined, undefined, undefined);
+    expect(mockQerApiService.client.portal_candidates_Person_get).toHaveBeenCalledWith({ PageSize: 20, StartIndex: 0 });
   });
 
   it('personData(search) should call client method with correct parameters', () => {
@@ -100,6 +100,6 @@ describe('IdentitiesReportsService', () => {
 
     service.personData('test');
 
-    expect(mockQerApiService.client.portal_candidates_Person_get).toHaveBeenCalledWith(undefined, 0, 20, undefined, undefined, 'test');
+    expect(mockQerApiService.client.portal_candidates_Person_get).toHaveBeenCalledWith({ PageSize: 20, StartIndex: 0, search: 'test' });
   });
 });

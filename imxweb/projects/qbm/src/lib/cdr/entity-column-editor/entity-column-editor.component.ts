@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -44,7 +44,7 @@ export class EntityColumnEditorComponent implements OnChanges {
   @Output() public controlCreated = new EventEmitter<{ name: string; control: AbstractControl; }>();
 
   public ngOnChanges(changes: SimpleChanges): void {
-    if (changes.column || changes.readonly) {
+    if (changes['column'] || changes['readonly']) {
       this.cdr = this.column ?
         {
           column: this.column,

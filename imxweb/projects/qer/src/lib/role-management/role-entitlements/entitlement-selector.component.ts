@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -47,6 +47,8 @@ export class EntitlementSelectorComponent {
   public selectedType: RoleAssignmentData;
   public data;
 
+  @ViewChild(FkCandidatesComponent) private fkCandidatesComponent: FkCandidatesComponent;
+
   private fkEntity: IEntity;
   private fk: FkProviderItem;
   private empty: EntityCollectionData = {
@@ -65,8 +67,6 @@ export class EntitlementSelectorComponent {
     this.ReinitData();
   }
 
-  @ViewChild(FkCandidatesComponent) private fkCandidatesComponent: FkCandidatesComponent;
-
   public get types(): RoleAssignmentData[] {
     return this.sidesheetData.entitlementTypes;
   }
@@ -82,6 +82,7 @@ export class EntitlementSelectorComponent {
     this.ReinitData();
     this.selectedItems = [];
     this.fkCandidatesComponent.clearSelection();
+    this.fkCandidatesComponent.clearTreeFilter();
   }
 
 
@@ -124,7 +125,6 @@ export class EntitlementSelectorComponent {
         }
         return this.fk.getFilterTree(this.fkEntity, parentKey);
       },
-      hasSearchParameter: true,
       isMultiValue: true
     };
   }

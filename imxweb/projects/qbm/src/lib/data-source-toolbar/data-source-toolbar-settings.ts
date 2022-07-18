@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,8 @@
  *
  */
 
-import { TypedEntity, TypedEntityCollectionData, CollectionLoadParameters, EntitySchema, IClientProperty, DataModel } from 'imx-qbm-dbts';
+import { TypedEntity, TypedEntityCollectionData, CollectionLoadParameters, EntitySchema, DataModel } from 'imx-qbm-dbts';
+import { ClientPropertyForTableColumns } from './client-property-for-table-columns';
 import { FilterTreeParameter } from './data-model/filter-tree-parameter';
 import { DataSourceToolbarFilter } from './data-source-toolbar-filters.interface';
 import { DataSourceToolbarGroupData } from './data-source-toolbar-groups.interface';
@@ -53,7 +54,7 @@ export interface DataSourceToolbarSettings {
    * Indicates which properties should be shown.
    * If undefined, all properties of the typed entity should be visible.
    */
-  displayedColumns?: IClientProperty[];
+  displayedColumns?: ClientPropertyForTableColumns[];
 
   /**
    * The datamodel filters for the typed entity

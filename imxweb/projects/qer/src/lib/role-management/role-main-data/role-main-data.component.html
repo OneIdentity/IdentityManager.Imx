@@ -1,7 +1,7 @@
 <div class="imx-tab-content">
   <div class="imx-tab-content-body">
     <mat-card>
-      <form [formGroup]="formGroup">
+      <form class="imx-cdr-group" [formGroup]="formGroup">
         <ng-container *ngFor="let cdr of properties">
           <imx-cdr-editor [cdr]="cdr" (valueChange)="onValueChanged()"
             (controlCreated)="addControl(cdr.column.ColumnName, $event)">
@@ -16,7 +16,10 @@
     </button>
     <mat-menu #ToolbarButton1="matMenu">
       <button mat-menu-item data-imx-identifier="roles-compare" (click)="openCompareSidesheet()" *ngIf="canCompare">
-        {{ '#LDS#Compare' | translate }}
+        {{ '#LDS#Compare and merge' | translate }}
+      </button>
+      <button mat-menu-item data-imx-identifier="roles-rollback" (click)="openRollbackSidesheet()">
+        {{ '#LDS#Rollback' | translate }}
       </button>
       <button mat-menu-item data-imx-identifier="roles-main-split" (click)="splitRole()" *ngIf="canSplitRole">
         {{ '#LDS#Split' | translate }}

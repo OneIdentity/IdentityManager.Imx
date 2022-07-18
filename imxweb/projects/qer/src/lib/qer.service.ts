@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,7 +28,6 @@ import { Injectable } from '@angular/core';
 
 import { TwoFactorAuthenticationService, ExtService, MenuService } from 'qbm';
 
-import { StarlingComponent } from './starling/starling.component';
 import { ObjectOverviewPersonComponent } from './ops/objectOverviewPerson.component';
 import { ObjectsheetPersonComponent } from './objectsheet-person/objectsheet-person.component';
 import { ShoppingCartValidationDetailService } from './shopping-cart-validation-detail/shopping-cart-validation-detail.service';
@@ -51,8 +50,6 @@ export class QerService {
   ) { }
 
   public init(): void {
-    // register Starling as a 2FA provider
-    this.authService.register('Starling', StarlingComponent);
 
     this.extService.register('QBM_ops_ObjectOverview_Actions', { instance: ObjectOverviewPersonComponent });
 

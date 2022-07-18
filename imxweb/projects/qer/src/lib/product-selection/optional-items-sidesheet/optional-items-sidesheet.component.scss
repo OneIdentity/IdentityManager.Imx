@@ -1,0 +1,54 @@
+@import '@elemental-ui/core/src/styles/_palette.scss';
+
+:host {
+
+  .eui-sidesheet-content {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+  }
+
+  ::ng-deep .eui-alert {
+    margin-bottom: 20px;
+  }
+
+  .mat-tree {
+    flex-grow: 1;
+  }
+
+  .service-tree-invisible {
+    display: none;
+  }
+
+  ::ng-deep .mat-checkbox-label {
+    line-height: 20px;
+  }
+
+  .eui-badge {
+    padding-left: 10px;
+  }
+
+  .imx-subtext {
+    font-size: smaller;
+    color: $black-b;
+}
+
+  .imx-menu-spacer {
+    flex-grow: 1;
+  }
+
+  button {
+    margin-left: 10px;
+  }
+
+  .imx-selected-products {
+    margin: 0;
+    line-height: 36px;
+  }
+
+  ::ng-deep .imx-badge.eui-badge .eui-badge-content {
+    font-size: 14px;
+    line-height: 14px;
+    margin-left: 10px;
+  }
+}

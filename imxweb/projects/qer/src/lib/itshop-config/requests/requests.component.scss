@@ -1,4 +1,4 @@
-@import '~@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 :host {
   display: flex;
@@ -21,7 +21,7 @@
         flex-grow: 1;
         overflow: auto;
       }
-    }      
+    }
 
     > div {
       display: flex;

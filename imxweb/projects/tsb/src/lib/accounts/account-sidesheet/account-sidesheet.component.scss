@@ -1,5 +1,5 @@
 
-@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_palette.scss";
 
 .governance-sidesheet {
   ::ng-deep .eui-alert {
@@ -26,7 +26,7 @@
   ::ng-deep .mat-tab-body-wrapper {
     height: 100%;
   }
-  
+
 
   .imx-edit-fk-open-picker {
     display: none;

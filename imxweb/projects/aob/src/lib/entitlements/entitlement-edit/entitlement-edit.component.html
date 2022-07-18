@@ -6,9 +6,6 @@
     <imx-entity-column-editor [column]="entitlement.Description.Column"
       (controlCreated)="form.addControl($event.name, $event.control)">
     </imx-entity-column-editor>
-    <imx-entity-column-editor [column]="entitlement.UID_AERoleOwner.Column"
-      (controlCreated)="form.addControl($event.name, $event.control)">
-    </imx-entity-column-editor>
     <imx-entity-column-editor [column]="entitlement.ObjectKeyAdditionalApprover.Column"
       (controlCreated)="form.addControl($event.name, $event.control)">
     </imx-entity-column-editor>
@@ -18,6 +15,9 @@
         [loading]="loadingTags"
         (controlCreated)="form.addControl('tags', $event)">
       </imx-service-item-tags>
+      <imx-entity-column-editor [column]="serviceItem.UID_OrgRuler.Column"
+        (controlCreated)="form.addControl($event.name, $event.control)">
+      </imx-entity-column-editor>
       <imx-entity-column-editor [column]="serviceItem.UID_PWODecisionMethod.Column"
         (controlCreated)="form.addControl($event.name, $event.control)">
       </imx-entity-column-editor>
@@ -30,7 +30,7 @@
       <imx-entity-column-editor [column]="serviceItem.ProductURL.Column"
         (controlCreated)="form.addControl($event.name, $event.control)">
       </imx-entity-column-editor>
-      <imx-entity-column-editor *ngIf="isStarlingTwoFactorConfigured" [column]="serviceItem.IsApproveRequiresMfa.Column"
+      <imx-entity-column-editor [column]="serviceItem.IsApproveRequiresMfa.Column"
         (controlCreated)="form.addControl($event.name, $event.control)">
       </imx-entity-column-editor>
     </ng-container>

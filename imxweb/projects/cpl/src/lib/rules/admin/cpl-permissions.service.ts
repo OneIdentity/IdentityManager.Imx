@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { Injectable } from '@angular/core';
 
 import { UserModelService } from 'qer';
-import { isCiso, isRuleOwner } from './permissions-helper';
+import { isCiso, isExceptionAdmin, isRuleOwner } from './permissions-helper';
 
 @Injectable({
   providedIn: 'root'
@@ -41,5 +41,9 @@ export class CplPermissionsService {
 
   public async isRuleOwner(): Promise<boolean> {
     return isRuleOwner((await this.userService.getGroups()).map(group => group.Name));
+  }
+
+  public async isExceptionAdmin(): Promise<boolean> {
+    return isExceptionAdmin((await this.userService.getGroups()).map(group => group.Name));
   }
 }

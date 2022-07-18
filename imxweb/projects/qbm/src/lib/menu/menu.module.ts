@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,21 +29,15 @@ import { CommonModule } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTabsModule } from '@angular/material/tabs';
 import { TranslateModule } from '@ngx-translate/core';
+import { MatButtonModule } from '@angular/material/button';
 
 import { MenuComponent } from './menu.component';
 import { MenuService } from './menu.service';
 
 @NgModule({
   declarations: [MenuComponent],
-  imports: [
-    CommonModule,
-    MatMenuModule,
-    MatTabsModule,
-    TranslateModule
-  ],
+  imports: [CommonModule, MatMenuModule, MatTabsModule, MatButtonModule, TranslateModule],
   exports: [MenuComponent],
-  providers: [
-    MenuService
-  ]
+  providers: [MenuService],
 })
-export class MenuModule { }
+export class MenuModule {}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,7 +38,8 @@ import {
   DataTableComponent,
   DataTableGroupedData,
   SettingsService,
-  UserMessageService
+  UserMessageService,
+  ClientPropertyForTableColumns
 } from 'qbm';
 import { AttestationHistoryCase } from './attestation-history-case';
 import { AttestationCaseLoadParameters } from './attestation-case-load-parameters.interface';
@@ -72,7 +73,7 @@ export class AttestationHistoryComponent implements OnInit, OnDestroy {
   private navigationState: AttestationCaseLoadParameters;
 
   private groupData: DataSourceToolbarGroupData;
-  private displayedColumns: IClientProperty[];
+  private displayedColumns: ClientPropertyForTableColumns[];
   private readonly subscriptions: Subscription[] = [];
   @ViewChild(DataTableComponent) private readonly table: DataTableComponent<TypedEntity>;
 
@@ -101,7 +102,8 @@ export class AttestationHistoryComponent implements OnInit, OnDestroy {
       {
         ColumnName: 'viewDetailsButton',
         Display: await this.translator.get('#LDS#Details').toPromise(),
-        Type: ValType.String
+        Type: ValType.String,
+        afterAdditionals: true
       }
     ];
     this.navigationState = { ...this.parameters, ...{ PageSize: this.settingsService.DefaultPageSize, StartIndex: 0, OrderBy: 'ToSolveTill asc' } };

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,7 +28,8 @@ import { AfterViewInit, Component, EventEmitter, HostListener, Input, OnInit, Ou
 import { AbstractControl } from '@angular/forms';
 import { MatCalendar, MatCalendarUserEvent } from '@angular/material/datepicker';
 import { DbVal } from 'imx-qbm-dbts';
-import * as moment from 'moment-timezone';
+import moment from 'moment-timezone';
+import { Moment } from 'moment-timezone';
 
 /**
  * Internal wrapper component around material calendar to pick a Moment date value.
@@ -93,7 +94,7 @@ export class CalendarComponent implements OnInit, AfterViewInit {
    *
    * the wrapped material calendar.
    */
-  @ViewChild(MatCalendar) private calendar: MatCalendar<moment>;
+  @ViewChild(MatCalendar) private calendar: MatCalendar<Moment>;
 
   /**
    * @ignore AfterViewInit lifecycle hook.
@@ -117,7 +118,7 @@ export class CalendarComponent implements OnInit, AfterViewInit {
    *
    * Handler for the dateChanged event of the material calendar.
    */
-  public onDateChanged(event: MatCalendarUserEvent<moment>): void {
+  public onDateChanged(event: MatCalendarUserEvent<Moment>): void {
     this.datePickerDate = moment(event.value).clone();
     this.control.setValue(this.datePickerDate);
   }

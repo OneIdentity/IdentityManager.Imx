@@ -5,7 +5,7 @@
   <mat-error *ngIf="control.errors?.pattern">
     {{ '#LDS#Please enter a valid URL in the format https://www.example.com or http://www.example.com respectively.' | translate }}
   </mat-error>
-  <mat-error *ngIf="control.errors?.required">
+  <mat-error *ngIf="control.errors?.['required']">
     {{ '#LDS#This field is mandatory.' | translate }}
   </mat-error>
 </mat-form-field>

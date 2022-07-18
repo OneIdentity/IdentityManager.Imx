@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,23 +28,16 @@ import { ErrorHandler, Injectable } from '@angular/core';
 
 @Injectable()
 export class UserActionService {
-
-  constructor(
-    private errorHandler: ErrorHandler) { }
+  constructor(private errorHandler: ErrorHandler) {}
 
   public downloadData(data: string, fileName: string, contentType: string): void {
     try {
-      if (window.navigator && window.navigator.msSaveOrOpenBlob) {
-        const blob = new Blob([data], { type: contentType + ';charset=utf-8;' });
-        window.navigator.msSaveOrOpenBlob(blob, fileName);
-      } else {
-        const link = document.createElement('a');
-        link.href = 'data:' + contentType + ',' + encodeURIComponent(data);
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
+      const link = document.createElement('a');
+      link.href = 'data:' + contentType + ',' + encodeURIComponent(data);
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } catch (error) {
       this.errorHandler.handleError(error);
     }

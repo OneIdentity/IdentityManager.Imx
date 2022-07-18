@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,6 +32,7 @@ import {
   CollectionLoadParameters, DisplayColumns, FilterData, IForeignKeyInfo, TypedEntity, ValType
 } from 'imx-qbm-dbts';
 import { DataSourceToolbarSettings } from '../../data-source-toolbar/data-source-toolbar-settings';
+import { DataSourceToolbarComponent } from '../../data-source-toolbar/data-source-toolbar.component';
 import { DataTableComponent } from '../../data-table/data-table.component';
 import { SettingsService } from '../../settings/settings-service';
 import { FkCandidateEntityBuilderService } from './fk-candidate-entity-builder.service';
@@ -57,6 +58,7 @@ export class FkCandidatesComponent implements OnChanges {
   public settings: DataSourceToolbarSettings;
 
   @ViewChild(DataTableComponent) private readonly table: DataTableComponent<TypedEntity>;
+  @ViewChild(DataSourceToolbarComponent) private readonly dst: DataSourceToolbarComponent;
 
   private busyIndicator: OverlayRef;
 
@@ -67,7 +69,7 @@ export class FkCandidatesComponent implements OnChanges {
   ) { }
 
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
-    if ((changes.data && this.data) || changes.selectedFkTable) {
+    if ((changes['data'] && this.data) || changes['selectedFkTable']) {
       await this.getData({ StartIndex: 0, PageSize: this.settingsService.DefaultPageSize, filter: undefined, search: '' },
       );
     }
@@ -82,6 +84,13 @@ export class FkCandidatesComponent implements OnChanges {
    */
   public clearSelection(): void {
     this.table.clearSelection();
+  }
+
+  /**
+   * @ignore
+   */
+  public clearTreeFilter(): void {
+    this.dst.clearTreeFilter();
   }
 
   public get showToolbar(): boolean {

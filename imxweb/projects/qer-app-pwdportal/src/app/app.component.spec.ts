@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,7 +30,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { configureTestSuite } from 'ng-bullet';
 import { of, Subject } from 'rxjs';
 
-import { AuthenticationService, clearStylesFromDOM } from 'qbm';
+import { AuthenticationService, clearStylesFromDOM, SplashService } from 'qbm';
 import { AppComponent } from './app.component';
 import { ProjectConfigurationService } from 'qer';
 
@@ -51,6 +51,12 @@ for (const navigationState of [
       navigate: jasmine.createSpy('navigate'),
       events: of(navigationState)
     };
+
+    const splashServiceStub = {
+      init: jasmine.createSpy('init'),
+      update: jasmine.createSpy('update'),
+      close: jasmine.createSpy('close'),
+    }
 
     const mockAuthService = {
       onSessionResponse: new Subject()
@@ -76,6 +82,10 @@ for (const navigationState of [
           {
             provide: ProjectConfigurationService,
             useValue: projectConfigService
+          },
+          {
+            provide: SplashService,
+            useValue: splashServiceStub
           }
         ]
       });

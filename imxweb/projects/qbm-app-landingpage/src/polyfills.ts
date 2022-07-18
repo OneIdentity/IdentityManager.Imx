@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -56,12 +56,17 @@
 // Used for reflect-metadata in JIT. If you use AOT (and only Angular decorators), you can remove.
 import 'core-js/es7/reflect';
 
+// Used for support array.includes
+import 'core-js/es7/array';
+
+// Used for support object.values
+import 'core-js/es7/object';
 
 /**
  * Required to support Web Animations `@angular/platform-browser/animations`.
  * Needed for: All but Chrome, Firefox and Opera. http://caniuse.com/#feat=web-animation
  */
-// import 'web-animations-js';  // Run `npm install --save web-animations-js`.
+import 'web-animations-js';
 
 
 

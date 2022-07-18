@@ -46,7 +46,9 @@
 
       <button mat-raised-button data-imx-identifier="admin-add-config-setting-button" (click)="add()">{{'#LDS#Create configuration key' | translate}}</button>
 
-      <div *ngIf="sectionsFiltered.length == 0">{{ 'No configuration settings were found.' | translate}}</div>
+      <div *ngIf="sectionsFiltered.length == 0" class="no-results">
+        <eui-icon [icon]="'search'"></eui-icon>{{ 'No configuration settings were found.' | translate}}
+      </div>
 
       <ng-container *ngFor="let section of sectionsFiltered">
         <h2 class="section-header">{{ section.Title }}</h2>

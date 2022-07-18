@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -43,7 +43,7 @@ import {
   DataTableGroupedData,
   MessageDialogComponent,
   SettingsService,
-  UserMessageService
+  UserMessageService,
 } from 'qbm';
 import { AttestationCasesService } from './attestation-cases.service';
 import { AttestationCaseComponent } from './attestation-case.component';
@@ -80,6 +80,9 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
   }
   public get canDenyApproval(): boolean {
     return this.selectedCases.every((item) => item.canDenyApproval(this.userUid));
+  }
+  public get canEscalateDecisions(): boolean {
+    return this.selectedCases.every((item) => item.canEscalateDecision(this.userUid));
   }
 
   public get canPerformActions(): boolean {
@@ -183,25 +186,6 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
     this.handleDecision();
   }
 
-  public async initDataModel(): Promise<void> {
-    this.dataModel = await this.attestationCases.getDataModel();
-
-    this.filterOptions = this.dataModel.Filters;
-
-    this.groupData = createGroupData(
-      this.dataModel,
-      (parameters) =>
-        this.attestationCases.getGroupInfo({
-          ...{
-            PageSize: this.collectionLoadParameters.PageSize,
-            StartIndex: 0,
-          },
-          ...parameters,
-        }),
-      []
-    );
-  }
-
   public ngOnDestroy(): void {
     this.subscriptions.forEach((s) => s.unsubscribe());
   }
@@ -296,13 +280,14 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
           {
             ColumnName: 'decision',
             Type: ValType.String,
+            afterAdditionals: true,
           },
           {
             ColumnName: 'edit',
             Type: ValType.String,
           },
         ],
-        identifierForSessionStore: 'attestation-decision'
+        identifierForSessionStore: 'attestation-decision',
       };
     } finally {
       setTimeout(() => this.busyService.hide(busyIndicator));
@@ -315,12 +300,13 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
 
     try {
       const groupedData = this.groupedData[groupKey];
-      groupedData.data = await this.attestationCases.get(groupedData.navigationState);
+      const navigationState = { ...groupedData.navigationState, Escalation: this.viewEscalation };
+      groupedData.data = await this.attestationCases.get(navigationState);
       groupedData.settings = {
         displayedColumns: this.dstSettings.displayedColumns,
         dataSource: groupedData.data,
         entitySchema: this.dstSettings.entitySchema,
-        navigationState: groupedData.navigationState,
+        navigationState
       };
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
@@ -380,7 +366,7 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
           approvalThreshold: this.approvalThreshold,
           autoRemovalScope: this.autoRemovalScope,
           lossPreview: this.lossPreview,
-          mitigatingControlsPerViolation: this.mitigatingControlsPerViolation
+          mitigatingControlsPerViolation: this.mitigatingControlsPerViolation,
         },
       });
     } else {
@@ -388,6 +374,25 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
         text: '#LDS#You cannot edit the item because the item does not exist. Please reload the page.',
       });
     }
+  }
+
+  private async initDataModel(): Promise<void> {
+    const dataModel = await this.attestationCases.getDataModel();
+
+    this.filterOptions = this.dataModel?.Filters ?? [];
+
+    this.groupData = createGroupData(
+      dataModel,
+      (parameters) =>
+        this.attestationCases.getGroupInfo({
+          ...{
+            PageSize: this.collectionLoadParameters.PageSize,
+            StartIndex: 0,
+          },
+          ...parameters,
+        }),
+      []
+    );
   }
 
   private async parseParams(): Promise<void> {

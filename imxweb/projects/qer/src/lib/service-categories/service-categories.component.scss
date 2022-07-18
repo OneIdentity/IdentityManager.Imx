@@ -1,10 +1,9 @@
-@import '~@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 :host {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  max-width: 1200px;
 }
 
 .heading-wrapper {
@@ -28,7 +27,6 @@
 
 .imx-data-tree {
   overflow: auto;
-  max-width: 1200px;
   background-color: $white;
   display: flex;
   flex-direction: column;

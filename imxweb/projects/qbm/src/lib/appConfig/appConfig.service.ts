@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,9 +27,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, ErrorHandler, Injector } from '@angular/core';
 
-import { AppConfig } from './appConfig.interface';
+import { AppConfig } from './appconfig.interface';
 import { ApiClientFetch } from '../api-client/api-client-fetch';
-import { V2Client, Client, ImxConfig } from 'imx-api-qbm';
+import { V2Client, ImxConfig } from 'imx-api-qbm';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ApiClient } from 'imx-qbm-dbts';
@@ -40,8 +40,7 @@ export class AppConfigService {
   public get Config(): AppConfig { return this.config; }
   public get BaseUrl(): string { return this.baseUrl; }
 
-  private _client: Client;
-  public get client(): Client { return this._client; }
+  public get client(): V2Client { return this._v2client; }
 
   private _v2client: V2Client;
   public get v2client(): V2Client { return this._v2client; }
@@ -55,7 +54,6 @@ export class AppConfigService {
   constructor(
     private readonly httpClient: HttpClient,
     private readonly logger: ClassloggerService,
-    private readonly errorHandler: ErrorHandler,
     private readonly injector: Injector
   ) { }
 
@@ -81,9 +79,8 @@ export class AppConfigService {
 
     // avoid cyclic dependency
     const translation = this.injector.get(TranslateService);
-    this._apiClient = new ApiClientFetch(this.errorHandler, this.baseUrl, this.logger, translation);
-    this._client = new Client(this._apiClient);
-    this._v2client = new V2Client(this._apiClient, this._client);
+    this._apiClient = new ApiClientFetch(this.baseUrl, this.logger, translation);
+    this._v2client = new V2Client(this._apiClient);
   }
 
  

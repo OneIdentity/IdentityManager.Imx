@@ -7,7 +7,7 @@
 
 <mat-slide-toggle class="jobs-toggle-showGraph" color="primary" [checked]="isShowGraph"
   (change)="isShowGraph = !isShowGraph" data-imx-identifier="jobs-toggle-showGraph">
-  <span [translate]="isShowGraph ? '#LDS#Chart view' : '#LDS#Table view'"></span>
+  <span>{{(isShowGraph ? '#LDS#Chart view' : '#LDS#Table view') | translate}}</span>
 </mat-slide-toggle>
 <imx-jobs-gridview [style.display]="isShowGraph ? 'none' : 'flex'" class="imx-job-grid"
   [preselectFailed]="failed">

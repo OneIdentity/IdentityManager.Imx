@@ -1,0 +1,42 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  ::ng-deep .mat-list-base .mat-list-item .mat-list-item-content{
+    padding-left: 0%;
+  }
+
+  ::ng-deep .mat-list-base .mat-list-item{
+    height: auto;
+    margin-bottom: 16px;
+  }
+}
+
+mat-card {
+  margin-bottom: 20px;
+}
+
+mat-card-content {
+  overflow: auto;
+}
+
+.imx-selection-card {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+imx-bulk-editor {
+  margin-top: 20px;
+}
+
+
+.mat-list-base .mat-list-item .mat-line{
+  margin-left: 0px;
+  overflow: auto;
+  white-space: inherit;
+  word-wrap: break-word;
+  height: auto;
+}

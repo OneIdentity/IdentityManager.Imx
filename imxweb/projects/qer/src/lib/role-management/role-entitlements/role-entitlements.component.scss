@@ -1,4 +1,4 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_palette.scss";
 
 :host {
   display: flex;
@@ -15,7 +15,15 @@
   .imx-tab-content-body {
     flex: 1;
     padding: 32px;
-    overflow: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    :first-child {
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
   }
 
   .imx-action-buttons {
@@ -31,11 +39,11 @@
       margin: 0;
       line-height: 36px;
     }
-    
+
     > :not(:last-child){
       margin-right: 5px;
     }
-  
+
     .imx-menu-spacer {
       flex-grow: 1;
     }

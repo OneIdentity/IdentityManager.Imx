@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -53,6 +53,7 @@ import { DynamicExclusionDialogModule } from '../dynamic-exclusion-dialog/dynami
 import { MemberSelectorComponent } from './request-config-members/member-selector.component';
 import { ShopAdminGuardService } from '../guards/shop-admin-guard.service';
 import { isShopAdmin } from '../admin/qer-permissions-helper';
+import { CREATE_SHELF_TOKEN } from './request-shelves/request-shelf-token';
 
 
 const routes: Routes = [
@@ -90,6 +91,7 @@ const routes: Routes = [
     FkAdvancedPickerModule,
     RouterModule.forChild(routes),
   ],
+  providers: [{provide: CREATE_SHELF_TOKEN, useValue: RequestShelvesComponent}],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class RequestConfigModule {

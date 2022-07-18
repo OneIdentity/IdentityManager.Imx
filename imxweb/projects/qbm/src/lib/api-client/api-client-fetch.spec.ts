@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -108,7 +108,6 @@ describe('ApiClientFetch', () => {
     ].forEach(testcase =>
       it(`has a method ${method.path}`, async () => {
         const client = new ApiClientFetch(
-          { handleError: (_: any): void => { } },
           '',
           <any>{
             debug: jasmine.createSpy('debug')

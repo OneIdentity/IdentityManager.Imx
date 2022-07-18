@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -112,23 +112,16 @@ export class AttestationCasesService {
   }
 
   public async getDataModel(): Promise<DataModel> {
-    return this.attClient.client.portal_attestation_approve_datamodel_get(this.isChiefApproval, undefined, undefined);
+    return this.attClient.client.portal_attestation_approve_datamodel_get({ Escalation: this.isChiefApproval });
   }
 
   public async getGroupInfo(parameters: { by?: string, def?: string } & CollectionLoadParameters = {}): Promise<GroupInfo[]> {
     return this.attClient.client.portal_attestation_approve_group_get(
-      parameters.by,
-      parameters.def,
-      undefined, // filter
-      parameters.StartIndex,
-      parameters.PageSize,
-      true, // withcount
-      undefined, // attestationtype
-      undefined, // uidpolicy
-      undefined, // type
-      undefined, // risk
-      this.isChiefApproval
-    );
+      {
+        ...parameters,
+        withcount: true,
+        Escalation: this.isChiefApproval
+      });
   }
 
   public async getApprovers(
@@ -275,15 +268,8 @@ export class AttestationCasesService {
     return this.attClient.client.portal_attestation_approve_parameter_candidates_post(
       parameters.columnName,
       parameters.fkTableName,
-      parameters.OrderBy,
-      parameters.StartIndex,
-      parameters.PageSize,
-      parameters.filter,
-      null,
-      parameters.search,
-      parameters.ParentKey,
-      parameters.diffData
-    );
+      parameters.diffData,
+      parameters);
   }
 
   private async getFilterTree(parameters: ParameterDataLoadParameters): Promise<FilterTreeData>
@@ -291,9 +277,7 @@ export class AttestationCasesService {
     return this.attClient.client.portal_attestation_approve_parameter_candidates_filtertree_post(
       parameters.columnName,
       parameters.fkTableName,
-      parameters.filter,
-      parameters.ParentKey,
-      parameters.diffData
-    );
+      parameters.diffData,
+      parameters);
   }
 }

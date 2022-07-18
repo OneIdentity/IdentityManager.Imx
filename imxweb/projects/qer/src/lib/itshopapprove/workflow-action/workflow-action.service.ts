@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,14 +24,14 @@
  *
  */
 
-import { Injectable } from '@angular/core';
+import { Injectable, Type } from '@angular/core';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 
 import { ValType } from 'imx-qbm-dbts';
-import { BaseCdr, EntityService, SnackBarService } from 'qbm';
+import { BaseCdr, ClassloggerService, EntityService, ExtService, SnackBarService } from 'qbm';
 import { WorkflowActionComponent } from './workflow-action.component';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
 import { PersonService } from '../../person/person.service';
@@ -42,6 +42,7 @@ import { JustificationService } from '../../justification/justification.service'
 import { JustificationType } from '../../justification/justification-type.enum';
 import { WorkflowActionEditWrapper } from './workflow-action-edit-wrapper.interface';
 import { WorkflowActionParameters } from './workflow-action-parameters.interface';
+import { TermsOfUseAcceptComponent } from '../../terms-of-use/terms-of-use-accept.component';
 
 @Injectable({
   providedIn: 'root'
@@ -57,10 +58,12 @@ export class WorkflowActionService {
     private readonly entityService: EntityService,
     private readonly busyService: EuiLoadingService,
     private readonly snackBar: SnackBarService,
+    private readonly logger: ClassloggerService,
     private readonly person: PersonService,
     private readonly projectConfig: ProjectConfigurationService,
     private readonly approvalsService: ApprovalsService,
-    private readonly justificationService: JustificationService
+    private readonly justificationService: JustificationService,
+    private readonly extService: ExtService,
   ) { }
 
   public async directDecisions(requests: Approval[], userUid: string): Promise<void> {
@@ -196,25 +199,68 @@ export class WorkflowActionService {
     });
   }
 
+  public async checkMFA(uidPwo: string[]): Promise<boolean> {
+    this.busyService.show();
+    let workflowActionId: string;
+    let mfaComponent: Type<any>;
+    let response: boolean;
+    try {
+      workflowActionId = await this.apiService.v2Client.portal_itshop_approve_requests_stepup_post({UidPwo: uidPwo});
+      mfaComponent = (await this.extService.getFittingComponent('mfaComponent')).instance;
+    } catch {
+      throw Error('The OLG module is not configured correctly');
+    } finally {
+      this.busyService.hide();
+      response = await this.sideSheet.open(mfaComponent, {
+        title: await this.translate.get('#LDS#Header Authenticate using OneLogin').toPromise(),
+        padding: '0px',
+        headerColour: 'iris-blue',
+        bodyColour: 'asher-gray',
+        testId: 'imx-request-approval-mfa',
+        width: 'max(700px, 60%)',
+        data: {
+          workflowActionId
+        }
+      }).afterClosed().toPromise();
+    }
+    return response;
+  }
+
   public async approve(requests: Approval[]): Promise<void> {
+
+    if (!await this.checkTermsOfUse(requests)) {
+      this.snackBar.open({ key: '#LDS#You have canceled the action.' });
+      return;
+    }
+
     const itShopConfig = (await this.projectConfig.getConfig()).ITShopConfig;
 
     const schema = this.apiService.typedClient.PortalItshopApproveRequests.GetSchema();
+    if (itShopConfig.StepUpAuthenticationProvider !== 'NoAuth') {
+      // Check for MFA, don't continue unless true
+      const isMFA = await this.checkMFA(requests.map(request => request.GetEntity().GetKeys()[0]));
+      if (!isMFA) {
+        return;
+      }
+    }
 
     let justification: BaseCdr;
 
     let busyIndicator: OverlayRef;
     setTimeout(() => busyIndicator = this.busyService.show());
 
+    const maxApproveReasonType = Math.max(...requests.map(elem => elem.ApproveReasonType.value));
+
     try {
-      justification = await this.justificationService.createCdr(JustificationType.approve);
+      justification = await this.justificationService.createCdr(JustificationType.approve, maxApproveReasonType);
     } finally {
       setTimeout(() => this.busyService.hide(busyIndicator));
     }
 
     const actionParameters: WorkflowActionParameters = {
+      maxReasonType: maxApproveReasonType,
       justification,
-      reason: this.createCdrReason(justification ? '#LDS#Additional comments about your decision' : undefined)
+      reason: this.createCdrReason(justification ? '#LDS#Additional comments about your decision' : undefined, maxApproveReasonType)
     };
 
     const showValidDate: { [key: string]: any } = {};
@@ -304,15 +350,17 @@ export class WorkflowActionService {
     let busyIndicator: OverlayRef;
     setTimeout(() => busyIndicator = this.busyService.show());
 
+    const maxDenyReasonType = Math.max(...requests.map(elem => elem.DenyReasonType.value));
     try {
-      justification = await this.justificationService.createCdr(JustificationType.deny);
+      justification = await this.justificationService.createCdr(JustificationType.deny, maxDenyReasonType);
     } finally {
       setTimeout(() => this.busyService.hide(busyIndicator));
     }
 
     const actionParameters: WorkflowActionParameters = {
       justification,
-      reason: this.createCdrReason(justification ? '#LDS#Additional comments about your decision' : undefined)
+      maxReasonType: maxDenyReasonType,
+      reason: this.createCdrReason(justification ? '#LDS#Additional comments about your decision' : undefined, maxDenyReasonType)
     };
 
     return this.editAction(
@@ -393,11 +441,12 @@ export class WorkflowActionService {
     }
   }
 
-  private createCdrReason(display?: string): BaseCdr {
+  private createCdrReason(display?: string, reasonType?: number): BaseCdr {
     const column = this.entityService.createLocalEntityColumn({
       ColumnName: 'ReasonHead',
       Type: ValType.Text,
-      IsMultiLine: true
+      IsMultiLine: true,
+      MinLen: reasonType === 2 ? 1 : 0
     });
 
     return new BaseCdr(column, display || '#LDS#Reason for your decision');
@@ -423,5 +472,44 @@ export class WorkflowActionService {
     );
 
     return new BaseCdr(column, display);
+  }
+
+  private async checkTermsOfUse(requests: Approval[]): Promise<boolean> {
+
+    // get all cart items with terms of uses
+    const approvalItemsWithTermsOfUseToAccept = requests.filter(item =>
+      item.UID_QERTermsOfUse?.value !== null
+      && item.UID_QERTermsOfUse?.value !== ''
+    );
+
+    if (approvalItemsWithTermsOfUseToAccept.length > 0) {
+      this.logger.debug(this,
+        `There are ${approvalItemsWithTermsOfUseToAccept.length} service items with terms of use the user have to accepted.`);
+
+      const termsOfUseAccepted = await this.sideSheet.open(TermsOfUseAcceptComponent, {
+        title: await this.translate.get('#LDS#Heading Accept Terms Of Use').toPromise(),
+        headerColour: 'iris-blue',
+        bodyColour: 'asher-gray',
+        padding: '0px',
+        width: 'max(600px, 60%)',
+        data: {
+          acceptCartItems: false,
+          approvalItems: approvalItemsWithTermsOfUseToAccept
+        },
+        testId: 'approvalitems-terms-of-use-accept-sidesheet'
+      }).afterClosed().toPromise();
+
+      if (termsOfUseAccepted) {
+        this.logger.debug(this, 'all terms of use were accepted.');
+        return true;
+      } else {
+        this.logger.debug(this, 'at least one terms of use was not accepted.');
+        return false;
+      }
+
+    } else {
+      this.logger.debug(this, 'there are no service items with terms of use the user have to accepted.');
+      return true;
+    }
   }
 }

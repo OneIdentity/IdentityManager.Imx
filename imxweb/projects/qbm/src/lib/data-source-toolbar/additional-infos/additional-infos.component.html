@@ -1,6 +1,15 @@
-<h2 mat-dialog-title>{{(data.type === 'list' ? '#LDS#Heading Additional Information per Entry' : '#LDS#Heading Additional Columns') |
+<h2 mat-dialog-title>{{(data.type === 'list' ? '#LDS#Heading Additional Information per Entry' : '#LDS#Heading
+  Additional Columns') |
   translate}}</h2>
 <mat-dialog-content class="imx-dialog-content">
+  <eui-alert class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" [dismissable]="true">
+    <eui-alert-header>
+      <span translate>{{infoText}}</span>
+    </eui-alert-header>
+    <eui-alert-content>
+      <span class="imx-info-content" translate>{{infoTextLong}}</span>
+    </eui-alert-content>
+  </eui-alert>
   <mat-card class="imx-element-chooser">
     <mat-card-title>{{'#LDS#Information that can be added' | translate}}</mat-card-title>
     <mat-selection-list class="imx-item-list" (selectionChange)="updateSelected($event)">
@@ -38,7 +47,9 @@
   </mat-card>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button data-imx-identifier="additional-infos-button-cancel" mat-stroked-button mat-dialog-close>{{'#LDS#Cancel' | translate}}</button>
-  <button color="primary" data-imx-identifier="additional-infos-button-apply" mat-raised-button [mat-dialog-close]="result" cdkFocusInitial>{{'#LDS#Apply' |
+  <button data-imx-identifier="additional-infos-button-cancel" mat-stroked-button mat-dialog-close>{{'#LDS#Cancel' |
+    translate}}</button>
+  <button color="primary" data-imx-identifier="additional-infos-button-apply" mat-raised-button
+    [mat-dialog-close]="result" cdkFocusInitial>{{'#LDS#Apply' |
     translate}}</button>
 </mat-dialog-actions>

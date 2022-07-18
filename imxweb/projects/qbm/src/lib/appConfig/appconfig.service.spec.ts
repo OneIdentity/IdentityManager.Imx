@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,7 +29,7 @@ import { HttpClient } from '@angular/common/http';
 import { configureTestSuite } from 'ng-bullet';
 import { of } from 'rxjs';
 
-import { AppConfig } from './appConfig.interface';
+import { AppConfig } from './appconfig.interface';
 import { AppConfigService } from './appConfig.service';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 

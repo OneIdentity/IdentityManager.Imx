@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -47,7 +47,10 @@ export class SystemStatusService {
   }
 
   public set(isJobServiceDisabled: boolean, isDbSchedulerDisabled: boolean): Promise<SystemStatusInformation> {
-    return this.session.Client.opsupport_systemstatus_post(isDbSchedulerDisabled, isJobServiceDisabled, '');
+    return this.session.Client.opsupport_systemstatus_post('', {
+      IsDbSchedulerDisabled: isDbSchedulerDisabled,
+      IsJobServiceDisabled: isJobServiceDisabled
+    });
   }
 
   public async isSystemAdmin(): Promise<boolean> {

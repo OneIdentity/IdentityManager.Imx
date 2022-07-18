@@ -17,7 +17,7 @@
   </mat-radio-group>
 
   <ng-container *ngIf="settings?.dataSource && selectedTable">
-    <imx-data-source-toolbar #dst [hidden]="!selectedTable.hasSearchParameter" [settings]="settings"
+    <imx-data-source-toolbar #dst [settings]="settings"
       (navigationStateChanged)="loadTableData($event)" [preSelection]="preselectedEntities"
       (filterTreeSelectionChanged)="filterByTree($event)"
       [options]="['search','filterTree','filter', 'settings']"
@@ -35,10 +35,12 @@
         </imx-data-table-column>
         <imx-data-table-generic-column *ngIf="!data.isMultiValue" columnName="Actions" columnLabel="{{ '#LDS#Actions' | translate }}">
           <ng-template let-item>
-            <button mat-button color="primary" (click)="selectObject(item)"
-              data-imx-identifier="cdr-fkadvancedpicker-datatable-button-assign">
-              {{ '#LDS#Assign' | translate }}
-            </button>
+            <ng-container *ngIf="!amIDisabled(item)">
+              <button mat-button color="primary" (click)="selectObject(item)"
+                data-imx-identifier="cdr-fkadvancedpicker-datatable-button-assign">
+                {{ '#LDS#Assign' | translate }}
+              </button>
+            </ng-container>
           </ng-template>
         </imx-data-table-generic-column>
       </imx-data-table>

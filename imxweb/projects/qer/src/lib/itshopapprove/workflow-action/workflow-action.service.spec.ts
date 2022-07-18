@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,7 +31,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 
 import { WorkflowActionService } from './workflow-action.service';
-import { SnackBarService, EntityService } from 'qbm';
+import { SnackBarService, EntityService, ExtService, ClassloggerService } from 'qbm';
 import { PortalItshopApproveRequests, PortalWorkflow } from 'imx-api-qer';
 import { ApprovalsService } from '../approvals.service';
 import { PersonService } from '../../person/person.service';
@@ -41,6 +41,7 @@ import { ProjectConfigurationService } from '../../project-configuration/project
 import { QerApiService } from '../../qer-api-client.service';
 import { JustificationService } from '../../justification/justification.service';
 import { JustificationType } from '../../justification/justification-type.enum';
+import { _MatSlideToggleRequiredValidatorModule } from '@angular/material/slide-toggle';
 
 describe('WorkflowActionService', () => {
   let service: WorkflowActionService;
@@ -75,6 +76,9 @@ describe('WorkflowActionService', () => {
           GetSchema: () => PortalWorkflow.GetEntitySchema(),
           Get: jasmine.createSpy('Get').and.callFake((uidPwo: string) => this.workFlowMock[uidPwo])
         }
+      },
+      v2Client: {
+        portal_itshop_approve_requests_stepup_post: jasmine.createSpy('portal_itshop_approve_requests_stepup_post').and.callFake(() => '')
       }
     };
 
@@ -82,10 +86,17 @@ describe('WorkflowActionService', () => {
       getConfig: jasmine.createSpy('getConfig').and.callFake(() => Promise.resolve({
         ITShopConfig: {
           VI_ITShop_ApproverCanSetValidFrom: true,
-          VI_ITShop_ApproverCanSetValidUntil: true
+          VI_ITShop_ApproverCanSetValidUntil: true,
+          StepUpAuthenticationProvider: "NoAuth"
         }
       }))
     };
+
+    readonly extServiceStub = {
+      getFittingComponent: jasmine.createSpy('getFittingComponent').and.callFake(() => Promise.resolve({
+        instance: {}
+      }))
+    }
 
     readonly sideSheetServiceStub = new class {
       result = false;
@@ -150,6 +161,8 @@ describe('WorkflowActionService', () => {
       );
 
       this.justificationServiceStub.reset();
+
+      this.sessionServiceStub.v2Client.portal_itshop_approve_requests_stepup_post.calls.reset();
     }
   }();
 
@@ -160,6 +173,12 @@ describe('WorkflowActionService', () => {
         {
           provide: QerApiService,
           useValue: testHelper.sessionServiceStub
+        },
+        {
+          provide: ClassloggerService,
+          useValue: {
+            debug: jasmine.createSpy('debug').and.callThrough()
+          }
         },
         {
           provide: TranslateService,
@@ -205,6 +224,10 @@ describe('WorkflowActionService', () => {
         {
           provide: JustificationService,
           useValue: testHelper.justificationServiceStub
+        },
+        {
+          provide: ExtService,
+          useValue: testHelper.extServiceStub
         }
       ]
     });
@@ -309,7 +332,7 @@ describe('WorkflowActionService', () => {
   });
 
   for (const testcase of [
-    { description: '(approve)', approve: true },
+    { description: '(approve, no MFA)', approve: true },
     { description: '(approve, no justifications)', approve: true, noJustifications: true },
     { description: '(deny)', approve: false },
     { description: '(approve, no justifications)', approve: false, noJustifications: true },
@@ -320,6 +343,8 @@ describe('WorkflowActionService', () => {
       const approval = {
         ValidFrom: {},
         ValidUntil: {},
+        DenyReasonType: {},
+        ApproveReasonType: {},
         canSetValidFrom: () => true,
         canSetValidUntil: _ => true,
         GetEntity: () => createEntity(approvalKey),

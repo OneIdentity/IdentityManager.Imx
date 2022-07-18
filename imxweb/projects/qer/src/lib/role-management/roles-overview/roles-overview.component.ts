@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -49,6 +49,8 @@ import {
   SettingsService
 } from 'qbm';
 import { IDataExplorerComponent } from '../../data-explorer-view/data-explorer-extension';
+import { IRoleRestoreHandler } from '../restore/restore-handler';
+import { RestoreComponent } from '../restore/restore.component';
 import { RoleDetailComponent } from '../role-detail/role-detail.component';
 import { RoleService } from '../role.service';
 import { TreeDatabaseAdaptorService } from './tree-database-adaptor.service';
@@ -228,5 +230,30 @@ export class RolesOverviewComponent implements OnInit, IDataExplorerComponent {
       filters: this.filterOptions,
       dataModel: this.dataModel
     };
+  }
+
+  public get restoreHandler(): IRoleRestoreHandler {
+    return this.roleService.targetMap.get(this.ownershipInfo.TableName)?.restore;
+  }
+
+  public async restoreDeletedRole(): Promise<void> {
+    const restoreHandler = this.restoreHandler;
+    const context = this.isAdmin ? restoreHandler.asAdmin() : restoreHandler.asOwner();
+
+    const sidesheetRef = this.sidesheet.open(RestoreComponent, {
+      title: await this.translate.get('#LDS#Heading Restore a Deleted Role').toPromise(),
+      headerColour: 'blue',
+      padding: '0px',
+      width: 'max(768px, 80%)',
+      testId: 'role-restore-sidesheet',
+      data: {
+        isAdmin: this.isAdmin,
+        restore: context
+      },
+    });
+
+    sidesheetRef.afterClosed().subscribe(async (result) => {
+      await this.navigate();
+    });
   }
 }

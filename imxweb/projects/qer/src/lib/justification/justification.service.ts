@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -66,12 +66,13 @@ export class JustificationService {
     return collection && collection.Data && collection.Data.length > 0 ? collection.Data[0] : undefined;
   }
 
-  public async createCdr(justificationType: JustificationType): Promise<BaseCdr> {
+  public async createCdr(justificationType: JustificationType, reasonType?: number): Promise<BaseCdr> {
     if ((await this.getByType(justificationType))?.TotalCount === 0) {
       return undefined;
     }
 
     const property = this.createProperty();
+    property.MinLen = reasonType === 1 ? 1 : 0;
 
     const fkProviderItem = this.createFkProviderItem(property.FkRelation, justificationType);
 
@@ -110,19 +111,12 @@ export class JustificationService {
       ],
       load: async (_, parameters = {}) => this.getByType(justificationType, parameters),
       getDataModel: async () => ({}),
-      getFilterTree: async ()=>({})
+      getFilterTree: async () => ({})
     };
   }
 
   private async getByType(justificationType: JustificationType, parameters: CollectionLoadParameters = {}): Promise<EntityCollectionData> {
-    const collection = await this.apiService.client.portal_justifications_get(
-      parameters.OrderBy,
-      parameters.StartIndex,
-      parameters.PageSize,
-      parameters.filter,
-      null,
-      parameters.search
-    );
+    const collection = await this.apiService.client.portal_justifications_get(parameters);
 
     // tslint:disable-next-line:no-bitwise
     const entities = collection.Entities.filter(entityData => (entityData.Columns.JustificationType.Value & justificationType) > 0);

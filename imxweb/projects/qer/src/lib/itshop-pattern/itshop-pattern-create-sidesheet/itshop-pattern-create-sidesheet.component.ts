@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,11 +38,15 @@ import {
   ColumnDependentReference,
   ConfirmationService,
   DataTableComponent,
+  ErrorService,
   TabControlHelper,
 } from 'qbm';
 import { ItshopPatternService } from '../itshop-pattern.service';
 import { ItShopPatternChangedType } from '../itshop-pattern-changed.enum';
 
+/**
+ * Component displayed in a sidesheet with a form to create a itshop pattern.
+ */
 @Component({
   selector: 'imx-itshop-pattern-create-sidesheet',
   templateUrl: './itshop-pattern-create-sidesheet.component.html',
@@ -56,11 +60,12 @@ export class ItshopPatternCreateSidesheetComponent implements OnInit, OnDestroy 
   public cdrList: ColumnDependentReference[] = [];
   public readonly detailsFormGroup: FormGroup;
 
-  public detailsInfoText = '#LDS#Here you can specify the details of the new request template.';
+  public detailsInfoText: string;
 
   @ViewChild(DataTableComponent) public table: DataTableComponent<TypedEntity>;
 
   private closeSubscription: Subscription;
+  private disposable: () => void;
 
   constructor(
     formBuilder: FormBuilder,
@@ -70,6 +75,7 @@ export class ItshopPatternCreateSidesheetComponent implements OnInit, OnDestroy 
     private readonly patternService: ItshopPatternService,
     private readonly sideSheetRef: EuiSidesheetRef,
     private readonly logger: ClassloggerService,
+    errorService: ErrorService,
     confirmation: ConfirmationService
   ) {
     this.detailsFormGroup = new FormGroup({ formArray: formBuilder.array([]) });
@@ -82,6 +88,8 @@ export class ItshopPatternCreateSidesheetComponent implements OnInit, OnDestroy 
         this.sideSheetRef.close();
       }
     });
+
+    this.disposable = errorService.setTarget('sidesheet');
   }
 
   public async ngOnInit(): Promise<void> {
@@ -97,6 +105,7 @@ export class ItshopPatternCreateSidesheetComponent implements OnInit, OnDestroy 
   }
 
   public ngOnDestroy(): void {
+    this.disposable();
     if (this.closeSubscription) {
       this.closeSubscription.unsubscribe();
     }
@@ -117,6 +126,9 @@ export class ItshopPatternCreateSidesheetComponent implements OnInit, OnDestroy 
   }
 
   private async setupDetailsTab(): Promise<void> {
+
+    this.detailsInfoText = '#LDS#Here you can specify the details of the new request template.';
+
     this.cdrList = [
       new BaseCdr(this.data.pattern.Ident_ShoppingCartPattern.Column),
       new BaseCdr(this.data.pattern.Description.Column),

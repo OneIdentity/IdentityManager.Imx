@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,10 +38,12 @@ import {
   DataSourceToolbarModule,
   DataTableModule,
   DataTreeWrapperModule,
+  DateModule,
   DynamicTabsModule,
   FkAdvancedPickerModule,
   LdsReplaceModule,
   MenuService,
+  ObjectHistoryModule,
   RouteGuardService,
   SqlWizardApiService
 } from 'qbm';
@@ -57,10 +59,16 @@ import { DataExplorerRegistryService } from '../data-explorer-view/data-explorer
 import { DynamicRoleSqlWizardService } from './dynamicrole-sqlwizard.service';
 import { CompareComponent } from './compare/compare.component';
 import { CompareItemComponent } from './compare/compare-item.component';
+import { RestoreComponent } from './restore/restore.component';
 import { SplitComponent } from './split/split.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RollbackComponent } from './rollback/rollback.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatListModule } from '@angular/material/list';
 
 const routes: Routes = [
   {
@@ -80,6 +88,8 @@ const routes: Routes = [
     RoleDetailComponent,
     RoleMainDataComponent,
     RoleEntitlementsComponent,
+    RollbackComponent,
+    RestoreComponent,
     SplitComponent,
   ],
   imports: [
@@ -90,13 +100,19 @@ const routes: Routes = [
     DataSourceToolbarModule,
     DataTableModule,
     DataTreeWrapperModule,
+    DateModule,
     FkAdvancedPickerModule,
     FormsModule,
+    ObjectHistoryModule,
     LdsReplaceModule,
+    MatDatepickerModule,
     MatMenuModule,
     MatOptionModule,
     MatSelectModule,
+    MatListModule,
     MatProgressSpinnerModule,
+    MatTableModule,
+    MatTooltipModule,
     ReactiveFormsModule,
     RoleMembershipsModule,
     TranslateModule,
@@ -119,7 +135,7 @@ export class RoleManangementModule {
     private readonly menuService: MenuService,
     private readonly dataExplorerRegistryService: DataExplorerRegistryService,
     private readonly logger: ClassloggerService) {
-    this.logger.info(this, '▶️ RoleManagement-Module loaded');
+    this.logger.info(this, '▶︝ RoleManagement-Module loaded');
 
     const config = this.router.config;
     routes.forEach((route) => {

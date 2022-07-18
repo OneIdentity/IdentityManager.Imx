@@ -56,7 +56,7 @@
         </imx-data-table-column>
         <imx-data-table-generic-column columnName="removeItemButton" [columnLabel]="''">
           <ng-template let-cartItem>
-            <button mat-flat-button *ngIf="cartItem.UID_ShoppingCartItemParent.value == null || cartItem.UID_ShoppingCartItemParent.value === ''"
+            <button mat-flat-button *ngIf="cartItem.UID_ShoppingCartItemParent.value == null || cartItem.UID_ShoppingCartItemParent.value === '' || cartItem.IsOptionalChild.value" 
               class="imx-remove-button"
               [attr.data-imx-identifier]="'cartitem-button-remove-' + cartItem.UID_AccProduct.Column.GetDisplayValue()"
               (click)="removeHighlightedItem(cartItem)">

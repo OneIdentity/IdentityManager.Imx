@@ -1,0 +1,31 @@
+<div eui-sidesheet-content>
+  <mat-card>
+    <eui-alert type="info" [condensed]="true" [colored]="true" [dismissable]="false" *ngIf="canRequestForSomebodyElse">
+      {{ description | translate }}
+    </eui-alert>
+    <div data-imx-identifier="itshop-pattern-add-products-recipient-and-actions" class="imx-recipients" *ngIf="canRequestForSomebodyElse">
+      <mat-radio-group [(ngModel)]="recipientType" data-imx-identifier="itshop-pattern-add-products-recipient-type"
+        (change)="selectedRecipientTypeChanged($event)">
+        <mat-radio-button [value]="'self'" data-imx-identifier="itshop-pattern-add-products-recipient-type-self">
+          {{'#LDS#For me' | translate}}
+        </mat-radio-button>
+        <mat-radio-button [value]="'others'" data-imx-identifier="itshop-pattern-add-products-recipient-type-others">
+          {{'#LDS#For someone else' | translate}}
+        </mat-radio-button>
+      </mat-radio-group>
+      <imx-cdr-editor class="imx-align-self-base" *ngIf="recipientType === 'others'" [cdr]="cartItemRecipients"
+        (valueChange)="onRecipientsChanged($event)"></imx-cdr-editor>
+    </div>
+    <imx-serviceitem-list data-imx-identifier="itshop-pattern-add-products-serviceitem-list" [recipients]="recipients"
+      [itemActions]="serviceItemActions" [selectedServiceCategory]="selectedCategory"
+      (handleAction)="handlePatternItemAction($event)" (selectionChanged)="onSelectionChanged($event)"
+      [dataSourceView]="dataSourceView" (openCategoryTree)="openCategoryTree()">
+    </imx-serviceitem-list>
+  </mat-card>
+</div>
+<div eui-sidesheet-actions color="white">
+  <button [disabled]="!selectedItems?.length" mat-raised-button color="primary" (click)="addTemplateItem(selectedItems)"
+    data-imx-identifier="itshop-pattern-add-products-button-add-to-template">
+    {{'#LDS#Add' | translate}}
+  </button>
+</div>

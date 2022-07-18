@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -64,7 +64,6 @@ import {
   ServiceCategoriesModule,
   ServiceItemsEditModule,
   ShoppingCartModule,
-  StarlingService,
   ProfileModule,
   RequestConfigModule,
   RoleManangementModule,
@@ -74,7 +73,6 @@ import {
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AppService } from './app.service';
-import { PortalStarlingService } from './portal-starling.service';
 import { environment } from '../environments/environment';
 import appConfigJson from '../appconfig.json';
 import { PortalHistoryService } from './portal-history.service';
@@ -139,10 +137,6 @@ import { PortalHistoryService } from './portal-history.service';
     {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler
-    },
-    {
-      provide: StarlingService,
-      useClass: PortalStarlingService
     },
     {
       provide: ObjectHistoryApiService,

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -49,7 +49,7 @@ export class FilterTreeDatabase extends TreeDatabase {
     }
 
     try {
-      entities = this.entityWrapper.convertToEntities(await this.getFilterTree(parameters.ParentKey), parameters.parentDisplay);
+      entities = this.entityWrapper.convertToEntities(await this.getFilterTree(parameters.ParentKey), parameters['parentDisplay']);
     } finally {
       if (showLoading) {
         setTimeout(() => this.busyService.hide());

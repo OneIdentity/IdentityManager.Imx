@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -152,7 +152,9 @@ export class AuthenticationService {
   }
 
   public registerAuthConfigProvider(authConfig: AuthConfigProvider): void {
-    this.providers.push(authConfig);
+    if (this.providers?.length === 0 || this.providers.findIndex(prov => prov.name === authConfig.name) === -1) {
+      this.providers.push(authConfig);
+    }
   }
 
   private async handleSessionState(getSessionState: () => Promise<ISessionState>): Promise<void> {

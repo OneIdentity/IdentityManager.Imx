@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,7 +30,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ITranslationProvider, MultiLanguageStringData, EntitySchema, DefaultServiceResolver } from 'imx-qbm-dbts';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import * as moment from 'moment-timezone';
+import moment from 'moment-timezone';
 
 import { TextContainer } from './text-container';
 import { MultiLanguageCaptions } from '../base/multi-language-captions';
@@ -78,16 +78,18 @@ export class ImxTranslationProviderService implements ITranslationProvider {
 
     this.culture = culture;
 
-    this.multilanguageTranslationDict = await this.appConfig.client.imx_multilanguage_translations_get(this.culture, 'all');
+    this.multilanguageTranslationDict = await this.appConfig.client.imx_multilanguage_translations_get('all', {
+      cultureName: this.culture
+    });
 
-    const captions = await this.appConfig.client.imx_multilanguage_getcaptions_get(this.culture);
+    const captions = await this.appConfig.client.imx_multilanguage_getcaptions_get({ cultureName: this.culture });
     this.multilanguageCaptions = {
-      Timeline_ZoomIn: captions.Timeline_ZoomIn,
-      Timeline_ZoomOut: captions.Timeline_ZoomOut,
-      Timeline_MoveLeft: captions.Timeline_MoveLeft,
-      Timeline_MoveRight: captions.Timeline_MoveRight,
-      Timeline_ClusterDescription: (numOfEvents: number) => captions.Timeline_ClusterDescription.replace('{0}', numOfEvents.toString()),
-      Timeline_ClusterTitle: (numOfEvents: number) => captions.Timeline_ClusterTitle.replace('{0}', numOfEvents.toString()),
+      Timeline_ZoomIn: captions['Timeline_ZoomIn'],
+      Timeline_ZoomOut: captions['Timeline_ZoomOut'],
+      Timeline_MoveLeft: captions['Timeline_MoveLeft'],
+      Timeline_MoveRight: captions['Timeline_MoveRight'],
+      Timeline_ClusterDescription: (numOfEvents: number) => captions['Timeline_ClusterDescription'].replace('{0}', numOfEvents.toString()),
+      Timeline_ClusterTitle: (numOfEvents: number) => captions['Timeline_ClusterTitle'].replace('{0}', numOfEvents.toString()),
       Timeline_New: 'New',
       Timeline_CreateNewEvent: 'Create new event'
     };

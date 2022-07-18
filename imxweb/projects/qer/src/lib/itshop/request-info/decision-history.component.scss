@@ -1,4 +1,4 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_palette.scss";
 
 :host {
   display: flex;
@@ -34,18 +34,6 @@
     font-style: italic;
     font-size: 0.9em;
   }
-}
-
-ul.imx-eventbar {
-  margin: 0 0 0 -25px;
-  padding: 0;
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-}
-
-li {
-  max-width: 460px;
 }
 
 li.imx-event {

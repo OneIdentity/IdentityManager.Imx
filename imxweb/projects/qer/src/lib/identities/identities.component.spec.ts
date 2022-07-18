@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -204,7 +204,7 @@ describe('DataExplorerIdentitiesComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-  
+
   it('should change navigation state', async () => {
     await component.onNavigationStateChanged(navigationState);
     expect(component.navigationState).toEqual(navigationState);

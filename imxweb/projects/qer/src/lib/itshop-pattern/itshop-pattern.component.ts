@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,6 @@
  */
 
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -48,6 +47,10 @@ import { ItshopPatternService } from './itshop-pattern.service';
 import { ItshopPatternCreateService } from './itshop-pattern-create-sidesheet/itshop-pattern-create.service';
 import { ItShopPatternChangedType } from './itshop-pattern-changed.enum';
 
+/**
+ * Component that shows all list of all itshop pattern of the current user
+ * or all itshop pattern of all other users, if the user is a shop admin.
+ */
 @Component({
   selector: 'imx-itshop-pattern',
   templateUrl: './itshop-pattern.component.html',
@@ -76,7 +79,6 @@ export class ItshopPatternComponent implements OnInit, OnDestroy {
     private readonly patternService: ItshopPatternService,
     private readonly patternCreateService: ItshopPatternCreateService,
     private readonly qerPermissionService: QerPermissionsService,
-    private readonly activatedRoute: ActivatedRoute,
     private readonly sidesheet: EuiSidesheetService,
     private readonly snackBar: SnackBarService,
     private readonly translate: TranslateService,
@@ -95,8 +97,7 @@ export class ItshopPatternComponent implements OnInit, OnDestroy {
 
     this.patternService.handleOpenLoader();
     try {
-      const route = this.activatedRoute.snapshot.routeConfig.path;
-      this.adminMode = await this.qerPermissionService.isShopAdmin() && route === 'configuration/carttemplates';
+      this.adminMode = await this.qerPermissionService.isShopAdmin();
 
       this.infoText = this.adminMode ? this.infoTextAdmin : this.infoTextUser;
 
@@ -113,7 +114,8 @@ export class ItshopPatternComponent implements OnInit, OnDestroy {
           entitySchema.Columns.IsPublicPattern,
           {
             ColumnName: 'actions',
-            Type: ValType.String
+            Type: ValType.String,
+            afterAdditionals: true
           }
         ],
         entitySchema,

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,8 +25,8 @@
  */
 
 import { Component, Input, EventEmitter, Output, HostListener } from '@angular/core';
-import { AbstractControl } from '@angular/forms';
-import * as moment from 'moment-timezone';
+import { AbstractControl, FormControl } from '@angular/forms';
+import { Moment } from 'moment-timezone';
 
 /**
  * Internal wrapper component around elemental time picker to pick a Moment time value.
@@ -43,6 +43,8 @@ export class TimePickerComponent {
    *
    * When a time is picked it will be stored into the value of this control.
    */
+
+  // TODO: Check Upgrade
   @Input() public control: AbstractControl;
 
   /**
@@ -55,7 +57,7 @@ export class TimePickerComponent {
    *
    * Handles the value change event of the time picker.
    */
-  public onValueChange(value: moment): void {
+  public onValueChange(value: Moment): void {
     this.control.setValue(value);
   }
 

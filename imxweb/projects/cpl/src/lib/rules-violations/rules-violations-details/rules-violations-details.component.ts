@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -64,6 +64,11 @@ export class RulesViolationsDetailsComponent {
    */
   public async deny(): Promise<void> {
     await this.actionService.deny([this.data]);
+    return this.sideSheetRef.close(true);
+  }
+
+  public async resolve(): Promise<void> {
+    await this.actionService.resolve(this.data);
     return this.sideSheetRef.close(true);
   }
 }

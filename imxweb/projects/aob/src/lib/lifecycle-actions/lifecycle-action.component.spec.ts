@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -204,7 +204,7 @@ describe('LifecycleActionComponent', () => {
       component.data.elements = [];
       component.whenToPublish = testcase.whenToPublish as ('now' | 'future');
       component.submitData();
-      expect(mockMatDialogRef.close).toHaveBeenCalledWith({ publishFuture: testcase.expectedIsInActive, date: component.datepickerFormControl.value });
+      expect(mockMatDialogRef.close).toHaveBeenCalledWith({ publishFuture: testcase.expectedIsInActive, date: component.datepickerFormControl.value.toDate() });
     }));
 
   [

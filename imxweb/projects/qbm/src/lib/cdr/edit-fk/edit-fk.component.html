@@ -48,7 +48,7 @@
     {{ '#LDS#The value entered in the {0} box could not be found. Please select a value from the list.' | translate |
     ldsReplace:(columnContainer?.display | translate) }}
   </mat-error>
-  <mat-error *ngIf="control.errors?.required">
+  <mat-error *ngIf="control.errors?.['required']">
     {{ '#LDS#This field is mandatory.' | translate }}
   </mat-error>
 </mat-form-field>

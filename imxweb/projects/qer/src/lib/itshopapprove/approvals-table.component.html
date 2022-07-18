@@ -46,12 +46,10 @@
     <imx-data-table-column [entityColumn]="entitySchema?.Columns.PWOPriority" data-imx-identifier="approvals-tabledata-table-column-priority" columnLabel="">
       <ng-template let-pwo>
         <div *ngIf="pwo.PWOPriority.value !== 0" data-imx-identifier="approvals-span-priority" class="imx-badge-container">
-          <eui-badge>
-            {{ '#LDS#Priority' | translate }}: {{ pwo.PWOPriority.Column.GetDisplayValue() }}
-          </eui-badge>
+          <eui-badge> {{ '#LDS#Priority' | translate }}: {{ pwo.PWOPriority.Column.GetDisplayValue() }} </eui-badge>
         </div>
         <div *ngIf="pwo.complianceRuleViolation" class="imx-badge-container">
-          <eui-badge  color="orange">
+          <eui-badge color="orange">
             {{ '#LDS#Compliance violation' | translate }}
           </eui-badge>
         </div>
@@ -74,6 +72,17 @@
         <button mat-button color="primary" (click)="editPwo(item)" data-imx-identifier="approvals-table-row-button-view-details">
           {{ '#LDS#Details' | translate }}
         </button>
+      </ng-template>
+    </imx-data-table-generic-column>
+    <imx-data-table-generic-column columnName="recommendations">
+      <ng-template let-item>
+        <div *ngIf="item.pwoData?.Recommendation">
+          <button mat-button color="primary" (click)="viewRecommendationDetails(item)" data-imx-identifier="approvals-table-row-button-view-recommendations">
+            {{ '#LDS#Recommendation' | translate }}
+          </button>
+          <eui-icon *ngIf="item.pwoData.Recommendation.Recommendation === recApprove" class="recommendation-approve-icon" icon="setdefault" [matTooltip]="'#LDS#Based on an analysis with currently available data, it is recommended you approve this request.' | translate"></eui-icon>
+          <eui-icon *ngIf="item.pwoData.Recommendation.Recommendation === recDeny" class="recommendation-deny-icon" icon="error" [matTooltip]="'#LDS#Based on an analysis with currently available data, it is recommended you deny this request.' | translate"></eui-icon>
+        </div>
       </ng-template>
     </imx-data-table-generic-column>
   </imx-data-table>

@@ -81,7 +81,7 @@
 
 .imx-button:Disabled {
   color: $VI_Common_Color_Button_Font_Disabled;
-  background-color: mat-color($asher-gray-palette, 900);
+  // background-color: mat-color($asher-gray-palette, 900);
   cursor: not-allowed;
 }
 

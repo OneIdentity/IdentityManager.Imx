@@ -1,9 +1,11 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
+@use '@angular/material' as mat;
+@import "@elemental-ui/core/src/styles/_palette.scss";
+
 :host {
     display: flex;
     flex-direction: column;
     padding-top: 10px;
-    background-color: mat-color($asher-gray-palette, 800);
+    background-color: mat.get-color-from-palette($asher-gray-palette, 800);
     padding-left: 30px;
     padding-right: 30px;
     overflow: auto;

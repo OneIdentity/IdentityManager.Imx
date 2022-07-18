@@ -1,0 +1,28 @@
+<mat-card>
+  <mat-card-title>{{ '#LDS#Heading General Settings' | translate }}</mat-card-title>
+  <mat-card-subtitle>{{ '#LDS#Here you can make settings that are applied to each selected policy violation.' | translate }}
+  </mat-card-subtitle>
+  <mat-card-content>
+    <div>
+      <imx-decision-reason [reasonStandard]="data.actionParameters.justification"
+        [reasonFreetext]="data.actionParameters.reason" (controlCreated)="formGroup.addControl('reason', $event)"
+        data-imx-identifier="policy-violation-property-reason">
+      </imx-decision-reason>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="imx-selection-card">
+  <mat-card-title>{{ '#LDS#Heading Selected Policy Violations' | translate }}</mat-card-title>
+  <mat-card-content>
+    <div>
+      <mat-list>
+        <mat-list-item *ngFor="let policyViolationApproval of data?.policyViolations">
+          <div mat-line>
+            {{ policyViolationApproval?.GetEntity()?.GetDisplay() }}
+          </div>
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </mat-card-content>
+</mat-card>

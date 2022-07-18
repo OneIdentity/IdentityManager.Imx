@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,7 +30,7 @@ import { EuiLoadingService, EuiSidesheetConfig, EuiSidesheetService } from '@ele
 
 import { OpsupportQueueJobs, ReactivateJobMode } from 'imx-api-qbm';
 import { OpsupportQueueJobsParameters, QueueJobsService } from '../queue-jobs.service';
-import { SnackBarService, TextContainer, DataSourceToolbarSettings, DataSourceToolbarFilter, SettingsService } from 'qbm';
+import { SnackBarService, TextContainer, DataSourceToolbarSettings, DataSourceToolbarFilter, SettingsService, ClientPropertyForTableColumns } from 'qbm';
 import { CollectionLoadParameters, CompareOperator, DataModel, EntitySchema, FilterType, IClientProperty, ValType } from 'imx-qbm-dbts';
 import { SingleFrozenJobComponent } from '../../frozen-jobs/single-frozen-job.component';
 import { TranslateService } from '@ngx-translate/core';
@@ -56,7 +56,7 @@ export class JobsGridviewComponent implements OnInit {
   @Input() public preselectFailed = false;
 
   private navigationState: CollectionLoadParameters;
-  private readonly displayedColumns: IClientProperty[];
+  private readonly displayedColumns: ClientPropertyForTableColumns[];
   private filters: DataSourceToolbarFilter[];
   private dataModel: DataModel;
 
@@ -75,7 +75,8 @@ export class JobsGridviewComponent implements OnInit {
       this.entitySchemaJobs.Columns.XDateInserted,
       {
         ColumnName: 'actions',
-        Type: ValType.String
+        Type: ValType.String,
+        afterAdditionals: true
       }
     ];
 

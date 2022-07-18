@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,8 +34,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { EuiCoreModule, EuiLoadingService } from '@elemental-ui/core';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { Component, Input, Output, EventEmitter, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { EuiCoreModule, EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 
@@ -110,10 +111,19 @@ describe('ShoppingCartComponent', () => {
         ITShopConfig: {}
     };
 
+    const sidesheetServiceStub = {
+      open: jasmine.createSpy('open').and.returnValue({
+        afterClosed: () => of({})
+      })
+    };
+
     let component: ShoppingCartComponent;
     let fixture: ComponentFixture<ShoppingCartComponent>;
     configureTestSuite(() => {
         TestBed.configureTestingModule({
+            schemas: [
+              CUSTOM_ELEMENTS_SCHEMA
+            ],
             imports: [
                 EuiCoreModule,
                 LoggerTestingModule,
@@ -123,6 +133,7 @@ describe('ShoppingCartComponent', () => {
                 MatSelectModule,
                 MatButtonModule,
                 MatMenuModule,
+                NoopAnimationsModule,
                 RouterTestingModule.withRoutes(
                     [
                         { path: 'shoppingcart/empty', component: MockEmptyCartComponent },
@@ -179,6 +190,10 @@ describe('ShoppingCartComponent', () => {
                 {
                     provide: ItshopService,
                     useValue: itshopServiceStub
+                },
+                {
+                  provide: EuiSidesheetService,
+                  useValue: sidesheetServiceStub
                 }
             ]
         });

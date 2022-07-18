@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { Injectable, ComponentFactoryResolver } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -37,7 +37,8 @@ import {
   ImxTranslationProviderService,
   imx_SessionService,
   AuthenticationService,
-  PluginLoaderService
+  PluginLoaderService,
+  SplashService
 } from 'qbm';
 import { SystemOverviewComponent } from './information/system-overview/system-overview.component';
 import { environment } from '../environments/environment';
@@ -53,21 +54,22 @@ declare var SystemJS: any;
 })
 export class AppService {
   constructor(
-    private logger: ClassloggerService,
+    public readonly registry: CdrRegistryService,
+    private readonly logger: ClassloggerService,
     private readonly config: AppConfigService,
     private readonly translateService: TranslateService,
     private readonly session: imx_SessionService,
     private readonly translationProvider: ImxTranslationProviderService,
     private readonly title: Title,
-    public readonly registry: CdrRegistryService,
-    public readonly resolver: ComponentFactoryResolver,
     private readonly extService: ExtService,
     private readonly pluginLoader: PluginLoaderService,
-    private readonly authentication: AuthenticationService
+    private readonly authentication: AuthenticationService,
+    private readonly splash: SplashService,
   ) { }
 
 
   public async init(): Promise<void> {
+    this.showSplash();
     await this.config.init(environment.clientUrl);
 
     this.translateService.addLangs(this.config.Config.Translation.Langs);
@@ -102,6 +104,8 @@ export class AppService {
     this.config.Config.Title = await this.translateService.get('#LDS#Heading Operations Support Web Portal').toPromise();
     const title = `${name} ${this.config.Config.Title}`;
     this.title.setTitle(title);
+
+    await this.updateSplash(title);
   }
 
   public static init(app: AppService): () => Promise<any> {
@@ -110,5 +114,16 @@ export class AppService {
         await app.init();
         resolve();
       });
+  }
+
+  private showSplash(): void {
+    // open splash screen with fix values
+    this.splash.init({ applicationName: 'Operations Support Web Portal' });
+  }
+
+  private async updateSplash(title: string): Promise<void> {
+    // update the splash screen and use translated texts and the title from the imxconfig
+    const loadingMsg = await this.translateService.get('#LDS#Loading...').toPromise();
+    this.splash.update({ applicationName: title, message: loadingMsg });
   }
 }

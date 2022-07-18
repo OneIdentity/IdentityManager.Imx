@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,17 +31,24 @@ import { LoggerTestingModule } from 'ngx-logger/testing';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, of } from 'rxjs';
 
-import { AppConfigService, imx_SessionService, ImxTranslationProviderService, AuthenticationService } from 'qbm';
+import { AppConfigService, imx_SessionService, ImxTranslationProviderService, AuthenticationService, SplashService } from 'qbm';
 import { AppService } from './app.service';
 import { PluginLoaderService } from 'qbm';
 
 describe('AppService', () => {
   class Mocks {
     translate = {
+      get: jasmine.createSpy('get').and.returnValue(of()),
       addLangs: jasmine.createSpy('addLangs'),
       getBrowserCultureLang: jasmine.createSpy('getBrowserCultureLang').and.returnValue(''),
       setDefaultLang: jasmine.createSpy('setDefaultLang'),
       use: jasmine.createSpy('use').and.returnValue(of({})),
+    };
+
+    splash = {
+      init: jasmine.createSpy('init'),
+      update: jasmine.createSpy('update'),
+      close: jasmine.createSpy('close'),
     };
 
     translationProvider = {
@@ -122,6 +129,10 @@ describe('AppService', () => {
         {
           provide: AuthenticationService,
           useValue: mocks.authentication
+        },
+        {
+          provide: SplashService,
+          useValue: mocks.splash
         }
       ]
     });

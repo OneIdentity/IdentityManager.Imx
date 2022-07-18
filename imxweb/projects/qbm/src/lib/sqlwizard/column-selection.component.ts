@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -53,7 +53,7 @@ export class ColumnSelectionComponent implements OnInit, OnChanges {
     constructor(private readonly svc: SqlWizardService) {
     }
 
-    public async ngOnInit() {
+    public async ngOnInit(): Promise<void> {
         await this.reloadColumns();
         if (this.node.Property) {
             this.formControl.setValue(this.node.Property.PropertyId);
@@ -64,22 +64,23 @@ export class ColumnSelectionComponent implements OnInit, OnChanges {
         });
     }
 
-    public selectionChange(value) {
+    // TODO: Check Upgrade
+    public selectionChange(value: any): void {
         this.formControl.setValue(value);
         this.node.columnChanged.emit(value);
     }
 
-    public ngOnChanges(changes) {
+    public ngOnChanges(changes: any): void {
         if (changes.node) {
             this.reloadColumns();
         }
     }
-    public async selectColumn(propertyId: string) {
-        if (this.lastSelected == propertyId) {
+    public async selectColumn(propertyId: string): Promise<void> {
+        if (this.lastSelected === propertyId) {
             return;
         }
         this.lastSelected = propertyId;
-        const found = this.columns.filter(c => c.PropertyId == propertyId);
+        const found = this.columns.filter(c => c.PropertyId === propertyId);
         if (found.length != 1) {
             throw new Error('Property not found: ' + propertyId);
         }
@@ -88,9 +89,10 @@ export class ColumnSelectionComponent implements OnInit, OnChanges {
         // If there is only one operator, pre-select it.
         // this is important for boolean properties that do not show
         // an operator selection.
-        var preselectedOperator: string = null;
-        if (found[0].Operators?.length == 1)
-            preselectedOperator = found[0].Operators[0].Type;
+        let preselectedOperator: string = null;
+        if (found[0].Operators?.length === 1) {
+          preselectedOperator = found[0].Operators[0].Type;
+        }
 
         // create new empty node
         const data: SqlExpression = {
@@ -106,7 +108,7 @@ export class ColumnSelectionComponent implements OnInit, OnChanges {
         return option.display.toString().toUpperCase().trim().includes(searchInputValue.toUpperCase().trim());
     }
 
-    private async reloadColumns() {
+    private async reloadColumns(): Promise<void> {
         const tableName = this.node.tableName;
 
         if (tableName) {

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,16 +28,16 @@ import { Component, Input, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiSidesheetService, EuiLoadingService } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 
 import {
   DataSourceToolbarSettings,
-  ImxTranslationProviderService,
   ClassloggerService,
   DataSourceToolbarFilter,
   SettingsService
 } from 'qbm';
 import { IDataExplorerComponent } from 'qer';
-import { CollectionLoadParameters, IClientProperty, DisplayColumns, DbObjectKey, EntitySchema, CompareOperator, FilterType, DataModel, FilterData } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, IClientProperty, DisplayColumns, DbObjectKey, EntitySchema, DataModel, FilterData } from 'imx-qbm-dbts';
 import { AccountsService } from './accounts.service';
 import { AccountSidesheetComponent } from './account-sidesheet/account-sidesheet.component';
 import { DeHelperService } from '../de-helper.service';
@@ -45,6 +45,7 @@ import { DataExplorerFiltersComponent } from '../data-filters/data-explorer-filt
 import { AccountSidesheetData, GetAccountsOptionalParameters } from './accounts.models';
 import { PortalTargetsystemUnsSystem, PortalTargetsystemUnsAccount } from 'imx-api-tsb';
 import { ContainerTreeDatabaseWrapper } from '../container-list/container-tree-database-wrapper';
+import { TargetSystemReportComponent } from './target-system-report/target-system-report.component';
 
 @Component({
   selector: 'imx-data-explorer-accounts',
@@ -81,13 +82,13 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
   private dataModel: DataModel;
 
   constructor(
-    public translateProvider: ImxTranslationProviderService,
+    public translateProvider: TranslateService,
     private readonly sideSheet: EuiSidesheetService,
     private readonly busyService: EuiLoadingService,
     private readonly logger: ClassloggerService,
     private readonly accountsService: AccountsService,
-    private readonly settingsService: SettingsService,
-    private readonly dataHelper: DeHelperService
+    private readonly dataHelper: DeHelperService,
+    readonly settingsService: SettingsService
   ) {
     this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchemaUnsAccount = accountsService.accountSchema;
@@ -99,6 +100,7 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
     this.displayedColumns = [
       this.entitySchemaUnsAccount.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
       this.entitySchemaUnsAccount.Columns.UID_Person,
+      this.entitySchemaUnsAccount.Columns.UID_UNSRoot,
       this.entitySchemaUnsAccount.Columns.AccountDisabled,
       this.entitySchemaUnsAccount.Columns.XMarkedForDeletion,
     ];
@@ -164,6 +166,7 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
         unsAccountId: unsAccount.UID_UNSAccount.value,
         unsDbObjectKey,
         selectedAccount: await this.accountsService.getAccountInteractive(unsDbObjectKey, 'UID_UNSAccount'),
+        uidPerson: unsAccount.UID_Person.value,
         tableName: this.tableName
       };
     } finally {
@@ -188,6 +191,17 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
   public async filterByTree(filters: FilterData[]): Promise<void> {
     this.navigationState.filter = filters;
     return this.navigate();
+  }
+
+  public async openReportOptionsSidesheet(): Promise<void> {
+    this.sideSheet.open(TargetSystemReportComponent, {
+      title: await this.translateProvider.get('#LDS#Choose target system for report').toPromise(),
+      headerColour: 'iris-blue',
+      bodyColour: 'asher-gray',
+      padding: '0px',
+      width: 'max(400px, 40%)',
+      testId: 'accounts-report-sidesheet'
+    });
   }
 
   private async navigate(): Promise<void> {

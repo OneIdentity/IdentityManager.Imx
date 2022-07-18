@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,7 +38,7 @@ import { ItshopService } from '../../itshop/itshop.service';
   selector: 'imx-approvals-sidesheet',
   templateUrl: './approvals-sidesheet.component.html',
   styleUrls: ['./approvals-sidesheet.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class ApprovalsSidesheetComponent implements OnDestroy {
   public readonly hasPeerGroupAnalysis: boolean;
@@ -48,9 +48,10 @@ export class ApprovalsSidesheetComponent implements OnDestroy {
   private readonly subscriptions: Subscription[] = [];
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public readonly data: {
-      pwo: Approval,
-      itShopConfig: ITShopConfig
+    @Inject(EUI_SIDESHEET_DATA)
+    public readonly data: {
+      pwo: Approval;
+      itShopConfig: ITShopConfig;
     },
     public readonly actionService: WorkflowActionService,
     private readonly sideSheetRef: EuiSidesheetRef,
@@ -58,16 +59,18 @@ export class ApprovalsSidesheetComponent implements OnDestroy {
     authentication: AuthenticationService
   ) {
     this.subscriptions.push(this.actionService.applied.subscribe(() => this.sideSheetRef.close()));
-    this.subscriptions.push(authentication.onSessionResponse.subscribe(state => this.currentUserId = state.UserUid));
+    this.subscriptions.push(authentication.onSessionResponse.subscribe((state) => (this.currentUserId = state.UserUid)));
 
     if (this.data.pwo.pwoData?.WorkflowHistory) {
       const history = itshop.createTypedHistory(this.data.pwo.pwoData);
-      this.hasPeerGroupAnalysis = history.some(item => item.Ident_PWODecisionStep.value === 'EXWithPeerGroupAnalysis');
+      this.hasPeerGroupAnalysis = history.some((item) =>
+        ['EXWithPeerGroupAnalysis', 'Peer group analysis'].includes(item.Ident_PWODecisionStep.value)
+      );
     }
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   public async acceptTermsOfUse(): Promise<void> {

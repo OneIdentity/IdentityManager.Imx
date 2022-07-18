@@ -1,10 +1,21 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_palette.scss";
 :host {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
   overflow: hidden;
-  padding-bottom: 15px;
+  height: 100%;
+  
+  ::ng-deep .mat-list-base {
+    .mat-list-item.imx-list-item {
+      height: auto;
+    }
+  }
+
+  ::ng-deep .mat-menu-panel {
+    padding: 10px;
+    max-width: 500px;
+  }
 }
 
 .imx-dialog-content {
@@ -25,10 +36,6 @@
   }
 }
 
-::ng-deep .mat-menu-panel {
-  padding: 10px;
-  max-width: 500px;
-}
 
 .imx-badge {
   background-color: $white;
@@ -42,8 +49,3 @@
   margin: 5px 0;
 }
 
-::ng-deep .mat-list-base {
-  .mat-list-item.imx-list-item {
-    height: auto;
-  }
-}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -61,15 +61,7 @@ export class ClaimGroupService {
         ParentTableName: 'UNSGroup',
         ParentColumnName: 'XObjectKey'
       },
-      parameters => this.apiService.client.portal_claimgroup_group_get(
-        parameters.OrderBy,
-        parameters.StartIndex,
-        parameters.PageSize,
-        parameters.filter,
-        null,
-        parameters.search
-
-      )
+      parameters => this.apiService.client.portal_claimgroup_group_get(parameters)
     );
 
     return new BaseCdr(column, '#LDS#System entitlement' /* TODO: globalize */);
@@ -123,13 +115,7 @@ export class ClaimGroupService {
     const collection = await this.apiService.client.portal_claimgroup_suggestedowner_get(
       tableName,
       uid,
-      parameters.OrderBy,
-      parameters.StartIndex,
-      parameters.PageSize,
-      parameters.filter,
-      null,
-      parameters.search
-    );
+      parameters);
 
     if (collection.Entities && collection.Entities.length > 0) {
       return collection;
@@ -138,12 +124,6 @@ export class ClaimGroupService {
     return this.apiService.client.portal_claimgroup_suggestedowner2_get(
       tableName,
       uid,
-      parameters.OrderBy,
-      parameters.StartIndex,
-      parameters.PageSize,
-      parameters.filter,
-      null,
-      parameters.search
-    );
+      parameters);
   }
 }

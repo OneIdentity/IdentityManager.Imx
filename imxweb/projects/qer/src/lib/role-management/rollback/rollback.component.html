@@ -1,0 +1,95 @@
+<mat-vertical-stepper [linear]="true" (selectionChange)="selectedStepChanged($event)">
+  <mat-step label="{{'#LDS#Select comparison date' | translate}}">
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{LdsPickComparisonDate | translate}}</mat-label>
+      <input matInput [matDatepicker]="picker" [(ngModel)]="compareDate" [max]="maxDate"
+        (dateChange)="loadCompareItems()">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-spinner *ngIf="busy"></mat-spinner>
+
+    <eui-alert [condensed]="true" [colored]="true" type="info"
+      *ngIf="!busy && compareDate && comparisonItems.length == 0">
+      {{LdsNoChanges | translate}}</eui-alert>
+
+      <eui-alert [condensed]="true" [colored]="true" type="info"
+      *ngIf="!busy && compareDate && comparisonItems.length > 0">
+      {{LdsSelectItems | translate}}</eui-alert>
+
+    <table mat-table [dataSource]="comparisonItems" class="mat-elevation-z2"
+      *ngIf="comparisonItems.length > 0 && !busy">
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)">
+          </mat-checkbox>
+        </td>
+      </ng-container>
+
+      <ng-container [matColumnDef]="'Object'">
+        <th mat-header-cell *matHeaderCellDef> {{'#LDS#Assigned object' | translate}} </th>
+        <td mat-cell *matCellDef="let entl">
+          <div>{{ entl.Property }}</div>
+          <div class="subtext">{{ entl.TypeDisplay }}</div>
+        </td>
+      </ng-container>
+
+      <ng-container [matColumnDef]="'Then'">
+        <th mat-header-cell *matHeaderCellDef> {{'#LDS#Previous state' | translate}} </th>
+        <td mat-cell *matCellDef="let entl">
+          <div>{{ entl.HistoryValueDisplay }}</div>
+        </td>
+      </ng-container>
+
+      <ng-container [matColumnDef]="'Now'">
+        <th mat-header-cell *matHeaderCellDef> {{'#LDS#Current state' | translate}} </th>
+        <td mat-cell *matCellDef="let entl">
+          <div>{{ entl.CurrentValueDisplay }}</div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <div class="imx-step-button">
+      <button mat-raised-button data-imx-identifier="rollback-step-1-next" color="primary" matStepperNext
+        [disabled]="selection.selected.length < 1">{{'#LDS#Next' | translate}}</button>
+    </div>
+
+  </mat-step>
+
+  <mat-step label="{{'#LDS#Review actions' | translate}}">
+    <mat-spinner *ngIf="busy"></mat-spinner>
+
+    <ng-container *ngIf="!busy">
+      <eui-alert [condensed]="true" [colored]="true" type="info">
+        {{LdsActionList | translate}}</eui-alert>
+
+      <mat-selection-list [(ngModel)]="uidActions">
+        <mat-list-option checkboxPosition="before" *ngFor="let action of actions" [value]="action.Id"
+          [disabled]="!action.CanExecute" [attr.data-imx-identifier]="'multi-select-action-' + action.Id">
+          <div>{{action.ObjectDisplay }}</div>
+          <div class="subtext">{{action.Display }}</div>
+        </mat-list-option>
+      </mat-selection-list>
+
+      <div class="imx-step-button">
+        <button mat-raised-button data-imx-identifier="rollback-step-2-back" matStepperPrevious>{{'#LDS#Back' |
+          translate}}</button>
+        <button mat-raised-button data-imx-identifier="rollback-step-2-next" (click)="Execute()" color="primary"
+          matStepperNext>{{'#LDS#Next' | translate}}</button>
+      </div>
+    </ng-container>
+  </mat-step>
+</mat-vertical-stepper>

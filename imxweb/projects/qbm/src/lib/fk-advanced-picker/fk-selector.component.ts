@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -106,6 +106,10 @@ export class FkSelectorComponent implements OnInit {
   public search(keywords: string): void {
     this.logger.debug(this, 'Search - keywords', keywords);
     this.loadTableData({ search: keywords });
+  }
+
+  public amIDisabled(item: TypedEntity): boolean {
+    return this.data.disabledIds?.find( x => x === item.GetEntity().GetKeys()[0]) ? true : false;
   }
 
   /**

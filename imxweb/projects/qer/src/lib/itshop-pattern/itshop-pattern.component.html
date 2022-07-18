@@ -36,7 +36,7 @@
       <imx-data-table-generic-column columnName="actions">
         <ng-template let-item>
           <button mat-button color="primary" (click)="viewDetails(item)"
-            data-imx-identifier="tshop-pattern-button-view-details">
+            data-imx-identifier="itshop-pattern-button-view-details">
             {{'#LDS#Edit' | translate}}
           </button>
         </ng-template>
@@ -68,9 +68,8 @@
       [disabled]="!selectedItemsCanBePublished()" (click)="publish(selectedPatterns)">
       {{ '#LDS#Share' | translate}}
     </button>
-    <!-- TODO later 
     <button mat-raised-button color="primary" data-imx-identifier="itshop-pattern-button-create" (click)="createNewPattern()">
       {{ '#LDS#Create' | translate}}
-    </button> -->
+    </button>
   </div>
 </div>

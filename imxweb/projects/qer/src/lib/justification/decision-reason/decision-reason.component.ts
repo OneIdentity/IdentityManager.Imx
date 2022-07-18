@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -39,6 +39,7 @@ import { JustificationService } from '../justification.service';
 export class DecisionReasonComponent implements AfterViewInit {
   @Input() public reasonStandard: ColumnDependentReference;
   @Input() public reasonFreetext: ColumnDependentReference;
+  @Input() public maxReasonType: number;
 
   @Output() public controlCreated = new EventEmitter<AbstractControl>();
 
@@ -64,8 +65,11 @@ export class DecisionReasonComponent implements AfterViewInit {
 
   public async checkReason(value: ValueStruct<string>): Promise<void> {
     const justification = await this.justificationService.get(value.DataValue);
+
     this.formGroup.removeControl(this.reasonFreetextControl.name);
-    this.reasonFreetext.minLength = justification && justification.RequiresText.value ? 1 : 0;
+    this.reasonFreetext.minLength = Math.max((justification && justification.RequiresText.value ? 1 : 0),
+      (this.maxReasonType ?? 0) < 2 ? 0 : 1);
+
     this.addReasonFreetext();
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,6 @@
  *
  */
 
-import { ErrorHandler } from '@angular/core';
-
 import { MethodDefinition, MethodDescriptor, ApiClient } from 'imx-qbm-dbts';
 import { ServerExceptionError } from '../base/server-exception-error';
 import { ServerError } from '../base/server-error';
@@ -33,25 +31,12 @@ import { ClassloggerService } from '../classlogger/classlogger.service';
 import { TranslateService } from '@ngx-translate/core';
 
 export class ApiClientFetch implements ApiClient {
-    constructor(private readonly errorHandler: ErrorHandler,
+    constructor(
         private readonly baseUrl: string = '',
-        logger: ClassloggerService,
+        private readonly logger: ClassloggerService,
         private readonly translation: TranslateService,
         private readonly http: { fetch(input: RequestInfo, init?: RequestInit): Promise<Response> } = window) {
-
-        // is API running on same host than the web app?
-        const apiHost = baseUrl ? new URL(baseUrl).host : null;
-        const htmlHost = window.location.host;
-        this.xsrfProtectionEnabled = !baseUrl || apiHost == htmlHost;
-        if (this.xsrfProtectionEnabled) {
-            logger.debug(this, "XSRF protection token is active for this session.");
-        }
-        else {
-            logger.info(this, `XSRF protection is not enabled for this session (API host=${apiHost} HTML host=${htmlHost})`);
-        }
     }
-
-    private readonly xsrfProtectionEnabled: boolean;
 
     public async processRequest<T>(methodDescriptor: MethodDescriptor<T>): Promise<T> {
         const method = new MethodDefinition(methodDescriptor);
@@ -67,11 +52,8 @@ export class ApiClientFetch implements ApiClient {
                 headers: headers,
                 body: method.body
             });
-        } catch {
-            this.errorHandler.handleError(new ServerError(await this.GetUnexpectedErrorText()));
-
-//TODO: or throw?            
-            return null;
+        } catch (e) {
+            throw new ServerError(await this.GetUnexpectedErrorText());
         }
 
         if (response) {
@@ -103,9 +85,7 @@ export class ApiClientFetch implements ApiClient {
             throw new ServerExceptionError(await response.json());
         }
 
-        this.errorHandler.handleError(new ServerError(await this.GetUnexpectedErrorText()));
-        //TODO: or throw?
-        return null;
+        throw new ServerError(await this.GetUnexpectedErrorText());
     }
 
     private append(input: string, statusText: string): string {
@@ -125,15 +105,9 @@ export class ApiClientFetch implements ApiClient {
     private addXsrfProtectionHeader<T>(headers: Headers, method: MethodDefinition<T>) {
         // Sending XSRF-TOKEN as an additional header, if:
         // - there is one
-        // - the base URL is not set or equivalent to window.location.origin (XSRF protection does not work across domains)
         // - the request is not a GET or HEAD request (which does not require XSRF protection)
 
-        if (!this.xsrfProtectionEnabled) {
-            // when connecting to an API server on a different domain, XSRF protection cookies
-            // do not work -> requesting that the server emits no protection cookie
-            headers.set("X-NO-XSRF", "true");
-        }
-        else if (document.cookie && !["GET", "HEAD"].includes(method.httpMethod.toUpperCase())) {
+        if (document.cookie && !["GET", "HEAD"].includes(method.httpMethod.toUpperCase())) {
             const token = this.getCookie("XSRF-TOKEN");
             if (token) {
                 headers.set("X-XSRF-TOKEN", token);

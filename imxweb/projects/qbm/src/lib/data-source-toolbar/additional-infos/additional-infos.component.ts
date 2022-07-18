@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,6 +29,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSelectionListChange } from '@angular/material/list';
 import { DataModel, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
+import { ClientPropertyForTableColumns } from '../client-property-for-table-columns';
 
 @Component({
   selector: 'imx-additional-infos',
@@ -38,8 +39,10 @@ import { DataModel, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
 export class AdditionalInfosComponent implements OnInit {
 
   public possibleProperties: IClientProperty[];
+  public optionals: ClientPropertyForTableColumns[];
 
-  public optionals: IClientProperty[];
+  public infoText = '#LDS#Please choose the columns you like to add.';
+  public infoTextLong = '#LDS#New columns will be added to your table. You can change the sort order via drag and drop using the hatched handle.';
 
   public get result(): any {
     return { all: this.data.preselectedProperties, optionals: this.optionals };
@@ -49,9 +52,9 @@ export class AdditionalInfosComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public readonly data: {
       dataModel: DataModel,
       entitySchema: EntitySchema,
-      displayedColumns: IClientProperty[],
-      additionalPropertyNames: IClientProperty[],
-      preselectedProperties: IClientProperty[],
+      displayedColumns: ClientPropertyForTableColumns[],
+      additionalPropertyNames: ClientPropertyForTableColumns[],
+      preselectedProperties: ClientPropertyForTableColumns[],
       type: 'list' | 'columns'
     },
     public dialogRef: MatDialogRef<AdditionalInfosComponent>) {
@@ -80,9 +83,14 @@ export class AdditionalInfosComponent implements OnInit {
 
   public updateSelected(event: MatSelectionListChange): void {
     if (event.options[0].selected) {
-      this.data.preselectedProperties.push(event.options[0].value);
-      this.optionals.push(event.options[0].value);
+      // add new columns before first item with afterAdditionals = true or at the end
+      let index = this.data.preselectedProperties.findIndex(elem => elem.afterAdditionals === true);
+      this.data.preselectedProperties.splice(index === -1 ? this.data.preselectedProperties.length : index, 0, event.options[0].value);
+
+      index = this.optionals.findIndex(elem => elem.afterAdditionals === true);
+      this.optionals.splice(index === -1 ? this.optionals.length : index, 0, event.options[0].value);
     } else {
+      // Find item and remove it
       let position = this.data.preselectedProperties.findIndex(elem => elem.ColumnName === event.options[0].value.ColumnName);
       this.data.preselectedProperties.splice(position, 1);
 

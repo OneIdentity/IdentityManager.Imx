@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -104,10 +104,10 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
 
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
     this.checklistSelection = new SelectionModel<TreeNode>(this.withMultiSelect);
-    if (changes.navigationState) {
+    if (changes['navigationState']) {
       this.reload();
     }
-    if (changes.database) {
+    if (changes['database']) {
       this.logger.debug(this, `initialize the treeDatasource`);
       this.treeDataSource = new TreeDatasource(this.treeControl, this.database);
       this.treeDataSource.emptyNodeCaption = this.emptyNodeCaption;
@@ -117,8 +117,8 @@ export class CheckableTreeComponent implements OnChanges, AfterViewInit, OnDestr
       this.logger.debug(this, `toggle Node of the selected entity to load its children`);
     }
 
-    if (changes.selectedEntities && changes.selectedEntities.currentValue && changes.selectedEntities.currentValue.length === 1) {
-      const key = this.getId(changes.selectedEntities.currentValue[0]);
+    if (changes['selectedEntities'] && changes['selectedEntities'].currentValue && changes['selectedEntities'].currentValue.length === 1) {
+      const key = this.getId(changes['selectedEntities'].currentValue[0]);
 
       if (key !== '') {
         if (this.treeControl.dataNodes != null) {

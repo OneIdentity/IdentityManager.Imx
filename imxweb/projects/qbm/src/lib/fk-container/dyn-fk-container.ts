@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,6 +29,6 @@ import { FkContainer } from './fk-container';
 
 export class DynFkContainer extends FkContainer {
   protected getEntityKey(data: EntityData): string {
-    return data && data.Columns ? data.Columns.XObjectKey.Value : undefined;
+    return data && data.Columns ? data.Columns['XObjectKey'].Value : undefined;
   }
 }

@@ -1,5 +1,5 @@
 <ng-container *ngIf="dstSettings">
-  <imx-data-source-toolbar #dst [options]="['search', 'filter', 'selectedViewGroup', 'settings']" [settings]="dstSettings"
+  <imx-data-source-toolbar #dst [options]="options" [settings]="dstSettings"
     (search)="getData({ search: $event })" (viewSelectionChanged)="viewSelectionChanged($event)" [initalView]="dataSourceView.selected"
     (navigationStateChanged)="getData($event)" data-imx-identifier="rolememberships-dst">
   </imx-data-source-toolbar>
@@ -12,6 +12,7 @@
       (selectionChanged)="selectionChanged.emit($event)"
       [useActionMenu]="false"
       fallbackIcon="request"
+      [noItemsFoundText]="noDataText"
       [selectable]="true"
       [actions]="[{ name: 'edit', description: '#LDS#Add to cart' | translate }]"
       [titleObject]="dstWrapper?.propertyDisplay"
@@ -21,7 +22,7 @@
     >
     </imx-data-tiles>
     <imx-data-table *ngIf="dataSourceView.selected === 'table'" mode="manual"
-      [dst]="dst" [detailViewVisible]="false" data-imx-identifier="rolememberships-datatable"
+      [dst]="dst" [detailViewVisible]="false" data-imx-identifier="rolememberships-datatable" [noDataText]="noDataText"
       [selectable]="true" (selectionChanged)="selectionChanged.emit($event)" [showSelectedItemsMenu]="false">
       <imx-data-table-column [entityColumn]="dstWrapper?.propertyDisplay">
         <ng-template let-item>

@@ -1,4 +1,4 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_palette.scss";
 
 :host {
   overflow-y: auto;
@@ -10,6 +10,11 @@
   imx-data-table {
     flex-grow: 2;
   }
+}
+
+.eui-sidesheet-content {
+  display: flex;
+  flex-direction: column;
 }
 
 h2 {
@@ -132,6 +137,7 @@ imx-data-table {
 
 .heading-wrapper {
   display: flex;
+  flex-direction: column;
 
   .helper-alert {
     margin: 0px 0px 30px 0px;

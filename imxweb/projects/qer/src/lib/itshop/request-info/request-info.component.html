@@ -10,13 +10,32 @@
   </mat-tab>
   <mat-tab [label]="'#LDS#Workflow' | translate">
     <div class="imx-request-history">
-      <imx-decision-history [approverContainer]="approverContainer" [workflow]="workflow"> </imx-decision-history>
+      <mat-card>
+        <imx-decision-history [approverContainer]="approverContainer" [workflow]="workflow"></imx-decision-history>
+      </mat-card>
+    </div>
+  </mat-tab>
+
+  <mat-tab [label]="'#LDS#Heading Product Details' | translate">
+    <div *ngIf="serviceItem" class="imx-request-item-detail">
+      <imx-service-item-detail [projectConfig]="projectConfig" [serviceItem]="serviceItem"></imx-service-item-detail>
+    </div>
+    <div *ngIf="isRoleAssignment" class="imx-request-item-detail">
+      <eui-alert
+      class="helper-alert"
+      type="info"
+      condensed="true"
+      [colored]="true">
+      <span>{{'#LDS#This product is a role membership and has the following entitlements.' |translate}}</span>
+      </eui-alert>
+      <imx-product-entitlements [uidAccProduct]="request.UID_AccProduct.value"></imx-product-entitlements>
     </div>
   </mat-tab>
 
   <mat-tab [label]="'#LDS#Heading Compliance Violations' | translate" *ngIf="extensions && extensions.length > 0">
     <ng-template matTabContent><imx-ext [id]="ruleViolationDetailId" [properties]="{'pwoId': request.GetEntity().GetKeys()[0], 'request': request}"></imx-ext></ng-template>
   </mat-tab>
+
 
   <!-- TODO later
   <ObjectSwitchContainer [ActionType]="ObjectView" [EnableNavigation]="true"

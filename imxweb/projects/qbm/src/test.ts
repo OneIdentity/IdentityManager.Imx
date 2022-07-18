@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,7 +36,11 @@ import { TestHelperModule } from './lib/testing/TestHelperModule.spec';
 declare const require: any;
 
 // First, initialize the Angular testing environment.
-getTestBed().initTestEnvironment([BrowserDynamicTestingModule, TestHelperModule], platformBrowserDynamicTesting());
+getTestBed().initTestEnvironment([BrowserDynamicTestingModule, TestHelperModule], platformBrowserDynamicTesting(), {
+  teardown: {
+    destroyAfterEach: false,
+  },
+});
 // Then we find all the tests.
 const context = require.context('./', true, /\.spec\.ts$/);
 // And load the modules.

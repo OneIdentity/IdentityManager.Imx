@@ -1,4 +1,4 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_palette.scss";
 .imx-report-table {
   display: flex;
   margin-top: 10px;
@@ -25,8 +25,8 @@ imx-property-viewer {
   }
 }
 
-@media only screen and (max-width: 1024px) {  
+@media only screen and (max-width: 1024px) {
   .imx-wizard-info {
     margin: 0;
-  }  
+  }
 }

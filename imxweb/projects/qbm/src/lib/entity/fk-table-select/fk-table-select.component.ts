@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,7 +34,7 @@ import { MetadataService } from '../../base/metadata.service';
 @Component({
   selector: 'imx-fk-table-select',
   templateUrl: './fk-table-select.component.html',
-  styleUrls: ['./fk-table-select.component.scss']
+  styleUrls: ['./fk-table-select.component.scss'],
 })
 export class FkTableSelectComponent implements OnInit {
   public readonly control = new FormControl(undefined);
@@ -47,16 +47,16 @@ export class FkTableSelectComponent implements OnInit {
 
   @Output() public selectionChanged = new EventEmitter<string>();
 
-  constructor(private readonly metadata: MetadataService) { }
+  constructor(private readonly metadata: MetadataService) {}
 
   public async ngOnInit(): Promise<void> {
     this.loading = true;
-    await this.metadata.updateNonExisting(this.fkTables.map(item => item.TableName));
+    await this.metadata.updateNonExisting(this.fkTables.map((item) => item.TableName));
     this.loading = false;
 
-    this.options = this.fkTables.map(item => ({
+    this.options = this.fkTables.map((item) => ({
       display: this.metadata.tables[item.TableName]?.DisplaySingular || item.TableName,
-      value: item.TableName
+      value: item.TableName,
     }));
 
     this.control.setValue(this.preselectedTableName ?? this.fkTables[0].TableName, { emitEvent: false });
@@ -65,4 +65,9 @@ export class FkTableSelectComponent implements OnInit {
   public filter(option: EuiSelectOption, searchInputValue: string): boolean {
     return option.display.toString().toUpperCase().trim().includes(searchInputValue.toUpperCase().trim());
   }
+
+  // TODO: Check Upgrade
+  // public onChange(event: any): void {
+  //   this.selectionChanged.emit(event.value);
+  // }
 }

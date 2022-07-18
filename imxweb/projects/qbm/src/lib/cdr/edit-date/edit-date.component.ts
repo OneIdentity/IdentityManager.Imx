@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,11 +25,12 @@
  */
 
 import { Component, ErrorHandler, EventEmitter, OnDestroy } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { CdrEditor } from '../cdr-editor.interface';
+import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
-import * as moment from 'moment-timezone';
+import moment from 'moment-timezone';
+import { Moment } from 'moment-timezone';
 
 import { EntityColumnContainer } from '../entity-column-container';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
@@ -48,7 +49,7 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
 
   public readonly columnContainer = new EntityColumnContainer<Date>();
 
-  public readonly valueHasChanged = new EventEmitter<Date>();
+  public readonly valueHasChanged = new EventEmitter<ValueHasChangedEventArg>();
 
   public isBusy = false;
 
@@ -91,7 +92,7 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
         if (!this.isWriting) {
           this.logger.trace(this, 'Control set to new value');
           this.resetControlValue();
-          this.valueHasChanged.emit(this.control.value);
+          this.valueHasChanged.emit({value: this.control.value});
         }
       }));
 
@@ -103,7 +104,7 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
     this.updateControlValue(value);
   }
 
-  private updateControlValue(value: moment): void {
+  private updateControlValue(value: Moment): void {
     if (this.control.value !== value) {
       this.control.setValue(value, {emitEvent: false});
     }
@@ -113,7 +114,7 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
    * updates the value for the CDR
    * @param value the new value
    */
-  private async writeValue(value: moment): Promise<void> {
+  private async writeValue(value: Moment): Promise<void> {
     if (this.control.errors) {
       return;
     }
@@ -141,7 +142,7 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
       this.resetControlValue();
     }
 
-    this.valueHasChanged.emit(this.columnContainer.value);
+    this.valueHasChanged.emit({value: this.columnContainer.value, forceEmit: true});
   }
 
 }

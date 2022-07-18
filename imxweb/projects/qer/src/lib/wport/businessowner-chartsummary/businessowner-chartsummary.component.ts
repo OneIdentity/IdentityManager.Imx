@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -87,7 +87,7 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
     let overlayRef: OverlayRef;
     setTimeout(() => overlayRef = this.busyService.show());
     try {
-      const identityCollection = await this.qerClient.typedClient.PortalPersonReportsInteractive_byid.Get_byid(uid);
+      const identityCollection = await this.qerClient.typedClient.PortalPersonReportsInteractive.Get_byid(uid);
       selectedIdentity = identityCollection?.Data?.[0];
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,7 +30,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { PortalRules } from 'imx-api-cpl';
 import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
-import { DataSourceToolbarFilter, DataSourceToolbarSettings } from 'qbm';
+import { DataSourceToolbarFilter, DataSourceToolbarSettings, ClientPropertyForTableColumns } from 'qbm';
 import { RuleParameter } from './rule-parameter';
 import { RulesSidesheetComponent } from './rules-sidesheet/rules-sidesheet.component';
 import { RulesService } from './rules.service';
@@ -45,7 +45,7 @@ export class RulesComponent implements OnInit {
   public readonly DisplayColumns = DisplayColumns;
   public ruleSchema: EntitySchema;
 
-  private displayedColumns: IClientProperty[] = [];
+  private displayedColumns: ClientPropertyForTableColumns[] = [];
   private filterOptions: DataSourceToolbarFilter[] = [];
   private navigationState: RuleParameter = {};
 
@@ -66,6 +66,7 @@ export class RulesComponent implements OnInit {
       {
         ColumnName: 'details',
         Type: ValType.String,
+        afterAdditionals: true
       }
     ];
   }

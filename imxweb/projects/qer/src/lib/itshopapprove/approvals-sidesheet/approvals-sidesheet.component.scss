@@ -1,4 +1,5 @@
-@import '~@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_palette.scss';
+
 
 .imx-approvals-sidesheet {
   display: flex;
@@ -15,6 +16,7 @@
 }
 
 .imx-button-bar {
+  background-color: $white;
   display: flex;
   justify-content: flex-end;
   border-top: $black-c 1px solid;
@@ -25,7 +27,7 @@
     margin-top: 20px;
   }
 
-  
+
   ::ng-deep .mat-tab-body-wrapper {
     flex: 1 1 auto;
 

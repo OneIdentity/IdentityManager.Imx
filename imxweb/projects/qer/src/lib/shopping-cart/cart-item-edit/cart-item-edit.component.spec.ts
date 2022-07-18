@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -45,6 +45,7 @@ describe('CartItemEditComponent', () => {
 
   const defaultColumnNames = [
     'OrderReason',
+    'UID_QERJustificationOrder',
     'PWOPriority',
     extendedColumnNames[0],
     'ValidUntil',
@@ -65,6 +66,7 @@ describe('CartItemEditComponent', () => {
     cartitem['PWOPriority'].value = 1;
     cartitem['OrderReason'].value = 'No reason';
     cartitem['RequestType'].value = 'request';
+    cartitem['UID_QERJustificationOrder'].value = 'uidKistification';
 
     return cartitem;
   }
@@ -126,11 +128,11 @@ describe('CartItemEditComponent', () => {
   });
 
   it('should init the correct columns', () => {
-    expect(component.columns.length).toEqual(5);
+    expect(component.columns.length).toEqual(6);
     expect(component.columns[0].ColumnName).toEqual(extendedColumnNames[0]);
     expect(component.columns[1].ColumnName).toEqual(extendedColumnNames[1]);
     expect(component.columns[2].ColumnName).toEqual(defaultColumnNames[0]);
     expect(component.columns[3].ColumnName).toEqual(defaultColumnNames[1]);
-    expect(component.columns[4].ColumnName).toEqual(defaultColumnNames[3]);
+    expect(component.columns[4].ColumnName).toEqual(defaultColumnNames[2]);
   });
 });

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Input, OnChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { OverlayRef } from '@angular/cdk/overlay';
@@ -43,7 +43,7 @@ import {
   DataTableComponent,
   DataTilesComponent
 } from 'qbm';
-import { PortalEntitlement, PortalApplication, PortalEntitlementServiceitem, EntitlementSystemRoleInput } from 'imx-api-aob';
+import { PortalEntitlement, PortalApplication, PortalEntitlementServiceitem, EntitlementSystemRoleInput, ApplicationExtendedDataRead } from 'imx-api-aob';
 import { CollectionLoadParameters, IClientProperty, ValType, DisplayColumns, EntitySchema, TypedEntity, DbObjectKey } from 'imx-qbm-dbts';
 import { EntitlementsService } from './entitlements.service';
 import { LifecycleAction } from '../lifecycle-actions/lifecycle-action.enum';
@@ -56,6 +56,8 @@ import { ServiceItemsService } from '../service-items/service-items.service';
 import { EntitlementDetailComponent } from './entitlement-detail/entitlement-detail.component';
 import { UserModelService } from 'qer';
 import { EntitlementWrapper } from './entitlement-wrapper.interface';
+import { EntitlementEditAutoAddComponent } from './entitlement-edit-auto-add/entitlement-edit-auto-add.component';
+import { EntitlementEditAutoAddService } from './entitlement-edit-auto-add/entitlement-edit-auto-add.service';
 
 /**
  * A component for viewing, editing and acting all {@link PortalEntitlement|entitlements} for a given {@link PortalApplication|application}.
@@ -75,6 +77,7 @@ export class EntitlementsComponent implements OnChanges {
 
   /** The {@link PortalApplication|application} */
   @Input() public application: PortalApplication;
+  @Output() public reloadRequested = new EventEmitter<void>();
   @ViewChild('table') public table: DataTableComponent<PortalEntitlement>;
   @ViewChild('tiles') public tiles: DataTilesComponent;
 
@@ -89,18 +92,20 @@ export class EntitlementsComponent implements OnChanges {
   public isUsedInDialog = false;
   public readonly entitySchema: EntitySchema;
   public readonly filter = new EntitlementFilter();
-  public selectedView: string;
 
   public isSystemRoleEnabled: boolean;
 
+  public get hasConditionForDynamicAssignment(): boolean {
+    return this.application.extendedDataRead?.SqlExpression?.Expressions?.length &&
+      this.application.extendedDataRead?.SqlExpression?.Expressions[0].Expression.Expressions.length > 0;
+  }
+
   public readonly status = {
     getBadges: (entitlement: PortalEntitlement): DataTileBadge[] => this.entitlementsProvider.getEntitlementBadges(entitlement),
-    enabled: (__): boolean => {
-      return true;
+    enabled: (entitlement: PortalEntitlement): boolean => {
+      return !entitlement.IsDynamic.value;
     }
   };
-
-  private isStarlingTwoFactorConfigured: boolean;
 
   private readonly displayedColumns: IClientProperty[];
   private readonly updatedTableNames: string[] = [];
@@ -120,11 +125,16 @@ export class EntitlementsComponent implements OnChanges {
     private readonly settingsService: SettingsService,
     private readonly userService: UserModelService,
     private readonly systemInfo: SystemInfoService,
-    private readonly metadata: MetadataService
+    private readonly metadata: MetadataService,
+    private readonly autoAddService: EntitlementEditAutoAddService
   ) {
     this.entitySchema = entitlementsProvider.entitlementSchema;
     this.displayedColumns = [
       this.entitySchema.Columns.Ident_AOBEntitlement,
+      {
+        Type: ValType.String,
+        ColumnName: 'badges'
+      },
       {
         Type: ValType.String,
         ColumnName: 'type'
@@ -146,7 +156,6 @@ export class EntitlementsComponent implements OnChanges {
     setTimeout(() => overlayRef = this.busyService.show());
     try {
       this.isSystemRoleEnabled = (await this.systemInfo.get()).PreProps.includes('ESET');
-      this.isStarlingTwoFactorConfigured = (await this.userService.getUserConfig()).IsStarlingTwoFactorConfigured;
       this.getData(true);
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
@@ -183,6 +192,47 @@ export class EntitlementsComponent implements OnChanges {
       this.buildRoleAndAddItToApplication(candidates.role);
     } else {
       this.addDirectEntitlements(candidates.selection);
+    }
+  }
+
+  public async applyMappingForDynamicAssignments(): Promise<void> {
+    let overlayRef: OverlayRef;
+    setTimeout(() => overlayRef = this.busyService.show());
+    try {
+      this.autoAddService.mapEntitlementsToApplication(this.application.UID_AOBApplication.value);
+    } finally {
+      setTimeout(() => this.busyService.hide(overlayRef));
+    }
+    this.snackbar.open({ key: '#LDS#The system entitlements will be added now. This may take a while.' });
+  }
+
+  public async editConditionForDynamicAssignments(): Promise<void> {
+    const reload = await this.sidesheet.open(EntitlementEditAutoAddComponent, {
+      title: await this.translateService.get(
+        this.hasConditionForDynamicAssignment
+          ? '#LDS#Edit condition for dynamic assignments'
+          : '#LDS#Add condition for dynamic assignments'
+      ).toPromise(),
+      headerColour: 'iris-blue',
+      bodyColour: 'asher-gray',
+      padding: '0px',
+      width: 'max(600px, 60%)',
+      panelClass: 'imx-sidesheet',
+      testId: 'entitlements-edit-auto-add-sidesheet',
+      data: {
+        sqlExpression: this.application.extendedDataRead.SqlExpression.Expressions[0],
+        application: this.application
+      }
+    }).afterClosed().toPromise();
+
+    if (!reload) { return; }
+
+    let overlayRef: OverlayRef;
+    setTimeout(() => overlayRef = this.busyService.show());
+    try {
+      this.reloadRequested.emit();
+    } finally {
+      setTimeout(() => this.busyService.hide(overlayRef));
     }
   }
 
@@ -411,13 +461,6 @@ export class EntitlementsComponent implements OnChanges {
     return tableName != null && this.metadata.tables[tableName] ? this.metadata.tables[tableName]?.DisplaySingular : '';
   }
 
-  /**
-   * Triggered action from the {@link DataSourceToolbar|DataSourceToolbar} after the view selection have changed.
-   */
-  public viewSelectionChanged(view: string): void {
-    this.selectedView = view;
-  }
-
   private async addDirectEntitlements(candidates: TypedEntity[]): Promise<void> {
     let overlayRef: OverlayRef;
     setTimeout(() => overlayRef = this.busyService.show());
@@ -510,7 +553,6 @@ export class EntitlementsComponent implements OnChanges {
     return {
       entitlement: entitlementReloaded,
       serviceItem,
-      isStarlingTwoFactorConfigured: this.isStarlingTwoFactorConfigured
     };
   }
 }

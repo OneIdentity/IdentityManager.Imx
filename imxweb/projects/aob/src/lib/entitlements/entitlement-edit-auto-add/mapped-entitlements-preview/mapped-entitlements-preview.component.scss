@@ -1,0 +1,51 @@
+.eui-sidesheet-content {
+  height: inherit;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  .imx-content-card {
+    flex: 1 1 auto;
+    overflow: hidden;
+
+    .imx-table-container {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      height: calc(100% - 80px);
+      flex: 1 1 auto;
+    }
+  }
+}
+
+.eui-sidesheet-actions {
+  .justify-start {
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: auto;
+  }
+
+  button:not(:last-of-type):not(.justify-start) {
+    margin-right: 10px;
+  }
+}
+
+.imx-info-text {
+  margin-bottom: 15px;
+}
+
+span[bold] {
+  font-weight: 600;
+}
+
+.imx-info-grid {
+  display: flex;
+  flex-direction: row;
+  :first-child {
+    display: grid;
+    column-gap: 15px;
+    grid-template-columns: auto auto;
+  }
+}

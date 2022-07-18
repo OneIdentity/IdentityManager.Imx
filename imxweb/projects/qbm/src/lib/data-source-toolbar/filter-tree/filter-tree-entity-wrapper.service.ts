@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -58,27 +58,27 @@ export class FilterTreeEntityWrapperService {
   private buildProperties(): EntitySchema {
     const ret: { [key: string]: IClientProperty } = {};
 
-    ret.Display = {
+    ret['Display'] = {
       Type: ValType.String,
       ColumnName: 'Display'
     };
 
-    ret.Filter = {
+    ret['Filter'] = {
       Type: ValType.String,
       ColumnName: 'Filter'
     };
 
-    ret.HasChildren = {
+    ret['HasChildren'] = {
       Type: ValType.Bool,
       ColumnName: 'HasChildren'
     };
 
-    ret.ObjectKey = {
+    ret['ObjectKey'] = {
       Type: ValType.String,
       ColumnName: 'ObjectKey'
     };
 
-    ret.LongDisplay = {
+    ret['LongDisplay'] = {
       Type: ValType.String,
       ColumnName: 'LongDisplay'
     };
@@ -92,15 +92,15 @@ export class FilterTreeEntityWrapperService {
   private buildEntityData(data: FilterTreeElement, parentDisplay: string): EntityData {
     const ret: { [key: string]: EntityColumnData } = {};
 
-    ret.Display = { Value: data.Display, IsReadOnly: true, DisplayValue: data.Display };
+    ret['Display'] = { Value: data.Display, IsReadOnly: true, DisplayValue: data.Display };
 
-    ret.Filter = { Value: data.Filter, IsReadOnly: true };
+    ret['Filter'] = { Value: data.Filter, IsReadOnly: true };
 
-    ret.HasChildren = { Value: data.HasHierarchy, IsReadOnly: true };
+    ret['HasChildren'] = { Value: data.HasHierarchy, IsReadOnly: true };
 
-    ret.ObjectKey = { Value: data.ObjectKey, IsReadOnly: true };
+    ret['ObjectKey'] = { Value: data.ObjectKey, IsReadOnly: true };
 
-    ret.LongDisplay = {
+    ret['LongDisplay'] = {
       Value: (parentDisplay || '') === '' ? data.Display : `${parentDisplay}\\${data.Display}`,
       IsReadOnly: true
     };

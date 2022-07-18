@@ -1,4 +1,4 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_palette.scss";
 
 :host {
   overflow-y: auto;
@@ -46,5 +46,5 @@
 }
 
 ::ng-deep .imx-under {
-  margin-top: 30px; 
+  margin-top: 30px;
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -98,7 +98,6 @@ export class RequestsEntitySelectorComponent {
         }
         return this.fk.getFilterTree(this.fkEntity, parentKey);
       },
-      hasSearchParameter: true,
       isMultiValue: true
     };
   }

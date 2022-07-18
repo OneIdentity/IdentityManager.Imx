@@ -37,7 +37,7 @@ eui-alert {
   margin-bottom: 1em;
 }
 
-$HalfPhotoSize: $Imx_Identity_PhotoSize / 2;
+$HalfPhotoSize: calc($Imx-Identity-PhotoSize / 2);
 
 /* connector from manager to current identity */
 .border-container

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { IssueItem, IssueAction } from '../service-Issues/service-issues.models';
+import { IssueItem, IssueAction } from '../service-issues/service-issues.models';
 
 export enum NotificationIssueType {
   Undefined,
