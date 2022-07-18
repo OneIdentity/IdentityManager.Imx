@@ -79,6 +79,14 @@ jobs:
       working-directory: ./imxweb
       run: npm run build o3t
 
+    - name: Build olg
+      working-directory: ./imxweb
+      run: npm run build olg
+      
+    - name: Build hds
+      working-directory: ./imxweb
+      run: npm run build hds
+
     - name: Build pol
       working-directory: ./imxweb
       run: npm run build pol
