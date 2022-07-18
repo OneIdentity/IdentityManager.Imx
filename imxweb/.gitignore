@@ -49,9 +49,7 @@ testem.log
 Thumbs.db
 
 # Custom
-imx-modules
 documentation
 /html/*
 !.gitkeep
 debug.log
-.angular
