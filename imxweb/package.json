@@ -91,7 +91,7 @@
     "ng-bullet": "^1.0.3",
     "ng-packagr": "^11.2.4",
     "protractor": "^7.0.0",
-    "terser": "^4.6.6",
+    "terser": "^5.14.2",
     "ts-node": "~7.0.0",
     "tslint": "~6.1.0",
     "typemoq": "^2.1.0",
