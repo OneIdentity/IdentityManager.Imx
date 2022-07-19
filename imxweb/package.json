@@ -50,7 +50,7 @@
     "chap-timeline": "^2.9.2",
     "core-js": "^2.6.9",
     "element-resize-detector": "^1.1.13",
-    "file-saver": "^2.0.2",
+    "file-saver": "^2.0.5",
     "moment-timezone": "^0.5.27",
     "ngx-logger": "^4.1.2",
     "rxjs": "~6.5.4",
