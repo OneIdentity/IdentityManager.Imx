@@ -51,7 +51,7 @@
     "core-js": "^2.6.9",
     "element-resize-detector": "^1.1.13",
     "file-saver": "^2.0.2",
-    "moment-timezone": "^0.5.27",
+    "moment-timezone": "^0.5.34",
     "ngx-logger": "^4.1.2",
     "rxjs": "~6.5.4",
     "smooth-scrollbar": "^8.5.1",
