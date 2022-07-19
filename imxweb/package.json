@@ -56,7 +56,7 @@
     "rxjs": "~6.5.4",
     "smooth-scrollbar": "^8.5.1",
     "swagger-ui-dist": "^3.25.4",
-    "systemjs": "^0.21.6",
+    "systemjs": "^6.12.1",
     "tslib": "^2.0.0",
     "url-polyfill": "^1.1.12",
     "web-animations-js": "^2.3.2",
