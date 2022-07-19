@@ -60,7 +60,7 @@
     "tslib": "^2.0.0",
     "url-polyfill": "^1.1.12",
     "web-animations-js": "^2.3.2",
-    "whatwg-fetch": "^3.0.0",
+    "whatwg-fetch": "^3.6.2",
     "zone.js": "~0.10.3"
   },
   "devDependencies": {
