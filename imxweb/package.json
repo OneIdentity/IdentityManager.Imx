@@ -72,7 +72,7 @@
     "@types/jasmine": "~3.6.0",
     "@types/jasminewd2": "^2.0.10",
     "@types/node": "^12.11.1",
-    "angular-in-memory-web-api": "^0.9.0",
+    "angular-in-memory-web-api": "^0.11.0",
     "codelyzer": "^6.0.0",
     "copy-and-watch": "^0.1.5",
     "jasmine": "^3.4.0",
