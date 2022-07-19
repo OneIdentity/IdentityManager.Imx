@@ -54,7 +54,7 @@
     "moment-timezone": "^0.5.27",
     "ngx-logger": "^4.1.2",
     "rxjs": "~6.5.4",
-    "smooth-scrollbar": "^8.5.1",
+    "smooth-scrollbar": "^8.7.4",
     "swagger-ui-dist": "^3.25.4",
     "systemjs": "^0.21.6",
     "tslib": "^2.0.0",
