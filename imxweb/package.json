@@ -86,7 +86,7 @@
     "karma-ie-launcher": "^1.0.0",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.5.0",
-    "karma-junit-reporter": "^1.2.0",
+    "karma-junit-reporter": "^2.0.1",
     "karma-viewport": "^1.0.4",
     "ng-bullet": "^1.0.3",
     "ng-packagr": "^11.2.4",
