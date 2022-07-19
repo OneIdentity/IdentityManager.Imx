@@ -53,7 +53,7 @@
     "file-saver": "^2.0.2",
     "moment-timezone": "^0.5.27",
     "ngx-logger": "^4.1.2",
-    "rxjs": "~6.5.4",
+    "rxjs": "~6.6.7",
     "smooth-scrollbar": "^8.5.1",
     "swagger-ui-dist": "^3.25.4",
     "systemjs": "^0.21.6",
