@@ -345,6 +345,7 @@ describe('WorkflowActionService', () => {
         ValidUntil: {},
         DenyReasonType: {},
         ApproveReasonType: {},
+        IsApproveRequiresMfa: {},
         canSetValidFrom: () => true,
         canSetValidUntil: _ => true,
         GetEntity: () => createEntity(approvalKey),

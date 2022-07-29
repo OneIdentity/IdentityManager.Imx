@@ -25,9 +25,9 @@
       </div>
    </mat-card>
 </div>
-<mat-card class="imx-button-bar">
-  <button mat-raised-button color="primary" data-imx-identifier="run-approvers-button-send-reminder"
+<div class="imx-button-bar">
+  <button mat-stroked-button color="primary" data-imx-identifier="run-approvers-button-send-reminder"
     [disabled]="!selected.length" (click)="sendReminder.emit(selected)">
     {{ '#LDS#Send reminder' | translate }}
   </button>
-</mat-card>
+</div>

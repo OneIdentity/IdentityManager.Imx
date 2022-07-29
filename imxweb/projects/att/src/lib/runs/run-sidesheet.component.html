@@ -124,8 +124,8 @@
           </ng-container>
         </mat-expansion-panel>
       </mat-accordion>
-      
-      <mat-card *ngIf="data.canSeeAttestationPolicies" class="imx-button-bar">
+
+      <div *ngIf="data.canSeeAttestationPolicies" class="imx-button-bar">
         <button data-imx-identifier="run-button-download-report" mat-stroked-button [euiDownload]="reportDownload">
           {{ '#LDS#Download report' | translate }}
         </button>
@@ -137,7 +137,7 @@
           (click)="runsService.sendReminderEmail([run])" [disabled]="!run.PendingCases.value">
           {{ '#LDS#Send reminder to all attestors' | translate }}
         </button>
-      </mat-card>
+      </div>
     </div>
   </mat-tab>
 

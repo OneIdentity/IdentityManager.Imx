@@ -219,7 +219,8 @@ export class ItshopPatternComponent implements OnInit, OnDestroy {
       testId: 'pattern-details-sidesheet',
       data: {
         pattern,
-        isMyPattern
+        isMyPattern,
+        adminMode: this.adminMode
       }
     }).afterClosed().toPromise();
 

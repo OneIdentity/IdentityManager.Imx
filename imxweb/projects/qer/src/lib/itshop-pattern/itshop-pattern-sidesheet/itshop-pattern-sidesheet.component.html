@@ -56,7 +56,7 @@
       {{ '#LDS#Delete' | translate }}
     </button>
     <button mat-raised-button data-imx-identifier="itshop-pattern-sidesheet-button-toggle-public"
-      *ngIf="data.isMyPattern" (click)="togglePublic()">
+      *ngIf="data.isMyPattern && data.adminMode" (click)="togglePublic()">
       {{ (data.pattern.IsPublicPattern.value ? '#LDS#Unshare' : '#LDS#Share') | translate }}
     </button>
     <button mat-raised-button color="primary" data-imx-identifier="itshop-pattern-sidesheet-button-toggle-public"

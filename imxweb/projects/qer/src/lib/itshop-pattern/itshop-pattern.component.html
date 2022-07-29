@@ -60,11 +60,11 @@
       [disabled]="!selectedItemsCanBeDeleted()" (click)="delete()">
       {{'#LDS#Delete' | translate}}
     </button>
-    <button mat-stroked-button data-imx-identifier="itshop-pattern-button-view-publish"
+    <button mat-stroked-button data-imx-identifier="itshop-pattern-button-view-publish" *ngIf="adminMode"
       [disabled]="!selectedItemsCanBeUnpublished()" (click)="unpublish(selectedPatterns)">
       {{ '#LDS#Unshare' | translate}}
     </button>
-    <button mat-raised-button color="primary" data-imx-identifier="itshop-pattern-button-view-publish"
+    <button mat-raised-button color="primary" data-imx-identifier="itshop-pattern-button-view-publish" *ngIf="adminMode"
       [disabled]="!selectedItemsCanBePublished()" (click)="publish(selectedPatterns)">
       {{ '#LDS#Share' | translate}}
     </button>

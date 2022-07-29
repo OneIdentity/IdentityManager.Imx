@@ -211,18 +211,18 @@ export class WorkflowActionService {
       throw Error('The OLG module is not configured correctly');
     } finally {
       this.busyService.hide();
-      response = await this.sideSheet.open(mfaComponent, {
-        title: await this.translate.get('#LDS#Header Authenticate using OneLogin').toPromise(),
-        padding: '0px',
-        headerColour: 'iris-blue',
-        bodyColour: 'asher-gray',
-        testId: 'imx-request-approval-mfa',
-        width: 'max(700px, 60%)',
-        data: {
-          workflowActionId
-        }
-      }).afterClosed().toPromise();
     }
+    response = await this.sideSheet.open(mfaComponent, {
+      title: await this.translate.get('#LDS#Header Authenticate using OneLogin').toPromise(),
+      padding: '0px',
+      headerColour: 'iris-blue',
+      bodyColour: 'asher-gray',
+      testId: 'imx-request-approval-mfa',
+      width: 'max(700px, 60%)',
+      data: {
+        workflowActionId
+      }
+    }).afterClosed().toPromise();
     return response;
   }
 
@@ -233,12 +233,18 @@ export class WorkflowActionService {
       return;
     }
 
-    const itShopConfig = (await this.projectConfig.getConfig()).ITShopConfig;
-
     const schema = this.apiService.typedClient.PortalItshopApproveRequests.GetSchema();
-    if (itShopConfig.StepUpAuthenticationProvider !== 'NoAuth') {
+    // Check for itshop stepup and if any cases have mfa required
+    const itShopConfig = (await this.projectConfig.getConfig()).ITShopConfig;
+    const uidCases: string[] = []
+    const anyMFACases = requests.map(request => {
+      uidCases.push(request.GetEntity().GetKeys()[0])
+      return request?.IsApproveRequiresMfa.value;
+    }).some(isMFA => isMFA);
+
+    if (itShopConfig && itShopConfig.StepUpAuthenticationProvider !== 'NoAuth' && anyMFACases) {
       // Check for MFA, don't continue unless true
-      const isMFA = await this.checkMFA(requests.map(request => request.GetEntity().GetKeys()[0]));
+      const isMFA = await this.checkMFA(uidCases);
       if (!isMFA) {
         return;
       }
@@ -267,7 +273,7 @@ export class WorkflowActionService {
 
     const minDateFrom = new Date();
 
-    if (itShopConfig.VI_ITShop_ApproverCanSetValidFrom &&
+    if (itShopConfig && itShopConfig.VI_ITShop_ApproverCanSetValidFrom &&
       requests.some(item => item.canSetValidFrom())) {
       showValidDate.validFrom = { key: 'validFrom', placeholder: '#LDS#immediately' };
 
@@ -280,7 +286,7 @@ export class WorkflowActionService {
       actionParameters[showValidDate.validFrom.key] = new BaseCdr(validFromColumn);
     }
 
-    if (itShopConfig.VI_ITShop_ApproverCanSetValidUntil &&
+    if (itShopConfig && itShopConfig.VI_ITShop_ApproverCanSetValidUntil &&
       requests.some(item => item.canSetValidUntil(itShopConfig))) {
       showValidDate.validUntil = { key: 'validUntil', placeholder: '#LDS#unlimited' };
 

@@ -32,7 +32,7 @@ import { of } from 'rxjs';
 import { AttestationActionService } from './attestation-action.service';
 import { SnackBarService, EntityService, BaseCdr, ExtService } from 'qbm';
 import { AttestationCasesService } from '../decision/attestation-cases.service';
-import { JustificationService, PersonService } from 'qer';
+import { JustificationService, PersonService, ProjectConfigurationService } from 'qer';
 import { IEntityColumn } from 'imx-qbm-dbts';
 import { AttestationCase } from '../decision/attestation-case';
 import { AttestationWorkflowService } from './attestation-workflow.service';
@@ -90,6 +90,16 @@ describe('AttestationActionService', () => {
     TestBed.configureTestingModule({
       providers: [
         AttestationActionService,
+        {
+          provide: ProjectConfigurationService,
+          useValue: {
+            getConfig: __ => Promise.resolve({
+              ITShopConfig: {
+                StepUpAuthenticationProvider: 'NoAuth'
+              }
+            })
+          }
+        },
         {
           provide: ApiService,
           useValue: {}

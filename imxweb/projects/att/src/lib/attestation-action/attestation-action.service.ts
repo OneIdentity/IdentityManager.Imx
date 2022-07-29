@@ -33,7 +33,7 @@ import { Subject } from 'rxjs';
 import { PortalAttestationApprove } from 'imx-api-att';
 import { IEntityColumn, ValType } from 'imx-qbm-dbts';
 import { SnackBarService, EntityService, ColumnDependentReference, BaseCdr, ExtService } from 'qbm';
-import { JustificationService, JustificationType, PersonService } from 'qer';
+import { JustificationService, JustificationType, PersonService, ProjectConfigurationService } from 'qer';
 import { AttestationCasesService } from '../decision/attestation-cases.service';
 import { AttestationActionComponent } from './attestation-action.component';
 import { AttestationCase } from '../decision/attestation-case';
@@ -48,6 +48,7 @@ export class AttestationActionService {
   public readonly applied = new Subject();
 
   constructor(
+    private readonly projectConfig: ProjectConfigurationService,
     private readonly apiService: ApiService,
     private readonly justification: JustificationService,
     private readonly attestationCases: AttestationCasesService,
@@ -223,30 +224,31 @@ export class AttestationActionService {
       throw Error('The OLG module is not configured correctly');
     } finally {
       this.busyService.hide();
-      response = await this.sideSheet.open(mfaComponent, {
-        title: await this.translate.get('#LDS#Header Authenticate using OneLogin').toPromise(),
-        padding: '0px',
-        headerColour: 'iris-blue',
-        bodyColour: 'asher-gray',
-        testId: 'imx-attestation-approval-mfa',
-        width: 'max(700px, 60%)',
-        data: {
-          workflowActionId
-        }
-      }).afterClosed().toPromise();
     }
+    response = await this.sideSheet.open(mfaComponent, {
+      title: await this.translate.get('#LDS#Header Authenticate using OneLogin').toPromise(),
+      padding: '0px',
+      headerColour: 'iris-blue',
+      bodyColour: 'asher-gray',
+      testId: 'imx-attestation-approval-mfa',
+      width: 'max(700px, 60%)',
+      data: {
+        workflowActionId
+      }
+    }).afterClosed().toPromise();
     return response;
   }
 
   public async approve(attestationCases: AttestationCaseAction[]): Promise<void> {
-    // Check is any case has an MFA property, open sidesheet if so
+    // Check for itshop stepup and if any cases have mfa required
+    const itShopConfig = (await this.projectConfig.getConfig()).ITShopConfig;
     const uidCases: string[] = [];
     const anyMFACases = attestationCases.map((attestationCase) => {
       const attCase = attestationCase.typedEntity as PortalAttestationApprove;
       uidCases.push(attestationCase.key);
       return attCase?.IsApproveRequiresMfa.value;
     }).some(isMfa => isMfa);
-    if (anyMFACases) {
+    if (itShopConfig.StepUpAuthenticationProvider !== 'NoAuth' && anyMFACases) {
       const isMFA = await this.checkMFA(uidCases);
       if (!isMFA) {
         return;
