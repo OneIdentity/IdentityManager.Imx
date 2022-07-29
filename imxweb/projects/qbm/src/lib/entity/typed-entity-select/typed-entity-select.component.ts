@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -85,7 +85,6 @@ export class TypedEntitySelectComponent implements OnInit {
         width: isIE() ? '60%' : 'max(600px, 60%)',
         data: {
           getTyped: this.data.dynamicFkRelation ? undefined : this.data.getTyped,
-          hasSearchParameter: this.data.hasSearchParameter,
           isMultiValue: true,
           preselectedEntities: this.selected,
           fkTables: this.data.dynamicFkRelation?.tables,

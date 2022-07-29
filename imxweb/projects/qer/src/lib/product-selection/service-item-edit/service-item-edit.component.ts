@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -49,8 +49,8 @@ export class ServiceItemEditComponent {
   }
 
   public async close(submit: boolean = true): Promise<void> {
-    const bulkItemsWithNoDecision = this.bulkItems.filter(bulkItem => bulkItem.status === BulkItemStatus.unknown);
-    if (!submit && await this.confirmationService.confirm({
+     const bulkItemsWithNoDecision = this.bulkItems.filter(bulkItem => bulkItem.status === BulkItemStatus.unknown);
+     if (!submit && await this.confirmationService.confirm({
       Title: '#LDS#Heading Cancel Request Process',
       Message: '#LDS#Are you sure you want to cancel the request process and not add the products to your shopping cart?'
     })) {

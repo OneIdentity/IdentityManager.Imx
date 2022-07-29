@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -201,7 +201,6 @@ export class RequestConfigMembersComponent implements OnInit {
       data: {
         get: parameters => fk.load(entity, parameters),
         GetFilterTree: parentkey => fk.getFilterTree(entity, parentkey),
-        hasSearchParameter: true,
         isMultiValue: true
       }
     });

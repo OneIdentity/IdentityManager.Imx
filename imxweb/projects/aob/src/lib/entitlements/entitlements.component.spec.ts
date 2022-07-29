@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -50,6 +50,7 @@ import { DbVal, IClientProperty, ValType } from 'imx-qbm-dbts';
 import { ShopsService } from '../shops/shops.service';
 import { ServiceItemsService } from '../service-items/service-items.service';
 import { UserModelService } from 'qer';
+import { EntitlementEditAutoAddService } from './entitlement-edit-auto-add/entitlement-edit-auto-add.service';
 
 @Component({
   selector: 'imx-data-table',
@@ -352,6 +353,11 @@ describe('EntitlementsComponent', () => {
           useValue: {
             update: jasmine.createSpy('update'),
           }
+        }, {
+          provide:EntitlementEditAutoAddService,
+          useValue: {
+            mapEntitlementsToApplication: jasmine.createSpy('mapEntitlementsToApplication').and.returnValue(Promise.resolve()),
+          }
         }
       ]
     });
@@ -621,12 +627,6 @@ describe('EntitlementsComponent', () => {
     component.status.getBadges({} as PortalEntitlement);
     expect(mockEntitlementsService.getEntitlementBadges).toHaveBeenCalled();
   });
-
-  it('updates the selectedview', async () => {
-    const dummyView = 'test'
-    await component.viewSelectionChanged(dummyView);
-    expect(component.selectedView).toBe(dummyView);
-  })
 
   it('provides grouping', () => {
     expect(() => {

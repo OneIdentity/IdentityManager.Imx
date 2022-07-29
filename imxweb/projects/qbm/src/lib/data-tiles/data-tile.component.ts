@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -60,7 +60,11 @@ export class DataTileComponent implements OnInit {
   }
 
   public get hasImage(): boolean {
-    return this.image != null || this.status?.getImage != null || this.fallbackIcon != null;
+    return (this.image || this.status?.getImagePath || this.fallbackIcon) ? true : false;
+  }
+
+  public get filteredActions(): DataTileMenuItem[] {
+    return this.enabled ? this.actions : this.actions.filter(elem => elem.useOnDisabledTile);
   }
 
   public isLoadingImage: boolean;
@@ -157,6 +161,7 @@ export class DataTileComponent implements OnInit {
    */
   @Output() public selectionChanged = new EventEmitter<TypedEntity>();
 
+  // TODO: Check Upgrade
   @Output() public badgeClicked = new EventEmitter<{ entity: TypedEntity, badge: DataTileBadge }>();
 
   /**
@@ -178,19 +183,10 @@ export class DataTileComponent implements OnInit {
       this.selectedHint = 'background-color: #F2F2F2;'
     }
 
-    if (this.status?.getImage) {
+    if (this.status?.getImagePath) {
       this.isLoadingImage = true;
-      const blob = await this.status.getImage(this.typedEntity);
-      if (blob) {
-        const reader = new FileReader();
-        reader.readAsDataURL(blob);
-        reader.onload = () => {
-          this.imageUrl = reader.result;
-          this.isLoadingImage = false;
-        }
-      } else {
-        this.isLoadingImage = false;
-      }
+      this.imageUrl = await this.status.getImagePath(this.typedEntity);
+      this.isLoadingImage  = false;      
     } else if (this.image?.ColumnName) {
       this.imageUrl = this.base64ImageService.addBase64Prefix(
         this.typedEntity.GetEntity().GetColumn(this.image.ColumnName).GetValue()

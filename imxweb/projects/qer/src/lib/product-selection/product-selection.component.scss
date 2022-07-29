@@ -1,3 +1,5 @@
+@import "@elemental-ui/core/src/styles/_palette.scss";
+
 :host {
   display: flex;
   flex-direction: column;
@@ -12,31 +14,26 @@
 }
 
 h1 {
+  margin: 0;
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding-top: 16px;
 }
 
-.imx-top-container,
-.imx-top-container-auto {
+.imx-top-container{
   display: grid;
-  grid-template-columns: auto auto 1fr 1fr;
-  grid-template-rows: 50px 50px auto;
-  gap: 10px;
-  margin-bottom: 10px;
+  grid-template-columns: auto auto 1fr 20px;
+  grid-template-rows: 60px auto auto;
+  grid-gap: 10px;
+  align-items: baseline;
 
   .imx-helper-alert {
-    margin: 0 0 20px auto;
     grid-column: 2 / span 3;
-    grid-row: 1 / span 3;
+    grid-row: 1 / 1;
     max-width: max(500px, 50%);
     justify-self: end;
+    z-index: 10;
   }
-}
-
-.imx-top-container-auto {
-  grid-template-columns: auto auto auto auto;
 }
 
 .mat-tab-group {
@@ -102,19 +99,32 @@ h1 {
 }
 
 .imx-recipients {
-  grid-column-start: 1;
-  grid-column-end: 1;
-  grid-row-start: 2;
-  grid-row-end: 2;
-  margin-top: -25px;
+  grid-column-start: 2;
+  grid-column-end: 2;
+  grid-row-start: 1;
+  grid-row-end: 1;
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  position: relative;
+  top: -5px;
+
+  .imx-recipients-readonly-cdr {
+    position: relative;
+    top: -10px;
+  }
 }
 
-.imx-align-self-base {
-  margin-right: 10px;
-  align-self: baseline;
+.imx-recipients-cdr {
+  grid-column: 3 / 3;
+  grid-row: 1 / 1;
+  width: 250px;
+}
+
+.imx-info-icon {
+  grid-column-start: 5;
+  grid-column-end: 5;
+  grid-row-start: 1;
+  grid-row-end: 1;
+  color: $iris-blue;
 }
 
 .imx-actions-button {
@@ -143,8 +153,6 @@ h1 {
     margin-right: 10px;
   }
 }
-
-
 
 .imx-button-bar {
   display: flex;

@@ -1,9 +1,4 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
-
-:host {
-  width: 350px;
-  height: 156px;
-}
+@import "@elemental-ui/core/src/styles/_palette.scss";
 
 mat-card {
   padding: 0px;

@@ -1,4 +1,4 @@
-@import '~@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 
 :host {
@@ -64,7 +64,7 @@ imx-data-source-paginator {
 }
 
 :host ::ng-deep .badgeContainer {
-  width:355px; 
+  width:355px;
 }
 
 :host ::ng-deep imx-data-tile > .cardContainer > .imx-selected-icon-container {
@@ -73,7 +73,7 @@ imx-data-source-paginator {
 
 :host ::ng-deep .mat-card.imx-data-tile-container {
   padding: 35px 50px 0 25px;
-  
+
   .imx-data-tile-subtitle.mat-subheading-1 {
     align-self: baseline;
     top: 10px;
@@ -97,14 +97,14 @@ imx-data-source-paginator {
   }
 
 
- 
+
 
   // If line-clamp is supported, use it instead (Firefox 68+, Chrome 14+, Edge 17+)
   @supports (-webkit-line-clamp: 3) {
     .imx-data-tile-subtitle.mat-subheading-1 {
         display: -webkit-box;
         -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;  
+        -webkit-box-orient: vertical;
         height: auto;
         top: 0px;
     }

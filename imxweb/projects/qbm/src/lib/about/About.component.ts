@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -62,33 +62,33 @@ export class AboutComponent implements OnInit {
   ) {
     this.entitySchema = aboutInfoService.EntitySchema;
     this.displayedColumns = [
-      this.entitySchema.Columns.ComponentName,
-      this.entitySchema.Columns.CopyRight,
-      this.entitySchema.Columns.EmailOrURl,
-      this.entitySchema.Columns.LicenceName
+      this.entitySchema.Columns['ComponentName'],
+      this.entitySchema.Columns['CopyRight'],
+      this.entitySchema.Columns['EmailOrURl'],
+      this.entitySchema.Columns['LicenceName']
     ];
-    this.product.Name = Globals.QIM_ProductNameFull;
-    this.product.Version = Globals.Version;
-    this.product.Copyright = Globals.QBM_Copyright;
+    this.product['Name'] = Globals.QIM_ProductNameFull;
+    this.product['Version'] = Globals.Version;
+    this.product['Copyright'] = Globals.QBM_Copyright;
 
-    this.product.ThirdPartyLicencesUrl = 'https://www.oneidentity.com/legal/third-party-licenses.aspx';
-    this.product.OpenSourceUrl = 'https://opensource.quest.com';
-    this.product.ContactUrl = 'https://www.oneidentity.com/company/contact-us.aspx';
-    this.product.ProductSupportPortalUrl = 'https://support.oneidentity.com/';
-    this.product.ProductPageUrl = 'https://www.oneidentity.com/products/identity-manager/';
+    this.product['ThirdPartyLicencesUrl'] = 'https://www.oneidentity.com/legal/third-party-licenses.aspx';
+    this.product['OpenSourceUrl'] = 'https://opensource.quest.com';
+    this.product['ContactUrl'] = 'https://www.oneidentity.com/company/contact-us.aspx';
+    this.product['ProductSupportPortalUrl'] = 'https://support.oneidentity.com/';
+    this.product['ProductPageUrl'] = 'https://www.oneidentity.com/products/identity-manager/';
   }
 
   public async ngOnInit(): Promise<void> {
     const imxConfig = await this.config.getImxConfig();
     const name = imxConfig.ProductName;
     if (name)
-      this.product.Name = name;
+      this.product['Name'] = name;
 
     await this.update({ PageSize: this.settings.DefaultPageSize, StartIndex: 0, OrderBy: 'ComponentName' });
   }
 
   public ShowSystemOverviewTab(): boolean {
-    return this.extService.Registry.SystemOverview && this.extService.Registry.SystemOverview.length > 0;
+    return this.extService.Registry['SystemOverview'] && this.extService.Registry['SystemOverview'].length > 0;
   }
 
   public async update(parameters?: CollectionLoadParameters): Promise<void> {

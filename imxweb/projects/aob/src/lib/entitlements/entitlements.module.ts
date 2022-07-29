@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,9 +38,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatMenuModule } from '@angular/material/menu';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { MatDividerModule } from '@angular/material/divider';
 
 import {
   ClassloggerModule,
@@ -50,9 +53,9 @@ import {
   DisableControlModule,
   QbmModule,
   LdsReplaceModule,
-  CdrModule
+  CdrModule,
+  SqlWizardModule
 } from 'qbm';
-
 import { EntitlementsAddComponent } from './entitlement-add/entitlements-add.component';
 import { EntitlementsComponent } from './entitlements.component';
 import { EntitlementsService } from './entitlements.service';
@@ -61,14 +64,17 @@ import { LifecycleActionsModule } from '../lifecycle-actions/lifecycle-actions.m
 import { EntitlementEditModule } from './entitlement-edit/entitlement-edit.module';
 import { EntitlementDetailComponent } from './entitlement-detail/entitlement-detail.component';
 import { SystemRoleConfigComponent } from './entitlement-add/system-role-config/system-role-config.component';
-import { ScrollingModule } from '@angular/cdk/scrolling';
+import { EntitlementEditAutoAddComponent } from './entitlement-edit-auto-add/entitlement-edit-auto-add.component';
+import { MappedEntitlementsPreviewComponent } from './entitlement-edit-auto-add/mapped-entitlements-preview/mapped-entitlements-preview.component';
 
 @NgModule({
   declarations: [
     EntitlementsAddComponent,
     EntitlementsComponent,
     EntitlementDetailComponent,
-    SystemRoleConfigComponent
+    SystemRoleConfigComponent,
+    EntitlementEditAutoAddComponent,
+    MappedEntitlementsPreviewComponent
   ],
   imports: [
     ClassloggerModule,
@@ -91,8 +97,11 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     MatTableModule,
     MatTooltipModule,
     MatButtonModule,
+    MatDividerModule,
     MatFormFieldModule,
+    MatSlideToggleModule,
     MatInputModule,
+    MatMenuModule,
     QbmModule,
     ReactiveFormsModule,
     TranslateModule,
@@ -100,6 +109,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     LifecycleActionsModule,
     CdrModule,
     ScrollingModule,
+    SqlWizardModule
   ],
   providers: [
     EntitlementsService

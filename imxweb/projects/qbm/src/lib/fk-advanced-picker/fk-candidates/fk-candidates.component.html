@@ -1,5 +1,5 @@
 <ng-container *ngIf="settings">
-  <imx-data-source-toolbar #dst [hidden]="!data?.hasSearchParameter" [settings]="settings"
+  <imx-data-source-toolbar #dst [settings]="settings"
     (navigationStateChanged)="getData($event)" 
     (filterTreeSelectionChanged)="filterByTree($event)"
     [preSelection]="data?.preselectedEntities" [alwaysVisible]="showToolbar"

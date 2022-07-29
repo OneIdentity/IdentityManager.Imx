@@ -1,6 +1,6 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
-
-@import "~@angular/material/theming";
+@use '@angular/material' as mat;
+@import "@elemental-ui/core/src/styles/_palette.scss";
+@import "@angular/material/theming";
 
 :host {
   display: flex;
@@ -15,12 +15,12 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: mat-color($asher-gray-palette, 100);
+  background-color: mat.get-color-from-palette($asher-gray-palette, 100);
   flex: 1 1 auto;
 }
 
 // Create a config with the default typography levels.
-$config: mat-typography-config();
+$config: mat.define-typography-config();
 
 imx-data-source-toolbar {
   margin-bottom: 20px;
@@ -53,16 +53,14 @@ imx-data-source-toolbar-custom button {
   }
 
   .imx-aob-entitlements-empty-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    display: flex;
+    flex-direction: column;
 
     > .mat-raised-button {
       margin-bottom: 15px;
     }
     > :last-child {
       justify-self: center;
-      grid-column: span 2;
     }
   }
 }
@@ -85,7 +83,7 @@ imx-data-source-toolbar-custom button {
 
   > span {
     line-height: 36px;
-    font-size: mat-font-size($config, button);
+    font-size: mat.font-size($config, button);
   }
 }
 

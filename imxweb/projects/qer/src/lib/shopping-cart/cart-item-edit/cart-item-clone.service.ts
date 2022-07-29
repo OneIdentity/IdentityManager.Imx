@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -80,10 +80,12 @@ export class CartItemCloneService {
       setTimeout(() => this.busyService.show());
       try {
         const serviceItem = await this.serviceItems.getServiceItem(item.accProduct.DataValue);
-        const serviceItemForPersons = await this.serviceItems.getServiceItemsForPersons(
+        const serviceItemForPersons = this.serviceItems.getServiceItemsForPersons(
           [serviceItem],
           persons,
-          item.uidITShopOrg
+          {
+            uidITShopOrg: item.uidITShopOrg
+          }
         );
 
         if (serviceItemForPersons && serviceItemForPersons.length > 0) {

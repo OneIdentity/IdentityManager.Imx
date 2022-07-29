@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -59,9 +59,10 @@ export class PatternItemListComponent implements AfterViewInit, OnChanges, OnDes
   @Input() public keywords: string;
   @Input() public recipients: IWriteValue<string>;
   @Input() public dataSourceView = { selected: 'cardlist' };
+  @Input() public itemActions: DataTileMenuItem[];
 
-  @Output() public addItemToCart = new EventEmitter<PortalItshopPatternRequestable>();
-  @Output() public showDetails = new EventEmitter<PortalShopServiceitems[]>();
+  @Output() public handleAction = new EventEmitter<
+    { name: string, serviceItems?: PortalShopServiceitems[], patternItem?: PortalItshopPatternRequestable }>();
   @Output() public selectionChanged = new EventEmitter<PortalItshopPatternRequestable[]>();
 
   public dstSettings: DataSourceToolbarSettings;
@@ -129,7 +130,7 @@ export class PatternItemListComponent implements AfterViewInit, OnChanges, OnDes
         Type: ValType.String
       },
       {
-        ColumnName: 'addCartButton',
+        ColumnName: 'actions',
         Type: ValType.String,
       },
     ];
@@ -244,28 +245,25 @@ export class PatternItemListComponent implements AfterViewInit, OnChanges, OnDes
     this.dataSourceView.selected = view;
   }
 
-  public handleAction(item: DataTileMenuItem): void {
-    if (item.name === 'edit') {
-      this.addItemToCart.emit(item.typedEntity as PortalItshopPatternRequestable);
-    }
+  public async emitAction(item: DataTileMenuItem, patternRequestable?: PortalItshopPatternRequestable): Promise<void> {
+
     if (item.name === 'details') {
-      this.bubbleShowDetails(item.typedEntity as PortalItshopPatternRequestable);
-    }
-  }
-
-  public async bubbleShowDetails(patternRequestable: PortalItshopPatternRequestable): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => {
-      overlayRef = this.busyService.show();
-    });
-
-    try {
-      const items = await this.patternItemService.getServiceItems(patternRequestable);
-      this.showDetails.emit(items);
-    } finally {
+      let overlayRef: OverlayRef;
       setTimeout(() => {
-        this.busyService.hide(overlayRef);
+        overlayRef = this.busyService.show();
       });
+
+      try {
+        const items = await this.patternItemService.getServiceItems(item.typedEntity as PortalItshopPatternRequestable);
+        this.handleAction.emit({ serviceItems: items, name: item.name });
+      } finally {
+        setTimeout(() => {
+          this.busyService.hide(overlayRef);
+        });
+      }
+    }
+    if (item.name === 'addTemplateToCart') {
+      this.handleAction.emit({ patternItem: patternRequestable ?? item.typedEntity as PortalItshopPatternRequestable, name: item.name });
     }
   }
 

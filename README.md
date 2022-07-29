@@ -4,6 +4,11 @@
 
 ## Change log
 
+### July 29, 2022
+
+- The repository has been updated with the source code for the Identity Manager 9.0 release in the `v90` branch.
+- The build now supports case-sensitive file systems (namely Linux) in the `v90` branch.
+
 ### June 7, 2022
 
 - Added clarification on the [branches](#branches-and-update-policy).
@@ -22,8 +27,6 @@ It is a monorepo containing the Angular [workspace](https://angular.io/guide/wor
 
 By forking this repository, you may create customized versions of the projects and add them to your Identity Manager deployment.
 
-*Note*: A case-insensitive file system (Windows) is currently required to build the projects. Compatibility with case-sensitive file systems is coming soon.
-
 ## Workspace overview
 
 Each Angular library and app belongs to a folder in the `projects` directory. The workspace is defined in the `angular.json` file.
@@ -41,6 +44,7 @@ Each Angular library and app belongs to a folder in the `projects` directory. Th
 |`aob`|Angular plugin library|`qbm`, `qer`|
 |`uci`|Angular plugin library|`qbm`, `qer`|
 |`cpl`|Angular plugin library|`qbm`, `qer`|
+|`hds`|Angular plugin library|`qbm`, `qer`|
 |`dpr`|Angular plugin library|`qbm`|
 |`o3t`|Angular plugin library|`qbm`, `qer`, `tsb`|
 |`olg`|Angular plugin library|`qbm`, `qer`|
@@ -101,6 +105,7 @@ The following table shows the branches in this repository corresponding to each 
 
 |Branch|Product version|
 |-|-|
+|`v90`|Identity Manager 9.0|
 |`v82`|Identity Manager 8.2.x|
 |`master`|The `master` branch does not correspond to a supported version of Identity Manager. Do not use this branch for development purposes.|
 

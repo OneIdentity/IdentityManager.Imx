@@ -6,7 +6,7 @@
         <span *ngIf="workflowHistoryEntity.DecisionType?.value">{{
           workflowHistoryEntity.DecisionType?.Column?.GetDisplayValue() }}</span>
         <span *ngIf="workflowHistoryEntity.XDateInserted?.value">&nbsp;-&nbsp;{{
-          workflowHistoryEntity.XDateInserted?.Column?.GetDisplayValue() }}
+          workflowHistoryEntity.XDateInserted.value | localizedDate }}
         </span>
       </mat-card-title>
       <mat-card-subtitle class="imx-workflowhistory-pwodecisionstep">

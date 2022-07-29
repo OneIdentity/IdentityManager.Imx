@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ɵgetDebugNode__POST_R3__ } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { ChartOptions, XTickConfiguration } from 'billboard.js';
@@ -93,7 +93,7 @@ export class JobQueueOverviewComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    if (changes.isShowGraph) {
+    if (changes['isShowGraph']) {
       this.updatePlot();
     }
   }

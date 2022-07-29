@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,13 +31,14 @@ import { TranslateModule } from '@ngx-translate/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCardModule } from '@angular/material/card';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 
 import { QbmModule, LdsReplaceModule, ParameterizedTextModule } from 'qbm';
 import { SourceDetectiveComponent } from './sourcedetective.component';
-import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { SourceDetectiveSidesheetComponent } from './sourcedetective-sidesheet.component';
 import { RequestHistoryModule } from '../request-history/request-history.module';
-import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatTreeModule,
     TranslateModule,
     ParameterizedTextModule,
-    RequestHistoryModule
+    RequestHistoryModule,
+    MatCardModule
   ],
   exports: [
     SourceDetectiveComponent

@@ -1,0 +1,80 @@
+<mat-vertical-stepper [linear]="true" (selectionChange)="selectedStepChanged($event)">
+  <mat-step label="{{'#LDS#Select permissions for removal' | translate}}">
+    <mat-spinner *ngIf="busy"></mat-spinner>
+
+    <ng-container *ngIf="!busy">
+      <eui-alert [condensed]="true" [colored]="true" type="info" *ngIf="entitlements.length > 0">
+        {{LdsContributingPermissions | translate}}
+      </eui-alert>
+
+      <eui-alert [condensed]="true" [colored]="true" type="info" *ngIf="entitlements.length == 0">
+        {{LdsNoPermissions | translate}}</eui-alert>
+
+      <mat-selection-list [(ngModel)]="selectedEntitlements" *ngIf="entitlements.length > 0">
+        <mat-list-option checkboxPosition="before" *ngFor="let entl of entitlements" [value]="entl.ObjectKeyEntitlement"
+          [attr.data-imx-identifier]="'multi-select-entitlement-' + entl.ObjectKeyEntitlement">
+          <div>{{entl.Display }}</div>
+          <div class="subtext">{{ entl.TypeDisplay }}</div>
+        </mat-list-option>
+      </mat-selection-list>
+
+      <div class="imx-step-button">
+        <button mat-raised-button data-imx-identifier="resolve-step-1-next" color="primary" matStepperNext
+          [disabled]="selectedEntitlements.length < 1">{{'#LDS#Next' | translate}}</button>
+      </div>
+    </ng-container>
+  </mat-step>
+
+  <mat-step label="{{'#LDS#Review actions' | translate}}">
+    <mat-spinner *ngIf="busy"></mat-spinner>
+
+    <ng-container *ngIf="!busy">
+      <eui-alert [condensed]="true" [colored]="true" type="info">
+        {{LdsActionList | translate}}</eui-alert>
+
+      <mat-selection-list [(ngModel)]="uidActions">
+        <mat-list-option checkboxPosition="before" *ngFor="let action of actions" [value]="action.Id"
+          [disabled]="!action.CanExecute" [attr.data-imx-identifier]="'multi-select-action-' + action.Id">
+          <div>{{action.Display }}</div>
+          <div class="subtext">{{action.ObjectDisplay }}</div>
+        </mat-list-option>
+      </mat-selection-list>
+
+      <div class="imx-step-button">
+        <button mat-raised-button data-imx-identifier="resolve-step-2-back" matStepperPrevious>{{'#LDS#Back' |
+          translate}}</button>
+        <button mat-raised-button data-imx-identifier="resolve-step-2-next" color="primary" matStepperNext
+          [disabled]="uidActions.length < 1">{{'#LDS#Check entitlement list' |
+          translate}}</button>
+      </div>
+    </ng-container>
+  </mat-step>
+  <mat-step label="{{'#LDS#Loss of entitlements' | translate}}">
+
+    <mat-spinner *ngIf="busy"></mat-spinner>
+
+    <ng-container *ngIf="!busy">
+      <eui-alert [condensed]="true" [colored]="true" *ngIf="0 === entitlementsLoseAlso.length" type="info">
+        {{LdsNoLoseAdditional | translate}}</eui-alert>
+
+      <ng-container *ngIf="0 < entitlementsLoseAlso.length">
+        <eui-alert [condensed]="true" [colored]="true" type="warning">
+          {{LdsLoseEntitlements | translate}}</eui-alert>
+
+        <ul>
+          <li class="entllose" *ngFor="let entl of entitlementsLoseAlso">
+            <div>{{ entl.Display }}</div>
+            <div class="subtext">{{ entl.TypeDisplay }}</div>
+          </li>
+        </ul>
+      </ng-container>
+
+      <div class="imx-step-button">
+        <button mat-raised-button data-imx-identifier="resolve-step-3-back" matStepperPrevious>{{'#LDS#Back' |
+          translate}}</button>
+        <button mat-raised-button data-imx-identifier="resolve-step-3-next" (click)="Execute()" color="primary"
+          matStepperNext>{{'#LDS#Next' | translate}}</button>
+      </div>
+    </ng-container>
+  </mat-step>
+</mat-vertical-stepper>

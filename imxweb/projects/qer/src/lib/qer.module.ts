@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -56,7 +56,6 @@ import { ServiceItemsService } from './service-items/service-items.service';
 import { PatternItemsModule } from './pattern-item-list/pattern-items.module';
 import { PatternItemService } from './pattern-item-list/pattern-item.service';
 import { SourceDetectiveModule } from './sourcedetective/sourcedetective.module';
-import { StarlingComponent } from './starling/starling.component';
 import { StartComponent } from './wport/start/start.component';
 import { TilesModule } from './tiles/tiles.module';
 import { UserModule } from './user/user.module';
@@ -84,7 +83,10 @@ const routes: Routes = [
 
 // @dynamic
 @NgModule({
-  declarations: [StarlingComponent, StartComponent, BusinessOwnerChartSummaryComponent],
+  declarations: [
+    StartComponent,
+    BusinessOwnerChartSummaryComponent,
+  ],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
@@ -112,7 +114,7 @@ const routes: Routes = [
     OpsModule,
     DataExplorerViewModule,
   ],
-  exports: [StarlingComponent, PasscodeViewerComponent, ObjectOverviewPersonComponent],
+  exports: [PasscodeViewerComponent, ObjectOverviewPersonComponent],
   providers: [
     {
       provide: APP_INITIALIZER,

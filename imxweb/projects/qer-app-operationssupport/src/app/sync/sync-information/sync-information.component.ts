@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,7 +31,7 @@ import { EuiLoadingService } from '@elemental-ui/core';
 
 import { OpsupportSyncShell } from 'imx-api-dpr';
 import { EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings, SettingsService } from 'qbm';
+import { DataSourceToolbarSettings, ClientPropertyForTableColumns, SettingsService } from 'qbm';
 import { OpsupportSyncShellParameters, SyncService } from '../sync.service';
 
 @Component({
@@ -44,7 +44,7 @@ export class SyncInformationComponent implements OnInit {
   public dstSettings: DataSourceToolbarSettings;
   public readonly entitySchemaSyncInfo: EntitySchema;
   private navigationState: OpsupportSyncShellParameters;
-  private readonly displayedColumns: IClientProperty[];
+  private readonly displayedColumns: ClientPropertyForTableColumns[];
 
   constructor(
     private dataSource: SyncService,
@@ -62,7 +62,8 @@ export class SyncInformationComponent implements OnInit {
       this.entitySchemaSyncInfo.Columns.LastSyncCountObjects,
       {
         ColumnName: 'actions',
-        Type: ValType.String
+        Type: ValType.String,
+        afterAdditionals: true
       }
     ];
   }

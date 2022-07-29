@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { ListReportDefinitionRead, PortalReports, PortalReportsEditInteractive_byid } from 'imx-api-rps';
+import { ListReportDefinitionRead, PortalReports, PortalReportsEditInteractive } from 'imx-api-rps';
 import { CollectionLoadParameters, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
 
 import { RpsApiService } from '../rps-api-client.service';
@@ -40,13 +40,13 @@ export class EditReportService {
     private readonly api: RpsApiService,
   ) { }
 
-  public reportSchema = PortalReportsEditInteractive_byid.GetEntitySchema();
+  public reportSchema = PortalReportsEditInteractive.GetEntitySchema();
 
-  public async getReport(id: string): Promise<ExtendedTypedEntityCollection<PortalReportsEditInteractive_byid, ListReportDefinitionRead>> {
-    return await this.api.typedClient.PortalReportsEditInteractive_byid.Get_byid(id);
+  public async getReport(id: string): Promise<ExtendedTypedEntityCollection<PortalReportsEditInteractive, ListReportDefinitionRead>> {
+    return await this.api.typedClient.PortalReportsEditInteractive.Get_byid(id);
   }
 
-  public async createNew(): Promise<ExtendedTypedEntityCollection<PortalReportsEditInteractive_byid, ListReportDefinitionRead>> {
+  public async createNew(): Promise<ExtendedTypedEntityCollection<PortalReportsEditInteractive, ListReportDefinitionRead>> {
     return this.api.typedClient.PortalReportsEditInteractive.Get();
   }
 

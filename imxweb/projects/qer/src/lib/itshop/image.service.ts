@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,15 +26,44 @@
 
 import { Injectable } from '@angular/core';
 
-import { ITShopConfig, PortalShopServiceitems } from 'imx-api-qer';
+import { ITShopConfig, PortalShopServiceitems, V2ApiClientMethodFactory } from 'imx-api-qer';
+import { MethodDefinition, MethodDescriptor } from 'imx-qbm-dbts';
+import { AppConfigService } from 'qbm';
 import { QerApiService } from '../qer-api-client.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ImageService {
-  constructor(private readonly api: QerApiService) { }
+  private readonly methodFactory = new V2ApiClientMethodFactory();
 
+  constructor(
+    private readonly api: QerApiService,   
+    private readonly config: AppConfigService,
+  ) { }
+
+  /** Returns the URL to the image for the specified service item. */
+  public getPath(serviceItem: PortalShopServiceitems): string {
+    const tokens = serviceItem.ImageRef.value?.split('/');
+    if (tokens?.length > 1) {
+      let path: MethodDescriptor<any>;
+      if (tokens[0] === 'category') {
+        path = this.methodFactory.portal_shop_categoryimage_get(tokens[1]);
+      } else if (tokens[0] === 'product') {
+        path = this.methodFactory.portal_shop_serviceitemimage_get(tokens[1]);
+      }
+
+      if (path) {
+        // parameterize path
+        return this.config.BaseUrl + new MethodDefinition(path).path;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * @deprecated Use getPath()
+   */
   public async get(serviceItem: PortalShopServiceitems, config: ITShopConfig): Promise<Blob> {
     const tokens = serviceItem.ImageRef.value?.split('/');
     if (tokens?.length > 1) {

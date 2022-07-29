@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -53,7 +53,7 @@ export class SubscriptionsService {
   }
 
   public async getSubscriptionInteractive(uid: string): Promise<ExtendedTypedEntityCollection<PortalSubscriptionInteractive, {}>> {
-    return this.api.typedClient.PortalSubscriptionInteractive_byid.Get_byid(uid);
+    return this.api.typedClient.PortalSubscriptionInteractive.Get_byid(uid);
   }
 
   public async sendMail(uidPort: string, withCc: boolean): Promise<void> {

@@ -1,4 +1,4 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_palette.scss";
 
 :host {
   display: flex;
@@ -83,12 +83,15 @@
 }
 
 .imx-button-bar {
+  background-color: $white;
   display: flex;
   justify-content: flex-end;
   border-top: $black-c 1px solid;
   padding: 0px 20px 20px 8px;
+  flex-wrap: wrap;
+  margin: 0 -20px -20px;
 
-  >* {
+  > * {
     margin-left: 10px;
     margin-top: 20px;
   }
@@ -148,6 +151,6 @@ eui-badge {
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 32px;
+  padding: 20px;
   overflow: auto;
 }

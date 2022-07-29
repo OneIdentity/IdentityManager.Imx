@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,6 +31,9 @@ import { RouterModule, Routes } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
+import { ProjectConfig } from 'imx-api-qbm';
+import { QerProjectConfig } from 'imx-api-qer';
+
 import {
   CdrModule,
   ClassloggerService,
@@ -38,37 +41,34 @@ import {
   DataTableModule,
   MenuItem,
   MenuService,
-  RouteGuardService
+  RouteGuardService,
+  UserMessageModule
 } from 'qbm';
 import { ItshopPatternComponent } from './itshop-pattern.component';
 import { ItshopPatternSidesheetComponent } from './itshop-pattern-sidesheet/itshop-pattern-sidesheet.component';
-
-import { ShopAdminGuardService } from '../guards/shop-admin-guard.service';
-import { isShopAdmin } from '../admin/qer-permissions-helper';
 import { ItshopPatternCreateSidesheetComponent } from './itshop-pattern-create-sidesheet/itshop-pattern-create-sidesheet.component';
+import { ItshopPatternAddProductsComponent } from './itshop-pattern-add-products/itshop-pattern-add-products.component';
+import { ServiceItemsModule } from '../service-items/service-items.module';
+import { DuplicatePatternItemsComponent } from './duplicate-pattern-items/duplicate-pattern-items.component';
+import { UserModule } from '../user/user.module';
+import { ItshopPatternGuardService } from '../guards/itshop-pattern-guard.service';
 
 const routes: Routes = [
   {
-    path: 'configuration/carttemplates',
+    path: 'itshop/requesttemplates',
     component: ItshopPatternComponent,
-    canActivate: [RouteGuardService, ShopAdminGuardService],
-    resolve: [RouteGuardService]
-  },
-  {
-    path: 'itshop/myrequesttemplates',
-    component: ItshopPatternComponent,
-    canActivate: [RouteGuardService],
+    canActivate: [RouteGuardService, ItshopPatternGuardService],
     resolve: [RouteGuardService]
   }
 ];
-
-
 
 @NgModule({
   declarations: [
     ItshopPatternComponent,
     ItshopPatternSidesheetComponent,
-    ItshopPatternCreateSidesheetComponent
+    ItshopPatternCreateSidesheetComponent,
+    ItshopPatternAddProductsComponent,
+    DuplicatePatternItemsComponent
   ],
   imports: [
     CdrModule,
@@ -79,8 +79,11 @@ const routes: Routes = [
     EuiMaterialModule,
     FormsModule,
     ReactiveFormsModule,
+    ServiceItemsModule,
     TranslateModule,
     RouterModule.forChild(routes),
+    UserMessageModule,
+    UserModule
   ]
 })
 export class ItshopPatternModule {
@@ -95,17 +98,18 @@ export class ItshopPatternModule {
 
   private setupMenu(): void {
     this.menuService.addMenuFactories(
-      (preProps: string[], groups: string[]) => {
+      (preProps: string[], groups: string[], projectConfig: QerProjectConfig & ProjectConfig) => {
         const items: MenuItem[] = [];
+        const requestTemplatesEnabled = projectConfig.ITShopConfig.VI_ITShop_ProductSelectionFromTemplate;
 
-        if (preProps.includes('ITSHOP')) {
+        if (preProps.includes('ITSHOP') && requestTemplatesEnabled) {
           items.push(
             {
-              id: 'QER_Request_MyRequestTemplates',
+              id: 'QER_Request_RequestTemplates',
               navigationCommands: {
-                commands: ['itshop', 'myrequesttemplates']
+                commands: ['itshop', 'requesttemplates']
               },
-              title: '#LDS#Menu Entry My request templates',
+              title: '#LDS#Menu Entry Request templates',
               sorting: '10-50',
             }
           );
@@ -120,36 +124,7 @@ export class ItshopPatternModule {
           sorting: '10',
           items
         };
-      },
-      (preProps: string[], groups: string[]) => {
-        const items: MenuItem[] = [];
-
-        if (preProps.includes('ITSHOP') && isShopAdmin(groups)) {
-          items.push(
-            {
-              id: 'QER_Setup_Patterns',
-              navigationCommands: {
-                commands: ['configuration', 'carttemplates']
-              },
-              title: '#LDS#Menu Entry Request templates',
-              sorting: '50-50',
-            },
-          );
-        }
-
-        if (items.length === 0) {
-          return null;
-        }
-        return {
-          id: 'ROOT_Setup',
-          title: '#LDS#Setup',
-          sorting: '50',
-          items
-        };
-      },
+      }
     );
   }
-
-
-
 }

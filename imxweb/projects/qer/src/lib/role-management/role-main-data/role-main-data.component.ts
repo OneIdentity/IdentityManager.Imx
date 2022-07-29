@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,6 +35,7 @@ import { BaseCdr, ColumnDependentReference, SnackBarService } from 'qbm';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
 import { CompareComponent } from '../compare/compare.component';
 import { RoleService } from '../role.service';
+import { RollbackComponent } from '../rollback/rollback.component';
 import { SplitComponent } from '../split/split.component';
 
 
@@ -130,7 +131,7 @@ export class RoleMainDataComponent implements OnInit {
 
   public async openCompareSidesheet(): Promise<void> {
     this.sidesheet.open(CompareComponent, {
-      title: await this.translateService.get('#LDS#Heading Compare').toPromise(),
+      title: await this.translateService.get('#LDS#Heading Compare and Merge').toPromise(),
       headerColour: 'iris-blue',
       bodyColour: 'asher-gray',
       padding: '0px',
@@ -140,6 +141,21 @@ export class RoleMainDataComponent implements OnInit {
         isAdmin: this.isAdmin,
         roleType: this.entity.GetEntity().TypeName,
         uidRole: this.item.GetKeys()[0]
+      }
+    });
+  }
+
+  public async openRollbackSidesheet(): Promise<void> {
+    this.sidesheet.open(RollbackComponent, {
+      title: await this.translateService.get('#LDS#Heading Rollback to a previous state').toPromise(),
+      headerColour: 'iris-blue',
+      bodyColour: 'asher-gray',
+      padding: '0px',
+      width: 'max(600px, 60%)',
+      testId: 'role-main-data-rollback-sidesheet',
+      data: {
+        tableName: this.entity.GetEntity().TypeName,
+        uid: this.item.GetKeys()[0]
       }
     });
   }

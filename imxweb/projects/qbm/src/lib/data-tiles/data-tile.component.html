@@ -35,8 +35,8 @@
         [matTooltip]="getTitleDisplayValue(subtitleObject.ColumnName)">
         {{getTitleDisplayValue(subtitleObject.ColumnName)}}
       </div>
-      <div *ngIf="additionalSubtitleObjects" 
-        [matTooltip]="getAdditionalColumnText">
+      <div *ngIf="additionalSubtitleObjects"
+        [matTooltip]="getAdditionalColumnText()">
         {{getAdditionalColumnText()}}
       </div>
     </div>
@@ -49,12 +49,14 @@
           <eui-icon icon="ellipsisvertical" (click)="menuClicked($event)"></eui-icon>
         </button>
         <mat-menu #menu="matMenu">
-          <button *ngFor="let action of actions" mat-menu-item (click)="menuItemClicked(action)">{{ action.description
-            }}</button>
+          <button *ngFor="let action of actions" mat-menu-item (click)="menuItemClicked(action)">
+            {{ action.description | translate }}
+          </button>
         </mat-menu>
-        <ng-container *ngIf="useActionMenu === false && this.enabled">
-          <button mat-button *ngFor="let action of actions" color="primary" (click)="menuItemClicked(action, $event)">{{
-            action.description }}</button>
+        <ng-container *ngIf="useActionMenu === false">
+          <button mat-button *ngFor="let action of filteredActions" color="primary" (click)="menuItemClicked(action, $event)">
+            {{ action.description | translate }}
+          </button>
         </ng-container>
       </ng-container>
     </div>

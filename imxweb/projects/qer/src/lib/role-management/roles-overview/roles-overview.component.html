@@ -49,3 +49,10 @@
     </imx-data-tree-wrapper>
   </div>
 </mat-card>
+
+<div class="data-explorer-bottom-button-row">
+  <button mat-stroked-button data-imx-identifier="roles-overview-button-restore" (click)="restoreDeletedRole()"
+    *ngIf="restoreHandler" class="imx-right-button">
+    <span translate>#LDS#Restore a deleted role</span>
+  </button>
+</div>

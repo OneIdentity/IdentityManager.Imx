@@ -1,4 +1,4 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_palette.scss";
 
 .imx-data-source-toolbar-container {
   .imx-data-source-toolbar {
@@ -38,7 +38,7 @@
 
   .imx-data-source-selected-filters {
     display: block;
-    margin: 10px 5px;    
+    margin: 10px 5px;
 
     .mat-chip-list-wrapper > span {
       margin-right: 5px;
@@ -121,7 +121,7 @@
         white-space: normal;
       }
     }
-    
+
     .mat-checkbox-layout {
       white-space: normal;
     }
@@ -135,7 +135,7 @@
     color: inherit;
   }
 
-  button.mat-menu-item {  
+  button.mat-menu-item {
     white-space: break-spaces;
     min-height: 48px;
     height: auto;

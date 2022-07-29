@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -57,6 +57,7 @@ import { RequestsFeatureGuardService } from '../requests-feature-guard.service';
 import { JustificationModule } from '../justification/justification.module';
 import { WorkflowMultiActionComponent } from './workflow-action/workflow-multi-action/workflow-multi-action.component';
 import { WorkflowSingleActionComponent } from './workflow-action/workflow-single-action/workflow-single-action.component';
+import { RecommendationSidesheetComponent } from './recommendation-sidesheet/recommendation-sidesheet.component';
 
 const routes: Routes = [
   {
@@ -75,7 +76,8 @@ const routes: Routes = [
     QueryPersonComponent,
     WorkflowActionComponent,
     WorkflowMultiActionComponent,
-    WorkflowSingleActionComponent
+    WorkflowSingleActionComponent,
+    RecommendationSidesheetComponent
   ],
   imports: [
     BulkPropertyEditorModule,
@@ -94,7 +96,7 @@ const routes: Routes = [
     ReactiveFormsModule,
     RequestHistoryModule,
     RouterModule.forChild(routes),
-    TranslateModule,
+    TranslateModule
   ],
   providers: [
     ApprovalsService

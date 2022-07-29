@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,7 +30,7 @@ import { Router, RouterEvent, NavigationStart, NavigationEnd, NavigationError, N
 import { EuiLoadingService } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
-import { MenuItem, AuthenticationService, ISessionState, MenuService, SettingsService, imx_SessionService } from 'qbm';
+import { MenuItem, AuthenticationService, ISessionState, MenuService, SettingsService, imx_SessionService, SplashService } from 'qbm';
 import { FeatureConfigService } from 'qer';
 import { UserService } from './user/user.service';
 import { FeatureConfig } from 'imx-api-qer';
@@ -45,6 +45,7 @@ export class AppComponent implements OnInit, OnDestroy {
   public isLoggedIn = false;
   public hideMenu = false;
   public hideUserMessage = false;
+  public showPageContent = false;
 
   private readonly subscriptions: Subscription[] = [];
 
@@ -53,21 +54,32 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly busyService: EuiLoadingService,
     private readonly router: Router,
     private readonly menuService: MenuService,
-    private readonly userModelService: UserService,
     private readonly featureService: FeatureConfigService,
+    private readonly splash: SplashService,
     sessionService: imx_SessionService,
-    settings: SettingsService
+    settings: SettingsService,
+    userModelService: UserService,
   ) {
 
     this.subscriptions.push(
       this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
+
+        if (sessionState.hasErrorState) {
+          // Needs to close here when there is an error on sessionState
+          splash.close();
+        }
+
         this.isLoggedIn = sessionState.IsLoggedIn;
         if (this.isLoggedIn) {
+          // Close the splash screen that opened in app service initialisation
+          // Needs to close here when running in containers (auth skipped)
+          splash.close();
+
           await this.setupMenu();
           const conf = await sessionService.Client.opsupport_config_get();
           settings.DefaultPageSize = conf.DefaultPageSize;
 
-          const groupInfo = await this.userModelService.getGroups();
+          const groupInfo = await userModelService.getGroups();
           this.menuItems = this.menuService.getMenuItems([], groupInfo.map(group => group.Name), true);
         }
       })
@@ -95,21 +107,26 @@ export class AppComponent implements OnInit, OnDestroy {
       switch (true) {
         case event instanceof NavigationStart:
           this.hideUserMessage = true;
-          setTimeout(() => overlayRef = this.busyService.show());
+
+          if (this.isLoggedIn && event.url === '/') {
+            // show the splash screen, when the user logs out!
+            this.splash.init({ applicationName: 'Operations Support Web Portal' });
+          }
           break;
         case event instanceof NavigationEnd:
         case event instanceof NavigationCancel:
         case event instanceof NavigationError:
           this.hideUserMessage = false;
           this.hideMenu = event.url === '/';
-          setTimeout(() => this.busyService.hide(overlayRef));
+          // show the pageContent, if the user is logged in or the login page is shown
+          this.showPageContent = this.isLoggedIn || event.url === '/';
       }
     }));
   }
 
   private async setupMenu(): Promise<void> {
 
-    let featureConfig : FeatureConfig;
+    let featureConfig: FeatureConfig;
     const overlay = this.busyService.show();
     try {
       featureConfig = await this.featureService.getFeatureConfig();

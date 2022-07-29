@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,6 +26,8 @@
 
 import { TestBed } from '@angular/core/testing';
 
+import { AppConfigService } from 'qbm';
+
 import { QerApiService } from '../qer-api-client.service';
 import { ImageService } from './image.service';
 
@@ -38,6 +40,14 @@ describe('ImageService', () => {
         {
           provide: QerApiService,
           useValue: {}
+        },
+        {
+          provide: AppConfigService,
+          useClass: class {
+            public Config = {
+              BaseUrl: ''
+            };
+          }
         }
       ]
     });

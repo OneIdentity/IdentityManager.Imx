@@ -1,4 +1,4 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_palette.scss";
 
 .mat-expansion-panel {
   margin-bottom: 20px;
@@ -18,12 +18,12 @@
     height: 100%;
     flex-grow: 1;
     overflow: auto;
-  
+
     .mat-tab-header {
       padding: 0 32px;
       background-color: $white;
     }
-  
+
     ::ng-deep .mat-tab-body-wrapper {
       height: 100%;
     }

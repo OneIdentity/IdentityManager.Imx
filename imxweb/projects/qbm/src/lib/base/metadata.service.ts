@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -60,7 +60,7 @@ export class MetadataService {
    */
   public async update(tableNames: string[]): Promise<void> {
     for (const tableName of tableNames) {
-      this.tables[tableName] = await this.sessionService.Client.imx_metadata_table_get(tableName, this.translateService.currentLang);
+      this.tables[tableName] = await this.sessionService.Client.imx_metadata_table_get(tableName, { cultureName: this.translateService.currentLang });
     }
   }
 
@@ -72,7 +72,7 @@ export class MetadataService {
     if (this.tableMetadata[table] == null) {
       this.tableMetadata[
         table
-      ] = await this.sessionService.Client.imx_metadata_table_get(table, this.translateService.currentLang);
+      ] = await this.sessionService.Client.imx_metadata_table_get(table, { cultureName: this.translateService.currentLang });
     }
 
     return this.tableMetadata[table];

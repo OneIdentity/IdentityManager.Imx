@@ -8,10 +8,10 @@
         <div matSuffix class="imx-suffix-container">
             <mat-spinner diameter="30" *ngIf="isBusy"></mat-spinner>
         </div>
-        <mat-error *ngIf="control.errors?.required">
+        <mat-error *ngIf="control.errors?.['required']">
             {{ '#LDS#This field is mandatory.' | translate }}
         </mat-error>
-        <mat-error *ngIf="control.errors?.generalError">
+        <mat-error *ngIf="control.errors?.['generalError']">
             {{validationErrorMessage}}
         </mat-error>
 </mat-form-field>

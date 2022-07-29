@@ -8,13 +8,13 @@
         <div matSuffix class="imx-suffix-container">
             <mat-spinner diameter="30" *ngIf="isBusy"></mat-spinner>
         </div>
-        <mat-error *ngIf="control.errors?.invalidInteger">
+        <mat-error *ngIf="control.errors?.['invalidInteger']">
             {{ '#LDS#WD_InputInvalidInteger' | translate | ldsReplace: control.value }}
         </mat-error>
-        <mat-error *ngIf="control.errors?.rangeMin">
+        <mat-error *ngIf="control.errors?.['rangeMin']">
             {{ '#LDS#Please enter a number greater than or equal to {0}.' | translate | ldsReplace: columnContainer.valueConstraint.MinValue }}
         </mat-error>
-        <mat-error *ngIf="control.errors?.rangeMax">
+        <mat-error *ngIf="control.errors?.['rangeMax']">
             {{ '#LDS#Please enter a number less than or equal to {0}.' | translate | ldsReplace: columnContainer.valueConstraint.MaxValue }}
         </mat-error>
 </mat-form-field>

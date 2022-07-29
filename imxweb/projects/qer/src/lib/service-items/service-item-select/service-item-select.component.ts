@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -80,7 +80,6 @@ export class ServiceItemSelectComponent implements OnChanges {
         width: isIE() ? '60%' : 'max(600px, 60%)',
         data: {
           getTyped: this.data.getTyped,
-          hasSearchParameter: this.data.hasSearchParameter,
           isMultiValue: true,
           preselectedEntities: this.data.selected
         }

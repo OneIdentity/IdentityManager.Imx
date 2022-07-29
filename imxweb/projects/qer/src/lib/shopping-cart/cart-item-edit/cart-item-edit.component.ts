@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -52,6 +52,7 @@ export class CartItemEditComponent {
 
     const defaultColumns = [
       this.shoppingCartItem.OrderReason.Column,
+      this.shoppingCartItem.UID_QERJustificationOrder.Column,
       this.shoppingCartItem.PWOPriority.Column
     ];
 

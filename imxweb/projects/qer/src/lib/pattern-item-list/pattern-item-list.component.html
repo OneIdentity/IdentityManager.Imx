@@ -24,13 +24,10 @@
     [useActionMenu]="false"
     fallbackIcon="request"
     [selectable]="true"
-    [actions]="[
-      { name: 'details', description: '#LDS#Details' | translate },
-      { name: 'edit', description: '#LDS#Add to cart' | translate }
-    ]"
+    [actions]="itemActions"
     [titleObject]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
     [subtitleObject]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-    (actionSelected)="handleAction($event)"
+    (actionSelected)="emitAction($event)"
   >
   </imx-data-tiles>
   <imx-data-table
@@ -64,14 +61,18 @@
       </ng-template>
     </imx-data-table-generic-column>
 
-    <imx-data-table-generic-column columnName="addCartButton" [columnLabel]="''">
+    <imx-data-table-generic-column columnName="actions" [columnLabel]="''">
       <ng-template let-prod>
-        <button mat-button color="primary" (click)="bubbleShowDetails(prod)" data-imx-identifier="pattern-item-list-datatable-row-button-show-details">
+        <button mat-button color="primary" *ngFor="let action of itemActions" (click)="emitAction(action, prod)"
+          [attr.data-imx-identifier]="'pattern-item-list-datatable-row-button-' + action.name">
+          {{ action.description | translate }}
+        </button>
+        <!-- <button mat-button color="primary" (click)="bubbleShowDetails(prod)" data-imx-identifier="pattern-item-list-datatable-row-button-show-details">
           {{ '#LDS#Details' | translate }}
         </button>
         <button mat-button color="primary" (click)="addItemToCart.emit(prod)" data-imx-identifier="pattern-item-list-datatable-row-button-add-to-cart">
           {{ '#LDS#Add request template products to cart' | translate }}
-        </button>
+        </button> -->
       </ng-template>
     </imx-data-table-generic-column>
   </imx-data-table>

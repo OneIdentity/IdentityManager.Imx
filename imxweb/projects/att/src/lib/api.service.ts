@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { V2Client, Client, TypedClient } from 'imx-api-att';
+import { V2Client, TypedClient } from 'imx-api-att';
 import { ApiClient } from 'imx-qbm-dbts';
 import { AppConfigService, ClassloggerService, ImxTranslationProviderService } from 'qbm';
 
@@ -39,8 +39,8 @@ export class ApiService {
     return this.tc;
   }
 
-  private c: Client;
-  public get client(): Client {
+  private c: V2Client;
+  public get client(): V2Client {
     return this.c;
   }
 
@@ -57,8 +57,8 @@ export class ApiService {
 
       // Use schema loaded by QBM client
       const schemaProvider = config.client;
-      this.c = new Client(this.config.apiClient, schemaProvider);
-      this.tc = new TypedClient(new V2Client(this.config.apiClient, schemaProvider), this.translationProvider);
+      this.c = new V2Client(this.config.apiClient, schemaProvider);
+      this.tc = new TypedClient(this.c, this.translationProvider);
     } catch (e) {
       this.logger.error(this, e);
     }

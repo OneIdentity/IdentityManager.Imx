@@ -1,14 +1,13 @@
 <nav mat-tab-nav-bar>
   <ng-container *ngIf="menuItems">
     <span *ngFor="let item of menuItems">
-      <a mat-tab-link *ngIf="!item.items" (click)="navigate(item)" [attr.data-imx-identifier]="item.id" (keyup.enter)="navigate(item)" [active]="isActive(item)">
+      <button mat-button class="imx-mein-menu-item" *ngIf="!item.items" (click)="navigate(item)" [attr.data-imx-identifier]="item.id" (keyup.enter)="navigate(item)" [active]="isActive(item)">
         {{ item.title | translate }}
-      </a>
+      </button>
       <ng-container *ngIf="item.items">
-        <a mat-tab-link [matMenuTriggerFor]="submenu" (keyup.tab)="submenuTrigger.openMenu()" [attr.data-imx-identifier]="item.id"
-          (keyup.shift.tab)="submenuTrigger.openMenu()" #submenuTrigger="matMenuTrigger" [active]="isActive(item)">
+        <button mat-button class="imx-mein-menu-item" [matMenuTriggerFor]="submenu" #submenuTrigger="matMenuTrigger">
           {{ item.title | translate }}
-        </a>
+        </button>
         <mat-menu #submenu="matMenu" yPosition="below" overlapTrigger="false">
           <button mat-menu-item *ngFor="let subitem of item.items" (click)="navigate(subitem)" [attr.data-imx-identifier]="subitem.id" (keyup.enter)="navigate(item)">
             {{ subitem.title | translate }}

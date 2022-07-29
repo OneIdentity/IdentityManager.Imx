@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,12 +26,12 @@
 
 import { ClassloggerService } from '../../classlogger/classlogger.service';
 import { DateParser } from './date-parser';
-import * as moment from 'moment-timezone';
+import moment from 'moment-timezone';
 
 describe('DateParser', () => {
 
   const mockLogger: ClassloggerService = jasmine.createSpyObj<ClassloggerService>("ClassloggerService", ["debug"]);
-  
+
   beforeEach(() => {
     // set en-US as default locale
     moment.locale('en-US');
@@ -47,10 +47,10 @@ describe('DateParser', () => {
 
   it('should cast away seconds in full format', () => {
     let parser = new DateParser(mockLogger, true);
-    
+
     // note: month unlike the other nmbers is zero based, so december is month 11.
     let m = moment({year: 2100, month:11, day: 31, hour:23, minute: 47, second: 42});
-    
+
     expect(parser.format(m)).toEqual('12/31/2100 11:47 PM');
   });
 
@@ -83,10 +83,10 @@ describe('DateParser', () => {
     { text: '13/22/2100 11:47', valid: false},
   ].forEach(testcase => it(`should ${testcase.valid ? '' : 'not '}parse as date: ${testcase.text}`, () => {
       let result = DateParser.parseDate(testcase.text);
-      
-      expect(result).toBeDefined();    
+
+      expect(result).toBeDefined();
       expect(result.isValid()).toBe(testcase.valid);
-      
+
       if (testcase.valid) {
         expect(result.year()).toBe(testcase.year);
         expect(result.month()).toBe(testcase.month);
@@ -114,10 +114,10 @@ describe('DateParser', () => {
     { text: '13/22/2100 11:47', valid: true, hour: 13, minute: 47},
   ].forEach(testcase => it(`should ${testcase.valid ? '' : 'not '}parse as time: ${testcase.text}`, () => {
       let result = DateParser.parseTime(testcase.text);
-      
-      expect(result).toBeDefined();    
+
+      expect(result).toBeDefined();
       expect(result.isValid()).toBe(testcase.valid);
-      
+
       if (testcase.valid) {
         const now = moment();
         expect(result.year()).toBe(now.year());
@@ -143,7 +143,7 @@ describe('DateParser', () => {
     expect(parser.parseDateAndTimeString('\t')).toBeUndefined();
   });
 
-  [ 
+  [
     { text: '12/22/2100 11:47', valid: true, year: 2100, month: 11, day: 22, hour: 11, minute: 47},
     { text: '12/22/2100 14:47', valid: true, year: 2100, month: 11, day: 22, hour: 14, minute: 47},
     { text: '12/22/2100 2:47 PM', valid: true, year: 2100, month: 11, day: 22, hour: 14, minute: 47},
@@ -156,20 +156,19 @@ describe('DateParser', () => {
     { locale: 'de-DE', text: '22.12.2100 2:47', valid: true, year: 2100, month: 11, day: 22, hour: 2, minute: 47},
     { locale: 'de-DE', text: '22.12.2100 2:47', valid: true, year: 2100, month: 11, day: 22, excludeTime: true},
     { locale: 'de-DE', text: '1.2.03 4:5', valid: true, year: 2003, month: 1, day: 1, excludeTime: true},
-    // if time is required but not given, the result is invalid
-    { locale: 'de-DE', text: '22.12.2100', valid: false},
+    { locale: 'de-DE', text: '22.12.2100', valid: true, year: 2100, month: 11, day: 22, hour: 0, minute: 0}, // because the time is added internally
   ].forEach(testcase => it(`should ${testcase.valid ? '' : 'not '}parse as date and time: ${testcase.text}`, () => {
-      
+
       if (testcase.locale) {
         moment.locale(testcase.locale);
       }
 
       let withTime =! testcase.excludeTime;
       let result = new DateParser(mockLogger, withTime).parseDateAndTimeString(testcase.text);
-      
-      expect(result).toBeDefined();    
+
+      expect(result).toBeDefined();
       expect(result.isValid()).toBe(testcase.valid);
-      
+
       if (testcase.valid) {
         expect(result.year()).toBe(testcase.year);
         expect(result.month()).toBe(testcase.month);

@@ -2,14 +2,10 @@
 <div class="imx-table-container">
   <ng-container *ngIf="dstSettings">
     <div class="toggle-wrapper">
-      <mat-slide-toggle
-        *ngIf="isUserEscalationApprover"
-        class="escalation-approver-toggle"
-        color="primary"
-        [(ngModel)]="viewEscalation"
-        (change)="switchEscalation()"
-        [matTooltip]="'#LDS#Activate this toggle to show only attestation cases that can be approved by the chief approval team. Members of the chief approval team are authorized to intervene in the approval process at any time.'| translate">
-        {{ '#LDS#Show attestation cases to be approved by chief approval team' | translate }}
+      <mat-slide-toggle *ngIf="isUserEscalationApprover" class="escalation-approver-toggle" color="primary"
+      [(ngModel)]="viewEscalation" (change)="switchEscalation()"
+      [matTooltip]="'#LDS#Activate this toggle to show only attestation cases that can be approved by the chief approval team. Members of the chief approval team are authorized to intervene in the approval process at any time.'|translate">
+      {{'#LDS#Show attestation cases to be approved by chief approval team' | translate}}
       </mat-slide-toggle>
     </div>
     <imx-data-source-toolbar
@@ -34,7 +30,7 @@
       >
         <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.UiText" data-imx-identifier="attestations-table-column-attestationCaseDisplay">
           <ng-template let-item>
-            <imx-attestation-display [attestation]="item"></imx-attestation-display>
+            <imx-attestation-display [additionalColumns]="dst.additionalListElements" [attestation]="item"></imx-attestation-display>
           </ng-template>
         </imx-data-table-column>
         <imx-data-table-generic-column columnName="badges" data-imx-identifier="attestations-table-column-edit">

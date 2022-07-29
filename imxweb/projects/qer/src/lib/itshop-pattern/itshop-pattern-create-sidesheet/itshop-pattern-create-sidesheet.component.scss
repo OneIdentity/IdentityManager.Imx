@@ -1,4 +1,4 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_palette.scss";
 
 .eui-sidesheet-content {
   display: flex;
@@ -14,12 +14,13 @@
 
   .imx-helper-alert {
     width: 100%;
+
     ::ng-deep .eui-alert {
       margin-bottom: 20px;
     }
   }
 
-  .imx-sidesheet-content{
+  .imx-sidesheet-content {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -34,5 +35,12 @@
       margin-right: 10px;
     }
   }
-}
 
+  .imx-errormessages {
+    margin-bottom: 10px;
+
+    ::ng-deep .imx-message-content {
+      font-size: 14px;
+    }
+  }
+}

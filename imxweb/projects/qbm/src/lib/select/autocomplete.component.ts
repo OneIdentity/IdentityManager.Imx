@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -131,7 +131,7 @@ export class AutocompleteComponent<T> implements AfterViewInit, OnChanges {
 
   public ngOnChanges(changes: SimpleChanges): void {
 
-    if (changes.items && changes.items.currentValue) {
+    if (changes['items'] && changes['items'].currentValue) {
       this.dataSource.setData(this.items);
 
       if (this.isLocalDatasource) {

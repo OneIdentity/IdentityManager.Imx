@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -69,6 +69,14 @@ export class WorkflowSingleActionComponent implements OnInit {
   /**
    * @ignore since this is only public because of databinding to the template
    *
+   * The references depending on the parameter of the request that are displayed/edited during the decision.
+   *
+   */
+  public readonly requestParameterColumns: ColumnDependentReference[] = [];
+
+  /**
+   * @ignore since this is only public because of databinding to the template
+   *
    * The single request taken from {@link data}
    */
   public request: Approval;
@@ -94,14 +102,9 @@ export class WorkflowSingleActionComponent implements OnInit {
       this.columns.push(new BaseCdr(this.request.ValidUntil.Column));
     }
 
-    if (this.data.actionParameters.justification) {
-      this.columns.push(this.data.actionParameters.justification);
-    }
-
-    this.columns.push(this.data.actionParameters.reason);
-
     if (this.request.parameterColumns) {
-      this.request.parameterColumns.forEach(pCol => this.columns.push(this.data.approve ? new BaseCdr(pCol) : new BaseReadonlyCdr(pCol)));
+      this.request.parameterColumns.forEach(pCol => 
+        this.requestParameterColumns.push(this.data.approve ? new BaseCdr(pCol) : new BaseReadonlyCdr(pCol)));
     }
   }
 

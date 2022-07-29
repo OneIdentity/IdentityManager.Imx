@@ -1,0 +1,66 @@
+@import '@elemental-ui/core/src/styles/_palette.scss';
+
+:host {
+  overflow: auto;
+
+  ::ng-deep .eui-alert {
+    margin-bottom: 20px;
+  }
+
+  ::ng-deep .mat-card-header-text {
+    margin: 0;
+  }
+
+  ::ng-deep .mat-form-field-wrapper {
+    padding-bottom: 0;
+  }
+}
+
+.imx-info {
+  margin-bottom: 20px;
+}
+
+.auth-factor {
+  margin-bottom: 20px;
+}
+
+.spinner {
+  position: absolute;
+  top: 3px;
+  left: 20px;
+}
+
+.poll-spinner {
+  position: absolute;
+}
+
+.auth-text {
+  font-size: 14px;
+  color: $black-9;
+}
+
+.poll-content {
+  display: flex;
+  justify-content: space-between;
+}
+
+.poll-button {
+  display: flex;
+  width: 30%;
+  align-items: center;
+  justify-content: center;
+}
+
+.poll-otp {
+  width: 60%;
+}
+
+.otp {
+  display: flex;
+  flex-direction: column;
+}
+
+.otp-actions {
+  display: flex;
+  justify-content: flex-end;
+}

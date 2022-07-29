@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,10 +36,9 @@ import { AttestationCasesComponentParameter } from './attestation-cases-componen
 
 @Component({
   templateUrl: './attestation-cases.component.html',
-  styleUrls: ['./attestation-cases.component.scss']
+  styleUrls: ['./attestation-cases.component.scss'],
 })
 export class AttestationCasesComponent implements OnInit {
-
   public dstSettings: DataSourceToolbarSettings;
   public readonly entitySchemaPolicy: EntitySchema;
   public DisplayColumns = DisplayColumns;
@@ -51,6 +50,7 @@ export class AttestationCasesComponent implements OnInit {
   private navigationState: CollectionLoadParameters;
   private displayedColumns: IClientProperty[];
   private dataModel: DataModel;
+  private threshold = -1;
 
   constructor(
     public readonly sidesheetRef: EuiSidesheetRef,
@@ -60,28 +60,34 @@ export class AttestationCasesComponent implements OnInit {
     private readonly snackbar: SnackBarService,
     private readonly confirmationService: ConfirmationService,
     settingsService: SettingsService,
-    private readonly logger: ClassloggerService) {
+    private readonly logger: ClassloggerService
+  ) {
     this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0, ParentKey: '' };
     this.entitySchemaPolicy = policyService.AttestationMatchingObjectsSchema;
-    this.displayedColumns = [
-      this.entitySchemaPolicy.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]
-    ];
+    this.displayedColumns = [this.entitySchemaPolicy.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]];
 
     if (data.canCreateRuns) {
       this.displayedColumns.push({
         ColumnName: 'runMethod',
-        Type: ValType.String
+        Type: ValType.String,
       });
     }
   }
 
+  public get showWarning() {
+    return this.threshold > 0 && this.threshold < (this.dstSettings?.dataSource?.totalCount ?? 0);
+  }
+
   public async ngOnInit(): Promise<void> {
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
       this.dataModel = await this.policyService.getDataModel();
+      this.threshold = await this.policyService.getCasesThreshold();
     } finally {
-      setTimeout(async () => { this.busyService.hide(overlayRef); });
+      setTimeout(async () => {
+        this.busyService.hide(overlayRef);
+      });
     }
 
     return this.navigate();
@@ -97,21 +103,30 @@ export class AttestationCasesComponent implements OnInit {
   }
 
   public async createRun(data: PortalAttestationFilterMatchingobjects[]): Promise<void> {
-
     const count = data.length > 0 ? data.length : this.dstSettings.dataSource.totalCount;
-    if (count <= 1000 || await this.confirmCreation()) {
+    if (count <= 1000 || (await this.confirmCreation())) {
       let overlayRef: OverlayRef;
-      setTimeout(() => overlayRef = this.busyService.show());
+      setTimeout(() => (overlayRef = this.busyService.show()));
 
       try {
-        await this.policyService.createAttestationRun(this.data.uidpolicy,
-          data.map(elem => elem.Key.value));
+        await this.policyService.createAttestationRun(
+          this.data.uidpolicy,
+          data.map((elem) => elem.Key.value)
+        );
 
-        this.logger.trace(this, 'attestation run created for', this.data.uidpolicy, data.map(elem => elem.Key.value));
+        this.logger.trace(
+          this,
+          'attestation run created for',
+          this.data.uidpolicy,
+          data.map((elem) => elem.Key.value)
+        );
 
-        this.snackbar.open({
-          key: '#LDS#The attestation has been started successfully. It may take some time until the associated attestation cases are created.',
-        }, '#LDS#Close');
+        this.snackbar.open(
+          {
+            key: '#LDS#The attestation has been started successfully. It may take some time until the associated attestation cases are created.',
+          },
+          '#LDS#Close'
+        );
       } finally {
         setTimeout(async () => {
           this.busyService.hide(overlayRef);
@@ -123,13 +138,15 @@ export class AttestationCasesComponent implements OnInit {
 
   private async navigate(): Promise<void> {
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
 
     try {
-
-      const datasource = await this.policyService.getObjectsForFilter(this.data.uidobject,
+      const datasource = await this.policyService.getObjectsForFilter(
+        this.data.uidobject,
         this.data.uidPickCategory,
-        { Elements: this.data.filter, ConcatenationType: this.data.concat }, this.navigationState);
+        { Elements: this.data.filter, ConcatenationType: this.data.concat },
+        this.navigationState
+      );
 
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
@@ -137,7 +154,7 @@ export class AttestationCasesComponent implements OnInit {
         entitySchema: this.entitySchemaPolicy,
         navigationState: this.navigationState,
         dataModel: this.dataModel,
-        identifierForSessionStore: 'attestatation-cases'
+        identifierForSessionStore: 'attestatation-cases',
       };
 
       this.logger.debug(this, 'matching objects table navigated to', this.navigationState);
@@ -149,7 +166,7 @@ export class AttestationCasesComponent implements OnInit {
   private async confirmCreation(): Promise<boolean> {
     return this.confirmationService.confirm({
       Title: '#LDS#Heading Start Attestation',
-      Message: '#LDS#You have selected more than 1000 objects. Are you sure you want to start the attestation for all objects?'
+      Message: '#LDS#You have selected more than 1000 objects. Are you sure you want to start the attestation for all objects?',
     });
   }
 }

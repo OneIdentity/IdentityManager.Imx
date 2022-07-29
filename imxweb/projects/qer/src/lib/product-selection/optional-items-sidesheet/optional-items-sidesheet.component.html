@@ -1,0 +1,59 @@
+<div eui-sidesheet-content>
+  <eui-alert type="info" colored="true" condensed="true">
+    <span>{{ '#LDS#The following products have optional products as well, select these if you want to request them additionally. Only products with selected parents will be added.' | translate }}</span>
+  </eui-alert>
+  <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+      <li class="mat-tree-node">
+        <button mat-icon-button disabled></button>
+        <ng-container *ngTemplateOutlet="treeNodeTemplate; context: { $implicit: node }"></ng-container>
+      </li>
+    </mat-tree-node>
+
+    <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
+      <li>
+        <div class="mat-tree-node">
+          <button mat-icon-button matTreeNodeToggle>
+            <mat-icon class="mat-icon-rtl-mirror">
+              {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+            </mat-icon>
+          </button>
+          <ng-container *ngTemplateOutlet="treeNodeTemplate; context: { $implicit: node }"></ng-container>
+        </div>
+        <ul [class.service-tree-invisible]="!treeControl.isExpanded(node)">
+          <ng-container matTreeNodeOutlet></ng-container>
+        </ul>
+      </li>
+    </mat-nested-tree-node>
+  </mat-tree>
+</div>
+
+<div eui-sidesheet-actions color="white">
+  <p class="imx-selected-products">
+    <span>{{ '#LDS#Selected optional products' | translate }}</span>
+    <eui-badge class="imx-badge" color="orange">{{ selected }}</eui-badge>
+  </p>
+  <button mat-stroked-button (click)="onSelectAll()" data-imx-identifier="optional-items-select-all">{{ '#LDS#Select all' | translate }}</button>
+  <button mat-stroked-button (click)="onDeselectAll()" data-imx-identifier="optional-items-deselect-all" [disabled]="selected === 0">{{ '#LDS#Deselect all' | translate }}</button>
+  <div class="imx-menu-spacer"></div>
+  <button mat-raised-button color="primary" (click)="addToCart()" data-imx-identifier="optional-items-button-add-to-cart">{{ '#LDS#Add to cart' | translate }}</button>
+</div>
+
+<ng-template #treeNodeTemplate let-node>
+  <mat-checkbox *ngIf="!node?.Recipient" [checked]="node.isChecked" [disabled]="node.isMandatory || !node.parentChecked || node.isIndeterminate" [indeterminate]="node.isIndeterminate" (change)="onChange($event, node)">
+    <span>{{ node.Display }}</span>
+    <div class="imx-subtext">
+      {{ (node.isMandatory ?
+          '#LDS#Mandatory product' :
+          '#LDS#Optional product') | translate
+      }}
+    </div>
+  </mat-checkbox>
+  <div class="imx-tree-root" *ngIf="node?.Recipient">
+    <span>{{ node.Display }}</span>
+    <div class="imx-subtext">
+      {{'#LDS#Recipient:' | translate}}
+      {{node.Recipient}}
+    </div>
+  </div>
+</ng-template>

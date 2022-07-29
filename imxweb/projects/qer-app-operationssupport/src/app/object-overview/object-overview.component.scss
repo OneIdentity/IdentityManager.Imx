@@ -1,11 +1,10 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_palette.scss";
 
 :host {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   height: 100%;
-  max-width: 1200px;
 }
 
 :host ::ng-deep .mat-tab-body {
@@ -77,13 +76,13 @@
     width: 50%;
     align-self: flex-end;
   }
-  
+
   .mat-card-title {
     font-size: medium;
     font-weight: 600;
     padding: 10px 10px 0 10px;
   }
-  
+
   .mat-card-content {
     display: grid;
     grid-template-columns: auto 1fr;

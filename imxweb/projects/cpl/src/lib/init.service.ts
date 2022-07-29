@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,17 +26,20 @@
 
 import { Injectable } from '@angular/core';
 import { Router, Route } from '@angular/router';
-import { ShoppingCartValidationDetailService } from 'qer';
+import { IdentityRoleMembershipsService, ShoppingCartValidationDetailService } from 'qer';
 
 import { ExtService, MenuItem, MenuService, TabItem } from 'qbm';
 
 import { DashboardPluginComponent } from './dashboard-plugin/dashboard-plugin.component';
 import { CartItemComplianceCheckComponent } from './item-validator/cart-item-compliance-check/cart-item-compliance-check.component';
 import { isCiso, isRuleOwner } from './rules/admin/permissions-helper';
-import { RoleComplianceViolationsService } from './role-compliance-violations/role-compliance-violations.service';
-import { RoleComplianceViolationsComponent } from './role-compliance-violations/role-compliance-violations.component';
 import { RequestRuleViolation } from './request/request-rule-violation';
 import { RequestRuleViolationDetail } from './request/request-rule-violation-detail';
+import { RoleComplianceViolationsService } from './role-compliance-violations/role-compliance-violations.service';
+import { RoleComplianceViolationsComponent } from './role-compliance-violations/role-compliance-violations.component';
+import { PortalPersonRolemembershipsNoncompliance } from 'imx-api-cpl';
+import { ApiService } from './api.service';
+import { CollectionLoadParameters } from 'imx-qbm-dbts';
 import { IdentityRuleViolationsComponent } from './identity-rule-violations/identity-rule-violations.component';
 
 @Injectable({ providedIn: 'root' })
@@ -45,8 +48,10 @@ export class InitService {
     private readonly extService: ExtService,
     private readonly router: Router,
     private readonly menuService: MenuService,
+    private readonly api: ApiService,
     private readonly cplService: RoleComplianceViolationsService,
-    private readonly validationDetailService: ShoppingCartValidationDetailService
+    private readonly validationDetailService: ShoppingCartValidationDetailService,
+    private readonly identityRoleMembershipService: IdentityRoleMembershipsService
   ) {
     this.setupMenu();
   }
@@ -55,16 +60,17 @@ export class InitService {
     this.addRoutes(routes);
 
     this.extService.register('Dashboard-SmallTiles', { instance: DashboardPluginComponent });
-    this.extService.register('roleOverview', {
-      instance: RoleComplianceViolationsComponent, inputData: {
-        id: 'roleCompliance',
-        label: '#LDS#Heading Rule Violations',
-        checkVisibility: async ref => this.checkCompliances(ref)
-      },
-      sortOrder: 0
-    } as TabItem);
     this.extService.register(RequestRuleViolation.id, new RequestRuleViolation());
     this.extService.register(RequestRuleViolationDetail.id, new RequestRuleViolationDetail());
+    this.extService.register('roleOverview', {
+      instance: RoleComplianceViolationsComponent,
+      inputData: {
+        id: 'roleCompliance',
+        label: '#LDS#Heading Rule Violations',
+        checkVisibility: async (ref) => this.checkCompliances(ref),
+      },
+      sortOrder: 0,
+    });
 
     this.extService.register('identitySidesheet', {
       instance: IdentityRuleViolationsComponent,
@@ -78,14 +84,12 @@ export class InitService {
     this.validationDetailService.register(CartItemComplianceCheckComponent, 'CartItemComplianceCheck');
   }
 
-
   private async checkCompliances(referrer: any): Promise<boolean> {
     this.cplService.handleOpenLoader();
     let violationCount = 0;
     try {
-      violationCount = (await this.cplService.getRoleComplianceViolations(
-        referrer.tablename, referrer.entity.GetKeys()[0])
-      ).Violations?.length || 0;
+      violationCount =
+        (await this.cplService.getRoleComplianceViolations(referrer.tablename, referrer.entity.GetKeys()[0])).Violations?.length || 0;
     } finally {
       this.cplService.handleCloseLoader();
     }
@@ -95,7 +99,7 @@ export class InitService {
 
   private addRoutes(routes: Route[]): void {
     const config = this.router.config;
-    routes.forEach(route => {
+    routes.forEach((route) => {
       config.unshift(route);
     });
     this.router.resetConfig(config);
@@ -103,11 +107,7 @@ export class InitService {
 
   private setupMenu(): void {
     this.menuService.addMenuFactories((preProps: string[], groups: string[]) => {
-
-      if (
-        !preProps.includes('COMPLIANCE')
-        || (!isCiso(groups) && !isRuleOwner(groups))
-      ) {
+      if (!preProps.includes('COMPLIANCE') || (!isCiso(groups) && !isRuleOwner(groups))) {
         return null;
       }
 
@@ -127,10 +127,9 @@ export class InitService {
         id: 'ROOT_Compliance',
         title: '#LDS#Compliance',
         sorting: '25',
-        items
+        items,
       };
       return menu;
     });
-
   }
 }

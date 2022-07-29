@@ -1,11 +1,10 @@
-@import '~@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 :host{
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   max-height: 100%;
-  max-width: 1200px;
 }
 
 .imx-jobqueue-container {
@@ -18,7 +17,7 @@
 
 mat-form-field {
   display: flex;
-  
+
   ::ng-deep .mat-form-field-wrapper {
     padding-bottom: 0;
   }

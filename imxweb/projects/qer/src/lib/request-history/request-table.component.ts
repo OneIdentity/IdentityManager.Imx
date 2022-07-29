@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -41,9 +41,9 @@ import {
   ImxTranslationProviderService,
   DataTableComponent,
   SettingsService,
-  DataSourceToolbarComponent,
   ExtService,
-  IExtension
+  IExtension,
+  DataSourceToolbarComponent
 } from 'qbm';
 import { RequestDetailComponent } from './request-detail/request-detail.component';
 import { RequestHistoryService } from './request-history.service';
@@ -92,7 +92,9 @@ export class RequestTableComponent implements OnInit, AfterViewInit, OnDestroy {
   public get canUnsubscribeRequest(): boolean {
     return this.selectedItems.every((item) => item.UnsubscribeRequestAllowed.value);
   }
-  public get canEscalateDecision(): boolean { return this.selectedItems.every(item => item.canEscalateDecision); }
+  public get canEscalateDecision(): boolean {
+    return this.selectedItems.every((item) => item.canEscalateDecision);
+  }
 
   public get canPerformActions(): boolean {
     return (
@@ -123,7 +125,6 @@ export class RequestTableComponent implements OnInit, AfterViewInit, OnDestroy {
   private busyIndicator: OverlayRef;
   private userUid: string;
   private extensions: IExtension[] = [];
-
   private readonly UID_ComplianceRuleId = 'cpl.UID_ComplianceRule';
   private displayedColumns: IClientProperty[];
   private readonly subscriptions: Subscription[] = [];
@@ -293,22 +294,20 @@ export class RequestTableComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public async viewDetails(pwo: ItshopRequest): Promise<void> {
-    await this.sideSheet
-      .open(RequestDetailComponent, {
-        title: await this.translator.get('#LDS#Heading View Request Details').toPromise(),
-        headerColour: 'iris-blue',
-        padding: '10px',
-        width: '640px',
-        testId: 'imx-request-detail',
-        data: {
-          isReadOnly: this.isReadOnly,
-          personWantsOrg: pwo,
-          itShopConfig: this.itShopConfig,
-          userUid: this.userUid,
-        },
-      })
-      .afterClosed()
-      .toPromise();
+    await this.sideSheet.open(RequestDetailComponent, {
+      title: await this.translator.get('#LDS#Heading View Request Details').toPromise(),
+      headerColour: 'iris-blue',
+      bodyColour: 'asher-gray',
+      padding: '0px',
+      width: 'max(700px, 60%)',
+      testId: 'imx-request-detail',
+      data: {
+        isReadOnly: this.isReadOnly,
+        personWantsOrg: pwo,
+        itShopConfig: this.itShopConfig,
+        userUid: this.userUid
+      }
+    }).afterClosed().toPromise();
   }
 
   private sortChildrenAfterParents(requests: ItshopRequest[]): ItshopRequest[] {

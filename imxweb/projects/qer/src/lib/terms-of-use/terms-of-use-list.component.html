@@ -1,0 +1,30 @@
+<form [formGroup]="formGroup">
+  <mat-vertical-stepper linear #stepper>
+    <mat-step *ngFor="let terms of termsOfUse; index as i" label="{{terms?.GetEntity()?.GetDisplay()}}">
+      <mat-card class="imx-accept-terms-container mat-elevation-z3">
+        {{ terms?.DisplayContent?.Column?.GetDisplayValue() }}
+      </mat-card>
+      <button mat-stroked-button color="primary" *ngIf="terms?.HasFile?.value"
+        attr.data-imx-identifier="terms-of-use-list-button-download-term-no-{{i}}"
+        [euiDownload]="getDownloadOptions(terms?.GetEntity()?.GetKeys()[0], terms?.GetEntity()?.GetDisplay())">
+        {{ '#LDS#Download' | translate}}
+      </button>
+      <div class="imx-accept-terms-list-heading">
+        {{ itemsHeading | translate}}:
+      </div>
+      <ul class="imx-accept-terms-list-serviceitems">
+        <li *ngFor="let item of getTermsOfUseItems(terms?.GetEntity()?.GetKeys()[0])">
+          {{ item?.GetEntity()?.GetDisplay() }}
+        </li>
+      </ul>
+      <button mat-raised-button color="primary" attr.data-imx-identifier="terms-of-use-list-button-next-term-no-{{i}}"
+        matStepperNext>{{'#LDS#Next' | translate}}</button>
+    </mat-step>
+    <mat-step *ngIf="termsOfUse.length > 0" label="{{'#LDS#Accept them' | translate}}">
+      <mat-checkbox class="imx-accept-checkbox" data-imx-identifier="terms-of-use-list-checkbox-accept"
+        formControlName="acceptTermsOfUseFormCtrl" required>
+        {{'#LDS#I have read and understood the terms of use.' | translate}}
+      </mat-checkbox>
+    </mat-step>
+  </mat-vertical-stepper>
+</form>

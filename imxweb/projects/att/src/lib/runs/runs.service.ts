@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -66,15 +66,11 @@ export class RunsService {
   }
 
   public async getGroupInfo(parameters: RunsLoadParameters): Promise<GroupInfo[]> {
-    return this.attService.client.portal_attestation_run_group_get(
-      parameters.by,
-      parameters.def,
-      parameters.groupFilter, // filter
-      parameters.StartIndex,
-      parameters.PageSize,
-      true, // withcount
-      parameters.withpendingcases // withpendingcases
-    );
+    return this.attService.client.portal_attestation_run_group_get({
+      ...parameters,
+      filter: parameters.groupFilter,
+      withcount: true
+    });
   }
 
   public async extendRun(run: PortalAttestationRun, data: ExtendRunInput): Promise<any> {

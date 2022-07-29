@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -89,14 +89,7 @@ export class OwnerControlService {
         fkTableName: fkRelation.ParentTableName,
         parameterNames: ['OrderBy', 'StartIndex', 'PageSize', 'filter', 'search'],
         load: async (_, parameters = {}) =>
-          this.qerClient.client.portal_candidates_Person_get(
-            parameters.OrderBy,
-            parameters.StartIndex,
-            parameters.PageSize,
-            parameters.filter,
-            parameters.withProperties,
-            parameters.search
-          ),
+          this.qerClient.client.portal_candidates_Person_get(parameters),
         getDataModel: async () => ({}),
         getFilterTree: async () => ({ Elements: [] })
       },

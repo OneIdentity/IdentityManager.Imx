@@ -25,6 +25,7 @@
       >
       </imx-cdr-editor>
       <imx-decision-reason
+        [maxReasonType]="data.actionParameters.maxReasonType"
         [reasonStandard]="data.actionParameters.justification"
         [reasonFreetext]="data.actionParameters.reason"
         (controlCreated)="formGroup.addControl('reason', $event)"

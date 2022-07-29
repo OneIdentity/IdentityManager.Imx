@@ -5,6 +5,10 @@
             <div class="imx-helper-title">{{'#LDS#Here you can select the objects to be attested.' | translate}}</div>
             <div>{{'#LDS#Note: After you have started an attestation, it may take some time until the associated attestation cases are created.' | translate}}</div>
         </eui-alert>
+        <eui-alert class="helper-alert" type="warning" condensed="true" [colored]="true" *ngIf="showWarning"
+        [dismissable]="true">
+            <div>{{'#LDS#This policy affects many objects. Note that running this policy may take some time and generate notifications to many approvers' | translate}}</div>
+        </eui-alert>
     </div>
 
     <mat-card class="imx-cases-card">

@@ -1,3 +1,29 @@
+/*
+ * ONE IDENTITY LLC. PROPRIETARY INFORMATION
+ *
+ * This software is confidential.  One Identity, LLC. or one of its affiliates or
+ * subsidiaries, has supplied this software to you under terms of a
+ * license agreement, nondisclosure agreement or both.
+ *
+ * You may not copy, disclose, or use this software except in accordance with
+ * those terms.
+ *
+ *
+ * Copyright 2022 One Identity LLC.
+ * ALL RIGHTS RESERVED.
+ *
+ * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
+ * WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+ * TO THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR
+ * NON-INFRINGEMENT.  ONE IDENTITY LLC. SHALL NOT BE
+ * LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE
+ * AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
+ * THIS SOFTWARE OR ITS DERIVATIVES.
+ *
+ */
+
 import { EventEmitter, Injector } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DataModel, DataModelViewConfig, EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
@@ -5,6 +31,7 @@ import { ClassloggerService } from '../classlogger/classlogger.service';
 import { StorageService } from '../storage/storage.service';
 import { AdditionalInfosComponent } from './additional-infos/additional-infos.component';
 import { DataSourceToolbarSettings } from './data-source-toolbar-settings';
+import { ClientPropertyForTableColumns } from './client-property-for-table-columns';
 import _ from 'lodash';
 
 export interface ShownClientPropertiesArg {
@@ -16,7 +43,7 @@ export class ColumnOptions {
   /**
    * A list of client properties, that will be shown in the DataTable
    */
-  public shownClientProperties: IClientProperty[] = [];
+  public shownClientProperties: ClientPropertyForTableColumns[] = [];
 
   /**
    * List of possible addable columns
@@ -160,11 +187,14 @@ export class ColumnOptions {
     if (this.currentViewSettings == null) { return; }
 
     const addition = this.additionalColumns;
-    const properties = [...this.displayedColumns, ...addition];
     this.selectedOptionals = [];
-    this.shownClientProperties = properties;
 
-    this.shownColumnsSelectionChanged.emit({ properties, needsReload: false });
+    this.shownClientProperties = [...this.displayedColumns];
+    const index = this.shownClientProperties.findIndex(elem => elem.afterAdditionals);
+    this.shownClientProperties.splice(index === -1 ? this.shownClientProperties.length : index, 0, ...addition);
+
+
+    this.shownColumnsSelectionChanged.emit({ properties: this.shownClientProperties, needsReload: false });
     this.logger.trace(this, 'shown client properties resetted to', this.shownClientProperties);
 
     if (this.settings.identifierForSessionStore) {
@@ -224,8 +254,8 @@ export class ColumnOptions {
     const optional = this.dataModel.Properties?.filter(elem => elem.IsAdditionalColumn).map(elem => elem.Property);
 
     this.optionalColumns = optional?.filter((value, index, categoryArray) =>
-        this.isAdditional(value.ColumnName)
-        && categoryArray.indexOf(value) === index);
+      this.isAdditional(value.ColumnName)
+      && categoryArray.indexOf(value) === index);
 
 
     this.logger.trace(this, 'optional columns', this.optionalColumns);
@@ -234,14 +264,9 @@ export class ColumnOptions {
   private initShownClientProperties(): void {
     const current = this.currentViewSettings?.AdditionalTableColumns?.
       map(elem => ColumnOptions.getClientProperty(elem, this.dataModel)) ?? [];
-
-    this.shownClientProperties = [
-      ...this.displayedColumns,
-      ...current,
-    ];
-    if (this.selectedOptionals?.length) {
-      this.shownClientProperties.push(...this.selectedOptionals);
-    }
+    this.shownClientProperties = [...this.displayedColumns];
+    const index = this.shownClientProperties.findIndex(elem => elem.afterAdditionals);
+    this.shownClientProperties.splice(index === -1 ? this.shownClientProperties.length : index, 0, ...current, ...this.selectedOptionals);
 
     this.logger.trace(this, 'shown client properties initialized with', this.shownClientProperties);
   }

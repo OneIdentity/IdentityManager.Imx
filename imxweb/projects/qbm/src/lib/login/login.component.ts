@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit, OnDestroy, ViewChild, ComponentFactoryResolver } from '@angular/core';
 import { Router } from '@angular/router';
-import { EuiLoadingService } from '@elemental-ui/core';
+import { EuiLoadingService, EuiSplashScreenService } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
 import { Globals } from 'imx-qbm-dbts';
@@ -67,6 +67,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private readonly appConfigService: AppConfigService,
     private readonly logger: ClassloggerService,
     private readonly componentFactoryResolver: ComponentFactoryResolver,
+    private readonly splash: EuiSplashScreenService,
     private readonly busyService: EuiLoadingService
   ) {
 
@@ -148,7 +149,8 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.product.name = name;
     }
 
-    this.initCustomAuthFlowView();
+    this.initCustomAuthFlowView();    
+    this.splash.close();    
   }
 
   public ngOnDestroy(): void {
@@ -169,7 +171,9 @@ export class LoginComponent implements OnInit, OnDestroy {
       provider = [];
     }
     for (const registeredProvider of this.authentication.authConfigProviders) {
-      provider.push(registeredProvider);
+      if (provider.length === 0 || provider.findIndex(prov => prov.name === registeredProvider.name) === -1) {
+        provider.push(registeredProvider);
+      }
     }
     this.configurationProviders = provider;
   }

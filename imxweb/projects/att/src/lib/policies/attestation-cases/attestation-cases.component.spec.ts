@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -114,7 +114,8 @@ describe('MatchingObjectsComponent', () => {
     AttestationMatchingObjectsSchema: PortalAttestationFilterMatchingobjects.GetEntitySchema(),
     getObjectsForFilter: jasmine.createSpy('getObjectsForFilter').and.returnValue(Promise.resolve({})),
     createAttestationRun: jasmine.createSpy('createAttestationRun'),
-    getDataModel: jasmine.createSpy('getDataModel').and.returnValue(Promise.resolve({}))
+    getDataModel: jasmine.createSpy('getDataModel').and.returnValue(Promise.resolve({})),
+    getCasesThreshold: jasmine.createSpy('getCasesThreshold').and.returnValue(Promise.resolve(99999))
   }
 
   const sideSheetRef = {

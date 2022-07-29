@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { PortalApplication, PortalApplicationIdentities } from 'imx-api-aob';
@@ -95,7 +95,7 @@ export class IdentitiesComponent implements OnChanges {
     await this.onOpenDetails(selectedItem.typedEntity);
   }
 
-  private async onOpenDetails(item: TypedEntity): Promise<void> {
+  public async onOpenDetails(item: TypedEntity): Promise<void> {
     const data: IdentityDetailData = {
       application: this.application,
       selectedItem: item

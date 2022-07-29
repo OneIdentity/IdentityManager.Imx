@@ -36,12 +36,24 @@
   <div *ngIf="!dataExplorerFilters.showTsSyncStatus" class="imx-data-explorer-content">
     <div class="data-explorer-table">
       <imx-data-table [dst]="dst" (highlightedEntityChanged)="onAccountChanged($event)" detailViewVisible="false" mode="manual">
-        <imx-data-table-column [entityColumn]="entitySchemaUnsAccount?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+        <imx-data-table-column width="500px" [entityColumn]="entitySchemaUnsAccount?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+          <ng-template let-item>
+            <div [style.max-width]="'500px'" class="imx-ellipse-column">{{item.GetEntity().GetDisplay()}}</div>
+          </ng-template>
         </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchemaUnsAccount?.Columns.UID_Person">
+        <imx-data-table-column width="300px" [entityColumn]="entitySchemaUnsAccount?.Columns.UID_Person">
+          <ng-template let-item>
+            <div [style.max-width]="'300px'" class="imx-ellipse-column">{{item.UID_Person.Column.GetDisplayValue()}}</div>
+          </ng-template>
         </imx-data-table-column>
         <imx-data-table-column align="center"
           [entityColumn]="entitySchemaUnsAccount?.Columns.AccountDisabled">
+        </imx-data-table-column>
+        <imx-data-table-column [entityColumn]="entitySchemaUnsAccount?.Columns.UID_UNSRoot">
+          <ng-template let-item>
+            <div>{{item.UID_UNSRoot.Column.GetDisplayValue()}}</div>
+            <div subtitle >{{item.UID_DPRNameSpace.Column.GetDisplayValue()}}</div>
+          </ng-template>
         </imx-data-table-column>
         <imx-data-table-generic-column alignHeader="center" alignContent="center"
           [columnName]="entitySchemaUnsAccount?.Columns.XMarkedForDeletion.ColumnName">
@@ -57,3 +69,6 @@
   </div>
 
 </mat-card>
+<div class="data-explorer-bottom-button-row">
+  <button mat-raised-button color="primary" data-imx-identifier="accounts-button-show-report-for-targetsystem" (click)="openReportOptionsSidesheet()">{{'#LDS#Show report for target system' | translate}}</button>
+</div>

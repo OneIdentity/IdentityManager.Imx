@@ -4,7 +4,7 @@
       <ng-template matTabContent>
         <div class="imx-tab-content">
           <eui-alert class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" [dismissable]="true">
-            {{ detailsInfoText | translate}}
+            {{ (data.isMyPattern ? editableProductsInfoText : detailsInfoText) | translate}}
           </eui-alert>
           <mat-card>
             <eui-badge *ngIf="!data.pattern.IsPublicPattern.value">
@@ -23,7 +23,7 @@
       <ng-template matTabContent>
         <div class="imx-tab-content">
           <eui-alert class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" [dismissable]="true">
-            {{ productsInfoText | translate}}
+            {{ (data.isMyPattern ? editableProductsInfoText : productsInfoText)  | translate}}
           </eui-alert>
           <mat-card>
             <div class="imx-table-container" *ngIf="dstWrapper && dstSettings">
@@ -56,7 +56,7 @@
       {{ '#LDS#Delete' | translate }}
     </button>
     <button mat-raised-button data-imx-identifier="itshop-pattern-sidesheet-button-toggle-public"
-      *ngIf="data.isMyPattern" (click)="togglePublic()">
+      *ngIf="data.isMyPattern && data.adminMode" (click)="togglePublic()">
       {{ (data.pattern.IsPublicPattern.value ? '#LDS#Unshare' : '#LDS#Share') | translate }}
     </button>
     <button mat-raised-button color="primary" data-imx-identifier="itshop-pattern-sidesheet-button-toggle-public"
@@ -75,6 +75,10 @@
     <button mat-stroked-button data-imx-identifier="itshop-pattern-sidesheet-button-delete-products" color="warn"
       class="justify-start" [disabled]="!selectedItemsCanBeDeleted()" (click)="deleteProducts()">
       {{ '#LDS#Remove' | translate }}
+    </button>
+    <button mat-raised-button data-imx-identifier="itshop-pattern-sidesheet-button-delete-products" color="primary"
+      (click)="addProducts()">
+      {{ '#LDS#Add' | translate }}
     </button>
   </div>
 </ng-template>

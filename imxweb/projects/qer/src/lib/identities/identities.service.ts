@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -132,17 +132,19 @@ export class IdentitiesService {
   public async getGroupedAllPerson(columns: string, navigationState: CollectionLoadParameters): Promise<GroupInfo[]> {
     this.logger.debug(this, `Retrieving person list`);
     this.logger.trace('Navigation state', navigationState);
+
     return this.qerClient.client.portal_admin_person_group_get(
-      columns,
-      '',
-      undefined,
-      navigationState.StartIndex,
-      navigationState.PageSize,
-      true,
-      '',
-      '',
-      '',
-      ''
+      {
+        by: columns,
+        def: '',
+        StartIndex: navigationState.StartIndex,
+        PageSize: navigationState.PageSize,
+        withcount: true,
+        withmanager: '',
+        orphaned: '',
+        deletedintarget: '',
+        isinactive: ''
+      }
     );
   }
 
@@ -172,7 +174,7 @@ export class IdentitiesService {
   }
 
   public async getPersonInteractive(uid: string): Promise<TypedEntityCollectionData<PortalPersonReportsInteractive>> {
-    return this.qerClient.typedClient.PortalPersonReportsInteractive_byid.Get_byid(uid);
+    return this.qerClient.typedClient.PortalPersonReportsInteractive.Get_byid(uid);
   }
 
   public async getDataModelAdmin(): Promise<DataModel> {

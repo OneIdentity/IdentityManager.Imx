@@ -22,7 +22,7 @@
         [colored]="true" type="info">
         {{ ldsAllRowsInfoText | translate }}
       </eui-alert>
-      <imx-sqlwizard *ngIf="!sqlExpression.IsUnsupported" [tableName]="definition.TableName" [apiService]="svc" [expression]="sqlExpression.Expression" [allowEmptyExpression]="true">
+      <imx-sqlwizard *ngIf="!sqlExpression.IsUnsupported" [tableName]="definition.TableName" [apiService]="svc" [expression]="sqlExpression.Expression">
       </imx-sqlwizard>
 
     </mat-card>

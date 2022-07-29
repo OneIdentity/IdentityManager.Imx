@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -171,7 +171,8 @@ export class ParameterDataService {
   public createInteractiveParameterCategoryColumns(
     parameterCategories: ParameterCategory[],
     getFkProviderItems: (parameter: ParameterData) => FkProviderItem[],
-    typedEntity: WriteExtTypedEntity<CategoryParameterWrite>
+    typedEntity: WriteExtTypedEntity<CategoryParameterWrite>,
+    callbackOnChange?: () => void
   ): ParameterCategoryColumn[] {
     const columns = [];
     const container = new ParameterContainer(this.entityService, getFkProviderItems, this.logger, typedEntity);
@@ -186,6 +187,9 @@ export class ParameterDataService {
           container.update(lookupKey, parameter);
           // TODO: remove parameters not returned by the server
         }));
+
+      if (callbackOnChange)
+        callbackOnChange();
     });
 
     parameterCategories.forEach(category =>

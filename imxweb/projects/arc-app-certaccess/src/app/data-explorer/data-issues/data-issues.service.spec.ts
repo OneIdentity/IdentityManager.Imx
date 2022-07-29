@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,8 +38,11 @@ describe('DataIssuesService', () => {
 
   const mockQerApiService = {
     typedClient: {
+      PortalAdminPerson: {
+        Get: jasmine.createSpy('Get').and.returnValue(Promise.resolve({ totalCount: 10 }))
+      },
       PortalPersonAll: {
-        Get: jasmine.createSpy('Get').and.returnValue(Promise.resolve({ totalCount: 10 })),
+        Get: jasmine.createSpy('Get').and.returnValue(Promise.resolve({ totalCount: 10 }))
       }
     }
   };

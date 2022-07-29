@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,9 +38,8 @@ export class QerApiService {
     return this.tc;
   }
 
-  private c: Client;
-  public get client(): Client {
-    return this.c;
+  public get client(): V2Client {
+    return this.v2Client;
   }
 
   public readonly v2Client: V2Client;
@@ -58,7 +57,6 @@ export class QerApiService {
 
       // Use schema loaded by QBM client
       const schemaProvider = config.client;
-      this.c = new Client(this.config.apiClient, schemaProvider);
       this.v2Client = new V2Client(this.config.apiClient, schemaProvider);
       this.tc = new TypedClient(this.v2Client, this.translationProvider);
     } catch (e) {

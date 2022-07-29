@@ -4,14 +4,15 @@
 
     <!-- Datasource Toolbar -->
     <imx-data-source-toolbar #dst [settings]="dstSettings" (navigationStateChanged)="getData(false, $event)"
-      (viewSelectionChanged)="viewSelectionChanged($event)" (groupingChanged)="onGroupingChanged($event)"
-      [options]="['selectedViewGroup']"
+      (groupingChanged)="onGroupingChanged($event)"
+      [alwaysVisible]="true"
+      [options]="['custom']"
       [itemStatus]="status">
       <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
     </imx-data-source-toolbar>
 
     <!-- Data Table -->
-    <ng-container *ngIf="selectedView === 'table'">
+    <ng-container>
       <imx-data-table #table [dst]="dst" [selectable]="true" (highlightedEntityChanged)="editEntitlement($event)"
         (selectionChanged)="onSelectionChanged($event)" mode="manual" class="mat-elevation-z2 imx-aob-data-container"
         [detailViewVisible]="false">
@@ -21,6 +22,11 @@
             <div subtitle>{{ data.Description.Column.GetDisplayValue() }}</div>
           </ng-template>
         </imx-data-table-column>
+        <imx-data-table-generic-column columnName="badges" columnLabel="">
+          <ng-template let-data>
+            <eui-badge *ngIf="data.IsDynamic.value">{{'#LDS#Dynamic' | translate}}</eui-badge>
+          </ng-template>
+        </imx-data-table-generic-column>
         <imx-data-table-generic-column columnName="type" columnLabel="{{'#LDS#Type' | translate }}">
           <ng-template let-data>
             <div>
@@ -50,32 +56,41 @@
         </imx-data-table-generic-column>
       </imx-data-table>
     </ng-container>
-
-    <!-- Data Tiles -->
-    <ng-container *ngIf="selectedView === 'cardlist'">
-      <imx-data-tiles #tiles class="imx-aob-data-container" [dst]="dst" selectable="true"
-        (selectionChanged)="onSelectionChanged($event)" [contentTemplate]="cardContentTemplate"
-        [titleObject]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-        [subtitleObject]="entitySchema?.Columns['Description']" icon="key"
-        [actions]="[{ name: 'edit', description: '#LDS#View and edit' | translate}]"
-        (actionSelected)="editEntitlement($event.typedEntity)" [useActionMenu]="false">
-      </imx-data-tiles>
-    </ng-container>
-
     <imx-data-source-paginator class="mat-elevation-z2" [dst]="dst"></imx-data-source-paginator>
   </ng-container>
 </div>
 
 <!-- Custom toolbar template with publish, unpublish and unassign buttons -->
 <ng-template #customToolbarTemplate>
-  <button mat-raised-button color="primary" [disabled]="publishDisabled" (click)="publish()" data-imx-identifier="imx-entitlements-publish">{{ '#LDS#Publish' |
+  <button mat-raised-button color="primary" [disabled]="publishDisabled" (click)="publish()"
+    data-imx-identifier="imx-entitlements-publish">{{ '#LDS#Publish' |
     translate }}</button>
-  <button mat-stroked-button [disabled]="unpublishDisabled" (click)="unpublish()" data-imx-identifier="imx-entitlements-unpublish">{{ '#LDS#Unpublish' | translate
+  <button mat-stroked-button [disabled]="unpublishDisabled" (click)="unpublish()"
+    data-imx-identifier="imx-entitlements-unpublish">{{ '#LDS#Unpublish' | translate
     }}</button>
-    <button mat-stroked-button data-imx-identifier="imx-entitlements-assign" (click)="addNewElement()">
-        {{'#LDS#Assign more' | translate}}
-      </button>
-  <button mat-stroked-button [disabled]="unassignedDisabled" (click)="unassign()" data-imx-identifier="imx-entitlements-unassign">{{ '#LDS#Unassign' | translate
+  <button mat-stroked-button data-imx-identifier="imx-entitlements-assign-mode-button"
+    [matMenuTriggerFor]="actionsMenu">
+    <span>{{'#LDS#Assign more' | translate}}</span>
+    <eui-icon icon="collapsedown"></eui-icon>
+  </button>
+  <mat-menu data-imx-identifier="entitlements-assign-more-actions-menu" #actionsMenu="matMenu">
+    <button mat-menu-item data-imx-identifier="imx-entitlements-assign-manually" (click)="addNewElement()">
+      {{'#LDS#Assign manually' | translate}}
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item data-imx-identifier="imx-entitlements-updateCondition" [disabled]="!application.extendedDataRead"
+      (click)="editConditionForDynamicAssignments()">
+      {{ (hasConditionForDynamicAssignment ? '#LDS#Edit condition for dynamic assignments' : '#LDS#Add condition for dynamic assignments'
+      ) | translate
+      }}
+    </button>
+    <button mat-menu-item data-imx-identifier="imx-entitlements-apply-mapping" [disabled]="!hasConditionForDynamicAssignment"
+    (click)="applyMappingForDynamicAssignments()">
+    {{'#LDS#Check for new dynamic assignments' | translate}}
+  </button>
+  </mat-menu>
+  <button mat-stroked-button [disabled]="unassignedDisabled" (click)="unassign()"
+    data-imx-identifier="imx-entitlements-unassign">{{ '#LDS#Unassign' | translate
     }}</button>
 </ng-template>
 
@@ -96,11 +111,16 @@
         data-imx-identifier="entitlements-add-unsGroup">
         {{'#LDS#Assign application entitlements' | translate}}
       </button>
+      <button mat-stroked-button data-imx-identifier="imx-entitlements-assign" [disabled]="!application.extendedDataRead"
+        (click)="editConditionForDynamicAssignments()">
+        {{'#LDS#Edit dynamic assignment condition' | translate}}
+      </button>
     </div>
   </div>
 </ng-template>
 
 <!-- Tile content template -->
 <ng-template #cardContentTemplate let-entitlement>
-  <imx-user [uid]='entitlement.UID_AERoleOwner' role="{{ '#LDS#Application entitlement owner' | translate }}"></imx-user>
+  <imx-user [uid]='entitlement.UID_AERoleOwner' role="{{ '#LDS#Application entitlement owner' | translate }}">
+  </imx-user>
 </ng-template>

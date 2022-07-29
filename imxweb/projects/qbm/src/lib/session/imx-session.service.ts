@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { Client, TypedClient } from 'imx-api-qbm';
+import { TypedClient, V2Client } from 'imx-api-qbm';
 import { ISessionState, SessionState } from './session-state';
 import { AppConfigService } from '../appConfig/appConfig.service';
 import { ClassloggerService } from '../classlogger/classlogger.service';
@@ -36,7 +36,7 @@ export class imx_SessionService {
   public get SessionState(): ISessionState {
     return this.sessionState;
   }
-  public get Client(): Client {
+  public get Client(): V2Client {
     return this.appConfigService.client;
   }
 
@@ -56,7 +56,9 @@ export class imx_SessionService {
 
   public async login(loginData: { [key: string]: string }): Promise<ISessionState> {
     this.logger.debug(this, 'login');
-    const sr = await this.appConfigService.client.imx_login_post(this.appConfigService.Config.WebAppIndex, false, loginData);
+    const sr = await this.appConfigService.client.imx_login_post(this.appConfigService.Config.WebAppIndex, loginData, {
+      noxsrf: false
+    });
     return (this.sessionState = new SessionState(sr));
   }
 

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -45,6 +45,7 @@ import {
   DataSourceToolbarSettings,
   DataTableComponent,
   FkAdvancedPickerComponent,
+  ClientPropertyForTableColumns,
   SettingsService,
   SnackBarService
 } from 'qbm';
@@ -92,8 +93,8 @@ export class GroupMembersComponent implements OnInit {
     }
   };
 
-  private displayedColumns: IClientProperty[] = [];
-  private nestedDisplayColumns: IClientProperty[] = [];
+  private displayedColumns: ClientPropertyForTableColumns[] = [];
+  private nestedDisplayColumns: ClientPropertyForTableColumns[] = [];
   private selectedItems: TypedEntity[] = [];
   private selectedMembershipView: 'direct' | 'nested' = 'direct';
   private busyIndicator: OverlayRef;
@@ -134,7 +135,8 @@ export class GroupMembersComponent implements OnInit {
       this.entitySchemaGroupDirectMemberships.Columns.XMarkedForDeletion,
       {
         Type: ValType.String,
-        ColumnName: 'details'
+        ColumnName: 'details',
+        afterAdditionals: true
       }
     ];
     this.nestedDisplayColumns = [
@@ -143,7 +145,8 @@ export class GroupMembersComponent implements OnInit {
       this.entitySchemaGroupNestedMemberships.Columns.XMarkedForDeletion,
       {
         Type: ValType.String,
-        ColumnName: 'details'
+        ColumnName: 'details',
+        afterAdditionals: true
       }
     ];
 

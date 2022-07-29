@@ -1,4 +1,4 @@
-@import '~@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 :host {
   display: flex;
@@ -15,7 +15,7 @@
 }
 
 .mat-card {
-  margin: 32px;
+  margin: 20px;
   overflow-y: auto;
 }
 
@@ -25,6 +25,8 @@
   overflow-y: inherit;
   border-top: $black-c 1px solid;
   padding: 0px 20px 20px 8px;
+  margin: 0;
+  background-color: $white;
   > * {
     margin-left: 10px;
     margin-top: 20px;
@@ -33,7 +35,7 @@
 
 .helper-alert {
   display: flex;
-  padding: 32px 32px 0;
+  padding: 30px 20px 0;
   flex-direction: column;
   span {
     display: block;

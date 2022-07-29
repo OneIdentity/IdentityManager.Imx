@@ -1,4 +1,5 @@
-@import '~@elemental-ui/core/src/styles/_palette.scss';
+@use '@angular/material' as mat;
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 :host {
   display: flex;
@@ -6,7 +7,7 @@
   overflow: hidden;
   flex: 1 1 auto;
   min-height: 100%;
-  background-color: mat-color($asher-gray-palette, 100);
+  background-color: mat.get-color-from-palette($asher-gray-palette, 100);
 }
 
 
@@ -68,7 +69,7 @@
   flex-direction: row;
   justify-content: flex-end;
 
-  
+
   .justify-start{
     margin-right: auto;
     justify-self: start;
@@ -78,7 +79,7 @@
     margin-right: 5px;
     margin-left: 5px;
   }
-  
+
 }
 
 .imx-application-property-multi {

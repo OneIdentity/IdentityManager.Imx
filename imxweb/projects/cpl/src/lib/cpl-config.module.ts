@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -42,12 +42,14 @@ import { TilesModule } from 'qer';
 import { DashboardPluginComponent } from './dashboard-plugin/dashboard-plugin.component';
 import { CartItemComplianceCheckComponent } from './item-validator/cart-item-compliance-check/cart-item-compliance-check.component';
 import { RulesComponent } from './rules/rules.component';
-import { ComplianceRulesGuardService } from './guards/compliance-rules-guard.service';
+import { ComplianceViolationDetailsComponent } from './request/compliance-violation-details/compliance-violation-details.component';
+import { WorkflowViolationDetailsComponent } from './request/workflow-violation-details/workflow-violation-details.component';
 import { IdentityRuleViolationsModule } from './identity-rule-violations/identity-rule-violations.module';
 import { RulesViolationsModule } from './rules-violations/rules-violations.module';
 import { RulesViolationsComponent } from './rules-violations/rules-violations.component';
-import { ComplianceViolationDetailsComponent } from './request/compliance-violation-details/compliance-violation-details.component';
-import { WorkflowViolationDetailsComponent } from './request/workflow-violation-details/workflow-violation-details.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ComplianceRulesGuardService } from './guards/compliance-rules-guard.service';
+import { RuleViolationsGuardService } from './guards/rule-violations-guard.service';
 
 const routes: Routes = [
   {
@@ -59,7 +61,7 @@ const routes: Routes = [
   {
     path: 'compliance/rulesviolations/approve',
     component: RulesViolationsComponent,
-    canActivate: [RouteGuardService],
+    canActivate: [RouteGuardService, RuleViolationsGuardService],
     resolve: [RouteGuardService]
   },
 ];
@@ -74,12 +76,14 @@ const routes: Routes = [
   imports: [
     CommonModule,
     EuiCoreModule,
+    FormsModule,
     MatButtonModule,
     MatExpansionModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
     MatListModule,
+    ReactiveFormsModule,
     RouterModule.forChild(routes),
     RulesViolationsModule,
     TilesModule,

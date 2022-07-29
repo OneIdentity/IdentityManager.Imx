@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -39,9 +39,6 @@ export class SingleExpressionComponent {
     @Input() public first: boolean;
     @Input() public last: boolean;
     @Input() public viewSettings: SqlViewSettings;
-
-    /** If false, prevents the user from deleting the only expression node. */
-    @Input() public allowEmptyExpression: boolean;
 
     public LogOp = _logOp;
 

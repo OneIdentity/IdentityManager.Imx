@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,6 +26,7 @@
 
 import { RoleExtendedDataWrite } from 'imx-api-qer';
 import { EntitySchema, ExtendedTypedEntityCollection, WriteExtTypedEntity } from 'imx-qbm-dbts';
+import { IRoleRestoreHandler } from './restore/restore-handler';
 import { IRoleDataModel } from './role-data-model.interface';
 import { IRoleEntitlements } from './role-entitlements/entitlement-handlers';
 import { IRoleMembershipType } from './role-memberships/membership-handlers';
@@ -44,6 +45,9 @@ export interface RoleObjectInfo {
 
   /** Returns a flag indicating whether roles of this type can be created by splitting an existing role. */
   canBeSplitTarget: boolean;
+
+  restore?: IRoleRestoreHandler;
+
   respType?: any;
   adminType?: any;
   resp?: any;

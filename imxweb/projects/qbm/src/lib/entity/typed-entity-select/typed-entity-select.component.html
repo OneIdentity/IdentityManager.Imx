@@ -11,7 +11,7 @@
       {{ control?.value?.length ? ('#LDS#Change' | translate) : ('#LDS#Assign' | translate) }}
     </button>
   </div>
-  <mat-error *ngIf="!loading && control.errors?.required">
+  <mat-error *ngIf="!loading && control.errors?.['required']">
     {{ '#LDS#This field is mandatory.' | translate }}
   </mat-error>
 </mat-form-field>

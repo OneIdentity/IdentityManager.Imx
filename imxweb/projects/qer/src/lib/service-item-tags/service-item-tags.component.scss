@@ -1,4 +1,4 @@
-@import '~@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 .mat-form-field {
   width: 100%;
@@ -23,7 +23,7 @@
   background-color: $iris-pastel;
   display: grid;
   grid-template-columns: auto 30px;
-  
+
   .mat-chip-input {
     grid-column: 1;
   }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -49,7 +49,7 @@ describe('AttestationCasesService', () => {
           GetDisplayValue: () => value
         }),
         GetKeys: () => [key],
-        GetSchema: () => PortalAttestationCase.GetEntitySchema()
+        GetSchema: () => <any>PortalAttestationApprove.GetEntitySchema()
       })
     } as AttestationCase;
   }

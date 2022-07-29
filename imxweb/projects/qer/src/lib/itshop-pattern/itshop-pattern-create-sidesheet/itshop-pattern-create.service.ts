@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,14 +25,17 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Injectable } from '@angular/core';
+import { ErrorHandler, Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PortalCartitem, PortalItshopPatternItem, PortalItshopPatternPrivate } from 'imx-api-qer';
+import { PortalItshopPatternItem, PortalItshopPatternPrivate, RequestableProductForPerson } from 'imx-api-qer';
 
 import { ClassloggerService, SnackBarService, UserMessageService } from 'qbm';
 import { QerApiService } from '../../qer-api-client.service';
+import { DuplicatePatternItem } from '../duplicate-pattern-items/duplicate-pattern-item';
+import { DuplicatePatternItemsComponent } from '../duplicate-pattern-items/duplicate-pattern-items.component';
 import { ItShopPatternChangedType } from '../itshop-pattern-changed.enum';
 import { ItshopPatternCreateSidesheetComponent } from './itshop-pattern-create-sidesheet.component';
 
@@ -48,9 +51,11 @@ export class ItshopPatternCreateService {
     private readonly qerClient: QerApiService,
     private readonly logger: ClassloggerService,
     private readonly busyService: EuiLoadingService,
+    private readonly dialogService: MatDialog,
     private readonly messageService: UserMessageService,
     private readonly sidesheet: EuiSidesheetService,
     private readonly translate: TranslateService,
+    private readonly errorHandler: ErrorHandler,
     private readonly snackBar: SnackBarService) { }
 
   public async saveNewPatternAndItems(pattern: PortalItshopPatternPrivate, patternItems: PortalItshopPatternItem[]): Promise<void> {
@@ -107,24 +112,54 @@ export class ItshopPatternCreateService {
     return newAssignedObjects;
   }
 
-  public async createItshopPatternFromShoppingCart(cartItems: PortalCartitem[]): Promise<number> {
+  public async assignItemsToPattern(
+    serviceItemUids: string[],
+    serviceItemsForPersons: RequestableProductForPerson[],
+    uidPattern: string = ''): Promise<number> {
 
-    const pattern = await this.createNewPattern(false);
-    if (!pattern) {
-      return 0;
+    if (uidPattern.length === 0) {
+      // create new pattern
+      const pattern = await this.createNewPattern(false);
+      if (!pattern) {
+        return 0;
+      }
+      uidPattern = pattern.GetEntity().GetKeys()[0];
     }
-    const uidPattern = pattern.GetEntity().GetKeys()[0];
+
+    const duplicateItems: DuplicatePatternItem[] = [];
 
     const newAssignedObjects = (await this.handlePromiseLoader(
       Promise.all(
-        cartItems.map(async (item) => {
-          const patternItem = this.qerClient.typedClient.PortalItshopPatternItem.createEntity();
-          patternItem.UID_ShoppingCartPattern.value = uidPattern;
-          patternItem.UID_AccProduct.value = item.UID_AccProduct.value;
-          await patternItem.GetEntity().Commit(true);
+        serviceItemUids.map(async (uid) => {
+          let patternItem: PortalItshopPatternItem;
+          try {
+            patternItem = this.qerClient.typedClient.PortalItshopPatternItem.createEntity();
+            patternItem.UID_ShoppingCartPattern.value = uidPattern;
+            patternItem.UID_AccProduct.value = uid;
+            await patternItem.GetEntity().Commit(true);
+          } catch (exception) {
+            // 810303 == the combination of the fields Role/organization, Service item, Request template must be unique.
+            if (exception?.dataItems.length && exception.dataItems[0].Number === 810303) {
+              const serviceItem = serviceItemsForPersons.find(item => item.UidAccProduct === uid);
+              duplicateItems.push(new DuplicatePatternItem(serviceItem, exception.dataItems[0]));
+            } else {
+              this.errorHandler.handleError(exception);
+            }
+          }
         })
       )
     )).length;
+
+
+    if (duplicateItems.length > 0) {
+      const dialogRef = this.dialogService.open(DuplicatePatternItemsComponent, {
+        data: {
+          duplicatePatternItems: duplicateItems
+        }
+      });
+
+      await dialogRef.beforeClosed().toPromise();
+    }
     return newAssignedObjects;
   }
 

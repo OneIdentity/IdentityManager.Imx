@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,7 +32,8 @@ import { TextToken } from './text-token.interface';
 
 @Component({
   selector: 'imx-parameterized-text',
-  templateUrl: './parameterized-text.component.html'
+  templateUrl: './parameterized-text.component.html',
+  styleUrls: ['./parameterized-text.component.scss']
 })
 export class ParameterizedTextComponent implements OnInit {
   public textTokens: TextToken[];

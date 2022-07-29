@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,6 +27,7 @@
 import { ColumnDependentReference } from 'qbm';
 
 export interface WorkflowActionParameters {
+  maxReasonType?: number;
   reason: ColumnDependentReference;
   justification?: ColumnDependentReference;
   uidPerson?: ColumnDependentReference;

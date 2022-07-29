@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -81,11 +81,6 @@ export class AccountsService {
 
 
   public async getFilterTree(parameter: AccountsFilterTreeParameters):Promise<FilterTreeData>{
-    return this.tsbClient.client.portal_targetsystem_uns_account_filtertree_get(
-      parameter.container,  //container
-      parameter.system, //system
-      parameter.filter, //filter
-      parameter.parentkey //parentkey
-    );
+    return this.tsbClient.client.portal_targetsystem_uns_account_filtertree_get(parameter);
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -97,7 +97,7 @@ describe('imx_QBM_SearchService', () => {
 
   it('can fetch search results', () => {
     svc.search('bla', '');
-    expect(sessionServiceSpy.Client.opsupport_search_get).toHaveBeenCalledWith('bla', '');
+    expect(sessionServiceSpy.Client.opsupport_search_get).toHaveBeenCalledWith({ term: 'bla', tables: '' });
   });
 
   it('can get the list of table for searchfiltering', done => {

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -168,12 +168,13 @@ export class SecondaryMembershipsComponent implements OnInit {
   public async onShowDetails(): Promise<void> {
 
     const uidPerson = this.membershipService.GetUidPerson(this.ownershipInfo.TableName, this.selectedEntities[0]);
+    const uidRole = this.membershipService.targetMap.get(this.ownershipInfo.TableName).membership.GetUidRole(this.selectedEntities[0].GetEntity());
 
     const data: SourceDetectiveSidesheetData = {
       UID_Person: uidPerson,
       Type: SourceDetectiveType.MembershipOfRole,
-      UID: this.entity.GetKeys()[0],
-      TableName: this.entity.TypeName
+      UID: uidRole,
+      TableName: this.ownershipInfo.TableName
     };
     this.sidesheet.open(SourceDetectiveSidesheetComponent, {
       title: await this.translate.get('#LDS#Heading View Assignment Analysis').toPromise(),

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,17 +32,33 @@ import { Routes, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { EuiCoreModule } from '@elemental-ui/core';
+
 import { ClassloggerService, RouteGuardService } from 'qbm';
 import { InitService } from './init.service';
 import { TilesModule } from 'qer';
 import { DashboardPluginComponent } from './dashboard-plugin/dashboard-plugin.component';
+import { PolicyViolationsComponent } from './policy-violations/policy-violations.component';
+import { PolicyViolationsModule } from './policy-violations/policy-violations.module';
+import { PolicyViolationApproverGuardService } from './guards/policy-violation-approver-guard.service';
 
 const routes: Routes = [
+  {
+    path: 'compliance/policyviolations/approve',
+    component: PolicyViolationsComponent,
+    canActivate: [RouteGuardService, PolicyViolationApproverGuardService],
+    resolve: [RouteGuardService]
+  },
+  {
+    path: 'compliance/policyviolations',
+    component: PolicyViolationsComponent,
+    canActivate: [RouteGuardService, PolicyViolationApproverGuardService],
+    resolve: [RouteGuardService]
+  }
 ];
 
 @NgModule({
   declarations: [
-    DashboardPluginComponent
+    DashboardPluginComponent,
   ],
   imports: [
     CommonModule,
@@ -51,7 +67,8 @@ const routes: Routes = [
     MatIconModule,
     MatListModule,
     TranslateModule,
-    EuiCoreModule
+    EuiCoreModule,
+    PolicyViolationsModule
   ]
 })
 export class PolConfigModule {

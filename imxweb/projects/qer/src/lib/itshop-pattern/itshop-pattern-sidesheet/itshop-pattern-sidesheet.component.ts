@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { MatTabChangeEvent } from '@angular/material/tabs';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EuiSidesheetRef, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
@@ -42,10 +42,12 @@ import {
   DataSourceToolbarSettings,
   DataSourceWrapper,
   DataTableComponent,
+  SnackBarService,
   TabControlHelper,
 } from 'qbm';
 import { ItshopPatternService } from '../itshop-pattern.service';
 import { ItShopPatternChangedType } from '../itshop-pattern-changed.enum';
+import { ItshopPatternAddProductsComponent } from '../itshop-pattern-add-products/itshop-pattern-add-products.component';
 
 @Component({
   selector: 'imx-itshop-pattern-sidesheet',
@@ -66,13 +68,17 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
   public adminMode: boolean;
   public selectedTabIndex = 0;
 
-  public detailsInfoText = '#LDS#Here you can edit the details of this request template.';
-  public productsInfoText =
-    '#LDS#Here you can get an overview of all products assigned to this request template. Additionally, you can remove products from this request template.';
+  public detailsInfoText = '#LDS#Here you can see the details of this request template.';
+  public editableDetailsInfoText = '#LDS#Here you can edit the details of this request template.';
+
+  public productsInfoText = '#LDS#Here you can get an overview of all products assigned to this request template.';
+  public editableProductsInfoText = '#LDS#Here you can get an overview of all products assigned to this request template. You can also add and remove products.';
+
 
   @ViewChild(DataTableComponent) public table: DataTableComponent<TypedEntity>;
 
   private closeSubscription: Subscription;
+  private shoppingCartPatternUid = '';
 
   constructor(
     formBuilder: FormBuilder,
@@ -81,8 +87,11 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
       isMyPattern: boolean,
       adminMode: boolean
     },
+    private readonly translate: TranslateService,
     private readonly patternService: ItshopPatternService,
+    private readonly sidesheet: EuiSidesheetService,
     private readonly sideSheetRef: EuiSidesheetRef,
+    private readonly snackBar: SnackBarService,
     private readonly logger: ClassloggerService,
     private confirmation: ConfirmationService
   ) {
@@ -105,6 +114,8 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
       TabControlHelper.triggerResizeEvent();
     });
 
+    this.shoppingCartPatternUid = this.data.pattern.GetEntity().GetKeys()[0];
+
     await this.setupDetailsTab();
     this.setupProductsTab();
   }
@@ -118,18 +129,16 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
   public async getData(parameter?: CollectionLoadParameters): Promise<void> {
     this.patternService.handleOpenLoader();
     try {
-      const uid = this.data.pattern.GetEntity().GetKeys()[0];
       const filteredState: CollectionLoadParameters = {
         filter: [
           {
             ColumnName: 'UID_ShoppingCartPattern',
             Type: FilterType.Compare,
             CompareOp: CompareOperator.Equal,
-            Value1: uid,
+            Value1: this.shoppingCartPatternUid,
           },
         ],
       };
-
 
       const parameters = {
         ...parameter,
@@ -163,7 +172,7 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
   public async delete(): Promise<void> {
     if (await this.confirmation.confirm({
       Title: '#LDS#Heading Delete Request Template',
-      Message: '#LDS#Are you sure you want to delete this request template?'
+      Message: '#LDS#Are you sure you want to delete the request template?'
     })) {
       if (await this.patternService.delete([this.data.pattern])) {
         this.sideSheetRef.close(ItShopPatternChangedType.Deleted);
@@ -173,6 +182,29 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
 
   public async deleteProducts(): Promise<void> {
     if (await this.patternService.deleteProducts(this.selectedPatternItems)) {
+      await this.getData();
+      this.table?.clearSelection();
+    }
+  }
+
+  public async addProducts(): Promise<void> {
+
+    const result = await this.sidesheet.open(ItshopPatternAddProductsComponent, {
+      title: await this.translate.get('#LDS#Heading Add Products To Request Template').toPromise(),
+      headerColour: 'iris-blue',
+      bodyColour: 'asher-gray',
+      panelClass: 'imx-sidesheet',
+      padding: '0',
+      width: 'max(768px, 70%)',
+      testId: 'pattern-details-sidesheet',
+      data: {
+        shoppingCartPatternUid: this.shoppingCartPatternUid
+      }
+    }).afterClosed().toPromise();
+
+    if (result) {
+      const snackBarMessage = '#LDS#The selected products have been successfully added.';
+      this.snackBar.open({ key: snackBarMessage });
       await this.getData();
     }
   }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,14 +24,15 @@
  *
  */
 
+import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { EuiLoadingService } from '@elemental-ui/core';
+import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { map } from 'rxjs/operators';
 
-import { PortalItshopCart, CheckMode, ITShopConfig, PortalCartitem } from 'imx-api-qer';
+import { CartCheckResult, CheckMode, ITShopConfig, PortalCartitem, PortalItshopCart, RequestableProductForPerson } from 'imx-api-qer';
 import { ClassloggerService, SnackBarService, LdsReplacePipe, ConfirmationService } from 'qbm';
 import { UserModelService } from '../user/user-model.service';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
@@ -42,6 +43,8 @@ import { ConfirmCartSubmitDialog } from './confirm-cart-submit.dialog';
 import { ShoppingCartSubmitWarningsDialog } from './shopping-cart-submit-warnings.dialog';
 import { ShoppingCartValidator } from './shopping-cart-validator';
 import { ItshopPatternCreateService } from '../itshop-pattern/itshop-pattern-create-sidesheet/itshop-pattern-create.service';
+import { TermsOfUseAcceptComponent } from '../terms-of-use/terms-of-use-accept.component';
+import { CartItemCheckStatus } from './cart-items/cart-item-check-status.enum';
 
 @Component({
   templateUrl: './shopping-cart.component.html',
@@ -54,6 +57,7 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
   public selectedItshopCart: PortalItshopCart;
   public selectedItems: PortalCartitem[];
   public isEmpty: boolean;
+  public canCreateRequestTemplates: boolean;
 
   private itshopConfig: ITShopConfig;
 
@@ -70,11 +74,13 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
     private readonly projectConfig: ProjectConfigurationService,
     private readonly itshopProvider: ItshopService,
     private readonly patternCreateService: ItshopPatternCreateService,
-    private readonly snackBarService: SnackBarService
+    private readonly snackBarService: SnackBarService,
+    private readonly sideSheet: EuiSidesheetService
   ) { }
 
   public async ngOnInit(): Promise<void> {
     this.itshopConfig = (await this.projectConfig.getConfig()).ITShopConfig;
+    this.canCreateRequestTemplates = this.itshopConfig.VI_ITShop_ProductSelectionFromTemplate;
   }
 
   public async ngAfterViewInit(): Promise<void> {
@@ -82,14 +88,14 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
   }
 
   public async validate(): Promise<void> {
+
+    await this.checkTermsOfUse();
+
+    const result = await this.checkShoppingCart();
     let message = '#LDS#An error ocurred';
     setTimeout(() => this.busyService.show());
 
     try {
-      const uid = this.selectedItshopCart.GetEntity().GetKeys()[0];
-      const result = await this.cartItemService.submit(uid, CheckMode.CheckOnly);
-      this.logger.debug(this, 'Validation result', result);
-
       message = result.HasErrors ? '#LDS#At least one request cannot be submitted.' : '#LDS#Your shopping cart may be submitted.';
       await this.getCartItems();
     } finally {
@@ -102,13 +108,23 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
   }
 
   public async createItshopPattern(cartItems?: PortalCartitem[]): Promise<void> {
-    if (await this.patternCreateService.createItshopPatternFromShoppingCart(cartItems) > 0) {
+    const cartItemUids = cartItems.map(item => item.UID_AccProduct.value);
+
+    const serviceItemsForPersons = cartItems.map(item => {
+      return {
+        Display: item.GetEntity().GetDisplay(),
+        DisplayRecipient: item.UID_PersonOrdered.Column.GetDisplayValue(),
+        UidITShopOrg: item.UID_ITShopOrg.value,
+        UidAccProduct: item.UID_AccProduct.value
+      } as RequestableProductForPerson;
+    });
+    if ((await this.patternCreateService.assignItemsToPattern(cartItemUids, serviceItemsForPersons)) > 0) {
       await this.getData(true);
 
       const snackbarRef = this.snackBarService.open(
         { key: '#LDS#The request template has been successfully created.' },
         '#LDS#View my request templates');
-      snackbarRef.onAction().subscribe(() => this.router.navigate(['itshop/myrequesttemplates']));
+      snackbarRef.onAction().subscribe(() => this.router.navigate(['itshop/requesttemplates']));
 
     } else {
       this.snackBarService.open({ key: '#LDS#The request template could not be created.' });
@@ -144,16 +160,19 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
   }
 
   public async submitShoppingCart(): Promise<void> {
+
+    this.logger.debug(this, 'Submit shopping cart. Check for TermsOfUse...');
+
+    await this.checkTermsOfUse();
+
+    this.logger.debug(this, 'Submit shopping cart. Validating cart...')
+    const validator = new ShoppingCartValidator(await this.checkShoppingCart());
+
+    this.logger.debug(this, `Check shopping cart. Validation errors: ${validator.hasErrors}`);
+    this.logger.debug(this, `Check shopping cart. Validation warnings: ${validator.hasWarnings}`);
+
     setTimeout(() => this.busyService.show());
-
     try {
-      this.logger.debug(this, 'Submit shopping cart. Validating cart...');
-      const uid = this.selectedItshopCart.GetEntity().GetKeys()[0];
-      const validator = new ShoppingCartValidator(await this.cartItemService.submit(uid, CheckMode.CheckOnly));
-
-      this.logger.debug(this, `Check shopping cart. Validation errors: ${validator.hasErrors}`);
-      this.logger.debug(this, `Check shopping cart. Validation warnings: ${validator.hasWarnings}`);
-
       if (validator.hasErrors) {
         this.snackBarService.open(
           { key: '#LDS#At least one request cannot be submitted.' },
@@ -190,7 +209,7 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
         await this.getCartItems();
         return;
       }
-
+      const uid = this.selectedItshopCart.GetEntity().GetKeys()[0];
       await this.cartItemService.submit(uid, CheckMode.SubmitWithWarnings);
 
       this.snackBarService.open(
@@ -244,6 +263,20 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
     this.selectedItems = items;
   }
 
+  private async checkShoppingCart(): Promise<CartCheckResult> {
+    let overlayRef: OverlayRef;
+    setTimeout(() => overlayRef = this.busyService.show());
+    try {
+      const uid = this.selectedItshopCart.GetEntity().GetKeys()[0];
+      const result = await this.cartItemService.submit(uid, CheckMode.CheckOnly);
+      this.logger.debug(this, 'Validation result', result);
+      return result;
+    } finally {
+      setTimeout(() => this.busyService.hide(overlayRef));
+    }
+  }
+
+
   private async getCartItems(): Promise<void> {
     if (this.selectedItshopCart) {
       this.logger.debug(this, 'getCartItems - loading...', this.selectedItshopCart.GetEntity().GetDisplay());
@@ -261,4 +294,45 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
     this.isEmpty = (this.shoppingCart.numberOfItems === 0 &&
       (this.shoppingCartCandidates == null || this.shoppingCartCandidates.length <= 1));
   }
+
+  private async checkTermsOfUse(): Promise<boolean> {
+
+    // get all cart items with terms of uses
+    const itemsWithTermsOfUseToAccecpt = this.shoppingCart.getItems(item =>
+      item.UID_QERTermsOfUse?.value !== null
+      && item.UID_QERTermsOfUse?.value !== ''
+      && item.CheckResult?.value !== CartItemCheckStatus.ok
+    );
+
+    if (itemsWithTermsOfUseToAccecpt.length > 0) {
+      this.logger.debug(this,
+        `There are ${itemsWithTermsOfUseToAccecpt.length} service items with terms of use the user have to accepted.`);
+
+      const termsOfUseAccepted = await this.sideSheet.open(TermsOfUseAcceptComponent, {
+        title: await this.translate.get('#LDS#Heading Accept Terms Of Use').toPromise(),
+        headerColour: 'iris-blue',
+        bodyColour: 'asher-gray',
+        padding: '0px',
+        width: 'max(600px, 60%)',
+        data: {
+          acceptCartItems: true,
+          cartItems: itemsWithTermsOfUseToAccecpt,
+        },
+        testId: 'terms-of-use-accept-sidesheet'
+      }).afterClosed().toPromise();
+
+      if (termsOfUseAccepted) {
+        this.logger.debug(this, 'all terms of use were accepted.');
+        return true;
+      } else {
+        this.logger.debug(this, 'at least one terms of use was not accepted.');
+        return false;
+      }
+
+    } else {
+      this.logger.debug(this, 'there are no service items with terms of use the user have to accepted.');
+      return true;
+    }
+  }
 }
+

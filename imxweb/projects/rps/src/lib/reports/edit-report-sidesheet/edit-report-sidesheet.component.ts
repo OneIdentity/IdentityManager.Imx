@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,8 +28,8 @@ import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, ViewChild } fr
 import { AbstractControl, FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 
-import { ListReportDefinitionDto, ListReportDefinitionRead, PortalReportsEditInteractive_byid } from 'imx-api-rps';
-import { ExtendedTypedEntityCollection, SqlWizardExpression, isExpressionInvalid, ValType, FkProviderItem } from 'imx-qbm-dbts';
+import { ListReportDefinitionDto, ListReportDefinitionRead, PortalReportsEditInteractive } from 'imx-api-rps';
+import { ExtendedTypedEntityCollection, SqlWizardExpression, isExpressionInvalid, ValType, FkProviderItem, IEntityColumn } from 'imx-qbm-dbts';
 
 import {
   BaseCdr,
@@ -59,7 +59,7 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
 
   public get sqlExpression(): SqlWizardExpression { return this.definition.Data; }
   public definition: ListReportDefinitionDto;
-  public report: PortalReportsEditInteractive_byid;
+  public report: PortalReportsEditInteractive;
 
   public ldsUnsupportedExpression = '#LDS#You cannot edit the conditions of this report in the Web Portal.';
 
@@ -73,7 +73,7 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
     formBuilder: FormBuilder,
     public readonly svc: EditReportSqlWizardService,
     @Inject(EUI_SIDESHEET_DATA) public data: {
-      report: ExtendedTypedEntityCollection<PortalReportsEditInteractive_byid, ListReportDefinitionRead>,
+      report: ExtendedTypedEntityCollection<PortalReportsEditInteractive, ListReportDefinitionRead>,
       asNew: boolean
     },
     private readonly snackBar: SnackBarService,
@@ -102,9 +102,9 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
   }
 
   public async ngOnInit(): Promise<void> {
-
     const c = await this.config.getConfig();
     this.cdrList = c.OwnershipConfig.EditableFields[this.report.GetEntity().TypeName]
+      .filter(elem => this.tryGetColumn(elem))
       .map(columnName =>
         new BaseCdr(this.report.GetEntity().GetColumn(columnName))
       );
@@ -113,6 +113,7 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
     {
       this.cdrList.push(await this.buildTableCdr());
     }
+    this.cdrList.push(new BaseCdr(this.report.AvailableTo.Column));
   }
 
   public addCdr(control: AbstractControl): void {
@@ -148,7 +149,7 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
         };
       }
 
-      await this.report.GetEntity().Commit(true);
+      await this.report.GetEntity().Commit(false);
       this.detailsFormGroup.markAsPristine();
       this.sideSheetRef.close(true);
       this.snackBar.open({ key: '#LDS#The report has been successfully saved.' });
@@ -174,7 +175,7 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
     const fkProviderItem: FkProviderItem = {
       columnName: 'uid_dialogtable',
       fkTableName: 'DialogTable',
-      parameterNames: [],
+      parameterNames: ['search'],
       load: async (_, parameters?) => {
         return this.api.client.portal_reports_tables_get(parameters);
       },
@@ -214,6 +215,13 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
     return tableCdr;
   }
 
-
+  private tryGetColumn(name: string): IEntityColumn {
+    try {
+      return this.report.GetEntity().GetColumn(name);
+    }
+    catch {
+      return undefined;
+    }
+  }
 
 }

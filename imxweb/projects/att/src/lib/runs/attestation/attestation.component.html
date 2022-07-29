@@ -15,7 +15,7 @@
     </imx-attestation-history>
   </mat-card>
 </div>
-<mat-card class="imx-button-bar">
+<div class="imx-button-bar">
   <button data-imx-identifier="attestation-approve-selected-button" mat-stroked-button
   (click)="attestationAction.approve(selectedCases)" [disabled]="!canDecide">
     {{ '#LDS#Approve' | translate }}
@@ -24,4 +24,4 @@
     (click)="attestationAction.deny(selectedCases)" [disabled]="!canDecide">
     {{ '#LDS#Deny' | translate }}
   </button>
-</mat-card>
+</div>

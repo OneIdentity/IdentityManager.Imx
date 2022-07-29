@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,6 +31,7 @@ import { RequestShelvesComponent } from './request-shelves.component';
 import { RequestsConfigurationTestBed } from '../test/requests-configuration-test-bed';
 import { RequestsConfigurationCommonMocks } from '../test/requests-configuration-mocks';
 import { HELPER_ALERT_KEY_PREFIX, StorageService } from 'qbm';
+import { CREATE_SHELF_TOKEN } from './request-shelf-token';
 
 describe('RequestShelvesComponent', () => {
   let component: RequestShelvesComponent;
@@ -41,6 +42,10 @@ describe('RequestShelvesComponent', () => {
   RequestsConfigurationTestBed.configureTestingModule({
     declarations: [ RequestShelvesComponent ],
     providers: [
+      {
+        provide: CREATE_SHELF_TOKEN,
+        useValue: {}
+      },
       {
         provide: RequestsService,
         useValue: RequestsConfigurationCommonMocks.mockRequestsService

@@ -1,0 +1,41 @@
+<div eui-sidesheet-content>
+  <eui-alert class="imx-info" type="info" condensed="true" colored="true">
+    <span>{{ '#LDS#Select one of the enabled multi-factor methods to authenticate.' | translate }}</span>
+  </eui-alert>
+
+  <div class="auth-factors-wrapper">
+    <mat-card class="auth-factor" *ngFor="let factor of authFactors.Factors; index as i">
+      <mat-card-header>
+        <mat-card-title>{{ factor.Display }}</mat-card-title>
+        <mat-card-subtitle>{{ factor.Name }}</mat-card-subtitle>
+      </mat-card-header>
+      <div class="auth-factor-actions">
+        <button mat-raised-button [attr.data-imx-identifier]="'activate-factor-' + factor.Display" color="primary" (click)="activateFactor(factor.Name, factor.Id, i)" [disabled]="factor.Id === activatedFactor?.device_id">
+          {{ '#LDS#Activate Factor' | translate }}
+        </button>
+      </div>
+      <div *ngIf="showCDRs[i]" class="factor">
+        <p class="auth-text" *ngIf="isOTP(factor.Name)">{{ '#LDS#Check the corresponding factor for your One-Time Password to verify.' | translate }}</p>
+        <p class="auth-text" *ngIf="isProtect(factor.Name)">{{ '#LDS#Use either the push notification or the One-Time Password in your OneLogin Protector app to verify.' | translate }}</p>
+        <p class="auth-text" *ngIf="isAuthenticator(factor.Name)" >{{ '#LDS#Check your authenticator app for your One-Time Password to verify.' | translate }}</p>
+        <imx-cdr-editor [cdr]="authCDRs[i]"></imx-cdr-editor>
+        <div class="otp-actions" *ngIf="isOTP(factor.Name)">
+          <button mat-raised-button [attr.data-imx-identifier]="'otp-factor-action-' + factor.Display" color="primary" [disabled]="!isCDRValid(authCDRs[i]) || checkingOTP" (click)="verifyWithOTP(i)">
+            {{ '#LDS#Verify' | translate }}
+            <div class="spinner" *ngIf="checkingOTP">
+              <mat-spinner diameter="30"></mat-spinner>
+            </div>
+          </button>
+        </div>
+        <div class="otp-actions" *ngIf="isProtect(factor.Name) || isAuthenticator(factor.Name)">
+          <button mat-raised-button [attr.data-imx-identifier]="'otp-factor-action-' + factor.Display" color="primary" [disabled]="!isCDRValid(authCDRs[i]) || checkingOTP" (click)="verifyWithOTPAndDevice(i)">
+            {{ '#LDS#Verify' | translate }}
+            <div class="spinner" *ngIf="checkingOTP">
+              <mat-spinner diameter="30"></mat-spinner>
+            </div>
+          </button>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+</div>

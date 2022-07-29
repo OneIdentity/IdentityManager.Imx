@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,7 +33,7 @@ import { RouterModule } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { DataSourceToolbarModule, DataTableModule, CdrModule, EntityModule, BulkPropertyEditorModule } from 'qbm';
+import { DataSourceToolbarModule, DataTableModule, CdrModule, EntityModule, BulkPropertyEditorModule, DateModule } from 'qbm';
 import { AttestationDecisionComponent } from './attestation-decision.component';
 import { AttestationCaseComponent } from './attestation-case.component';
 import { AttestationActionComponent } from '../attestation-action/attestation-action.component';
@@ -79,7 +79,8 @@ import { MitigatingControlsComponent } from './mitigating-controls/mitigating-co
     ReactiveFormsModule,
     BulkPropertyEditorModule,
     AttestationDisplayModule,
-    MatExpansionModule
+    MatExpansionModule,
+    DateModule
   ],
   exports: [
     DecisionHistoryItemComponent,

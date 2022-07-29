@@ -1,6 +1,6 @@
 <mat-form-field appearance="outline">
   <mat-label>{{ display | translate }}</mat-label>
-  <input matInput [readonly]="isReadonly" [formControl]="shadowText"
+  <input matInput [readonly]="isReadonly" [formControl]="shadowText"  (focusout)="focusout()"
     [attr.data-imx-identifier]="'date-input-' + imxIdentifierSuffix" [required]="isValueRequired">
   <div matSuffix>
     <mat-spinner diameter="30" *ngIf="isLoading"></mat-spinner>
@@ -8,14 +8,14 @@
       mat-icon-button type="button" class="mat-focus-indicator mat-icon-button mat-button-base"
       aria-haspopup="dialog" aria-label="Open calendar"
       [class.mat-datepicker-toggle-active]="isDatePickerOpen">
-      <eui-icon icon="calendar" size="m" aria-hidden="false" [attr.aria-label]="'#LDS#Edit date' | translate"></eui-icon>
+      <eui-icon icon="calendar" size="m" [aria-hidden]="false" [attr.aria-label]="'#LDS#Edit date' | translate"></eui-icon>
     </button>
 
     <span cdkOverlayOrigin #triggerTime="cdkOverlayOrigin">
       <button *ngIf="withTime" (click)="toggleTimePickerOpen($event)"
         mat-icon-button type="button" class="mat-focus-indicator mat-icon-button mat-button-base" #timeButton
         [class.mat-datepicker-toggle-active]="isTimePickerOpen">
-        <eui-icon size="m" icon="clock" aria-hidden="false" [attr.aria-label]="'#LDS#Edit time' | translate"></eui-icon>
+        <eui-icon size="m" icon="clock" [aria-hidden]="false" [attr.aria-label]="'#LDS#Edit time' | translate"></eui-icon>
       </button>
     </span>
 

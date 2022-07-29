@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -430,8 +430,8 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
    * Checks if input fields had changed.
    */
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
-    if (changes.settings && changes.settings.currentValue) {
-      this.dataSourceHasChanged = !(changes.settings.currentValue.entitySchema === changes.settings.previousValue);
+    if (changes['settings'] && changes['settings'].currentValue) {
+      this.dataSourceHasChanged = !(changes['settings'].currentValue.entitySchema === changes['settings'].previousValue);
 
       if (this.dataSourceHasChanged) {
         this.entitySchema = this.settings.entitySchema;
@@ -467,7 +467,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
       this.settingsChanged.emit(this.settings);
     }
 
-    if (changes.preSelection && changes.preSelection.currentValue) {
+    if (changes['preSelection'] && changes['preSelection'].currentValue) {
       this.isUpdatingPreselection = true;
       setTimeout(() => {
         this.preSelection.forEach(item => this.selection.checked(item));

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -70,7 +70,6 @@ describe('RequestsEntitySelectorComponent', () => {
         provide: MAT_DIALOG_DATA,
         useValue: {
           get: (params) =>  Promise.resolve([]),
-          hasSearchParameter: true,
           isMultiValue: true
         },
       },

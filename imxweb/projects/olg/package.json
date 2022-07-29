@@ -1,0 +1,8 @@
+{
+  "name": "olg",
+  "version": "9.0.0",
+  "private": true,
+  "bundledDependencies": [
+    "imx-api-olg"
+  ]
+}

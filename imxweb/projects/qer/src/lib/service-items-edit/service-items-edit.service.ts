@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,7 +28,7 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import { Injectable } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { PortalServiceitems, PortalServiceitemsInteractive_byid } from 'imx-api-qer';
+import { PortalServiceitems, PortalServiceitemsInteractive } from 'imx-api-qer';
 import { CollectionLoadParameters, ExtendedTypedEntityCollection, EntitySchema } from 'imx-qbm-dbts';
 import { DynamicMethodService, GenericTypedEntity } from 'qbm';
 import { QerApiService } from '../qer-api-client.service';
@@ -54,8 +54,8 @@ export class ServiceItemsEditService {
     return this.qerClient.typedClient.PortalServiceitems.Get(parameters);
   }
 
-  public async getServiceItem(serviceItemUid: string): Promise<PortalServiceitemsInteractive_byid> {
-    const serviceItemCollection = await this.qerClient.typedClient.PortalServiceitemsInteractive_byid.Get_byid(serviceItemUid);
+  public async getServiceItem(serviceItemUid: string): Promise<PortalServiceitemsInteractive> {
+    const serviceItemCollection = await this.qerClient.typedClient.PortalServiceitemsInteractive.Get_byid(serviceItemUid);
 
     if (serviceItemCollection == null || serviceItemCollection.Data == null || serviceItemCollection.Data.length === 0) {
       throw new Error('getServiceItem - service item not found');

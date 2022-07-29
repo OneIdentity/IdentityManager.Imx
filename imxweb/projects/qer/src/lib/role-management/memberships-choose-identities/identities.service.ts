@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -66,13 +66,10 @@ export class IdentitiesService {
   ): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
     const candidates = await this.api.client.portal_roles_config_membership_Locality_UID_Person_candidates_get(
       id,
-      0,
-      navigationState?.OrderBy,
-      navigationState?.StartIndex,
-      navigationState?.PageSize,
-      navigationState?.filter,
-      navigationState?.withProperties,
-      navigationState?.search
+      {
+        ...navigationState,
+        xorigin: 0,
+      }
     );
 
     const builder = new TypedEntityBuilder(PortalPersonAll);

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,7 +28,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
 import { EuiSelectOption, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import * as moment from 'moment-timezone';
+import moment from 'moment-timezone';
 
 import { PortalAttestationSchedules } from 'imx-api-arc';
 import {
@@ -176,8 +176,9 @@ export class AttestationScheduleSidesheetComponent implements OnInit {
     // Time with these values are not set
     if (hourPart !== 'LB' && minPart !== 'ST') {
       // Only initialise timeControl if there is an actual value set
-      const time = moment().hour(hourPart).minute(minPart).second(0).milliseconds(0);
-      this.startTimeControl.setValue(time);
+      // TODO: Reactive - hour(), minute() do not accept strings
+      // const time = moment().hour(hourPart).minute(minPart).second(0).milliseconds(0);
+      // this.startTimeControl.setValue(time);
     }
     else {
       this.showInfoIcon = true;

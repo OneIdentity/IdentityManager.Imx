@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -59,7 +59,7 @@ export class InitService {
 
     const inputData: ReportButtonParameter = {
       uidReport: 'CPL-77d3c04ac2084a968433ef7daf7e56ff',
-        caption: '#LDS#Compliance rule violations by direct reports',
+        caption: '#LDS#Download report on rule violations by identities who report directly to you',
         preprop: ['COMPLIANCE'],
         groups: ['VI_4_ALLMANAGER']
     };

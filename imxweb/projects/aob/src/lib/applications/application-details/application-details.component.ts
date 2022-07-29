@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, Input, OnChanges, ViewChild, TemplateRef, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnChanges, ViewChild, TemplateRef, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';

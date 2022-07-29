@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -324,7 +324,7 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
    */
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
 
-    if (changes.mode && changes.mode.currentValue) {
+    if (changes['mode'] && changes['mode'].currentValue) {
       if (this.mode === 'auto') {
         if (this.dst.dataSourceChanged && this.columnDefs) {
           this.columnDefs.forEach(colDef => this.table.removeColumnDef(colDef));
@@ -332,7 +332,7 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
       }
     }
 
-    if (changes.dst && changes.dst.currentValue) {
+    if (changes['dst'] && changes['dst'].currentValue) {
 
       this.subscriptions.push(this.dst.settingsChanged.subscribe(async (value: DataSourceToolbarSettings) => {
         if (this.dst.dataSourceHasChanged) {

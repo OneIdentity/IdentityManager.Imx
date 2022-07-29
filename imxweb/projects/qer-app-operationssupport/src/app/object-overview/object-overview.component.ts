@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -42,7 +42,8 @@ import {
   ShapeClickArgs,
   ClassloggerService,
   DataSourceToolbarSettings,
-  AuthenticationService
+  AuthenticationService,
+  ClientPropertyForTableColumns
 } from 'qbm';
 import { QueueJobsService } from '../processes/jobs/queue-jobs.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -50,7 +51,7 @@ import { ObjectOverviewContainer, FeatureConfigService  } from 'qer';
 import { HyperviewService } from './hyperview/hyperview.service';
 import { ObjectOverviewService } from './object-overview.service';
 import { PersonDbQueueInfo } from './person-db-queue-info';
-import { PersonJobQueueInfo } from './person-job-queue-Info';
+import { PersonJobQueueInfo } from './person-job-queue-info';
 
 @Component({
   templateUrl: './object-overview.component.html',
@@ -68,7 +69,7 @@ export class ObjectOverviewComponent implements OnInit, ObjectOverviewContainer 
   public readonly entitySchemaJobs: EntitySchema;
   public readonly entitySchemaDbs: EntitySchema;
 
-  public displayedColumnsJobs: IClientProperty[];
+  public displayedColumnsJobs: ClientPropertyForTableColumns[];
   public displayedColumnsDbs: IClientProperty[];
 
   public dstSettingsJobs: DataSourceToolbarSettings;
@@ -111,7 +112,8 @@ export class ObjectOverviewComponent implements OnInit, ObjectOverviewContainer 
       this.entitySchemaJobs.Columns.TaskName,
       {
         ColumnName: 'actions',
-        Type: ValType.String
+        Type: ValType.String,
+        afterAdditionals: true
       }
     ];
 

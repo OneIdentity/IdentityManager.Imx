@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -183,7 +183,9 @@ describe('ServiceItemsService', () => {
     const serviceItemsForPersons = await service.getServiceItemsForPersons(
       createEntities(serviceItems),
       persons,
-      uidITShopOrg
+      {
+        uidITShopOrg
+      }
     );
 
     expect(serviceItemsForPersons.length).toEqual(serviceItems.length * persons.length);

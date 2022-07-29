@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,4 +31,8 @@ export function isCiso(groups: string[]): boolean {
 
 export function isRuleOwner(groups: string[]): boolean {
   return groups.find(item => item === 'vi_4_RULEADMIN_RESPONSIBLE') != null;
+}
+
+export function isExceptionAdmin(groups: string[]): boolean {
+  return groups.find(item => item === 'vi_4_RULEADMIN_EXCEPTION') != null;
 }

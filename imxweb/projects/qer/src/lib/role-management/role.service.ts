@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -59,12 +59,14 @@ import { QerApiService } from '../qer-api-client.service';
 import { RoleObjectInfo } from './role-object-info';
 import { DynamicMethodService, ImxTranslationProviderService, imx_SessionService } from 'qbm';
 import { BaseTreeEntitlement } from './role-entitlements/entitlement-handlers';
+import { BaseTreeRoleRestoreHandler } from './restore/restore-handler';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RoleService {
   public dataDirtySubject: Subject<boolean> = new Subject();
+  public autoMembershipDirty$: Subject<boolean> = new Subject();
   public readonly targetMap: Map<string, RoleObjectInfo> = new Map();
 
   protected readonly LocalityTag = 'Locality';
@@ -100,6 +102,33 @@ export class RoleService {
     this.targetMap.get(this.DepartmentTag).resp = this.api.typedClient.PortalRespDepartment;
     this.targetMap.get(this.AERoleTag).resp = this.api.typedClient.PortalRespAerole;
 
+    this.targetMap.get(this.LocalityTag).restore = new BaseTreeRoleRestoreHandler(
+      () => this.api.client.portal_roles_Locality_restore_get(),
+      () => this.api.client.portal_resp_Locality_restore_get(),
+      uid => this.api.client.portal_roles_Locality_restore_byid_get(uid),
+      uid => this.api.client.portal_resp_Locality_restore_byid_get(uid),
+      (uidRole, actions) => this.api.client.portal_roles_Locality_restore_byid_post(uidRole, actions),
+      (uidRole, actions) => this.api.client.portal_resp_Locality_restore_byid_post(uidRole, actions)
+    );
+
+    this.targetMap.get(this.ProfitCenterTag).restore = new BaseTreeRoleRestoreHandler(
+      () => this.api.client.portal_roles_ProfitCenter_restore_get(),
+      () => this.api.client.portal_resp_ProfitCenter_restore_get(),
+      uid => this.api.client.portal_roles_ProfitCenter_restore_byid_get(uid),
+      uid => this.api.client.portal_resp_ProfitCenter_restore_byid_get(uid),
+      (uidRole, actions) => this.api.client.portal_roles_ProfitCenter_restore_byid_post(uidRole, actions),
+      (uidRole, actions) => this.api.client.portal_resp_ProfitCenter_restore_byid_post(uidRole, actions)
+    );
+
+    this.targetMap.get(this.DepartmentTag).restore = new BaseTreeRoleRestoreHandler(
+      () => this.api.client.portal_roles_Department_restore_get(),
+      () => this.api.client.portal_resp_Department_restore_get(),
+      uid => this.api.client.portal_roles_Department_restore_byid_get(uid),
+      uid => this.api.client.portal_resp_Department_restore_byid_get(uid),
+      (uidRole, actions) => this.api.client.portal_roles_Department_restore_byid_post(uidRole, actions),
+      (uidRole, actions) => this.api.client.portal_resp_Department_restore_byid_post(uidRole, actions)
+    );
+
     this.targetMap.get(this.LocalityTag).canBeSplitTarget = true;
     this.targetMap.get(this.ProfitCenterTag).canBeSplitTarget = true;
     this.targetMap.get(this.DepartmentTag).canBeSplitTarget = true;
@@ -111,39 +140,13 @@ export class RoleService {
     // Role Objects for Admin (useable by tree)
     this.targetMap.get(this.LocalityTag).admin =
     {
-      get: async (parameter: any) => this.api.client.portal_admin_role_locality_get(
-        parameter?.OrderBy,
-        parameter?.StartIndex,
-        parameter?.PageSize,
-        parameter?.filter,
-        parameter?.withProperties,
-        parameter?.search,
-        parameter?.ParentKey,
-        parameter?.risk)
+      get: async (parameter: any) => this.api.client.portal_admin_role_locality_get(parameter)
     };
     this.targetMap.get(this.ProfitCenterTag).admin = {
-      get: async (parameter: any) => this.api.client.portal_admin_role_profitcenter_get(
-        parameter?.OrderBy,
-        parameter?.StartIndex,
-        parameter?.PageSize,
-        parameter?.filter,
-        parameter?.withProperties,
-        parameter?.search,
-        parameter?.ParentKey,
-        parameter?.risk
-      )
+      get: async (parameter: any) => this.api.client.portal_admin_role_profitcenter_get(parameter)
     };
     this.targetMap.get(this.DepartmentTag).admin = {
-      get: async (parameter: any) => this.api.client.portal_admin_role_department_get(
-        parameter?.OrderBy,
-        parameter?.StartIndex,
-        parameter?.PageSize,
-        parameter?.filter,
-        parameter?.withProperties,
-        parameter?.search,
-        parameter?.ParentKey,
-        parameter?.risk
-      )
+      get: async (parameter: any) => this.api.client.portal_admin_role_department_get(parameter)
     };
 
 
@@ -152,7 +155,7 @@ export class RoleService {
     this.targetMap.get(this.ProfitCenterTag).adminSchema = this.api.typedClient.PortalAdminRoleProfitcenter.GetSchema();
     this.targetMap.get(this.DepartmentTag).adminSchema = this.api.typedClient.PortalAdminRoleDepartment.GetSchema();
 
-    // wrapper class for interactive and interactive_byid methods
+    // wrapper class for interactive methods
     class ApiWrapper {
 
       constructor(private getApi: {
@@ -176,32 +179,32 @@ export class RoleService {
     // Interactive Role Objects for Resp
     this.targetMap.get(this.LocalityTag).interactiveResp = new ApiWrapper(
       this.api.typedClient.PortalRespLocalityInteractive,
-      this.api.typedClient.PortalRespLocalityInteractive_byid);
+      this.api.typedClient.PortalRespLocalityInteractive);
 
     this.targetMap.get(this.ProfitCenterTag).interactiveResp = new ApiWrapper(
       this.api.typedClient.PortalRespProfitcenterInteractive,
-      this.api.typedClient.PortalRespProfitcenterInteractive_byid);
+      this.api.typedClient.PortalRespProfitcenterInteractive);
 
     this.targetMap.get(this.DepartmentTag).interactiveResp = new ApiWrapper(
       this.api.typedClient.PortalRespDepartmentInteractive,
-      this.api.typedClient.PortalRespDepartmentInteractive_byid);
+      this.api.typedClient.PortalRespDepartmentInteractive);
 
     this.targetMap.get(this.AERoleTag).interactiveResp = new ApiWrapper(
       this.api.typedClient.PortalRespAeroleInteractive,
-      this.api.typedClient.PortalRespAeroleInteractive_byid);
+      this.api.typedClient.PortalRespAeroleInteractive);
 
     // Interactive Role Objects for Admin
     this.targetMap.get(this.LocalityTag).interactiveAdmin = new ApiWrapper(
       this.api.typedClient.PortalAdminRoleLocalityInteractive,
-      this.api.typedClient.PortalAdminRoleLocalityInteractive_byid);
+      this.api.typedClient.PortalAdminRoleLocalityInteractive);
 
     this.targetMap.get(this.ProfitCenterTag).interactiveAdmin = new ApiWrapper(
       this.api.typedClient.PortalAdminRoleProfitcenterInteractive,
-      this.api.typedClient.PortalAdminRoleProfitcenterInteractive_byid);
+      this.api.typedClient.PortalAdminRoleProfitcenterInteractive);
 
     this.targetMap.get(this.DepartmentTag).interactiveAdmin = new ApiWrapper(
       this.api.typedClient.PortalAdminRoleDepartmentInteractive,
-      this.api.typedClient.PortalAdminRoleDepartmentInteractive_byid);
+      this.api.typedClient.PortalAdminRoleDepartmentInteractive);
 
     // Role Membership Objects
     this.targetMap.get(this.LocalityTag).membership = new LocalityMembership(this.api, session, this.translator);
@@ -225,6 +228,10 @@ export class RoleService {
 
   public dataDirty(flag: boolean): void {
     this.dataDirtySubject.next(flag);
+  }
+
+  public autoMembershipDirty(flag: boolean): void {
+    this.autoMembershipDirty$.next(flag);
   }
 
   public exists(tableName: string): boolean {

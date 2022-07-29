@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -104,6 +104,8 @@ import { RouteGuardService } from './route-guard/route-guard.service';
 import { ClassloggerService } from './classlogger/classlogger.service';
 import { AuthenticationGuardService } from './authentication/authentication-guard.service';
 import { JobQueueOverviewModule } from './jobqueue-overview/jobqueue-overview.module';
+import { PluginLoaderService } from './plugins/plugin-loader.service';
+import { HttpClientModule } from '@angular/common/http';
 
 export function initApp(registry: CdrRegistryService, resolver: ComponentFactoryResolver, logger: NGXLogger): () => Promise<any> {
   logger.debug('init qbm');
@@ -141,6 +143,7 @@ const routes: Routes = [
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
+    HttpClientModule,
     TranslateModule,
     DisableControlModule,
     ExtModule,
@@ -199,7 +202,8 @@ const routes: Routes = [
     ImxTreeTableComponent,
     TwoFactorAuthenticationService,
     ApiClientAngularService,
-    TableImageService
+    TableImageService,
+    PluginLoaderService
   ],
   exports: [
     TwoFactorAuthenticationComponent,

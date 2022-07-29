@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -197,18 +197,22 @@ describe('DataTileComponent', () => {
     });
   }
 
-  [
-    { expected: false },
-    { status: {}, expected: false },
-    { status: { getImage: {} }, expected: true },
-    { image: {}, expected: true },
-    { fallbackIcon: 'some icon', expected: true }
-  ].forEach(testcase =>
-  it('should check if it has an image (or a fallback icon)', () => {
-    component.image = testcase.image as IClientProperty;
-    component.status = testcase.status as DataSourceItemStatus;
-    component.fallbackIcon = testcase.fallbackIcon;
+  describe('should check if it has an image (or a fallback icon) - ', () => {
+    [
+      { description: 'has nothing', expected: false },
+      { description: 'has an empty status', status: {}, expected: false },
+      { description: 'has a status with an imagepath', status: { getImagePath: {} }, expected: true },
+      { description: 'has an image', image: {}, expected: true },
+      { description: 'has a fallback icon', fallbackIcon: 'some icon', expected: true }
+    ].forEach(testcase =>
+      it(`${testcase.description}`, () => {
+       component.image = testcase.image as IClientProperty;
+        component.status = testcase.status as DataSourceItemStatus;
+       component.fallbackIcon = testcase.fallbackIcon;
 
-    expect(component.hasImage).toEqual(testcase.expected);
-  }));
+        expect(component.hasImage).toEqual(testcase.expected);
+      }));
+  });
+
+
 });

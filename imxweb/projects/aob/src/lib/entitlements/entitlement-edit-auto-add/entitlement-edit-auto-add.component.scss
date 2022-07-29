@@ -1,0 +1,24 @@
+.eui-sidesheet-content {
+  height: inherit;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  .imx-content-card {
+    flex: 1 1 auto;
+    overflow: auto;
+  }
+}
+
+.eui-sidesheet-actions {
+  .justify-start {
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  button:not(:last-of-type):not(.justify-start) {
+    margin-right: 10px;
+  }
+}

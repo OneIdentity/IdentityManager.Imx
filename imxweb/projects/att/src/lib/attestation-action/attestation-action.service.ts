@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { Injectable } from '@angular/core';
+import { Injectable, Type } from '@angular/core';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
@@ -32,13 +32,14 @@ import { Subject } from 'rxjs';
 
 import { PortalAttestationApprove } from 'imx-api-att';
 import { IEntityColumn, ValType } from 'imx-qbm-dbts';
-import { SnackBarService, EntityService, ColumnDependentReference, BaseCdr } from 'qbm';
-import { JustificationService, JustificationType, PersonService } from 'qer';
+import { SnackBarService, EntityService, ColumnDependentReference, BaseCdr, ExtService } from 'qbm';
+import { JustificationService, JustificationType, PersonService, ProjectConfigurationService } from 'qer';
 import { AttestationCasesService } from '../decision/attestation-cases.service';
 import { AttestationActionComponent } from './attestation-action.component';
 import { AttestationCase } from '../decision/attestation-case';
 import { AttestationWorkflowService } from './attestation-workflow.service';
 import { AttestationCaseAction } from './attestation-case-action.interface';
+import { ApiService } from '../api.service';
 
 @Injectable({
   providedIn: 'root'
@@ -47,15 +48,18 @@ export class AttestationActionService {
   public readonly applied = new Subject();
 
   constructor(
+    private readonly projectConfig: ProjectConfigurationService,
+    private readonly apiService: ApiService,
     private readonly justification: JustificationService,
     private readonly attestationCases: AttestationCasesService,
-    private readonly sidesheet: EuiSidesheetService,
+    private readonly sideSheet: EuiSidesheetService,
     private readonly busyService: EuiLoadingService,
     private readonly translate: TranslateService,
     private readonly snackBar: SnackBarService,
     private readonly entityService: EntityService,
     private readonly person: PersonService,
-    private readonly workflow: AttestationWorkflowService
+    private readonly workflow: AttestationWorkflowService,
+    private readonly extService: ExtService
   ) { }
 
   public async directDecision(attestationCases: AttestationCase[], userUid: string): Promise<void> {
@@ -208,7 +212,48 @@ export class AttestationActionService {
     }
   }
 
+  public async checkMFA(uidCases: string[]): Promise<boolean> {
+    this.busyService.show();
+    let workflowActionId: string;
+    let mfaComponent: Type<any>;
+    let response: boolean;
+    try {
+      workflowActionId = await this.apiService.client.portal_attestation_stepup_post({UidCases: uidCases});
+      mfaComponent = (await this.extService.getFittingComponent('mfaComponent')).instance;
+    } catch {
+      throw Error('The OLG module is not configured correctly');
+    } finally {
+      this.busyService.hide();
+    }
+    response = await this.sideSheet.open(mfaComponent, {
+      title: await this.translate.get('#LDS#Header Authenticate using OneLogin').toPromise(),
+      padding: '0px',
+      headerColour: 'iris-blue',
+      bodyColour: 'asher-gray',
+      testId: 'imx-attestation-approval-mfa',
+      width: 'max(700px, 60%)',
+      data: {
+        workflowActionId
+      }
+    }).afterClosed().toPromise();
+    return response;
+  }
+
   public async approve(attestationCases: AttestationCaseAction[]): Promise<void> {
+    // Check for itshop stepup and if any cases have mfa required
+    const itShopConfig = (await this.projectConfig.getConfig()).ITShopConfig;
+    const uidCases: string[] = [];
+    const anyMFACases = attestationCases.map((attestationCase) => {
+      const attCase = attestationCase.typedEntity as PortalAttestationApprove;
+      uidCases.push(attestationCase.key);
+      return attCase?.IsApproveRequiresMfa.value;
+    }).some(isMfa => isMfa);
+    if (itShopConfig.StepUpAuthenticationProvider !== 'NoAuth' && anyMFACases) {
+      const isMFA = await this.checkMFA(uidCases);
+      if (!isMFA) {
+        return;
+      }
+    }
     return this.makeDecisions(attestationCases, true);
   }
 
@@ -268,13 +313,13 @@ export class AttestationActionService {
   }
 
   private async editAction(config: any): Promise<void> {
-    const result = await this.sidesheet.open(AttestationActionComponent, {
+    const result = await this.sideSheet.open(AttestationActionComponent, {
       title: await this.translate.get(config.title).toPromise(),
       headerColour: config.headerColour ?? 'iris-blue',
-      panelClass: 'imx-sidesheet',
+      panelClass: 'imx-sideSheet',
       padding: '0',
       width: '600px',
-      testId: 'attestation-action-sidesheet',
+      testId: 'attestation-action-sideSheet',
       data: config.data
     }).afterClosed().toPromise();
 

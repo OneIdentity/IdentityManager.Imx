@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -82,7 +82,7 @@ export class DataSourcePaginatorComponent implements OnChanges, OnDestroy {
    * Configures the paginator and subscribes to events from the attached datasource toolbar.
    */
   public ngOnChanges(changes: SimpleChanges): void {
-    if (changes.dst && changes.dst.currentValue) {
+    if (changes['dst'] && changes['dst'].currentValue) {
       this.setPaginator();
 
       this.subscriptions.push(this.dst.settingsChanged.subscribe((value: DataSourceToolbarSettings) => {

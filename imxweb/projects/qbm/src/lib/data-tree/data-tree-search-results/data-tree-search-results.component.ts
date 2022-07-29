@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -66,7 +66,7 @@ export class DataTreeSearchResultsComponent implements OnChanges {
   @Input() public database: TreeDatabase;
 
   @Input() public navigationState: CollectionLoadParameters;
-  
+
   @Input() public withSelectedNodeHighlight: boolean;
 
   @ContentChild(TemplateRef, { static: true }) public templateRef: TemplateRef<any>;
@@ -95,7 +95,7 @@ export class DataTreeSearchResultsComponent implements OnChanges {
   constructor(private readonly logger: ClassloggerService) { }
 
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
-    if (changes.navigationState) {
+    if (changes['navigationState']) {
       await this.reload();
     }
   }
@@ -178,7 +178,7 @@ export class DataTreeSearchResultsComponent implements OnChanges {
   }
 
   private getId(entity: IEntity): string {
-    return this.database ?  this.database.getId(entity) : entity.GetKeys()[0]; 
+    return this.database ?  this.database.getId(entity) : entity.GetKeys()[0];
    }
 
 }

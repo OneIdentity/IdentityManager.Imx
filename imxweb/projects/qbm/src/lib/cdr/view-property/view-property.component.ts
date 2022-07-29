@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,15 +25,30 @@
  */
 
 import { Component, Input } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
+import { ValType } from 'imx-qbm-dbts';
 import { EntityColumnContainer } from '../entity-column-container';
 
 @Component({
   selector: 'imx-view-property',
   templateUrl: './view-property.component.html',
-  styleUrls: ['./view-property.component.scss']
+  styleUrls: ['./view-property.component.scss'],
 })
 export class ViewPropertyComponent {
   @Input() public columnContainer: EntityColumnContainer;
   @Input() public defaultValue: string;
+
+  constructor(private translate: TranslateService) {}
+
+  public get displayedValue(): string {
+    if (this.columnContainer?.type === ValType.Date) {
+      if (this.columnContainer?.value == null) {
+        return this.defaultValue;
+      }
+      const date: Date = new Date(this.columnContainer.value);
+      return date.getDate() ? date.toLocaleString(this.translate.currentLang) : this.defaultValue;
+    }
+    return this.columnContainer?.displayValue || this.columnContainer?.value || this.defaultValue;
+  }
 }

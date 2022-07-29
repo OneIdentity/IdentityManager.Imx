@@ -31,19 +31,25 @@
   button.mat-menu-item {
     box-sizing: border-box;
   }
-  
+
   button.mat-menu-item:hover,
   button.mat-menu-item:focus {
     background-color: $white !important;
   }
-  
+
   .mat-tab-nav-bar {
     background-color: $white;
-  
+
     .mat-tab-link {
       font-size: 16px;
       color: $black-6;
     }
+  }
+
+  .imx-mein-menu-item {
+    font-size: 16px;
+    padding: 10px 24px 10px 24px;
+    color: $black-7;
   }
 }
 

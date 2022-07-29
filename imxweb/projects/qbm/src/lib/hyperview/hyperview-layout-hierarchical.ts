@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -115,47 +115,47 @@ export class HyperviewLayoutHierarchical implements HyperViewLayout {
 
   private layoutTopShapes(sCenter: Size, elems: { [id: string]: HvCell; }): Size {
     // layout top left shapes
-    sCenter = this.getMaxSize(elems.MiddleCenter.size, elems.TopCenter.size.width, elems.MiddleLeft.size.height);
-    this.layoutElements(elems.TopLeft, sCenter, -2, -1, false, false);
+    sCenter = this.getMaxSize(elems['MiddleCenter'].size, elems['TopCenter'].size.width, elems['MiddleLeft'].size.height);
+    this.layoutElements(elems['TopLeft'], sCenter, -2, -1, false, false);
 
     // layout top center shapes
-    sCenter = this.getMaxSize(elems.MiddleCenter.size, elems.TopCenter.size.width,
-      Math.max(elems.MiddleLeft.size.height, elems.MiddleRight.size.height));
-    this.layoutElements(elems.TopCenter, sCenter, 0, -1, true, false);
+    sCenter = this.getMaxSize(elems['MiddleCenter'].size, elems['TopCenter'].size.width,
+      Math.max(elems['MiddleLeft'].size.height, elems['MiddleRight'].size.height));
+    this.layoutElements(elems['TopCenter'], sCenter, 0, -1, true, false);
 
     // layout top right shapes
-    sCenter = this.getMaxSize(elems.MiddleCenter.size, elems.TopCenter.size.width, elems.MiddleRight.size.height);
-    this.layoutElements(elems.TopRight, sCenter, 2, -1, false, false);
+    sCenter = this.getMaxSize(elems['MiddleCenter'].size, elems['TopCenter'].size.width, elems['MiddleRight'].size.height);
+    this.layoutElements(elems['TopRight'], sCenter, 2, -1, false, false);
     return sCenter;
   }
 
   private layoutBottomShapes(sCenter: Size, elems: { [id: string]: HvCell; }): Size {
     // layout bottom left shapes
-    sCenter = this.getMaxSize(elems.MiddleCenter.size, elems.BottomCenter.size.width, elems.MiddleLeft.size.height);
-    this.layoutElements(elems.BottomLeft, sCenter, -2, 1, false, false);
+    sCenter = this.getMaxSize(elems['MiddleCenter'].size, elems['BottomCenter'].size.width, elems['MiddleLeft'].size.height);
+    this.layoutElements(elems['BottomLeft'], sCenter, -2, 1, false, false);
 
     // layout bottom center shapes
-    sCenter = this.getMaxSize(elems.MiddleCenter.size, elems.BottomCenter.size.width,
-      Math.max(elems.MiddleLeft.size.height, elems.MiddleRight.size.height));
-    this.layoutElements(elems.BottomCenter, sCenter, 0, 1, true, false);
+    sCenter = this.getMaxSize(elems['MiddleCenter'].size, elems['BottomCenter'].size.width,
+      Math.max(elems['MiddleLeft'].size.height, elems['MiddleRight'].size.height));
+    this.layoutElements(elems['BottomCenter'], sCenter, 0, 1, true, false);
 
     // layout bottom right shapes
-    sCenter = this.getMaxSize(elems.MiddleCenter.size, elems.BottomCenter.size.width, elems.MiddleRight.size.height);
-    this.layoutElements(elems.BottomRight, sCenter, 2, 1, false, false);
+    sCenter = this.getMaxSize(elems['MiddleCenter'].size, elems['BottomCenter'].size.width, elems['MiddleRight'].size.height);
+    this.layoutElements(elems['BottomRight'], sCenter, 2, 1, false, false);
     return sCenter;
   }
 
   private layoutMiddleShapes(sCenter: Size, elems: { [id: string]: HvCell; }): Size {
     // layout middle left shapes
-    sCenter = this.getMaxSize(elems.MiddleCenter.size, 0, elems.MiddleLeft.size.height);
-    this.layoutElements(elems.MiddleLeft, sCenter, -1, 0, false, true);
+    sCenter = this.getMaxSize(elems['MiddleCenter'].size, 0, elems['MiddleLeft'].size.height);
+    this.layoutElements(elems['MiddleLeft'], sCenter, -1, 0, false, true);
 
     // layout middle center shapes
-    this.layoutElements(elems.MiddleCenter, sCenter, 0, 0, true, true);
+    this.layoutElements(elems['MiddleCenter'], sCenter, 0, 0, true, true);
 
     // layout middle right shapes
-    sCenter = this.getMaxSize(elems.MiddleCenter.size, 0, elems.MiddleRight.size.height);
-    this.layoutElements(elems.MiddleRight, sCenter, 1, 0, false, true);
+    sCenter = this.getMaxSize(elems['MiddleCenter'].size, 0, elems['MiddleRight'].size.height);
+    this.layoutElements(elems['MiddleRight'], sCenter, 1, 0, false, true);
     return sCenter;
   }
 

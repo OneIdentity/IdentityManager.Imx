@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,15 +27,18 @@
 import { Injectable } from '@angular/core';
 import { Router, Route } from '@angular/router';
 
-import { ExtService } from 'qbm';
+import { ExtService, MenuItem, MenuService } from 'qbm';
+import { isExceptionApprover } from './admin/permissions-helper';
 import { DashboardPluginComponent } from './dashboard-plugin/dashboard-plugin.component';
 
 @Injectable({ providedIn: 'root' })
 export class InitService {
   constructor(
     private readonly extService: ExtService,
+    private readonly menuService: MenuService,
     private readonly router: Router
   ) {
+    this.setupMenu();
   }
 
   public onInit(routes: Route[]): void {
@@ -50,5 +53,29 @@ export class InitService {
       config.unshift(route);
     });
     this.router.resetConfig(config);
+  }
+
+  private setupMenu(): void {
+    this.menuService.addMenuFactories((preProps: string[], groups: string[]) => {
+      if (!preProps.includes('COMPLIANCE') || !isExceptionApprover(groups)) {
+        return null;
+      }
+
+      const menu: MenuItem = {
+        id: 'ROOT_Compliance',
+        title: '#LDS#Compliance',
+        sorting: '25',
+        items: [
+          {
+            id: 'POL_policy-violations',
+            route: 'compliance/policyviolations',
+            title: '#LDS#Menu Entry Policy violations',
+            sorting: '20-10',
+          }
+        ]
+      };
+
+      return menu;
+    });
   }
 }

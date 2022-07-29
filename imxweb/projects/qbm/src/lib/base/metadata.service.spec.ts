@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -88,6 +88,6 @@ describe('MetadataService', () => {
 
     await service.updateNonExisting(['dummyTable', 'another table']);
 
-    expect(clientSpy.imx_metadata_table_get).toHaveBeenCalledWith('another table', 'de');
+    expect(clientSpy.imx_metadata_table_get).toHaveBeenCalledWith('another table', { cultureName: 'de' });
   });
 });

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -53,7 +53,6 @@ export class EditMasterDataComponent implements OnInit, OnDestroy {
   public readonly formArray: FormArray;
   public reload = false;
   public filterModel: FilterModel;
-  public isStarlingTwoFactorConfigured: boolean;
   public hasAttestations: boolean;
 
   private isPoliyEditorEnabled = true;
@@ -106,7 +105,6 @@ export class EditMasterDataComponent implements OnInit, OnDestroy {
     setTimeout(() => overlayRef = this.busyService.show());
     try {
       this.hasAttestations = (await this.policyService.getRunCountForPolicy(this.policy.policy.GetEntity().GetKeys()[0])) > 0;
-      this.isStarlingTwoFactorConfigured = (await this.userService.getUserConfig()).IsStarlingTwoFactorConfigured;
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
@@ -149,7 +147,6 @@ export class EditMasterDataComponent implements OnInit, OnDestroy {
   }
 
   public async updateAttestation(): Promise<void> {
-    await this.policy.policy.Attestators.Column.PutValueStruct({ DataValue: '', DisplayValue: '' });
     this.objectProperties.Attestators.cdr = new BaseCdr(this.policy.policy.Attestators.Column);
     this.logger.debug(this, 'Attestator cdr updated');
   }
@@ -277,9 +274,12 @@ export class EditMasterDataComponent implements OnInit, OnDestroy {
       this.policy.policy.UID_PersonOwner.Column,
       this.policy.policy.RiskIndex.Column,
       this.policy.policy.Areas.Column,
+      this.policy.policy.UID_AttestationPolicyGroup.Column,
       this.policy.policy.UID_DialogCulture.Column,
+      this.policy.policy.IsShowElementsInvolved.Column,
       this.policy.policy.IsInActive.Column,
       this.policy.policy.IsAutoCloseOldCases.Column,
+      this.policy.policy.LimitOfOldCases.Column,
       this.policy.policy.IsApproveRequiresMfa.Column,
       this.policy.policy.UID_QERPickCategory.Column
     ];

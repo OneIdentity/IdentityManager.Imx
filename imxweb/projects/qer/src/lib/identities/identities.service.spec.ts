@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -51,7 +51,7 @@ describe('IdentitiesService', () => {
       PortalPersonReportsInteractive: {
         Get_byid: jasmine.createSpy('Get_byid').and.returnValue(Promise.resolve({ Data: ['test1'] })),
       },
-      PortalPersonReportsInteractive_byid: {
+      PortalPersonReportsinteractive: {
         Get_byid: jasmine.createSpy('Get_byid').and.returnValue(Promise.resolve({ Data: ['test1'] })),
       },
     },
@@ -108,7 +108,7 @@ describe('IdentitiesService', () => {
   it('retrieves persons details (as a manager)', async () => {
     mockQerApiService.typedClient.PortalPersonReportsInteractive.Get_byid.calls.reset;
     expect(await service.getPersonInteractive('test1')).toBeDefined();
-    expect(mockQerApiService.typedClient.PortalPersonReportsInteractive_byid.Get_byid).toHaveBeenCalled();
+    expect(mockQerApiService.typedClient.PortalPersonReportsInteractive.Get_byid).toHaveBeenCalled();
   });
 
   it('retrieves the filter options for the identities', async () => {

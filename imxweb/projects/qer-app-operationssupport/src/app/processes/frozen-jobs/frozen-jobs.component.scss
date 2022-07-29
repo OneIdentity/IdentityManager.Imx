@@ -1,11 +1,10 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_palette.scss";
 
 :host {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   flex-grow: 1;
-  max-width: 1200px;
 }
 
 .imx-table-container {
@@ -13,7 +12,7 @@
   height: calc(100% - 50px);
   display: flex;
   flex-direction: column;
-  
+
   > :nth-child(2) {
     flex: 1 1 auto;
   }
@@ -38,7 +37,7 @@
   clear: both;
   width: auto;
   float: right;
-  position: absolute;  
+  position: absolute;
   right: 0;
   padding: 0 20px;
   background-color: $iris-blue;

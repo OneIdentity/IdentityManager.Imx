@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -88,7 +88,6 @@ describe('TypedEntitySelectComponent', () => {
       },
       getInitialDisplay: () => 'some entity display',
       getSelected: () => Promise.resolve([{ GetEntity: () => ({ GetDisplay: () => 'some entity display' }) } as TypedEntity]),
-      hasSearchParameter: true
     }as unknown as TypedEntitySelectionData;
 
     component.data = data;

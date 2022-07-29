@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -40,6 +40,7 @@ import { HierarchicalCandidate } from './hierarchical-candidate';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatSelectChange } from '@angular/material/select';
 import { DataTreeWrapperComponent } from '../data-tree-wrapper/data-tree-wrapper.component';
+import { FilterTreeParameter } from '../data-source-toolbar/data-model/filter-tree-parameter';
 
 @Component({
   selector: 'imx-fk-hierarchical-dialog',
@@ -56,7 +57,8 @@ export class FkHierarchicalDialogComponent implements OnInit, OnDestroy {
   public filters: DataModelFilter[] = [];
 
   public entitySchema = HierarchicalCandidate.GetEntitySchema();
-  public filterTree: (parentkey: string) => Promise<FilterTreeData>;
+  // public filterTree: (parentkey: string) => Promise<FilterTreeData>;
+  public filterTree: FilterTreeParameter;
 
   private isChanged = false;
   private closeClickSubscription: Subscription;
@@ -81,7 +83,7 @@ export class FkHierarchicalDialogComponent implements OnInit, OnDestroy {
       this.hierarchyService.fkTable = data.fkRelations.find(fkr => fkr.TableName === data.selectedTableName) || data.fkRelations[0];
     }
 
-    this.filterTree = async (parent) => this.hierarchyService.fkTable.GetFilterTree(parent);
+    this.filterTree = {filterMethode: async (parent) => this.hierarchyService.fkTable.GetFilterTree(parent)};
   }
 
   public ngOnDestroy(): void {

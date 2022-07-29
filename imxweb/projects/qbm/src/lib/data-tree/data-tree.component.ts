@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -106,7 +106,7 @@ export class DataTreeComponent implements OnChanges, OnDestroy {
   }
 
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
-    if (changes.database) {
+    if (changes['database']) {
       this.hasTreeData = true; // because of 298890: (await this.database.getData(true, { PageSize: -1 })).totalCount > 0;
     }
   }

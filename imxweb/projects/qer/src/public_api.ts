@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -56,8 +56,11 @@ export { BadgeTileComponent } from './lib/tiles/badge-tile/badge-tile.component'
 export { IconTileComponent } from './lib/tiles/icon-tile/icon-tile.component';
 export { IRoleMembershipType } from './lib/role-management/role-memberships/membership-handlers';
 export { IdentityRoleMembershipsService } from './lib/identities/identity-sidesheet/identity-role-memberships/identity-role-memberships.service';
-export { IdentityRoleMembershipsParameter, MembershipContolInfo } from './lib/identities/identity-sidesheet/identity-role-memberships/identity-role-memberships-parameter.interface';
-export { IdentityRoleMembershipsModule} from './lib/identities/identity-sidesheet/identity-role-memberships/identity-role-memberships.module';
+export {
+  IdentityRoleMembershipsParameter,
+  MembershipContolInfo,
+} from './lib/identities/identity-sidesheet/identity-role-memberships/identity-role-memberships-parameter.interface';
+export { IdentityRoleMembershipsModule } from './lib/identities/identity-sidesheet/identity-role-memberships/identity-role-memberships.module';
 export { IdentityRoleMembershipsComponent } from './lib/identities/identity-sidesheet/identity-role-memberships/identity-role-memberships.component';
 export { IRoleDataModel } from './lib/role-management/role-data-model.interface';
 export { ObjectOverviewContainer } from './lib/ops/objectOverviewContainer';
@@ -113,10 +116,9 @@ export { ServiceItemTagsService } from './lib/service-item-tags/service-item-tag
 export { ServiceCategoriesModule } from './lib/service-categories/service-categories.module';
 export { ServiceCategoriesService } from './lib/service-categories/service-categories.service';
 export { ShoppingCartModule } from './lib/shopping-cart/shopping-cart.module';
-export { StarlingComponent } from './lib/starling/starling.component';
-export { StarlingService } from './lib/starling/starling.service';
 export { UserModelService } from './lib/user/user-model.service';
 export { UserModule } from './lib/user/user.module';
+export { TermsOfUseModule } from './lib/terms-of-use/terms-of-use.module';
 export { TilesModule } from './lib/tiles/tiles.module';
 export { ItshopModule } from './lib/itshop/itshop.module';
 export { ItshopService } from './lib/itshop/itshop.service';
@@ -124,6 +126,8 @@ export { ItshopPatternModule } from './lib/itshop-pattern/itshop-pattern.module'
 export { ShelfService } from './lib/itshop/shelf.service';
 export { DecisionReasonComponent } from './lib/justification/decision-reason/decision-reason.component';
 export { RequestInfoComponent } from './lib/itshop/request-info/request-info.component';
+export { ServiceItemDetailComponent } from './lib/itshop/request-info/service-item-detail/service-item-detail.component';
+export { ProductEntitlementsComponent } from './lib/itshop/request-info/service-item-detail/product-entitlements/product-entitlements.component';
 export { JustificationModule } from './lib/justification/justification.module';
 export { JustificationService } from './lib/justification/justification.service';
 export { JustificationType } from './lib/justification/justification-type.enum';
@@ -150,4 +154,5 @@ export { QerPermissionsService } from './lib/admin/qer-permissions.service';
 export { IDataExplorerComponent } from './lib/data-explorer-view/data-explorer-extension';
 export { FeatureConfigService } from './lib/admin/feature-config.service';
 export { ItshopRequest } from './lib/request-history/itshop-request';
-export { RequestParameterDataEntity } from "./lib/itshop/request-info/request-parameter-data-entity.interface";
+export { RequestParameterDataEntity } from './lib/itshop/request-info/request-parameter-data-entity.interface';
+export { BaseTreeRoleRestoreHandler } from './lib/role-management/restore/restore-handler';

@@ -1,0 +1,16 @@
+<div eui-sidesheet-content color="white">
+  <form [formGroup]="formGroup" class="imx-policy-violation-content">
+    <p *ngIf="data.description">{{ data.description | translate }}</p>
+    <ng-container *ngIf="data.policyViolations.length > 1">
+      <imx-policy-violations-action-multi-action [formGroup]="formGroup" [data]="data"></imx-policy-violations-action-multi-action>
+    </ng-container>
+    <ng-container *ngIf="data.policyViolations.length === 1">
+      <imx-policy-violations-action-single-action [formGroup]="formGroup" [data]="data"></imx-policy-violations-action-single-action>
+    </ng-container>
+  </form>
+</div>
+<div eui-sidesheet-actions color="white">
+  <button data-imx-identifier="policy-violation-action-button-save" mat-raised-button color="primary" (click)="sideSheetRef.close(true)" *ngIf="formGroup" [disabled]="formGroup.invalid">
+    {{ '#LDS#Save' | translate }}
+  </button>
+</div>

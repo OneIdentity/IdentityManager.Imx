@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,6 +34,7 @@ import {
   BaseTreeEntitlement,
   DataExplorerRegistryService,
   RolesOverviewComponent,
+  BaseTreeRoleRestoreHandler,
   IdentityRoleMembershipsService
 } from 'qer';
 import { DynamicMethodService, ImxTranslationProviderService, imx_SessionService, MenuService } from 'qbm';
@@ -67,7 +68,7 @@ export class InitService {
     this.addRoutes(routes);
 
 
-    // wrapper class for interactive and interactive_byid methods
+    // wrapper class for interactive methods
     class ApiWrapper {
 
       constructor(private getApi: {
@@ -88,6 +89,15 @@ export class InitService {
       }
     }
 
+    const restore = new BaseTreeRoleRestoreHandler(
+      () => this.api.client.portal_roles_Org_restore_get(),
+      () => this.api.client.portal_resp_Org_restore_get(),
+      uid => this.api.client.portal_roles_Org_restore_byid_get(uid),
+      uid => this.api.client.portal_resp_Org_restore_byid_get(uid),
+      (uidRole, actions) => this.api.client.portal_roles_Org_restore_byid_post(uidRole, actions),
+      (uidRole, actions) => this.api.client.portal_resp_Org_restore_byid_post(uidRole, actions)
+    );
+
     this.roleService.targetMap.set(this.orgTag, {
       canBeSplitTarget: true,
       canBeSplitSource: true,
@@ -96,31 +106,22 @@ export class InitService {
       resp: this.api.typedClient.PortalRespOrg,
       adminType: PortalAdminRoleOrg,
       admin: {
-        get: async (parameter: any) => this.api.client.portal_admin_role_org_get(
-          parameter?.OrderBy,
-          parameter?.StartIndex,
-          parameter?.PageSize,
-          parameter?.filter,
-          parameter?.withProperties,
-          parameter?.search,
-          parameter?.ParentKey,
-          parameter?.risk,
-          parameter?.orgroot
-        )
+        get: async (parameter: any) => this.api.client.portal_admin_role_org_get(parameter)
       },
       adminSchema: this.api.typedClient.PortalAdminRoleOrg.GetSchema(),
       dataModel: new OrgDataModel(this.api),
       interactiveResp: new ApiWrapper(
         this.api.typedClient.PortalRespOrgInteractive,
-        this.api.typedClient.PortalRespOrgInteractive_byid
+        this.api.typedClient.PortalRespOrgInteractive
       ),
       interactiveAdmin: new ApiWrapper(
         this.api.typedClient.PortalAdminRoleOrgInteractive,
-        this.api.typedClient.PortalAdminRoleOrgInteractive_byid,
+        this.api.typedClient.PortalAdminRoleOrgInteractive,
       ),
       entitlements: new BaseTreeEntitlement(this.qerApi, this.session, this.dynamicMethodService, this.translator,
         this.orgTag, e => e.GetColumn('UID_OrgRoot').GetValue()),
-      membership: new OrgMembership(this.api, this.session, this.translator)
+      membership: new OrgMembership(this.api, this.session, this.translator),
+      restore: restore
     });
 
 
@@ -132,15 +133,8 @@ export class InitService {
         label: '#LDS#Menu Entry Business roles',
         index: 70,
       },
-      get: async (parameter: CollectionLoadParameters) => this.api.client.portal_person_rolememberships_Org_get(
-          parameter?.uidPerson,
-          parameter?.OrderBy,
-          parameter?.StartIndex,
-          parameter?.PageSize,
-          parameter?.filter,
-          parameter?.withProperties,
-          parameter?.search
-        ),
+      get: async (uidPerson: string, parameter: CollectionLoadParameters) => this.api.client.portal_person_rolememberships_Org_get(
+        uidPerson, parameter),
       withAnalysis: true
     });
 

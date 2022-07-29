@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -55,7 +55,7 @@ export class IdentityRoleMembershipsService {
     this.addPredefinedTargets();
   }
 
-  public async get(target: string, navigationState?: CollectionLoadParameters)
+  public async get(target: string, uidPerson:string, navigationState?: CollectionLoadParameters)
     : Promise<TypedEntityCollectionData<TypedEntity>> {
     const targetObject = this.targetMap.get(target);
 
@@ -64,7 +64,7 @@ export class IdentityRoleMembershipsService {
     }
 
     const builder = new TypedEntityBuilder(targetObject.type);
-    const data = await targetObject.get(navigationState);
+    const data = await targetObject.get(uidPerson,navigationState);
 
     return builder.buildReadWriteEntities(data, targetObject.entitySchema);
   }
@@ -95,15 +95,12 @@ export class IdentityRoleMembershipsService {
         label: '#LDS#Menu Entry Locations',
         index: 40,
       },
-      get: async (parameter: CollectionLoadParameters) => this.qerApiClient.client.portal_person_rolememberships_Locality_get(
-          parameter?.uidPerson,
-          parameter?.OrderBy,
-          parameter?.StartIndex,
-          parameter?.PageSize,
-          parameter?.filter,
-          parameter?.withProperties,
-          parameter?.search
-        )
+      get: async (uidPerson: string, parameter: CollectionLoadParameters) =>
+       {
+        return this.qerApiClient.client.portal_person_rolememberships_Locality_get(
+          uidPerson,
+          parameter
+        )}
       ,
       withAnalysis: true
     });
@@ -116,15 +113,10 @@ export class IdentityRoleMembershipsService {
         label: '#LDS#Menu Entry Cost centers',
         index: 50,
       },
-      get: async (parameter: CollectionLoadParameters) => this.qerApiClient.client.portal_person_rolememberships_ProfitCenter_get(
-          parameter?.uidPerson,
-          parameter?.OrderBy,
-          parameter?.StartIndex,
-          parameter?.PageSize,
-          parameter?.filter,
-          parameter?.withProperties,
-          parameter?.search
-        ),
+      get: async (uidPerson:string, parameter: CollectionLoadParameters) => this.qerApiClient.client.portal_person_rolememberships_ProfitCenter_get(
+        uidPerson,
+        parameter
+      ),
       withAnalysis: true
     });
 
@@ -136,14 +128,9 @@ export class IdentityRoleMembershipsService {
         label: '#LDS#Menu Entry Departments',
         index: 30,
       },
-      get: async (parameter: CollectionLoadParameters) => this.qerApiClient.client.portal_person_rolememberships_Department_get(
-          parameter?.uidPerson,
-          parameter?.OrderBy,
-          parameter?.StartIndex,
-          parameter?.PageSize,
-          parameter?.filter,
-          parameter?.withProperties,
-          parameter?.search
+      get: async (uidPerson: string, parameter: CollectionLoadParameters) => this.qerApiClient.client.portal_person_rolememberships_Department_get(
+          uidPerson,
+          parameter
         ),
       withAnalysis: true
     });
@@ -153,18 +140,13 @@ export class IdentityRoleMembershipsService {
       type: PortalPersonRolemembershipsAerole,
       entitySchema: this.qerApiClient.typedClient.PortalPersonRolemembershipsAerole.GetSchema(),
       controlInfo: {
-        label: '#LDS#Heading Application Roles',
+        label: '#LDS#Menu Entry Application roles',
         index: 60,
       },
-      get: async (parameter: CollectionLoadParameters) => this.qerApiClient.client.portal_person_rolememberships_AERole_get(
-          parameter?.uidPerson,
-          parameter?.OrderBy,
-          parameter?.StartIndex,
-          parameter?.PageSize,
-          parameter?.filter,
-          parameter?.withProperties,
-          parameter?.search
-        ),
+      get: async (uidPerson: string, parameter: CollectionLoadParameters) => this.qerApiClient.client.portal_person_rolememberships_AERole_get(
+        uidPerson,
+        parameter
+      ),
       withAnalysis: true
     });
 
@@ -176,16 +158,13 @@ export class IdentityRoleMembershipsService {
         label: '#LDS#Heading Shops',
         index: 90,
       },
-      get: async (parameter: CollectionLoadParameters) => this.qerApiClient.client.portal_person_rolememberships_ITShopOrg_get(
-          parameter?.uidPerson,
-          parameter?.OrderBy,
-          parameter?.StartIndex,
-          parameter?.PageSize,
-          undefined,
-          parameter?.withProperties,
-          parameter?.search,
-          'CU'
-        ),
+      get: async (uidPerson: string,parameter: CollectionLoadParameters) => this.qerApiClient.client.portal_person_rolememberships_ITShopOrg_get(
+        uidPerson,
+        {
+          ...parameter,
+          type: 'CU'
+        }
+      ),
       withAnalysis: true
     });
   }

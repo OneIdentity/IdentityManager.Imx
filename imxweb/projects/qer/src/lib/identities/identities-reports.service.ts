@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -48,14 +48,7 @@ export class IdentitiesReportsService {
   public async personData(search?: string): Promise<EntityCollectionData> {
     const options: CollectionLoadParameters = this.getDefaultDataOptions(search);
 
-    return this.qerClient.client.portal_candidates_Person_get(
-      options.OrderBy,
-      options.StartIndex,
-      options.PageSize,
-      options.filter,
-      options.withProperties,
-      options.search
-    );
+    return this.qerClient.client.portal_candidates_Person_get(options);
   }
 
   private getDefaultDataOptions(search?: string): CollectionLoadParameters {

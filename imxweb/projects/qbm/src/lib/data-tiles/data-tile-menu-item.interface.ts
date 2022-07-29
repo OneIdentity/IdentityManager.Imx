@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,7 +31,8 @@ import { TypedEntity } from 'imx-qbm-dbts';
  */
 export interface DataTileMenuItem {
   name: string;
-  description: string;
+  description?: string;
   typedEntity?: TypedEntity;
-  tileSelected?: boolean
+  tileSelected?: boolean;
+  useOnDisabledTile?: boolean;
 }

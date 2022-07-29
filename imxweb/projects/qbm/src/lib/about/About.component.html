@@ -3,7 +3,7 @@
     <mat-tab label="{{ '#LDS#About' | translate }}">
       <ng-template matTabContent>
         <a class="imx-productLink" href="{{ product['ProductPageUrl'] }}">
-          <eui-logo size="72"></eui-logo>
+          <eui-logo [size]="72"></eui-logo>
         </a>
         <div class="imx-productNameVersion" data-imx-identifier="ProductName and Version">
           <div>{{ product['Name'] }}</div>

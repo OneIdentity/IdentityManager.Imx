@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -39,14 +39,13 @@ import { ClassloggerService } from '../../classlogger/classlogger.service';
 @Component({
   selector: 'imx-cdr-editor',
   templateUrl: './cdr-editor.component.html',
-  styleUrls: ['./cdr-editor.component.scss']
+  styleUrls: ['./cdr-editor.component.scss'],
 })
 export class CdrEditorComponent implements OnChanges {
   /**
    * The column dependent reference for which the editor should be provided.
    */
   @Input() public cdr: ColumnDependentReference;
-
 
   @Output() public controlCreated = new EventEmitter<AbstractControl>();
   @Output() public readonly valueChange = new EventEmitter<any>();
@@ -57,19 +56,23 @@ export class CdrEditorComponent implements OnChanges {
   // stores if the cdr is readonly, because otherwise you're unable to check if the value has changed
   private isReadonly: boolean;
 
-  constructor(private registry: CdrRegistryService, private logger: ClassloggerService, private readonly elementRef: ElementRef) {
-  }
+  constructor(private registry: CdrRegistryService, private logger: ClassloggerService, private readonly elementRef: ElementRef) {}
 
   public ngOnChanges(changes: SimpleChanges): void {
-    if (changes.cdr && changes.cdr.currentValue) {
+    if (changes['cdr'] && changes['cdr'].currentValue) {
       this.viewContainerRef.clear();
       try {
         const ref = this.registry.createEditor(this.viewContainerRef, this.cdr);
         this.isReadonly = this.cdr.isReadOnly();
         if (ref.instance.valueHasChanged) {
-          ref.instance.valueHasChanged.subscribe(value => {
-            if ((value || '') !== (this.cdr.column.GetValue() || '')) {
-              this.valueChange.emit(value);
+          ref.instance.valueHasChanged.subscribe((value) => {
+            if (value?.forceEmit === true) {
+              this.valueChange.emit(value.value);
+            } else {
+              const val = value.value?.DataValue ?? value.value;
+              if ((val ?? '') !== (this.cdr.column.GetValue() ?? '')) {
+                this.valueChange.emit(value.value);
+              }
             }
             if (this.cdr.isReadOnly() !== this.isReadonly) {
               this.isReadonly = this.cdr.isReadOnly();

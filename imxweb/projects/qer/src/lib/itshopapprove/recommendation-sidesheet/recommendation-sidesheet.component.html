@@ -1,0 +1,40 @@
+<div eui-sidesheet-content>
+
+  <eui-alert *ngIf="isRecApprove" class="helper-alert" type="success" condensed="true" [colored]="true">
+    {{'#LDS#Based on an analysis with currently available data, it is recommended you approve this request.'| translate}}
+  </eui-alert>
+
+  <eui-alert *ngIf="isRecReject" class="helper-alert" type="error" condensed="true" [colored]="true">
+    {{'#LDS#Based on an analysis with currently available data, it is recommended you deny this request.'| translate}}
+  </eui-alert>
+
+  <eui-alert *ngIf="isRecApprove" class="helper-alert" type="info" condensed="true" [colored]="true">
+    {{'#LDS#A recent analysis with currently available data could not conclude with a recommendation for this request.'| translate}}
+  </eui-alert>
+
+  <div class="recommendation-items" *ngIf="recommendationItems">
+    <p>{{'#LDS#The following factors were considered in this recommendation.' | translate}}</p>
+    <mat-card *ngFor="let item of recommendationItems" class="recommendation-item">
+      <mat-card-header>
+        <div mat-card-avatar>
+          <eui-icon *ngIf="!item?.Weight || item?.Weight == 0" class="imx-icon-ok" icon="setdefault" size="25px"></eui-icon>
+          <eui-icon *ngIf="item?.Weight && item?.Weight > 0" class="imx-icon-warning" icon="warning" size="25px"></eui-icon>
+        </div>
+        <mat-card-title>
+          {{item.Display}}
+        </mat-card-title>
+        <mat-card-subtitle *ngIf="item?.Detail">
+          {{item.Detail}}
+        </mat-card-subtitle>
+      </mat-card-header>
+    </mat-card>
+  </div>
+</div>
+
+<div eui-sidesheet-actions color="white">
+  <button mat-stroked-button data-imx-identifier="approval-recommendation-button-approve" (click)="onApprove()">{{'#LDS#Approve' | translate}}</button>
+  <button mat-stroked-button data-imx-identifier="approval-recommendation-button-approve" (click)="onDeny()">{{'#LDS#Deny' | translate}}</button>
+</div>
+
+
+

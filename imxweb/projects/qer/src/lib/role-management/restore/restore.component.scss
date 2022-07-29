@@ -1,0 +1,21 @@
+@import "@elemental-ui/core/src/styles/_palette.scss";
+
+eui-alert {
+  margin-bottom: 1em;
+  display: block;
+}
+
+.subtext {
+  font-size: small;
+  font-style: italic;
+  color: $black_9;
+  margin-bottom: 10px;
+}
+
+.imx-step-button,
+.imx-step-button-save {
+  margin-top: 10px;
+  > *:not(:last-child) {
+    margin-right: 10px;
+  }
+}

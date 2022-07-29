@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -77,7 +77,7 @@ describe('CartItemInteractiveService', () => {
   const apiService = {
     typedClient: {
       PortalCartitemInteractive: portalCartitemInteractiveMethod,
-      PortalCartitemInteractive_byid:  portalCartitemInteractiveMethod}
+      PortalCartiteminteractive:  portalCartitemInteractiveMethod}
   };
 
   const parameterDataService = new class {

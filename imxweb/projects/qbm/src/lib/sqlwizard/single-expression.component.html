@@ -11,7 +11,7 @@
     </imx-sqlwizard-whereclauseexpression>
     <div class="remove-btn">
         <button (click)="expr.remove()" data-imx-identifier="single-expr-button-remove"
-            *ngIf="expr.canRemove(allowEmptyExpression)" mat-icon-button [attr.aria-label]="'#LDS#Delete' | translate">
+            *ngIf="expr.canRemove()" mat-icon-button [attr.aria-label]="'#LDS#Delete' | translate">
             <eui-icon icon="delete"></eui-icon>
         </button>
     </div>

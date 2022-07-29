@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -136,7 +136,6 @@ export class ServiceCategoriesComponent implements OnDestroy {
       display: '#LDS#Service items',
       selected: serviceItemsInitialSelection?.slice(),
       getTyped: parameters => this.serviceItemsService.get(parameters),
-      hasSearchParameter: true
     };
 
     const state = await this.sidesheet.open(

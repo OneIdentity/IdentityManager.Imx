@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,7 +31,7 @@ import { LoggerTestingModule } from 'ngx-logger/testing';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, of } from 'rxjs';
 
-import { AppConfigService, AuthenticationService, imx_SessionService, ImxTranslationProviderService, PluginLoaderService } from 'qbm';
+import { AppConfigService, AuthenticationService, imx_SessionService, ImxTranslationProviderService, PluginLoaderService, SplashService } from 'qbm';
 import { AppService } from './app.service';
 
 describe('AppService', () => {
@@ -45,6 +45,12 @@ describe('AppService', () => {
       use: jasmine.createSpy('use').and.returnValue(of({})),
       onLangChange: { subscribe: () => {}},
     };
+
+    splash = {
+      init: jasmine.createSpy('init'),
+      update: jasmine.createSpy('update'),
+      close: jasmine.createSpy('close'),
+    }
 
     translationProvider = {
       init: jasmine.createSpy('init').and.returnValue(Promise.resolve())
@@ -126,6 +132,10 @@ describe('AppService', () => {
         {
           provide: AuthenticationService,
           useValue: mocks.authentication
+        },
+        {
+          provide: SplashService,
+          useValue: mocks.splash
         }
       ]
     });

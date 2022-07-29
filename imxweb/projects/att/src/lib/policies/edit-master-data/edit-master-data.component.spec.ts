@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -131,6 +131,16 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
                 ColumnName: 'RiskIndex'
             }
         },
+        LimitOfOldCases: {
+            value: 42,
+            Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                }),
+                GetDisplayValue: () => '',
+                ColumnName: 'LimitOfOldCases'
+            }
+        },
         SolutionDays: {
             value: 7,
             Column: {
@@ -171,6 +181,16 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
                 ColumnName: 'UID_PWODecisionMethod'
             }
         },
+        UID_AttestationPolicyGroup: {
+            value: 'uidPolicyGroup',
+            Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                }),
+                GetDisplayValue: () => '',
+                ColumnName: 'UID_AttestationPolicyGroup'
+            }
+        },
         UID_DialogSchedule: {
             value: 'DialogSchedule',
             Column: {
@@ -179,6 +199,16 @@ function buildPolicy(isInactiv: boolean, minlegth: number, openCases: number): a
                 }),
                 GetDisplayValue: () => '',
                 ColumnName: 'UID_DialogSchedule'
+            }
+        },
+        IsShowElementsInvolved: {
+            value: true,
+            Column: {
+                GetMetadata: () => ({
+                    CanSee: () => true
+                }),
+                GetDisplayValue: () => '',
+                ColumnName: 'IsShowElementsInvolved'
             }
         },
         UID_PersonOwner: {
@@ -424,6 +454,7 @@ describe('EditMasterDataComponent', () => {
 
     for (const column of ['Ident_AttestationPolicy', 'Description', 'IsApproveRequiresMfa',
         'IsAutoCloseOldCases', 'IsInActive', 'RiskIndex', 'SolutionDays', 'UID_AttestationObject',
+        'LimitOfOldCases',
         'UID_DialogCulture',
         'UID_PWODecisionMethod', 'UID_DialogSchedule', 'Areas', 'Attestators']) {
         it(`can add a form control for column ${column}`, fakeAsync(() => {

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,7 +36,8 @@ import {
   SnackBarService,
   ClassloggerService,
   DataTableComponent,
-  ConfirmationService
+  ConfirmationService,
+  ClientPropertyForTableColumns
 } from 'qbm';
 import { DisplayColumns, EntitySchema, IClientProperty, TypedEntity, ValType } from 'imx-qbm-dbts';
 import { CartItemEditComponent } from '../cart-item-edit/cart-item-edit.component';
@@ -57,7 +58,7 @@ export class CartItemsComponent implements OnInit, OnChanges {
   public removeButtonLabel = '';
   public readonly entitySchema: EntitySchema;
   public DisplayColumns = DisplayColumns;
-  public displayedColumns: IClientProperty[];
+  public displayedColumns: ClientPropertyForTableColumns[];
 
   public readonly itemStatus = {
     enabled: (cartItem: PortalCartitem): boolean => {
@@ -96,7 +97,8 @@ export class CartItemsComponent implements OnInit, OnChanges {
       this.entitySchema.Columns[DisplayColumns.DISPLAY_LONG_PROPERTYNAME],
       {
         ColumnName: 'removeItemButton',
-        Type: ValType.String
+        Type: ValType.String,
+        afterAdditionals: true
       }
 
     ];

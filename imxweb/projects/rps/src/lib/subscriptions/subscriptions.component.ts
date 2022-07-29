@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,7 +31,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { PortalSubscription } from 'imx-api-rps';
 import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
-import { ConfirmationService, DataSourceToolbarSettings, SnackBarService } from 'qbm';
+import { ConfirmationService, DataSourceToolbarSettings, ClientPropertyForTableColumns, SnackBarService } from 'qbm';
 import { ReportSubscription } from './report-subscription/report-subscription';
 import { ReportSubscriptionService } from './report-subscription/report-subscription.service';
 import { ReportViewConfigComponent } from './report-view-config/report-view-config.component';
@@ -51,7 +51,7 @@ export class SubscriptionsComponent implements OnInit {
   public dstSettings: DataSourceToolbarSettings;
   public canAddSubscription = false;
 
-  private readonly displayedColumns: IClientProperty[];
+  private readonly displayedColumns: ClientPropertyForTableColumns[];
 
   private navigationState: CollectionLoadParameters = { PageSize: 25, StartIndex: 0 };
 
@@ -69,7 +69,8 @@ export class SubscriptionsComponent implements OnInit {
       this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
       {
         ColumnName: 'edit',
-        Type: ValType.String
+        Type: ValType.String,
+        afterAdditionals: true
       },
       {
         ColumnName: 'actions',

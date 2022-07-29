@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,8 @@
 
 import { EntityData } from 'imx-qbm-dbts';
 import { DataSourceToolbarSettings, IExtension } from 'qbm';
-import { Subject } from 'rxjs/internal/Subject';
+import { ItshopRequest } from 'qer';
+import { Subject } from 'rxjs';
 
 export class RequestRuleViolation implements IExtension {
   public static readonly id = 'cpl.UID_ComplianceRule';
@@ -41,13 +42,14 @@ export class RequestRuleViolation implements IExtension {
 
     if (this.dstSettings.extendedData) {
       for (let i = 0; i < this.dstSettings.dataSource.Data.length; i++) {
-        const item = this.dstSettings.dataSource.Data[i] as any;
-        const element = this.dstSettings.extendedData[i];
+        const item = this.dstSettings.dataSource.Data[i] as ItshopRequest;
 
-        element.WorkflowHistory.Entities.forEach((wh: EntityData) => {
-          if (wh.Columns['UID_ComplianceRule'].Value) {
-            item.complianceRuleViolation = true;
-          }
+        this.dstSettings.extendedData.forEach((element) => {
+          element.WorkflowHistory.Entities.forEach((wh: EntityData) => {
+            if (wh.Columns['UID_ComplianceRule'].Value) {
+              item.complianceRuleViolation = true;
+            }
+          });
         });
       }
     }

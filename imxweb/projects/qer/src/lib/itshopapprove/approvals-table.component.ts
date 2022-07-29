@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,10 +31,18 @@ import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PwoExtendedData } from 'imx-api-qer';
+import { PwoExtendedData, RecommendationEnum } from 'imx-api-qer';
 import { ValType, ExtendedTypedEntityCollection, TypedEntity, EntitySchema, DataModel, IClientProperty } from 'imx-qbm-dbts';
-
-import { DataSourceToolbarSettings, ClassloggerService, AuthenticationService, DataTableComponent, isIE, SettingsService, IExtension, ExtService, buildAdditionalElementsString } from 'qbm';
+import {
+  DataSourceToolbarSettings,
+  ClassloggerService,
+  AuthenticationService,
+  DataTableComponent,
+  SettingsService,
+  IExtension,
+  ExtService,
+  buildAdditionalElementsString,
+} from 'qbm';
 import { ApprovalsSidesheetComponent } from './approvals-sidesheet/approvals-sidesheet.component';
 import { Approval } from './approval';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
@@ -43,6 +51,7 @@ import { WorkflowActionService } from './workflow-action/workflow-action.service
 import { ApprovalsLoadParameters } from './approvals-load-parameters';
 import { ApprovalsDecision } from './approvals-decision.enum';
 import { UserModelService } from '../user/user-model.service';
+import { RecommendationSidesheetComponent } from './recommendation-sidesheet/recommendation-sidesheet.component';
 
 @Component({
   templateUrl: './approvals-table.component.html',
@@ -50,6 +59,9 @@ import { UserModelService } from '../user/user-model.service';
   styleUrls: ['./approvals-table.component.scss'],
 })
 export class ApprovalsTableComponent implements OnInit, OnDestroy {
+  public recApprove = RecommendationEnum.Approve;
+  public recDeny = RecommendationEnum.Deny;
+
   @Input() public params: Params = {};
   public isUserEscalationApprover = false;
 
@@ -97,7 +109,6 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
   private extensions: IExtension[] = [];
   private readonly subscriptions: Subscription[] = [];
   private readonly UID_ComplianceRuleId = 'cpl.UID_ComplianceRule';
-
   private dataModel: DataModel;
 
   constructor(
@@ -131,7 +142,7 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     if (this.extensions && this.extensions.length > 0) {
       this.extensions[0].subject.subscribe((dstSettings: DataSourceToolbarSettings) => {
         this.dstSettings = dstSettings;
-      })
+      });
     }
   }
 
@@ -154,7 +165,6 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     this.approvalsService.isChiefApproval = false;
     this.subscriptions.forEach((s) => s.unsubscribe());
   }
-
 
   public get viewEscalation(): boolean {
     return this.approvalsService.isChiefApproval;
@@ -194,7 +204,6 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
       if (this.extensions && this.extensions[0]) {
         this.extensions[0].inputData = this.dstSettings;
       }
-
     } finally {
       setTimeout(() => this.busyService.hide(busyIndicator));
     }
@@ -211,8 +220,10 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
       .open(ApprovalsSidesheetComponent, {
         title: await this.translator.get('#LDS#Heading View Request Details').toPromise(),
         headerColour: 'blue',
-        padding: '10px',
-        width: isIE() ? '40%' : 'max(550px, 40%)',
+        bodyColour: 'asher-gray',
+        panelClass: 'imx-sidesheet',
+        padding: '0',
+        width: 'max(700px, 60%)',
         testId: 'approvals-sidesheet',
         data: {
           pwo,
@@ -224,6 +235,34 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
 
     if (doUpdate) {
       await this.getData();
+    }
+  }
+
+    /**
+   * Occurs when user clicks the edit button for a request
+   *
+   * @param pwo Selected PortalItshopApproveRequests.
+   */
+  public async viewRecommendationDetails(pwo: Approval): Promise<void> {
+    this.logger.trace('See recommendations of: ', pwo);
+    const decision: 'approve' | 'deny' | null = await this.sideSheet
+      .open(RecommendationSidesheetComponent, {
+        title: await this.translator.get('#LDS#Heading View Recommendation Details').toPromise(),
+        headerColour: 'blue',
+        bodyColour: 'asher-gray',
+        panelClass: 'imx-sidesheet',
+        padding: '0',
+        width: 'max(700px, 60%)',
+        testId: 'approval-recommendation-sidesheet',
+        data: pwo.pwoData.Recommendation,
+      })
+      .afterClosed()
+      .toPromise();
+
+    if (decision === 'approve') {
+      this.actionService.approve([pwo]);
+    } else if (decision === 'deny') {
+      this.actionService.deny([pwo]);
     }
   }
 
@@ -248,7 +287,7 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     if (this.approvalsCollection) {
       this.dstSettings = {
         dataSource: this.approvalsCollection,
-        extendedData: this.approvalsCollection.extendedData?.Data,
+        extendedData: this.approvalsCollection.extendedData.Data,
         entitySchema: this.entitySchema,
         navigationState: this.navigationState,
         displayedColumns: [
@@ -259,14 +298,19 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
           {
             ColumnName: 'decision',
             Type: ValType.String,
+            afterAdditionals: true,
           },
           {
             ColumnName: 'edit',
             Type: ValType.String,
           },
+          {
+            ColumnName: 'recommendations',
+            Type: ValType.String
+          }
         ],
         dataModel: this.dataModel,
-        identifierForSessionStore: 'approvals-table'
+        identifierForSessionStore: 'approvals-table',
       };
     } else {
       this.dstSettings = undefined;

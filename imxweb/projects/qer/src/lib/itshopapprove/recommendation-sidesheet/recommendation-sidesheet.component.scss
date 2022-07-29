@@ -1,0 +1,32 @@
+@import "@elemental-ui/core/src/styles/_palette.scss";
+
+:host {
+  ::ng-deep .eui-alert {
+    margin-bottom: 20px;
+  }
+
+  .mat-card-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .recommendation-item {
+    margin-bottom: 20px;
+  }
+
+  .imx-icon-warning {
+    color: $corbin-orange;
+  }
+
+  .imx-icon-ok {
+    color: $aspen-green
+  }
+
+  .eui-sidesheet-actions {
+    > * {
+      margin-left: 5px;
+    }
+  }
+}
+

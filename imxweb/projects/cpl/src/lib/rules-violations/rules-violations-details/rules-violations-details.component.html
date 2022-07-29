@@ -10,11 +10,14 @@
   </mat-card>
 </div>
 <div eui-sidesheet-actions color="white">
+  <button mat-stroked-button (click)="resolve()"
+    data-imx-identifier="rules-violations-table-row-button-resolve">
+    {{ '#LDS#Resolve rule violation' | translate }}
+  </button>
   <button mat-stroked-button (click)="approve()"
     data-imx-identifier="rules-violations-table-row-button-approve">
     {{ '#LDS#Grant exception' | translate }}
-  </button>
-  <button mat-stroked-button (click)="deny()"
+  </button>  <button mat-stroked-button (click)="deny()"
     data-imx-identifier="rules-violations-table-row-button-deny">
     {{ '#LDS#Deny exception' | translate }}
   </button>

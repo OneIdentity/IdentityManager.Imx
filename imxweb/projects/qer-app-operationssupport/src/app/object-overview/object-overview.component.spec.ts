@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -40,7 +40,7 @@ import { TranslationProviderServiceSpy } from '../test-utilities/imx-translation
 import { RoutingMock } from '../test-utilities/router-mock.spec';
 import { SessionServiceSpy } from '../test-utilities/imx-session.service.spy.spec';
 import { ObjectOverviewService } from './object-overview.service';
-import { PersonJobQueueInfo } from './person-job-queue-Info';
+import { PersonJobQueueInfo } from './person-job-queue-info';
 import { Subject } from 'rxjs';
 
 @Component({

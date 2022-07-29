@@ -1,4 +1,4 @@
-@import "~@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_palette.scss";
 :host {
   overflow-y: auto;
   display: flex;
@@ -35,7 +35,7 @@
   .justify-start {
     margin-right: auto;
   }
-  
+
   .imx-badge {
     background-color: unset;
   }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -125,12 +125,12 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
   /**
    * The width of a tile.
    */
-  @Input() public width = "340px";
+  @Input() public width = '340px';
 
   /**
    * The height of a tile.
    */
-  @Input() public height: "140px";
+  @Input() public height: '140px';
 
   @Input() public useActionMenu = true;
 
@@ -167,7 +167,7 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
    * Listens for changes of data table inputs e.g. checks it the datasource has changed.
    */
   public ngOnChanges(changes: SimpleChanges): void {
-    if (changes.dst && changes.dst.currentValue) {
+    if (changes['dst'] && changes['dst'].currentValue) {
       this.subscriptions.push(this.dst.selectionChanged.subscribe((event: SelectionChange<TypedEntity>) =>
         this.selectionChanged.emit(event.source.selected)
       ));

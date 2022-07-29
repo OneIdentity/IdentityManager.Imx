@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { Component, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { PortalServiceitemsInteractive_byid } from 'imx-api-qer';
+import { PortalServiceitemsInteractive } from 'imx-api-qer';
 
 import { ClassloggerService, ColumnDependentReference, ConfirmationService, SnackBarService } from 'qbm';
 import { Subscription } from 'rxjs';
@@ -51,7 +51,7 @@ export class ServiceItemsEditSidesheetComponent implements OnDestroy {
 
   constructor(
     formBuilder: FormBuilder,
-    @Inject(EUI_SIDESHEET_DATA) public serviceItem: PortalServiceitemsInteractive_byid,
+    @Inject(EUI_SIDESHEET_DATA) public serviceItem: PortalServiceitemsInteractive,
     private serviceItemsEditService: ServiceItemsEditService,
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly logger: ClassloggerService,
@@ -81,7 +81,7 @@ export class ServiceItemsEditSidesheetComponent implements OnDestroy {
       const uidPerson = this.serviceItemsEditForm?.getSelectedUidPerson;
       let confirmMessage = '#LDS#The service item has been successfully saved.';
       if (uidPerson) {
-        // PortalServiceitemsInteractive_byid cannot write extendedData,
+        // PortalServiceitemsInteractive cannot write extendedData,
         // but this code was here and should not break with strong typing
         (<any>this.serviceItem).extendedData = {
           UidPerson: uidPerson,

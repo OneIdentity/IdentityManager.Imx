@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,13 +31,14 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 
 import { NonComplianceDecisionInput } from 'imx-api-cpl';
-import { ValType } from 'imx-qbm-dbts';
+import { IReadValue, ValType } from 'imx-qbm-dbts';
 import { SnackBarService, EntityService, ColumnDependentReference, BaseCdr } from 'qbm';
 import { JustificationService, JustificationType } from 'qer';
 import { ApiService } from '../../api.service';
 import { RulesViolationsApproval } from '../rules-violations-approval';
 import { RulesViolationsActionComponent } from './rules-violations-action.component';
 import { RulesViolationsActionParameters } from './rules-violations-action-parameters.interface';
+import { ResolveComponent } from '../resolve/resolve.component';
 
 /**
  * Service that handles the approve and deny of one or more rules violations.
@@ -74,6 +75,23 @@ export class RulesViolationsActionService {
    */
   public async deny(rulesViolations: RulesViolationsApproval[]): Promise<void> {
     return this.makeDecisions(rulesViolations, false);
+  }
+
+  public async resolve(ruleViolation: { UID_Person: IReadValue<string>, UID_NonCompliance: IReadValue<string>}): Promise<void> {
+    const sidesheetRef = this.sidesheet.open(ResolveComponent, {
+      title: await this.translate.get('#LDS#Heading Resolve Rule Violation').toPromise(),
+      headerColour: 'iris-blue',
+      bodyColour: 'asher-gray',
+      padding: '0px',
+      width: 'max(600px, 60%)',
+      testId: 'rulesviolations-resolve-sidesheet',
+      data: {
+        uidPerson: ruleViolation.UID_Person.value,
+        uidNonCompliance: ruleViolation.UID_NonCompliance.value
+      }
+    });
+
+    return sidesheetRef.afterClosed().toPromise();
   }
 
   private async makeDecisions(rulesViolationsApprovals: RulesViolationsApproval[], approve: boolean): Promise<void> {
@@ -114,8 +132,8 @@ export class RulesViolationsActionService {
       headerColour: approve ? 'aspen-green' : 'corbin-orange',
       data: { rulesViolationsApprovals, actionParameters, approve, },
       message: approve
-        ? '#LDS#Exceptions were successfully granted for {0} rule violations.'
-        : '#LDS#Exceptions were successfully denied for {0} rule violations.',
+        ? '#LDS#Exceptions have been successfully granted for {0} rule violations.'
+        : '#LDS#Exceptions have been successfully denied for {0} rule violations.',
       apply: async (rulesViolationsAction: RulesViolationsApproval) => {
         return this.postDecision(rulesViolationsAction, {
           Reason: actionParameters.reason.column.GetValue(),

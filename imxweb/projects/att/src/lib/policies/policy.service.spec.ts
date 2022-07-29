@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -68,6 +68,22 @@ describe('PolicyService', () => {
         PutValueStruct: jasmine.createSpy('PutValueStruct')
       }
     },
+    LimitOfOldCases: {
+      GetMetadata: () => ({
+        CanEdit: () => true
+      }),
+      Column: {
+        PutValueStruct: jasmine.createSpy('PutValueStruct')
+      }
+    },
+    IsShowElementsInvolved: {
+      GetMetadata: () => ({
+        CanEdit: () => true
+      }),
+      Column: {
+        PutValueStruct: jasmine.createSpy('PutValueStruct')
+      }
+    },
     IsInActive: {
       GetMetadata: () => ({
         CanEdit: () => true
@@ -101,6 +117,14 @@ describe('PolicyService', () => {
       }
     },
     UID_AttestationObject: {
+      GetMetadata: () => ({
+        CanEdit: () => true
+      }),
+      Column: {
+        PutValueStruct: jasmine.createSpy('PutValueStruct')
+      }
+    },
+    UID_AttestationPolicyGroup: {
       GetMetadata: () => ({
         CanEdit: () => true
       }),
@@ -193,7 +217,7 @@ describe('PolicyService', () => {
         Get_byid: jasmine.createSpy('Get_byid').and.returnValue(Promise.resolve({ totalCount: 1, Data: [] })),
         Get: jasmine.createSpy('Get').and.returnValue(Promise.resolve({ totalCount: 1, Data: [emptyElement] }))
       },
-      PortalAttestationPolicyEditInteractive_byid :  {
+      PortalAttestationPolicyEditinteractive :  {
         Get_byid: jasmine.createSpy('Get_byid').and.returnValue(Promise.resolve({ totalCount: 1, Data: [] })),
       },
       PortalAttestationPolicy: {
@@ -258,7 +282,7 @@ describe('PolicyService', () => {
 
   it('can getPolicy for editing', async () => {
     await service.getPolicyEditInteractive('policy');
-    expect(apiServiceStub.typedClient.PortalAttestationPolicyEditInteractive_byid.Get_byid)
+    expect(apiServiceStub.typedClient.PortalAttestationPolicyEditInteractive.Get_byid)
       .toHaveBeenCalledWith('policy');
   });
 
@@ -273,7 +297,7 @@ describe('PolicyService', () => {
     const state = { PageSize: 10 }
     await service.getFilterCandidates(state, 'uid')
     expect(apiServiceStub.client.portal_attestation_filter_candidates_get)
-      .toHaveBeenCalledWith('uid', undefined, undefined, 10, undefined, null, undefined, undefined);
+      .toHaveBeenCalledWith('uid', { PageSize: 10 });
   });
 
   it('can delete attestation policy', async () => {
@@ -328,6 +352,24 @@ describe('PolicyService', () => {
             })
           }
         },
+        LimitOfOldCases: {
+          value: 42,
+          Column: {
+            GetDisplayValue: () => '',
+            GetMetadata: () => ({
+              CanEdit: () => true
+            })
+          }
+        },
+        IsShowElementsInvolved: {
+          value: true,
+          Column: {
+            GetDisplayValue: () => '',
+            GetMetadata: () => ({
+              CanEdit: () => true
+            })
+          }
+        },
         IsInActive: {
           value: 'true',
           Column: {
@@ -357,6 +399,15 @@ describe('PolicyService', () => {
         },
         UID_DialogCulture: {
           value: 'uidDialogCulture',
+          Column: {
+            GetDisplayValue: () => '',
+            GetMetadata: () => ({
+              CanEdit: () => true
+            })
+          }
+        },
+        UID_AttestationPolicyGroup: {
+          value: 'uidPolicyGroup',
           Column: {
             GetDisplayValue: () => '',
             GetMetadata: () => ({

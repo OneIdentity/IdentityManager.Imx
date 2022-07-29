@@ -1,27 +1,16 @@
 <div class="imx-tab-content">
-  <mat-button-toggle-group *ngIf="canHavePrimaryMemberships() || canBeDynamic || isDynamic"
-    data-imx-identifier="role-memberships-button-group" class="imx-toggle-group" #buttonToggle value="primary" (change)="onToggleChanged($event)">
-    <mat-button-toggle data-imx-identifier="role-memberships-button-primary" *ngIf="canHavePrimaryMemberships()" value="primary">{{ '#LDS#Primary memberships' | translate
-      }}</mat-button-toggle>
-    <mat-button-toggle data-imx-identifier="role-memberships-button-secondary" value="secondary">{{ '#LDS#Secondary memberships' | translate }}</mat-button-toggle>
-    <mat-button-toggle *ngIf="canBeDynamic" value="dynamicgroup">{{ '#LDS#Automatic memberships' | translate }}</mat-button-toggle>
-    <mat-button-toggle data-imx-identifier="role-memberships-button-exclusion" *ngIf="isDynamic" value="exclusions">{{ '#LDS#Excluded members' | translate }}
-    </mat-button-toggle>
-  </mat-button-toggle-group>
-
-  <ng-container *ngIf="selectedView === 'primary'">
-    <imx-primary-memberships [entity]="entity" [ownershipInfo]="ownershipInfo"></imx-primary-memberships>
-  </ng-container>
-
-  <ng-container *ngIf="selectedView === 'secondary'">
-    <imx-secondary-memberships [isAdmin]="isAdmin" [entity]="entity" [ownershipInfo]="ownershipInfo"></imx-secondary-memberships>
-  </ng-container>
-
-  <ng-container *ngIf="selectedView === 'exclusions'">
-    <imx-excluded-memberships [entity]="entity"></imx-excluded-memberships>
-  </ng-container>
-  
-  <ng-container *ngIf="selectedView === 'dynamicgroup'">
-    <imx-dynamic-group [entity]="entity" [isAdmin]="isAdmin" [uidDynamicGroup]="uidDynamicGroup"></imx-dynamic-group>
-  </ng-container>
+  <mat-tab-group *ngIf="canHavePrimaryMemberships() || canBeDynamic || isDynamic">
+    <mat-tab *ngIf="canHavePrimaryMemberships()" [label]="'#LDS#Primary memberships' | translate">
+      <imx-primary-memberships [entity]="entity" [ownershipInfo]="ownershipInfo"></imx-primary-memberships>
+    </mat-tab>
+    <mat-tab [label]="'#LDS#Secondary memberships' | translate">
+      <imx-secondary-memberships [isAdmin]="isAdmin" [entity]="entity" [ownershipInfo]="ownershipInfo"></imx-secondary-memberships>
+    </mat-tab>
+    <mat-tab *ngIf="canBeDynamic" [label]="'#LDS#Automatic memberships' | translate">
+      <imx-dynamic-group [entity]="entity" [isAdmin]="isAdmin" [uidDynamicGroup]="uidDynamicGroup"></imx-dynamic-group>
+    </mat-tab>
+    <mat-tab *ngIf="isDynamic" [label]="'#LDS#Excluded memberships' | translate">
+      <imx-excluded-memberships [entity]="entity"></imx-excluded-memberships>
+    </mat-tab>
+  </mat-tab-group>
 </div>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -88,7 +88,10 @@ function createOAuthServiceStub(oauthParameters: string[] = []) {
       .createSpy('IsOAuthParameter')
       .and.callFake(
         (name: string) => oauthParameters.findIndex((param: string) => param === name) > -1
-      )
+      ),
+      hasRequiredOAuthParameter: jasmine
+      .createSpy('hasRequiredOAuthParameter')
+      .and.returnValue(true)
   };
 }
 

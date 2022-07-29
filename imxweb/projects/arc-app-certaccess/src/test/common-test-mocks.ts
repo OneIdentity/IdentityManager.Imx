@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -52,7 +52,7 @@ export class ArcGovernanceCommonTestData {
         start: 'dashboard'
       }
     },
-    apiClient: new ApiClientFetch(<any>{}, '', <any>{ debug: () => { } }, <any>{}),
+    apiClient: new ApiClientFetch('', <any>{ debug: () => { } }, <any>{}),
     client: {
       imx_multilanguage_getcaptions_get: () => Promise.resolve({}),
       imx_multilanguage_translations_get: () => Promise.resolve({})

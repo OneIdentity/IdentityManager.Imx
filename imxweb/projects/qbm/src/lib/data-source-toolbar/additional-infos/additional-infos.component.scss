@@ -1,4 +1,5 @@
-@import '~@elemental-ui/core/src/styles/_palette.scss';
+@use '@angular/material' as mat;
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 :host{
   display:flex;
@@ -17,10 +18,22 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  
+  grid-row: 2;
+
   > .imx-item-list {
     padding: 10px;
     overflow: auto;
+  }
+}
+
+.imx-helper-alert {
+  grid-row: 1;
+  grid-column-start: 1;
+  grid-column-end: 3;
+  margin-bottom: 10px;
+
+  .imx-info-content {
+    font-size: 14px;
   }
 }
 
@@ -60,6 +73,7 @@
   grid-column: 2;
   padding: 10px;
   overflow-y: auto;
+  grid-row: 2;
 }
 
 .imx-drag-handle {
@@ -72,8 +86,8 @@
   box-sizing: border-box;
   border-radius: 4px;
   box-shadow: 0 5px 5px -3px $black-c
-              0 8px 10px 1px mat-color($asher-gray-palette, 900),
-              0 3px 14px 2px mat-color($asher-gray-palette, 700);
+              0 8px 10px 1px mat.get-color-from-palette($asher-gray-palette, 900),
+              0 3px 14px 2px mat.get-color-from-palette($asher-gray-palette, 700);
 }
 
 .cdk-drag-placeholder {

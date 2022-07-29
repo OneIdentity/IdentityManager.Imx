@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,7 +29,7 @@ import { EuiDownloadOptions } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import {
-  ApiClientMethodFactory,
+  V2ApiClientMethodFactory,
   ParmData,
   PolicyFilter,
   PolicyStartInput,
@@ -48,7 +48,6 @@ import {
   FilterType,
   GroupInfo,
   MethodDefinition,
-  TypedEntity,
 } from 'imx-qbm-dbts';
 import { AppConfigService, ClassloggerService, ElementalUiConfigService } from 'qbm';
 import { ApiService } from '../api.service';
@@ -60,7 +59,7 @@ import { PolicyLoadParameters } from './policy-list/policy-load-parameters.inter
 })
 export class PolicyService {
 
-  private readonly apiClientMethodFactory = new ApiClientMethodFactory();
+  private readonly apiClientMethodFactory = new V2ApiClientMethodFactory();
 
   constructor(
     private api: ApiService,
@@ -96,7 +95,7 @@ export class PolicyService {
 
   public async getPolicyEditInteractive(uid: string):
     Promise<ExtendedTypedEntityCollection<PortalAttestationPolicyEditInteractive, {}>> {
-    return this.api.typedClient.PortalAttestationPolicyEditInteractive_byid.Get_byid(uid);
+    return this.api.typedClient.PortalAttestationPolicyEditInteractive.Get_byid(uid);
   }
 
   public async buildNewEntity(reference?: PortalAttestationPolicyEdit, filter?: PolicyFilter):
@@ -117,14 +116,7 @@ export class PolicyService {
   public async getFilterCandidates(parameters: CollectionLoadParameters, uidAttestationParm: string): Promise<EntityCollectionData> {
     return this.api.client.portal_attestation_filter_candidates_get(
       uidAttestationParm,
-      parameters.OrderBy,
-      parameters.StartIndex,
-      parameters.PageSize,
-      parameters.filter,
-      null,
-      parameters.search,
-      parameters.ParentKey
-    );
+      parameters);
   }
 
   public async deleteAttestationPolicy(uidAttestationpolicy: string): Promise<ExtendedEntityCollectionData<any>> {
@@ -141,14 +133,18 @@ export class PolicyService {
   }
 
   public async userCanSeePolicy(ident: string): Promise<boolean> {
-    const pols = await this.api.client.portal_attestation_policy_edit_get('', 0, -1, [
-      {
-        ColumnName: 'Ident_AttestationPolicy',
-        CompareOp: CompareOperator.Equal,
-        Type: FilterType.Compare,
-        Value1: ident
-      }
-    ], '', '', '');
+    const pols = await this.api.client.portal_attestation_policy_edit_get({
+      StartIndex: 0,
+      PageSize: -1,
+      filter: [
+        {
+          ColumnName: 'Ident_AttestationPolicy',
+          CompareOp: CompareOperator.Equal,
+          Type: FilterType.Compare,
+          Value1: ident
+        }
+      ]
+    });
     return pols.TotalCount > 0;
   }
 
@@ -176,17 +172,7 @@ export class PolicyService {
   }
 
   public async getGroupInfo(parameters: { by?: string, def?: string } & CollectionLoadParameters = {}): Promise<GroupInfo[]> {
-    const test = await this.api.client.portal_attestation_policy_group_get(
-      parameters.by,
-      parameters.def,
-      undefined, // filter
-      parameters.StartIndex,
-      parameters.PageSize,
-      true, // withcount
-      undefined, // OnlyActivePolicies
-      undefined, // ScheduleType
-      undefined // myPolicies
-    );
+    const test = await this.api.client.portal_attestation_policy_group_get(parameters);
     return test;
   }
 
@@ -204,6 +190,10 @@ export class PolicyService {
       url: this.config.BaseUrl + new MethodDefinition(this.apiClientMethodFactory.portal_attestation_policy_reportbypolicy_get(key)).path,
       fileName: `${display}.pdf`,
     };
+  }
+
+  public async getCasesThreshold():Promise<number> {
+    return (await this.api.client.portal_attestation_config_get()).PolicyObjectCountThreshold;
   }
 
   public async getRunCountForPolicy(uid: string): Promise<number> {

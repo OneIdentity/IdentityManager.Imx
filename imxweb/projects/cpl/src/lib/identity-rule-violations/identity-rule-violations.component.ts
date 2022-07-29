@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,7 +31,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { PortalPersonRolemembershipsNoncompliance } from 'imx-api-cpl';
 
 import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, ValType } from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings, DynamicTabDataProviderDirective, MetadataService, SettingsService } from 'qbm';
+import { DataSourceToolbarSettings, DynamicTabDataProviderDirective, ClientPropertyForTableColumns, MetadataService, SettingsService } from 'qbm';
 import { IdentityRuleViolationsMitigationControlComponent } from './identity-rule-violations-mitigation-control/identity-rule-violations-mitigation-control.component';
 import { IdentityRuleViolationService } from './identity-rule-violations.service';
 
@@ -43,7 +43,7 @@ export class IdentityRuleViolationsComponent implements OnInit {
 
   public dstSettings: DataSourceToolbarSettings;
   public readonly DisplayColumns = DisplayColumns;
-  public displayedColumns: IClientProperty[];
+  public displayedColumns: ClientPropertyForTableColumns[];
   public caption: string;
   public entitySchema: EntitySchema;
 
@@ -142,7 +142,7 @@ export class IdentityRuleViolationsComponent implements OnInit {
 
       const displayedColumns = this.displayedColumns;
       displayedColumns.unshift(this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]);
-      displayedColumns.push({ ColumnName: 'actions', Type: ValType.String });
+      displayedColumns.push({ ColumnName: 'actions', Type: ValType.String, afterAdditionals: true });
 
       this.dstSettings = {
         displayedColumns,

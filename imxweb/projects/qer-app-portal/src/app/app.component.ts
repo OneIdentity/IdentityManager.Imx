@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,12 +25,13 @@
  */
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Router, NavigationEnd, NavigationStart, NavigationError, RouterEvent, NavigationCancel } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { AuthenticationService, ISessionState, MenuItem, SystemInfoService, MenuService, IeWarningService } from 'qbm';
+import { AuthenticationService, ISessionState, MenuItem, SystemInfoService, MenuService, IeWarningService, SplashService } from 'qbm';
 import { PendingItemsType, ProjectConfigurationService, UserModelService } from 'qer';
+import { QerProjectConfig } from 'imx-api-qer';
+import { ProjectConfig } from 'imx-api-qbm';
 
 @Component({
   selector: 'imx-root',
@@ -43,27 +44,39 @@ export class AppComponent implements OnInit, OnDestroy {
   public hideMenu = false;
   public hideUserMessage = false;
   public pendingItems: PendingItemsType;
+  public showPageContent = false;
 
   private readonly subscriptions: Subscription[] = [];
 
   constructor(
     private readonly authentication: AuthenticationService,
+    private readonly router: Router,
+    private readonly splash: SplashService,
     menuService: MenuService,
     userModelService: UserModelService,
-    private readonly router: Router,
     systemInfoService: SystemInfoService,
     ieWarningService: IeWarningService,
-    projectConfig: ProjectConfigurationService
+    projectConfig: ProjectConfigurationService,
   ) {
     this.subscriptions.push(
       this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
+
+        if (sessionState.hasErrorState) {
+          // Needs to close here when there is an error on sessionState
+          splash.close();
+        }
+
         this.isLoggedIn = sessionState.IsLoggedIn;
         if (this.isLoggedIn) {
-          projectConfig.getConfig();
+          // Close the splash screen that opened in app service initialisation
+          // Needs to close here when running in containers (auth skipped)
+          splash.close();
+
+          const config: QerProjectConfig & ProjectConfig = await projectConfig.getConfig();
           this.pendingItems = await userModelService.getPendingItems();
           const groupInfo = await userModelService.getGroups();
           const systemInfo = await systemInfoService.get();
-          this.menuItems = menuService.getMenuItems(systemInfo.PreProps, groupInfo.map(group => group.Name));
+          this.menuItems = menuService.getMenuItems(systemInfo.PreProps, groupInfo.map(group => group.Name), false, config);
 
           ieWarningService.showIe11Banner();
         }
@@ -103,11 +116,13 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private setupRouter(): void {
-    let overlayRef: OverlayRef;
-
     this.router.events.subscribe(((event: RouterEvent) => {
       if (event instanceof NavigationStart) {
         this.hideUserMessage = true;
+        if (this.isLoggedIn && event.url === '/') {
+          // show the splash screen, when the user logs out!
+          this.splash.init({ applicationName: 'One Identity Manager Portal' });
+        }
       }
 
       if (event instanceof NavigationCancel) {
@@ -117,6 +132,8 @@ export class AppComponent implements OnInit, OnDestroy {
       if (event instanceof NavigationEnd) {
         this.hideUserMessage = false;
         this.hideMenu = event.url === '/';
+        // show the pageContent, if the user is logged in or the login page is shown
+        this.showPageContent = this.isLoggedIn || event.urlAfterRedirects === '/';
       }
 
       if (event instanceof NavigationError) {

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,6 +29,6 @@ import { DataTileBadge } from './data-tile-badge.interface';
 
 export interface DataSourceItemStatus {
   enabled: (item: TypedEntity) => boolean;
-  getBadges?: (input: TypedEntity) => DataTileBadge[];
-  getImage?: (item: TypedEntity) => Promise<Blob>;
+  getBadges?: (input: TypedEntity) => DataTileBadge[];  
+  getImagePath?: (item: TypedEntity) => Promise<string>;
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -124,8 +124,8 @@ export class JobQueueOverviewService {
     if (changeData.New) {
       // Loop over each entity to add to the queues
       changeData.New.forEach((entity) => {
-        name = entity.Columns.QueueName.Value;
-        uid = entity.Columns.UID_QBMJobqueueOverview.Value;
+        name = entity.Columns['QueueName'].Value;
+        uid = entity.Columns['UID_QBMJobqueueOverview'].Value;
         this.addEntity(name, entity);
         this.uidToName[uid] = name;
       });

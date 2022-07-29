@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { DataModel, EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+import { EntitySchema, ExtendedTypedEntityCollection, DataModel } from 'imx-qbm-dbts';
 import { RequestHistoryLoadParameters } from './request-history-load-parameters.interface';
 import { PortalItshopRequests, ProlongationInput, PwoExtendedData, PwoUnsubscribeInput, PwoUnsubscribeResult } from 'imx-api-qer';
 import { ItshopRequest } from './itshop-request';
@@ -69,7 +69,7 @@ export class RequestHistoryService {
   }
 
   public async getDataModel(userUid: string): Promise<DataModel> {
-    return this.qerClient.client.portal_itshop_requests_datamodel_get(userUid, undefined);
+    return this.qerClient.client.portal_itshop_requests_datamodel_get({ UID_Person: userUid });
   }
 
   public async prolongate(pwo: PortalItshopRequests, input: ProlongationInput): Promise<void> {

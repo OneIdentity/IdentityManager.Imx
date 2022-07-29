@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,3 +30,8 @@
 
 export { PolConfigModule } from './lib/pol-config.module';
 export { ApiService } from './lib/api.service';
+export { PolicyViolationsModule } from './lib/policy-violations/policy-violations.module';
+export { PolicyViolationsComponent } from './lib/policy-violations/policy-violations.component';
+export { PolicyViolationApproverGuardService } from './lib/guards/policy-violation-approver-guard.service';
+export { PermissionsService } from './lib/admin/permissions.service';
+

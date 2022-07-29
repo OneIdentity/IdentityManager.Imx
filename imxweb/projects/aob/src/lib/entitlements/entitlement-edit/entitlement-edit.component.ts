@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -51,7 +51,6 @@ export class EntitlementEditComponent implements OnChanges, OnInit {
 
   @Input() public entitlement: PortalEntitlement;
   @Input() public serviceItem: PortalEntitlementServiceitem;
-  @Input() public isStarlingTwoFactorConfigured: boolean;
 
   @Output() public readonly controlCreated = new EventEmitter<AbstractControl>();
   @Output() public readonly saved = new EventEmitter();

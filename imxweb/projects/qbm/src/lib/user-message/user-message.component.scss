@@ -1,4 +1,4 @@
-@import '~@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 .imx-message-content {
   white-space: pre-wrap;
@@ -9,7 +9,7 @@
 }
 
 .imx-message {
-  color: $black;  
+  color: $black;
   position: fixed;
   width: 100%;
   top: 64px;

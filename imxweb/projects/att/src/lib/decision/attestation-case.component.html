@@ -51,6 +51,11 @@
       </div>
     </div>
   </mat-tab>
+  <mat-tab *ngIf="showLosses" [label]="'#LDS#Heading Entitlement Loss' | translate">
+    <div class="imx-loss-preview-table-wrapper">
+      <imx-loss-preview-table [lossPreview]="lossPreview"></imx-loss-preview-table>
+    </div>
+  </mat-tab>
 </mat-tab-group>
 <div class="imx-button-bar">
   <button *ngIf="reportType === 'PDF'" mat-stroked-button [euiDownload]="reportDownload">
@@ -103,6 +108,11 @@
   </button>
   <button mat-stroked-button *ngIf="case.canDenyApproval(userUid)" (click)="attestationAction.denyDecisions([case])" data-imx-identifier="attestation-case-deny-decision-button">
     {{ '#LDS#Reject approval' | translate }}
+  </button>
+  <button mat-stroked-button *ngIf="case.canEscalateDecision(userUid)"
+    data-imx-identifier="attestation-case-escalate-decision-button"
+    (click)="attestationAction.escalateDecisions([case])">
+    {{ '#LDS#Escalate approval' | translate }}
   </button>
 </div>
 

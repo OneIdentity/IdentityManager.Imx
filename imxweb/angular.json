@@ -23,6 +23,9 @@
           "configurations": {
             "production": {
               "tsConfig": "projects/qbm/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/qbm/tsconfig.lib.json"
             }
           }
         },
@@ -30,7 +33,12 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             },
             "main": "projects/qbm/src/test.ts",
             "tsConfig": "projects/qbm/tsconfig.spec.json",
@@ -66,6 +74,9 @@
           "configurations": {
             "production": {
               "tsConfig": "projects/qer/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/qer/tsconfig.lib.json"
             }
           }
         },
@@ -73,7 +84,12 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             },
             "main": "projects/qer/src/test.ts",
             "tsConfig": "projects/qer/tsconfig.spec.json",
@@ -110,6 +126,9 @@
             "production": {
               "tsConfig": "projects/att/tsconfig.lib.prod.json"
             },
+            "development": {
+              "tsConfig": "projects/att/tsconfig.lib.json"
+            },
             "dynamic": {
               "project": "projects/att/ng-package.dynamic.json"
             }
@@ -122,7 +141,12 @@
             "tsConfig": "projects/att/tsconfig.spec.json",
             "karmaConfig": "projects/att/karma.conf.js",
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             }
           }
         },
@@ -156,6 +180,9 @@
             "production": {
               "tsConfig": "projects/aad/tsconfig.lib.prod.json"
             },
+            "development": {
+              "tsConfig": "projects/aad/tsconfig.lib.json"
+            },
             "dynamic": {
               "project": "projects/aad/ng-package.dynamic.json"
             }
@@ -169,7 +196,12 @@
             "karmaConfig": "projects/aad/karma.conf.js",
             "codeCoverageExclude": ["projects/o3t/src/**/test/*"],
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             }
           }
         },
@@ -203,6 +235,9 @@
             "production": {
               "tsConfig": "projects/cpl/tsconfig.lib.prod.json"
             },
+            "development": {
+              "tsConfig": "projects/cpl/tsconfig.lib.json"
+            },
             "dynamic": {
               "project": "projects/cpl/ng-package.dynamic.json"
             }
@@ -215,7 +250,12 @@
             "tsConfig": "projects/cpl/tsconfig.spec.json",
             "karmaConfig": "projects/cpl/karma.conf.js",
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             }
           }
         },
@@ -249,6 +289,9 @@
             "production": {
               "tsConfig": "projects/dpr/tsconfig.lib.prod.json"
             },
+            "development": {
+              "tsConfig": "projects/dpr/tsconfig.lib.json"
+            },
             "dynamic": {
               "project": "projects/dpr/ng-package.dynamic.json"
             }
@@ -261,22 +304,75 @@
             "tsConfig": "projects/dpr/tsconfig.spec.json",
             "karmaConfig": "projects/dpr/karma.conf.js",
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             }
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "projects/dpr/tsconfig.lib.json",
-              "projects/dpr/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "**/*.spec.ts",
-              "**/*.json"
-            ]
+            "tsConfig": ["projects/dpr/tsconfig.lib.json", "projects/dpr/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+          }
+        }
+      }
+    },
+    "hds": {
+      "root": "projects/hds",
+      "sourceRoot": "projects/hds/src",
+      "projectType": "library",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "prefix": "imx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/hds/tsconfig.lib.json",
+            "project": "projects/hds/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/hds/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/hds/tsconfig.lib.json"
+            },
+            "dynamic": {
+              "project": "projects/hds/ng-package.dynamic.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/hds/src/test.ts",
+            "tsConfig": "projects/hds/tsconfig.spec.json",
+            "karmaConfig": "projects/hds/karma.conf.js",
+            "codeCoverageExclude": ["projects/hds/src/**/test/*"],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/hds/tsconfig.lib.json", "projects/hds/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
           }
         }
       }
@@ -302,6 +398,9 @@
             "production": {
               "tsConfig": "projects/o3t/tsconfig.lib.prod.json"
             },
+            "development": {
+              "tsConfig": "projects/o3t/tsconfig.lib.json"
+            },
             "dynamic": {
               "project": "projects/o3t/ng-package.dynamic.json"
             }
@@ -315,7 +414,12 @@
             "karmaConfig": "projects/o3t/karma.conf.js",
             "codeCoverageExclude": ["projects/o3t/src/**/test/*"],
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             }
           }
         },
@@ -323,6 +427,61 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": ["projects/o3t/tsconfig.lib.json", "projects/o3t/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+          }
+        }
+      }
+    },
+    "olg": {
+      "root": "projects/olg",
+      "sourceRoot": "projects/olg/src",
+      "projectType": "library",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "prefix": "imx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/olg/tsconfig.lib.json",
+            "project": "projects/olg/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/olg/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/olg/tsconfig.lib.json"
+            },
+            "dynamic": {
+              "project": "projects/olg/ng-package.dynamic.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/olg/src/test.ts",
+            "tsConfig": "projects/olg/tsconfig.spec.json",
+            "karmaConfig": "projects/olg/karma.conf.js",
+            "codeCoverageExclude": ["projects/olg/src/**/test/*"],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/olg/tsconfig.lib.json", "projects/olg/tsconfig.spec.json"],
             "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
           }
         }
@@ -349,6 +508,9 @@
             "production": {
               "tsConfig": "projects/pol/tsconfig.lib.prod.json"
             },
+            "development": {
+              "tsConfig": "projects/pol/tsconfig.lib.json"
+            },
             "dynamic": {
               "project": "projects/pol/ng-package.dynamic.json"
             }
@@ -361,7 +523,12 @@
             "tsConfig": "projects/pol/tsconfig.spec.json",
             "karmaConfig": "projects/pol/karma.conf.js",
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             }
           }
         },
@@ -395,6 +562,9 @@
             "production": {
               "tsConfig": "projects/rmb/tsconfig.lib.prod.json"
             },
+            "development": {
+              "tsConfig": "projects/rmb/tsconfig.lib.json"
+            },
             "dynamic": {
               "project": "projects/rmb/ng-package.dynamic.json"
             }
@@ -407,7 +577,12 @@
             "tsConfig": "projects/rmb/tsconfig.spec.json",
             "karmaConfig": "projects/rmb/karma.conf.js",
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             }
           }
         },
@@ -441,6 +616,9 @@
             "production": {
               "tsConfig": "projects/rms/tsconfig.lib.prod.json"
             },
+            "development": {
+              "tsConfig": "projects/rms/tsconfig.lib.json"
+            },
             "dynamic": {
               "project": "projects/rms/ng-package.dynamic.json"
             }
@@ -453,7 +631,12 @@
             "tsConfig": "projects/rms/tsconfig.spec.json",
             "karmaConfig": "projects/rms/karma.conf.js",
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             }
           }
         },
@@ -487,6 +670,9 @@
             "production": {
               "tsConfig": "projects/rps/tsconfig.lib.prod.json"
             },
+            "development": {
+              "tsConfig": "projects/rps/tsconfig.lib.json"
+            },
             "dynamic": {
               "project": "projects/rps/ng-package.dynamic.json"
             }
@@ -499,7 +685,12 @@
             "tsConfig": "projects/rps/tsconfig.spec.json",
             "karmaConfig": "projects/rps/karma.conf.js",
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             }
           }
         },
@@ -533,6 +724,9 @@
             "production": {
               "tsConfig": "projects/tsb/tsconfig.lib.prod.json"
             },
+            "development": {
+              "tsConfig": "projects/tsb/tsconfig.lib.json"
+            },
             "dynamic": {
               "project": "projects/tsb/ng-package.dynamic.json"
             }
@@ -545,7 +739,12 @@
             "tsConfig": "projects/tsb/tsconfig.spec.json",
             "karmaConfig": "projects/tsb/karma.conf.js",
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             }
           }
         },
@@ -574,6 +773,9 @@
             "production": {
               "tsConfig": "projects/uci/tsconfig.lib.prod.json"
             },
+            "development": {
+              "tsConfig": "projects/uci/tsconfig.lib.json"
+            },
             "dynamic": {
               "project": "projects/uci/ng-package.dynamic.json"
             }
@@ -584,7 +786,15 @@
           "options": {
             "main": "projects/uci/src/test.ts",
             "tsConfig": "projects/uci/tsconfig.spec.json",
-            "karmaConfig": "projects/uci/karma.conf.js"
+            "karmaConfig": "projects/uci/karma.conf.js",
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
+            }
           }
         },
         "lint": {
@@ -627,7 +837,7 @@
               {
                 "glob": "**/*",
                 "input": "./node_modules/@elemental-ui/core/assets",
-                "output": "./assets/"
+                "output": "./assets"
               }
             ],
             "styles": [
@@ -637,9 +847,18 @@
               "node_modules/swagger-ui-dist/swagger-ui.css"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets", "./node_modules/@elemental-ui/cadence-icon", "./node_modules/@elemental-ui/core"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             },
-            "scripts": ["node_modules/swagger-ui-dist/swagger-ui-bundle.js", "node_modules/swagger-ui-dist/swagger-ui-standalone-preset.js"]
+            "scripts": [
+              "node_modules/systemjs/dist/system.src.js",
+              "node_modules/swagger-ui-dist/swagger-ui-bundle.js",
+              "node_modules/swagger-ui-dist/swagger-ui-standalone-preset.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -669,6 +888,14 @@
                 }
               ]
             },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
             "es5": {
               "tsConfig": "./projects/qbm-app-landingpage/tsconfig-es5.app.json"
             }
@@ -678,16 +905,14 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "browserTarget": "qbm-app-landingpage:build",
-            "disableHostCheck": true,
-            "sourceMap": {
-              "scripts": true,
-              "styles": true,
-              "vendor": true
-            }
+            "disableHostCheck": true
           },
           "configurations": {
             "production": {
               "browserTarget": "qbm-app-landingpage:build:production"
+            },
+            "development": {
+              "browserTarget": "qbm-app-landingpage:build:development"
             },
             "es5": {
               "browserTarget": "qbm-app-landingpage:build:es5"
@@ -719,7 +944,12 @@
             ],
             "styles": ["projects/qbm-app-landingpage/src/styles.scss", "shared/assets/styles.scss"],
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             }
           }
         },
@@ -769,6 +999,11 @@
                 "glob": "**/*",
                 "input": "./node_modules/@elemental-ui/core/assets",
                 "output": "./assets"
+              },
+              {
+                "glob": "**/*",
+                "input": "./node_modules/systemjs-plugin-babel/",
+                "output": "./systemjs-plugin-babel"
               }
             ],
             "styles": [
@@ -778,9 +1013,18 @@
               "shared/assets/variables.scss"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets", "./node_modules/@elemental-ui/cadence-icon", "./node_modules/@elemental-ui/core"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             },
-            "scripts": ["node_modules/systemjs/dist/system.src.js"]
+            "scripts": [
+              "node_modules/systemjs/dist/system.src.js",
+              "node_modules/systemjs-plugin-babel/plugin-babel.js",
+              "node_modules/systemjs-plugin-babel/systemjs-babel-browser.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -810,6 +1054,14 @@
                 }
               ]
             },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
             "es5": {
               "tsConfig": "./projects/qer-app-operationssupport/tsconfig-es5.app.json"
             }
@@ -819,16 +1071,14 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "browserTarget": "qer-app-operationssupport:build",
-            "disableHostCheck": true,
-            "sourceMap": {
-              "scripts": true,
-              "styles": true,
-              "vendor": true
-            }
+            "disableHostCheck": true
           },
           "configurations": {
             "production": {
               "browserTarget": "qer-app-operationssupport:build:production"
+            },
+            "development": {
+              "browserTarget": "qer-app-operationssupport:build:development"
             },
             "es5": {
               "browserTarget": "qer-app-operationssupport:build:es5"
@@ -850,7 +1100,12 @@
             "karmaConfig": "projects/qer-app-operationssupport/karma.conf.js",
             "styles": ["projects/qer-app-operationssupport/src/styles.scss", "shared/assets/styles.scss"],
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             },
             "scripts": ["node_modules/systemjs/dist/system.src.js"],
             "assets": [
@@ -910,6 +1165,11 @@
                 "glob": "**/*",
                 "input": "./node_modules/@elemental-ui/core/assets",
                 "output": "./assets"
+              },
+              {
+                "glob": "**/*",
+                "input": "./node_modules/systemjs-plugin-babel/",
+                "output": "./systemjs-plugin-babel"
               }
             ],
             "styles": [
@@ -921,9 +1181,18 @@
               "shared/assets/variables.scss"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets", "./node_modules/@elemental-ui/cadence-icon", "./node_modules/@elemental-ui/core"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             },
-            "scripts": ["node_modules/systemjs/dist/system.src.js"]
+            "scripts": [
+              "node_modules/systemjs/dist/system.src.js",
+              "node_modules/systemjs-plugin-babel/plugin-babel.js",
+              "node_modules/systemjs-plugin-babel/systemjs-babel-browser.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -953,6 +1222,14 @@
                 }
               ]
             },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
             "es5": {
               "tsConfig": "./projects/qer-app-portal/tsconfig-es5.app.json"
             }
@@ -961,17 +1238,14 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "qer-app-portal:build",
-            "disableHostCheck": true,
-            "sourceMap": {
-              "scripts": true,
-              "styles": true,
-              "vendor": true
-            }
+            "browserTarget": "qer-app-portal:build"
           },
           "configurations": {
             "production": {
               "browserTarget": "qer-app-portal:build:production"
+            },
+            "development": {
+              "browserTarget": "qer-app-portal:build:development"
             },
             "es5": {
               "browserTarget": "qer-app-portal:build:es5"
@@ -993,7 +1267,12 @@
             "karmaConfig": "projects/qer-app-portal/karma.conf.js",
             "styles": ["projects/qer-app-portal/src/styles.scss"],
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             },
             "scripts": ["node_modules/systemjs/dist/system.src.js"],
             "assets": ["projects/qer-app-portal/src/appconfig.json", "projects/qer-app-portal/src/assets"]
@@ -1051,7 +1330,12 @@
               "shared/assets/variables.scss"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets", "./node_modules/@elemental-ui/cadence-icon", "./node_modules/@elemental-ui/core"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             },
             "scripts": []
           },
@@ -1083,6 +1367,14 @@
                 }
               ]
             },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
             "es5": {
               "tsConfig": "./projects/arc-app-certaccess/tsconfig-es5.app.json"
             }
@@ -1092,16 +1384,14 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "browserTarget": "arc-app-certaccess:build",
-            "disableHostCheck": true,
-            "sourceMap": {
-              "scripts": true,
-              "styles": true,
-              "vendor": true
-            }
+            "disableHostCheck": true
           },
           "configurations": {
             "production": {
               "browserTarget": "arc-app-certaccess:build:production"
+            },
+            "development": {
+              "browserTarget": "arc-app-certaccess:build:development"
             },
             "es5": {
               "browserTarget": "arc-app-certaccess:build:es5"
@@ -1125,7 +1415,12 @@
             "styles": ["projects/arc-app-certaccess/src/styles.scss"],
             "scripts": [],
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             },
             "assets": ["projects/arc-app-certaccess/src/appconfig.json", "projects/arc-app-certaccess/src/assets"]
           }
@@ -1160,6 +1455,9 @@
             "production": {
               "tsConfig": "projects/aob/tsconfig.lib.prod.json"
             },
+            "development": {
+              "tsConfig": "projects/qbm/tsconfig.lib.json"
+            },
             "dynamic": {
               "project": "projects/aob/ng-package.dynamic.json"
             }
@@ -1172,7 +1470,12 @@
             "tsConfig": "projects/aob/tsconfig.spec.json",
             "karmaConfig": "projects/aob/karma.conf.js",
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             }
           }
         },
@@ -1231,7 +1534,12 @@
               "shared/assets/variables.scss"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             },
             "scripts": ["node_modules/systemjs/dist/system.src.js"]
           },
@@ -1262,6 +1570,14 @@
                 }
               ]
             },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
             "es5": {
               "tsConfig": "./projects/qer-app-pwdportal/tsconfig-es5.app.json"
             }
@@ -1270,16 +1586,14 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "qer-app-pwdportal:build",
-            "sourceMap": {
-              "scripts": true,
-              "styles": true,
-              "vendor": true
-            }
+            "browserTarget": "qer-app-pwdportal:build"
           },
           "configurations": {
             "production": {
               "browserTarget": "qer-app-pwdportal:build:production"
+            },
+            "development": {
+              "browserTarget": "qer-app-pwdportal:build:development"
             },
             "es5": {
               "browserTarget": "qer-app-pwdportal:build:es5"
@@ -1302,7 +1616,12 @@
             "assets": ["projects/qer-app-pwdportal/src/appconfig.json", "projects/qer-app-pwdportal/src/assets"],
             "styles": ["projects/qer-app-pwdportal/src/styles.scss"],
             "stylePreprocessorOptions": {
-              "includePaths": ["./shared/assets"]
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
             },
             "scripts": ["node_modules/systemjs/dist/system.src.js"]
           }

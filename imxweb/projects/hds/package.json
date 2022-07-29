@@ -1,0 +1,8 @@
+{
+  "name": "hds",
+  "version": "9.0.0",
+  "private": true,
+  "bundledDependencies": [
+    "imx-api-hds"
+  ]
+}

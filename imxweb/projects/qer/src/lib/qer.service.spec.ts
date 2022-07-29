@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,6 +31,7 @@ import { configureTestSuite } from 'ng-bullet';
 import { QerService } from './qer.service';
 import { TwoFactorAuthenticationService, ExtService, MenuService, MenuFactory } from 'qbm';
 import { ObjectSheetService } from './object-sheet/object-sheet.service';
+import { ProjectConfig } from 'imx-api-qbm';
 
 describe('QerService', () => {
   const twoFaRegisterSpy = jasmine.createSpy('register').and.callThrough();
@@ -49,7 +50,7 @@ describe('QerService', () => {
     }
 
     childMenus(preProps, groups) {
-      return this.menuFactories.map(factory => factory(preProps, groups));
+      return this.menuFactories.map(factory => factory(preProps, groups, {} as ProjectConfig));
     }
 
     readonly addMenuFactories = jasmine.createSpy('addMenuFactories').and.callFake((...factories: any[]) => {
@@ -95,11 +96,10 @@ describe('QerService', () => {
     expect(service).toBeDefined();
   }));
 
-  it('should register Starling as a 2FA provider and QBM_ops_ObjectOverview_Actions an extension service', inject(
+  it('should register QBM_ops_ObjectOverview_Actions an extension service', inject(
     [QerService],
     (service: QerService) => {
       service.init();
-      expect(twoFaRegisterSpy).toHaveBeenCalledWith('Starling', jasmine.any(Type));
       expect(extRegisterSpy).toHaveBeenCalledWith('QBM_ops_ObjectOverview_Actions', jasmine.any(Object));
       expect(objectSheetsSpy).toHaveBeenCalledWith('Person', jasmine.any(Type));
     }

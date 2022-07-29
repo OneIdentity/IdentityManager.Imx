@@ -14,6 +14,6 @@
   </ng-container>
   <div class="pageContent" [ngClass]="{ 'pageContent--full-page': isContentFullScreen }">
     <imx-usermessage *ngIf="isLoggedIn" [hidden]="hideUserMessage"></imx-usermessage>
-    <router-outlet></router-outlet>
+    <router-outlet *ngIf="showPageContent"></router-outlet>
   </div>
 </div>

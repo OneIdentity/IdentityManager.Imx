@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,12 +29,28 @@ import { AbstractControl } from '@angular/forms';
 import { ColumnDependentReference } from './column-dependent-reference.interface';
 
 /**
+ * Interface for the argument, that it emitted in the CDR editor
+ */
+export interface ValueHasChangedEventArg {
+    /**
+     * The new value of the editor
+     */
+    value: any;
+
+    /**
+     * A flag to show whether the emitting of a follow up event should be forced
+     * (evaluated by  {@link CdrEditorComponent|CdrEditorComponent})
+     */
+    forceEmit?: boolean;
+}
+
+/**
  * Interface for an editor of a column dependent reference.
  */
 export interface CdrEditor {
     control: AbstractControl;
 
-    valueHasChanged?: EventEmitter<any>;
+    valueHasChanged?: EventEmitter<ValueHasChangedEventArg>;
 
     /**
      * Binds a column dependent reference to the editor.

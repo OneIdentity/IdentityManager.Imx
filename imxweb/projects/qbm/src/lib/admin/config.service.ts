@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -127,7 +127,7 @@ export class ConfigService {
     const confObj = {};
     // setting to null value, meaning: revert
     confObj[conf.Path] = null;
-    await this.session.Client.admin_apiconfig_post(this.appId, !conf.HasCustomLocalValue, confObj);
+    await this.session.Client.admin_apiconfig_post(this.appId, confObj, { global: !conf.HasCustomLocalValue });
     delete this.pendingChanges[this.appId];
 
     // reload all to get the effective value. there is no good way to get just
@@ -141,7 +141,7 @@ export class ConfigService {
       Message: '#LDS#Are you sure you want to reset all customized configuration values?',
       identifier: 'config-confirm-reset-configuration'
     })) {
-      await this.session.Client.admin_apiconfig_revert_post(this.appId, isGlobal);
+      await this.session.Client.admin_apiconfig_revert_post(this.appId, { global: isGlobal });
       delete this.pendingChanges[this.appId];
       this.load();
     }
@@ -160,7 +160,7 @@ export class ConfigService {
     }
 
     for (let appId in this.pendingChanges) {
-      await this.session.Client.admin_apiconfig_post(appId, isGlobal, changeObj);
+      await this.session.Client.admin_apiconfig_post(appId, changeObj, { global: isGlobal });
     }
     this.pendingChanges = {};
     this.load();
@@ -219,6 +219,7 @@ export class ConfigService {
     const thisPath = path + node.Key;
     for (const n of node.Settings) {
       const searchTerms = [
+        ...displayPath.map(d => d?.toLowerCase()),
         n.Name?.toLowerCase(),
         n.Key?.toLowerCase(),
         n.Description?.toLowerCase()

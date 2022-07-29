@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -72,40 +72,27 @@ export class AttestationHistoryService {
   }
 
   public async getDataModel(objecttable?: string, objectuid?: string, groupFilter?: FilterData[]): Promise<DataModel> {
-    return this.attClient.client.portal_attestation_case_datamodel_get(objecttable, objectuid, groupFilter);
+    return this.attClient.client.portal_attestation_case_datamodel_get({
+      objecttable: objecttable,
+      objectuid: objectuid,
+      filter: groupFilter
+    });
   }
 
   public async getGroupInfo(parameters: AttestationCaseLoadParameters = {}): Promise<GroupInfo[]> {
-    return this.attClient.client.portal_attestation_case_group_get(
-      parameters.by,
-      parameters.def,
-      parameters.groupFilter, // filter
-      parameters.StartIndex,
-      parameters.PageSize,
-      true, // withcount
-      parameters.state, // state
-      parameters.attestationtype, // attestationtype
-      parameters.uidpolicy, // uidpolicy
-      parameters.type, // type
-      parameters.risk, // risk
-      parameters.objecttable,
-      parameters.objectuid
-    );
+    return this.attClient.client.portal_attestation_case_group_get({
+      ...parameters,
+      withcount: true,
+      filter: parameters.groupFilter
+    });
   }
 
   private async getParameterCandidates(parameters: ParameterDataLoadParameters): Promise<EntityCollectionData> {
     return this.attClient.client.portal_attestation_case_parameter_candidates_post(
       parameters.columnName,
       parameters.fkTableName,
-      parameters.OrderBy,
-      parameters.StartIndex,
-      parameters.PageSize,
-      parameters.filter,
-      null,
-      parameters.search,
-      parameters.ParentKey,
-      parameters.diffData
-    );
+      parameters.diffData,
+      parameters);
   }
 
   private async getFilterTree(parameters: ParameterDataLoadParameters): Promise<FilterTreeData>
@@ -113,9 +100,10 @@ export class AttestationHistoryService {
     return this.attClient.client.portal_attestation_case_parameter_candidates_filtertree_post(
       parameters.columnName,
       parameters.fkTableName,
-      parameters.filter,
-      parameters.ParentKey,
-      parameters.diffData
-    );
+      parameters.diffData,
+      {
+        ...parameters,
+        parentkey: parameters.ParentKey
+      });
   }
 }

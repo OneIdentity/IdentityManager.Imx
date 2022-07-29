@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -74,7 +74,7 @@ describe('ItshopPatternComponent', () => {
     isShopAdmin: jasmine.createSpy('isShopAdmin').and.callFake(() => isShopAdmin)
   };
 
-  let routeConfigPath = 'configuration/carttemplates';
+  let routeConfigPath = 'itshop/requesttemplates';
   const activatedRouteStub = {
     snapshot: {
       routeConfig: { path: routeConfigPath }
@@ -151,8 +151,7 @@ describe('ItshopPatternComponent', () => {
           }
         }
       ]
-    })
-      .compileComponents();
+    });
   });
 
   beforeEach(waitForAsync(() => {
@@ -177,34 +176,6 @@ describe('ItshopPatternComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  for (const testcase of [
-    { adminMode: true, description: 'admin-mode' },
-    { adminMode: false, description: 'normaö-user-mode' },
-  ]) {
-    xit(`should run the component in  ${testcase.description}`, async () => {
-      patterServiceStub.getPrivatePatterns.calls.reset();
-      patterServiceStub.getPublicPatterns.calls.reset();
-      const state = { OrderBy: 'Ident_ShoppingCartPattern asc' };
-      if (testcase.adminMode) {
-        routeConfigPath = 'configuration/carttemplates';
-        isShopAdmin = true;
-      } else {
-        routeConfigPath = 'something else';
-        isShopAdmin = false;
-      }
-
-      await component.ngOnInit();
-
-      if (testcase.adminMode) {
-        expect(patterServiceStub.getPublicPatterns).toHaveBeenCalledWith(state);
-        expect(patterServiceStub.getPrivatePatterns).not.toHaveBeenCalled();
-      } else {
-        expect(patterServiceStub.getPrivatePatterns).toHaveBeenCalledWith(state);
-        expect(patterServiceStub.getPublicPatterns).not.toHaveBeenCalled();
-      }
-    });
-  }
 
   it('should open the details sidesheet', async () => {
     await component.viewDetails(selectedPattern);

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -266,7 +266,7 @@ export class AppComponent implements OnInit, OnDestroy {
         type: EuiTopNavigationItemType.RouterLink,
         text,
         url,
-        routerLinkActiveOptions: { exact: exact ? true : false },
+        // routerLinkActiveOptions: { exact: exact ? true : false }, //TODO: Reactivate - Interface does not match
       };
       if (items) {
         navItem.type = EuiTopNavigationItemType.Menu;
@@ -286,7 +286,7 @@ export class AppComponent implements OnInit, OnDestroy {
             type: EuiTopNavigationItemType.RouterLink,
             text: item.text,
             url: item.url,
-            routerLinkActiveOptions: { exact: false },
+            // routerLinkActiveOptions: { exact: false }, //TODO: Reactivate - Interface does not match
           });
         });
         if (index === items.length - 1) {

@@ -2,7 +2,7 @@
     <mat-list>
         <ng-container *ngFor="let expr of viewSettings.root.childViews; let first = first; let last = last">
             <li>
-                <imx-sqlwizard-singleexpression [expr]="expr" [first]="first" [last]="last" [allowEmptyExpression]="allowEmptyExpression">
+                <imx-sqlwizard-singleexpression [expr]="expr" [first]="first" [last]="last">
                 </imx-sqlwizard-singleexpression>
             </li>
         </ng-container>

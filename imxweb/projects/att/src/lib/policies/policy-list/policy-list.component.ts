@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -37,6 +37,7 @@ import {
   DataSourceToolbarGroupData,
   DataSourceToolbarSettings,
   DataTableGroupedData,
+  ClientPropertyForTableColumns,
   SettingsService,
   SnackBarService,
   SystemInfoService
@@ -78,7 +79,7 @@ export class PolicyListComponent implements OnInit {
 
   private filterOptions: DataSourceToolbarFilter[] = [];
   private prefilterOwner = false;
-  private readonly displayedColumns: IClientProperty[];
+  private readonly displayedColumns: ClientPropertyForTableColumns[];
   private dataModel: DataModel;
 
   constructor(
@@ -99,7 +100,8 @@ export class PolicyListComponent implements OnInit {
       this.entitySchemaPolicy.Columns.NextRun,
       {
         ColumnName: 'actions',
-        Type: ValType.String
+        Type: ValType.String,
+        afterAdditionals: true
       }
     ];
   }

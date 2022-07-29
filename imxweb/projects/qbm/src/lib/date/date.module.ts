@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -49,17 +49,20 @@ import { DateComponent } from './date/date.component';
 import { CalendarComponent } from './date/calendar/calendar.component';
 import { TimePickerComponent } from './date/time-picker/time-picker.component';
 import { ShortDatePipe } from './short-date.pipe';
+import { LocalizedDatePipe } from './localized-date.pipe';
 
 @NgModule({
   declarations: [
     ShortDatePipe,
+    LocalizedDatePipe,
     DateComponent,
     CalendarComponent,
     TimePickerComponent
   ],
   exports: [
     DateComponent,
-    ShortDatePipe
+    ShortDatePipe,
+    LocalizedDatePipe
   ],
   imports: [
     A11yModule,

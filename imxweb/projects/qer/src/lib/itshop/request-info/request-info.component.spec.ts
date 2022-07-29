@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -64,7 +64,8 @@ describe('RequestInfoComponent', () => {
         { UID_Person: { value: 'uidOfAPerson' } }
       ]
     })),
-    createTypedHistory: __ => []
+    createTypedHistory: __ => [],
+    getServiceItem: jasmine.createSpy('getServiceItem')
   };
 
   let component: RequestInfoComponent;
@@ -108,6 +109,7 @@ describe('RequestInfoComponent', () => {
     fixture = TestBed.createComponent(RequestInfoComponent);
     component = fixture.componentInstance;
     projectConfigurationServiceStub.getConfig.calls.reset();
+    itshopServiceStub.getServiceItem.calls.reset();
   });
 
   afterAll(() => {
@@ -138,11 +140,59 @@ describe('RequestInfoComponent', () => {
         DecisionLevel: { },
         UiOrderState: { value: testcase.uiOrderState },
         UID_QERWorkingMethod: { },
-        parameterColumns: []
+        parameterColumns: [],
+        UID_AccProduct: {},
+        TableName: {}
       } as RequestParameterDataEntity;
       await component.ngOnInit();
       expect(component.approverContainer.config).toBeDefined();
       expect(component.approverContainer.isInWorkflow).toEqual(testcase.expect);
     });
   }
+
+  it('can render role membership details', async () => {
+    projectConfig = {
+      ITShopConfig: {
+        VI_ITShop_NextApproverCanBeSeen: false,
+        VI_ITShop_CurrentApproversCanBeSeen: false
+      }
+    } as ProjectConfig & QerProjectConfig;
+    component.request = {
+      GetEntity: () => ({
+        GetKeys: () => ['entity']
+      }),
+      DecisionLevel: { },
+      UiOrderState: { },
+      UID_QERWorkingMethod: { },
+      parameterColumns: [],
+      UID_AccProduct: {},
+      TableName: { value: 'QERAssign'}
+    } as RequestParameterDataEntity;
+    await component.ngOnInit();
+    expect(component.isRoleAssignment).toBeTruthy();
+    expect(itshopServiceStub.getServiceItem).not.toHaveBeenCalled();
+  });
+
+  it('can render service item details', async () => {
+    projectConfig = {
+      ITShopConfig: {
+        VI_ITShop_NextApproverCanBeSeen: false,
+        VI_ITShop_CurrentApproversCanBeSeen: false
+      }
+    } as ProjectConfig & QerProjectConfig;
+    component.request = {
+      GetEntity: () => ({
+        GetKeys: () => ['entity']
+      }),
+      DecisionLevel: { },
+      UiOrderState: { },
+      UID_QERWorkingMethod: { },
+      parameterColumns: [],
+      UID_AccProduct: {},
+      TableName: { value: ''}
+    } as RequestParameterDataEntity;
+    await component.ngOnInit();
+    expect(itshopServiceStub.getServiceItem).toHaveBeenCalledTimes(1);
+    expect(component.isRoleAssignment).toBeFalsy();
+  })
 });

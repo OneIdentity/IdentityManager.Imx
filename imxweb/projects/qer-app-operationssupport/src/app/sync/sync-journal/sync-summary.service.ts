@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2021 One Identity LLC.
+ * Copyright 2022 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,6 +36,6 @@ export class SyncSummaryService {
   constructor(private readonly dprClient: DprApiService) {}
 
   public async Get(state: OpsupportSyncSummaryParameters): Promise<Blob> {
-    return this.dprClient.client.opsupport_sync_summary_get(state.journal);
+    return this.dprClient.client.opsupport_sync_summary_get({ journal: state.journal });
   }
 }
