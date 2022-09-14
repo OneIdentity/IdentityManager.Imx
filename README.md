@@ -4,6 +4,17 @@
 
 ## Change log
 
+### September 14, 2022
+
+The `v82` branch has been updated with fixes for the following issues:
+
+- 35898 A partial shopping cart cannot be submitted, so the submit button is deactivated when the user makes a partial selection
+- 35818 The shopping cart items now show the cart item display and not the service item display
+- 314557 Added an unsaved changes check in the dynamic role editor
+- 320800 The menu item "Move to shopping cart" is shown disabled when no items are selected
+- 304748 Error messages sometimes were sometimes displayed only after an additional click
+- 308454/308947 Fixed small UI glitches in the Operations Support Portal
+
 ### May 2, 2022
 
 The repository has been updated with the code changes for the Identity Manager 8.2.1 release.
