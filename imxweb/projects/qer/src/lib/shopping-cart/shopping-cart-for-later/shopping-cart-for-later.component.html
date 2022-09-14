@@ -23,7 +23,7 @@
               {{ '#LDS#View shopping cart' | translate}}
         </button>
         <mat-divider></mat-divider>
-        <button  mat-menu-item data-imx-identifier="imx-table-actions-move-menu"
+        <button  mat-menu-item data-imx-identifier="imx-table-actions-move-menu" [disabled]="!cartItems?.itemsCanBeMoved()"
         title="{{ '#LDS#Moves the selected products to your shopping cart' | translate }}" (click)="cartItems?.moveSelectedToCart()">
         {{ '#LDS#Move to shopping cart' | translate }}
         </button>
