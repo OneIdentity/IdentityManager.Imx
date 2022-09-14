@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { SqlViewSettings } from './SqlNodeView';
 import { LogOp as _logOp, SqlExpression } from 'imx-qbm-dbts';
 import { SqlWizardApiService } from './sqlwizard-api.service';
@@ -45,6 +45,8 @@ export class SqlWizardComponent implements OnInit, OnChanges {
     /** Alternate API service to use. */
     @Input() public apiService: SqlWizardApiService;
 
+    @Output() public change = new EventEmitter<any>();
+
     constructor(private readonly apiSvc: SqlWizardApiService) {
     }
 
@@ -52,15 +54,25 @@ export class SqlWizardComponent implements OnInit, OnChanges {
         await this.reinit();
     }
 
+    public async addExpression(): Promise<void> {
+      await this.viewSettings.root.addChildNode();
+      this.emitChanges();
+    }
+
     public ngOnChanges(changes: SimpleChanges): void {
-        if ((changes.expression && changes.expression.currentValue !== this.expression) ||
-            (changes.tableName && changes.tableName.currentValue !== this.viewSettings?.root.tableName)) {
-            this.reinit();
+        if ((changes['expression'] && changes['expression'].currentValue !== this.expression) ||
+            (changes['tableName'] && changes['tableName'].currentValue !== this.viewSettings?.root.tableName)) {
+              this.reinit();
         }
+    }
+
+    public emitChanges(): void {
+      this.change.emit();
     }
 
     private async reinit(): Promise<void> {
         if (this.tableName && this.expression) {
+
             var svc = this.apiService;
             if (!svc) {
                 svc = this.apiSvc;

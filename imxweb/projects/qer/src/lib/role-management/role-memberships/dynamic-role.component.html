@@ -3,8 +3,7 @@
   <ng-container *ngIf="!busy && !sqlExpression">
     <eui-alert condensed="true" [colored]="true" type="info">
       <div class="margin">{{ LdsNoDynamicRole | translate }}</div>
-      <button data-imx-identifier="button-dynamic-role-create" mat-raised-button (click)="createDynamic()"
-        color="primary">{{ '#LDS#Create dynamic role'|translate}}</button>
+      <button data-imx-identifier="button-dynamic-role-create" mat-raised-button (click)="createDynamic()" color="primary">{{ '#LDS#Create dynamic role' | translate }}</button>
     </eui-alert>
   </ng-container>
   <ng-container *ngIf="sqlExpression">
@@ -12,27 +11,37 @@
       {{ LdsUnsupportedExpression | translate }}
     </eui-alert>
 
-    <eui-alert class="helper-alert" condensed="true" [colored]="true" type="info" *ngIf="showHelperAlert
-       && !sqlExpression.IsUnsupported" [dismissable]="true" (dismissed)="showHelperAlert = false">{{ LdsWizardInfo |
-      translate }}</eui-alert>
+    <eui-alert
+      class="helper-alert"
+      condensed="true"
+      [colored]="true"
+      type="info"
+      *ngIf="showHelperAlert && !sqlExpression.IsUnsupported"
+      [dismissable]="true"
+      (dismissed)="showHelperAlert = false"
+      >{{ LdsWizardInfo | translate }}</eui-alert
+    >
     <div class="imx-mat-card-container">
       <mat-card>
-        <imx-sqlwizard *ngIf="!sqlExpression.IsUnsupported" tableName="Person" [expression]="sqlExpression.Expression">
-        </imx-sqlwizard>
+        <imx-sqlwizard *ngIf="!sqlExpression.IsUnsupported" tableName="Person" [expression]="sqlExpression.Expression" (change)="checkChanges()"> </imx-sqlwizard>
 
         <ng-container *ngIf="cdrList.length > 0">
-          <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr">
-          </imx-cdr-editor>
+          <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="formArray.push($event)" (valueChange)="checkCDRs()"></imx-cdr-editor>
         </ng-container>
 
         <div class="button-bar">
-          <button data-imx-identifier="button-dynamic-role-delete" mat-raised-button (click)="deleteDynamic()"
-            color="warn">{{ '#LDS#Delete'|translate}}</button>
-          <button data-imx-identifier="button-dynamic-role-save" mat-raised-button (click)="save()"
-            [disabled]="isConditionInvalid()" color="primary">{{ '#LDS#Save'|translate}}</button>
+          <button data-imx-identifier="button-dynamic-role-delete" mat-raised-button (click)="deleteDynamic()" color="warn">{{ '#LDS#Delete' | translate }}</button>
+          <button
+            data-imx-identifier="button-dynamic-role-save"
+            mat-raised-button
+            (click)="save()"
+            [disabled]="(exprHasntChanged && cdrsHaventChanged) || formGroup.invalid || isConditionInvalid()"
+            color="primary"
+          >
+            {{ '#LDS#Save' | translate }}
+          </button>
         </div>
       </mat-card>
     </div>
   </ng-container>
-
 </div>

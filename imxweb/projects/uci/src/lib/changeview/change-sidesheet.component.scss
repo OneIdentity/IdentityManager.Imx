@@ -3,10 +3,14 @@
 :host {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: auto;
   height: 100%;
   padding: 1em;
   background-color: $asher-gray;
+}
+
+.mat-card {
+  margin-bottom: 10px;
 }
 
 .imx-helper-alert {
