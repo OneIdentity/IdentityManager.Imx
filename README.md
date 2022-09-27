@@ -4,6 +4,11 @@
 
 ## Change log
 
+### September 27, 2022
+
+- The repository has been updated with the source code for the Identity Manager 9.1 release in the `v91` branch.
+- Added clarification on the [required node.js version](#installing-node-js).
+
 ### July 29, 2022
 
 - The repository has been updated with the source code for the Identity Manager 9.0 release in the `v90` branch.
@@ -40,6 +45,7 @@ Each Angular library and app belongs to a folder in the `projects` directory. Th
 |`tsb`|Angular plugin library|`qbm`, `qer`|
 |`att`|Angular plugin library|`qbm`, `qer`|
 |`rms`|Angular plugin library|`qbm`, `qer`|
+|`rps`|Angular plugin library|`qbm`, `qer`|
 |`aad`|Angular plugin library|`qbm`, `qer`, `tsb`|
 |`aob`|Angular plugin library|`qbm`, `qer`|
 |`uci`|Angular plugin library|`qbm`, `qer`|
@@ -65,6 +71,10 @@ For more information about each project, see the `readme.md` files in each proje
 |`qer-app-operationssupport`|Operations Support Portal|Angular app|`qbm`, `qer`|
 |`qer-app-pwdportal`|Password Reset Portal|Angular app|`qbm`, `qer`|
 |`arc-app-certaccess`|Starling CertAccess|Angular app|various|
+
+## Installing node.js
+
+Verify that you have installed the correct `node.js` version for your branch. The version used by the CI build is defined in the [`npm-build.yml`](.github/workflows/npm-build.yml) file in the `node-version` property. Other versions of `node.js`, including newer versions, are not guaranteed to be compatible with other Angular versions.
 
 ## Building
 
@@ -103,11 +113,12 @@ Please refer to the [HTML Development Guide](https://support.oneidentity.com/tec
 
 The following table shows the branches in this repository corresponding to each product version.
 
-|Branch|Product version|
-|-|-|
-|`v90`|Identity Manager 9.0|
-|`v82`|Identity Manager 8.2.x|
-|`master`|The `master` branch does not correspond to a supported version of Identity Manager. Do not use this branch for development purposes.|
+|Branch|Product version|`node.js` version|
+|-|-|-|
+|`v91`|Identity Manager 9.1.x|14|
+|`v90`|Identity Manager 9.0|14|
+|`v82`|Identity Manager 8.2.x|14|
+|`master`|The `master` branch does not correspond to a supported version of Identity Manager. Do not use this branch for development purposes.||
 
 We plan to push updates for each minor and major product release, allowing developers to track source code changes from one version to the next. Occasionally we may also publish important bug fixes.
 
