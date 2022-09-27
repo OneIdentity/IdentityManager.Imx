@@ -74,7 +74,7 @@ For more information about each project, see the `readme.md` files in each proje
 
 ## Installing node.js
 
-Verify that you have installed the correct `node.js` version for your branch. The version used by the CI build is defined in the [`npm-build.yml`](.github/workflows/npm-build.yml) file in the `node-version` property. Other versions of `node.js`, including newer versions, are not guaranteed to be compatible with other Angular versions.
+Verify that you have installed the correct `node.js` version for your branch. The version used by the CI build is defined in the [`.github/workflows/npm-build.yml`](.github/workflows/npm-build.yml) file in the `node-version` property. Other versions of `node.js`, including newer versions, are not guaranteed to be compatible with other Angular versions.
 
 ## Building
 
