@@ -33,7 +33,7 @@ import { ParameterizedText } from 'qbm';
 
 /** Default display component for cart items; simply displaying the service item. */
 @Component({
-  template: `<div data-imx-identifier="default-cart-item-display">{{ cartItem.UID_AccProduct.Column.GetDisplayValue() }}</div>
+  template: `<div data-imx-identifier="default-cart-item-display">{{ cartItem.GetEntity().GetDisplay() }}</div>
         <div subtitle>
           <span>{{'#LDS#Recipient' | translate}}: </span>
           <span data-imx-identifier="default-cart-item-recipient">{{ cartItem.UID_PersonOrdered?.Column?.GetDisplayValue() }}</span>

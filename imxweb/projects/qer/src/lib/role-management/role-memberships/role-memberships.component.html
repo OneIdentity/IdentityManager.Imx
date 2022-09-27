@@ -6,7 +6,14 @@
     <mat-tab [label]="'#LDS#Secondary memberships' | translate">
       <imx-secondary-memberships [isAdmin]="isAdmin" [entity]="entity" [ownershipInfo]="ownershipInfo"></imx-secondary-memberships>
     </mat-tab>
-    <mat-tab *ngIf="canBeDynamic" [label]="'#LDS#Automatic memberships' | translate">
+    <mat-tab *ngIf="canBeDynamic">
+      <ng-template mat-tab-label>
+        <div [matTooltip]="(autoMembershipsValid ? '' : '#LDS#You have unsaved changes') | translate">
+          <eui-icon *ngIf="!autoMembershipsValid" icon="warning" class="imx-dirty-indicator" size="s"
+          [attr.aria-label]="'#LDS#You have unsaved changes.' | translate"></eui-icon>
+          <span translate>#LDS#Automatic memberships</span>
+        </div>
+      </ng-template>
       <imx-dynamic-group [entity]="entity" [isAdmin]="isAdmin" [uidDynamicGroup]="uidDynamicGroup"></imx-dynamic-group>
     </mat-tab>
     <mat-tab *ngIf="isDynamic" [label]="'#LDS#Excluded memberships' | translate">

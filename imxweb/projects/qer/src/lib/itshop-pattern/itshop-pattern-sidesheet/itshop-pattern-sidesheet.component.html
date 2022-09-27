@@ -4,7 +4,7 @@
       <ng-template matTabContent>
         <div class="imx-tab-content">
           <eui-alert class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" [dismissable]="true">
-            {{ (data.isMyPattern ? editableProductsInfoText : detailsInfoText) | translate}}
+            {{ (data.isMyPattern ? editableDetailsInfoText : detailsInfoText) | translate}}
           </eui-alert>
           <mat-card>
             <eui-badge *ngIf="!data.pattern.IsPublicPattern.value">
