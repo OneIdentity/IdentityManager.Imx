@@ -128,21 +128,26 @@ export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
 
     const uidsAdded: string[] = [];
     this.treeControl.dataNodes.forEach((tree) => {
-      const recipient = {
-        DataValue: tree.UidRecipient,
-        DisplayValue: tree.Recipient,
-      };
-      this.treeControl.getDescendants(tree).forEach(async (child) => {
-        if (!child.isMandatory && child.isChecked && !child.isIndeterminate) {
-          const uid = child.UidAccProduct;
-          const serviceItem = await this.optionalItemMap[uid];
-          const requestable = this.serviceItemsProvider.getServiceItemsForPersons([serviceItem], [recipient])[0];
-          requestable.UidAccProductParent = child.parent;
-          outgoingServiceOrder.requestables.push(requestable);
-          if (!uidsAdded.includes(uid)) {
-            outgoingServiceOrder.optionalItems.push(serviceItem);
+      // Loop over each service item tree
+      tree.UidRecipients.forEach((uidRecipient, index) => {
+        // Loop over each recipient
+        const recipient = {
+          DataValue: uidRecipient,
+          DisplayValue: tree.Recipients[index],
+        };
+        this.treeControl.getDescendants(tree).forEach(async (child) => {
+          // Grab all descendants of the parent service item and create an order
+          if (!child.isMandatory && child.isChecked && !child.isIndeterminate) {
+            const uid = child.UidAccProduct;
+            const serviceItem = await this.optionalItemMap[uid];
+            const requestable = this.serviceItemsProvider.getServiceItemsForPersons([serviceItem], [recipient])[0];
+            requestable.UidAccProductParent = child.parent;
+            outgoingServiceOrder.requestables.push(requestable);
+            if (!uidsAdded.includes(uid)) {
+              outgoingServiceOrder.optionalItems.push(serviceItem);
+            }
           }
-        }
+        });
       });
     });
     this.sideSheetRef.close(outgoingServiceOrder);

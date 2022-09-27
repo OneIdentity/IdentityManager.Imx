@@ -77,14 +77,14 @@ export interface ServiceItemHierarchyExtended {
   Mandatory?: ServiceItemHierarchyExtended[];
 
   /**
-   * Recipient string for this leaf (only appears in base of tree)
+   * Recipient strings for this leaf (only appears in base of tree)
    */
-  Recipient?: string;
+  Recipients?: string[];
 
   /**
-   * Recipient uid for this leaf (only appears in base of tree)
+   * Recipient uids for this leaf (only appears in base of tree)
    */
-  UidRecipient?: string;
+  UidRecipients?: string[];
 
   /**
    * is this leaf mandatory (coupled to UI)

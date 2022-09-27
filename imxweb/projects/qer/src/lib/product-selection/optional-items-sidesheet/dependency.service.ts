@@ -64,8 +64,8 @@ export class DependencyService {
   public extendTree(
     tree: ServiceItemHierarchy,
     options?: {
-      Recipient?: string;
-      UidRecipient?: string;
+      Recipients?: string[];
+      UidRecipients?: string[];
       isMandatory: boolean;
       isChecked: boolean;
       isIndeterminate: boolean;
@@ -116,32 +116,28 @@ export class DependencyService {
     try {
       this.busyService.show();
       let optionalCount = 0;
-      const recipientsUids = MultiValue.FromString(recipients.value).GetValues();
-      const recipientsDisplays = MultiValue.FromString(recipients.Column.GetDisplayValue()).GetValues();
+      const uidRecipients = MultiValue.FromString(recipients.value).GetValues();
+      const displayRecipients = MultiValue.FromString(recipients.Column.GetDisplayValue()).GetValues();
       await Promise.all(
         serviceItems.map(async (parentItem) => {
-          await Promise.all(
-            recipientsUids.map(async (recipientUid, index) => {
-              const parentKey = this.getKey(parentItem);
-              const hierarchy = await this.get({
-                UID_AccProductParent: parentKey,
-                UID_Person: recipientUid,
-              });
-              const thisCount = this.countOptional(hierarchy);
-              if (thisCount > 0) {
-                const extendedhierarchy = this.extendTree(hierarchy, {
-                  Recipient: recipientsDisplays[index],
-                  UidRecipient: recipientUid,
-                  isMandatory: true,
-                  isChecked: true,
-                  isIndeterminate: false,
-                  parentChecked: true,
-                });
-                allTrees.trees.push(extendedhierarchy);
-                optionalCount += thisCount;
-              }
-            })
-          );
+          const parentKey = this.getKey(parentItem);
+          const hierarchy = await this.get({
+            UID_AccProductParent: parentKey,
+            UID_Person: uidRecipients.join(','),
+          });
+          const thisCount = this.countOptional(hierarchy);
+          if (thisCount > 0) {
+            const extendedhierarchy = this.extendTree(hierarchy, {
+              Recipients: displayRecipients,
+              UidRecipients: uidRecipients,
+              isMandatory: true,
+              isChecked: true,
+              isIndeterminate: false,
+              parentChecked: true,
+            });
+            allTrees.trees.push(extendedhierarchy);
+            optionalCount += thisCount;
+          }
         })
       );
       allTrees.totalOptional = optionalCount;

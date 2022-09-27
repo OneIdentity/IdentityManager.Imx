@@ -1,4 +1,4 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   display: flex;
@@ -10,12 +10,18 @@
     padding-top: 20px;
 
     ::ng-deep .mat-tab-header {
-      background-color: $asher-gray;
+      background-color: transparent;
       border-bottom: 0px;
     }
+
     ::ng-deep .mat-tab-label {
-      background-color: $white;
+      background-color: $color-gray-0;
     }
+  }
+
+  .imx-dirty-indicator {
+    margin-right: 10px;
+    color: $color-orange-60
   }
 }
 

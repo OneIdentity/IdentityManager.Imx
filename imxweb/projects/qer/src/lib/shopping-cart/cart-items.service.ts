@@ -106,36 +106,42 @@ export class CartItemsService {
     const sortedRequestables: RequestableProductForPerson[] = [];
     const sortedUids: string[] = [];
     // We need to order the items such that we can order them sequentially
-    let error: Error;
     let result = 0;
-    while (sortedRequestables.length < requestableServiceItemsForPersons.length && !error) {
-      const preLength = sortedRequestables.length;
-      requestableServiceItemsForPersons.map((requestable) => {
-        const uidProdAndPerson = requestable.UidAccProduct + requestable.UidPerson;
-        const uidParentAndPerson = requestable?.UidAccProductParent + requestable.UidPerson;
-        if (!requestable?.UidAccProductParent || sortedUids.includes(uidParentAndPerson)) {
-          sortedRequestables.push(requestable);
+    requestableServiceItemsForPersons.forEach(item => {
+      const uidProdAndPerson = item.UidAccProduct + item.UidPerson;
+      if (item?.UidAccProductParent) {
+        const uidParentAndPerson = item.UidAccProductParent + item.UidPerson;
+        // If this item has a parent, look if its in the list already
+        const insertPosition = sortedUids.findIndex(uid => uid === uidParentAndPerson) + 1;
+        if (insertPosition === 0) {
+          // Push item to the end of the array
           sortedUids.push(uidProdAndPerson);
+          sortedRequestables.push(item);
+        } else {
+          // Push item behind parent
+          sortedUids.splice(insertPosition, 0, uidProdAndPerson);
+          sortedRequestables.splice(insertPosition, 0, item);
         }
-      });
-      const postLength = sortedRequestables.length;
-      if (preLength === postLength) {
-        error = new Error('The items could not be added to the cart.');
-        this.logger.error(this, 'addItems entered an endless loop.');
+      } else {
+        // This item does not have a parent, so push it to the front
+        sortedUids.unshift(uidProdAndPerson);
+        sortedRequestables.unshift(item);
       }
-      result = result + 1;
-    }
-    if (error) {
-      this.errorHandler.handleError(error);
-      return result;
-    }
+    });
 
     for await (const requestable of sortedRequestables) {
       let parentCartUid: string;
       if (requestable?.UidAccProductParent) {
+        // We check through already ordered items to link this item to a parent
         const uidParentAndPerson = requestable.UidAccProductParent + requestable.UidPerson;
         const index = sortedUids.findIndex((uid) => uid === uidParentAndPerson);
-        parentCartUid = this.getKey(addedItems[index]);
+        if (index === -1) {
+          // The parent is a mandatory item and we don't have this locally. We need to view the current state of the shopping cart for this.
+          parentCartUid =  await this.getFromExistingCartItems(addedItems[0].UID_ShoppingCartOrder.value, uidParentAndPerson);
+        } else {
+          // Use the local parent uid
+          parentCartUid = this.getKey(addedItems[index]);
+        }
       }
       const cartItemCollection = await this.createAndPost(requestable, parentCartUid);
 
@@ -159,6 +165,12 @@ export class CartItemsService {
     } else {
       return requestableServiceItemsForPersons.length;
     }
+  }
+
+  public async getFromExistingCartItems(cartUid: string, uidParentAndPerson: string): Promise<string> {
+    const allItems = (await this.getItemsForCart(cartUid)).Data;
+    const parentItem = allItems.find(item => item.UID_AccProduct.value + item.UID_PersonOrdered.value === uidParentAndPerson);
+    return this.getKey(parentItem);
   }
 
   public async removeItems(cartItems: PortalCartitem[], filter?: (cartItem: PortalCartitem) => boolean): Promise<void> {

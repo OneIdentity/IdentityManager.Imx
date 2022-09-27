@@ -51,11 +51,6 @@
       </div>
     </div>
   </mat-tab>
-  <mat-tab *ngIf="showLosses" [label]="'#LDS#Heading Entitlement Loss' | translate">
-    <div class="imx-loss-preview-table-wrapper">
-      <imx-loss-preview-table [lossPreview]="lossPreview"></imx-loss-preview-table>
-    </div>
-  </mat-tab>
 </mat-tab-group>
 <div class="imx-button-bar">
   <button *ngIf="reportType === 'PDF'" mat-stroked-button [euiDownload]="reportDownload">

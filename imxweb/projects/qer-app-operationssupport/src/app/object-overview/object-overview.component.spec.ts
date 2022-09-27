@@ -40,7 +40,7 @@ import { TranslationProviderServiceSpy } from '../test-utilities/imx-translation
 import { RoutingMock } from '../test-utilities/router-mock.spec';
 import { SessionServiceSpy } from '../test-utilities/imx-session.service.spy.spec';
 import { ObjectOverviewService } from './object-overview.service';
-import { PersonJobQueueInfo } from './person-job-queue-info';
+import { PersonJobQueueInfo } from './person-job-queue-Info';
 import { Subject } from 'rxjs';
 
 @Component({

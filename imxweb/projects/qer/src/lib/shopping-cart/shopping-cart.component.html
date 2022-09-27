@@ -74,7 +74,7 @@
           </button>
       </mat-menu>
         <button mat-raised-button color="primary" data-imx-identifier="shoppingcart-submit-button"
-            (click)="submitShoppingCart()" [disabled]="shoppingCart.totalCount === 0 || shoppingCart.hasErrors">
+            (click)="submitShoppingCart()" [disabled]="shoppingCart.totalCount === 0 || shoppingCart.hasErrors || selectedItems?.length > 0">
             {{ '#LDS#Submit' | translate }}
         </button>
         <mat-menu data-imx-identifier="shoppingcart-actions-menu" #actionsMenu="matMenu">
@@ -83,7 +83,7 @@
               {{ '#LDS#Check shopping cart' | translate }}
             </button>
             <button data-imx-identifier="shoppingcart-delete-all-requests-button"
-              title="{{ '#LDS#Removes all products from your shopping cart' | translate }}" mat-menu-item (click)="deleteCart()">
+              title="{{ '#LDS#Removes all products from your shopping cart' | translate }}"  mat-menu-item (click)="deleteCart()">
               {{ '#LDS#Delete shopping cart' | translate }}
             </button>
             <button data-imx-identifier="shoppingcart-goto-save-for-later-link"
