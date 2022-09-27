@@ -7,7 +7,7 @@
 ### September 27, 2022
 
 - The repository has been updated with the source code for the Identity Manager 9.1 release in the `v91` branch.
-- Added clarification on the [required node.js version](#installing-node-js).
+- Added clarification on the [required node.js version](#installing-nodejs).
 
 ### July 29, 2022
 
