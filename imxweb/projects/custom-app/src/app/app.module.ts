@@ -46,8 +46,7 @@ import {
   LdsReplacePipe,
   QbmModule,
   AuthenticationModule,
-  MenuModule,
-  CustomThemeModule
+  MenuModule
 } from 'qbm';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -79,7 +78,6 @@ import { StartComponent } from './start.component';
     MastHeadModule,
     MenuModule,
     QbmModule,
-    CustomThemeModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
