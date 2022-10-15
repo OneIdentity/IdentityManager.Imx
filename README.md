@@ -4,6 +4,10 @@
 
 ## Change log
 
+### October 15, 2022
+
+- There is a new application in the workspace called `custom-app`. This application is a template that provides the basic building blocks (such as Material integration, session handling, login, and the API client configuration) can be used as a starting point for building new applications. See [`readme.md`](./imxweb/projects/custom-app/readme.md) for more information.
+
 ### September 27, 2022
 
 - The repository has been updated with the source code for the Identity Manager 9.1 release in the `v91` branch.

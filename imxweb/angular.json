@@ -1790,6 +1790,7 @@
           }
         }
       }
+    }
   },
   "defaultProject": "qer-app-portal",
   "cli": {
