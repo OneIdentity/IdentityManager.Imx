@@ -38,6 +38,7 @@ import { ShelfSelectionComponent } from './shelf-selection.component';
 import { QerApiService } from '../qer-api-client.service';
 import { NonRequestableItemsComponent } from './non-requestable-items/non-requestable-items.component';
 import { PersonForProduct, ShelfObject, ShelfSelectionObject } from './shelf-selection-sidesheet.model';
+import _ from 'lodash';
 
 @Injectable({
   providedIn: 'root'
@@ -54,7 +55,7 @@ export class ShelfService {
   ) { }
 
   public async setShops(requestableServiceItemsForPersons: RequestableProductForPerson[]): Promise<boolean> {
-    const requestableServiceItemsForPersonsInShops = await this.findProducts(
+    const requestableServiceItemsForPersonsInShops = await this.findUniqueProductsInShops(
       requestableServiceItemsForPersons
     );
 
@@ -73,13 +74,13 @@ export class ShelfService {
       return false;
     }
     // preset unique elements
-    this.presetUniqe(requestableServiceItemsForPersons, requestableServiceItemsForPersonsInShops);
+    this.presetUnique(requestableServiceItemsForPersons, requestableServiceItemsForPersonsInShops);
 
     if (requestableServiceItemsForPersons.every(elem => elem.UidITShopOrg != null)) {
       return true;
     } else {
 
-      const data = this.build(requestableServiceItemsForPersons, requestableServiceItemsForPersonsInShops);
+      const data = this.buildShelfSelection(requestableServiceItemsForPersons, requestableServiceItemsForPersonsInShops);
 
       await this.showNotRequestableProducts(data);
 
@@ -130,6 +131,11 @@ export class ShelfService {
       return true;
     }
 
+    // TODO TASK 321664: This is only a temporary fix to choose to all items with the same uid, regardless of if they are optional or not.
+    ssos.forEach(item => {
+      item.personsForProduct = _.uniqWith(item.personsForProduct, _.isEqual);
+    });
+
     // show side sheet for multishelf objects
     const sidesheetRef = this.sideSheet.open(ShelfSelectionComponent, {
       title: await this.translate.get('#LDS#Heading Select Shelf').toPromise(),
@@ -147,14 +153,21 @@ export class ShelfService {
     sidesheetResult
       .forEach(requestedProduct => requestedProduct.personsForProduct
         .forEach(person => {
-          const item = requested.find(elem =>
+          // TODO TASK 321664: This is only a temporary fix to choose to all items with the same uid, regardless of if they are optional or not.
+          const items = requested.filter(elem =>
             elem.UidAccProduct === requestedProduct.uidAccproduct && elem.UidPerson === person.uidPerson);
-          item.UidITShopOrg = person.uidItShopOrg;
+          items.forEach( item => {
+            item.UidITShopOrg = person.uidItShopOrg;
+          });
+          // const item = requested.find(elem =>
+          //   elem.UidAccProduct === requestedProduct.uidAccproduct && elem.UidPerson === person.uidPerson);
+          // item.UidITShopOrg = person.uidItShopOrg;
         }));
     return true;
   }
 
-  private presetUniqe(requested: RequestableProductForPerson[], productsWithShops: RequestableProductForPerson[]): void {
+  private presetUnique(requested: RequestableProductForPerson[], productsWithShops: RequestableProductForPerson[]): void {
+    // Here we set any unique products with a unique shelf, unique is defined as only one UID for AccProduct, Person
     for (const serviceItemForPerson of requested
       .filter(elem => elem.UidITShopOrg == null || elem.UidITShopOrg === '')) {
       const possibleRequestableServiceItems = productsWithShops.filter(item =>
@@ -173,7 +186,8 @@ export class ShelfService {
     return shelfSelectionObject.personsForProduct.some(person => person.shelfsObjects.length !== 1);
   }
 
-  private build(requested: RequestableProductForPerson[], productsWithShops: RequestableProductForPerson[]): ShelfSelectionObject[] {
+  private buildShelfSelection(requested: RequestableProductForPerson[], productsWithShops: RequestableProductForPerson[]): ShelfSelectionObject[] {
+    // Build the shelf selection object to then ask the user to set values on
     return requested
       .map(elem => ({ display: elem.Display, uid: elem.UidAccProduct })).filter(this.uniqueProducts)
       .map(elem => ({
@@ -225,12 +239,14 @@ export class ShelfService {
     return self.findIndex(elem => shelf.uidItShopOrg === elem.uidItShopOrg) === index;
   }
 
-  private async findProducts(serviceItemsForPersons: ServiceItemForPerson[]): Promise<RequestableProductForPerson[]> {
+  private async findUniqueProductsInShops(serviceItemsForPersons: ServiceItemForPerson[]): Promise<RequestableProductForPerson[]> {
+    // Get all unique products within the itshop
     let products: RequestableProductForPerson[]
     let overlay: OverlayRef;
     setTimeout(() => overlay = this.busyService.show());
     try {
       products = await this.qerClient.client.portal_itshop_findproducts_post(serviceItemsForPersons);
+      products = _.uniqWith(products, _.isEqual);
     } finally {
       setTimeout(() => this.busyService.hide(overlay));
     }

@@ -26,6 +26,7 @@
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ImxTranslationProviderService, imx_SessionService } from 'qbm';
+import { Observable } from 'rxjs';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
 import { QerApiService } from '../../qer-api-client.service';
 import { RoleService } from '../role.service';
@@ -69,6 +70,7 @@ describe('RoleMembershipsComponent', () => {
           useValue: {
             canHavePrimaryMemberships: _ => true,
             canHaveDynamicMemberships: _ => false,
+            autoMembershipDirty$: new Observable()
           }
         },
       ]

@@ -24,16 +24,16 @@
  *
  */
 
-import { CUSTOM_ELEMENTS_SCHEMA, Optional } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { PortalServiceitems, RequestableProductForPerson } from 'imx-api-qer';
+import { PortalServiceitems } from 'imx-api-qer';
 import { ValueStruct } from 'imx-qbm-dbts';
 import { configureTestSuite } from 'ng-bullet';
 import { ConfirmationService } from 'qbm';
-import { ServiceItemTreeWrapper } from 'qer/lib/product-selection/service-item-order.interface';
+import { ServiceItemTreeWrapper } from '../../product-selection/service-item-order.interface';
 import { Subject } from 'rxjs';
 import { ServiceItemsService } from '../../service-items/service-items.service';
 
@@ -52,8 +52,8 @@ describe('OptionalItemsSidesheetComponent', () => {
         isChecked: true,
         isIndeterminate: false,
         parentChecked: true,
-        Recipient: 'User',
-        UidRecipient: 'User',
+        Recipients: ['User'],
+        UidRecipients: ['User'],
         Mandatory: [
           {
             Display: 'mandatory1',

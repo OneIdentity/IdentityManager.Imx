@@ -82,6 +82,7 @@ export class InitService {
       }
 
       const menu: MenuItem = {
+        id: 'ROOT_Attestation',
         title: '#LDS#Attestation',
         sorting: '20',
         items: [

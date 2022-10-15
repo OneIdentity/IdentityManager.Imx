@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FkProviderItem, IClientProperty, MetaTableRelationData, SqlColumnTypes, SqlTable, ValType, ValType as _valType } from 'imx-qbm-dbts';
 import { Subscription } from 'rxjs';
 import { BaseCdr } from '../cdr/base-cdr';
@@ -73,6 +73,8 @@ export class SingleValueComponent implements OnInit, OnDestroy {
   @Input() public mode: 'array' | 'single' = 'single';
   @Input() public index: number;
 
+  @Output() public change = new EventEmitter<any>();
+
   public ValType = _valType;
   public ColumnType = SqlColumnTypes;
 
@@ -93,6 +95,7 @@ export class SingleValueComponent implements OnInit, OnDestroy {
       'search'
     ],
     load: async (_, parameters = {}) => this.sqlWizardApi.getCandidates(this._fkRelation.ParentTableName, parameters),
+    getFilterTree: async () => ({ Elements: [] }),
     getDataModel: async () => ({}),
   };
 
@@ -107,6 +110,10 @@ export class SingleValueComponent implements OnInit, OnDestroy {
     }));
 
     this.buildCdr();
+  }
+
+  public emitChanges(): void {
+    this.change.emit();
   }
 
   private buildCdr() {
@@ -132,6 +139,7 @@ export class SingleValueComponent implements OnInit, OnDestroy {
     // when the CDR value changes, write back to the SQL wizard data structure
     column.ColumnChanged.subscribe(() => {
       this.value = column.GetValue();
+      this.emitChanges();
     });
     this.cdr = new BaseCdr(column, '#LDS#Value');
   }

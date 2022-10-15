@@ -5,7 +5,7 @@
         {{ item.title | translate }}
       </button>
       <ng-container *ngIf="item.items">
-        <button mat-button class="imx-mein-menu-item" [matMenuTriggerFor]="submenu" #submenuTrigger="matMenuTrigger">
+        <button mat-button class="imx-mein-menu-item" [attr.data-imx-identifier]="item.id" [matMenuTriggerFor]="submenu" #submenuTrigger="matMenuTrigger">
           {{ item.title | translate }}
         </button>
         <mat-menu #submenu="matMenu" yPosition="below" overlapTrigger="false">

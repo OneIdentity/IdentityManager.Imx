@@ -1,6 +1,6 @@
 <div eui-sidesheet-content>
   <eui-alert type="info" colored="true" condensed="true">
-    <span>{{ '#LDS#The following products have optional products as well, select these if you want to request them additionally. Only products with selected parents will be added.' | translate }}</span>
+    <span>{{ '#LDS#The following products have optional products. You can select the products you want to request additionally. NOTE: You can select child products only if you have selected the corresponding parent product as well.' | translate }}</span>
   </eui-alert>
   <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
     <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
@@ -40,7 +40,7 @@
 </div>
 
 <ng-template #treeNodeTemplate let-node>
-  <mat-checkbox *ngIf="!node?.Recipient" [checked]="node.isChecked" [disabled]="node.isMandatory || !node.parentChecked || node.isIndeterminate" [indeterminate]="node.isIndeterminate" (change)="onChange($event, node)">
+  <mat-checkbox *ngIf="!node?.Recipients" [checked]="node.isChecked" [disabled]="node.isMandatory || !node.parentChecked || node.isIndeterminate" [indeterminate]="node.isIndeterminate" (change)="onChange($event, node)">
     <span>{{ node.Display }}</span>
     <div class="imx-subtext">
       {{ (node.isMandatory ?
@@ -49,11 +49,18 @@
       }}
     </div>
   </mat-checkbox>
-  <div class="imx-tree-root" *ngIf="node?.Recipient">
+  <div class="imx-tree-root" *ngIf="node?.Recipients?.length == 1">
     <span>{{ node.Display }}</span>
     <div class="imx-subtext">
-      {{'#LDS#Recipient:' | translate}}
-      {{node.Recipient}}
+      {{'#LDS#Recipient' | translate}}
+      {{node.Recipients[0]}}
+    </div>
+  </div>
+  <div class="imx-tree-root" *ngIf="node?.Recipients?.length > 1">
+    <span>{{ node.Display }}</span>
+    <div class="imx-subtext">
+      {{node.Recipients.length}}
+      {{'#LDS# recipients selected' | translate}}
     </div>
   </div>
 </ng-template>
