@@ -107,3 +107,7 @@ jobs:
       working-directory: ./imxweb
       run: npm run build qer-app-pwdportal
 
+    - name: Build custom-app
+      working-directory: ./imxweb
+      run: npm run build custom-app
+
