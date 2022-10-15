@@ -1,0 +1,15 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="BuildAngularProject" ToolsVersion="15.0">
+	<PropertyGroup>
+		<ComponentDir>imxweb\projects\custom-app</ComponentDir>
+	    <VI_NET_DE>no</VI_NET_DE>
+		<PackageName>custom-app</PackageName>
+	</PropertyGroup>
+
+	<Import Project="$(VI_PROJECTDIR)\Build\Includes\Build_Html_Package.targets"/>
+
+    <ItemGroup>
+		<!-- only run if any of these files have changed -->
+		<InputFiles Include="$(Workspace)\imx-modules\imx-api-qbm.tgz" />
+	</ItemGroup>
+
+</Project>
