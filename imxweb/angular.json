@@ -1634,6 +1634,162 @@
           }
         }
       }
+    },
+    "custom-app": {
+      "projectType": "application",
+      "root": "projects/custom-app",
+      "sourceRoot": "projects/custom-app/src",
+      "prefix": "imx",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/custom-app",
+            "index": "projects/custom-app/src/index.html",
+            "main": "projects/custom-app/src/main.ts",
+            "polyfills": "projects/custom-app/src/polyfills.ts",
+            "tsConfig": "projects/custom-app/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "projects/custom-app/src/appconfig.json",
+              "projects/custom-app/src/assets",
+              {
+                "glob": "**/*",
+                "input": "./html",
+                "output": "./html"
+              },
+              {
+                "glob": "**/*",
+                "input": "./shared/assets/",
+                "output": "./assets"
+              },
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@elemental-ui/core/assets",
+                "output": "./assets"
+              },
+              {
+                "glob": "**/*",
+                "input": "./node_modules/systemjs-plugin-babel/",
+                "output": "./systemjs-plugin-babel"
+              }
+            ],
+            "styles": [
+              "projects/custom-app/src/styles.scss",
+              "projects/qbm/src/lib/styles/imx-page-title.scss",
+              "shared/assets/styles.scss",
+              "shared/assets/variables.scss"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
+            },
+            "scripts": [
+              "node_modules/systemjs/dist/system.src.js",
+              "node_modules/systemjs-plugin-babel/plugin-babel.js",
+              "node_modules/systemjs-plugin-babel/systemjs-babel-browser.js"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/custom-app/src/environments/environment.ts",
+                  "with": "projects/custom-app/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "20mb",
+                  "maximumError": "40mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
+            "es5": {
+              "tsConfig": "./projects/custom-app/tsconfig-es5.app.json"
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "custom-app:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "custom-app:build:production"
+            },
+            "development": {
+              "browserTarget": "custom-app:build:development"
+            },
+            "es5": {
+              "browserTarget": "custom-app:build:es5"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "custom-app:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/custom-app/src/test.ts",
+            "polyfills": "projects/custom-app/src/polyfills.ts",
+            "tsConfig": "projects/custom-app/tsconfig.spec.json",
+            "karmaConfig": "projects/custom-app/karma.conf.js",
+            "assets": ["projects/custom-app/src/appconfig.json", "projects/custom-app/src/assets"],
+            "styles": ["projects/custom-app/src/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "./shared/assets",
+                "./node_modules",
+                "./node_modules/@elemental-ui/cadence-icon",
+                "./node_modules/@elemental-ui/core"
+              ]
+            },
+            "scripts": ["node_modules/systemjs/dist/system.src.js"]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["projects/custom-app/tsconfig.app.json", "projects/custom-app/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
+          }
+        }
+      }
     }
   },
   "defaultProject": "qer-app-portal",

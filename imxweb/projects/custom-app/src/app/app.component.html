@@ -1,0 +1,10 @@
+<div class="page">
+    <ng-container *ngIf="isLoggedIn">
+        <imx-mast-head>
+        </imx-mast-head>
+    </ng-container>
+    <div class="pageContent">
+        <imx-usermessage *ngIf="isLoggedIn" [hidden]="hideUserMessage"></imx-usermessage>
+        <router-outlet *ngIf="showPageContent"></router-outlet>
+    </div>
+</div>

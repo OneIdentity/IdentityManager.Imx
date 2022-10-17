@@ -4,6 +4,10 @@
 
 ## Change log
 
+### October 15, 2022
+
+- There is a new application in the workspace called `custom-app`. This application is a template that provides the basic building blocks (such as Material integration, session handling, login, and the API client configuration) can be used as a starting point for building new applications. See [`readme.md`](./imxweb/projects/custom-app/readme.md) for more information.
+
 ### September 27, 2022
 
 - The repository has been updated with the source code for the Identity Manager 9.1 release in the `v91` branch.
@@ -70,7 +74,7 @@ For more information about each project, see the `readme.md` files in each proje
 |`qer-app-portal`|Portal|Angular app|`qbm`, `qer`|
 |`qer-app-operationssupport`|Operations Support Portal|Angular app|`qbm`, `qer`|
 |`qer-app-pwdportal`|Password Reset Portal|Angular app|`qbm`, `qer`|
-|`arc-app-certaccess`|Starling CertAccess|Angular app|various|
+|`custom-app`|Template for custom applications|Angular app|`qbm`|
 
 ## Installing node.js
 
@@ -90,8 +94,6 @@ To build any library or app, run `npm build <name>`. Note that you must build ea
 When changing the code of a _library_, you will need to build and deploy customized versions of all the apps that should use the customized versions. For example, changing `qer` will require that you also compile `qer-app-portal`, `qer-app-operationssupport` and `qer-app-pwdportal` because all of these apps include `qbm`.
 
 When changing the code of a _plugin library_, you will need to build and deploy customized versions of the plugin library itself, and all plugin libraries depending on it. For example, changing `tsb` will require that you also compile `aad` and `o3t` because these plugins include `tsb`.
-
-_Note_: Starling CertAccess currently does not support hosting custom HTML5 apps.
 
 ### Debugging
 
