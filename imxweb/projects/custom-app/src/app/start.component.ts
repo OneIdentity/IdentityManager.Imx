@@ -11,7 +11,7 @@ export class StartComponent {
 
   persons: PortalPersonAll[] = [];
   totalCount = 0;
-  busy = true;
+  busy = false;
 
   async loadPersonData() {
 
