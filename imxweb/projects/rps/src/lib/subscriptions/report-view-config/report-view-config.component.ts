@@ -86,7 +86,14 @@ export class ReportViewConfigComponent implements OnDestroy {
         if (val) {
 
           this.newSubscription = await this.reportSubscriptionService.createNewSubscription(uidReport);
-          this.newSubscription.subscription.ExportFormat.value = 'PDF';
+
+          // Set PDF as default, but only if the report supports PDF
+          const xformat = this.newSubscription.subscription.ExportFormat;
+          const allowedFormats = xformat.Column.GetMetadata().GetLimitedValues();
+          if (allowedFormats && allowedFormats.filter(f => f.Value == "PDF").length > 0) {
+            xformat.value = "PDF";
+          }
+          
           this.parameterCdrList = [
             new BaseCdr(this.newSubscription.subscription.ExportFormat.Column, format),
             ...this.newSubscription.getParameterCdr()

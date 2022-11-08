@@ -171,44 +171,47 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
     this.logger.debug(this, `Check shopping cart. Validation errors: ${validator.hasErrors}`);
     this.logger.debug(this, `Check shopping cart. Validation warnings: ${validator.hasWarnings}`);
 
-    setTimeout(() => this.busyService.show());
-    try {
-      if (validator.hasErrors) {
-        this.snackBarService.open(
-          { key: '#LDS#At least one request cannot be submitted.' },
-          '#LDS#Close'
-        );
-        await this.getCartItems();
-        return;
-      }
+    if (validator.hasErrors) {
+      this.snackBarService.open(
+        { key: '#LDS#At least one request cannot be submitted.' },
+        '#LDS#Close'
+      );
+      await this.getCartItems();
+      return;
+    }
 
-      let confirmSubmit = true;
+    let confirmSubmit = true;
 
-      if (validator.hasWarnings) {
-        const submitRef = this.dialogService.open(
-          ShoppingCartSubmitWarningsDialog,
-          {
-            data: {
-              hasErrors: validator.hasErrors,
-              hasWarnings: validator.hasWarnings,
-              warnings: validator.getWarnings(cartItemUid => this.shoppingCart.getItem(cartItemUid))
-            }
+    if (validator.hasWarnings) {
+      // Pause spinner and ask for confirmation
+      const submitRef = this.dialogService.open(
+        ShoppingCartSubmitWarningsDialog,
+        {
+          data: {
+            hasErrors: validator.hasErrors,
+            hasWarnings: validator.hasWarnings,
+            warnings: validator.getWarnings(cartItemUid => this.shoppingCart.getItem(cartItemUid))
           }
-        );
-        confirmSubmit = await submitRef.afterClosed().toPromise();
-      } else if (!this.itshopConfig.VI_ITShop_SubmitOrderImmediately) {
-        const confirmSubmitRef = this.dialogService.open(ConfirmCartSubmitDialog);
-        confirmSubmit = await confirmSubmitRef.afterClosed().toPromise();
-      }
+        }
+      );
+      confirmSubmit = await submitRef.afterClosed().toPromise();
+    } else if (!this.itshopConfig.VI_ITShop_SubmitOrderImmediately) {
+      // Pause spinner and ask for confirmation
+      const confirmSubmitRef = this.dialogService.open(ConfirmCartSubmitDialog);
+      confirmSubmit = await confirmSubmitRef.afterClosed().toPromise();
+    }
 
-      if (!confirmSubmit) {
-        this.snackBarService.open(
-          { key: '#LDS#You have canceled the submission of your shopping cart.' },
-          '#LDS#Close'
-        );
-        await this.getCartItems();
-        return;
-      }
+    if (!confirmSubmit) {
+      this.snackBarService.open(
+        { key: '#LDS#You have canceled the submission of your shopping cart.' },
+        '#LDS#Close'
+      );
+      await this.getCartItems();
+      return;
+    }
+    // Show spinner and continue order
+    this.busyService.show();
+    try {
       const uid = this.selectedItshopCart.GetEntity().GetKeys()[0];
       await this.cartItemService.submit(uid, CheckMode.SubmitWithWarnings);
 
@@ -220,7 +223,7 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
       await this.userModelService.reloadPendingItems();
     } finally {
       await this.getData(true);
-      setTimeout(() => this.busyService.hide());
+      this.busyService.hide();
     }
   }
 
@@ -264,15 +267,14 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
   }
 
   private async checkShoppingCart(): Promise<CartCheckResult> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    this.busyService.show();
     try {
       const uid = this.selectedItshopCart.GetEntity().GetKeys()[0];
       const result = await this.cartItemService.submit(uid, CheckMode.CheckOnly);
       this.logger.debug(this, 'Validation result', result);
       return result;
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
   }
 

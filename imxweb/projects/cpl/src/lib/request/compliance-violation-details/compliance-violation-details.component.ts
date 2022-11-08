@@ -26,6 +26,7 @@
 
 import { Component, Inject, Input, OnInit } from '@angular/core';
 import { EuiLoadingService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { ICartItemCheck } from 'imx-api-qer';
 import { EntitySchema } from 'imx-qbm-dbts';
 import { RequestParameterDataEntity } from 'qer';
 import { ApplicableRule, ViolationDetail } from '../../item-validator/cart-item-compliance-check/cart-item-compliance-check.component';
@@ -41,50 +42,49 @@ export class ComplianceViolationDetailsComponent implements OnInit {
   @Input() public pwoId: string;
   @Input() public request: RequestParameterDataEntity;
 
-  public rules: ApplicableRule[];
+  public rules: ApplicableRule[] = [];
   public schema: EntitySchema;
-
-  private applicableRulesLoaded = false;
 
   constructor(
     private readonly validator: ItemValidatorService,
     private complianceApi: ComplianceViolationService,
     private readonly loadingService: EuiLoadingService,
-    @Inject(EUI_SIDESHEET_DATA) public data?: ApplicableRule[]
+    @Inject(EUI_SIDESHEET_DATA) public data?: ICartItemCheck | any
   ) {
-    this.schema = this.validator.getRulesSchema();
 
-    if (data && this.isAnApplicableRuleList(data)) {
-      this.rules = data;
-      this.applicableRulesLoaded = true;
-    }
   }
 
   public async ngOnInit(): Promise<void> {
     const ref = this.loadingService.show();
 
     try {
-      if (!this.applicableRulesLoaded) {
-        const violations = await this.complianceApi.getRequestViolations(this.pwoId);
-        this.rules = [];
-
-        violations.forEach(violation => {
-          this.rules.push({
-            violationDetail: violation  as ViolationDetail
-          });
-        });
-      }
+      this.schema = this.validator.getRulesSchema();
+      this.isICartItemCheck(this.data) ? await this.loadCartItemViolations(this.data) : await this.loadRequestViolations(this.pwoId);
     } finally {
       this.loadingService.hide(ref);
     }
   }
 
-   // ApplicableRule[] type guard
-   private isAnApplicableRuleList(obj: any): obj is ApplicableRule[] {
-    if (obj.constructor !== Array || obj.length === 0) {
-      return false;
-    }
+  private async loadCartItemViolations(cartItemCheck: ICartItemCheck): Promise<void> {
+    let rules = (await this.validator.getRules()).Data;
+    this.rules = [];
+    cartItemCheck.Detail.Violations.forEach((item) => {
+      this.rules.push({ rule: rules.find((x) => x.GetEntity().GetKeys()[0] === item.UidComplianceRule), violationDetail: item });
+    });
+  }
 
-    return 'violationDetail' in obj[0];
+  private async loadRequestViolations(id: string): Promise<void> {
+    const violations = await this.complianceApi.getRequestViolations(id);
+    this.rules = [];
+    violations.forEach((violation) => {
+      this.rules.push({
+        violationDetail: violation as ViolationDetail,
+      });
+    });
+  }
+
+  // ICartItemCheck type guard
+  private isICartItemCheck(obj: any): obj is ICartItemCheck {
+    return 'Id' in obj && 'Status' in obj && 'Title' in obj && 'ResultText' in obj && 'Detail' in obj;
   }
 }

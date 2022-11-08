@@ -1,7 +1,7 @@
 <div eui-sidesheet-content>
   <div class="heading-wrapper">
     <eui-alert class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true">
-      {{ this.data.acceptCartItems ? ldsAcceptCartItemsInfoText : ldsAcceptApprovalItemsInfoText | translate}}
+      {{( this.data.acceptCartItems ? ldsAcceptCartItemsInfoText : ldsAcceptApprovalItemsInfoText) | translate}}
     </eui-alert>
   </div>
 
