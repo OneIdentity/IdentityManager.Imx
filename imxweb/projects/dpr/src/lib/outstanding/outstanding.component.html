@@ -31,7 +31,7 @@
   <imx-data-source-toolbar #dst [settings]="dstSettings" (navigationStateChanged)="getData($event)" [options]="['filter']">
   </imx-data-source-toolbar>
 
-  <div class="scroll-container">
+  <mat-card class="scroll-container">
     <imx-data-table #dataTable [dst]="dst" [detailViewVisible]="false" [selectable]="true" [showSelectedItemsMenu]="false"
       (selectionChanged)="selectionChanged($event)" mode="manual"
       [noDataText]="getNoDataText()" data-imx-identifier="outstanding-objects-table">
@@ -47,7 +47,7 @@
       <imx-data-table-column [entityColumn]="schema?.Columns.LastMethodRun">
       </imx-data-table-column>
     </imx-data-table>
-  </div>
+  </mat-card>
 
   <div class="imx-button-bar">
     <div class="imx-justify-start">

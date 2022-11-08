@@ -259,6 +259,29 @@ export class RequestActionService {
     });
   }
 
+  public async revokeAdditionalApprover(requests: PortalItshopRequests[], title: string, message: string, description: string): Promise<void> {
+    const reason = this.createCdrReason();
+
+    return this.editAction({
+      title: await this.translate.get(title).toPromise(),
+      message: await this.translate.get(message).toPromise(),
+      testId: 'imx-revoke-additional-approver-reason',
+      data: {
+        description: await this.translate.get(description).toPromise(),
+        reason,
+        requests
+      },
+      apply: async () => {
+        for (const request of requests) {
+          await this.requestHistoryService.revokeAdditionalApprover(request, reason.column.GetValue());
+        }
+
+        this.logger.debug(this, 'revoke delegation');
+        this.logger.trace(this, 'revoke delegation Reason', reason.column.GetValue());
+      }
+    });
+  }
+
   public async recallDecision(requests: PortalItshopRequests[]): Promise<void> {
     const reason = this.createCdrReason();
 

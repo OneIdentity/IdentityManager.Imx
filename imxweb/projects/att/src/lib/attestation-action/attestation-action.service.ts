@@ -157,7 +157,8 @@ export class AttestationActionService {
     });
   }
 
-  public async revokeDelegation(attestationCases: PortalAttestationApprove[]): Promise<void> {
+
+  public async revokeAdditional(attestationCases: PortalAttestationApprove[]): Promise<void> {
     const actionParameters = {
       reason: this.createCdrReason({ mandatory: true })
     };
@@ -166,7 +167,7 @@ export class AttestationActionService {
       title: '#LDS#Heading Withdraw Additional Attestor',
       data: { attestationCases, actionParameters },
       message: '#LDS#The additional attestors of {0} attestation cases have been successfully withdrawn.',
-      apply: (attestationCase: PortalAttestationApprove) => this.attestationCases.revokeDelegation(attestationCase, {
+      apply: (attestationCase: PortalAttestationApprove) => this.attestationCases.revokeAdditional(attestationCase, {
         Reason: actionParameters.reason.column.GetValue()
       })
     });

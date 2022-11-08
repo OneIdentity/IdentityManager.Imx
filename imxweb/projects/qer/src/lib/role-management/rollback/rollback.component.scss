@@ -25,10 +25,18 @@ eui-alert {
   }
 }
 
-mat-form-field {
-  width: 100%;
+.imx-step-data-table {
+  display: flex;
+  flex-direction: column;
+  max-height: 500px;
+  margin-bottom: 45px;
 }
 
-.mat-column-select {
-  overflow: initial;
+.imx-stepper-card{
+  height: 100%;
+}
+
+.imx-top-alert {
+  display: block;
+  margin: 1em 0;
 }

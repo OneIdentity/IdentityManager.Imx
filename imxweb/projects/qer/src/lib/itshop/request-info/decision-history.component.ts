@@ -24,8 +24,8 @@
  *
  */
 
-import { Component, Input } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { EntityData } from 'imx-qbm-dbts';
 import { DecisionHistoryService } from '../decision-history.service';
 
 import { ApproverContainer } from './approver-container';
@@ -36,11 +36,20 @@ import { WorkflowHistoryItemWrapper } from './workflow-history-item-wrapper';
   templateUrl: './decision-history.component.html',
   styleUrls: ['./decision-history.component.scss']
 })
-export class DecisionHistoryComponent {
+export class DecisionHistoryComponent implements OnChanges {
   @Input() public approverContainer: ApproverContainer;
   @Input() public workflow: WorkflowHistoryItemWrapper[];
+
+  public approverNow:{ display: string; data: EntityData[] }[] = [];
+  public approverFuture:{ display: string; data: EntityData[] }[] = [];
   constructor(
-    public readonly decisionHistory: DecisionHistoryService,
-    private readonly translate: TranslateService
+    public readonly decisionHistory: DecisionHistoryService
   ) { }
+
+  public ngOnChanges(changes: SimpleChanges): void {
+    if(changes.approverContainer){
+      this.approverFuture = this.approverContainer?.getApproverSortedByStep();
+      this.approverNow = this.approverContainer?.getApproverSortedByStep(false);
+    }
+  }
 }

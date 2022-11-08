@@ -58,7 +58,7 @@
             </ng-template>
         </imx-data-table-generic-column>
     </imx-data-table>
-    <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+    <imx-data-source-paginator  *ngIf="!dstSettings?.groupData?.currentGrouping" [dst]="dst"></imx-data-source-paginator>
 </div>
 <div class="button-row">
     <span class="imx-toolbar-spacer"></span>

@@ -69,19 +69,15 @@ export class CartItemsService {
     ]);
   }
 
-  public async addItemsFromRoles(objectKeyMemberships: string[], recipients: string[]): Promise<any> {
-    return Promise.all(
-      objectKeyMemberships.map(async (key) =>
-        Promise.all(
-          recipients.map(async (recipient) => {
-            const cartItem = this.qerClient.typedClient.PortalCartitem.createEntity();
-            cartItem.RoleMembership.value = key;
-            cartItem.UID_PersonOrdered.value = recipient;
-            await this.qerClient.typedClient.PortalCartitem.Post(cartItem);
-          })
-        )
-      )
-    );
+  public async addItemsFromRoles(objectKeyMemberships: string[], recipients: string[]): Promise<void> {
+    for (const key of objectKeyMemberships) {
+      for (const recipient of recipients) {
+        const cartItem = this.qerClient.typedClient.PortalCartitem.createEntity();
+        cartItem.RoleMembership.value = key;
+        cartItem.UID_PersonOrdered.value = recipient;
+        await this.qerClient.typedClient.PortalCartitem.Post(cartItem);
+      }
+    }
   }
 
   public async createAndPost(

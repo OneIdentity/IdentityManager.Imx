@@ -30,9 +30,18 @@ import { EuiLoadingService, EuiSidesheetConfig, EuiSidesheetService } from '@ele
 import { TranslateService } from '@ngx-translate/core';
 
 import { OwnershipInformation } from 'imx-api-qer';
-import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, IEntity, TypedEntity, XOrigin } from 'imx-qbm-dbts';
+import {
+  CollectionLoadParameters,
+  DataModel,
+  DisplayColumns,
+  EntitySchema,
+  IClientProperty,
+  IEntity,
+  TypedEntity,
+  XOrigin,
+} from 'imx-qbm-dbts';
 
-import { DataSourceItemStatus, DataSourceToolbarSettings, DataTableComponent } from 'qbm';
+import { ConfirmationService, DataSourceItemStatus, DataSourceToolbarSettings, DataTableComponent, SnackBarService } from 'qbm';
 import { SourceDetectiveSidesheetData } from '../../sourcedetective/sourcedetective-sidesheet.component';
 import { SourceDetectiveSidesheetComponent } from '../../sourcedetective/sourcedetective-sidesheet.component';
 import { SourceDetectiveType } from '../../sourcedetective/sourcedetective-type.enum';
@@ -68,6 +77,8 @@ export class SecondaryMembershipsComponent implements OnInit {
     private readonly membershipService: RoleService,
     private readonly busyService: EuiLoadingService,
     private readonly translate: TranslateService,
+    private readonly confirmation: ConfirmationService,
+    private readonly snackbar: SnackBarService
   ) {
     this.navigationState = {};
   }
@@ -106,15 +117,21 @@ export class SecondaryMembershipsComponent implements OnInit {
   }
 
   public async onDeleteMemberships(): Promise<void> {
-
-    const deletableMemberships = this.selectedEntities.filter(item => {
+    const deletableMemberships = this.selectedEntities.filter((item) => {
       // is it a direct assignment?
-      return ((XOrigin.Direct & item.GetEntity().GetColumn('XOrigin').GetValue()) === XOrigin.Direct) ||
-        ((XOrigin.Dynamic & item.GetEntity().GetColumn('XOrigin').GetValue()) === XOrigin.Dynamic) ||
-        item.GetEntity().GetColumn('IsRequestCancellable').GetValue();
+      return (
+        (XOrigin.Direct & item.GetEntity().GetColumn('XOrigin').GetValue()) === XOrigin.Direct ||
+        (XOrigin.Dynamic & item.GetEntity().GetColumn('XOrigin').GetValue()) === XOrigin.Dynamic ||
+        item.GetEntity().GetColumn('IsRequestCancellable').GetValue()
+      );
     });
 
-    const nonDeletableMemberships = this.selectedEntities.filter(item => deletableMemberships.indexOf(item) < 0);
+    const nonDeletableMemberships = this.selectedEntities.filter((item) => deletableMemberships.indexOf(item) < 0);
+    const countDynamic = this.getCount(deletableMemberships, XOrigin.Dynamic);
+    const countRequested = deletableMemberships.filter((e) => {
+      return e.GetEntity().GetColumn('IsRequestCancellable').GetValue();
+    }).length;
+    const countDirect = this.getCount(deletableMemberships, XOrigin.Direct);
 
     const config: EuiSidesheetConfig = {
       title: await this.translate.get('#LDS#Heading Remove Memberships').toPromise(),
@@ -128,7 +145,10 @@ export class SecondaryMembershipsComponent implements OnInit {
         ownershipInfo: this.ownershipInfo,
         nonDeletableMemberships,
         selectedEntities: deletableMemberships,
-        entity: this.entity
+        entity: this.entity,
+        countDirect,
+        countDynamic,
+        countRequested
       }
     };
     const sidesheetRef = this.sidesheet.open(RemoveMembershipComponent, config);
@@ -166,15 +186,16 @@ export class SecondaryMembershipsComponent implements OnInit {
   }
 
   public async onShowDetails(): Promise<void> {
-
     const uidPerson = this.membershipService.GetUidPerson(this.ownershipInfo.TableName, this.selectedEntities[0]);
-    const uidRole = this.membershipService.targetMap.get(this.ownershipInfo.TableName).membership.GetUidRole(this.selectedEntities[0].GetEntity());
+    const uidRole = this.membershipService.targetMap
+      .get(this.ownershipInfo.TableName)
+      .membership.GetUidRole(this.selectedEntities[0].GetEntity());
 
     const data: SourceDetectiveSidesheetData = {
       UID_Person: uidPerson,
       Type: SourceDetectiveType.MembershipOfRole,
       UID: uidRole,
-      TableName: this.ownershipInfo.TableName
+      TableName: this.ownershipInfo.TableName,
     };
     this.sidesheet.open(SourceDetectiveSidesheetComponent, {
       title: await this.translate.get('#LDS#Heading View Assignment Analysis').toPromise(),
@@ -196,16 +217,30 @@ export class SecondaryMembershipsComponent implements OnInit {
 
   private async navigate(): Promise<void> {
     this.busyService.show();
-  
+
     try {
       this.dstSettings = {
-        dataSource: await this.membershipService.getMemberships(this.ownershipInfo.TableName, this.entity.GetKeys()[0], this.navigationState),
+        dataSource: await this.membershipService.getMemberships(
+          this.ownershipInfo.TableName,
+          this.entity.GetKeys()[0],
+          this.navigationState
+        ),
         entitySchema: this.entitySchema,
         navigationState: this.navigationState,
-        displayedColumns: this.displayColumns
+        displayedColumns: this.displayColumns,
       };
     } finally {
       this.busyService.hide();
     }
+  }
+
+  private getCount(selectedEntities: TypedEntity[], xorigin: XOrigin): number {
+    return selectedEntities.filter((e) => {
+      return this.hasBit(e, xorigin);
+    }).length;
+  }
+
+  private hasBit(e: TypedEntity, xorigin: XOrigin): boolean {
+    return (e.GetEntity().GetColumn('XOrigin').GetValue() & xorigin) > 0;
   }
 }

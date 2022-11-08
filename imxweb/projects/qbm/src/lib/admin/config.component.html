@@ -69,8 +69,8 @@
               </mat-panel-title>
               <mat-panel-description class="right-aligned-description">
                 <ng-container *ngIf="isBoolean(conf)">
-                  <ng-container *ngIf="conf.Value">yes</ng-container>
-                  <ng-container *ngIf="!conf.Value">no</ng-container>
+                  <ng-container *ngIf="conf.Value">{{'#LDS#Activated' | translate}}</ng-container>
+                  <ng-container *ngIf="!conf.Value">{{'#LDS#Deactivated' | translate}}</ng-container>
                 </ng-container>
               </mat-panel-description>
             </mat-expansion-panel-header>

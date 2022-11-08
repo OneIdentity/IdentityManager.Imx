@@ -13,7 +13,7 @@
       {{'#LDS#Undo approval decision' | translate}}
     </button>
     <button *ngIf="canWithdrawDelegation" mat-menu-item data-imx-identifier="attestation-history-withdraw-delegation"
-      (click)="attestationAction.revokeDelegation(selectedCases)">
+      (click)="attestationAction.revokeAdditional(selectedCases)">
       {{'#LDS#Withdraw additional attestor' | translate}}
     </button>
   </mat-menu>

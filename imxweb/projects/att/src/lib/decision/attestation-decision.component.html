@@ -134,7 +134,7 @@
     *ngIf="canWithdrawAddApprover"
     data-imx-identifier="attestations-actions-menu-button-withdraw-additional-approver"
     title="{{ '#LDS#Withdraws the additional attestors for the selected attestation cases' | translate }}"
-    (click)="attestationAction.revokeDelegation(selectedCases)"
+    (click)="attestationAction.revokeAdditional(selectedCases)"
   >
     {{ '#LDS#Withdraw additional attestor' | translate }}
   </button>

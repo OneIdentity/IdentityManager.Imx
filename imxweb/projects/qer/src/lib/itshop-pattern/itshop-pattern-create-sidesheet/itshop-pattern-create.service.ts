@@ -127,8 +127,9 @@ export class ItshopPatternCreateService {
     }
 
     const duplicateItems: DuplicatePatternItem[] = [];
+    let newAssignedObjects = 0;
 
-    const newAssignedObjects = (await this.handlePromiseLoader(
+    await this.handlePromiseLoader(
       Promise.all(
         serviceItemUids.map(async (uid) => {
           let patternItem: PortalItshopPatternItem;
@@ -137,6 +138,7 @@ export class ItshopPatternCreateService {
             patternItem.UID_ShoppingCartPattern.value = uidPattern;
             patternItem.UID_AccProduct.value = uid;
             await patternItem.GetEntity().Commit(true);
+            newAssignedObjects++;
           } catch (exception) {
             // 810303 == the combination of the fields Role/organization, Service item, Request template must be unique.
             if (exception?.dataItems.length && exception.dataItems[0].Number === 810303) {
@@ -148,7 +150,7 @@ export class ItshopPatternCreateService {
           }
         })
       )
-    )).length;
+    );
 
 
     if (duplicateItems.length > 0) {

@@ -105,6 +105,11 @@ export class RequestHistoryService {
       { Reason: reason });
   }
 
+  public async revokeAdditionalApprover(pwo: PortalItshopRequests, reason: string): Promise<void> {
+    return this.qerClient.client.portal_itshop_revokeadditional_post(this.getUidPwo(pwo),
+      { Reason: reason });
+  }
+
   public async escalateDecision(pwo: PortalItshopRequests, reason: string): Promise<void> {
     return this.qerClient.client.portal_itshop_escalate_post(this.getUidPwo(pwo), { Reason: reason });
   }

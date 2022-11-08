@@ -128,6 +128,22 @@ export class WorkflowActionService {
     });
   }
 
+  public async withDrawApprover(requests: Approval[]): Promise<void> {
+    const actionParameters = {
+      reason: this.createCdrReason()
+    };
+
+    return this.editAction({
+      title: '#LDS#Heading Withdraw Additional Approver',
+      message: '#LDS#The additional approvers of {0} requests have been successfully withdrawn.',
+      data: {
+        actionParameters,
+        requests
+      },
+      apply: (request: Approval) => this.approvalsService.withdrawAdditionalApprover(request, { Reason: actionParameters.reason.column.GetValue() })
+    });
+  }
+
   public async delegateDecisions(requests: Approval[]): Promise<void> {
     const actionParameters = {
       uidPerson: this.createCdrPerson('#LDS#Delegate to'),

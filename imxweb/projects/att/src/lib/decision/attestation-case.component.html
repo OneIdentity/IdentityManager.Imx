@@ -96,7 +96,7 @@
   <button
     mat-stroked-button
     *ngIf="case.canWithdrawAddApprover(userUid)"
-    (click)="attestationAction.revokeDelegation([case])"
+    (click)="attestationAction.revokeAdditional([case])"
     data-imx-identifier="attestation-case-revoke-delegation-button"
   >
     {{ '#LDS#Withdraw additional attestor' | translate }}

@@ -37,10 +37,9 @@ import { RoleService } from '../role.service';
 
 @Component({
   templateUrl: './remove-membership.component.html',
-  styleUrls: ['./remove-membership.component.scss', '../sidesheet.scss']
+  styleUrls: ['./remove-membership.component.scss', '../sidesheet.scss'],
 })
 export class RemoveMembershipComponent implements OnInit {
-
   public get noneSelected(): boolean {
     return !this.formAbortRequested.value && !this.formExcludeDynamic.value && !this.formDeleteDirect.value;
   }
@@ -50,59 +49,56 @@ export class RemoveMembershipComponent implements OnInit {
   public formAbortRequested: FormControl;
   public formExcludeDynamic: FormControl;
   public formDeleteDirect: FormControl;
-  public countDynamic: number;
-  public countDirect: number;
-  public countRequested: number;
+  public withCheckboxes: boolean
 
   constructor(
     private formBuilder: FormBuilder,
     @Inject(EUI_SIDESHEET_DATA)
     public readonly data: {
-      ownershipInfo: OwnershipInformation,
-      nonDeletableMemberships: TypedEntity[],
-      selectedEntities: TypedEntity[],
-      entity: IEntity
+      ownershipInfo: OwnershipInformation;
+      nonDeletableMemberships: TypedEntity[];
+      selectedEntities: TypedEntity[];
+      entity: IEntity;
+      countDynamic: number;
+      countDirect: number;
+      countRequested: number;
     },
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly busyService: EuiLoadingService,
     private readonly qerApiClient: QerApiService,
     private readonly membershipService: RoleService,
     private readonly snackbar: SnackBarService
-  ) { }
+  ) {
+    this.withCheckboxes = [data.countDirect,data.countDynamic, data.countRequested].filter(elem=>elem >0).length > 1
+  }
+
+  
 
   public ngOnInit(): void {
-
-    // get the count of each type, and pre-set the checkboxes if there are any elements of the type
-
-    this.countDynamic = this.getCount(XOrigin.Dynamic);
-    this.formExcludeDynamic = new FormControl(this.countDynamic > 0);
-    this.countRequested = this.data.selectedEntities.filter(e => {
-      return e.GetEntity().GetColumn('IsRequestCancellable').GetValue();
-    }).length;
-    this.formAbortRequested = new FormControl(this.countRequested > 0);
-    this.countDirect = this.getCount(XOrigin.Direct);
-    this.formDeleteDirect = new FormControl(this.countDirect > 0);
+    this.formExcludeDynamic = new FormControl(this.data.countDynamic > 0);
+    this.formAbortRequested = new FormControl(this.data.countRequested > 0);
+    this.formDeleteDirect = new FormControl(this.data.countDirect > 0);
 
     this.dynamicExclusionForm = this.formBuilder.group({
       excludeDynamic: this.formExcludeDynamic,
       deleteDirect: this.formDeleteDirect,
       abortRequested: this.formAbortRequested,
       description: [''],
-      descriptionRequests: ['']
+      descriptionRequests: [''],
     });
   }
 
   public async save(): Promise<void> {
-
     this.busyService.show();
     try {
       for (const entity of this.data.selectedEntities) {
-
         const xorigin = entity.GetEntity().GetColumn('XOrigin').GetValue();
 
-        if (this.formDeleteDirect.value &&
+        if (
+          this.formDeleteDirect.value &&
           // is it a direct assignment?
-          (XOrigin.Direct & xorigin) === XOrigin.Direct) {
+          (XOrigin.Direct & xorigin) === XOrigin.Direct
+        ) {
           await this.membershipService.removeMembership(this.data.ownershipInfo.TableName, entity, this.data.entity.GetKeys()[0]);
         }
 
@@ -117,19 +113,20 @@ export class RemoveMembershipComponent implements OnInit {
       }
 
       if (this.formAbortRequested.value) {
-        const requested = this.data.selectedEntities.filter(e => {
-          return e.GetEntity().GetColumn('IsRequestCancellable').GetValue();
-        }).map(e => e.GetEntity().GetColumn('UID_PersonWantsOrg').GetValue() as string);
+        const requested = this.data.selectedEntities
+          .filter((e) => {
+            return e.GetEntity().GetColumn('IsRequestCancellable').GetValue();
+          })
+          .map((e) => e.GetEntity().GetColumn('UID_PersonWantsOrg').GetValue() as string);
 
         await this.qerApiClient.client.portal_itshop_unsubscribe_post({
           UidPwo: requested,
-          Reason: this.dynamicExclusionForm.get('descriptionRequests').value || ''
+          Reason: this.dynamicExclusionForm.get('descriptionRequests').value || '',
         });
       }
 
       this.sidesheetRef.close(true);
       this.snackbar.open({ key: '#LDS#The memberships have been successfully removed.' });
-
     } finally {
       this.busyService.hide();
     }
@@ -138,15 +135,4 @@ export class RemoveMembershipComponent implements OnInit {
   public cancel(): void {
     this.sidesheetRef.close();
   }
-
-  private getCount(xorigin: XOrigin): number {
-    return this.data.selectedEntities.filter(e => {
-      return this.hasBit(e, xorigin);
-    }).length;
-  }
-
-  private hasBit(e: TypedEntity, xorigin: XOrigin): boolean {
-    return (e.GetEntity().GetColumn('XOrigin').GetValue() & xorigin) > 0;
-  }
-
 }

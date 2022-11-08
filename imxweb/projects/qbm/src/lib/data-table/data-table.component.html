@@ -59,8 +59,9 @@
   </table>
 </div>
 
-<table mat-table [dataSource]="dataSource" matSort data-imx-identifier="datatable-table" [ngClass]="{ 'imx-data-table__hidden': isGroupingApplied || !dst?.dataSourceHasData }">
-  <ng-container *ngIf="selectable" matColumnDef="select" class="imx-data-table-column-select">
+<table mat-table [dataSource]="dataSource" matSort data-imx-identifier="datatable-table" 
+[ngClass]="{ 'imx-data-table__hidden': isGroupingApplied || !dst?.dataSourceHasData, 'imx-data-table-highlightedActive': ishighlightedEntityChangedUsed }">
+  <ng-container *ngIf="selectable" matColumnDef="select">
     <ng-container *ngIf="showSelectAllOption">
       <th mat-header-cell *matHeaderCellDef sticky>
         <mat-checkbox

@@ -101,23 +101,23 @@
     </button>
     <mat-divider></mat-divider>
     <div *ngFor="let group of settings?.groupData?.groups"
-      [attr.data-imx-identifier]="'dst-groupbymenu-'+ getGroupColumnDisplay(group)">
+      [attr.data-imx-identifier]="'dst-groupbymenu-'+ group.property.Property.ColumnName">
       <button mat-menu-item (click)="onGroupSelected(group)">
         <span>{{ getGroupColumnDisplay(group) }}</span>
       </button>
     </div>
     <div *ngFor="let category of settings?.groupData?.groupingCategories"
-      [attr.data-imx-identifier]="'dst-groupbymenuNested-'+ category.property.Display">
+      [attr.data-imx-identifier]="'dst-groupbymenuNested-'+ category.property.ColumnName">
       <mat-menu #groupByNestedMenu="matMenu">
         <div *ngFor="let group of category.groups"
-          [attr.data-imx-identifier]="'dst-groupbymenuNested-'+ category.property.Display + getGroupColumnDisplay(group)">
+          [attr.data-imx-identifier]="'dst-groupbymenuNested-'+ category.property.ColumnName + getGroupColumnDisplay(group)">
           <button mat-menu-item (click)="onGroupSelected(group, category)">
             <span>{{ getGroupColumnDisplay(group) }}</span>
           </button>
         </div>
       </mat-menu>
       <button mat-menu-item [matMenuTriggerFor]="groupByNestedMenu"
-        [attr.data-imx-identifier]="'dst-groupbymenu-'+ category.property.Display">
+        [attr.data-imx-identifier]="'dst-groupbymenu-'+ category.property.ColumnName">
         <span>{{ category.property.Display }}</span>
       </button>
     </div>

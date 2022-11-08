@@ -132,8 +132,12 @@ export class SingleValueComponent implements OnInit, OnDestroy {
       FkRelation: this._fkRelation
     };
 
+    // Handle display for array and single values, if null do nothing
+    const displayValue = this.expr.Data.DisplayValues ? ( this.mode === 'single' ? this.expr.Data.DisplayValues[0] : this.expr.Data.DisplayValues[this.index]) : null;
+
     const column = this.entityService.createLocalEntityColumn(property, [this._fkProviderItem], {
-      Value: this.value
+      Value: this.value,
+      DisplayValue: displayValue
     });
 
     // when the CDR value changes, write back to the SQL wizard data structure

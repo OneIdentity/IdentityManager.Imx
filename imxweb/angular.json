@@ -1525,6 +1525,11 @@
                 "glob": "**/*",
                 "input": "./node_modules/@elemental-ui/core/assets",
                 "output": "./assets"
+              },
+              {
+                "glob": "**/*",
+                "input": "./node_modules/systemjs-plugin-babel/",
+                "output": "./systemjs-plugin-babel"
               }
             ],
             "styles": [
@@ -1541,7 +1546,11 @@
                 "./node_modules/@elemental-ui/core"
               ]
             },
-            "scripts": ["node_modules/systemjs/dist/system.src.js"]
+            "scripts": [
+              "node_modules/systemjs/dist/system.src.js",
+              "node_modules/systemjs-plugin-babel/plugin-babel.js",
+              "node_modules/systemjs-plugin-babel/systemjs-babel-browser.js"
+            ]
           },
           "configurations": {
             "production": {

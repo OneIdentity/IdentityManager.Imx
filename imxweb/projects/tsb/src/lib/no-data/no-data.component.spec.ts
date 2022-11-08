@@ -40,7 +40,7 @@ describe('DataExplorerNoDataComponent', () => {
         provide: AppConfigService,
         useValue: {
           Config: {
-            Title: 'Portal',
+            WebAppIdentifier: 'Portal',
           }
         }
       },

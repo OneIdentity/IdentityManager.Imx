@@ -52,7 +52,6 @@ import {
   AuthenticationService,
   LdsReplacePipe,
   DataTileMenuItem,
-  MessageDialogComponent,
   SnackBarService,
 } from 'qbm';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
@@ -626,7 +625,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     itemsWithItShop.forEach((itemWithItShop) => {
       // Loop over all items that have an ITShop, get any service items that match its uid and also have no itshop set yet, and set them
       serviceItemsForPersons
-        .filter((item) => !item.UidITShopOrg && item.UidAccProduct === itemWithItShop.UidAccProduct)
+        .filter((item) => !item.UidITShopOrg && item.UidAccProduct === itemWithItShop.UidAccProduct && item.UidPerson === itemWithItShop.UidPerson)
         .forEach((item) => (item.UidITShopOrg = itemWithItShop.UidITShopOrg));
     });
     return;
@@ -666,6 +665,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
           if (hasItems) {
             setTimeout(() => this.busyIndicator.show());
             try {
+              
               this.copyShopInfoForDups(serviceItemsForPersons);
               const items = serviceItemsForPersons.filter((item) => item.UidITShopOrg?.length > 0);
               possibleItems = items.length;

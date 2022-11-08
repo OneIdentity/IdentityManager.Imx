@@ -3,7 +3,11 @@
   <mat-list>
     <mat-list-item *ngIf="isValueContains(data.prod.OrderableStatus.value, ['PERSONHASOBJECT', 'PERSONHASASSIGNMENTORDER', 'ASSIGNED'])">
       <eui-icon mat-list-icon icon='info'></eui-icon>
-      <div mat-line>{{'#LDS#This product has already been assigned to {0}.' | translate | ldsReplace:data.recipients.Column.GetDisplayValue()}}</div>
+      <div mat-line>{{
+        data.recipients.value?
+        ('#LDS#This product has already been assigned to {0}.' | translate | ldsReplace:data.recipients.Column.GetDisplayValue())
+        :( '#LDS#This product has already been assigned.' | translate)
+      }}</div>
     </mat-list-item>
     <mat-list-item *ngIf="isValueContains(data.prod.OrderableStatus.value, 'ORDER')">
       <eui-icon mat-list-icon icon='request'></eui-icon>

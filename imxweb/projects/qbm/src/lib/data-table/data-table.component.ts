@@ -38,7 +38,8 @@ import {
   ContentChildren,
   QueryList,
   OnDestroy,
-  AfterViewInit
+  AfterViewInit,
+  OnInit
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTable, MatColumnDef, MatTableDataSource } from '@angular/material/table';
@@ -90,7 +91,7 @@ import { RowHighlight } from './data-table-row-highlight.interface';
     ]),
   ]
 })
-export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestroy {
+export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   public get numOfSelectedItems(): number { return this.dst.numOfSelectedItems; }
 
   public get numOfSelectableRows(): number { return this.dst.numOfSelectableItems; }
@@ -271,6 +272,13 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
 
   /**
    * @ignore Used internally.
+   * Returns true highlightedEntityChanged ouput is used.
+   * Would be used for setting the hover-style.
+   */
+  public ishighlightedEntityChangedUsed: boolean;
+
+  /**
+   * @ignore Used internally.
    * Definitions of internally used mat columns.
    */
   private columnDefs: MatColumnDef[];
@@ -299,6 +307,14 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
       result = true;
     }
     return result;
+  }
+
+  /**
+ * @ignore Used internally.
+ * Does most of the initializing stuff.
+ */
+  public ngOnInit(): void {
+    this.ishighlightedEntityChangedUsed = this.highlightedEntityChanged.observers.length > 0;
   }
 
   /**
@@ -490,12 +506,14 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
             this.dst?.settings?.navigationState?.withProperties
         };
       }
-      this.propagateNavigationSettingsToGroups(true);
-      if (!groupData.data) {
-        this.groupDataChanged.emit(groupingDisplay);
-      }
+
       // Toggle if group is expanded in view or not
       groupData.isExpanded = !groupData.isExpanded;
+
+      this.propagateNavigationSettingsToGroups(true);
+      if (groupData.isExpanded) {
+        this.groupDataChanged.emit(groupingDisplay);
+      }
     }
   }
 
@@ -661,7 +679,7 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
         if (groupByChanged) {
           grouping.isExpanded = false;
         }
-
+        
         if (grouping.isExpanded || skipNavigationChange) {
           const preservedGroupingFilter = grouping.navigationState.filter;
           grouping.navigationState = JSON.parse(JSON.stringify(this.settings.navigationState));

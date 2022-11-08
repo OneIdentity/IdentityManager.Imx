@@ -172,7 +172,7 @@ export class PolicyService {
   }
 
   public async getGroupInfo(parameters: { by?: string, def?: string } & CollectionLoadParameters = {}): Promise<GroupInfo[]> {
-    const test = await this.api.client.portal_attestation_policy_group_get(parameters);
+    const test = await this.api.client.portal_attestation_policy_group_get({...parameters, withcount:true});
     return test;
   }
 

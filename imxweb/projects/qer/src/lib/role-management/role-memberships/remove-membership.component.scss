@@ -53,3 +53,9 @@ mat-card {
   width: 100%;
 }
 
+.hideBox{
+  ::ng-deep .mat-checkbox-inner-container {
+    display: none;
+  }
+}
+

@@ -59,7 +59,7 @@
     <button mat-stroked-button *ngIf="data.pwo.canWithdrawAdditionalApprover(currentUserId)"
       data-imx-identifier="approvals-sidesheet-button-withdraw--additional-approver"
       title="{{ '#LDS#Withdraws the additional approver for this request' | translate }}"
-      (click)="actionService.revokeDelegations([data.pwo])">
+      (click)="actionService.withDrawApprover([data.pwo])">
       {{ '#LDS#Withdraw additional approver' | translate }}
     </button>
 

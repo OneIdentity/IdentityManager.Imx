@@ -90,6 +90,10 @@ export class ApprovalsService {
     await this.apiService.client.portal_itshop_revokedelegation_post(this.getUidPwo(pwo), approver);
   }
 
+  public async withdrawAdditionalApprover(pwo: PortalItshopApproveRequests, approver: ReasonInput): Promise<any> {
+    await this.apiService.client.portal_itshop_revokeadditional_post(this.getUidPwo(pwo), approver);
+  }
+
   public async addApprover(pwo: PortalItshopApproveRequests, approver: OtherApproverInput): Promise<any> {
     await this.apiService.client.portal_itshop_additional_post(this.getUidPwo(pwo), approver);
   }

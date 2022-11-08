@@ -36,7 +36,7 @@
 
     <button mat-stroked-button
       *ngIf="data.personWantsOrg.canWithdrawAdditionalApprover && data.itShopConfig.VI_ITShop_OrderHistory_CancelOrder"
-      data-imx-identifier="request-detail-withdraw-additional-approver" (click)="actionService.revokeDelegation([data.personWantsOrg], '#LDS#Heading Withdraw Additional Approver',
+      data-imx-identifier="request-detail-withdraw-additional-approver" (click)="actionService.revokeAdditionalApprover([data.personWantsOrg], '#LDS#Heading Withdraw Additional Approver',
     '#LDS#The additional approvers for {0} requests have been successfully withdrawn.',
     '#LDS#Withdraw additional approvers for the following requests.')">
       {{'#LDS#Withdraw additional approver' | translate}}

@@ -31,6 +31,7 @@ export interface AppConfig {
   Basepath?: string;
   Title: string;
   WebAppIndex: string;
+  WebAppIdentifier?: string;
   NotificationUpdateInterval?: number;
   DatastoreIssueTreshold?: number;
   Translation?: TranslationConfiguration;

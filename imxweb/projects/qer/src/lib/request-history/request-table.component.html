@@ -109,7 +109,7 @@
       *ngIf="canWithdrawAdditionalApprover"
       data-imx-identifier="request-detail-withdraw-additional-approver"
       (click)="
-        actionService.revokeDelegation(
+        actionService.revokeAdditionalApprover(
           selectedItems,
           '#LDS#Heading Withdraw Additional Approver',
           '#LDS#The additional approvers for {0} requests have been successfully withdrawn.',

@@ -38,7 +38,7 @@ import { AuthenticationService, ISessionState, SplashService } from 'qbm';
 export class AppComponent implements OnInit, OnDestroy {
   public isLoggedIn = false;
   public hideUserMessage = false;
-  public showPageContent = false;
+  public showPageContent = true;
 
   private readonly subscriptions: Subscription[] = [];
 
@@ -55,8 +55,11 @@ export class AppComponent implements OnInit, OnDestroy {
           this.splash.close();
         }
 
-        this.isLoggedIn = sessionState.IsLoggedIn;
+        if (sessionState.IsLoggedOut) {
+          this.showPageContent = false;
+        }
 
+        this.isLoggedIn = sessionState.IsLoggedIn;
         if (this.isLoggedIn) {
           // Close the splash screen that opened in app service initialisation
           // Needs to close here when running in containers (auth skipped)
@@ -92,8 +95,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
       if (event instanceof NavigationEnd) {
         this.hideUserMessage = false;
-        // show the pageContent, if the user is logged in or the login page is shown
-        this.showPageContent = this.isLoggedIn || event.urlAfterRedirects === '/';
+        this.showPageContent = true;
       }
 
       if (event instanceof NavigationError) {

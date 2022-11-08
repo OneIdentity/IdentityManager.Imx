@@ -1,5 +1,5 @@
 <div class="imx-tab-content">
-  <mat-tab-group *ngIf="canHavePrimaryMemberships() || canBeDynamic || isDynamic">
+  <mat-tab-group *ngIf="canHavePrimaryMemberships() || canBeDynamic || isDynamic ; else secondaryOnly">
     <mat-tab *ngIf="canHavePrimaryMemberships()" [label]="'#LDS#Primary memberships' | translate">
       <imx-primary-memberships [entity]="entity" [ownershipInfo]="ownershipInfo"></imx-primary-memberships>
     </mat-tab>
@@ -21,3 +21,7 @@
     </mat-tab>
   </mat-tab-group>
 </div>
+
+<ng-template #secondaryOnly>
+  <imx-secondary-memberships [isAdmin]="isAdmin" [entity]="entity" [ownershipInfo]="ownershipInfo"></imx-secondary-memberships>
+</ng-template>

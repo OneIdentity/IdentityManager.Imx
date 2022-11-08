@@ -40,6 +40,6 @@ export class DataExplorerNoDataComponent {
   constructor(
     appConfigService: AppConfigService
   ) {
-    this.webApp = appConfigService.Config.Title;
+    this.webApp = appConfigService.Config.WebAppIdentifier.toLocaleLowerCase();
   }
 }
