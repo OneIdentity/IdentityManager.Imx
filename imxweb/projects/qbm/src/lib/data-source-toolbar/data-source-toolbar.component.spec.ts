@@ -32,9 +32,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { configureTestSuite } from 'ng-bullet';
-import { TypedEntity, DataModelFilterOption, IClientProperty, IEntity } from 'imx-qbm-dbts';
+import { TypedEntity, DataModelFilterOption, IClientProperty, IEntity, ValType } from 'imx-qbm-dbts';
 import { DataSourceToolbarComponent } from './data-source-toolbar.component';
-import { ImxTranslationProviderService } from '../translation/imx-translation-provider.service';
 import { clearStylesFromDOM } from '../testing/clear-styles.spec';
 import { DataSourceToolbarFilter, DataSourceToolbarSelectedFilter } from './data-source-toolbar-filters.interface';
 import { DataSourceToolBarGroup } from './data-source-toolbar-groups.interface';
@@ -60,10 +59,6 @@ describe('DataSourceToolbarComponent', () => {
     PageSize: pageSize
   };
 
-  const translationProviderStub = {
-    GetColumnDisplay: jasmine.createSpy('GetColumnDisplay')
-  };
-
   configureTestSuite(() => {
     TestBed.configureTestingModule({
       declarations: [DataSourceToolbarComponent],
@@ -75,19 +70,11 @@ describe('DataSourceToolbarComponent', () => {
         MatMenuModule,
         MatIconModule,
         MatTooltipModule
-      ],
-      providers: [
-        {
-          provide: ImxTranslationProviderService,
-          useValue: translationProviderStub
-        }
       ]
     });
   });
 
   beforeEach(() => {
-    translationProviderStub.GetColumnDisplay.calls.reset();
-
     fixture = TestBed.createComponent(DataSourceToolbarComponent);
     component = fixture.componentInstance;
   });
@@ -419,10 +406,10 @@ describe('DataSourceToolbarComponent', () => {
     });
 
     describe('getGroupColumnDisplay DataModelProperty', () => {
-      it('should call ImxTranslationProvider', () => {
-        const property = { Property: { ColumnName: 'IdentityType' } as IClientProperty };
-        component.getGroupColumnDisplay({ property } as DataSourceToolBarGroup);
-        expect(translationProviderStub.GetColumnDisplay).toHaveBeenCalledWith(property.Property.ColumnName, undefined);
+      it('should get  display by schema', () => {
+        component.entitySchema = {Columns: { IdentityType: {Type: ValType.String,ColumnName:'IdentityType'}}}
+        const property = { Property: { ColumnName: 'IdentityType',Display: 'the Display' } as IClientProperty };
+        expect(component.getGroupColumnDisplay({ property } as DataSourceToolBarGroup)).toEqual('the Display');
       });
     });
 
@@ -430,7 +417,6 @@ describe('DataSourceToolbarComponent', () => {
       it('should use Display', () => {
         const property = { Display: 'IdentityType' };
         expect(component.getGroupColumnDisplay({ property } as DataSourceToolBarGroup)).toEqual(property.Display);
-        expect(translationProviderStub.GetColumnDisplay).not.toHaveBeenCalled();
       });
     });
   });

@@ -158,7 +158,7 @@
       *ngIf="canWithdrawAdditionalApprover"
       data-imx-identifier="approvals-table-button-withdraw-additional-approver"
       title="{{ '#LDS#Withdraws the additional approvers for the selected requests' | translate }}"
-      (click)="actionService.revokeDelegations(selectedItems)"
+      (click)="actionService.withDrawApprover(selectedItems)"
     >
       {{ '#LDS#Withdraw additional approver' | translate }}
     </button>

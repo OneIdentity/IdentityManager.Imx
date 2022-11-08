@@ -33,6 +33,7 @@ import { IEntity, IEntityColumn } from 'imx-qbm-dbts';
 
 import { BaseCdr, ClassloggerService, ColumnDependentReference } from 'qbm';
 import { Subscription } from 'rxjs';
+import { QerPermissionsService } from '../../admin/qer-permissions.service';
 import { OwnerControlComponent } from '../../owner-control/owner-control.component';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
 import { ServiceItemTagsService } from '../../service-item-tags/service-item-tags.service';
@@ -44,7 +45,7 @@ import { UserModelService } from '../../user/user-model.service';
   templateUrl: './service-items-edit-form.component.html',
   styleUrls: ['./service-items-edit-form.component.scss']
 })
-export class ServiceItemsEditFormComponent implements OnChanges, OnDestroy {
+export class ServiceItemsEditFormComponent implements OnInit, OnChanges, OnDestroy {
 
   @ViewChild('ownerControl') public ownercontrol: OwnerControlComponent;
   @Input() public serviceItem: PortalServiceitemsInteractive;
@@ -53,6 +54,7 @@ export class ServiceItemsEditFormComponent implements OnChanges, OnDestroy {
   public readonly formGroup: FormGroup;
   public cdrList: ColumnDependentReference[] = [];
   public isInActiveFormControl = new FormControl();
+  public canEditOwner: boolean;
 
   public productTagsInitial: string[] = [];
   public productTagsSelected: string[];
@@ -68,6 +70,7 @@ export class ServiceItemsEditFormComponent implements OnChanges, OnDestroy {
     private readonly logger: ClassloggerService,
     private readonly userModelService: UserModelService,
     private readonly translate: TranslateService,
+    private readonly permission: QerPermissionsService,
     private readonly projectConfig: ProjectConfigurationService
   ) {
     this.formGroup = new FormGroup({ formArray: formBuilder.array([]) });
@@ -83,6 +86,10 @@ export class ServiceItemsEditFormComponent implements OnChanges, OnDestroy {
 
   get key(): string {
     return this.serviceItem.GetEntity().GetKeys().join(',');
+  }
+
+  public async ngOnInit(): Promise<void> {
+    this.canEditOwner = await this.permission.isShopAdmin();
   }
 
   public ngOnChanges(changes: SimpleChanges): void {

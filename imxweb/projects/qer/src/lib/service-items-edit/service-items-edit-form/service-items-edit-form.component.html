@@ -17,7 +17,7 @@
       <span [translate]="toggle.checked ? '#LDS#Requestable' : '#LDS#Not requestable'"></span>
     </mat-slide-toggle>
 
-    <imx-owner-control #ownerControl [column]="serviceItem?.UID_OrgRuler?.Column"
+    <imx-owner-control [isReadOnly]="!canEditOwner" #ownerControl [column]="serviceItem?.UID_OrgRuler?.Column"
       *ngIf="canEditProperty(serviceItem?.UID_OrgRuler?.Column?.ColumnName)"
       data-imx-identifier="service-items-edit-form-ownercontrol" (formControlCreated)="onFormControlCreated($event)">
     </imx-owner-control>

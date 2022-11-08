@@ -1,81 +1,98 @@
-<imx-data-source-toolbar #dst [settings]="dstSettings" (search)="onSearch($event)" [keywords]="keywords"
-  (viewSelectionChanged)="onViewSelectionChanged($event)"
-  [options]="options" (navigationStateChanged)="getData($event)"
-  data-imx-identifier="serviceitemlist-dst" [initalView]="dataSourceView.selected" [itemStatus]="status"
-  [alwaysVisible]="!referenceUserUid && !uidPersonPeerGroup">
-  <imx-data-source-toolbar-custom *ngIf="!referenceUserUid && !uidPersonPeerGroup"
-    [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
-</imx-data-source-toolbar>
-<div class="imx-table-container" *ngIf="!isLoading">
-  <imx-data-tiles
-    #dataTiles
-    *ngIf="dataSourceView.selected === 'cardlist'"
-    height="150px"
-    [dst]="dst"
-    (selectionChanged)="onSelectionChanged($event)"
-    (badgeClicked)="onBadgeClicked($event)"
-    [useActionMenu]="false"
-    [noItemsFoundText]="noDataText"
-    fallbackIcon="request"
-    [selectable]="true"
-    [actions]="itemActions"
-    [titleObject]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-    [subtitleObject]="entitySchema?.Columns['ServiceCategoryFullPath']"
-    (actionSelected)="emitAction($event)"
-    [contentTemplate]="peerGroupDisplay"
-  >
-  </imx-data-tiles>
-  <imx-data-table
-    *ngIf="dataSourceView.selected === 'table'"
-    [dst]="dst"
-    [detailViewVisible]="false"
-    [selectable]="true"
-    [noDataText]="noDataText"
-    mode="manual"
-    fallbackIcon="DefaultTypeNameImage"
-    (selectionChanged)="onSelectionChanged($event)"
-    data-imx-identifier="serviceitemlist-datatable"
-    [showSelectedItemsMenu]="false"
-  >
-    <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-      columnLabel="{{ '#LDS#Product' | translate }}" data-imx-identifier="serviceitemlist-datatable-table">
-      <ng-template let-prod>
-        <div data-imx-identifier="serviceitemlist-datatable-display">{{ prod.GetEntity().GetDisplay() }}</div>
-        <div subtitle data-imx-identifier="serviceitemlist-datatable-fullpath">
-          {{ getSubtitle(prod,dst.additionalListElements) }}
-        </div>
-        <p *ngIf="isValueContains(prod.OrderableStatus.value, ['PERSONHASOBJECT', 'PERSONHASASSIGNMENTORDER', 'ASSIGNED'])"
-          class="imx-subtext">
-          <eui-icon icon="info"></eui-icon>
-          {{ '#LDS#This product has already been assigned to {0}.' | translate | ldsReplace:
-          recipients.Column.GetDisplayValue() }}
-        </p>
-        <p *ngIf="isValueContains(prod.OrderableStatus.value, 'ORDER')" class="imx-subtext">
-          <eui-icon icon="request"></eui-icon>
-          {{ '#LDS#This product has already been requested.' | translate }}
-        </p>
-        <p *ngIf="isValueContains(prod.OrderableStatus.value, 'NOTORDERABLE')" class="imx-subtext">
-          <eui-icon icon="error"></eui-icon>
-          {{ '#LDS#This product cannot currently be requested.' | translate }}
-        </p>
-        <p *ngIf="isValueContains(prod.OrderableStatus.value, 'CART')" class="imx-subtext">
-          <eui-icon icon="error"></eui-icon>
-          {{ '#LDS#This product is already in your shopping cart.' | translate }}
-        </p>
-        <ng-container *ngTemplateOutlet="peerGroupDisplay; context: { $implicit: prod }"></ng-container>
-      </ng-template>
-    </imx-data-table-column>
-    <imx-data-table-generic-column columnName="actions" [columnLabel]="''">
-      <ng-template let-prod>
-        <button mat-button color="primary" *ngFor="let action of itemActions" (click)="emitAction(action, prod)"
-          [attr.data-imx-identifier]="'serviceitemlist-datatable-row-button-' + action.name">
-          {{ action.description | translate }}
-        </button>
-      </ng-template>
-    </imx-data-table-generic-column>
-  </imx-data-table>
-</div>
-<imx-data-source-paginator [dst]="dst" *ngIf="!isLoading"></imx-data-source-paginator>
+<ng-container *ngIf="recipients?.Column?.data?.Value?.length !== 0 ; else noRecipientSelected">
+  <imx-data-source-toolbar #dst [settings]="dstSettings" (search)="onSearch($event)" [keywords]="keywords"
+    (viewSelectionChanged)="onViewSelectionChanged($event)"
+    [options]="options" (navigationStateChanged)="getData($event)"
+    data-imx-identifier="serviceitemlist-dst" [initalView]="dataSourceView.selected" [itemStatus]="status"
+    [alwaysVisible]="!referenceUserUid && !uidPersonPeerGroup">
+    <imx-data-source-toolbar-custom *ngIf="!referenceUserUid && !uidPersonPeerGroup"
+      [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
+  </imx-data-source-toolbar>
+  <div class="imx-table-container" *ngIf="!isLoading">
+    <imx-data-tiles
+      #dataTiles
+      *ngIf="dataSourceView.selected === 'cardlist'"
+      height="150px"
+      [dst]="dst"
+      (selectionChanged)="onSelectionChanged($event)"
+      (badgeClicked)="onBadgeClicked($event)"
+      [useActionMenu]="false"
+      [noItemsFoundText]="noDataText"
+      fallbackIcon="request"
+      [selectable]="true"
+      [actions]="itemActions"
+      [titleObject]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
+      [subtitleObject]="entitySchema?.Columns['ServiceCategoryFullPath']"
+      (actionSelected)="emitAction($event)"
+      [contentTemplate]="peerGroupDisplay"
+    >
+    </imx-data-tiles>
+    <imx-data-table
+      *ngIf="dataSourceView.selected === 'table'"
+      [dst]="dst"
+      [detailViewVisible]="false"
+      [selectable]="true"
+      [noDataText]="noDataText"
+      mode="manual"
+      fallbackIcon="DefaultTypeNameImage"
+      (selectionChanged)="onSelectionChanged($event)"
+      data-imx-identifier="serviceitemlist-datatable"
+      [showSelectedItemsMenu]="false"
+    >
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
+        columnLabel="{{ '#LDS#Product' | translate }}" data-imx-identifier="serviceitemlist-datatable-table">
+        <ng-template let-prod>
+          <div data-imx-identifier="serviceitemlist-datatable-display">{{ prod.GetEntity().GetDisplay() }}</div>
+          <div subtitle data-imx-identifier="serviceitemlist-datatable-fullpath">
+            {{ getSubtitle(prod,dst.additionalListElements) }}
+          </div>
+          <p *ngIf="isValueContains(prod.OrderableStatus.value, ['PERSONHASOBJECT', 'PERSONHASASSIGNMENTORDER', 'ASSIGNED'])"
+            class="imx-subtext">
+            <eui-icon icon="info"></eui-icon>
+            {{ '#LDS#This product has already been assigned to {0}.' | translate | ldsReplace:
+            recipients.Column.GetDisplayValue() }}
+          </p>
+          <p *ngIf="isValueContains(prod.OrderableStatus.value, 'ORDER')" class="imx-subtext">
+            <eui-icon icon="request"></eui-icon>
+            {{ '#LDS#This product has already been requested.' | translate }}
+          </p>
+          <p *ngIf="isValueContains(prod.OrderableStatus.value, 'NOTORDERABLE')" class="imx-subtext">
+            <eui-icon icon="error"></eui-icon>
+            {{ '#LDS#This product cannot currently be requested.' | translate }}
+          </p>
+          <p *ngIf="isValueContains(prod.OrderableStatus.value, 'CART')" class="imx-subtext">
+            <eui-icon icon="error"></eui-icon>
+            {{ '#LDS#This product is already in your shopping cart.' | translate }}
+          </p>
+          <ng-container *ngTemplateOutlet="peerGroupDisplay; context: { $implicit: prod }"></ng-container>
+        </ng-template>
+      </imx-data-table-column>
+      <imx-data-table-generic-column columnName="actions" [columnLabel]="''">
+        <ng-template let-prod>
+          <button mat-button color="primary" *ngFor="let action of itemActions" (click)="emitAction(action, prod)"
+            [attr.data-imx-identifier]="'serviceitemlist-datatable-row-button-' + action.name">
+            {{ action.description | translate }}
+          </button>
+        </ng-template>
+      </imx-data-table-generic-column>
+    </imx-data-table>
+  </div>
+  <imx-data-source-paginator [dst]="dst" *ngIf="!isLoading"></imx-data-source-paginator>
+</ng-container>
+
+<!-- Template if no recipient was selected -->
+<ng-template #noRecipientSelected>
+  <mat-card class="imx-empty-repicients">
+    <eui-icon icon="request" size="100px"></eui-icon>
+    <div class="imx-empty-repicients-description">
+      <h2>
+        {{ '#LDS#There is currently no recipient selected.' | translate }}
+      </h2>
+      <span>
+        {{ '#LDS#Please select at least one recipient.' | translate }}
+      </span>
+    </div>
+  </mat-card>
+</ng-template>
 
 <ng-template #customToolbarTemplate>
   <div class="imx-toolbar-template">

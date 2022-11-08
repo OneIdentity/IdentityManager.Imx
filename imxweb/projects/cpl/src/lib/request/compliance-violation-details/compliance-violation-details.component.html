@@ -68,7 +68,7 @@
     </div>
   </ng-container>
 
-  <div *ngIf="(rules == null || rules.length === 0) && request.UiOrderState.value === 'OrderProduct'" class="imx-no-data">
+  <div *ngIf="(rules == null || rules.length === 0) && request?.UiOrderState.value === 'OrderProduct'" class="imx-no-data">
     <eui-icon icon="table"></eui-icon>
     <p>{{ '#LDS#No data' | translate }}</p>
   </div>

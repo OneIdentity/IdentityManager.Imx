@@ -34,6 +34,7 @@ import { MenuItem, AuthenticationService, ISessionState, MenuService, SettingsSe
 import { FeatureConfigService } from 'qer';
 import { UserService } from './user/user.service';
 import { FeatureConfig } from 'imx-api-qer';
+import { isOutstandingManager } from './permissions/permissions-helper';
 
 @Component({
   selector: 'imx-root',
@@ -45,7 +46,7 @@ export class AppComponent implements OnInit, OnDestroy {
   public isLoggedIn = false;
   public hideMenu = false;
   public hideUserMessage = false;
-  public showPageContent = false;
+  public showPageContent = true;
 
   private readonly subscriptions: Subscription[] = [];
 
@@ -67,6 +68,10 @@ export class AppComponent implements OnInit, OnDestroy {
         if (sessionState.hasErrorState) {
           // Needs to close here when there is an error on sessionState
           splash.close();
+        }
+
+        if (sessionState.IsLoggedOut) {
+          this.showPageContent = false;
         }
 
         this.isLoggedIn = sessionState.IsLoggedIn;
@@ -118,8 +123,7 @@ export class AppComponent implements OnInit, OnDestroy {
         case event instanceof NavigationError:
           this.hideUserMessage = false;
           this.hideMenu = event.url === '/';
-          // show the pageContent, if the user is logged in or the login page is shown
-          this.showPageContent = this.isLoggedIn || event.url === '/';
+          this.showPageContent = true;
       }
     }));
   }
@@ -191,7 +195,7 @@ export class AppComponent implements OnInit, OnDestroy {
           ]
         };
 
-        if (groups.some(elem => elem === 'QER_4_ManageOutstanding')) {
+        if (isOutstandingManager(groups)) {
           menu.items.push({
             id: 'OpsWeb_Synchronization_OutstandingObjects',
             title: '#LDS#Menu Entry Outstanding objects',

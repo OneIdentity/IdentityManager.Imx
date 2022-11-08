@@ -69,7 +69,7 @@ describe('OwnerControlService', () => {
   });
   describe('createGroupOwnerPersonEntityColumn() tests', () => {
     it('should return a fabricated IEntityColumn to represent a fk UID_Person property', () => {
-      const grpOwnerPersonColumn = service.createGroupOwnerPersonCdr();
+      const grpOwnerPersonColumn = service.createGroupOwnerPersonCdr(false);
       expect(grpOwnerPersonColumn.column.ColumnName).toEqual('PersonColumnName');
       expect(grpOwnerPersonColumn.column.GetMetadata().GetFkRelations()[0].TableName).toEqual('Person');
     });

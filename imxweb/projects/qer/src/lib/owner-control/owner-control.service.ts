@@ -26,44 +26,30 @@
 
 import { Injectable } from '@angular/core';
 
-import { BaseCdr, ImxTranslationProviderService } from 'qbm';
-import {
-  MetaTableRelationData,
-  FkCandidateProvider,
-  IClientProperty,
-  ValType,
-  ReadWriteEntity,
-  DisplayBuilder,
-} from 'imx-qbm-dbts';
+import { BaseCdr, BaseReadonlyCdr, ImxTranslationProviderService } from 'qbm';
+import { MetaTableRelationData, FkCandidateProvider, IClientProperty, ValType, ReadWriteEntity, DisplayBuilder } from 'imx-qbm-dbts';
 import { QerApiService } from '../qer-api-client.service';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class OwnerControlService {
+  constructor(private readonly qerClient: QerApiService, private readonly translate: ImxTranslationProviderService) {}
 
-  constructor(
-    private readonly qerClient: QerApiService,
-    private readonly translate: ImxTranslationProviderService,
-  ) { }
-
-  public createGroupOwnerPersonCdr(): BaseCdr {
+  public createGroupOwnerPersonCdr(readonly: boolean): BaseCdr {
     const columnProperties = {};
 
     const property = this.createGroupOwnerPersonProperty();
     columnProperties[property.ColumnName] = property;
+    const entityColumn = new ReadWriteEntity(
+      { Columns: columnProperties },
+      {},
+      this.createGroupOwnerPersonFkProvider(property.FkRelation),
+      undefined,
+      new DisplayBuilder(this.translate)
+    ).GetColumn(property.ColumnName);
 
-    return new BaseCdr(
-      new ReadWriteEntity(
-        { Columns: columnProperties },
-        {},
-        this.createGroupOwnerPersonFkProvider(property.FkRelation),
-        undefined,
-        new DisplayBuilder(this.translate)
-      ).GetColumn(property.ColumnName),
-      '#LDS#Identity'
-    );
+    return readonly ? new BaseReadonlyCdr(entityColumn,'#LDS#Identity') : new BaseCdr(entityColumn,'#LDS#Identity');
   }
 
   private createGroupOwnerPersonProperty(): IClientProperty {
@@ -88,12 +74,10 @@ export class OwnerControlService {
         columnName: fkRelation.ChildColumnName,
         fkTableName: fkRelation.ParentTableName,
         parameterNames: ['OrderBy', 'StartIndex', 'PageSize', 'filter', 'search'],
-        load: async (_, parameters = {}) =>
-          this.qerClient.client.portal_candidates_Person_get(parameters),
+        load: async (_, parameters = {}) => this.qerClient.client.portal_candidates_Person_get(parameters),
         getDataModel: async () => ({}),
-        getFilterTree: async () => ({ Elements: [] })
+        getFilterTree: async () => ({ Elements: [] }),
       },
     ]);
   }
-
 }

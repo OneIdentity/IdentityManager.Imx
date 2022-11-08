@@ -143,3 +143,15 @@ li.imx-event {
 .imx-approver {
   display: block;
 }
+
+div[step]{
+  margin-bottom: 10px;
+  span[caption]{
+    font-weight: 600;
+    font-size: 16px;
+ }
+}
+
+div[approver] {
+  margin-left: 10px;
+}

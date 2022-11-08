@@ -102,7 +102,7 @@ export class RulesComponent implements OnInit {
 
     this.rulesProvider.handleOpenLoader();
     try {
-      const data = await this.rulesProvider.getRules(parameter);
+      const data = await this.rulesProvider.getRules(this.navigationState);
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
         dataSource: data,

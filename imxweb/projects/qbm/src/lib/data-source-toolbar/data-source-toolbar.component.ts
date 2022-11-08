@@ -25,7 +25,18 @@
  */
 
 import { SelectionChange } from '@angular/cdk/collections';
-import { Component, Input, OnChanges, SimpleChanges, OnInit, Output, EventEmitter, ViewEncapsulation, OnDestroy, Injector } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  OnInit,
+  Output,
+  EventEmitter,
+  ViewEncapsulation,
+  OnDestroy,
+  Injector,
+} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatButtonToggleChange } from '@angular/material/button-toggle';
 import { MatCheckboxChange } from '@angular/material/checkbox';
@@ -44,7 +55,6 @@ import {
   DataModelFilterOption,
   FilterData,
   IEntity,
-  DataModelViewConfig
 } from 'imx-qbm-dbts';
 import { DataSourceToolbarSettings } from './data-source-toolbar-settings';
 import { DataSourceToolbarFilter, DataSourceToolbarSelectedFilter } from './data-source-toolbar-filters.interface';
@@ -80,9 +90,13 @@ import { ColumnOptions } from './column-options';
   encapsulation: ViewEncapsulation.None,
 })
 export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy {
-  public get numOfSelectedItems(): number { return this.selection.selected.length; }
+  public get numOfSelectedItems(): number {
+    return this.selection.selected.length;
+  }
 
-  public get numOfSelectableItems(): number { return this.internalDataSource.data.filter(item => this.itemStatus.enabled(item)).length; }
+  public get numOfSelectableItems(): number {
+    return this.internalDataSource.data.filter((item) => this.itemStatus.enabled(item)).length;
+  }
 
   public get additionalColumns(): IClientProperty[] {
     return this.columnOptions?.additionalColumns.concat(this.columnOptions.selectedOptionals) ?? [];
@@ -170,7 +184,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
    * Status of an item. If the property enabled is true, the item is selectable.
    */
   @Input() public itemStatus: DataSourceItemStatus = {
-    enabled: __ => true
+    enabled: (__) => true,
   };
 
   /**
@@ -319,8 +333,6 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
    */
   public hasViewSettings = false;
 
-
-
   /**
    * short description, which data type the filter tree filters
    */
@@ -363,17 +375,17 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
    * Inject the 'translateProvider' for use in the template.
    */
   constructor(
-    public translateProvider: ImxTranslationProviderService,
     public readonly dialog: MatDialog,
     private readonly injector: Injector
   ) {
-    this.subscriptions.push(this.selection.changed.subscribe((event: SelectionChange<TypedEntity>) => {
-      if (!this.isUpdatingPreselection) {
-        this.selectionChanged.next(event);
-      }
-    }));
+    this.subscriptions.push(
+      this.selection.changed.subscribe((event: SelectionChange<TypedEntity>) => {
+        if (!this.isUpdatingPreselection) {
+          this.selectionChanged.next(event);
+        }
+      })
+    );
   }
-
 
   /**
    * Indicates whether there is any initial data, and therefore whether to show the toolbar
@@ -400,8 +412,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
   }
 
   public get filtersCurrentlyApplied(): boolean {
-    return this.selectedFilters?.length > 0
-      || this.currentFilterData?.length > 0;
+    return this.selectedFilters?.length > 0 || this.currentFilterData?.length > 0;
   }
 
   /**
@@ -418,7 +429,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
    * Tidys up the view on destroy.
    */
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
 
     if (this.valueChanges$) {
       this.valueChanges$.unsubscribe();
@@ -446,15 +457,14 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
           this.setInitialFilterValues();
         }
 
-        const filterItems = this.settings?.filterTree?.filterMethode ?
-          await this.settings.filterTree?.filterMethode('') : { Elements: [] };
+        const filterItems = this.settings?.filterTree?.filterMethode ? await this.settings.filterTree?.filterMethode('') : { Elements: [] };
         this.hasFilterTree = this.settings.filterTree && filterItems?.Elements?.length > 0;
 
         if (this.settings?.dataModel) {
           this.initColumnOptions();
           this.hasViewSettings = this.columnOptions?.hasOptionalColumns;
           this.updateEntitySchema();
-          this.settings.dataSource.Data.forEach(elem => elem.GetEntity().ApplySchema(this.settings.entitySchema));
+          this.settings.dataSource.Data.forEach((elem) => elem.GetEntity().ApplySchema(this.settings.entitySchema));
         } else {
           this.hasViewSettings = false;
         }
@@ -470,7 +480,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
     if (changes['preSelection'] && changes['preSelection'].currentValue) {
       this.isUpdatingPreselection = true;
       setTimeout(() => {
-        this.preSelection.forEach(item => this.selection.checked(item));
+        this.preSelection.forEach((item) => this.selection.checked(item));
         this.isUpdatingPreselection = false;
       });
     }
@@ -493,14 +503,12 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
     this.dialog.open(SelectionListComponent, {
       width: '600px',
       height: '600px',
-      data: this.selection.selected
+      data: this.selection.selected,
     });
   }
 
   public numOfSelectedItemsOnPage(): number {
-    return this.internalDataSource.data.filter(item =>
-      this.selection.isSelected(item)
-    ).length;
+    return this.internalDataSource.data.filter((item) => this.selection.isSelected(item)).length;
   }
 
   /**
@@ -517,9 +525,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
    */
   public toggleSelection(): void {
     if (this.allSelected()) {
-      this.internalDataSource.data.forEach(item =>
-        this.selection.unChecked(item)
-      );
+      this.internalDataSource.data.forEach((item) => this.selection.unChecked(item));
     } else {
       this.selectAllOnPage();
     }
@@ -554,7 +560,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
   }
 
   public selectAllOnPage(): void {
-    this.internalDataSource.data.forEach(item => {
+    this.internalDataSource.data.forEach((item) => {
       if (this.itemStatus.enabled(item) && !this.selection.isSelected(item)) {
         this.selection.toggle(item);
       }
@@ -723,20 +729,23 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
    *  Shows a filter tree dialog and updates the filter set
    */
   public async showFilterTree(): Promise<void> {
-    const filterdata = await this.dialog.open(FilterTreeComponent, {
-      width: 'min(600px,60%)',
-      autoFocus: false,
-      height: 'min(600px,60%)',
-      data: {
-        filterTreeParameter: this.settings.filterTree,
-        preselection: this.currentFilterData.map(elem => elem),
-        type: this.filterType
-      },
-      panelClass: 'imx-toolbar-dialog'
-    }).afterClosed().toPromise();
+    const filterdata = await this.dialog
+      .open(FilterTreeComponent, {
+        width: 'min(600px,60%)',
+        autoFocus: false,
+        height: 'min(600px,60%)',
+        data: {
+          filterTreeParameter: this.settings.filterTree,
+          preselection: this.currentFilterData.map((elem) => elem),
+          type: this.filterType,
+        },
+        panelClass: 'imx-toolbar-dialog',
+      })
+      .afterClosed()
+      .toPromise();
     if (filterdata) {
       this.currentFilterData = filterdata;
-      this.filterTreeSelectionChanged.emit(this.currentFilterData.map(filter => filter.GetColumn('Filter').GetValue()));
+      this.filterTreeSelectionChanged.emit(this.currentFilterData.map((filter) => filter.GetColumn('Filter').GetValue()));
     }
   }
 
@@ -782,7 +791,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
   public onGroupSelected(group: DataSourceToolBarGroup, groupCategory?: DataSourceToolBarGroupingCategory): void {
     this.settings.groupData.currentGrouping = {
       display: (groupCategory?.property.Display ? groupCategory.property.Display + ' - ' : '') + this.getGroupColumnDisplay(group),
-      getData: group.getData
+      getData: group.getData,
     };
     this.settingsChanged.emit(this.settings);
   }
@@ -801,47 +810,49 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
    * @ignore Used internally in components template.
    * Used to convert the groupBy column api value into a display friendly format
    */
-  public getGroupColumnDisplay(group: DataSourceToolBarGroup): string {
-    return group.property.Display || this.translateProvider.GetColumnDisplay(group.property.Property.ColumnName, this.entitySchema);
+  public getGroupColumnDisplay(group: DataSourceToolBarGroup): string {   
+    return group.property.Display ?? this.entitySchema.Columns[group.property.Property.ColumnName]?.Display ?? group.property.Property.Display;
   }
+
+  
 
   /**
    * @ignore Used internally
    * inits the view settings and adds additional columns to the entity schema
    */
   private initColumnOptions(): void {
-    if (this.columnOptions &&
-      this.columnOptions.settings.dataModel === this.settings.dataModel
-    ) {
+    if (this.columnOptions && this.columnOptions.settings.dataModel === this.settings.dataModel) {
       return;
     }
 
     this.columnOptions = new ColumnOptions(this.settings, this.injector);
 
     if (this.columnSubscriptions.length > 0) {
-      this.columnSubscriptions.forEach(sub => sub.unsubscribe());
+      this.columnSubscriptions.forEach((sub) => sub.unsubscribe());
       this.columnSubscriptions = [];
     }
 
-    this.columnSubscriptions.push(this.columnOptions.shownColumnsSelectionChanged.subscribe(elem => {
-      this.shownColumnsSelectionChanged.emit(elem.properties);
-      const optionals = this.columnOptions.getPropertiesForNavigation();
-      this.additionalPropertiesForNavigation.forEach(prop => {
-        if (!optionals.includes(prop)) {
-          optionals.push(prop);
+    this.columnSubscriptions.push(
+      this.columnOptions.shownColumnsSelectionChanged.subscribe((elem) => {
+        this.shownColumnsSelectionChanged.emit(elem.properties);
+        const optionals = this.columnOptions.getPropertiesForNavigation();
+        this.additionalPropertiesForNavigation.forEach((prop) => {
+          if (!optionals.includes(prop)) {
+            optionals.push(prop);
+          }
+        });
+        const withProperties = optionals.length === 0 ? undefined : optionals.join(',');
+        if (this.settings.navigationState.withProperties !== withProperties) {
+          this.settings.navigationState.withProperties = withProperties;
+          if (this.settings.groupData?.currentGrouping == null && elem.needsReload) {
+            this.navigationStateChanged.emit(this.settings.navigationState);
+          }
         }
-      });
-      const withProperties = (optionals.length === 0 ? undefined : optionals.join(','));
-      if (this.settings.navigationState.withProperties !== withProperties) {
-        this.settings.navigationState.withProperties = withProperties;
-        if (this.settings.groupData?.currentGrouping == null && elem.needsReload) {
-          this.navigationStateChanged.emit(this.settings.navigationState);
-        }
-      }
-    }
-    ));
-    this.columnSubscriptions.push(this.columnOptions.additionalListElementsChanged.subscribe(elem =>
-      this.additionalListElementsChanged.emit(elem)));
+      })
+    );
+    this.columnSubscriptions.push(
+      this.columnOptions.additionalListElementsChanged.subscribe((elem) => this.additionalListElementsChanged.emit(elem))
+    );
 
     this.columnOptions.initColumnsAndAdditionalInformation();
   }

@@ -40,7 +40,8 @@ describe('AppService', () => {
     translate = {
       addLangs: jasmine.createSpy('addLangs'),
       getBrowserCultureLang: jasmine.createSpy('getBrowserCultureLang').and.returnValue(''),
-      setDefaultLang: jasmine.createSpy('setDefaultLang'),
+      setDefaultLang: jasmine.createSpy('setDefaultLang'),      
+      get: x => { return { toPromise: () => Promise.resolve(x) }; },
       use: jasmine.createSpy('use').and.returnValue(of({})),
     };
 

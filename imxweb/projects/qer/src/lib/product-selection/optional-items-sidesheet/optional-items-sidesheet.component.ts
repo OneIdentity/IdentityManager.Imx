@@ -43,6 +43,7 @@ import { ServiceItemHierarchyExtended, ServiceItemOrder, ServiceItemTreeWrapper 
   styleUrls: ['./optional-items-sidesheet.component.scss'],
 })
 export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
+  public nRecipientsText: string = '';
   public baseItems: PortalShopServiceitems[];
   public optionalItems: PortalShopServiceitems[];
   public treeControl = new NestedTreeControl<ServiceItemHierarchyExtended>((leaf) => {
@@ -63,6 +64,7 @@ export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
     private serviceItemsProvider: ServiceItemsService,
     private readonly sideSheetRef: EuiSidesheetRef,
     private confirmationService: ConfirmationService,
+    private translate: TranslateService,
     @Inject(EUI_SIDESHEET_DATA)
     public data: {
       serviceItemTree: ServiceItemTreeWrapper;
@@ -91,6 +93,7 @@ export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
     (!!tree.Mandatory && tree.Mandatory.length > 0) || (!!tree.Optional && tree.Optional.length > 0);
 
   public async ngOnInit(): Promise<void> {
+    this.nRecipientsText = await this.translate.get('{0} recipients selected').toPromise();
     this.treeControl.dataNodes.forEach((tree) => {
       this.treeControl.getDescendants(tree).map(async (child) => {
         this.initialState.push({
@@ -107,6 +110,10 @@ export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.subscriptions.forEach((s) => s.unsubscribe());
+  }
+
+  public getRecipientText(node: ServiceItemHierarchyExtended): string {
+    return this.nRecipientsText.slice().replace('{0}', node.Recipients.length.toString());
   }
 
   public getKey(item: PortalShopServiceitems): string {

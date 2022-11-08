@@ -21,13 +21,6 @@
       <imx-service-item-detail [projectConfig]="projectConfig" [serviceItem]="serviceItem"></imx-service-item-detail>
     </div>
     <div *ngIf="isRoleAssignment" class="imx-request-item-detail">
-      <eui-alert
-      class="helper-alert"
-      type="info"
-      condensed="true"
-      [colored]="true">
-      <span>{{'#LDS#This product is a role membership and has the following entitlements.' |translate}}</span>
-      </eui-alert>
       <imx-product-entitlements [uidAccProduct]="request.UID_AccProduct.value"></imx-product-entitlements>
     </div>
   </mat-tab>

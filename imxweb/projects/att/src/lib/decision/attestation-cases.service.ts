@@ -210,8 +210,17 @@ export class AttestationCasesService {
    * @param attestationCase The attestation case
    * @param input reason and/or standard reason
    */
-  public async revokeDelegation(attestationCase: TypedEntity, input: ReasonInput): Promise<any> {
+   public async revokeDelegation(attestationCase: TypedEntity, input: ReasonInput): Promise<any> {
     return this.attClient.client.portal_attestation_revokedelegation_post(this.getKey(attestationCase), input);
+  }
+
+  /**
+   * Zurücknehmen von AddAdditional oder AddInsteadOf
+   * @param attestationCase The attestation case
+   * @param input reason and/or standard reason
+   */
+   public async revokeAdditional(attestationCase: TypedEntity, input: ReasonInput): Promise<any> {
+    return this.attClient.client.portal_attestation_revokeadditional_post(this.getKey(attestationCase), input);
   }
 
   /**

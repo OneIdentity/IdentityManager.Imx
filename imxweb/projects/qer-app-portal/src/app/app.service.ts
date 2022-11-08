@@ -66,22 +66,19 @@ export class AppService {
 
   public async init(): Promise<void> {
     this.showSplash();
-
     await this.config.init(environment.clientUrl);
-
-    const imxConfig = await this.config.getImxConfig();
-    const name = imxConfig.ProductName || Globals.QIM_ProductNameFull;
-    const title = `${name} ${this.config.Config.Title}`;
-    this.logger.debug(this, `Set page title to ${title}`);
-    this.title.setTitle(title);
-
-    await this.updateSplash(title);
 
     this.translateService.addLangs(this.config.Config.Translation.Langs);
     const browserCulture = this.translateService.getBrowserCultureLang();
     this.logger.debug(this, `Set ${browserCulture} as default language`);
     this.translateService.setDefaultLang(browserCulture);
     await this.translateService.use(browserCulture).toPromise();
+
+    this.translateService.onLangChange.subscribe(() => {
+      this.setTitle();
+    });
+
+    this.setTitle();
 
     this.authentication.onSessionResponse.subscribe(sessionState => this.translationProvider.init(sessionState?.culture));
 
@@ -91,6 +88,16 @@ export class AppService {
     SystemJS.set('qer', SystemJS.newModule(QER));
 
     await this.pluginLoader.loadModules(environment.appName);
+  }
+
+  private async setTitle(): Promise<void> {
+    const imxConfig = await this.config.getImxConfig();
+    const name = imxConfig.ProductName || Globals.QIM_ProductNameFull;
+    this.config.Config.Title = await this.translateService.get('#LDS#Heading Portal').toPromise();
+    const title = `${name} ${this.config.Config.Title}`;
+    this.title.setTitle(title);
+
+    await this.updateSplash(title);
   }
 
   public static init(app: AppService): () => Promise<any> {

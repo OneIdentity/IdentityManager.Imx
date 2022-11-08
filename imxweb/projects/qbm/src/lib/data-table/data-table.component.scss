@@ -1,4 +1,5 @@
 /* You can add styles to this file, and also import other style files */
+@use '@angular/material' as mat;
 @import '@elemental-ui/core/src/styles/_palette.scss';
 
 :host {
@@ -6,6 +7,8 @@
   flex-grow: 1;
   height: 100%;
   background-color: $white;
+  display: flex;
+  flex-direction: column; 
 }
 
 .imx-data-table__hidden {
@@ -33,6 +36,10 @@
 .imx-data-table-no-results {
   text-align: center;
   margin: 20px 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 
   .eui-icon {
     font-size: 100px;
@@ -46,6 +53,11 @@
   }
 }
 
+.imx-data-table-highlightedActive .mat-row:hover {
+  background-color: mat.get-color-from-palette($iris-blue-palette, 200);
+  cursor: pointer;
+}
+
 .imx-data-table-row-highlighted {
   background-color: $asher-gray;
 }
@@ -54,8 +66,10 @@
   background-color: $phoenix-pastel;
 }
 
-.imx-data-table-column-select {
+.mat-column-select {
   overflow: initial;
+  max-width: 50px;
+  width: 15px;
 }
 
 .imx-data-table-selection-info {

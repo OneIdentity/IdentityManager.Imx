@@ -44,6 +44,7 @@ import { SyncInformationComponent } from './sync/sync-information/sync-informati
 import { SyncJournalComponent } from './sync/sync-journal/sync-journal.component';
 import { OutstandingComponent } from 'dpr';
 import { SystemStatusRouteGuardService } from './guards/system-status-route-guard.service';
+import { OutstandingManagerGuardService } from './guards/outstanding-manager-guard.service';
 
 const routes: Routes = [
   {
@@ -79,7 +80,7 @@ const routes: Routes = [
   {
     path: 'outstanding',
     component: OutstandingComponent,
-    canActivate: [RouteGuardService],
+    canActivate: [RouteGuardService, OutstandingManagerGuardService],
     resolve: [RouteGuardService]
   },
   {

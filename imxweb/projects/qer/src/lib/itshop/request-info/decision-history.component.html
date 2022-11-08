@@ -1,29 +1,26 @@
 <ul class="imx-eventbar">
-  <ng-container *ngFor="let step of workflow, index as i">
-    <li *ngIf="!step.approveHistory.IsToHideInHistory.value"
-      class="{{'imx-event ' + decisionHistory.getDecisionTypeCssClass(step.approveHistory.DecisionType.value)}}">
+  <ng-container *ngFor="let step of workflow; index as i">
+    <li *ngIf="!step.approveHistory.IsToHideInHistory.value" class="{{ 'imx-event ' + decisionHistory.getDecisionTypeCssClass(step.approveHistory.DecisionType.value) }}">
       <mat-card [attr.data-imx-identifier]="'workflow-step-' + i">
         <mat-card-header>
-          <mat-card-title [attr.data-imx-identifier]="'workflow-step-title-card-'+i">
-            <span *ngIf="step.approveHistory.DecisionType.value"
-              [attr.data-imx-identifier]="'workflow-step-title-'+i">{{
-              step.approveHistory.DecisionType.Column.GetDisplayValue() }}</span>
-              <span class="imx-spacing"> - </span>
-            <span *ngIf="step.approveHistory.XDateInserted.value">{{step.approveHistory.XDateInserted.value | localizedDate }}
-            </span>
+          <mat-card-title [attr.data-imx-identifier]="'workflow-step-title-card-' + i">
+            <span *ngIf="step.approveHistory.DecisionType.value" [attr.data-imx-identifier]="'workflow-step-title-' + i">{{
+              step.approveHistory.DecisionType.Column.GetDisplayValue()
+            }}</span>
+            <span class="imx-spacing"> - </span>
+            <span *ngIf="step.approveHistory.XDateInserted.value">{{ step.approveHistory.XDateInserted.value | localizedDate }} </span>
           </mat-card-title>
           <mat-card-subtitle class="imx-approveHistory-pwodecisionstep">
-            <span *ngIf="step.approveHistory.Ident_PWODecisionStep?.value">
-              {{step.approveHistory.Ident_PWODecisionStep?.Column?.GetDisplayValue()}} </span>
+            <span *ngIf="step.approveHistory.Ident_PWODecisionStep?.value"> {{ step.approveHistory.Ident_PWODecisionStep?.Column?.GetDisplayValue() }} </span>
           </mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
-          <eui-badge [attr.data-imx-identifier]="'chief-approval-badge-' + i"
-             class="chief-approval-badge" color="green" *ngIf="step.approveHistory.RulerLevel.value == 2">{{'#LDS#Approval decision by chief approval team'|translate}}</eui-badge>
+          <eui-badge [attr.data-imx-identifier]="'chief-approval-badge-' + i" class="chief-approval-badge" color="green" *ngIf="step.approveHistory.RulerLevel.value == 2">{{
+            '#LDS#Approval decision by chief approval team' | translate
+          }}</eui-badge>
 
           <imx-cdr-editor *ngIf="step.approver" [cdr]="step.approver"></imx-cdr-editor>
-          <div class="imx-reason"
-            *ngIf="step.approveHistory.UID_QERJustification.value || step.approveHistory.ReasonHead.value">
+          <div class="imx-reason" *ngIf="step.approveHistory.UID_QERJustification.value || step.approveHistory.ReasonHead.value">
             <span class="column-display">{{ step.getReasonDisplay() | translate }}</span>
             <span *ngIf="step.approveHistory.UID_QERJustification.value" class="column-value">
               {{ step.approveHistory.UID_QERJustification.Column.GetDisplayValue() }}
@@ -38,39 +35,50 @@
     </li>
   </ng-container>
   <div *ngIf="approverContainer">
-    <li data-imx-identifier="decision-step-is-calculating" class="imx-event imx-pending"
-      *ngIf="approverContainer.approverNow.length === 0 && approverContainer.isInWorkflow">
+    <li data-imx-identifier="decision-step-is-calculating" class="imx-event imx-pending" *ngIf="approverContainer.approverNow.length === 0 && approverContainer.isInWorkflow">
       <mat-card>
-        {{'#LDS#The next decision step is currently being calculated. The request might also be waiting on a pending decision of another request.' | translate}}
+        {{ '#LDS#The next decision step is currently being calculated. The request might also be waiting on a pending decision of another request.' | translate }}
       </mat-card>
     </li>
-    <li data-imx-identifier="decision-step-current-approvers" class="imx-event imx-pending"
-      *ngIf="approverContainer.approverNow.length > 0 && approverContainer.isInWorkflow && approverContainer.config.VI_ITShop_CurrentApproversCanBeSeen">
+    <li
+      data-imx-identifier="decision-step-current-approvers"
+      class="imx-event imx-pending"
+      *ngIf="approverContainer.approverNow.length > 0 && approverContainer.isInWorkflow && approverContainer.config.VI_ITShop_CurrentApproversCanBeSeen"
+    >
       <mat-card>
         <mat-card-header>
           <mat-card-title>
-            {{'#LDS#The following employees are currently entitled to approve this request.' | translate}}
+            {{ '#LDS#The following employees are currently entitled to approve this request.' | translate }}
           </mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <div *ngFor="let pnow of approverContainer.approverNow" class="imx-approver">
-            {{pnow.Columns.UID_PersonHead.DisplayValue}}
+          <div *ngFor="let pnow of approverNow[0].data" class="imx-approver">
+            {{ pnow.Columns.UID_PersonHead.DisplayValue }}
           </div>
         </mat-card-content>
       </mat-card>
     </li>
-    <li data-imx-identifier="decision-step-next-approvers" class="imx-event imx-pending"
-      *ngIf="approverContainer.approverFuture.length > 0 && approverContainer.isInWorkflow && approverContainer.config.VI_ITShop_NextApproverCanBeSeen">
+    <li
+      data-imx-identifier="decision-step-next-approvers"
+      class="imx-event imx-pending"
+      *ngIf="approverContainer.approverFuture.length > 0 && approverContainer.isInWorkflow && approverContainer.config.VI_ITShop_NextApproverCanBeSeen"
+    >
       <mat-card>
         <mat-card-header>
           <mat-card-title>
-            {{'#LDS#The following employees are entitled to approve this request after the current workflow step.' |
-            translate}}
+            {{ '#LDS#The following employees are entitled to approve this request after the current workflow step.' | translate }}
           </mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <div *ngFor="let pnext of approverContainer.approverFuture" class="imx-approver">
-            {{pnext.Columns.UID_PersonHead.DisplayValue}}
+          <div *ngFor="let approvalStep of approverFuture">
+            <div step>
+              <span caption translate>#LDS#Approval step</span>
+              <span class="imx-spacing"> - </span>
+              <span>{{ approvalStep.display }}</span>
+            </div>
+            <div approver *ngFor="let pnext of approvalStep.data" class="imx-approver">
+              {{ pnext.Columns.UID_PersonHead.DisplayValue }}
+            </div>
           </div>
         </mat-card-content>
       </mat-card>
