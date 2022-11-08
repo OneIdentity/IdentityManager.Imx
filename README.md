@@ -4,6 +4,13 @@
 
 ## Change log
 
+### November 8, 2022
+
+- The repository has been updated with fixes for the following issues.
+  - Dependency updates for CVE-2022-39353
+  - 35988: Report subscriptions fail if PDF is not a valid format for the report.
+  - Other minor stability and bug fixes
+
 ### July 29, 2022
 
 - The repository has been updated with the source code for the Identity Manager 9.0 release in the `v90` branch.
