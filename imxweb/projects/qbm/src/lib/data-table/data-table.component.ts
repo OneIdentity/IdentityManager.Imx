@@ -490,12 +490,14 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
             this.dst?.settings?.navigationState?.withProperties
         };
       }
-      this.propagateNavigationSettingsToGroups(true);
-      if (!groupData.data) {
-        this.groupDataChanged.emit(groupingDisplay);
-      }
+
       // Toggle if group is expanded in view or not
       groupData.isExpanded = !groupData.isExpanded;
+
+      this.propagateNavigationSettingsToGroups(true);
+      if (groupData.isExpanded) {
+        this.groupDataChanged.emit(groupingDisplay);
+      }
     }
   }
 
@@ -661,7 +663,7 @@ export class DataTableComponent<T> implements OnChanges, AfterViewInit, OnDestro
         if (groupByChanged) {
           grouping.isExpanded = false;
         }
-
+        
         if (grouping.isExpanded || skipNavigationChange) {
           const preservedGroupingFilter = grouping.navigationState.filter;
           grouping.navigationState = JSON.parse(JSON.stringify(this.settings.navigationState));

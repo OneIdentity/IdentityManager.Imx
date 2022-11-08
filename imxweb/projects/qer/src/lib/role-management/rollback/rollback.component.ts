@@ -24,136 +24,205 @@
  *
  */
 
-import { Component, OnInit, Inject } from "@angular/core";
-import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from "@elemental-ui/core";
-import { MetadataService, SnackBarService } from "qbm";
-import { StepperSelectionEvent } from "@angular/cdk/stepper";
-import { QerApiService } from "../../qer-api-client.service";
-import { HistoryComparisonData, UiActionData } from "imx-api-qer";
-import { SelectionModel } from "@angular/cdk/collections";
-
-type ComparisonItem = (HistoryComparisonData & { TypeDisplay?: string });
+import { Component, OnInit, Inject, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { ColumnDependentReference, DataSourceToolbarComponent, DataSourceToolbarSettings, MetadataService, SnackBarService } from 'qbm';
+import { StepperSelectionEvent } from '@angular/cdk/stepper';
+import { QerApiService } from '../../qer-api-client.service';
+import { UiActionData } from 'imx-api-qer';
+import { RollebackService } from './rollback.service';
+import { AbstractControl, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { ComparisonItem, RollbackItem } from './rollback-item';
+import { RollbackItemBuilder } from './rollback-item-builder';
+import { IClientProperty } from 'imx-qbm-dbts';
 
 @Component({
-  templateUrl: "./rollback.component.html",
-  styleUrls: ["./rollback.component.scss"]
+  templateUrl: './rollback.component.html',
+  styleUrls: ['./rollback.component.scss'],
 })
 export class RollbackComponent implements OnInit {
-
-  constructor(private readonly sidesheetRef: EuiSidesheetRef,
-    private readonly snackbar: SnackBarService,
-    private readonly api: QerApiService,
-    private readonly busySvc: EuiLoadingService,
-    private readonly metadata: MetadataService,
-    @Inject(EUI_SIDESHEET_DATA) private readonly data: {
-      tableName: string,
-      uid: string
-    }
-  ) { }
-
   public busy = false;
   public completed = false;
   public actions: UiActionData[] = [];
   public uidActions: string[] = [];
-  public compareDate: Date;
-  public maxDate: Date = new Date();
   public comparisonItems: ComparisonItem[] = [];
 
-  public displayedColumns = ['select', 'Object', 'Then', 'Now'];
-  public selection = new SelectionModel<ComparisonItem>(true, []);
+  public displayedColumns: IClientProperty[] = [];
+  public dstSettings: DataSourceToolbarSettings;
+  public ldsChangesQueued = '#LDS#The object has been successfully reset. It may take some time for the changes to take effect.';
+  public dateCdr: ColumnDependentReference;
+  public dateForm = new FormGroup({}, this.workaroundValidator());
+  public comparisonForm = new FormGroup({
+    helperInput: new FormControl(undefined, Validators.required),
+  });
+  public selected: RollbackItem[] = [];
+
+  public entitySchema = RollbackItem.GetEntitySchema();
+
+  public ldsNoChanges = '#LDS#No changes during selected time period.';
+
+  public ldsActionList = '#LDS#The following actions will be taken to roll back the role to the previous state.';
+
+  public ldsSelectItems =
+    '#LDS#The following properties have changed. Select the properties that you want to roll back to the previous state.';
+
+  private rollbackbuilder = new RollbackItemBuilder();
+  private calculateCompareItems = true;
+  private calculateActions = true;
+  @ViewChild(DataSourceToolbarComponent) private readonly dst: DataSourceToolbarComponent;
+
+
+  constructor(
+    private readonly sidesheetRef: EuiSidesheetRef,
+    private readonly snackbar: SnackBarService,
+    private readonly api: QerApiService,
+    private readonly busyService: EuiLoadingService,
+    private readonly metadata: MetadataService,
+    private readonly rollbackService: RollebackService,
+    @Inject(EUI_SIDESHEET_DATA)
+    private readonly data: {
+      tableName: string;
+      uid: string;
+    },
+    private readonly cdref: ChangeDetectorRef
+  ) {
+    this.dateCdr = this.rollbackService.createCdrDate();
+    this.displayedColumns = [
+      this.entitySchema.Columns.Property,
+      this.entitySchema.Columns.HistoryValueDisplay,
+      this.entitySchema.Columns.CurrentValueDisplay,
+    ];
+  }
 
   public ngOnInit(): void {
+    this.cdref.detectChanges();
+  }
+
+  public resetControls(): void {
+    this.calculateActions = true;
+    this.calculateCompareItems = true;
+    this.comparisonForm.get('helperInput').setValue(undefined);
+    this.comparisonItems = [];
+    this.selected = [];
+    this.dst?.clearSelection();
+    this.dstSettings = undefined;
+    this.actions = [];
+    this.uidActions = [];
+  }
+
+  public addControl(name: string, control: AbstractControl): void {
+    this.dateForm.addControl(name, control);
+    this.cdref.detectChanges();
+  }
+
+  public selectionChanged(selection: RollbackItem[]): void {
+    this.selected = selection;
+    this.calculateActions = true;
+    this.comparisonForm.get('helperInput').setValue(this.selected.length > 0 ? 'filled' : undefined);
   }
 
   public async loadCompareItems(): Promise<void> {
-    this.busy = true;
-
+    if (!this.calculateCompareItems) {
+      return;
+    }
+    const overlay = this.busyService.show();
     this.comparisonItems = [];
     try {
-      this.comparisonItems = (await this.api.client.portal_history_comparison_get(this.data.tableName, this.data.uid, { CompareDate: this.compareDate }))
+      this.comparisonItems = (
+        await this.api.client.portal_history_comparison_get(this.data.tableName, this.data.uid, {
+          CompareDate: this.dateCdr.column.GetValue(),
+        })
+      )
         // only take the items that have changed
-        .filter(item => item.HasChanged);
+        .filter((item) => item.HasChanged);
 
       await this.enhanceWithTypeDisplay(this.comparisonItems);
+
+      const dataSource = this.rollbackbuilder.build(this.rollbackbuilder.buildEntityCollectionData(this.comparisonItems));
+      this.dstSettings = {
+        dataSource,
+        entitySchema: RollbackItem.GetEntitySchema(),
+        navigationState: {},
+        displayedColumns: this.displayedColumns,
+      };
+    } finally {
+      this.busyService.hide(overlay);
+      this.calculateCompareItems = false;
     }
-    finally {
-      this.busy = false;
+  }
+
+  public async selectedStepChanged(event: StepperSelectionEvent): Promise<void> {
+    if (this.completed) {
+      return;
+    }
+
+    if (event.selectedIndex === 1) {
+      await this.loadCompareItems();
+    }
+
+    if (event.selectedIndex === 2 && event.previouslySelectedIndex === 1) {
+      await this.loadActions();
     }
   }
 
-  /** Whether the number of selected elements matches the total number of rows. */
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.comparisonItems.length;
-    return numSelected == numRows;
+  public async execute(): Promise<void> {
+    const overlay = this.busyService.show();
+    try {
+      await this.api.client.portal_history_rollback_post(
+        this.data.tableName,
+        this.data.uid,
+        {
+          ActionId: this.uidActions,
+        },
+        {
+          CompareDate: this.dateCdr.column.GetValue(),
+          CompareId: this.selected.map((s) => s.Id.value).reduce((a, b) => a + ',' + b),
+        }
+      );
+      this.completed = true;
+
+      this.sidesheetRef.close(true);
+      this.snackbar.open({ key: this.ldsChangesQueued });
+    } finally {
+      this.busyService.hide(overlay);
+    }
   }
 
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {
-    this.isAllSelected() ?
-      this.selection.clear() :
-      this.comparisonItems.forEach(row => this.selection.select(row));
+  // A little workaround, because the data-cdr is not validating properly
+  private workaroundValidator(): ValidatorFn {
+    return (control: AbstractControl): { error: string } | null => {
+      if (control == null) {
+        return null;
+      }
+
+      return control.get('ComparisonDate')?.value ? null : { error: 'required' };
+    };
   }
 
-  private async enhanceWithTypeDisplay(obj: ComparisonItem[]) {
-    await this.metadata.updateNonExisting(obj.map(i => i.TableName));
-    obj.forEach(element => {
+  private async enhanceWithTypeDisplay(obj: ComparisonItem[]): Promise<void> {
+    await this.metadata.updateNonExisting(obj.map((i) => i.TableName));
+    obj.forEach((element) => {
       element.TypeDisplay = this.metadata.tables[element.TableName].DisplaySingular;
     });
   }
 
-  public async selectedStepChanged(event: StepperSelectionEvent): Promise<void> {
-    if (this.completed)
+  private async loadActions(): Promise<void> {
+    if (!this.calculateActions) {
       return;
-    if (event.selectedIndex === 1 && event.previouslySelectedIndex === 0) {
-      await this.LoadActions();
     }
-  }
-
-  private async LoadActions(): Promise<void> {
-
     // load actions
     this.actions = [];
     this.uidActions = [];
-    this.busy = true;
+    const overlay = this.busyService.show();
     try {
       this.actions = await this.api.client.portal_history_rollback_get(this.data.tableName, this.data.uid, {
-        CompareDate: this.compareDate,
-        CompareId: this.selection.selected.map(s => s.Id).reduce((a, b) => a + "," + b)
+        CompareDate: this.dateCdr.column.GetValue(),
+        CompareId: this.selected.map((s) => s.Id.value).reduce((a, b) => a + ',' + b),
       });
-      this.uidActions = this.actions.filter(a => a.CanExecute).map(a => a.Id);
+      this.uidActions = this.actions.filter((a) => a.CanExecute).map((a) => a.Id);
     } finally {
-      this.busy = false;
+      this.calculateActions = false;
+      this.busyService.hide(overlay);
     }
   }
-
-  public async Execute(): Promise<void> {
-    const b = this.busySvc.show();
-    try {
-      await this.api.client.portal_history_rollback_post(this.data.tableName, this.data.uid,
-        {
-          ActionId: this.uidActions
-        },
-        {
-          CompareDate: this.compareDate,
-          CompareId: this.selection.selected.map(s => s.Id).reduce((a, b) => a + "," + b)
-        });
-      this.completed = true;
-
-      this.sidesheetRef.close(true);
-      this.snackbar.open({ key: this.LdsChangesQueued });
-    } finally {
-      this.busySvc.hide(b);
-    }
-  }
-
-  public LdsChangesQueued = '#LDS#Your changes have been saved. The changes may take a couple of minutes to take effect.';
-
-  public LdsPickComparisonDate = '#LDS#Select a point in time to view the changes since that date.';
-
-  public LdsNoChanges = '#LDS#No changes during selected time period.';
-
-  public LdsActionList = '#LDS#The following actions will be taken to roll back the role to the previous state.';
-
-  public LdsSelectItems = '#LDS#The following properties have changed. Select the properties that you want to roll back to the previous state.';
 }

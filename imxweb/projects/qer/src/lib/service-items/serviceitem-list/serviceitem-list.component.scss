@@ -36,3 +36,31 @@
 eui-icon {
   margin-right: 5px;
 }
+
+  
+.imx-empty-repicients {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+
+  h2 {
+    font-weight: 600;
+  }
+
+  > div {
+    margin-top: 30px;
+  }
+
+  > .eui-icon {
+    color: $black-b;
+  }
+
+  .imx-empty-repicients-description {
+    margin-bottom: 10px;
+    text-align: center;
+  }
+}
+

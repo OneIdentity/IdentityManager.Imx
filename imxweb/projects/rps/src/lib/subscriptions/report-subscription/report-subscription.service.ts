@@ -61,7 +61,10 @@ export class ReportSubscriptionService {
     const subscription = await this.api.typedClient.PortalSubscriptionInteractive.Get();
     await subscription.Data[0].UID_RPSReport.Column.PutValue(uidReport);
     await subscription.Data[0].Ident_RPSSubscription.Column.PutValue(subscription.Data[0].UID_RPSReport.Column.GetDisplayValue());
-    await subscription.Data[0].ExportFormat.Column.PutValue('PDF');
+    const allowedFormats = subscription.Data[0].ExportFormat.Column.GetMetadata().GetLimitedValues();
+    if (allowedFormats && allowedFormats.filter(f => f.Value == 'PDF').length > 0) {
+      await subscription.Data[0].ExportFormat.Column.PutValue('PDF');
+    }
 
     return this.buildRpsSubscription(subscription.Data[0]);
   }

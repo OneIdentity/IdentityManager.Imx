@@ -91,7 +91,7 @@ const routes: Routes = [
     FkAdvancedPickerModule,
     RouterModule.forChild(routes),
   ],
-  providers: [{provide: CREATE_SHELF_TOKEN, useValue: RequestShelvesComponent}],
+  providers: [{provide: CREATE_SHELF_TOKEN, useValue: RequestShelfSidesheetComponent}],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class RequestConfigModule {
