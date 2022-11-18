@@ -4,6 +4,15 @@
 
 ## Change log
 
+### November 17, 2022
+
+The `v82` branch has been updated with fixes for the following issues:
+
+- 36011 Identity administrators cannot change main data for identities.
+- 36016 Changing the application title causes the dashboard link to fail.
+- 36143 Candidate objects for parameter objects sometimes do not get reloaded.
+- 35988 Reports cannot be subscribed if "PDF" is not included in the list of valid values.
+
 ### September 14, 2022
 
 The `v82` branch has been updated with fixes for the following issues:
