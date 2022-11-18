@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { EuiSelectOption } from '@elemental-ui/core';
 import { FilterProperty, LogOp, SqlExpression } from 'imx-qbm-dbts';
@@ -40,6 +40,8 @@ export class ColumnSelectionComponent implements OnInit, OnChanges {
 
 
     @Input() public node: SqlNodeView;
+
+    @Output() public change = new EventEmitter<any>();
 
     public columns: FilterProperty[] = [];
 
@@ -67,6 +69,7 @@ export class ColumnSelectionComponent implements OnInit, OnChanges {
     public selectionChange(value) {
         this.formControl.setValue(value);
         this.node.columnChanged.emit(value);
+        this.change.emit();
     }
 
     public ngOnChanges(changes) {

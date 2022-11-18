@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, OnDestroy, ViewChild, AfterContentInit, Input } from '@angular/core';
+import { Component, OnDestroy, ViewChild, AfterContentInit, Input, ChangeDetectorRef } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { UserMessageService } from './user-message.service';
@@ -60,7 +60,9 @@ export class UserMessageComponent implements AfterContentInit, OnDestroy {
 
   private readonly subscriptions: Subscription[] = [];
 
-  constructor(private readonly messageService: UserMessageService, private readonly logger: ClassloggerService) {
+  constructor(private readonly messageService: UserMessageService, private readonly logger: ClassloggerService,
+    private cdref: ChangeDetectorRef
+  ) {
     this.logger.debug(this, 'init user message component');
     this.subscriptions.push(this.messageService.subject.subscribe(message => {
 
@@ -68,8 +70,13 @@ export class UserMessageComponent implements AfterContentInit, OnDestroy {
       this.message = message;
       if (this.alert) {
         this.alert.isDismissed = !this.isForMe();
+        this.cdref.detectChanges();
       }
     }));
+  }
+
+  public dismissClick(){
+    this.cdref.detectChanges();
   }
 
   private isForMe() {

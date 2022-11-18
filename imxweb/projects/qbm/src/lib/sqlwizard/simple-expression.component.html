@@ -1,4 +1,4 @@
-<imx-sqlwizard-columnselection class="column-selector" [node]="expr"></imx-sqlwizard-columnselection>
+<imx-sqlwizard-columnselection class="column-selector" [node]="expr" (change)="emitChanges()"></imx-sqlwizard-columnselection>
 
 <ng-container *ngIf="expr.Property">
     &nbsp;
@@ -13,7 +13,7 @@
 
     <div class="value-list" *ngIf="isArray(expr.Data.Value)">
         <div class="value-box" *ngFor="let elem of expr.Data.Value; let idx = index; trackBy:trackByFn">
-            <imx-sqlwizard-singlevalue [expr]="expr" mode="array" [index]="idx"></imx-sqlwizard-singlevalue>
+            <imx-sqlwizard-singlevalue [expr]="expr" mode="array" [index]="idx" (change)="emitChanges()"></imx-sqlwizard-singlevalue>
             <button mat-icon-button [attr.aria-label]="'#LDS#Delete' | translate"
                 data-imx-identifier="simple-exp-button-delete-element" (click)="delete(idx)">
                 <eui-icon icon="delete"></eui-icon>
@@ -26,6 +26,6 @@
     </div>
 
     <ng-container *ngIf="!isArray(expr.Data.Value)">
-        <imx-sqlwizard-singlevalue [expr]="expr"></imx-sqlwizard-singlevalue>
+        <imx-sqlwizard-singlevalue [expr]="expr" (change)="emitChanges()"></imx-sqlwizard-singlevalue>
     </ng-container>
 </ng-container>

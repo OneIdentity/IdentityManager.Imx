@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { SqlColumnTypes, ValType } from 'imx-qbm-dbts';
 import { SqlNodeView } from './SqlNodeView';
 
@@ -39,4 +39,10 @@ export class WhereClauseExpressionComponent {
     public ValType = ValType;
 
     @Input() public expr: SqlNodeView;
+
+    @Output() public change = new EventEmitter<any>();
+
+    public emitChanges(): void {
+      this.change.emit();
+    }
 }

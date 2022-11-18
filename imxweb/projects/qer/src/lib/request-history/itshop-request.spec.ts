@@ -131,20 +131,20 @@ describe('ItshopRequest', () => {
 
   for (const testcase of [
     {
-      description: ' 2 properties (1 property with a value)', nonEmptyProperties: 1,
+      description: ' 3 properties (2 property with a value)', nonEmptyProperties: 2,
       properties: {
         DisplayOrg: createColumn('DisplayOrg')
       }
     },
     {
-      description: ' 3 properties (2 property with a value)', nonEmptyProperties: 2,
+      description: ' 4 properties (3 property with a value)', nonEmptyProperties: 3,
       properties: {
         DisplayOrg: createColumn('DisplayOrg'),
         OrderReason: createColumn('OrderReason')
       }
     },
     {
-      description: ' 3 properties (0 property with a value)', nonEmptyProperties: 0,
+      description: ' 4 properties (1 property with a value)', nonEmptyProperties: 1,
       properties: {}
     }
   ]) {

@@ -38,8 +38,13 @@ export class RoleMembershipsComponent {
   @Input() public entity: IEntity;
   @Input() public isAdmin: boolean;
   @Input() public ownershipInfo: OwnershipInformation;
+  public autoMembershipsValid = true;
 
-  constructor(private readonly roleService: RoleService) {}
+  constructor(private readonly roleService: RoleService) {
+    this.roleService.autoMembershipDirty$.subscribe((flag) => {
+      this.autoMembershipsValid = !flag;
+    });
+  }
 
   public get canBeDynamic(): boolean {
     return this.entity && this.roleService.canHaveDynamicMemberships(this.entity.TypeName);

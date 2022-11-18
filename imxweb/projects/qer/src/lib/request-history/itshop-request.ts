@@ -97,5 +97,8 @@ export class ItshopRequest extends PortalItshopRequests implements RequestParame
       property.value != null && property.value !== '' &&
       !this.parameterColumns.find(column => column.ColumnName === property.Column.ColumnName)
     ).map(property => new BaseReadonlyCdr(property.Column));
+
+    const document = new BaseReadonlyCdr(this.DocumentNumber.Column, '#LDS#Document number');
+    this.propertyInfo.splice(3, 0, document);
   }
 }

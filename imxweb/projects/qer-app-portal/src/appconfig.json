@@ -1,5 +1,6 @@
 {
   "Title": "Portal",
+  "WebAppIdentifier": "portal",
   "WebAppIndex": "portal",
   "LocalDocPath": {
     "en-US": "imx/doc/OneIM_QER_WebPortal_en-us.html5/OneIM_QER_WebPortal.html",
