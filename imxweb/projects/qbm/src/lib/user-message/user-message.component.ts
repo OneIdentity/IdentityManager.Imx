@@ -72,6 +72,10 @@ export class UserMessageComponent implements AfterContentInit, OnDestroy {
         this.alert.isDismissed = !this.isForMe();
         this.cdref.detectChanges();
       }
+
+      // make sure messages get displayed, even if the notification comes from
+      // an async context.
+      this.cdref.detectChanges();
     }));
   }
 
