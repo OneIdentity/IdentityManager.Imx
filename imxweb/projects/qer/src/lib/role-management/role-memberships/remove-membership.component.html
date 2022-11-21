@@ -13,15 +13,15 @@
   </eui-alert>
 
   <form class="imx-form" [formGroup]="dynamicExclusionForm">
-    <mat-card *ngIf="countDirect > 0">
-      <mat-checkbox formControlName="deleteDirect" data-imx-identifier="remove-membership-checkbox-direct">
-        {{'#LDS#Delete {0} direct assignments' | translate | ldsReplace:countDirect }}
+    <mat-card *ngIf="data.countDirect > 0">
+      <mat-checkbox [ngClass]="{'hideBox': !withCheckboxes}" formControlName="deleteDirect" data-imx-identifier="remove-membership-checkbox-direct">
+        {{'#LDS#Delete {0} direct assignments' | translate | ldsReplace:data.countDirect }}
       </mat-checkbox>
     </mat-card>
 
-    <mat-card *ngIf="countRequested > 0">
-      <mat-checkbox formControlName="abortRequested" data-imx-identifier="remove-membership-checkbox-requested">
-        {{'#LDS#Unsubscribe {0} memberships' | translate | ldsReplace:countRequested}}
+    <mat-card *ngIf="data.countRequested > 0">
+      <mat-checkbox [ngClass]="{'hideBox': !withCheckboxes}" formControlName="abortRequested" data-imx-identifier="remove-membership-checkbox-requested">
+        {{'#LDS#Unsubscribe {0} memberships' | translate | ldsReplace:data.countRequested}}
       </mat-checkbox>
 
       <div class="beneath-checkbox" *ngIf="formAbortRequested.value">
@@ -33,10 +33,10 @@
 
     </mat-card>
 
-    <mat-card *ngIf="countDynamic > 0">
+    <mat-card *ngIf="data.countDynamic > 0">
 
-      <mat-checkbox formControlName="excludeDynamic" data-imx-identifier="remove-membership-checkbox-dynamic">
-        {{'#LDS#Exclude {0} members assigned by a dynamic role' | translate | ldsReplace: countDynamic}}
+      <mat-checkbox [ngClass]="{'hideBox': !withCheckboxes}" formControlName="excludeDynamic" data-imx-identifier="remove-membership-checkbox-dynamic">
+        {{'#LDS#Exclude {0} members assigned by a dynamic role' | translate | ldsReplace: data.countDynamic}}
       </mat-checkbox>
 
       <div class="beneath-checkbox" *ngIf="formExcludeDynamic.value">

@@ -61,7 +61,7 @@ export class UserMessageComponent implements AfterContentInit, OnDestroy {
   private readonly subscriptions: Subscription[] = [];
 
   constructor(private readonly messageService: UserMessageService, private readonly logger: ClassloggerService,
-    private cdref: ChangeDetectorRef,
+    private cdref: ChangeDetectorRef
   ) {
     this.logger.debug(this, 'init user message component');
     this.subscriptions.push(this.messageService.subject.subscribe(message => {
@@ -70,12 +70,17 @@ export class UserMessageComponent implements AfterContentInit, OnDestroy {
       this.message = message;
       if (this.alert) {
         this.alert.isDismissed = !this.isForMe();
+        this.cdref.detectChanges();
       }
 
       // make sure messages get displayed, even if the notification comes from
       // an async context.
       this.cdref.detectChanges();
     }));
+  }
+
+  public dismissClick(){
+    this.cdref.detectChanges();
   }
 
   private isForMe() {

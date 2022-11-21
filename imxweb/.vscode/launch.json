@@ -61,22 +61,10 @@
     },
     {
       "name": "QER App Portal (Chrome)",
-      "type": "chrome",
       "request": "launch",
-      "port": 9230,
-      "sourceMaps": true,
+      "type": "pwa-chrome",
       "url": "http://localhost:4200/",
-      "webRoot": "${workspaceFolder}/projects/qer-app-portal",
-      "sourceMapPathOverrides": {
-        "webpack:///./*": "${webRoot}/*",
-        "webpack:///src/*": "${webRoot}/*",
-        "webpack:///*": "*",
-        "webpack:///./~/*": "${webRoot}/node_modules/*",
-        "webpack:///ng://qbm/lib/*": "${workspaceFolder}/projects/qbm/src/lib/*",
-        "webpack:///ng://qer/lib/*": "${workspaceFolder}/projects/qer/src/lib/*",
-        "webpack:///ng://tsb/lib/*": "${workspaceFolder}/projects/tsb/src/lib/*",
-        "webpack:///ng://att/lib/*": "${workspaceFolder}/projects/att/src/lib/*"
-      }
+      "webRoot": "${workspaceFolder}"
     },
     {
       "name": "QER App Portal (Chrome, API Server)",
@@ -266,7 +254,7 @@
       "port": 9230,
       "sourceMaps": true,
       "url": "http://localhost:4200/",
-      "webRoot": "${workspaceFolder}/projects/qer-app-pwdPortal",
+      "webRoot": "${workspaceFolder}/projects/qer-app-pwdportal",
       "sourceMapPathOverrides": {
         "webpack:///./*": "${webRoot}/*",
         "webpack:///src/*": "${webRoot}/*",
@@ -282,7 +270,7 @@
       "request": "launch",
       "reAttach": true,
       "url": "http://localhost:4200/",
-      "webRoot": "${workspaceFolder}/projects/qer-app-pwdPortal",
+      "webRoot": "${workspaceFolder}/projects/qer-app-pwdportal",
       "pathMappings": [
         {
           "url": "webpack:///projects",

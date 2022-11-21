@@ -29,7 +29,7 @@ import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TypedEntity } from 'imx-qbm-dbts';
 import { configureTestSuite } from 'ng-bullet';
 
-import { clearStylesFromDOM } from 'qbm';
+import { clearStylesFromDOM, ConfirmationService, SnackBarService } from 'qbm';
 import { RoleService } from '../role.service';
 import { SecondaryMembershipsComponent } from './secondary-memberships.component';
 
@@ -39,34 +39,42 @@ describe('SecondaryMembershipsComponent', () => {
 
   const euiLoadingServiceStub = {
     hide: jasmine.createSpy('hide'),
-    show: jasmine.createSpy('show')
+    show: jasmine.createSpy('show'),
+  };
+
+  const mockConfirmationService = {
+    confirm: jasmine.createSpy('confirmDelete').and.callFake(() => Promise.resolve(true)),
   };
 
   configureTestSuite(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        SecondaryMembershipsComponent
-      ],
+      declarations: [SecondaryMembershipsComponent],
       providers: [
         {
           provide: EuiSidesheetService,
-          useValue: {}
+          useValue: {},
         },
         {
           provide: RoleService,
           useValue: {
             GetUidPerson: jasmine.createSpy('GetUidPerson'),
             getMemberships: jasmine.createSpy('getMemberships'),
-            getMembershipEntitySchema: jasmine.createSpy('getMembershipEntitySchema')
-
-          }
+            getMembershipEntitySchema: jasmine.createSpy('getMembershipEntitySchema'),
+          },
         },
         {
           provide: EuiLoadingService,
-          useValue: euiLoadingServiceStub
-        }
-      ]
-    })
+          useValue: euiLoadingServiceStub,
+        },
+        { provide: ConfirmationService, useValue: mockConfirmationService },
+        {
+          provide: SnackBarService,
+          useValue: {
+            open: jasmine.createSpy('open'),
+          },
+        },
+      ],
+    });
   });
 
   beforeEach(() => {
@@ -74,7 +82,6 @@ describe('SecondaryMembershipsComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
-
 
   afterAll(() => {
     clearStylesFromDOM();
@@ -88,18 +95,17 @@ describe('SecondaryMembershipsComponent', () => {
     {
       description: 'could click the delete-button, because one entity was selected',
       selectedEntities: [{}] as TypedEntity[],
-      expectedResult: true
+      expectedResult: true,
     },
     {
       description: 'could not click the delete-button, because no entity was selected',
       selectedEntities: [] as TypedEntity[],
-      expectedResult: false
-    }
+      expectedResult: false,
+    },
   ]) {
     it(testcase.description, () => {
       component['selectedEntities'] = testcase.selectedEntities;
       expect(component.canDeleteAllSelected()).toBe(testcase.expectedResult);
-    })
+    });
   }
-
 });

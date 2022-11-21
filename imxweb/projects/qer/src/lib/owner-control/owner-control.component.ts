@@ -24,13 +24,13 @@
  *
  */
 
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { AbstractControl, FormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 import { IEntityColumn } from 'imx-qbm-dbts';
-import { BaseCdr } from 'qbm';
+import { BaseCdr, BaseReadonlyCdr } from 'qbm';
 import { OwnerCandidateOptions } from './owner.model';
 import { OwnerControlService } from './owner-control.service';
 
@@ -39,9 +39,10 @@ import { OwnerControlService } from './owner-control.service';
   templateUrl: './owner-control.component.html',
   styleUrls: ['./owner-control.component.scss']
 })
-export class OwnerControlComponent implements OnInit, OnDestroy {
+export class OwnerControlComponent implements OnChanges, OnDestroy {
 
   @Input() public column: IEntityColumn;
+  @Input() public isReadOnly: boolean;
   @Output() public formControlCreated = new EventEmitter<AbstractControl>();
 
   public ownerCandidateOptions = OwnerCandidateOptions;
@@ -62,10 +63,9 @@ export class OwnerControlComponent implements OnInit, OnDestroy {
 
   constructor(public ownerService: OwnerControlService) { }
 
-  public ngOnInit(): void {
-
-    this.productOwnerCdr = new BaseCdr(this.column);
-    this.productOwnerPersonCdr = this.ownerService.createGroupOwnerPersonCdr();
+  public ngOnChanges(): void {
+    this.productOwnerCdr = this.isReadOnly ? new BaseReadonlyCdr(this.column) : new BaseCdr(this.column);
+    this.productOwnerPersonCdr = this.ownerService.createGroupOwnerPersonCdr(this.isReadOnly);
   }
 
   public ngOnDestroy(): void {

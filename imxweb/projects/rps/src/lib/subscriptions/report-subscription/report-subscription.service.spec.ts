@@ -53,6 +53,15 @@ function buildEmptySubscription(): PortalSubscriptionInteractive {
     ExportFormat: {
       Column: {
         GetValue: () => format,
+        GetMetadata: () => {
+          return {
+            GetLimitedValues: () => {
+              return [{
+                Value: 'PDF'
+              }];
+            }
+          };
+        },
         PutValue: (value: string) => format = value
       }
     }

@@ -71,7 +71,15 @@ describe('ReportSubscription', () => {
           Column: {}
         },
         ExportFormat: {
-          Column: {}
+          Column: {
+            GetMetadata: () => {
+              return {
+                GetLimitedValues: () => {
+                  return null;
+                }
+              };
+            }
+          }
         },
         AddtlSubscribers: {
           Column: {}
@@ -106,13 +114,21 @@ describe('ReportSubscription', () => {
             Column: {}
           },
           ExportFormat: {
-            Column: {}
+            Column: {
+              GetMetadata: () => {
+                return {
+                  GetLimitedValues: () => {
+                    return null;
+                  }
+                };
+              }
+            }
           },
           AddtlSubscribers: {
             Column: {}
           },
           extendedDataRead: testcase.parameter,
-          onChangeExtendedDataRead: _=> {}
+          onChangeExtendedDataRead: _ => { }
         } as unknown as PortalSubscriptionInteractive,
         () => [],
         parameterDataService);
