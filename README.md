@@ -4,6 +4,14 @@
 
 ## Change log
 
+### December 12, 2022
+
+The `v82` branch has been updated with fixes for the following issues:
+
+- 36288 Fix assertion error by moving code from constructor to OnInit method in `imxweb/projects/qbm/src/lib/user-message/user-message.component.ts`.
+- 387119 Some tiles on the dashboard were overlapping on smaller resolutions.
+- 393025 An error occurred when GetDataModel was undefined.
+
 ### November 17, 2022
 
 The `v82` branch has been updated with fixes for the following issues:
@@ -71,7 +79,6 @@ For more information about each project, see the `readme.md` files in each proje
 |`qer-app-portal`|Portal|Angular app|`qbm`, `qer`|
 |`qer-app-operationssupport`|Operations Support Portal|Angular app|`qbm`, `qer`|
 |`qer-app-pwdportal`|Password Reset Portal|Angular app|`qbm`, `qer`|
-|`arc-app-certaccess`|Starling CertAccess|Angular app|various|
 
 ## Building
 
@@ -87,8 +94,6 @@ To build any library or app, run `npm build <name>`. Note that you must build ea
 When changing the code of a _library_, you will need to build and deploy customized versions of all the apps that should use the customized versions. For example, changing `qer` will require that you also compile `qer-app-portal`, `qer-app-operationssupport` and `qer-app-pwdportal` because all of these apps include `qbm`.
 
 When changing the code of a _plugin library_, you will need to build and deploy customized versions of the plugin library itself, and all plugin libraries depending on it. For example, changing `tsb` will require that you also compile `aad` and `o3t` because these plugins include `tsb`.
-
-_Note_: Starling CertAccess currently does not support hosting custom HTML5 apps.
 
 ### Debugging
 

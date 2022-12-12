@@ -90,7 +90,7 @@ export class FkHierarchicalDialogComponent implements OnInit, OnDestroy {
 
   public async ngOnInit(): Promise<void> {
     await this.getPreselectedEntities();
-    this.filters = (await this.hierarchyService.fkTable.GetDataModel()).Filters;
+    this.filters = (await this.hierarchyService?.fkTable?.GetDataModel())?.Filters;
   }
 
   /**
