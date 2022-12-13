@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, OnDestroy, ViewChild, AfterContentInit, Input, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, ViewChild, AfterContentInit, Input, ChangeDetectorRef, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { UserMessageService } from './user-message.service';
@@ -40,7 +40,7 @@ import { EuiAlertComponent } from '@elemental-ui/core';
   templateUrl: './user-message.component.html',
   styleUrls: ['./user-message.component.scss']
 })
-export class UserMessageComponent implements AfterContentInit, OnDestroy {
+export class UserMessageComponent implements OnInit, AfterContentInit, OnDestroy {
   /**
    * @ignore
    * The ElementalUI alert component
@@ -62,21 +62,24 @@ export class UserMessageComponent implements AfterContentInit, OnDestroy {
 
   constructor(private readonly messageService: UserMessageService, private readonly logger: ClassloggerService,
     private cdref: ChangeDetectorRef
-  ) {
+  ) {}
+
+  public ngOnInit(): void {
     this.logger.debug(this, 'init user message component');
-    this.subscriptions.push(this.messageService.subject.subscribe(message => {
+    this.subscriptions.push(
+      this.messageService.subject.subscribe((message) => {
+        this.logger.debug(this, 'message received:', message);
+        this.message = message;
+        if (this.alert) {
+          this.alert.isDismissed = !this.isForMe();
+          this.cdref.detectChanges();
+        }
 
-      this.logger.debug(this, 'message received:', message);
-      this.message = message;
-      if (this.alert) {
-        this.alert.isDismissed = !this.isForMe();
+        // make sure messages get displayed, even if the notification comes from
+        // an async context.
         this.cdref.detectChanges();
-      }
-
-      // make sure messages get displayed, even if the notification comes from
-      // an async context.
-      this.cdref.detectChanges();
-    }));
+      })
+    );
   }
 
   public dismissClick(){
