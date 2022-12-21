@@ -24,14 +24,14 @@
  *
  */
 
-import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { OwnershipInformation } from 'imx-api-qer';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
 import { IEntity } from 'imx-qbm-dbts';
 import { RoleService } from '../role.service';
 import { ConfirmationService, ExtService, TabItem } from 'qbm';
 import { MatTabGroup } from '@angular/material/tabs';
 import { Subscription } from 'rxjs';
+import { DataManagementService } from '../data-management.service';
 
 @Component({
   selector: 'imx-role-detail',
@@ -50,30 +50,23 @@ export class RoleDetailComponent implements OnInit, OnDestroy {
   private confirmIsOpen = false;
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA)
-    public data: {
-      entity: IEntity;
-      isAdmin: boolean;
-      ownershipInfo: OwnershipInformation;
-      editableFields: string[];
-    },
+    private busyService: EuiLoadingService,
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly roleService: RoleService,
-    private readonly membershipService: RoleService,
+    private dataManagementService: DataManagementService,
     private readonly confirm: ConfirmationService,
-    private readonly tabService: ExtService,
+    private readonly tabService: ExtService
   ) {
-
     this.parameters = {
-      tablename: this.data.ownershipInfo.TableName,
-      entity: this.data.entity
+      tablename: this.roleService.ownershipInfo.TableName,
+      entity: this.dataManagementService.entityInteractive.GetEntity(),
     };
-    this.roleService.dataDirtySubject.subscribe((flag) => {
+    this.dataManagementService.mainDataDirty$.subscribe((flag) => {
       this.canClose = !flag;
     });
-    this.roleService.autoMembershipDirty$.subscribe((flag) => {
+    this.dataManagementService.autoMembershipDirty$.subscribe((flag) => {
       this.autoMembershipsValid = !flag;
-    })
+    });
     this.sidesheetRef.closeClicked().subscribe(async (result) => {
       if (this.confirmIsOpen) {
         return;
@@ -91,32 +84,60 @@ export class RoleDetailComponent implements OnInit, OnDestroy {
     });
   }
 
+  public get objectType(): string {
+    return this.dataManagementService.entityInteractive.GetEntity().TypeName;
+  }
+
+  public get objectUid(): string {
+    return this.dataManagementService.entityInteractive.GetEntity().GetKeys().join(',');
+  }
+
   public async ngOnInit(): Promise<void> {
     /**
      * Resolve an issue where the mat-tab navigation arrows could appear on first load
      */
-     this.subscriptions$.push(
+    this.subscriptions$.push(
       this.sidesheetRef.componentInstance.onOpen().subscribe(() => {
         // Recalculate header
         this.tabs.updatePagination();
-    }));
-    this.dynamicTabs = (await this.tabService.getFittingComponents<TabItem>('roleOverview',
-      (ext) =>  ext.inputData.checkVisibility(this.parameters)))
-      .sort((tab1: TabItem, tab2: TabItem) => tab1.sortOrder - tab2.sortOrder);
+      })
+    );
+    this.dynamicTabs = (
+      await this.tabService.getFittingComponents<TabItem>('roleOverview', (ext) => ext.inputData.checkVisibility(this.parameters))
+    ).sort((tab1: TabItem, tab2: TabItem) => tab1.sortOrder - tab2.sortOrder);
 
     // implement tab checking logic
     this.defaultClickHandler = this.tabs._handleClick;
     this.tabs._handleClick = async (tab, header, index) => {
-      if (index !== this.tabs.selectedIndex && await this.checkConfirmation()) {
-        this.roleService.autoMembershipDirty(false);
-        this.roleService.dataDirty(false);
-        this.defaultClickHandler.apply(this.tabs, [tab, header, index])
+      const isNewTab = index !== this.tabs.selectedIndex;
+      if (!isNewTab) {
+        return;
       }
-    }
+      if (this.leavingWithDirty()) {
+        if (await this.confirm.confirmLeaveWithUnsavedChanges(null, null, true)) {
+          // Need to reload the interactive entity to discard old data
+          this.busyService.show();
+          try {
+            this.dataManagementService.autoMembershipDirty(false);
+            this.dataManagementService.mainDataDirty(false);
+            await this.dataManagementService.setInteractive();
+          } finally {
+            this.busyService.hide();
+          }
+        }
+      }
+      this.defaultClickHandler.apply(this.tabs, [tab, header, index]);
+    };
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions$.map(sub => sub.unsubscribe());
+    this.subscriptions$.map((sub) => sub.unsubscribe());
+  }
+
+  public leavingWithDirty(): boolean {
+    const leavingMainWithDirty = this.tabs.selectedIndex === 0 && !this.canClose;
+    const leavingMemWithDirty = this.tabs.selectedIndex === 1 && !this.autoMembershipsValid;
+    return leavingMainWithDirty || leavingMemWithDirty;
   }
 
   public async checkConfirmation(): Promise<boolean> {
@@ -131,10 +152,10 @@ export class RoleDetailComponent implements OnInit, OnDestroy {
   }
 
   public canHaveMemberships(): boolean {
-    return this.membershipService.canHaveMemberships(this.data.ownershipInfo.TableName);
+    return this.roleService.canHaveMemberships();
   }
 
   public canHaveEntitlements(): boolean {
-    return this.membershipService.canHaveEntitlements(this.data.ownershipInfo.TableName);
+    return this.roleService.canHaveEntitlements();
   }
 }

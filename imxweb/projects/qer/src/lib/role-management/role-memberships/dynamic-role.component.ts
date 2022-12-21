@@ -28,12 +28,13 @@ import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { PortalDynamicgroup } from 'imx-api-qer';
-import { SqlWizardExpression, IEntity, WriteExtTypedEntity, SqlExpression, isExpressionInvalid, LogOp } from 'imx-qbm-dbts';
+import { SqlWizardExpression, WriteExtTypedEntity, SqlExpression, isExpressionInvalid, LogOp } from 'imx-qbm-dbts';
 import { BaseCdr, ColumnDependentReference, ConfirmationService } from 'qbm';
 import { QerApiService } from '../../qer-api-client.service';
 import { RoleService } from '../role.service';
 import _ from 'lodash';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { DataManagementService } from '../data-management.service';
 
 @Component({
   templateUrl: './dynamic-role.component.html',
@@ -46,6 +47,7 @@ export class DynamicRoleComponent implements OnInit {
     formBuilder: FormBuilder,
     private readonly apiService: QerApiService,
     private readonly roleService: RoleService,
+    private dataManagementService: DataManagementService,
     private readonly translator: TranslateService,
     private readonly cdref: ChangeDetectorRef,
     private readonly confirmSvc: ConfirmationService,
@@ -55,8 +57,6 @@ export class DynamicRoleComponent implements OnInit {
   }
 
   @Input() uidDynamicGroup: string;
-  @Input() public isAdmin: boolean;
-  @Input() public entity: IEntity;
 
   get formArray(): FormArray {
     return this.formGroup.get('formArray') as FormArray;
@@ -102,7 +102,7 @@ export class DynamicRoleComponent implements OnInit {
         await this.dynamicGroup.GetEntity().Commit(true);
       } else {
         const e = <WriteExtTypedEntity<{ NewDynamicRole: SqlExpression }>>(
-          await this.roleService.getInteractive(this.entity.TypeName, this.entity.GetKeys()[0], this.isAdmin)
+          this.dataManagementService.entityInteractive
         );
         e.extendedData = { NewDynamicRole: this.sqlExpression.Expression };
         await e.GetEntity().Commit(true);
@@ -110,9 +110,10 @@ export class DynamicRoleComponent implements OnInit {
         await this.loadDynamicRole();
       }
     } finally {
+      await this.dataManagementService.setInteractive();
       this.resetState();
       this.busyService.hide();
-      this.roleService.autoMembershipDirty(false);
+      this.dataManagementService.autoMembershipDirty(false);
     }
   }
 
@@ -124,7 +125,7 @@ export class DynamicRoleComponent implements OnInit {
       },
     };
     this.cdref.detectChanges();
-    this.roleService.autoMembershipDirty(true);
+    this.dataManagementService.autoMembershipDirty(true);
   }
 
   public async deleteDynamic(): Promise<void> {
@@ -151,7 +152,8 @@ export class DynamicRoleComponent implements OnInit {
       }
       this.dynamicGroup = null;
       this.sqlExpression = null;
-      this.roleService.autoMembershipDirty(false);
+      this.dataManagementService.autoMembershipDirty(false);
+      await this.dataManagementService.setInteractive();
     } finally {
       this.busyService.hide();
     }
@@ -160,9 +162,9 @@ export class DynamicRoleComponent implements OnInit {
   public checkChanges(): void {
     this.exprHasntChanged = _.isEqual(this.sqlExpression?.Expression, this.lastSavedExpression);
     if (!this.exprHasntChanged) {
-      this.roleService.autoMembershipDirty(true);
+      this.dataManagementService.autoMembershipDirty(true);
     } else if (this.cdrsHaventChanged && this.exprHasntChanged) {
-      this.roleService.autoMembershipDirty(false);
+      this.dataManagementService.autoMembershipDirty(false);
     }
   }
 
@@ -171,9 +173,9 @@ export class DynamicRoleComponent implements OnInit {
       return cdr.column.GetValue() === this.lastSavedCDRs[index];
     }).every(isTrue => isTrue);
     if (!this.cdrsHaventChanged) {
-      this.roleService.autoMembershipDirty(true);
+      this.dataManagementService.autoMembershipDirty(true);
     } else if (this.cdrsHaventChanged && this.exprHasntChanged) {
-      this.roleService.autoMembershipDirty(false);
+      this.dataManagementService.autoMembershipDirty(false);
     }
   }
 

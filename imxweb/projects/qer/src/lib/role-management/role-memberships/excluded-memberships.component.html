@@ -10,7 +10,7 @@
       [searchBoxText]="'#LDS#Search' | translate" (navigationStateChanged)="onNavigationStateExcludedChanged($event)"
       (search)="onSearchExcluded($event)"></imx-data-source-toolbar>
 
-    <mat-card>
+    <mat-card *ngIf="schema?.Columns">
       <imx-data-table class="no-row-selection" #dataTableExclusions [dst]="dstExcluded" detailViewVisible="false"
         [selectable]="true" (selectionChanged)="onExclusionSelected($event)" mode="manual"
         noDataText="#LDS#There are currently no excluded members." noDataIcon="usergroup"

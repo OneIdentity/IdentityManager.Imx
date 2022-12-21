@@ -18,7 +18,7 @@
         <ng-container *ngIf="compareItems && !showKeyMissingError">
           <imx-data-source-toolbar #dst data-imx-identifier="compare-data-source-toolbar" [settings]="dstSettings" [options]=""> </imx-data-source-toolbar>
           <div class="imx-step-data-table">
-            <imx-data-table data-imx-identifier="compare-data-table" [dst]="dst" detailViewVisible="false" mode="manual" noDataText="#LDS#No changes between objects found">
+            <imx-data-table data-imx-identifier="compare-data-table" [dst]="dst" detailViewVisible="false" mode="manual" noDataText="#LDS#Currently, no objects are assigned to the two selected objects.">
               <imx-data-table-generic-column columnName="assigned" [columnLabel]="'#LDS#Assigned object' | translate">
                 <ng-template let-item>
                   <div>{{ item.Display.value }}</div>

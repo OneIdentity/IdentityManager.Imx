@@ -181,14 +181,15 @@ export class EntitlementsService {
     let publishCount = 0;
 
     for (const entitlement of entitlements) {
+      const interactive = (await this.aobClient.typedClient.PortalEntitlementInteractive.Get_byid(entitlement.GetEntity().GetKeys()[0])).Data[0];
       if (!publishData.publishFuture) {
-        entitlement.IsInActive.value = publishData.publishFuture;
+       await interactive.IsInActive.Column.PutValue(publishData.publishFuture);
       } else {
-        entitlement.ActivationDate.value = publishData.date;
+       await interactive.ActivationDate.Column.PutValue(publishData.date);
       }
 
       this.logger.debug(this, 'Commit change: publish entitlement...');
-      if (await this.tryCommit(entitlement)) {
+      if (await this.tryCommit(interactive)) {
         publishCount++;
       }
     }
@@ -200,11 +201,13 @@ export class EntitlementsService {
     let unpublishCount = 0;
 
     for (const entitlement of entitlements) {
-      entitlement.ActivationDate.value = null;
-      entitlement.IsInActive.value = true;
+      const interactive = (await this.aobClient.typedClient.PortalEntitlementInteractive.Get_byid(entitlement.GetEntity().GetKeys()[0])).Data[0];
+
+      await interactive.IsInActive.Column.PutValue(true);
+      await interactive.ActivationDate.Column.PutValue(null);
 
       this.logger.debug(this, 'Commit change: unpublish entitlement...');
-      if (await this.tryCommit(entitlement)) {
+      if (await this.tryCommit(interactive)) {
         unpublishCount++;
       }
     }

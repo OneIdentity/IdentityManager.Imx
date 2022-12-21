@@ -4,6 +4,18 @@
 
 ## Change log
 
+### December 21, 2022
+
+- The repository has been updated with fixes for the following issues.
+  - 323931 Role details sidesheet has stale data problems.
+  - 330766/36011 Members of the identity administrator roles cannot edit some identity data.
+  - 384912 Login errors were not being handled correctly.
+  - 332393/36057 Publishing of an application entitlement did not work correctly.
+  - 388710/36356 The detail sidesheet for a request template did not open corectly.
+  - 314291 The button to add a configuration setting was visible even when no setting could be added.
+  - 387119 Some tiles on the dashboard were overlapping on smaller resolutions.
+  - 386868/36143 Candidates for parameter values were not correctly reloaded.
+
 ### November 8, 2022
 
 - The repository has been updated with fixes for the following issues.
@@ -77,7 +89,6 @@ For more information about each project, see the `readme.md` files in each proje
 |`qer-app-portal`|Portal|Angular app|`qbm`, `qer`|
 |`qer-app-operationssupport`|Operations Support Portal|Angular app|`qbm`, `qer`|
 |`qer-app-pwdportal`|Password Reset Portal|Angular app|`qbm`, `qer`|
-|`arc-app-certaccess`|Starling CertAccess|Angular app|various|
 
 ## Installing node.js
 
@@ -97,8 +108,6 @@ To build any library or app, run `npm build <name>`. Note that you must build ea
 When changing the code of a _library_, you will need to build and deploy customized versions of all the apps that should use the customized versions. For example, changing `qer` will require that you also compile `qer-app-portal`, `qer-app-operationssupport` and `qer-app-pwdportal` because all of these apps include `qbm`.
 
 When changing the code of a _plugin library_, you will need to build and deploy customized versions of the plugin library itself, and all plugin libraries depending on it. For example, changing `tsb` will require that you also compile `aad` and `o3t` because these plugins include `tsb`.
-
-_Note_: Starling CertAccess currently does not support hosting custom HTML5 apps.
 
 ### Debugging
 

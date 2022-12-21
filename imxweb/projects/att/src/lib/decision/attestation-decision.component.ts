@@ -256,9 +256,6 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
     setTimeout(() => (busyIndicator = this.busyService.show()));
 
     try {
-      if (this.dataModel == null) {
-        this.dataModel = await this.attestationCases.getDataModel();
-      }
       const dataSource = await this.attestationCases.get({
         Escalation: this.attestationCases.isChiefApproval,
         ...this.navigationState,
@@ -377,12 +374,12 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
   }
 
   private async initDataModel(): Promise<void> {
-    const dataModel = await this.attestationCases.getDataModel();
+    this.dataModel = await this.attestationCases.getDataModel();
 
     this.filterOptions = this.dataModel?.Filters ?? [];
 
     this.groupData = createGroupData(
-      dataModel,
+      this.dataModel,
       (parameters) =>
         this.attestationCases.getGroupInfo({
           ...{

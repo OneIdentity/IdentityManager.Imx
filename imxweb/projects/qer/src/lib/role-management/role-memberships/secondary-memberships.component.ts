@@ -25,18 +25,15 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { EuiLoadingService, EuiSidesheetConfig, EuiSidesheetService } from '@elemental-ui/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { OwnershipInformation } from 'imx-api-qer';
 import {
   CollectionLoadParameters,
-  DataModel,
   DisplayColumns,
   EntitySchema,
   IClientProperty,
-  IEntity,
   TypedEntity,
   XOrigin,
 } from 'imx-qbm-dbts';
@@ -45,6 +42,7 @@ import { ConfirmationService, DataSourceItemStatus, DataSourceToolbarSettings, D
 import { SourceDetectiveSidesheetData } from '../../sourcedetective/sourcedetective-sidesheet.component';
 import { SourceDetectiveSidesheetComponent } from '../../sourcedetective/sourcedetective-sidesheet.component';
 import { SourceDetectiveType } from '../../sourcedetective/sourcedetective-type.enum';
+import { DataManagementService } from '../data-management.service';
 import { MembershipsChooseIdentitiesComponent } from '../memberships-choose-identities/memberships-choose-identities.component';
 import { RoleService } from '../role.service';
 import { RemoveMembershipComponent } from './remove-membership.component';
@@ -64,22 +62,19 @@ export class SecondaryMembershipsComponent implements OnInit {
     enabled: (item: TypedEntity) => true,
   };
 
-  @Input() public entity: IEntity;
-  @Input() public isAdmin: boolean;
-  @Input() public ownershipInfo: OwnershipInformation;
-
   @ViewChild('dataTable') public dataTable: DataTableComponent<TypedEntity>;
 
   private selectedEntities: TypedEntity[] = [];
 
   constructor(
     private readonly sidesheet: EuiSidesheetService,
-    private readonly membershipService: RoleService,
+    private readonly roleService: RoleService,
+    private dataManagementService: DataManagementService,
     private readonly busyService: EuiLoadingService,
     private readonly translate: TranslateService,
     private readonly confirmation: ConfirmationService,
     private readonly snackbar: SnackBarService
-  ) {
+    ) {
     this.navigationState = {};
   }
 
@@ -88,7 +83,7 @@ export class SecondaryMembershipsComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.entitySchema = this.membershipService.getMembershipEntitySchema(this.ownershipInfo.TableName, 'get');
+    this.entitySchema = this.roleService.getMembershipEntitySchema('get');
     this.displayColumns = [
       this.entitySchema.Columns.UID_Person,
       this.entitySchema.Columns.XDateInserted,
@@ -126,38 +121,51 @@ export class SecondaryMembershipsComponent implements OnInit {
       );
     });
 
-    const nonDeletableMemberships = this.selectedEntities.filter((item) => deletableMemberships.indexOf(item) < 0);
+    const nonDeletableMemberships = this.selectedEntities.filter(item => deletableMemberships.indexOf(item) < 0);
     const countDynamic = this.getCount(deletableMemberships, XOrigin.Dynamic);
     const countRequested = deletableMemberships.filter((e) => {
       return e.GetEntity().GetColumn('IsRequestCancellable').GetValue();
     }).length;
     const countDirect = this.getCount(deletableMemberships, XOrigin.Direct);
 
-    const config: EuiSidesheetConfig = {
-      title: await this.translate.get('#LDS#Heading Remove Memberships').toPromise(),
-      width: '650px',
-      headerColour: 'red',
-      bodyColour: 'asher-gray',
-      padding: '0px',
-      disableClose: false,
-      testId: 'role-membership-remove',
-      data: {
-        ownershipInfo: this.ownershipInfo,
-        nonDeletableMemberships,
-        selectedEntities: deletableMemberships,
-        entity: this.entity,
-        countDirect,
-        countDynamic,
-        countRequested
-      }
-    };
-    const sidesheetRef = this.sidesheet.open(RemoveMembershipComponent, config);
-    sidesheetRef.afterClosed().subscribe((data) => {
-      if (data) {
+    if (nonDeletableMemberships.length > 0 || countDynamic > 0 || countRequested > 0) {
+      const result = await this.sidesheet.open(RemoveMembershipComponent, {
+        title: await this.translate.get('#LDS#Heading Remove Memberships').toPromise(),
+        width: '650px',
+        headerColour: 'warn',
+        padding: '0px',
+        disableClose: false,
+        testId: 'role-membership-remove',
+        data: {
+          nonDeletableMemberships,
+          selectedEntities: deletableMemberships,
+          countDirect,
+          countDynamic,
+          countRequested,
+        },
+      }).afterClosed().toPromise();
+
+      if (result) {
         this.dataTable.clearSelection();
         this.navigate();
+      };
+    } else {
+      if (await this.confirmation.confirmDelete('#LDS#Heading Remove Memberships','#LDS#Are you sure you want to remove the selected memberships?')) {
+        const directs = deletableMemberships.filter((elem) => this.hasBit(elem, XOrigin.Direct));
+        this.busyService.show();
+        try {
+          const id = this.dataManagementService.entityInteractive.GetEntity().GetKeys().join(',');
+          for (const membership of directs) {
+            await this.roleService.removeMembership(membership, id);
+          }
+        } finally {
+          this.busyService.hide();
+          this.snackbar.open({ key: '#LDS#The memberships have been successfully removed.' });
+          this.dataTable.clearSelection();
+          this.navigate();
+        }
       }
-    });
+    }
   }
 
   public async onSelectIdentities(): Promise<void> {
@@ -168,11 +176,6 @@ export class SecondaryMembershipsComponent implements OnInit {
       width: '800px',
       disableClose: false,
       testId: 'role-select-identities',
-      data: {
-        id: this.entity.GetKeys()[0],
-        entity: this.entity,
-        ownershipInfo: this.ownershipInfo.TableName,
-      },
     });
   }
 
@@ -186,16 +189,14 @@ export class SecondaryMembershipsComponent implements OnInit {
   }
 
   public async onShowDetails(): Promise<void> {
-    const uidPerson = this.membershipService.GetUidPerson(this.ownershipInfo.TableName, this.selectedEntities[0]);
-    const uidRole = this.membershipService.targetMap
-      .get(this.ownershipInfo.TableName)
-      .membership.GetUidRole(this.selectedEntities[0].GetEntity());
+    const uidPerson = this.roleService.getUidPerson( this.selectedEntities[0]);
+    const uidRole = this.roleService.getUidRole(this.selectedEntities[0]);
 
     const data: SourceDetectiveSidesheetData = {
       UID_Person: uidPerson,
       Type: SourceDetectiveType.MembershipOfRole,
       UID: uidRole,
-      TableName: this.ownershipInfo.TableName,
+      TableName: this.roleService.ownershipInfo.TableName,
     };
     this.sidesheet.open(SourceDetectiveSidesheetComponent, {
       title: await this.translate.get('#LDS#Heading View Assignment Analysis').toPromise(),
@@ -220,11 +221,10 @@ export class SecondaryMembershipsComponent implements OnInit {
 
     try {
       this.dstSettings = {
-        dataSource: await this.membershipService.getMemberships(
-          this.ownershipInfo.TableName,
-          this.entity.GetKeys()[0],
-          this.navigationState
-        ),
+        dataSource: await this.roleService.getMemberships({
+          id: this.dataManagementService.entityInteractive.GetEntity().GetKeys().join(','),
+          navigationState: this.navigationState
+        }),
         entitySchema: this.entitySchema,
         navigationState: this.navigationState,
         displayedColumns: this.displayColumns,
@@ -243,4 +243,5 @@ export class SecondaryMembershipsComponent implements OnInit {
   private hasBit(e: TypedEntity, xorigin: XOrigin): boolean {
     return (e.GetEntity().GetColumn('XOrigin').GetValue() & xorigin) > 0;
   }
+
 }

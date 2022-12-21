@@ -36,7 +36,7 @@ import { ProjectConfig } from 'imx-api-qbm';
 @Component({
   selector: 'imx-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
   public menuItems: MenuItem[];
@@ -60,14 +60,13 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {
     this.subscriptions.push(
       this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
-
         if (sessionState.hasErrorState) {
           // Needs to close here when there is an error on sessionState
           splash.close();
-        }
-
-        if (sessionState.IsLoggedOut) {
-          this.showPageContent = false;
+        } else {
+          if (sessionState.IsLoggedOut) {
+            this.showPageContent = false;
+          }
         }
 
         this.isLoggedIn = sessionState.IsLoggedIn;
@@ -98,9 +97,7 @@ export class AppComponent implements OnInit, OnDestroy {
    * Returns true for routes that require different page level styling
    */
   public get isContentFullScreen(): boolean {
-    return (
-      this.router.url.includes('dataexplorer')
-    );
+    return this.router.url.includes('dataexplorer');
   }
 
   public async ngOnInit(): Promise<void> {
@@ -108,7 +105,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   public async goToProfile(): Promise<void> {
@@ -120,7 +117,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private setupRouter(): void {
-    this.router.events.subscribe(((event: RouterEvent) => {
+    this.router.events.subscribe((event: RouterEvent) => {
       if (event instanceof NavigationStart) {
         this.hideUserMessage = true;
         if (this.isLoggedIn && event.url === '/') {
@@ -142,6 +139,6 @@ export class AppComponent implements OnInit, OnDestroy {
       if (event instanceof NavigationError) {
         this.hideUserMessage = false;
       }
-    }));
+    });
   }
 }
