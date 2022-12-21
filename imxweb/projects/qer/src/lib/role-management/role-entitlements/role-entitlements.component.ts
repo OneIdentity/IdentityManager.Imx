@@ -24,16 +24,17 @@
  *
  */
 
-import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { OwnershipInformation, PortalRolesEntitlements } from 'imx-api-qer';
-import { CollectionLoadParameters, DbObjectKey, DisplayColumns, EntitySchema, IClientProperty, IEntity, TypedEntity, XOrigin } from 'imx-qbm-dbts';
+import { PortalRolesEntitlements, RoleAssignmentData } from 'imx-api-qer';
+import { CollectionLoadParameters, DbObjectKey, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, XOrigin } from 'imx-qbm-dbts';
 
 import { ConfirmationService, DataSourceToolbarSettings, DataTableComponent, imx_SessionService, MetadataService } from 'qbm';
 import { QerApiService } from '../../qer-api-client.service';
+import { DataManagementService } from '../data-management.service';
 import { RoleService } from '../role.service';
 import { EntitlementSelectorComponent, SelectedEntitlement } from './entitlement-selector.component';
 
@@ -54,8 +55,6 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
   public displayColumns: IClientProperty[];
   public entitlementTypes: Map<string, string>;
 
-  @Input() public entity: IEntity;
-  @Input() public ownershipInfo: OwnershipInformation;
   @ViewChild('dataTable') public dataTable: DataTableComponent<TypedEntity>;
 
   public readonly itemStatus = {
@@ -69,7 +68,8 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
   constructor(
     private readonly busyService: EuiLoadingService,
     private readonly qerApiService: QerApiService,
-    private readonly entitlementService: RoleService,
+    private readonly roleService: RoleService,
+    private dataManagementService: DataManagementService,
     private readonly confirmationService: ConfirmationService,
     private readonly snackbar: MatSnackBar,
     private readonly sidesheet: EuiSidesheetService,
@@ -109,8 +109,15 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
   }
 
   public async onSelectEntitlements(): Promise<void> {
-    const entlTypes = await this.entitlementService.getEntitlementTypes(this.ownershipInfo.TableName, this.entity);
-    const dialogRef = this.sidesheet.open(EntitlementSelectorComponent,
+    this.busyService.show();
+    const entity = this.dataManagementService.entityInteractive.GetEntity();
+    let entitlementTypes: RoleAssignmentData[];
+    try {
+      entitlementTypes = await this.roleService.getEntitlementTypes(entity);
+    } finally {
+      this.busyService.hide();
+    }
+    const selectedValues = await this.sidesheet.open(EntitlementSelectorComponent,
       {
         title: await this.translate.get('#LDS#Heading Request Entitlements').toPromise(),
         headerColour: 'iris-blue',
@@ -119,17 +126,14 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
         width: 'max(600px, 60%)',
         testId: 'role-entitlements-new-sidesheet',
         data: {
-          entitlementTypes: entlTypes,
-          roleEntity: this.entity
+          entitlementTypes: entitlementTypes,
+          roleEntity: entity
         }
       }
-    );
-    dialogRef.afterClosed().subscribe((selectedValues: SelectedEntitlement[]) => {
-      if (selectedValues) {
-        this.processEntitlementSelections(selectedValues);
-      }
-    });
-
+    ).afterClosed().toPromise();
+    if (selectedValues) {
+      this.processEntitlementSelections(selectedValues);
+    }
   }
 
   public async onNavigationStateChanged(newState?: CollectionLoadParameters): Promise<void> {
@@ -140,7 +144,7 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
   }
 
   public async getTypeDescription(item: any): Promise<string> {
-    const colName = this.entitlementService.getEntitlementFkName(this.ownershipInfo.TableName);
+    const colName = this.roleService.getEntitlementFkName();
     const objKey = DbObjectKey.FromXml(item.GetEntity().GetColumn(colName).GetValue());
     const metadata = await this.metadata.GetTableMetadata(objKey.TableName);
     return metadata.DisplaySingular;
@@ -161,13 +165,14 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
     })) {
       this.busyService.show();
       try {
-        for (const entlasgn of this.selectedEntities) {
-          if (this.isDirectAssignment(entlasgn)) {
-            await this.entitlementService.removeEntitlements(this.ownershipInfo.TableName, this.entity.GetKeys()[0], entlasgn.GetEntity());
+        const entity = this.dataManagementService.entityInteractive.GetEntity();
+        for (const selectedEntity of this.selectedEntities) {
+          if (this.isDirectAssignment(selectedEntity)) {
+            await this.roleService.removeEntitlements(entity.GetKeys().join(','), selectedEntity.GetEntity());
           }
 
-          if (this.isRequestCancellable(entlasgn)) {
-            await this.entitlementService.unsubscribe(entlasgn);
+          if (this.isRequestCancellable(selectedEntity)) {
+            await this.roleService.unsubscribe(selectedEntity);
           }
 
         }
@@ -190,17 +195,18 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
     return !item.GetEntity().GetColumn('XIsInEffect').GetValue();
   }
 
-  private async processEntitlementSelections(values: SelectedEntitlement[]): Promise<void> {
+  private async processEntitlementSelections(selectedEntities: SelectedEntitlement[]): Promise<void> {
     const overlay = this.busyService.show();
     try {
-      for (const asgn of values) {
+      const entity = this.dataManagementService.entityInteractive.GetEntity();
+      for (const selectedEntity of selectedEntities) {
         const newCartItem = this.qerApiService.typedClient.PortalCartitem.createEntity();
 
         // i.e. "<Key><T>Org</T><P>4ee782c2-a518-42d3-8d38-73b0d287b7e6</P></Key>"
-        newCartItem.RoleMembership.value = this.entity.GetColumn('XObjectKey').GetValue();
+        newCartItem.RoleMembership.value = entity.GetColumn('XObjectKey').GetValue();
 
         // i.e. "OrgHasADSGroup|<Key><T>ADSGroup</T><P>468fa7aa-26d8-4c81-8944-a00146014ece</P></Key>"
-        newCartItem.EntitlementData.value = asgn.assignmentType.AssignTable + '|' + asgn.entity.GetColumn('XObjectKey').GetValue();
+        newCartItem.EntitlementData.value = selectedEntity.assignmentType.AssignTable + '|' + selectedEntity.entity.GetColumn('XObjectKey').GetValue();
 
         newCartItem.UID_PersonOrdered.value = this.session.SessionState.UserUid;
         await newCartItem.GetEntity().Commit(false);
@@ -222,7 +228,11 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
   private async navigate(): Promise<void> {
     this.busyService.show();
     try {
-      const ds = await this.entitlementService.getEntitlements(this.ownershipInfo.TableName, this.entity.GetKeys()[0], this.navigationState);
+      const entity = this.dataManagementService.entityInteractive.GetEntity();
+      const ds = await this.roleService.getEntitlements({
+        id: entity.GetKeys().join(','),
+        navigationState: this.navigationState
+      });
       this.entitlementTypes = new Map();
 
       ds.Data.forEach(async item => {

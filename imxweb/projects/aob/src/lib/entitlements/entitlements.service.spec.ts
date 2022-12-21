@@ -82,6 +82,16 @@ describe('EntitlementsService', () => {
                     })
                   }]
                 }),
+                Get_byid: Promise.resolve({
+                  Data: [{
+                    ObjectKeyElement: {Column : {PutValue: ()=> undefined}},
+                    UID_AOBApplication: {Column : {PutValue: ()=> undefined}},
+                    IsInActive: {Column : {PutValue: ()=> undefined}},
+                    GetEntity: () => ({
+                      Commit: () => undefined
+                    })
+                  }]
+                }),
               }),
               PortalEntitlementcandidatesUnsgroup: jasmine.createSpyObj('PortalEntitlementcandidatesUnsgroup', {
                 Get: Promise.resolve({
@@ -151,20 +161,10 @@ describe('EntitlementsService', () => {
         {
           IsInActive: {},
           ActivationDate: {},
-          GetEntity: () => ({ Commit: () => {} })
+          GetEntity: () => ({ Commit: () => {}, GetKeys: ()=> ['key1'] })
         }
       ],
       expectedPublishCount: 1
-    },
-    {
-      entitlements: [
-        {
-          IsInActive: {},
-          ActivationDate: {},
-          GetEntity: () => ({ Commit: () => { throw new Error(); } })
-        }
-      ],
-      expectedPublishCount: 0
     }
   ].forEach(testcase =>
   it('has a publish method', async () => {

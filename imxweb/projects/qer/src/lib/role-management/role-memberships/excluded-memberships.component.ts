@@ -24,11 +24,11 @@
  *
  */
 
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { PortalRolesExclusions } from 'imx-api-qer';
-import { CollectionLoadParameters, EntitySchema, IClientProperty, IEntity, TypedEntity, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, EntitySchema, IClientProperty, TypedEntity, TypedEntityCollectionData } from 'imx-qbm-dbts';
 import {
   DataSourceToolbarFilter,
   DataSourceToolbarSettings,
@@ -39,6 +39,8 @@ import {
 } from 'qbm';
 import { ACTION_DISMISS } from '../../itshop-config/requests.service';
 import { QerApiService } from '../../qer-api-client.service';
+import { DataManagementService } from '../data-management.service';
+import { RoleService } from '../role.service';
 
 const helperAlertKey = `${HELPER_ALERT_KEY_PREFIX}_roleMembership`;
 const LdsMembersAdded = '#LDS#The members have been successfully assigned. It may take some time for the changes to take effect.';
@@ -50,8 +52,8 @@ const LdsMembersByDynamicRole = '#LDS#Here you can see the members that are orig
   styleUrls: ['./excluded-memberships.component.scss', './role-sidesheet-tabs.scss']
 })
 export class ExcludedMembershipsComponent implements OnInit {
-
-  @Input() public entity: IEntity;
+  // Replaces the former input
+  public uidDynamicGroup: string;
 
   @ViewChild('dataTableExclusions', { static: false }) public dataTableExclusions: DataTableComponent<PortalRolesExclusions>;
 
@@ -72,6 +74,7 @@ export class ExcludedMembershipsComponent implements OnInit {
 
   constructor(
     private readonly qerApiClient: QerApiService,
+    private dataManagementService: DataManagementService,
     private readonly translate: TranslateService,
     private readonly snackbar: SnackBarService,
     private readonly busyService: EuiLoadingService,
@@ -80,6 +83,7 @@ export class ExcludedMembershipsComponent implements OnInit {
 
 
   public async ngOnInit(): Promise<void> {
+    this.uidDynamicGroup = this.dataManagementService.entityInteractive.GetEntity().GetColumn('UID_DynamicGroup').GetValue();
     this.schema = this.qerApiClient.typedClient.PortalRolesExclusions.GetSchema();
     this.displayedColumnsExcluded = [
       this.schema.Columns.UID_Person,
@@ -115,7 +119,7 @@ export class ExcludedMembershipsComponent implements OnInit {
   public async removeExclusions(): Promise<void> {
     const overlayRef = this.busyService.show();
     try {
-      await this.removeRequestConfigMemberExclusions(this.entity.GetColumn('UID_DynamicGroup').GetValue(), this.selectedExclusions);
+      await this.removeRequestConfigMemberExclusions(this.selectedExclusions);
       await this.navigateExcludedMembers();
 
       this.translate.get([LdsMembersAdded, ACTION_DISMISS]).subscribe((translations: any[]) => {
@@ -131,7 +135,7 @@ export class ExcludedMembershipsComponent implements OnInit {
     const overlayRef = this.busyService.show();
     try {
       if (!data) {
-        data = await this.qerApiClient.typedClient.PortalRolesExclusions.Get(this.entity.GetColumn('UID_DynamicGroup').GetValue(),
+        data = await this.qerApiClient.typedClient.PortalRolesExclusions.Get(this.uidDynamicGroup,
           this.navigationStateExcludedMembers);
       }
       this.dstSettingsExcludedMembers = {
@@ -146,11 +150,11 @@ export class ExcludedMembershipsComponent implements OnInit {
     }
   }
 
-  private removeRequestConfigMemberExclusions(uidDynamicGroup: string, exclusions: PortalRolesExclusions[]): Promise<any> {
+  private removeRequestConfigMemberExclusions(exclusions: PortalRolesExclusions[]): Promise<any> {
     const promises = [];
     exclusions.forEach((exclusion) => {
       const memberUid = exclusion.UID_Person?.value;
-      promises.push(this.qerApiClient.client.portal_roles_exclusions_delete(uidDynamicGroup, memberUid));
+      promises.push(this.qerApiClient.client.portal_roles_exclusions_delete(this.uidDynamicGroup, memberUid));
     });
     return Promise.all(promises);
   }

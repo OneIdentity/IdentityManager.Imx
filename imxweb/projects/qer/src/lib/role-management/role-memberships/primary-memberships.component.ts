@@ -24,11 +24,11 @@
  *
  */
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { OwnershipInformation } from 'imx-api-qer';
-import { CollectionLoadParameters, DisplayColumns, IClientProperty, IEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DisplayColumns, IClientProperty } from 'imx-qbm-dbts';
 import { DataSourceToolbarFilter, DataSourceToolbarSettings } from 'qbm';
+import { DataManagementService } from '../data-management.service';
 import { RoleService } from '../role.service';
 
 @Component({
@@ -43,12 +43,9 @@ export class PrimaryMembershipsComponent implements OnInit {
   public displayColumns: IClientProperty[] = [];
   public filterOptions: DataSourceToolbarFilter[] = [];
 
-  @Input() public entity: IEntity;
-  @Input() public isAdmin: boolean;
-  @Input() public ownershipInfo: OwnershipInformation;
-
   constructor(
-    private membershipService: RoleService,
+    private roleService: RoleService,
+    private dataManagementService: DataManagementService,
     private readonly busyService: EuiLoadingService
   ) {
   }
@@ -72,14 +69,17 @@ export class PrimaryMembershipsComponent implements OnInit {
 
   private async navigate(): Promise<void> {
     this.busyService.show();
-    const entitySchema = this.membershipService.getPrimaryMembershipSchema(this.ownershipInfo.TableName);
+    const entitySchema = this.roleService.getPrimaryMembershipSchema();
     this.displayColumns = [
       entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
       entitySchema.Columns.PrimaryMemberSince];
 
     try {
       this.dstSettings = {
-        dataSource: await this.membershipService.getPrimaryMemberships(this.ownershipInfo.TableName, this.entity.GetKeys()[0], this.navigationState),
+        dataSource: await this.roleService.getPrimaryMemberships({
+          id: this.dataManagementService.entityInteractive.GetEntity().GetKeys().join(','),
+          navigationState: this.navigationState
+        }),
         entitySchema,
         navigationState: this.navigationState,
         displayedColumns: this.displayColumns,

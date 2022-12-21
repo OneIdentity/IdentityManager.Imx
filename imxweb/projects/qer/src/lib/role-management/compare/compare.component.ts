@@ -24,16 +24,17 @@
  *
  */
 
-import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
-import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 
 import { ColumnDependentReference, DataSourceToolbarSettings, MetadataService, SnackBarService } from 'qbm';
-import { RoleCompareItems, UiActionData } from 'imx-api-qer';
+import { RoleCompareItem, RoleCompareItems, UiActionData } from 'imx-api-qer';
 import { DbObjectKey, IClientProperty, ValType } from 'imx-qbm-dbts';
 import { CompareService } from './compare.service';
 import { RoleService } from '../role.service';
+import { DataManagementService } from '../data-management.service';
 import { CompareItemBuilder } from './compare-item-builder';
 import { CompareItem } from './compare-item';
 
@@ -43,10 +44,14 @@ import { CompareItem } from './compare-item';
   styleUrls: ['./compare.component.scss'],
 })
 export class CompareComponent implements OnInit {
-  public compareItems: RoleCompareItems = undefined;
-  public mergeActions: UiActionData[] = undefined;
-  public mergePreventingReason: string;
-  public uidActions: string[] = undefined;
+  // Takes place of the previous injected data
+  public roleType: string;
+  public uidRole: string;
+
+  public compareItems: RoleCompareItems | null = null;
+  public mergeActions: UiActionData[] | undefined = undefined;
+  public mergePreventingReason: string | null;
+  public uidActions: string[] | undefined = undefined;
 
   public cdrList: ColumnDependentReference[] = [];
 
@@ -65,7 +70,7 @@ export class CompareComponent implements OnInit {
   public LdsSuccessMessage = '#LDS#The objects have been successfully merged. It may take some time for the changes to take effect.';
   public LdsMergeExplanation = '#LDS#The following actions will be performed to merge the selected objects.';
   public LdsPrepareMergeExplanation = '#LDS#You can review the actions before the objects are merged.';
-  public ldsKeyNotAvailable = '#LDS#The object to compare could not be found. Merging the two objects failed. ';
+  public ldsKeyNotAvailable = '#LDS#The object to be compared could not be found. Please try again or select another object to compare.';
 
   public showKeyMissingError = false;
   private readonly compareItemBuilder = new CompareItemBuilder();
@@ -74,21 +79,20 @@ export class CompareComponent implements OnInit {
     private readonly compareService: CompareService,
     private readonly metadata: MetadataService,
     private readonly roleService: RoleService,
+    private readonly dataManagementService: DataManagementService,
     private readonly busyService: EuiLoadingService,
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly snackbar: SnackBarService,
-    @Inject(EUI_SIDESHEET_DATA)
-    private readonly sidesheetData: {
-      isAdmin: boolean;
-      roleType: string;
-      uidRole: string;
-    },
     private readonly cdref: ChangeDetectorRef
   ) {}
 
   public roleCdr: ColumnDependentReference;
 
   public async ngOnInit(): Promise<void> {
+    // Set initial values
+    this.roleType = this.dataManagementService.entityInteractive.GetEntity().TypeName;
+    this.uidRole = this.dataManagementService.entityInteractive.GetEntity().GetKeys().join(',');
+
     const candidates = await this.roleService.getComparisonConfig();
     this.roleCdr = this.compareService.createCdrRole(candidates);
   }
@@ -98,7 +102,7 @@ export class CompareComponent implements OnInit {
   }
 
   public resetElements(): void {
-    this.compareItems = undefined;
+    this.compareItems = null;
     this.mergeActions = undefined;
     this.uidActions = undefined;
   }
@@ -128,7 +132,7 @@ export class CompareComponent implements OnInit {
         return;
       }
       const key = DbObjectKey.FromXml(keyXml);
-      await this.compareService.mergeRoles(this.sidesheetData.roleType, this.sidesheetData.uidRole, key, { ActionId: this.uidActions });
+      await this.compareService.mergeRoles(this.roleType, this.uidRole, key, { ActionId: this.uidActions });
       this.sidesheetRef.close(true);
       this.snackbar.open({ key: this.LdsSuccessMessage });
     } finally {
@@ -149,10 +153,10 @@ export class CompareComponent implements OnInit {
         return;
       }
       const key = DbObjectKey.FromXml(keyXml);
-      const items = await this.compareService.getCompares(this.sidesheetData.roleType, this.sidesheetData.uidRole, key);
+      const items = await this.compareService.getCompares(this.roleType, this.uidRole, key);
 
       this.compareItems = items;
-      const dataSource = this.compareItemBuilder.build(this.compareItemBuilder.buildEntityCollectionData(this.compareItems.Items));
+      const dataSource = this.compareItemBuilder.build(this.compareItemBuilder.buildEntityCollectionData(this.compareItems.Items as RoleCompareItem[]));
       this.dstSettings = {
         dataSource,
         entitySchema: CompareItem.GetEntitySchema(),
@@ -179,15 +183,15 @@ export class CompareComponent implements OnInit {
         return;
       }
       const key = DbObjectKey.FromXml(keyXml);
-      const actions = await this.compareService.getMergeActions(this.sidesheetData.roleType, this.sidesheetData.uidRole, key);
+      const actions = await this.compareService.getMergeActions(this.roleType, this.uidRole, key);
 
       if (actions.Actions) {
         this.mergeActions = actions.Actions;
       } else {
         this.mergeActions = [];
       }
-      this.mergePreventingReason = actions.MergePreventionReason;
-      this.uidActions = this.mergeActions.filter((a) => a.IsActive).map((a) => a.Id);
+      this.mergePreventingReason = actions.MergePreventionReason as string;
+      this.uidActions = this.mergeActions.filter((a) => a.IsActive).map((a) => a.Id) as string[];
     } finally {
       this.busyService.hide(overlay);
     }

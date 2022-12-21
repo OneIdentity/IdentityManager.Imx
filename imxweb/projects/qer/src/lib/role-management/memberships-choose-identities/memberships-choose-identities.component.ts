@@ -25,9 +25,9 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
 
 import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, IEntity, TypedEntity, XOrigin } from 'imx-qbm-dbts';
 import {
@@ -38,6 +38,7 @@ import {
   SnackBarService
 } from 'qbm';
 import { UserModelService } from '../../user/user-model.service';
+import { DataManagementService } from '../data-management.service';
 import { RoleService } from '../role.service';
 import { IdentitiesService } from './identities.service';
 import { NotRequestableMembershipsComponent } from './not-requestable-memberships/not-requestable-memberships.component';
@@ -60,15 +61,10 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
   private candidatesEntitySchema: EntitySchema;
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA)
-    public data: {
-      id: string;
-      entity: IEntity;
-      ownershipInfo: string;
-    },
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly identityService: IdentitiesService,
-    private membershipService: RoleService,
+    private roleService: RoleService,
+    private dataManagementService: DataManagementService,
     private snackbar: SnackBarService,
     private readonly userService: UserModelService,
     private readonly busyService: EuiLoadingService,
@@ -85,8 +81,8 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
     setTimeout(() => (overlayRef = this.busyService.show()));
 
     try {
-      this.dataModel = await this.membershipService.getCandidatesDataModel(this.data.ownershipInfo, this.data.entity.GetKeys()[0]);
-      this.candidatesEntitySchema = this.membershipService.getMembershipEntitySchema(this.data.ownershipInfo, 'candidates');
+      this.dataModel = await this.roleService.getCandidatesDataModel(this.dataManagementService.entityInteractive.GetEntity().GetKeys()[0]);
+      this.candidatesEntitySchema = this.roleService.getMembershipEntitySchema('candidates');
     }
     finally {
       setTimeout(() => this.busyService.hide(overlayRef));
@@ -116,13 +112,13 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
       return;
     }
 
+    const entity = this.dataManagementService.entityInteractive.GetEntity()
     this.busyService.show();
-
     try {
       const notRequestableMemberships = await this.identityService.addMemberships(
-        this.data.ownershipInfo,
+        this.roleService.ownershipInfo.TableName,
         this.selection,
-        this.data.entity.GetColumn('XObjectKey').GetValue()
+        entity.GetColumn('XObjectKey').GetValue()
       );
 
       if (notRequestableMemberships.length > 0) {
@@ -130,7 +126,7 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
           data: {
             notRequestableMemberships,
             entitySchema: this.entitySchema,
-            membershipName: this.data.entity.GetDisplay()
+            membershipName: entity.GetDisplay()
           }
         });
 
@@ -141,7 +137,7 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
         await this.userService.reloadPendingItems();
         this.snackbar.open({
           key: '#LDS#The membership for "{0}" has been successfully added to the shopping cart.',
-          parameters: [this.data.entity.GetDisplay()],
+          parameters: [entity.GetDisplay()],
         });
       }
       this.sidesheetRef.close();
@@ -159,12 +155,10 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
 
     try {
       this.dstSettings = {
-        dataSource: await this.membershipService.getCandidates(
-          this.data.ownershipInfo,
-          this.data.entity.GetKeys()[0],
+        dataSource: await this.roleService.getCandidates(
+          this.dataManagementService.entityInteractive.GetEntity().GetKeys().join(','),
           {
             ...this.navigationState,
-
             // exclude candidate identities that already have an assignment request (XOrigin.Ordered)
             xorigin: XOrigin.Ordered
           }

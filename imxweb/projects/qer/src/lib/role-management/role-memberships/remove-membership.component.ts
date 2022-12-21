@@ -28,12 +28,12 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 
-import { OwnershipInformation } from 'imx-api-qer';
-import { IEntity, TypedEntity, XOrigin } from 'imx-qbm-dbts';
+import { TypedEntity, XOrigin } from 'imx-qbm-dbts';
 
 import { SnackBarService } from 'qbm';
 import { QerApiService } from '../../qer-api-client.service';
 import { RoleService } from '../role.service';
+import { DataManagementService } from '../data-management.service';
 
 @Component({
   templateUrl: './remove-membership.component.html',
@@ -55,10 +55,8 @@ export class RemoveMembershipComponent implements OnInit {
     private formBuilder: FormBuilder,
     @Inject(EUI_SIDESHEET_DATA)
     public readonly data: {
-      ownershipInfo: OwnershipInformation;
       nonDeletableMemberships: TypedEntity[];
       selectedEntities: TypedEntity[];
-      entity: IEntity;
       countDynamic: number;
       countDirect: number;
       countRequested: number;
@@ -66,13 +64,14 @@ export class RemoveMembershipComponent implements OnInit {
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly busyService: EuiLoadingService,
     private readonly qerApiClient: QerApiService,
-    private readonly membershipService: RoleService,
+    private readonly roleService: RoleService,
+    private dataManagementService: DataManagementService,
     private readonly snackbar: SnackBarService
   ) {
     this.withCheckboxes = [data.countDirect,data.countDynamic, data.countRequested].filter(elem=>elem >0).length > 1
   }
 
-  
+
 
   public ngOnInit(): void {
     this.formExcludeDynamic = new FormControl(this.data.countDynamic > 0);
@@ -89,24 +88,24 @@ export class RemoveMembershipComponent implements OnInit {
   }
 
   public async save(): Promise<void> {
+    const entity = this.dataManagementService.entityInteractive.GetEntity();
     this.busyService.show();
     try {
-      for (const entity of this.data.selectedEntities) {
-        const xorigin = entity.GetEntity().GetColumn('XOrigin').GetValue();
+      for (const selectedEntity of this.data.selectedEntities) {
+        const xorigin = selectedEntity.GetEntity().GetColumn('XOrigin').GetValue();
 
-        if (
-          this.formDeleteDirect.value &&
+        if (this.formDeleteDirect.value &&
           // is it a direct assignment?
           (XOrigin.Direct & xorigin) === XOrigin.Direct
         ) {
-          await this.membershipService.removeMembership(this.data.ownershipInfo.TableName, entity, this.data.entity.GetKeys()[0]);
+          await this.roleService.removeMembership(selectedEntity, entity.GetKeys()[0]);
         }
 
         // If the member is managed by a dynamic group, add an exclusion
         if (this.formExcludeDynamic.value && (xorigin & XOrigin.Dynamic) > 0) {
-          const uidDynamicGroup = this.data.entity.GetColumn('UID_DynamicGroup').GetValue();
+          const uidDynamicGroup = entity.GetColumn('UID_DynamicGroup').GetValue();
           const exclusionData = this.qerApiClient.typedClient.PortalRolesExclusions.createEntity();
-          exclusionData.UID_Person.value = entity.GetEntity().GetColumn('UID_Person').GetValue();
+          exclusionData.UID_Person.value = selectedEntity.GetEntity().GetColumn('UID_Person').GetValue();
           exclusionData.Description.value = this.dynamicExclusionForm.get('description').value || '';
           await this.qerApiClient.typedClient.PortalRolesExclusions.Post(uidDynamicGroup, exclusionData);
         }

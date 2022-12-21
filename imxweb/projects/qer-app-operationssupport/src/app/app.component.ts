@@ -39,7 +39,7 @@ import { isOutstandingManager } from './permissions/permissions-helper';
 @Component({
   selector: 'imx-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
   public menuItems: MenuItem[];
@@ -59,19 +59,17 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly splash: SplashService,
     sessionService: imx_SessionService,
     settings: SettingsService,
-    userModelService: UserService,
+    userModelService: UserService
   ) {
-
     this.subscriptions.push(
       this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
-
         if (sessionState.hasErrorState) {
           // Needs to close here when there is an error on sessionState
           splash.close();
-        }
-
-        if (sessionState.IsLoggedOut) {
-          this.showPageContent = false;
+        } else {
+          if (sessionState.IsLoggedOut) {
+            this.showPageContent = false;
+          }
         }
 
         this.isLoggedIn = sessionState.IsLoggedIn;
@@ -90,9 +88,11 @@ export class AppComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.subscriptions.push(this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
-      this.isLoggedIn = sessionState.IsLoggedIn;
-    }));
+    this.subscriptions.push(
+      this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
+        this.isLoggedIn = sessionState.IsLoggedIn;
+      })
+    );
 
     this.setupRouter();
   }
@@ -102,13 +102,13 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   private setupRouter(): void {
     let overlayRef: OverlayRef;
 
-    this.router.events.subscribe(((event: RouterEvent) => {
+    this.router.events.subscribe((event: RouterEvent) => {
       switch (true) {
         case event instanceof NavigationStart:
           this.hideUserMessage = true;
@@ -125,11 +125,10 @@ export class AppComponent implements OnInit, OnDestroy {
           this.hideMenu = event.url === '/';
           this.showPageContent = true;
       }
-    }));
+    });
   }
 
   private async setupMenu(): Promise<void> {
-
     let featureConfig: FeatureConfig;
     const overlay = this.busyService.show();
     try {
@@ -144,11 +143,10 @@ export class AppComponent implements OnInit, OnDestroy {
           id: 'OpsWeb_ROOT_Dashboard',
           sorting: '10',
           title: '#LDS#Home',
-          route: 'start'
+          route: 'start',
         };
       },
       (__: string[], groups: string[]) => {
-
         if (!groups.includes('QER_4_OperationsSupport')) {
           return null;
         }
@@ -161,19 +159,19 @@ export class AppComponent implements OnInit, OnDestroy {
             {
               id: 'OpsWeb_Processes_Processes',
               title: '#LDS#Processes',
-              route: 'Jobs'
+              route: 'Jobs',
             },
             {
               id: 'OpsWeb_Processes_ProcessSteps',
               title: '#LDS#Process steps',
-              route: 'JobChainInformation'
+              route: 'JobChainInformation',
             },
             {
               id: 'OpsWeb_Processes_Performance',
               title: '#LDS#Performance',
-              route: 'JobPerformance'
-            }
-          ]
+              route: 'JobPerformance',
+            },
+          ],
         };
         return menu;
       },
@@ -190,9 +188,9 @@ export class AppComponent implements OnInit, OnDestroy {
               id: 'OpsWeb_Synchronization_UnresolvedReferences',
               title: '#LDS#Unresolved references',
               route: 'unresolvedRefs',
-              sorting: '30-10'
-            }
-          ]
+              sorting: '30-10',
+            },
+          ],
         };
 
         if (isOutstandingManager(groups)) {
@@ -200,7 +198,7 @@ export class AppComponent implements OnInit, OnDestroy {
             id: 'OpsWeb_Synchronization_OutstandingObjects',
             title: '#LDS#Menu Entry Outstanding objects',
             route: 'outstanding',
-            sorting: '30-20'
+            sorting: '30-20',
           });
         }
 
@@ -208,7 +206,7 @@ export class AppComponent implements OnInit, OnDestroy {
           id: 'OpsWeb_Synchronization_SyncInformation',
           title: '#LDS#Synchronization',
           route: 'SyncInformation',
-          sorting: '30-30'
+          sorting: '30-30',
         });
         return menu;
       },
@@ -224,25 +222,26 @@ export class AppComponent implements OnInit, OnDestroy {
             {
               id: 'OpsWeb_System_Database',
               title: '#LDS#Database log',
-              route: 'journal'
+              route: 'journal',
             },
             {
               id: 'OpsWeb_System_WebApplications',
               title: '#LDS#Web applications',
-              route: 'WebApplications'
+              route: 'WebApplications',
             },
-          ]
+          ],
         };
 
         if (featureConfig?.EnableSystemStatus) {
           menu.items.unshift({
             id: 'OpsWeb_System_SystemStatus',
             title: '#LDS#System status',
-            route: 'SystemStatus'
+            route: 'SystemStatus',
           });
         }
         return menu;
-      });
+      }
+    );
 
     return null;
   }

@@ -26,6 +26,7 @@
 
 import { Injectable } from '@angular/core';
 import {
+  OwnershipInformation,
   PortalAdminRoleDepartment,
   PortalAdminRoleLocality,
   PortalAdminRoleProfitcenter,
@@ -65,10 +66,12 @@ import { BaseTreeRoleRestoreHandler } from './restore/restore-handler';
   providedIn: 'root',
 })
 export class RoleService {
-  public dataDirtySubject: Subject<boolean> = new Subject();
-  public autoMembershipDirty$: Subject<boolean> = new Subject();
-  public readonly targetMap: Map<string, RoleObjectInfo> = new Map();
+  // Sidesheet state vars
+  public entity: IEntity;
+  public ownershipInfo: OwnershipInformation;
+  public isAdmin: boolean;
 
+  public readonly targetMap: Map<string, RoleObjectInfo> = new Map();
   protected readonly LocalityTag = 'Locality';
   protected readonly ProfitCenterTag = 'ProfitCenter';
   protected readonly DepartmentTag = 'Department';
@@ -222,16 +225,8 @@ export class RoleService {
       'Department', e => 'QER-V-Department');
   }
 
-  public getRoleTypeInfo(tableName: string): RoleObjectInfo {
-    return this.targetMap.get(tableName);
-  }
-
-  public dataDirty(flag: boolean): void {
-    this.dataDirtySubject.next(flag);
-  }
-
-  public autoMembershipDirty(flag: boolean): void {
-    this.autoMembershipDirty$.next(flag);
+  public getRoleTypeInfo(): RoleObjectInfo {
+    return this.targetMap.get(this.ownershipInfo.TableName);
   }
 
   public exists(tableName: string): boolean {
@@ -251,6 +246,17 @@ export class RoleService {
     return null;
   }
 
+  public setSidesheetData(args: {
+    ownershipInfo: OwnershipInformation,
+    entity: IEntity,
+    isAdmin: boolean
+  }): void {
+    this.ownershipInfo = args.ownershipInfo;
+    this.isAdmin = args.isAdmin;
+    this.entity = args.entity;
+  }
+
+
   public getType(tableName: string, admin: boolean = false): any {
     return admin ? this.targetMap.get(tableName).adminType
       : this.targetMap.get(tableName).respType;
@@ -263,6 +269,18 @@ export class RoleService {
     return this.targetMap.get(tableName).admin.get(navigationState);
   }
 
+  public async getInteractiveInternal(): Promise<TypedEntity> {
+    // This function is used to use the target map along with all state variables to get an interactive entity
+    if (this.exists(this.ownershipInfo.TableName)) {
+      const id = this.entity.GetKeys().join(',');
+      return this.isAdmin
+      ? (await this.targetMap.get(this.ownershipInfo.TableName).interactiveAdmin.Get_byid(id)).Data[0]
+      : (await this.targetMap.get(this.ownershipInfo.TableName).interactiveResp.Get_byid(id)).Data[0];
+    } else {
+      return null;
+    }
+  }
+
   public async getInteractive(tableName: string, id: string, isAdmin: boolean = false): Promise<TypedEntity> {
     if (this.exists(tableName)) {
       return isAdmin
@@ -273,9 +291,9 @@ export class RoleService {
     return null;
   }
 
-  public async getInteractiveNew(tableName: string, isAdmin: boolean = false): Promise<WriteExtTypedEntity<RoleExtendedDataWrite>> {
+  public async getInteractiveNew(tableName: string): Promise<WriteExtTypedEntity<RoleExtendedDataWrite>> {
     if (this.exists(tableName)) {
-      return isAdmin
+      return this.isAdmin
         ? (await this.targetMap.get(tableName).interactiveAdmin.Get()).Data[0]
         : (await this.targetMap.get(tableName).interactiveResp.Get()).Data[0];
     }
@@ -301,10 +319,9 @@ export class RoleService {
   }
 
   public getMembershipEntitySchema(
-    tableName: string,
     key: string
   ): EntitySchema {
-    const membership = this.targetMap.get(tableName).membership;
+    const membership = this.targetMap.get(this.ownershipInfo.TableName).membership;
     return membership.getSchema(key);
   }
 
@@ -325,6 +342,11 @@ export class RoleService {
     return candidates;
   }
 
+  // Determine if any tables match, if so then we can compare
+  public async canCompare(): Promise<boolean> {
+    return (await this.getComparisonConfig()).filter(x => x.FkParentTableName === this.ownershipInfo.TableName).length > 0;
+  }
+
   public async getEditableFields(objectType: string, entity: IEntity, primary: boolean = false): Promise<string[]> {
     if (this.config == null) {
       this.config = await this.project.getConfig();
@@ -337,27 +359,25 @@ export class RoleService {
       .filter(name => entity.GetSchema().Columns[name]);
   }
 
-  public async getMemberships(
-    tableName: string,
+  public async getMemberships(args: {
     id: string,
     navigationState?: CollectionLoadParameters
-  ): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
-    if (!this.exists(tableName)) {
+  }): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
+    if (!this.exists(this.ownershipInfo.TableName)) {
       return null;
     }
-    return await this.targetMap.get(tableName).membership.get(id, navigationState);
+    return await this.targetMap.get(this.ownershipInfo.TableName).membership.get(args.id, args.navigationState);
   }
 
-  public async getPrimaryMemberships(
-    tableName: string,
+  public async getPrimaryMemberships(args: {
     id: string,
     navigationState?: CollectionLoadParameters
-  ): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
-    if (!this.exists(tableName)) {
+  }): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
+    if (!this.exists(this.ownershipInfo.TableName)) {
       return null;
     }
 
-    return await this.targetMap.get(tableName).membership.getPrimaryMembers(id, navigationState);
+    return await this.targetMap.get(this.ownershipInfo.TableName).membership.getPrimaryMembers(args.id, args?.navigationState);
   }
 
   public canHavePrimaryMemberships(tableName: string): boolean {
@@ -368,93 +388,98 @@ export class RoleService {
     return this.targetMap.get(tableName).membership.supportsDynamicMemberships;
   }
 
-  public getPrimaryMembershipSchema(tableName: string): EntitySchema {
-    if (!this.exists(tableName)) {
+  public getPrimaryMembershipSchema(): EntitySchema {
+    if (!this.exists(this.ownershipInfo.TableName)) {
       return null;
     }
 
-    return this.targetMap.get(tableName).membership.getPrimaryMembersSchema();
+    return this.targetMap.get(this.ownershipInfo.TableName).membership.getPrimaryMembersSchema();
   }
 
   public async getCandidates(
-    tableName: string,
     id: string,
     navigationState?: CollectionLoadParameters & { xorigin?: XOrigin }
   ): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
-    return await this.targetMap.get(tableName).membership.getCandidates(id, navigationState);
+    return await this.targetMap.get(this.ownershipInfo.TableName).membership.getCandidates(id, navigationState);
   }
 
   public async getCandidatesDataModel(
-    tableName: string,
     id: string
   ): Promise<DataModel> {
-    return this.targetMap.get(tableName).membership.getCandidatesDataModel(id);
+    return this.targetMap.get(this.ownershipInfo.TableName).membership.getCandidatesDataModel(id);
   }
 
-  public GetUidPerson(tableName: string, item: TypedEntity): string {
-    if (!this.exists(tableName)) {
+  public getUidPerson(item: TypedEntity): string {
+    if (!this.exists(this.ownershipInfo.TableName)) {
       return null;
     }
 
-    return this.targetMap.get(tableName).membership.GetUidPerson(item.GetEntity());
+    return this.targetMap.get(this.ownershipInfo.TableName).membership.GetUidPerson(item.GetEntity());
   }
 
-  public async removeMembership(tableName: string, item: TypedEntity, role: string): Promise<void> {
-    if (!this.exists(tableName)) {
+  public getUidRole(item: TypedEntity): string {
+    if (!this.exists(this.ownershipInfo.TableName)) {
       return null;
     }
 
-    const membership = this.targetMap.get(tableName).membership;
+    return this.targetMap.get(this.ownershipInfo.TableName).membership.GetUidRole(item.GetEntity());
+  }
+
+  public async removeMembership(item: TypedEntity, role: string): Promise<void> {
+    if (!this.exists(this.ownershipInfo.TableName)) {
+      return null;
+    }
+
+    const membership = this.targetMap.get(this.ownershipInfo.TableName).membership;
     // the UID_Person is 1 of 2 primary keys of the membership - the one that is not equal to the UID of the role
     const uidPerson = item.GetEntity().GetKeys().filter(k => k !== role)[0];
     await membership.delete(role, uidPerson);
   }
 
-  public async removeEntitlements(tableName: string, roleId: string, entity: IEntity): Promise<void> {
-    this.targetMap.get(tableName).entitlements.delete(roleId, entity);
+  public async removeEntitlements(roleId: string, entity: IEntity): Promise<void> {
+    this.targetMap.get(this.ownershipInfo.TableName).entitlements.delete(roleId, entity);
   }
 
   public async unsubscribe(item: TypedEntity): Promise<void> {
     await this.api.client.portal_itshop_unsubscribe_post({ UidPwo: [item.GetEntity().GetColumn('UID_PersonWantsOrg').GetValue()] });
   }
 
-  public canHaveMemberships(tableName: string): boolean {
-    if (!this.exists(tableName)) {
+  public canHaveMemberships(): boolean {
+    if (!this.exists(this.ownershipInfo.TableName)) {
       return false;
     }
 
-    return this.targetMap.get(tableName).membership ? true : false;
+    return this.targetMap.get(this.ownershipInfo.TableName).membership ? true : false;
   }
 
-  public canHaveEntitlements(tableName: string): boolean {
-    if (!this.exists(tableName)) {
+  public canHaveEntitlements(): boolean {
+    if (!this.exists(this.ownershipInfo.TableName)) {
       return false;
     }
 
-    return this.targetMap.get(tableName).entitlements ? true : false;
+    return this.targetMap.get(this.ownershipInfo.TableName).entitlements ? true : false;
   }
 
-  public async getEntitlements(
-    tableName: string,
+  public async getEntitlements(args: {
     id: string,
     navigationState?: CollectionLoadParameters
-  ): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
-    if (!this.exists(tableName)) {
+  }): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
+    if (!this.exists(this.ownershipInfo.TableName)) {
       return null;
     }
-    return await this.targetMap.get(tableName).entitlements.getCollection(id, navigationState);
+    return await this.targetMap.get(this.ownershipInfo.TableName).entitlements.getCollection(args.id, args.navigationState);
   }
 
-  public async getEntitlementTypes(tableName: string, role: IEntity): Promise<RoleAssignmentData[]> {
-    return await this.targetMap.get(tableName).entitlements.getEntitlementTypes(role);
+  public async getEntitlementTypes(role: IEntity): Promise<RoleAssignmentData[]> {
+    return await this.targetMap.get(this.ownershipInfo.TableName).entitlements.getEntitlementTypes(role);
   }
 
   public createEntitlementAssignmentEntity(role: IEntity, entlType: RoleAssignmentData): IEntity {
     return this.targetMap.get(role.TypeName).entitlements.createEntitlementAssignmentEntity(role, entlType);
   }
 
-  public getEntitlementFkName(tableName: string): string {
-    return this.targetMap.get(tableName).entitlements.getEntitlementFkName();
+  public getEntitlementFkName(): string {
+    return this.targetMap.get(this.ownershipInfo.TableName).entitlements.getEntitlementFkName();
   }
 
   private async getEntities(tableName: string, navigationState: CollectionLoadParameters)

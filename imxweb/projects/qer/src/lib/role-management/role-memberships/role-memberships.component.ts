@@ -24,9 +24,8 @@
  *
  */
 
-import { Component, Input } from '@angular/core';
-import { OwnershipInformation } from 'imx-api-qer';
-import { IEntity } from 'imx-qbm-dbts';
+import { Component } from '@angular/core';
+import { DataManagementService } from '../data-management.service';
 import { RoleService } from '../role.service';
 
 @Component({
@@ -35,31 +34,31 @@ import { RoleService } from '../role.service';
   styleUrls: ['./role-memberships.component.scss', '../sidesheet.scss'],
 })
 export class RoleMembershipsComponent {
-  @Input() public entity: IEntity;
-  @Input() public isAdmin: boolean;
-  @Input() public ownershipInfo: OwnershipInformation;
   public autoMembershipsValid = true;
 
-  constructor(private readonly roleService: RoleService) {
-    this.roleService.autoMembershipDirty$.subscribe((flag) => {
+  constructor(
+    private readonly roleService: RoleService,
+    private dataManagementService: DataManagementService,
+    ) {
+    this.dataManagementService.autoMembershipDirty$.subscribe((flag) => {
       this.autoMembershipsValid = !flag;
     })
   }
 
   public get canBeDynamic(): boolean {
-    return this.entity && this.roleService.canHaveDynamicMemberships(this.entity.TypeName);
+    return this.roleService.canHaveDynamicMemberships(this.dataManagementService.entityInteractive.GetEntity().TypeName);
   }
 
   public get isDynamic(): boolean {
-    return this.entity && this.entity.GetSchema().Columns['UID_DynamicGroup'] && this.entity.GetColumn('UID_DynamicGroup').GetValue();
+    return this.dataManagementService.entityInteractive.GetEntity().GetSchema().Columns['UID_DynamicGroup'] && this.dataManagementService.entityInteractive.GetEntity().GetColumn('UID_DynamicGroup').GetValue();
   }
 
   public get uidDynamicGroup(): boolean {
-    return this.entity.GetColumn('UID_DynamicGroup').GetValue();
+    return this.dataManagementService.entityInteractive.GetEntity().GetColumn('UID_DynamicGroup').GetValue();
   }
 
   public canHavePrimaryMemberships(): boolean {
-    return this.ownershipInfo && this.roleService.targetMap.get(this.ownershipInfo.TableName).membership.hasPrimaryMemberships();
+    return this.roleService.ownershipInfo && this.roleService.targetMap.get(this.roleService.ownershipInfo.TableName).membership.hasPrimaryMemberships();
   }
 
 }

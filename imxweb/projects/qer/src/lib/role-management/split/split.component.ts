@@ -34,12 +34,16 @@ import { RoleService } from '../role.service';
 import { BaseCdr, ColumnDependentReference, MetadataService, SnackBarService } from 'qbm';
 import { TranslateService } from '@ngx-translate/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
+import { DataManagementService } from '../data-management.service';
 
 @Component({
   templateUrl: './split.component.html',
   styleUrls: ['./split.component.scss']
 })
 export class SplitComponent implements OnInit {
+  // Takes place of the previous injected data
+  public roleType: string;
+  public uidRole: string;
 
   public splitItems: IRoleSplitItem[] = [];
   public actions: UiActionData[] = [];
@@ -71,9 +75,9 @@ export class SplitComponent implements OnInit {
     private readonly apiService: QerApiService,
     private readonly busySvc: EuiLoadingService,
     private readonly roleService: RoleService,
+    private dataManagementService: DataManagementService,
     private readonly translate: TranslateService,
     @Inject(EUI_SIDESHEET_DATA) private readonly sidesheetData: {
-      isAdmin: boolean;
       roleType: string,
       uidRole: string
     },
@@ -87,6 +91,9 @@ export class SplitComponent implements OnInit {
   public async ngOnInit(): Promise<void> {
     this.busy = true;
     try {
+      // Set initial values
+      this.roleType = this.dataManagementService.entityInteractive.GetEntity().TypeName;
+      this.uidRole = this.dataManagementService.entityInteractive.GetEntity().GetKeys().join(',');
       this.types = [
         await this.translate.get('#LDS#Keep and do not copy or move to new object').toPromise(),
         await this.translate.get('#LDS#Keep and copy to new object').toPromise(),
@@ -107,7 +114,7 @@ export class SplitComponent implements OnInit {
 
       if (!this.canChangeRoleType) {
         // pre-select role type
-        this.newRoleType = this.sidesheetData.roleType;
+        this.newRoleType = this.roleType.slice();
         await this.roleTypeChanged();
       }
     } finally {
@@ -119,7 +126,7 @@ export class SplitComponent implements OnInit {
     const b = this.busySvc.show();
     try {
       this.isLoading = true;
-      const items = await this.apiService.v2Client.portal_roles_split_get(this.sidesheetData.roleType, this.sidesheetData.uidRole,
+      const items = await this.apiService.v2Client.portal_roles_split_get(this.roleType, this.uidRole,
         this.newRoleType, this.newRole.GetKeys()[0]);
 
       await this.metadata.updateNonExisting(items.map(i => i.ObjectType));
@@ -143,11 +150,11 @@ export class SplitComponent implements OnInit {
     }
     const b = this.busySvc.show();
     try {
-      this.typedEntity = await this.roleService.getInteractiveNew(this.newRoleType, this.sidesheetData.isAdmin);
+      this.typedEntity = await this.roleService.getInteractiveNew(this.newRoleType);
       // set the source role
       await this.typedEntity.setExtendedData({
         RoleSplit: {
-          SourceRoleObjectKey: new DbObjectKey(this.sidesheetData.roleType, this.sidesheetData.uidRole).ToXmlString()
+          SourceRoleObjectKey: new DbObjectKey(this.roleType, this.uidRole).ToXmlString()
         }
       });
       this.newRole = this.typedEntity.GetEntity();
@@ -162,7 +169,7 @@ export class SplitComponent implements OnInit {
     const b = this.busySvc.show();
     try {
       this.isLoading = true;
-      this.actions = await this.apiService.v2Client.portal_roles_split_post(this.sidesheetData.roleType, this.sidesheetData.uidRole,
+      this.actions = await this.apiService.v2Client.portal_roles_split_post(this.roleType, this.uidRole,
         this.newRoleType, this.newRole.GetKeys()[0], {
         SplitItems: this.splitItems.map(i => {
           return {

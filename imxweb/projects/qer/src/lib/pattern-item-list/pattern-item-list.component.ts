@@ -254,7 +254,7 @@ export class PatternItemListComponent implements AfterViewInit, OnChanges, OnDes
       });
 
       try {
-        const items = await this.patternItemService.getServiceItems(item.typedEntity as PortalItshopPatternRequestable);
+        const items = await this.patternItemService.getServiceItems(patternRequestable ?? item.typedEntity as PortalItshopPatternRequestable);
         this.handleAction.emit({ serviceItems: items, name: item.name });
       } finally {
         setTimeout(() => {

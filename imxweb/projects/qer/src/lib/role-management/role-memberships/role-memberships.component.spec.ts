@@ -24,11 +24,12 @@
  *
  */
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ImxTranslationProviderService, imx_SessionService } from 'qbm';
 import { Observable } from 'rxjs';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
 import { QerApiService } from '../../qer-api-client.service';
+import { DataManagementService } from '../data-management.service';
 import { RoleService } from '../role.service';
 
 import { RoleMembershipsComponent } from './role-memberships.component';
@@ -43,7 +44,7 @@ describe('RoleMembershipsComponent', () => {
     },
   };
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [RoleMembershipsComponent],
       providers: [
@@ -70,13 +71,30 @@ describe('RoleMembershipsComponent', () => {
           useValue: {
             canHavePrimaryMemberships: _ => true,
             canHaveDynamicMemberships: _ => false,
-            autoMembershipDirty$: new Observable()
-          }
+          },
         },
+        {
+          provide: DataManagementService,
+          useValue: {
+            autoMembershipDirty$: new Observable(),
+            entityInteractive: {
+              GetEntity: () => {
+                return {
+                  GetColumn: (name: string) => {},
+                  GetSchema: () => {
+                    return {
+                      Columns: {}
+                    }
+                  }
+                }
+              },
+            }
+          }
+        }
       ]
     })
       .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(RoleMembershipsComponent);

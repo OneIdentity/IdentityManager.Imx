@@ -25,7 +25,7 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { ActivatedRoute, Data, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { OwnershipInformation } from 'imx-api-qer';
@@ -49,6 +49,7 @@ import {
   SettingsService
 } from 'qbm';
 import { IDataExplorerComponent } from '../../data-explorer-view/data-explorer-extension';
+import { DataManagementService } from '../data-management.service';
 import { IRoleRestoreHandler } from '../restore/restore-handler';
 import { RestoreComponent } from '../restore/restore.component';
 import { RoleDetailComponent } from '../role-detail/role-detail.component';
@@ -86,6 +87,7 @@ export class RolesOverviewComponent implements OnInit, IDataExplorerComponent {
     private readonly settings: SettingsService,
     private readonly logger: ClassloggerService,
     private readonly roleService: RoleService,
+    private dataManagementService: DataManagementService,
     private readonly metadataProvider: MetadataService,
     private readonly translate: TranslateService,
     private readonly ldsReplace: LdsReplacePipe,
@@ -183,27 +185,32 @@ export class RolesOverviewComponent implements OnInit, IDataExplorerComponent {
   }
 
   private async openDetails(item: IEntity): Promise<void> {
+    this.busyService.show();
+    try {
+      // Grab the interactive entity and store it in the service
+      this.roleService.setSidesheetData({
+        ownershipInfo: this.ownershipInfo,
+        entity: item,
+        isAdmin: this.isAdmin
+      });
+      await this.dataManagementService.setInteractive();
+    } finally {
+      this.busyService.hide();
+    }
     const table = this.metadataProvider.tables[this.ownershipInfo.TableName];
-
-    const sidesheetRef = this.sidesheet.open(RoleDetailComponent, {
+    const result = await this.sidesheet.open(RoleDetailComponent, {
       title: this.ldsReplace.transform(await this.translate.get('#LDS#Heading Edit {0}').toPromise(),
         table.DisplaySingular),
       headerColour: 'blue',
       padding: '0px',
       width: 'max(768px, 80%)',
       disableClose: true,
-      testId: 'role-detail-sidesheet',
-      data: {
-        entity: item,
-        isAdmin: this.isAdmin,
-        ownershipInfo: this.ownershipInfo,
-        editableFields: await this.roleService.getEditableFields(this.ownershipInfo.TableName, item),
-      },
-    });
+      testId: 'role-detail-sidesheet'
+    }).afterClosed().toPromise();
 
-    sidesheetRef.afterClosed().subscribe(async (result) => {
+    if (result) {
       await this.navigate();
-    });
+    };
   }
 
   private async navigate(): Promise<void> {

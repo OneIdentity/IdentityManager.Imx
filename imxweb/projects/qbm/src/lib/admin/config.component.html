@@ -44,7 +44,8 @@
 
     <ng-container *ngIf="!loading">
 
-      <button mat-raised-button data-imx-identifier="admin-add-config-setting-button" (click)="add()">{{'#LDS#Create configuration key' | translate}}</button>
+      <button mat-raised-button data-imx-identifier="admin-add-config-setting-button" *ngIf="configSvc.canAddAnyConfigKey"
+        (click)="add()">{{'#LDS#Create configuration key' | translate}}</button>
 
       <div *ngIf="sectionsFiltered.length == 0" class="no-results">
         <eui-icon [icon]="'search'"></eui-icon>{{ 'No configuration settings were found.' | translate}}

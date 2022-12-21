@@ -1,10 +1,10 @@
 <div class="imx-tab-content">
   <mat-tab-group *ngIf="canHavePrimaryMemberships() || canBeDynamic || isDynamic ; else secondaryOnly">
     <mat-tab *ngIf="canHavePrimaryMemberships()" [label]="'#LDS#Primary memberships' | translate">
-      <imx-primary-memberships [entity]="entity" [ownershipInfo]="ownershipInfo"></imx-primary-memberships>
+      <imx-primary-memberships></imx-primary-memberships>
     </mat-tab>
     <mat-tab [label]="'#LDS#Secondary memberships' | translate">
-      <imx-secondary-memberships [isAdmin]="isAdmin" [entity]="entity" [ownershipInfo]="ownershipInfo"></imx-secondary-memberships>
+      <imx-secondary-memberships></imx-secondary-memberships>
     </mat-tab>
     <mat-tab *ngIf="canBeDynamic">
       <ng-template mat-tab-label>
@@ -14,10 +14,10 @@
           <span translate>#LDS#Automatic memberships</span>
         </div>
       </ng-template>
-      <imx-dynamic-group [entity]="entity" [isAdmin]="isAdmin" [uidDynamicGroup]="uidDynamicGroup"></imx-dynamic-group>
+      <imx-dynamic-group [uidDynamicGroup]="uidDynamicGroup"></imx-dynamic-group>
     </mat-tab>
     <mat-tab *ngIf="isDynamic" [label]="'#LDS#Excluded memberships' | translate">
-      <imx-excluded-memberships [entity]="entity"></imx-excluded-memberships>
+      <imx-excluded-memberships></imx-excluded-memberships>
     </mat-tab>
   </mat-tab-group>
 </div>

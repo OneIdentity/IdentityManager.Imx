@@ -49,3 +49,13 @@
     display: none;
   }
 }
+
+.imx-toggle-container {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 15px;
+
+  > *:not(:last-child) {
+    margin-right: 10px;
+  }
+}

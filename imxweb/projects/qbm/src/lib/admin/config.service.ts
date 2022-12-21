@@ -48,6 +48,8 @@ export class ConfigService {
   /** view model for the sections */
   public sectionsFiltered: ConfigSection[] = [];
 
+  canAddAnyConfigKey = false;
+
   public readonly filter: {
     customized?: boolean,
     keywords?: string
@@ -179,11 +181,14 @@ export class ConfigService {
 
     const configNodes = await this.session.Client.admin_apiconfig_get(this.appId);
 
+    var canAdd = false;
     const result: ConfigSection[] = [];
     for (const topLevelNode of configNodes) {
       const keyData: KeyData[] = [];
       const settingsSupportingAdd: KeyData[] = [];
       this.flatten(keyData, topLevelNode, '', [], settingsSupportingAdd);
+      if (settingsSupportingAdd.length > 0)
+        canAdd = true;
 
       let name = topLevelNode.Name;
       if (!name) {
@@ -194,6 +199,7 @@ export class ConfigService {
 
     this.sections = result;
     this.search();
+    this.canAddAnyConfigKey = canAdd;
   }
 
   public async search(): Promise<void> {
