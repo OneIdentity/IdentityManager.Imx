@@ -4,6 +4,13 @@
 
 ## Change log
 
+### January 16, 2023
+
+The `v82` branch has been updated with fixes for the following issues:
+
+- 36325 The view of a manager's reports was not handling indirect vs. direct reports correctly.
+- 387104 Some context menu panels were opening on the wrong side, causing line breaks.
+
 ### December 12, 2022
 
 The `v82` branch has been updated with fixes for the following issues:

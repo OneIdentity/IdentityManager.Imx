@@ -240,7 +240,7 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
       const groupData = this.groupData[groupKey];
       groupData.data = this.isAdmin
         ? await this.identitiesService.getAllPersonAdmin(groupData.navigationState)
-        : await this.identitiesService.getDirectReportsOfManager(groupData.navigationState);
+        : await this.identitiesService.getReportsOfManager(groupData.navigationState);
       groupData.settings = {
         displayedColumns: this.displayedInnerColumns,
         dataSource: groupData.data,
@@ -350,7 +350,7 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, IData
 
       const data = this.isAdmin
         ? await this.identitiesService.getAllPersonAdmin(this.navigationState)
-        : await this.identitiesService.getDirectReportsOfManager(this.navigationState);
+        : await this.identitiesService.getReportsOfManager(this.navigationState);
 
       this.dstSettings = {
         displayedColumns: this.displayedColumns,

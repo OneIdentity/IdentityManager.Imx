@@ -79,7 +79,7 @@
   >
     <eui-icon icon="ellipsisvertical"></eui-icon>
   </button>
-  <mat-menu data-imx-identifier="requests-history-actions-menu" #actionsMenu="matMenu">
+  <mat-menu yPosition="above" xPosition="before" data-imx-identifier="requests-history-actions-menu" #actionsMenu="matMenu">
     <button mat-menu-item *ngIf="canProlongateRequest" data-imx-identifier="request-menu-renew-request" (click)="actionService.prolongate(selectedItems)">
       {{ '#LDS#Renew product' | translate }}
     </button>
