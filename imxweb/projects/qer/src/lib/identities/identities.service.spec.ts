@@ -93,9 +93,9 @@ describe('IdentitiesService', () => {
     expect(mockQerApiService.typedClient.PortalPersonUid.Get).toHaveBeenCalled();
   });
 
-  it('retrieves all direct reports of a person', async () => {
+  it('retrieves all reports of a person', async () => {
     mockQerApiService.typedClient.PortalPersonReports.Get.calls.reset;
-    expect(await service.getDirectReportsOfManager(navigationState)).toBeDefined();
+    expect(await service.getReportsOfManager(navigationState)).toBeDefined();
     expect(mockQerApiService.typedClient.PortalPersonReports.Get).toHaveBeenCalled();
   });
 

@@ -107,7 +107,7 @@
   >
     {{ '#LDS#Deny' | translate }}
   </button>
-  <mat-menu data-imx-identifier="approvals-table-actions-menu" #actionsMenu="matMenu">
+  <mat-menu yPosition="above" xPosition="before" data-imx-identifier="approvals-table-actions-menu" #actionsMenu="matMenu">
     <button
       mat-menu-item
       *ngIf="canRerouteDecision"
