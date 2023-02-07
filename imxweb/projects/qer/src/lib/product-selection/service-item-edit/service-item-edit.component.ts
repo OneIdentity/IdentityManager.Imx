@@ -69,8 +69,9 @@ export class ServiceItemEditComponent {
       })) {
         return this.sideSheetRef.close(true);
       }
+    } else if(submit) {
+      return this.sideSheetRef.close(true);
     }
-    return this.sideSheetRef.close(true);
   }
 
   public hasBulkItemsWithDecision(): boolean {
