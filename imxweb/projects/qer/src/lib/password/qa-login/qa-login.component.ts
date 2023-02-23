@@ -98,7 +98,7 @@ export class QaLoginComponent implements OnInit {
 			if (newSession) {
 				await this.authService.processLogin(async () => newSession);
 				this.Reset();
-				this.router.navigate(['']);
+				return Promise.resolve();
 			}
 			else {
 				this.LoadQuestions(true);
