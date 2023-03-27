@@ -4,6 +4,10 @@
 
 ## Change log
 
+### March 27, 2023
+
+- Added some [code samples](sdk_samples/README.md) with explanations.
+
 ### December 21, 2022
 
 - The repository has been updated with fixes for the following issues.

@@ -16,7 +16,7 @@ In addition to the ability to search, filter, etc, the Data Source Toolbar conta
 The "Hello World" version of the Data Table component looks like as follow.
 
 > Code
-```
+``` html
 <h1 class="mat-headline">{{ '#LDS#Identities' | translate }}</h1>
 
 <imx-data-source-toolbar
@@ -35,7 +35,7 @@ The "Hello World" version of the Data Table component looks like as follow.
 ```
 
 > Code 
-```
+``` ts
 
 @Component({
   selector: 'imx-select-identity',
@@ -88,7 +88,7 @@ The minimum set of properties that must be set are "EntitySchema", "DisplayColum
 Three places in the .ts Datei are worth to be highlighted.
 
 > Code
-```
+``` ts
  this.displayedColumns = [
       this.schema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
       this.schema.Columns.DefaultEmailAddress
@@ -98,7 +98,7 @@ Three places in the .ts Datei are worth to be highlighted.
 "displayedColumns" defines which columns the table should display.
 
 > Code
-```
+``` ts
   public async onNavigationStateChanged(newState?: CollectionLoadParameters): Promise<void> {
     if (newState) {
       this.navigationState = newState;
@@ -106,10 +106,11 @@ Three places in the .ts Datei are worth to be highlighted.
     await this.navigate();
   }
 ```
+
 This event handler is called every time the state of the data changes, e.g. when the user navigates to the next page.
 
 > Code
-```
+``` ts
  private async navigate(): Promise<void> {
     const data = await this.qerApiClient.typedClient.PortalPersonAll.Get(this.navigationState);
 
@@ -132,7 +133,7 @@ The first version of the Component looks like this.
 The table above shows two fields that are rendered automatically. It is also possible to design columns manually. Whether the table is rendered automatically or manually is controlled by the "mode" input field.
 
 > Code
-```
+``` html
 <imx-data-table
   [dst]="dst"
   mode="auto"
@@ -145,7 +146,7 @@ The table above shows two fields that are rendered automatically. It is also pos
 To display the previous table in manual mode, we need to add the two columns to the html template.
 
 > Code
-```
+``` html
 <imx-data-table [dst]="dst" mode="manual">
   <imx-data-table-column [entityColumn]="schema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
     <ng-template let-item>
@@ -164,7 +165,7 @@ In the next step we will add a new column to the table containing a button and s
 The first column currently shows the default display of the object. We want to add a second row that indicates whether the person is a primary identity or not.
 
 > Code
-```
+``` html
 <imx-data-table [dst]="dst" mode="manual">
   <imx-data-table-column [entityColumn]="schema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
     <ng-template let-item>
@@ -184,7 +185,7 @@ Next we will add a third column that will contain a button. To display data of a
 Before we can display the button, we need to add the new synthetic column to the columns to be displayed. This is done in the *.ts file.
 
 > Code
-```
+``` ts
  this.displayedColumns = [
       this.schema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
       this.schema.Columns.DefaultEmailAddress,
@@ -197,7 +198,7 @@ Before we can display the button, we need to add the new synthetic column to the
 
 
 > Code
-```
+``` html
 <imx-data-table [dst]="dst" mode="manual">
   <imx-data-table-column [entityColumn]="schema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
     <ng-template let-item>
@@ -232,7 +233,7 @@ To do this, you must first enable the "search" option and secondly implement a m
 The following code snippets shows these changes.
 
 > Code
-```
+``` html
 <imx-data-source-toolbar
   #dst
   [settings]="dstSettings"
@@ -243,7 +244,7 @@ The following code snippets shows these changes.
 ```
 
 > Code
-```
+``` ts
   public async onSearch(keywords: string): Promise<void> {
     this.navigationState.StartIndex = 0;
     this.navigationState.search = keywords;

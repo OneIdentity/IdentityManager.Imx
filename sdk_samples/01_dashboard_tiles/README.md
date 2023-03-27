@@ -45,7 +45,7 @@ The HTML template is based on the previously mentioned IconTileComponent compone
 
 > Code
 
-```
+``` html
 <imx-icon-tile caption="Block Identity" image="userremove" [subtitle]="description">
   <ng-template #ActionTemplate>
     <button mat-button color="primary" (click)="block()">
@@ -66,7 +66,7 @@ The IconTileComponent expects some input fields like "caption", "image" or "subt
 The corresponding *.ts component is not very exciting. On the one hand it sets the "Description" property/input used in the template and implements the (dummy) "block()" method.
 
 > Code
-```
+``` ts
 import { Component } from '@angular/core';
 
 @Component({
@@ -97,7 +97,7 @@ Here is the relevant section of the service.
 
 > Code
 
-```
+``` ts
 @Injectable({ providedIn: 'root' })
 export class InitService {
   public onInit(routes: Route[]): void {

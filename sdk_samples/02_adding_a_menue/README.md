@@ -20,7 +20,7 @@ First we add a new entry to the routing table.
 
 > Code
 
-```
+``` ts
 const routes: Routes = [
   :
   {
@@ -34,7 +34,7 @@ Now we can add the new menu with the associated route. Again, as in the previous
 
 > Code
 
-```
+``` ts
 :
 
 @Injectable({ providedIn: 'root' })
@@ -80,7 +80,7 @@ Here is an extract of the file.
 
 > Code
 
-```
+``` ts
 import { ProjectConfig } from 'imx-api-qbm';
 import { NavigationCommandsMenuItem } from './navigation-commands-menu-item.interface';
 
