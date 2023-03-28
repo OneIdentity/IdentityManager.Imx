@@ -42,10 +42,9 @@ export class PackagesComponent implements OnInit {
     private readonly appConfigService: AppConfigService) {
   }
 
-  busy = true;
-  displayedColumns: string[] = ['Name', 'App', 'RelativePath', 'LastChangeDate', 'Fingerprint'];
-
-  packages: ExtendedPackageInfo[] = [];
+  public busy = true;
+  public displayedColumns: string[] = ['Name', 'App', 'RelativePath', 'LastChangeDate', 'Fingerprint'];
+  public packages: ExtendedPackageInfo[] = [];
 
   public async ngOnInit(): Promise<void> {
     try {
@@ -65,6 +64,6 @@ export class PackagesComponent implements OnInit {
   }
 
   public getAppHref(packageInfo: PackageInfo) {
-    return new URL("html/" + packageInfo.Name, this.appConfigService.BaseUrl).href;
+    return this.appConfigService.BaseUrl + '/html/' + packageInfo.Name;
   }
 }

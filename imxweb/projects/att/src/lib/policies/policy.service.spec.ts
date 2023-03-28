@@ -38,7 +38,8 @@ describe('PolicyService', () => {
   const emptyElement = {
     Ident_AttestationPolicy: {
       GetMetadata: () => ({
-        CanEdit: () => true
+        CanEdit: () => true,
+        GetMaxLength: ()=> 500
       }),
       Column: {
         PutValueStruct: jasmine.createSpy('PutValueStruct')
@@ -297,9 +298,12 @@ describe('PolicyService', () => {
           Column: {
             GetDisplayValue: () => '',
             GetMetadata: () => ({
-              CanEdit: () => true
+              CanEdit: () => true,
             })
-          }
+          },
+          GetMetadata: () => ({
+            GetMaxLength: () => 300
+          })
         },
         Description: {
           value: 'uidpolicy',

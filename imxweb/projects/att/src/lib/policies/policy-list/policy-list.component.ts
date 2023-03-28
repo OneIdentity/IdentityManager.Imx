@@ -60,6 +60,7 @@ import { AttestationCasesComponent } from '../attestation-cases/attestation-case
 import { PolicyLoadParameters } from './policy-load-parameters.interface';
 import { AttestationPolicy } from './attestation-policy';
 import { PolicyDetailsComponent } from '../policy-details/policy-details.component';
+import { PolicyCopyData } from '../policy.interface';
 
 @Component({
   templateUrl: './policy-list.component.html',
@@ -188,7 +189,7 @@ export class PolicyListComponent implements OnInit {
   }
 
   public async newPolicy(): Promise<void> {
-    let policy: PortalAttestationPolicyEditInteractive;
+    let policy: PolicyCopyData;
     let overlayRef: OverlayRef;
     setTimeout(() => overlayRef = this.busyService.show());
     try {
@@ -197,17 +198,22 @@ export class PolicyListComponent implements OnInit {
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
       if (policy) {
-        await this.showPolicy(policy, {
-          IsReadOnly: false,
-          Filter: { Elements: [], ConcatenationType: 'OR' },
-          InfoDisplay: []
-        }, await this.translator.get('#LDS#Heading Create Attestation Policy').toPromise(), true);
+        await this.showPolicy(
+          policy.data,
+          {
+            IsReadOnly: false,
+            Filter: { Elements: [], ConcatenationType: 'OR' },
+            InfoDisplay: [],
+          },
+          await this.translator.get('#LDS#Heading Create Attestation Policy').toPromise(),
+          true
+        );
       }
     }
   }
 
   public async copy(policy: PortalAttestationPolicy): Promise<void> {
-    let newPolicy: PortalAttestationPolicyEditInteractive;
+    let newPolicy: PolicyCopyData;
     let filter: PolicyFilterData;
     let overlayRef: OverlayRef;
     setTimeout(() => overlayRef = this.busyService.show());
@@ -218,16 +224,13 @@ export class PolicyListComponent implements OnInit {
         return this.newPolicy();
       }
 
-      newPolicy = await this.policyService.buildNewEntity(data.Data[0], data.extendedData[0].Filter);
+      newPolicy = await this.policyService.buildNewEntity(data.Data[0], data.extendedData[0]?.Filter);
       filter = data.extendedData[0];
       this.logger.trace(this, 'copy for policy (old, new)', data, newPolicy);
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
       if (newPolicy) {
-        await this.showPolicy(newPolicy,
-          filter,
-          await this.translator.get('#LDS#Heading Copy Attestation Policy').toPromise(),
-          true);
+        await this.showPolicy(newPolicy.data, filter, await this.translator.get('#LDS#Heading Copy Attestation Policy').toPromise(), true);
       }
     }
   }
@@ -363,7 +366,9 @@ export class PolicyListComponent implements OnInit {
     policy: PortalAttestationPolicyEditInteractive,
     filterData: PolicyFilterData,
     display: string,
-    isNew: boolean): Promise<void> {
+    isNew: boolean,
+    showSampleDataWarning: boolean = false
+  ): Promise<void> {
     const sidesheetRef = this.sideSheet.open(EditMasterDataComponent, {
       title: display,
       headerColour: 'iris-blue',
@@ -371,8 +376,8 @@ export class PolicyListComponent implements OnInit {
       padding: '0px',
       width: 'max(600px, 80%)',
       disableClose: true,
-      data: { policy, filterData, isNew, isComplienceFrameworkEnabled: this.isComplienceFrameworkEnabled },
-      testId: 'policy-list-show-policy-sidesheet'
+      data: { policy, filterData, isNew, isComplienceFrameworkEnabled: this.isComplienceFrameworkEnabled,showSampleDataWarning },
+      testId: 'policy-list-show-policy-sidesheet',
     });
 
     const shouldReload = await sidesheetRef.afterClosed().toPromise();

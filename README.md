@@ -4,6 +4,18 @@
 
 ## Change log
 
+### March 28, 2023
+
+The `v82` branch has been updated with fixes for the following issues:
+
+- 358311 / 36090: Copy of some attestation policies yields error
+- 332087 / 36360: OAuth redirect flow was broken on the Server Administration app
+- 324128 / 35979 / 36503: Memberships of system roles were not displayed
+- 386166 / 36530: Package links were broken in the Server Administration app
+- 305110 / 36715: Error message after saving an invalid membership condition
+- 393701: Cannot select a previously selected image for a service item
+- 36325: Direct/indirect reports of an identity were not being fetched correctly. (This supports a bug fix in the API Server component.)
+
 ### January 16, 2023
 
 The `v82` branch has been updated with fixes for the following issues:
