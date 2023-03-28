@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -44,6 +44,9 @@ import { FileSelectorService } from '../../file-selector/file-selector.service';
   styleUrls: ['./edit-image.component.scss']
 })
 export class EditImageComponent implements CdrEditor, OnDestroy {
+  
+  @ViewChild('file') public fileInput: ElementRef;
+
   public get fileFormatHint(): string {
     return this.fileFormatError ? '#LDS#Please select an image in PNG format.' : undefined;
   }
@@ -113,6 +116,7 @@ export class EditImageComponent implements CdrEditor, OnDestroy {
    * removes the current image
    */
   public async remove(): Promise<void> {
+    this.fileInput.nativeElement.value = '';
     this.fileFormatError = false;
 
     this.logger.debug(this, 'Removing current image...');

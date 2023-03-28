@@ -24,11 +24,16 @@
  *
  */
 
-import { PolicyFilterData, PortalAttestationPolicyEditInteractive } from 'imx-api-att';
+import { PolicyFilterData, PortalAttestationPolicyEdit } from 'imx-api-att';
 export interface Policy {
-  policy: PortalAttestationPolicyEditInteractive;
+  policy: PortalAttestationPolicyEdit;
   filterData: PolicyFilterData;
   isNew?: boolean;
   isComplienceFrameworkEnabled: boolean;
+  showSampleDataWarning?: boolean;
+}
 
+export interface PolicyCopyData {
+  data: PortalAttestationPolicyEdit;
+  pickCategorySkipped: boolean;
 }

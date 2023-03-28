@@ -62,6 +62,18 @@ h2 {
   max-width: 600px;
 }
 
+.imx-helper-alert {
+  width: 100%;
+
+  ::ng-deep .eui-alert {
+    margin-bottom: 20px;
+  }
+
+  span {
+    display: block;
+  }
+}
+
 @media only screen and (max-width: 1024px) {
   .imx-master-data-grid > * {
     grid-column-start: 1;

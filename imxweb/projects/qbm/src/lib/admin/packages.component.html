@@ -4,7 +4,7 @@
   <mat-spinner *ngIf="busy"></mat-spinner>
 
 
-  <table mat-table *ngIf="!busy" [dataSource]="packages" class="mat-elevation-z8 package-table">
+  <table mat-table *ngIf="!busy" [dataSource]="packages" class="package-table">
     <ng-container matColumnDef="Name">
       <th mat-header-cell *matHeaderCellDef>{{'#LDS#Package name' | translate}}</th>
       <td mat-cell *matCellDef="let package"> {{package.Name}}
