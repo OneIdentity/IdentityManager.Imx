@@ -19,7 +19,7 @@
   - 36325 Fixed a bug that was causing the indirect reports view to only show direct reports.
   - 366940 Fixed a bug when running the application without the `RISKINDEX` configuration parameter.
   - 367251 Fixed a bug when approving policy violations.
-   -393864 Fixed a bug in the grouped view of attestation runs.
+  - 393864 Fixed a bug in the grouped view of attestation runs.
   - 332087 Fixed OAuth login to the Server Administration app.
   - 352481 Fixed app titles.
   - 386868/36143 Candidates for parameter values were not correctly reloaded.
