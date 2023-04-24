@@ -4,6 +4,51 @@
 
 ## Change log
 
+### April 24, 2023
+
+- The branch `v91` is now up to date with the 9.1.1 release of Identity Manager.
+- This update addresses the following security issues.
+  - 410789 Updated Webpack to address security issue CVE-2023-28154.
+  - 403744 Updated `ua-parser-js` to address security issue CVE-2022-25927.
+- The repository has been updated with fixes for the following issues.
+  - 407356 The `deleteDestPath` option is now set for Angular projects. This avoids having to restart `ng serve` when re-compiling base libraries. See [this Angular issue](https://github.com/angular/angular-cli/issues/24791) for more details.
+  - 319131 Fixed a bug when adding a service item to a request template.
+  - 407514 Fixed the password profile tab selection on the profile page.
+  - 403575 Fixed a SCSS bug.
+  - 406544, 406542 Fixed app titles.
+  - 406002 Search was not working correctly for application entitlements.
+  - 358311, 405872 Fixed a bug when copying an attestation policy.
+  - 322939 Fixed a bug that caused the page to load infinitely when loading password profile questions.
+  - 395047 Fixed a bug on the password profile page.
+  - 403650 Configuration of `EditableFields` was not being used for accounts in the Data Explorer.
+  - 394255 The API Documentation ("Swagger") page now submits XSRF protection tokens.
+  - 405669 History data was not being loaded from all objects.
+  - 278243 Add tags required to host the Password Reset Portal in the Password Manager Secure Password Extension.
+  - 367262 Fixed view bugs on the rule violations page.
+  - 305110 Fixed a bug when creating dynamic groups.
+  - 399901 Fixed a bug in the grouped view of attestation cases.
+  - 386166 Fixed the links on the Packages view of the Administration Portal.
+  - 366940 Fixed a bug when running the application without the `RISKINDEX` configuration parameter.
+  - 367251 Fixed a bug when approving policy violations.
+  - 36325 Fixed a bug that was causing the indirect reports view to only show direct reports.
+  - 389005 Fixed the view of attestation cases in the Data Explorer.
+  - 223697 Fixed an application name change bug
+  - 290031 Fixed a bug that was causing the chief approval team switch to be displayed after logging out and logging back in with a different user.
+  - 308537 Fixed a bug in the view to split a role.
+  - 393025 Fixed a bug in the [fk-hierarchical-dialog](./imxweb/projects/qbm/src/lib/fk-hierarchical-dialog/fk-hierarchical-dialog.component.ts) component.
+  - 393701 Fixed a bug when selecting an image for an application entitlement for the second time.
+  - 291061 The explanation for service category image inheritance was also shown when the inheritance itself is disabled.
+  - 310269 Fixed a bug when creating a request template with a name longer than 64 characters.
+  - 399839 The date in the history view was displayed in an incorrect format.
+  - 307558 The publication date of an application was displayed in an incorrect format.
+  - 393864 Fixed a bug in the grouped view of attestation runs.
+  - 388613 Fixed a missing scrollbar in the Pending Provisioning Processes view.
+  - 393524 The code to remove the local packages from `package-lock.json` has been moved to [remove-local-package-locks.js](imxweb/remove-local-package-locks.js).
+  - 324122 The unneccessary files `imx-project.json` and `placeholder.spec.ts` have been deleted.
+  - 387104 Fixed a line break in the "Cancel request" drop-down menu item.
+  - 331942 The rule violation details view now shows more information.
+  - 332087 Fixed OAuth login to the Server Administration app.
+
 ### March 27, 2023
 
 - Added some [code samples](sdk_samples/README.md) with explanations.
