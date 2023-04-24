@@ -136,7 +136,7 @@ export class KpiOverviewComponent implements OnChanges {
    * @returns the local date string for a date represented by an other string
    */
   public getDateDisplay(date: string): string {
-    return new Date(date).toLocaleString(this.translateService.getBrowserCultureLang());
+    return new Date(date).toLocaleString(this.translateService.currentLang);
   }
 
   /**
@@ -168,7 +168,7 @@ export class KpiOverviewComponent implements OnChanges {
         serie.Points.map((point: ChartDataPoint) => point.Value)
       )));
 
-    const browserCulture = this.translateService.getBrowserCultureLang();
+    const browserCulture = this.translateService.currentLang
 
     yAxis.tickConfiguration = {format : d => d.toLocaleString(browserCulture), values: this.accumulateTicks(chart)};
 

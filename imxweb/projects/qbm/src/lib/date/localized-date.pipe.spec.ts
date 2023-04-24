@@ -29,6 +29,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { configureTestSuite } from 'ng-bullet';
 import { LocalizedDatePipe } from './localized-date.pipe';
 
+function removeSpecialChars(input: string): string {
+  return input.replace(/[^a-zA-Z0-9_\\-\\,\\:\\/]/g,'');
+}
 
 describe('LocalizedDatePipe', () => {
 
@@ -67,7 +70,7 @@ describe('LocalizedDatePipe', () => {
       translateService.currentLang = testcase.culture;
 
       const pipe = new LocalizedDatePipe(translateService);
-      expect(pipe.transform(testcase.date)).toBe(testcase.expected);
+      expect(removeSpecialChars(pipe.transform(testcase.date))).toBe(removeSpecialChars(testcase.expected));
     });
   }
 

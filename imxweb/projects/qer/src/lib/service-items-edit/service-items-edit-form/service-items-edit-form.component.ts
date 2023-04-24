@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChange, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { TranslateService } from '@ngx-translate/core';
@@ -32,7 +32,6 @@ import { PortalServiceitemsInteractive } from 'imx-api-qer';
 import { IEntity, IEntityColumn } from 'imx-qbm-dbts';
 
 import { BaseCdr, ClassloggerService, ColumnDependentReference } from 'qbm';
-import { Subscription } from 'rxjs';
 import { QerPermissionsService } from '../../admin/qer-permissions.service';
 import { OwnerControlComponent } from '../../owner-control/owner-control.component';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
@@ -45,7 +44,7 @@ import { UserModelService } from '../../user/user-model.service';
   templateUrl: './service-items-edit-form.component.html',
   styleUrls: ['./service-items-edit-form.component.scss']
 })
-export class ServiceItemsEditFormComponent implements OnInit, OnChanges, OnDestroy {
+export class ServiceItemsEditFormComponent implements OnInit, OnChanges {
 
   @ViewChild('ownerControl') public ownercontrol: OwnerControlComponent;
   @Input() public serviceItem: PortalServiceitemsInteractive;
@@ -61,7 +60,8 @@ export class ServiceItemsEditFormComponent implements OnInit, OnChanges, OnDestr
   public loadingTags: boolean;
 
   private editableServiceItemColumns: string[] = [];
-  private readonly subscriptions: Subscription[] = [];
+  private inheritCategoryImagesToItems = false;
+  private imageHint: string;
 
   constructor(
     formBuilder: FormBuilder,
@@ -89,7 +89,10 @@ export class ServiceItemsEditFormComponent implements OnInit, OnChanges, OnDestr
   }
 
   public async ngOnInit(): Promise<void> {
-    this.canEditOwner = await this.permission.isShopAdmin();
+    this.canEditOwner = await this.permission.isShopAdmin();    
+    this.imageHint = await this.translate
+      .get('#LDS#If you do not specify an image, the image of the assigned service category will be used.')
+      .toPromise()
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
@@ -98,19 +101,16 @@ export class ServiceItemsEditFormComponent implements OnInit, OnChanges, OnDestr
     }
   }
 
-  public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+  public onImageValueChanged(control: AbstractControl, cdr: BaseCdr): void {
+    this.updateImageHint(cdr);
   }
 
-  public async onFormControlCreated(control: AbstractControl, cdr?: BaseCdr): Promise<void> {
+  public onFormControlCreated(control: AbstractControl, cdr?: BaseCdr): void {
     this.formArray.push(control);
     this.formControlCreated.emit(control);
 
     if (cdr) {
-      await this.updateImageHint(cdr);
-      this.subscriptions.push(control.valueChanges.subscribe(async () => {
-        await this.updateImageHint(cdr);
-      }));
+      this.updateImageHint(cdr);
     }
   }
 
@@ -145,7 +145,9 @@ export class ServiceItemsEditFormComponent implements OnInit, OnChanges, OnDestr
   private async setup(): Promise<void> {
     this.serviceItemsEditService.handleOpenLoader();
     try {
-      this.editableServiceItemColumns = (await this.projectConfig.getConfig()).OwnershipConfig?.EditableFields?.AccProduct;
+      const projectConfig = await this.projectConfig.getConfig();
+      this.inheritCategoryImagesToItems = projectConfig.ITShopConfig?.InheritCategoryImagesToItems;
+      this.editableServiceItemColumns = projectConfig.OwnershipConfig?.EditableFields?.AccProduct;
       const showTermsOfUseCdr = await this.serviceItemsEditService.hasTermsOfUseCancdidates();
       const showProductParamCategory = await this.serviceItemsEditService.hasAccproductparamcategoryCandidates();
       const showFunctionalArea = await this.serviceItemsEditService.hasFunctionalAreaCandidates();
@@ -189,11 +191,10 @@ export class ServiceItemsEditFormComponent implements OnInit, OnChanges, OnDestr
       });
   }
 
-  private async updateImageHint(cdr: BaseCdr): Promise<BaseCdr> {
+  private updateImageHint(cdr: BaseCdr): BaseCdr {
     const column = cdr.column;
-    // TODO #290223 show the hint, only when value is not set (column.GetValue().length === 0)
-    cdr.hint = column.ColumnName === 'JPegPhoto'
-      ? await this.translate.get('#LDS#If you do not specify an image, the image of the assigned service category will be used.').toPromise()
+    cdr.hint = this.inheritCategoryImagesToItems && column.GetValue().length === 0
+      ? this.imageHint
       : '';
     return cdr;
   }

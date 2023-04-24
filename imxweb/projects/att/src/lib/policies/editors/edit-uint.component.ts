@@ -59,7 +59,7 @@ export class EditUintComponent implements OnInit, OnDestroy {
     this.valueChangedSubscription = this.control.valueChanges.subscribe(() =>
       this.valueChanged.emit({
         ParameterValue: this.control.value,
-        displays: [this.control.value.toLocaleString(this.translateService.getBrowserCultureLang())]
+        displays: [this.control.value.toLocaleString(this.translateService.currentLang)]
       })
     );
   }

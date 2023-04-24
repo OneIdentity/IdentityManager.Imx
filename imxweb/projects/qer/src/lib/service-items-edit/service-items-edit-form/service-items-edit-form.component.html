@@ -3,6 +3,7 @@
     <div *ngIf="cdrList?.length > 0" class="imx-property-container">
       <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"
         [attr.data-imx-identifier]="'service-items-edit-form-cdr-' + cdr.column.ColumName"
+        (valueChange)="cdr.column.ColumnName  === 'JPegPhoto' ? onImageValueChanged($event, cdr) : void"
         (controlCreated)="cdr.column.ColumnName  === 'JPegPhoto' ? onFormControlCreated($event, cdr) : onFormControlCreated($event)">
       </imx-cdr-editor>
     </div>

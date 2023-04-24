@@ -42,7 +42,6 @@ import { DataManagementService } from '../data-management.service';
   selector: 'imx-dynamic-group',
 })
 export class DynamicRoleComponent implements OnInit {
-
   constructor(
     formBuilder: FormBuilder,
     private readonly apiService: QerApiService,
@@ -61,7 +60,6 @@ export class DynamicRoleComponent implements OnInit {
   get formArray(): FormArray {
     return this.formGroup.get('formArray') as FormArray;
   }
-
 
   public dynamicGroup: PortalDynamicgroup;
 
@@ -84,9 +82,9 @@ export class DynamicRoleComponent implements OnInit {
   public resetState(): void {
     this.lastSavedExpression = _.cloneDeep(this.sqlExpression?.Expression);
     this.lastSavedCDRs = [];
-    this.cdrList.map(cdr => {
+    this.cdrList.map((cdr) => {
       this.lastSavedCDRs.push(cdr.column.GetValue());
-    })
+    });
     this.exprHasntChanged = true;
     this.cdrsHaventChanged = true;
     this.formGroup.markAsPristine();
@@ -169,9 +167,11 @@ export class DynamicRoleComponent implements OnInit {
   }
 
   public checkCDRs(): void {
-    this.cdrsHaventChanged = this.cdrList.map((cdr, index) => {
-      return cdr.column.GetValue() === this.lastSavedCDRs[index];
-    }).every(isTrue => isTrue);
+    this.cdrsHaventChanged = this.cdrList
+      .map((cdr, index) => {
+        return cdr.column.GetValue() === this.lastSavedCDRs[index];
+      })
+      .every((isTrue) => isTrue);
     if (!this.cdrsHaventChanged) {
       this.dataManagementService.autoMembershipDirty(true);
     } else if (this.cdrsHaventChanged && this.exprHasntChanged) {
@@ -180,7 +180,11 @@ export class DynamicRoleComponent implements OnInit {
   }
 
   public isConditionInvalid(): boolean {
-    return this.sqlExpression?.Expression?.Expressions.length === 0 || isExpressionInvalid(this.sqlExpression)
+    return (
+      this.sqlExpression?.Expression?.Expressions.length === 0 ||
+      isExpressionInvalid(this.sqlExpression) ||
+      !this.hasValuesSet(this.sqlExpression.Expression)
+    );
   }
 
   private async loadDynamicRole(): Promise<void> {
@@ -192,8 +196,8 @@ export class DynamicRoleComponent implements OnInit {
         this.dynamicGroup = data.Data[0];
         this.sqlExpression = data.extendedData.Expressions[0];
         // Set "" to undefined so the cdr and data dirty states make sense
-        this.sqlExpression?.Expression?.Expressions?.map(exp => {
-          if (exp.Value === "") {
+        this.sqlExpression?.Expression?.Expressions?.map((exp) => {
+          if (exp.Value === '') {
             exp.Value = undefined;
           }
         });
@@ -210,6 +214,16 @@ export class DynamicRoleComponent implements OnInit {
     } finally {
       this.busy = false;
     }
+  }
+
+  private hasValuesSet(sqlExpression: SqlExpression, checkCurrent: boolean = false): boolean {
+    const current = !checkCurrent || (sqlExpression.Value != null && Object.keys(sqlExpression.Value).length > 0);
+
+    if (sqlExpression.Expressions?.length > 0) {
+      return current && sqlExpression.Expressions.every((elem) => this.hasValuesSet(elem, true));
+    }
+
+    return current;
   }
 
   LdsUnsupportedExpression = '#LDS#You cannot edit these automatic memberships conditions in the Web Portal.';

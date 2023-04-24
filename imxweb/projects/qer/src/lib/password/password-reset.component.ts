@@ -41,10 +41,9 @@ import { Column, GetLocalDataForPage, IColumn } from './helpers.model';
 @Component({
   selector: 'imx-password-reset',
   templateUrl: './password-reset.component.html',
-  styleUrls: ['./password-reset.component.scss']
+  styleUrls: ['./password-reset.component.scss'],
 })
 export class PasswordResetComponent implements OnInit {
-
   public myPasswordVisibility: boolean;
   public showHelper = true;
   public passwordItems: PasswordItem[];
@@ -58,16 +57,22 @@ export class PasswordResetComponent implements OnInit {
     size: 5,
     sizeOptions: [5, 10, 20, 50, 100, 200, 500],
     showFirstLastButtons: false,
-    hidden: false
+    hidden: false,
   };
 
-  private stateCached: { page: number, pageSize: number, skip: number };
+  private stateCached: { page: number; pageSize: number; skip: number };
 
   /** Identifier of the identity to set a password for. If this is not set, the logged-in user will be used. */
-  @Input() set uidPerson(val) { this.passwordHelper.uidPerson = val; }
+  @Input() set uidPerson(val: string) {
+    this.passwordHelper.uidPerson = val;
+  }
 
-  get embedded() { return this.passwordHelper.embedded; }
-  @Input() set embedded(val) { this.passwordHelper.embedded = val; }
+  public get embedded(): boolean {
+    return this.passwordHelper.embedded;
+  }
+  @Input() public set embedded(val: boolean) {
+    this.passwordHelper.embedded = val;
+  }
 
   constructor(
     private readonly sideSheet: EuiSidesheetService,
@@ -79,47 +84,46 @@ export class PasswordResetComponent implements OnInit {
     this.addColumnDef({
       id: 'display',
       title: '#LDS#User account',
-      getValue: (row: PasswordItem) => row.display
+      getValue: (row: PasswordItem) => row.display,
     });
 
     this.addColumnDef({
       id: 'tabledisplay',
       title: '#LDS#Type',
-      getValue: (row: PasswordItem) => row.tableDisplay
+      getValue: (row: PasswordItem) => row.tableDisplay,
     });
 
     this.addColumnDef({
       id: 'lastset',
       title: '#LDS#Last changed on',
-      getValue: (row: PasswordItem) => row.dataItem.PasswordLastSet
+      getValue: (row: PasswordItem) => row.dataItem.PasswordLastSet,
     });
 
     this.addColumnDef({
       id: 'actions',
       title: '#LDS#Type',
-      getValue: (row: PasswordItem) => row.dataItem
+      getValue: (row: PasswordItem) => row.dataItem,
     });
   }
 
-  public getDateDisplay(row: PasswordItem) {
+  public getDateDisplay(row: PasswordItem): string {
     const pls = row.dataItem.PasswordLastSet;
-    if (!pls)
-      return "";
+    if (!pls) { return ''; }
     const date = pls instanceof Date ? pls : new Date(pls);
-    return date.toLocaleDateString(this.translate.getBrowserCultureLang());
+    return date.toLocaleDateString(this.translate.currentLang);
   }
 
   public async ngOnInit(): Promise<void> {
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busy.show());
+    setTimeout(() => (overlayRef = this.busy.show()));
     try {
       this.passwordHelper.passwordItemData = await this.passwordSvc.getPasswordItems(this.passwordHelper.uidPerson);
-      this.passwordItems = this.passwordHelper.passwordItemData.Items.map(elem => new PasswordItem(elem));
+      this.passwordItems = this.passwordHelper.passwordItemData.Items.map((elem) => new PasswordItem(elem));
     } finally {
       setTimeout(() => this.busy.hide(overlayRef));
     }
 
-    await this.metadataSvc.update(this.passwordItems.map(elem => elem.tableName));
+    await this.metadataSvc.update(this.passwordItems.map((elem) => elem.tableName));
     for (const p of this.passwordItems) {
       p.tableDisplay = this.metadataSvc.tables[p.tableName].DisplaySingular;
     }
@@ -137,7 +141,7 @@ export class PasswordResetComponent implements OnInit {
       icon: 'password',
       disableClose: true,
       testId: 'password-sidesheet',
-      data: this.passwordHelper
+      data: this.passwordHelper,
     });
   }
 
@@ -145,7 +149,7 @@ export class PasswordResetComponent implements OnInit {
     this.updateDataCollection({
       skip: e.pageIndex * e.pageSize,
       page: e.pageIndex,
-      pageSize: e.pageSize
+      pageSize: e.pageSize,
     });
   }
 
@@ -161,8 +165,7 @@ export class PasswordResetComponent implements OnInit {
     this.columnDefs[def.id] = column;
   }
 
-  private updateDataCollection(state?: { page: number, pageSize: number, skip: number }): void {
-
+  private updateDataCollection(state?: { page: number; pageSize: number; skip: number }): void {
     if (state) {
       this.stateCached = state;
     }
@@ -170,13 +173,13 @@ export class PasswordResetComponent implements OnInit {
       this.stateCached = {
         skip: this.paginatorConfig.index * this.paginatorConfig.size,
         page: this.paginatorConfig.index,
-        pageSize: this.paginatorConfig.size
+        pageSize: this.paginatorConfig.size,
       };
     }
 
     this.dataCollection = {
       totalCount: this.passwordItems.length,
-      Data: GetLocalDataForPage(this.passwordItems, this.stateCached)
+      Data: GetLocalDataForPage(this.passwordItems, this.stateCached),
     };
   }
 }

@@ -132,7 +132,14 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
         this.table.clearSelection();
       })
     );
-    this.subscriptions.push(authentication.onSessionResponse.subscribe((state) => (this.currentUserId = state.UserUid)));
+    this.subscriptions.push(
+      authentication.onSessionResponse.subscribe((state) => {
+        this.currentUserId = state.UserUid;
+        if (state.IsLoggedIn) {
+          this.viewEscalation = false;
+        }
+      })
+    );
     this.userModelService.getGroups().then((groups) => {
       this.isUserEscalationApprover = groups.find((g) => g.Name === 'vi_4_ITSHOPADMIN_CANCEL') != null;
     });
@@ -238,7 +245,7 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     }
   }
 
-    /**
+  /**
    * Occurs when user clicks the edit button for a request
    *
    * @param pwo Selected PortalItshopApproveRequests.
@@ -306,8 +313,8 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
           },
           {
             ColumnName: 'recommendations',
-            Type: ValType.String
-          }
+            Type: ValType.String,
+          },
         ],
         dataModel: this.dataModel,
         identifierForSessionStore: 'approvals-table',

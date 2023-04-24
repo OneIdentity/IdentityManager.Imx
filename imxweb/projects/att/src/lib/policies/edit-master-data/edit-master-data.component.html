@@ -3,7 +3,21 @@
         <div class="imx-master-data-grid">
             <mat-card class="imx-master-data-cdrs">
                 <h2>{{'#LDS#Heading Attestation Policy Settings' | translate}}</h2>
-
+                <eui-alert *ngIf="policy.showSampleDataWarning" class="imx-helper-alert" type="warning" [colored]="true" [dismissable]="true">
+                    <eui-alert-header>
+                        <span translate>
+                            #LDS#Sample date could not be copied.
+                        </span>
+                    </eui-alert-header>
+                    <eui-alert-content>
+                        <span translate>
+                            #LDS#The original policy was using sample data. Because sample data can not be assigned to two different policies at once, sample data was excluded from the copy.
+                        </span>
+                        <span translate>
+                            #LDS#If you like to use sample data, please choose a new set.
+                        </span>
+                    </eui-alert-content>
+                  </eui-alert>
                 <imx-cdr-editor [cdr]="objectProperties.IsInActive?.cdr"
                     (controlCreated)="addControl($event, policy.policy.IsInActive.Column.ColumnName)">
                 </imx-cdr-editor>

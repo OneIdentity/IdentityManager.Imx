@@ -132,7 +132,10 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
         this.table.clearSelection();
       })
     );
-    this.subscriptions.push(authentication.onSessionResponse.subscribe((sessionState) => (this.userUid = sessionState?.UserUid)));
+    this.subscriptions.push(authentication.onSessionResponse.subscribe((sessionState) => {
+      this.userUid = sessionState?.UserUid;
+      this.attestationCases.isChiefApproval = false;
+    }));
 
     this.attFeatureService.getAttestationConfig().then((config) => {
       this.isUserEscalationApprover = config.IsUserInChiefApprovalTeam;

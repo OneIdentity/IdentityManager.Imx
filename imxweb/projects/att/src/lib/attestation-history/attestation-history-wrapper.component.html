@@ -7,7 +7,7 @@
     title="{{ '#LDS#Actions' | translate }}" [matMenuTriggerFor]="actionsMenu" [disabled]="!canPerformActions">
     <eui-icon icon='ellipsisvertical'></eui-icon>
   </button>
-  <mat-menu data-imx-identifier="attestation-history-actions-menu" #actionsMenu="matMenu">
+  <mat-menu yPosition="above" xPosition="before" data-imx-identifier="attestation-history-actions-menu" #actionsMenu="matMenu">
     <button *ngIf="canRecallDecision" mat-menu-item data-imx-identifier="attestation-history-recall-decision"
       (click)="attestationAction.recallDecision(selectedCases)">
       {{'#LDS#Undo approval decision' | translate}}

@@ -1,5 +1,19 @@
 @import "@elemental-ui/core/src/styles/_palette.scss";
 
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-grow: 1;
+} 
+
+.imx-table-container {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
 .subtitle {
   font-size: smaller;
   color: $black-9;

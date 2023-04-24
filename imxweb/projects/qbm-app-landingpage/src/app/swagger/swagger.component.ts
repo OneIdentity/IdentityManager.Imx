@@ -48,7 +48,18 @@ export class SwaggerComponent implements AfterViewInit {
         SwaggerUIBundle.presets.apis,
         SwaggerUIBundle.SwaggerUIStandalonePreset
       ],
-      url: this.appConfigProvider.BaseUrl + '/swagger/swagger.json'
+      url: this.appConfigProvider.BaseUrl + '/swagger/swagger.json',
+      requestInterceptor: (req) => {  const token = this.getCookie("XSRF-TOKEN");
+        if (token) {
+          req.headers['X-XSRF-TOKEN'] = token; 
+          }
+        }
     });
+  }
+
+  private getCookie(name) {
+    function escape(s) { return s.replace(/([.*+?\^$(){}|\[\]\/\\])/g, '\\$1'); }
+    var match = document.cookie.match(RegExp('(?:^|;\\s*)' + escape(name) + '=([^;]*)'));
+    return match ? match[1] : null;
   }
 }

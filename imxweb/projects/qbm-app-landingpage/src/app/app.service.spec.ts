@@ -25,7 +25,6 @@
  */
 
 import { TestBed } from '@angular/core/testing';
-import { Title } from '@angular/platform-browser';
 import { configureTestSuite } from 'ng-bullet';
 import { LoggerTestingModule } from 'ngx-logger/testing';
 import { TranslateService } from '@ngx-translate/core';
@@ -49,10 +48,6 @@ describe('AppService', () => {
       init: jasmine.createSpy('init').and.returnValue(Promise.resolve())
     };
 
-    title = {
-      setTitle: jasmine.createSpy('setTitle')
-    };
-
     session = { };
 
     appConfigService = {
@@ -71,7 +66,6 @@ describe('AppService', () => {
       this.translate.setDefaultLang.calls.reset();
       this.translate.use.calls.reset();
       this.translationProvider.init.calls.reset();
-      this.title.setTitle.calls.reset();
       this.appConfigService.init.calls.reset();
     }
 
@@ -81,7 +75,6 @@ describe('AppService', () => {
       expect(this.translate.setDefaultLang).toHaveBeenCalled();
       expect(this.translate.use).toHaveBeenCalled();
       expect(this.translationProvider.init).toHaveBeenCalled();
-      expect(this.title.setTitle).toHaveBeenCalled();
       expect(this.appConfigService.init).toHaveBeenCalled();
     }
   }
@@ -105,10 +98,6 @@ describe('AppService', () => {
         {
           provide: imx_SessionService,
           useValue: mocks.session
-        },
-        {
-          provide: Title,
-          useValue: mocks.title
         },
         {
           provide: ImxTranslationProviderService,

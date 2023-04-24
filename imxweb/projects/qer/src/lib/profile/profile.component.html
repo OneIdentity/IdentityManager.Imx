@@ -11,7 +11,7 @@
     (selectionChange)="onSelectIdentity($event)" [confirmChange]="confirmChange"
     data-imx-identifier="edit-profile-select-identity"></imx-identity-select>
 
-  <mat-tab-group *ngIf="!mailToBeUnsubscribed; else unsubscribeDisplay" #profileTabs>
+  <mat-tab-group *ngIf="!mailToBeUnsubscribed; else unsubscribeDisplay" [(selectedIndex)]="tabIndex">
     <mat-tab label="{{ '#LDS#Heading Main Data' | translate }}" data-imx-identifier="profile-main-data">
       <mat-card>
         <mat-card-content>
@@ -43,8 +43,8 @@
     <mat-tab label="{{ '#LDS#Heading Email Notifications' | translate }}" data-imx-identifier="profile-email" *ngIf="hasMailSubscriptions">
       <imx-mail-subscriptions [uidPerson]="userUid" [mailInfo]="mailInfo"></imx-mail-subscriptions>
     </mat-tab>
-    <mat-tab label="{{ '#LDS#Heading Password Questions' | translate }}" data-imx-identifier="profile-password-questions" *ngIf="canManagePasswordQuestions" >
-      <imx-password-questions componentId="profile-password-questions"></imx-password-questions>
+    <mat-tab #passwordQuestionTab label="{{ '#LDS#Heading Password Questions' | translate }}" data-imx-identifier="profile-password-questions" *ngIf="canManagePasswordQuestions" >
+      <imx-password-questions></imx-password-questions>
     </mat-tab>
     <ng-container *ngFor="let tab of dynamicTabs">
       <mat-tab [label]="tab.inputData.label | translate">

@@ -35,4 +35,7 @@ export class SettingsService {
   /** Number of elements to load for a data page by default. */
   DefaultPageSize: number = 20;
 
+  /**Large number for getting all elements */
+  PageSizeForAllElements: number = 999999;
+
 }

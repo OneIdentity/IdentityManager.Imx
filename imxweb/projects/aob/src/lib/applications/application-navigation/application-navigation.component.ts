@@ -72,11 +72,18 @@ export class ApplicationNavigationComponent implements OnInit {
     private readonly busyService: EuiLoadingService,
     private readonly settingsService: SettingsService,
     private readonly userService: UserModelService,
+    private readonly applicationsProvider: ApplicationsService,
     public overlay: Overlay) {
   }
 
   public async ngOnInit(): Promise<void> {
     this.isAdmin = (await this.userService.getGroups()).some(ug => ug.Name === 'AOB_4_AOB_Admin');
+
+    this.applicationsProvider.applicationRefresh.subscribe((res) => {
+      if(res){ 
+        return this.getData();
+      }
+    })
     return this.getData({ PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 });
   }
 

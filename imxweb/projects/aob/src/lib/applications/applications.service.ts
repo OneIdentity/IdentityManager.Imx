@@ -34,7 +34,7 @@ import {
   TypedEntityCollectionData, CollectionLoadParameters, EntitySchema
 } from 'imx-qbm-dbts';
 import { ApiClientService, ClassloggerService, DataTileBadge, isIE, SnackBarService } from 'qbm';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { AobApiService } from '../aob-api-client.service';
 import { ApplicationCreateComponent } from './application-create/application-create.component';
 
@@ -48,6 +48,7 @@ import { ApplicationCreateComponent } from './application-create/application-cre
 export class ApplicationsService {
   public readonly onApplicationCreated = new Subject<string>();
   public readonly onApplicationDeleted = new Subject<string>();
+  public applicationRefresh: BehaviorSubject<Boolean> = new BehaviorSubject<Boolean>(false);
 
   private badgePublished: DataTileBadge;
   private badgeKpiErrors: DataTileBadge;

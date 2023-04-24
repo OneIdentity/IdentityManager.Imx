@@ -55,6 +55,7 @@ export class RulesViolationsApproval extends PortalRulesViolations {
 
   constructor(
     readonly baseObject: PortalRulesViolations,
+    private readonly hasRiskIndex: boolean,
     private readonly translate: TranslateService
   ) {
     super(baseObject.GetEntity());
@@ -67,10 +68,16 @@ export class RulesViolationsApproval extends PortalRulesViolations {
     const properties: any =
       [
         this.UID_Person,
-        this.UID_NonCompliance,
+        this.UID_NonCompliance
+      ];
+
+    if (this.hasRiskIndex) {
+      properties.push(
         this.RiskIndexCalculated,
         this.RiskIndexReduced,
-      ];
+      );
+    }
+
     if (this.State.value !== 'pending') {
 
       properties.push(

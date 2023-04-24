@@ -1,4 +1,4 @@
-﻿/*
+/*
  * ONE IDENTITY LLC. PROPRIETARY INFORMATION
  *
  * This software is confidential.  One Identity, LLC. or one of its affiliates or

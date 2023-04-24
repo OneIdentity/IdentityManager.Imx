@@ -81,7 +81,7 @@ describe('ServicecategoryTreeDatabase', () => {
   });
 
   it('should be created', () => {
-    const scTreeDatabase = new ServicecategoryTreeDatabase(busyService, { DefaultPageSize: 20 }, productSelectionService);
+    const scTreeDatabase = new ServicecategoryTreeDatabase(busyService, { DefaultPageSize: 20,PageSizeForAllElements:50 }, productSelectionService);
     expect(scTreeDatabase).toBeTruthy();
   });
 });

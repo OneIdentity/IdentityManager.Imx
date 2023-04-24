@@ -35,6 +35,7 @@ import { ObjectHistoryComponent } from './object-history.component';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { ImxTranslationProviderService } from '../translation/imx-translation-provider.service';
 import { clearStylesFromDOM } from '../testing/clear-styles.spec';
+import { DateAdapter } from '@angular/material/core';
 
 describe('ObjectHistoryComponent', () => {
   let component: ObjectHistoryComponent;
@@ -79,6 +80,12 @@ describe('ObjectHistoryComponent', () => {
           useClass: class {
             multilanguageTranslationDict = {};
             Translate = jasmine.createSpy('Translate').and.callFake((key: string) => of(key));
+          }
+        },
+        {
+          provide: DateAdapter,
+          useValue: {
+            setLocale: jasmine.createSpy('setLocale')
           }
         }
       ]

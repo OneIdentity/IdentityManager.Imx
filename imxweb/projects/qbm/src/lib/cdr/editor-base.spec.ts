@@ -52,6 +52,7 @@ describe('EditorBase', () => {
       GetValue: () => undefined,
       GetMetadata: () => ({
         GetMinLength: () => minLength,
+        GetMaxLength: () => 255,
         CanEdit: () => true
       })
     };

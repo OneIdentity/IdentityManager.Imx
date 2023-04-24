@@ -24,8 +24,9 @@
  *
  */
 
-import { Component, ErrorHandler, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, ErrorHandler, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { MatTab } from '@angular/material/tabs';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 import { OverlayRef } from '@angular/cdk/overlay';
@@ -46,15 +47,24 @@ import { ProjectConfigurationService } from '../project-configuration/project-co
 import { MailInfoType, MailSubscriptionService } from './mailsubscription.service';
 import { PersonService } from '../person/person.service';
 
-
 @Component({
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit, OnDestroy {
-  public get userUid(): string { return (this.selectedIdentity?.GetKeys() ?? []).join(''); }
-  public dynamicTabs: TabItem[] = [];
 
+  @ViewChild('passwordQuestionTab') public set passwordTab (tab: MatTab) {
+    if(tab) { // initially setter gets called with undefined
+      this.passwordQuestionTab = tab;
+      if (this.hasPasswordQuestionsParam) {        
+        this.activatePassordQuestionTab();                
+      }       
+    }
+  }
+
+  public get userUid(): string { return (this.selectedIdentity?.GetKeys() ?? []).join(''); }
+  public dynamicTabs: TabItem[] = [];  
+  public tabIndex = 0;
   public identities: IEntity[];
   public selectedIdentity: IEntity;
   public mailInfo: MailInfoType[] = [];
@@ -67,9 +77,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
     check: () => this.form.pristine || this.confirmation.confirmLeaveWithUnsavedChanges()
   };
 
-  private columns: string[];
+  public LdsMultipleIdentities = '#LDS#Here you can manage personal data, organizational information, and location information of the selected identity.';
+  public LdsSingleIdentities = '#LDS#Here you can manage your personal data, organizational information, and location information and change the language of the user interface.';
 
+  private columns: string[];
   private readonly subscriptions: Subscription[] = [];
+  private passwordQuestionTab: MatTab;
+  private hasPasswordQuestionsParam = false;
 
   constructor(
     private readonly person: PersonService,
@@ -90,11 +104,14 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.load(sessionState.UserUid);
       }
     }));
-
   }
 
   public async ngOnInit(): Promise<void> {
     this.dynamicTabs = this.tabService.Registry.profile as TabItem[];
+
+    this.activatedRoute.params.subscribe(res => {
+      this.checkPasswordQuestionsParam(res.id);
+    });
 
     let overlayRef: OverlayRef;
     setTimeout(() => overlayRef = this.busy.show());
@@ -203,6 +220,16 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
   }
 
-  public LdsMultipleIdentities = '#LDS#Here you can manage personal data, organizational information, and location information of the selected identity.';
-  public LdsSingleIdentities = '#LDS#Here you can manage your personal data, organizational information, and location information and change the language of the user interface.';
+  private async activatePassordQuestionTab(): Promise<void> {
+    setTimeout(() => this.tabIndex = this.passwordQuestionTab.position);  
+  }
+  
+  /**
+   * Checks the route param if it's the password-questions param.
+   * @param param route param to check
+   * @returns true, if it's the password-questions param
+   */
+  private checkPasswordQuestionsParam(param: string): void {
+    this.hasPasswordQuestionsParam = param === 'profile-password-questions';
+  } 
 }

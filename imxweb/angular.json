@@ -26,6 +26,12 @@
             },
             "development": {
               "tsConfig": "projects/qbm/tsconfig.lib.json"
+            },
+            "remote-dev": {
+              "tsConfig": "projects/qbm/tsconfig.lib.json"
+            },
+            "remote-qs": {
+              "tsConfig": "projects/qbm/tsconfig.lib.json"
             }
           }
         },
@@ -76,6 +82,12 @@
               "tsConfig": "projects/qer/tsconfig.lib.prod.json"
             },
             "development": {
+              "tsConfig": "projects/qer/tsconfig.lib.json"
+            },
+            "remote-dev": {
+              "tsConfig": "projects/qer/tsconfig.lib.json"
+            },
+            "remote-qs": {
               "tsConfig": "projects/qer/tsconfig.lib.json"
             }
           }
@@ -131,6 +143,12 @@
             },
             "dynamic": {
               "project": "projects/att/ng-package.dynamic.json"
+            },
+            "remote-dev": {
+              "tsConfig": "projects/att/tsconfig.lib.json"
+            },
+            "remote-qs": {
+              "tsConfig": "projects/att/tsconfig.lib.json"
             }
           }
         },
@@ -185,6 +203,12 @@
             },
             "dynamic": {
               "project": "projects/aad/ng-package.dynamic.json"
+            },
+            "remote-dev": {
+              "tsConfig": "projects/aad/tsconfig.lib.json"
+            },
+            "remote-cornydqs": {
+              "tsConfig": "projects/aad/tsconfig.lib.json"
             }
           }
         },
@@ -240,6 +264,12 @@
             },
             "dynamic": {
               "project": "projects/cpl/ng-package.dynamic.json"
+            },
+            "remote-dev": {
+              "tsConfig": "projects/cpl/tsconfig.lib.json"
+            },
+            "remote-qs": {
+              "tsConfig": "projects/cpl/tsconfig.lib.json"
             }
           }
         },
@@ -294,6 +324,12 @@
             },
             "dynamic": {
               "project": "projects/dpr/ng-package.dynamic.json"
+            },
+            "remote-dev": {
+              "tsConfig": "projects/dpr/tsconfig.lib.json"
+            },
+            "remote-qs": {
+              "tsConfig": "projects/dpr/tsconfig.lib.json"
             }
           }
         },
@@ -348,6 +384,12 @@
             },
             "dynamic": {
               "project": "projects/hds/ng-package.dynamic.json"
+            },
+            "remote-dev": {
+              "tsConfig": "projects/hds/tsconfig.lib.json"
+            },
+            "remote-qs": {
+              "tsConfig": "projects/hds/tsconfig.lib.json"
             }
           }
         },
@@ -403,6 +445,12 @@
             },
             "dynamic": {
               "project": "projects/o3t/ng-package.dynamic.json"
+            },
+            "remote-dev": {
+              "tsConfig": "projects/o3t/tsconfig.lib.json"
+            },
+            "remote-qs": {
+              "tsConfig": "projects/o3t/tsconfig.lib.json"
             }
           }
         },
@@ -458,6 +506,12 @@
             },
             "dynamic": {
               "project": "projects/olg/ng-package.dynamic.json"
+            },
+            "remote-dev": {
+              "tsConfig": "projects/olg/tsconfig.lib.json"
+            },
+            "remote-qs": {
+              "tsConfig": "projects/olg/tsconfig.lib.json"
             }
           }
         },
@@ -513,6 +567,12 @@
             },
             "dynamic": {
               "project": "projects/pol/ng-package.dynamic.json"
+            },
+            "remote-dev": {
+              "tsConfig": "projects/pol/tsconfig.lib.json"
+            },
+            "remote-qs": {
+              "tsConfig": "projects/pol/tsconfig.lib.json"
             }
           }
         },
@@ -567,6 +627,12 @@
             },
             "dynamic": {
               "project": "projects/rmb/ng-package.dynamic.json"
+            },
+            "remote-dev": {
+              "tsConfig": "projects/rmb/tsconfig.lib.json"
+            },
+            "remote-qs": {
+              "tsConfig": "projects/rmb/tsconfig.lib.json"
             }
           }
         },
@@ -621,6 +687,12 @@
             },
             "dynamic": {
               "project": "projects/rms/ng-package.dynamic.json"
+            },
+            "remote-dev": {
+              "tsConfig": "projects/rms/tsconfig.lib.json"
+            },
+            "remote-qs": {
+              "tsConfig": "projects/rms/tsconfig.lib.json"
             }
           }
         },
@@ -675,6 +747,12 @@
             },
             "dynamic": {
               "project": "projects/rps/ng-package.dynamic.json"
+            },
+            "remote-dev": {
+              "tsConfig": "projects/rps/tsconfig.lib.json"
+            },
+            "remote-qs": {
+              "tsConfig": "projects/rps/tsconfig.lib.json"
             }
           }
         },
@@ -729,6 +807,12 @@
             },
             "dynamic": {
               "project": "projects/tsb/ng-package.dynamic.json"
+            },
+            "remote-dev": {
+              "tsConfig": "projects/tsb/tsconfig.lib.json"
+            },
+            "remote-qs": {
+              "tsConfig": "projects/tsb/tsconfig.lib.json"
             }
           }
         },
@@ -778,6 +862,12 @@
             },
             "dynamic": {
               "project": "projects/uci/ng-package.dynamic.json"
+            },
+            "remote-dev": {
+              "tsConfig": "projects/uci/tsconfig.lib.json"
+            },
+            "remote-qs": {
+              "tsConfig": "projects/uci/tsconfig.lib.json"
             }
           }
         },
@@ -896,6 +986,34 @@
               "sourceMap": true,
               "namedChunks": true
             },
+            "remote-dev": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/qbm-app-landingpage/src/environments/environment.ts",
+                  "with": "../imxweb_envs/qbm-app-landingpage/environments/environment.remote-dev.ts"
+                }
+              ],
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
+            "remote-qs": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/qbm-app-landingpage/src/environments/environment.ts",
+                  "with": "../imxweb_envs/qbm-app-landingpage/environments/environment.remote-qs.ts"
+                }
+              ],
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
             "es5": {
               "tsConfig": "./projects/qbm-app-landingpage/tsconfig-es5.app.json"
             }
@@ -913,6 +1031,12 @@
             },
             "development": {
               "browserTarget": "qbm-app-landingpage:build:development"
+            },
+            "remote-dev": {
+              "browserTarget": "qbm-app-landingpage:build:remote-dev"
+            },
+            "remote-qs": {
+              "browserTarget": "qbm-app-landingpage:build:remote-qs"
             },
             "es5": {
               "browserTarget": "qbm-app-landingpage:build:es5"
@@ -1062,6 +1186,34 @@
               "sourceMap": true,
               "namedChunks": true
             },
+            "remote-dev": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/qer-app-operationssupport/src/environments/environment.ts",
+                  "with": "../imxweb_envs/qer-app-operationssupport/environments/environment.remote-dev.ts"
+                }
+              ],
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
+            "remote-qs": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/qer-app-operationssupport/src/environments/environment.ts",
+                  "with": "../imxweb_envs/qer-app-operationssupport/environments/environment.remote-qs.ts"
+                }
+              ],
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
             "es5": {
               "tsConfig": "./projects/qer-app-operationssupport/tsconfig-es5.app.json"
             }
@@ -1079,6 +1231,12 @@
             },
             "development": {
               "browserTarget": "qer-app-operationssupport:build:development"
+            },
+            "remote-dev": {
+              "browserTarget": "qer-app-operationssupport:build:remote-dev"
+            },
+            "remote-qs": {
+              "browserTarget": "qer-app-operationssupport:build:remote-dev"
             },
             "es5": {
               "browserTarget": "qer-app-operationssupport:build:es5"
@@ -1230,6 +1388,34 @@
               "sourceMap": true,
               "namedChunks": true
             },
+            "remote-dev": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/qer-app-portal/src/environments/environment.ts",
+                  "with": "../imxweb_envs/qer-app-portal/environments/environment.remote-dev.ts"
+                }
+              ],
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
+            "remote-qs": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/qer-app-portal/src/environments/environment.ts",
+                  "with": "../imxweb_envs/qer-app-portal/environments/environment.remote-qs.ts"
+                }
+              ],
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
             "es5": {
               "tsConfig": "./projects/qer-app-portal/tsconfig-es5.app.json"
             }
@@ -1246,6 +1432,12 @@
             },
             "development": {
               "browserTarget": "qer-app-portal:build:development"
+            },
+            "remote-dev": {
+              "browserTarget": "qer-app-portal:build:remote-dev"
+            },
+            "remote-qs": {
+              "browserTarget": "qer-app-portal:build:remote-qs"
             },
             "es5": {
               "browserTarget": "qer-app-portal:build:es5"
@@ -1456,10 +1648,16 @@
               "tsConfig": "projects/aob/tsconfig.lib.prod.json"
             },
             "development": {
-              "tsConfig": "projects/qbm/tsconfig.lib.json"
+              "tsConfig": "projects/aob/tsconfig.lib.json"
             },
             "dynamic": {
               "project": "projects/aob/ng-package.dynamic.json"
+            },
+            "remote-dev": {
+              "tsConfig": "projects/aob/tsconfig.lib.json"
+            },
+            "remote-qs": {
+              "tsConfig": "projects/aob/tsconfig.lib.json"
             }
           }
         },
@@ -1587,6 +1785,34 @@
               "sourceMap": true,
               "namedChunks": true
             },
+            "remote-dev": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/qer-app-pwdportal/src/environments/environment.ts",
+                  "with": "../imxweb_envs/qer-app-pwdportal/environments/environment.remote-dev.ts"
+                }
+              ],
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
+            "remote-qs": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/qer-app-pwdportal/src/environments/environment.ts",
+                  "with": "../imxweb_envs/qer-app-pwdportal/environments/environment.remote-qs.ts"
+                }
+              ],
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
             "es5": {
               "tsConfig": "./projects/qer-app-pwdportal/tsconfig-es5.app.json"
             }
@@ -1603,6 +1829,12 @@
             },
             "development": {
               "browserTarget": "qer-app-pwdportal:build:development"
+            },
+            "remote-dev": {
+              "browserTarget": "qer-app-pwdportal:build:remote-dev"
+            },
+            "remote-qs": {
+              "browserTarget": "qer-app-pwdportal:build:remote-qs"
             },
             "es5": {
               "browserTarget": "qer-app-pwdportal:build:es5"

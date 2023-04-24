@@ -1,11 +1,16 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
 
-.imx-main-container {
-  margin: 20px;
+:host ::ng-deep .mat-expansion-panel-body {
+  display: flex;
+  flex-direction: column;
 }
 
 .imx-content-container {
   margin-top: 20px;
+}
+
+.imx-main-container {
+  margin: 20px;
 }
 
 .imx-label {
@@ -19,6 +24,7 @@
 
 .imx-list-value {
   margin-left: 20px;
+  list-style-type: disc;
 }
 
 .imx-first-section-item {
@@ -50,14 +56,25 @@
 }
 
 
+.mat-card{
+ .mat-divider-horizontal {
+  position: inherit;
+ }
+}
+
 .imx-accordion .mat-expansion-panel-header-title,
 .imx-accordion .mat-expansion-panel-header-description {
   flex-basis: 0;
 }
 
+.imx-accordion .mat-expansion-panel-header-title{
+  font-weight: bold;
+}
+
 .imx-accordion .mat-expansion-panel-header-description {
-  justify-content: space-between;
+  justify-content: end;
   align-items: center;
+  color: $black-9;
 }
 
 .imx-no-data {
