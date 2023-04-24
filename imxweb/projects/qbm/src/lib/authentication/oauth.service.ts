@@ -29,15 +29,20 @@ import { DefaultUrlSerializer } from '@angular/router';
 
 import { imx_SessionService } from '../session/imx-session.service';
 import { AppConfigService } from '../appConfig/appConfig.service';
+import { PlatformLocation } from '@angular/common';
 
 @Injectable()
 export class OAuthService {
-  constructor(private sessionService: imx_SessionService, private readonly config: AppConfigService) { }
+  constructor(
+    private readonly sessionService: imx_SessionService,
+    private readonly config: AppConfigService,
+    private readonly platformLocation: PlatformLocation
+  ) { }
 
   public async GetProviderUrl(authentifier: string): Promise<string> {
     const module = '?Module=' + authentifier;
     return this.sessionService.Client.imx_oauth_get(authentifier, this.config.Config.WebAppIndex, {
-      redirecturi: window.location.pathname + module
+      redirecturi: this.platformLocation.pathname + this.platformLocation.hash + module
     });
   }
 

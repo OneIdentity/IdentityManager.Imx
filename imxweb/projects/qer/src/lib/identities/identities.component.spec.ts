@@ -147,7 +147,7 @@ describe('DataExplorerIdentitiesComponent', () => {
           getAdminPerson: jasmine.createSpy('getAdminPerson').and.returnValue(Promise.resolve(adminPerson)),
           getPersonInteractive: jasmine.createSpy('getPersonInteractive').and.returnValue(Promise.resolve(personReportInteractive)),
           getGroupedAllPerson: jasmine.createSpy('getGroupedAllPerson').and.returnValue(Promise.resolve([])),
-          getDirectReportsOfManager: jasmine.createSpy('getDirectReportsOfManager').and.returnValue(Promise.resolve(
+          getReportsOfManager: jasmine.createSpy('getReportsOfManager').and.returnValue(Promise.resolve(
             {
               totalCount: 1,
               Data: [personReport]

@@ -2,7 +2,7 @@
   <h1 class="mat-headline">{{ '#LDS#Heading Policy Violations' | translate }}</h1>
   <div class="imx-table-container" *ngIf="dstSettings">
     <imx-data-source-toolbar #dst [options]="['search', 'filter','groupBy']" [settings]="dstSettings"
-      [itemStatus]="itemStatus" data-imx-identifier="policy-violations-table-dst"
+      data-imx-identifier="policy-violations-table-dst"
       (navigationStateChanged)="getData($event)" (search)="search($event)">
     </imx-data-source-toolbar>
     <div class="imx-policyviolation-table">
@@ -31,12 +31,10 @@
           <ng-template let-item>
             <div class="imx-decision">
               <button mat-stroked-button (click)="policyViolationsService.approve([item])"
-                [disabled]="item.State?.value?.toLocaleLowerCase() !== 'pending'"
                 data-imx-identifier="policy-violations-table-approve-button">
                 {{ '#LDS#Grant exception' | translate }}
               </button>
               <button mat-stroked-button (click)="policyViolationsService.deny([item])"
-                [disabled]="item.State?.value?.toLocaleLowerCase() !== 'pending'"
                 data-imx-identifier="policy-violations-table-deny-button">
                 {{ '#LDS#Deny exception' | translate }}
               </button>

@@ -125,6 +125,11 @@ export class RunSidesheetComponent implements AfterContentInit {
         Type: FilterType.Compare,
         ColumnName: 'UID_AttestationRun',
         Value1: this.run.GetEntity().GetKeys()[0]
+      },{
+        CompareOp: CompareOperator.Equal,
+        Type: FilterType.Compare,
+        ColumnName: 'UID_AttestationPolicy',
+        Value1: this.run.UID_AttestationPolicy.value
       }]
     };
   }

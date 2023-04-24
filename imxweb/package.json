@@ -4,6 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --configuration development",
+    "start:remote-dev": "ng serve -c remote-dev",
+    "start:remote-qs": "ng serve -c remote-qs",
     "build": "ng build",
     "build:watch": "ng build --watch --configuration development",
     "build:watch:dynamic": "ng build --watch --configuration dynamic",
@@ -24,7 +26,7 @@
     "doc:qer": "cd projects/qer && compodoc -p tsconfig.lib.json",
     "doc:qer-opssupport": "cd projects/qer-app-operationssupport && compodoc -p tsconfig.app.json",
     "doc:qer-portal": "cd projects/qer-app-portal && compodoc -p tsconfig.app.json",
-    "postshrinkwrap": "json -I -f ./package-lock.json -e \"delete this.dependencies['imx-qbm-dbts']; delete this.dependencies['imx-api-qbm']; delete this.dependencies['imx-api-dpr']; delete this.dependencies['imx-api-arc']; delete this.dependencies['imx-api-tsb']; delete this.dependencies['imx-api-aob']; delete this.dependencies['imx-api-qer']; delete this.dependencies['imx-api-rps'], delete this.dependencies['imx-api-cpl'], delete this.dependencies['imx-api-pol'], delete this.dependencies['imx-api-aad'], delete this.dependencies['imx-api-o3t'], delete this.dependencies['imx-api-rmb'], delete this.dependencies['imx-api-rms'], delete this.dependencies['imx-api-hds'], delete this.dependencies['imx-api-att'], delete this.dependencies['imx-api-uci']\""
+    "postshrinkwrap": "json -I -f ./package-lock.json -e \"delete this.dependencies['imx-qbm-dbts']; delete this.dependencies['imx-api-qbm']; delete this.dependencies['imx-api-dpr']; delete this.dependencies['imx-api-arc']; delete this.dependencies['imx-api-tsb']; delete this.dependencies['imx-api-aob']; delete this.dependencies['imx-api-qer']; delete this.dependencies['imx-api-rps'], delete this.dependencies['imx-api-cpl'], delete this.dependencies['imx-api-pol'], delete this.dependencies['imx-api-aad'], delete this.dependencies['imx-api-o3t'], delete this.dependencies['imx-api-rmb'], delete this.dependencies['imx-api-rms'], delete this.dependencies['imx-api-hds'], delete this.dependencies['imx-api-att'], delete this.dependencies['imx-api-olg'], delete this.dependencies['imx-api-uci']\""
   },
   "private": true,
   "dependencies": {
@@ -64,8 +66,8 @@
     "zone.js": "~0.11.5"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~13.3.5",
-    "@angular/cli": "^13.3.5",
+    "@angular-devkit/build-angular": "~13.3.10",
+    "@angular/cli": "^13.3.9",
     "@angular/compiler-cli": "^13.3.8",
     "@angular/language-service": "^13.3.8",
     "@compodoc/compodoc": "^1.1.10",
@@ -91,7 +93,7 @@
     "ng-bullet": "^1.0.3",
     "ng-packagr": "^13.3.1",
     "protractor": "^7.0.0",
-    "terser": "^5.14.2",
+    "terser": "^5.16.1",
     "ts-node": "~7.0.0",
     "tslint": "~6.1.0",
     "typemoq": "^2.1.0",

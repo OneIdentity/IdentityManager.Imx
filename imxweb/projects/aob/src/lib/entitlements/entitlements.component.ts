@@ -41,9 +41,15 @@ import {
   SystemInfoService,
   MetadataService,
   DataTableComponent,
-  DataTilesComponent
+  DataTilesComponent,
 } from 'qbm';
-import { PortalEntitlement, PortalApplication, PortalEntitlementServiceitem, EntitlementSystemRoleInput, ApplicationExtendedDataRead } from 'imx-api-aob';
+import {
+  PortalEntitlement,
+  PortalApplication,
+  PortalEntitlementServiceitem,
+  EntitlementSystemRoleInput,
+  ApplicationExtendedDataRead,
+} from 'imx-api-aob';
 import { CollectionLoadParameters, IClientProperty, ValType, DisplayColumns, EntitySchema, TypedEntity, DbObjectKey } from 'imx-qbm-dbts';
 import { EntitlementsService } from './entitlements.service';
 import { LifecycleAction } from '../lifecycle-actions/lifecycle-action.enum';
@@ -71,10 +77,9 @@ import { EntitlementEditAutoAddService } from './entitlement-edit-auto-add/entit
 @Component({
   selector: 'imx-entitlements',
   templateUrl: './entitlements.component.html',
-  styleUrls: ['./entitlements.component.scss']
+  styleUrls: ['./entitlements.component.scss'],
 })
 export class EntitlementsComponent implements OnChanges {
-
   /** The {@link PortalApplication|application} */
   @Input() public application: PortalApplication;
   @Output() public reloadRequested = new EventEmitter<void>();
@@ -96,15 +101,17 @@ export class EntitlementsComponent implements OnChanges {
   public isSystemRoleEnabled: boolean;
 
   public get hasConditionForDynamicAssignment(): boolean {
-    return this.application.extendedDataRead?.SqlExpression?.Expressions?.length &&
-      this.application.extendedDataRead?.SqlExpression?.Expressions[0].Expression.Expressions.length > 0;
+    return (
+      this.application.extendedDataRead?.SqlExpression?.Expressions?.length &&
+      this.application.extendedDataRead?.SqlExpression?.Expressions[0].Expression.Expressions.length > 0
+    );
   }
 
   public readonly status = {
     getBadges: (entitlement: PortalEntitlement): DataTileBadge[] => this.entitlementsProvider.getEntitlementBadges(entitlement),
     enabled: (entitlement: PortalEntitlement): boolean => {
       return !entitlement.IsDynamic.value;
-    }
+    },
   };
 
   private readonly displayedColumns: IClientProperty[];
@@ -133,27 +140,27 @@ export class EntitlementsComponent implements OnChanges {
       this.entitySchema.Columns.Ident_AOBEntitlement,
       {
         Type: ValType.String,
-        ColumnName: 'badges'
+        ColumnName: 'badges',
       },
       {
         Type: ValType.String,
-        ColumnName: 'type'
+        ColumnName: 'type',
       },
       this.entitySchema.Columns.UID_AERoleOwner,
       {
         Type: ValType.Date,
-        ColumnName: 'assigned'
+        ColumnName: 'assigned',
       },
       {
         Type: ValType.String,
-        ColumnName: 'status'
-      }
+        ColumnName: 'status',
+      },
     ];
   }
 
   public async ngOnChanges(): Promise<void> {
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
       this.isSystemRoleEnabled = (await this.systemInfo.get()).PreProps.includes('ESET');
       this.getData(true);
@@ -163,8 +170,10 @@ export class EntitlementsComponent implements OnChanges {
   }
 
   public canEdit(aobEntitlement: PortalEntitlement): boolean {
-    return aobEntitlement != null &&
-      (aobEntitlement.Ident_AOBEntitlement.GetMetadata().CanEdit() || aobEntitlement.Description.GetMetadata().CanEdit());
+    return (
+      aobEntitlement != null &&
+      (aobEntitlement.Ident_AOBEntitlement.GetMetadata().CanEdit() || aobEntitlement.Description.GetMetadata().CanEdit())
+    );
   }
 
   public async addNewElement(): Promise<void> {
@@ -197,7 +206,7 @@ export class EntitlementsComponent implements OnChanges {
 
   public async applyMappingForDynamicAssignments(): Promise<void> {
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
       this.autoAddService.mapEntitlementsToApplication(this.application.UID_AOBApplication.value);
     } finally {
@@ -228,7 +237,7 @@ export class EntitlementsComponent implements OnChanges {
     if (!reload) { return; }
 
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
       this.reloadRequested.emit();
     } finally {
@@ -253,19 +262,26 @@ export class EntitlementsComponent implements OnChanges {
     const dialogConfig = {
       data: {
         action: LifecycleAction.Publish,
-        elements: selectedEntitlements, shops: shops.Data, type: 'AobEntitlement'
+        elements: selectedEntitlements,
+        shops: shops.Data,
+        type: 'AobEntitlement',
       },
-      height: this.platform.TRIDENT ? '550px' : 'auto'
+      height: this.platform.TRIDENT ? '550px' : 'auto',
     };
     const dialogRef = this.dialog.open(LifecycleActionComponent, dialogConfig);
-    dialogRef.afterClosed().subscribe(async publishData => {
+    dialogRef.afterClosed().subscribe(async (publishData) => {
       if (publishData) {
-        this.logger.debug(this,
-          `Publishing entitlement(s)/role(s) ${publishData.date && publishData.publishFuture ? `on ${publishData.date}` : 'now'}`);
+        const overlay = this.busyService.show();
 
-        const publishCount = await this.entitlementsProvider.publish(selectedEntitlements, publishData);
+        try {
+          this.logger.debug(
+            this,
+            `Publishing entitlement(s)/role(s) ${publishData.date && publishData.publishFuture ? `on ${publishData.date}` : 'now'}`
+          );
 
-        this.matDialog.closeAll();
+          const publishCount = await this.entitlementsProvider.publish(selectedEntitlements, publishData);
+
+          this.matDialog.closeAll();
 
         if (publishCount > 0) {
           this.logger.debug(this, 'Deselect published entitlement(s)/role(s)');
@@ -290,6 +306,9 @@ export class EntitlementsComponent implements OnChanges {
         if (publishCount < selectedEntitlements.length) {
           this.logger.error(this, 'Attempt to publish entitlement(s)/role(s) failed');
         }
+        } finally {
+          this.busyService.hide(overlay);
+        }
       } else {
         this.logger.debug(this, 'dialog Cancel');
       }
@@ -303,26 +322,33 @@ export class EntitlementsComponent implements OnChanges {
   public async unpublish(aobEntitlement: PortalEntitlement = null): Promise<void> {
     const selectedEntitlements = aobEntitlement != null ? [aobEntitlement] : this.selections;
     const dialogConfig = {
-      data: { action: LifecycleAction.Unpublish, elements: selectedEntitlements, type: 'AobEntitlement' }, width: '800px', height: '500px'
+      data: { action: LifecycleAction.Unpublish, elements: selectedEntitlements, type: 'AobEntitlement' },
+      width: '800px',
+      height: '500px',
     };
     const dialogRef = this.dialog.open(LifecycleActionComponent, dialogConfig);
-    dialogRef.afterClosed().subscribe(async result => {
+    dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
-        this.logger.debug(this, 'Unpublish entitlement(s)/role(s)...');
+        const overlay = this.busyService.show();
+        try {
+          this.logger.debug(this, 'Unpublish entitlement(s)/role(s)...');
 
-        const unpublishCount = await this.entitlementsProvider.unpublish(selectedEntitlements);
+          const unpublishCount = await this.entitlementsProvider.unpublish(selectedEntitlements);
 
-        this.matDialog.closeAll();
+          this.matDialog.closeAll();
 
-        if (unpublishCount > 0) {
-          this.logger.debug(this, 'Deselect unpublished entitlement(s)/role(s)');
-          this.clearSelections();
-          this.snackbar.open({ key: '#LDS#Application entitlements unpublished' }, '#LDS#Close');
-          await this.getData();
-        }
+          if (unpublishCount > 0) {
+            this.logger.debug(this, 'Deselect unpublished entitlement(s)/role(s)');
+            this.clearSelections();
+            this.snackbar.open({ key: '#LDS#Application entitlements unpublished' }, '#LDS#Close');
+            await this.getData();
+          }
 
-        if (unpublishCount < selectedEntitlements.length) {
-          this.logger.error(this, 'Attempt to unpublish entitlement(s)/role(s) failed');
+          if (unpublishCount < selectedEntitlements.length) {
+            this.logger.error(this, 'Attempt to unpublish entitlement(s)/role(s) failed');
+          }
+        } finally {
+          this.busyService.hide(overlay);
         }
       } else {
         this.logger.debug(this, 'dialog Cancel');
@@ -339,15 +365,16 @@ export class EntitlementsComponent implements OnChanges {
     const selectedEntitlements = aobEntitlement != null ? [aobEntitlement] : this.selections;
     const dialogConfig = {
       data: { action: LifecycleAction.Unassign, elements: selectedEntitlements, type: 'AobEntitlement' },
-      width: '800px', height: '500px'
+      width: '800px',
+      height: '500px',
     };
     const dialogRef = this.dialog.open(LifecycleActionComponent, dialogConfig);
-    dialogRef.afterClosed().subscribe(async result => {
+    dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
         this.logger.debug(this, 'Remove entitlement(s) from application');
         if (selectedEntitlements.length > 0) {
           let overlayRef: OverlayRef;
-          setTimeout(() => overlayRef = this.busyService.show());
+          setTimeout(() => (overlayRef = this.busyService.show()));
           try {
             const unassignResult = await this.entitlementsProvider.unassign(selectedEntitlements);
             if (unassignResult) {
@@ -397,7 +424,7 @@ export class EntitlementsComponent implements OnChanges {
       padding: '0',
       width: 'max(600px, 60%)',
       disableClose: true,
-      data: entitlementWrapper
+      data: entitlementWrapper,
     });
   }
 
@@ -422,7 +449,7 @@ export class EntitlementsComponent implements OnChanges {
     let foundWillBePublished = false;
     let foundReadonly = false;
 
-    this.selections.forEach(item => {
+    this.selections.forEach((item) => {
       if (this.filter.notPublished(item)) {
         foundUnpublished = true;
       }
@@ -456,14 +483,16 @@ export class EntitlementsComponent implements OnChanges {
   }
 
   public getType(data: PortalEntitlement): string {
-    if (data?.ObjectKeyElement?.value == null) { return ''; }
+    if (data?.ObjectKeyElement?.value == null) {
+      return '';
+    }
     const tableName = DbObjectKey.FromXml(data.ObjectKeyElement.value)?.TableName;
     return tableName != null && this.metadata.tables[tableName] ? this.metadata.tables[tableName]?.DisplaySingular : '';
   }
 
   private async addDirectEntitlements(candidates: TypedEntity[]): Promise<void> {
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
       const assignedCount = await this.entitlementsProvider.assign(this.application, candidates);
       if (assignedCount > 0) {
@@ -480,18 +509,20 @@ export class EntitlementsComponent implements OnChanges {
 
   private async buildRoleAndAddItToApplication(entitlementSystemRoleInput: EntitlementSystemRoleInput): Promise<void> {
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     let success = true;
     try {
       await this.entitlementsProvider.addElementsToRole(entitlementSystemRoleInput);
-
     } catch {
       success = false;
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
     if (success) {
-      this.snackbar.open({ key: '#LDS#The application entitlements have been successfully merged into the system role and added to application.' }, '#LDS#Close');
+      this.snackbar.open(
+        { key: '#LDS#The application entitlements have been successfully merged into the system role and added to application.' },
+        '#LDS#Close'
+      );
       await this.getData();
     }
   }
@@ -512,7 +543,7 @@ export class EntitlementsComponent implements OnChanges {
           displayedColumns: this.displayedColumns,
           dataSource: data,
           entitySchema: this.entitySchema,
-          navigationState: this.navigationState
+          navigationState: this.navigationState,
         };
       } else {
         this.logger.error(this, 'TypedEntityCollectionData<PortalEntitlement> is undefined');
@@ -523,10 +554,11 @@ export class EntitlementsComponent implements OnChanges {
   }
 
   private async updateTableNames(objs: PortalEntitlement[]): Promise<void> {
-    const newTableNamesForUpdate = objs.map(obj => DbObjectKey.FromXml(obj.ObjectKeyElement.value).TableName)
-      .filter(obj => !this.updatedTableNames.includes(obj));
+    const newTableNamesForUpdate = objs
+      .map((obj) => DbObjectKey.FromXml(obj.ObjectKeyElement.value).TableName)
+      .filter((obj) => !this.updatedTableNames.includes(obj));
     if (newTableNamesForUpdate.length === 0) {
-      this.logger.debug(this, 'there are no new table names in this data')
+      this.logger.debug(this, 'there are no new table names in this data');
       return;
     }
     this.updatedTableNames.push(...newTableNamesForUpdate);
@@ -539,7 +571,7 @@ export class EntitlementsComponent implements OnChanges {
     let serviceItem: PortalEntitlementServiceitem;
 
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
 
     try {
       entitlementReloaded = await this.entitlementsProvider.reload(entitlement);
