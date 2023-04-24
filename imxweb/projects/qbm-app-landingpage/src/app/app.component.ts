@@ -26,7 +26,7 @@
 
 import { Component } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router, RouterEvent } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
 import { Globals } from 'imx-qbm-dbts';
@@ -44,31 +44,37 @@ export class AppComponent {
   public hideUserMessage = false;
   private readonly subscriptions: Subscription[] = [];
 
+  private overviewTitle: string;
+  private adminPortalTitle: string;
+
   constructor(
-    translate: TranslateService,
-    titleService: Title,
-    appConfigService: AppConfigService,
+    private readonly translate: TranslateService,
+    private readonly titleService: Title,
+    private readonly appConfigService: AppConfigService,
     private readonly router: Router,
+    private readonly translateService: TranslateService,
     private readonly authentication: AuthenticationService
   ) {
-    translate.addLangs(['en-US', 'de-DE', 'de', 'en']);
-    const browserCulture = translate.getBrowserCultureLang();
-    translate.setDefaultLang(browserCulture);
-    translate.use(browserCulture);
-    titleService.setTitle(Globals.QIM_ProductNameFull + ' ' + appConfigService.Config.Title);
+    this.translate.addLangs(['en-US', 'de-DE', 'de', 'en']);
+    const browserCulture = this.translate.getBrowserCultureLang();
+    this.translate.setDefaultLang(browserCulture);
+    this.translate.use(browserCulture);
+    this.titleService.setTitle(Globals.QIM_ProductNameFull + ' ' + this.appConfigService.Config.Title);
 
-    this.subscriptions.push(authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
+    this.translateService.onLangChange.subscribe(() => {
+      this.initTitles();
+      this.setTitle(this.router.url);
+    });
+
+    this.subscriptions.push(this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
       // Close the splash screen that opened in app service initialisation
       this.isLoggedIn = sessionState.IsLoggedIn;
-
       if (this.isLoggedIn) {
-        titleService.setTitle(Globals.QIM_ProductNameFull + ' ' +
-          await translate.get('#LDS#Administration Portal').toPromise());
-      }
-      else {
-        titleService.setTitle(Globals.QIM_ProductNameFull + ' ' + appConfigService.Config.Title);
+        this.titleService.setTitle(this.adminPortalTitle);
       }
     }));
+
+    this.setupRouter();
 
   }
 
@@ -77,6 +83,7 @@ export class AppComponent {
   }
 
   public async ngOnInit(): Promise<void> {
+    this.initTitles();
     this.authentication.update();
   }
 
@@ -88,4 +95,27 @@ export class AppComponent {
     this.router.navigate([''], { queryParams: {} });
   }
 
+  private setupRouter(): void {
+    this.router.events.subscribe((event: RouterEvent) => {
+      if (event instanceof NavigationEnd) {
+        this.setTitle(this.router.url); 
+      }
+    });
+  }
+
+  private async initTitles(): Promise<void> {
+    this.overviewTitle = await this.translate.get('#LDS#Heading Overview').toPromise();    
+    this.adminPortalTitle = await this.translate.get('#LDS#Heading Administration Portal').toPromise();
+  }
+
+  private setTitle(url: string): void {
+    if (url === "/") {  
+      // show another title on the startpage        
+      this.titleService.setTitle(Globals.QIM_ProductNameFull + ' ' + this.overviewTitle);
+      this.appConfigService.setTitle(this.overviewTitle);
+    } else {          
+      this.titleService.setTitle(Globals.QIM_ProductNameFull + ' ' + this.adminPortalTitle);
+      this.appConfigService.setTitle(this.adminPortalTitle);
+    }    
+  }
 }

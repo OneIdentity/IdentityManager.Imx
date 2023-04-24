@@ -70,7 +70,7 @@ export class GlobalKpiComponent implements OnInit {
     private readonly busyService: EuiLoadingService,
     readonly translateService: TranslateService,
   ) {
-    this.browserCulture = this.translateService.getBrowserCultureLang();
+    this.browserCulture = this.translateService.currentLang;
 
     translateService.get('#LDS#No data available')
       .subscribe((trans: string) => this.noDataLoaded = trans);

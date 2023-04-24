@@ -105,7 +105,7 @@ export class LifecycleActionComponent implements OnDestroy, OnInit {
     private readonly metadataProvider: MetadataService,
     private readonly aobApiService: AobApiService,
     private readonly platform: Platform) {
-    this.browserCulture = this.translateService.getBrowserCultureLang();
+    this.browserCulture = this.translateService.currentLang;
 
     this.initCaptions();
 

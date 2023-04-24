@@ -68,7 +68,8 @@ describe('AccountSidesheetComponent', () => {
     column.GetMetadata = () => ({
       CanEdit: () => true,
       GetDisplay: () => '',
-      GetMinLength: () => 0
+      GetMinLength: () => 0,
+      GetMaxLength: () =>  255,
     } as IValueMetadata);
     column.GetValue = () => value;
     column.PutValue = v => { value = v; return Promise.resolve(); }

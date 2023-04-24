@@ -31,7 +31,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Params } from '@angular/router';
 
-import { CollectionLoadParameters, DataModel, DisplayColumns, IClientProperty, TypedEntity, ValType } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DataModel, DisplayColumns, TypedEntity, ValType } from 'imx-qbm-dbts';
 import { DataSourceToolbarFilter, DataSourceToolbarGroupData, DataSourceToolbarSettings, DataTableComponent, DataTableGroupedData, ClientPropertyForTableColumns } from 'qbm';
 import { createGroupData } from 'qbm';
 import { PolicyViolation } from './policy-violation';
@@ -52,11 +52,6 @@ export class PolicyViolationsComponent implements OnInit {
   public groupedData: { [key: string]: DataTableGroupedData } = {};
 
   @ViewChild(DataTableComponent) public table: DataTableComponent<TypedEntity>;
-
-  public readonly itemStatus = {
-    enabled: (item: PolicyViolation): boolean =>
-      item.State?.value?.toLocaleLowerCase() === 'pending'
-  };
 
   private filterOptions: DataSourceToolbarFilter[] = [];
   private groupData: DataSourceToolbarGroupData;

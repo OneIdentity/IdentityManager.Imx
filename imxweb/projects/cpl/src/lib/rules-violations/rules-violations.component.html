@@ -55,7 +55,7 @@
         </ng-template>
       </imx-data-table-generic-column>
     </imx-data-table>
-    <imx-data-source-paginator data-imx-identifier="rules-violations-paginator" [dst]="dst">
+    <imx-data-source-paginator *ngIf="!dstSettings?.groupData?.currentGrouping" data-imx-identifier="rules-violations-paginator" [dst]="dst">
     </imx-data-source-paginator>
   </div>
 

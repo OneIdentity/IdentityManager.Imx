@@ -159,7 +159,12 @@ export class AttestationHistoryComponent implements OnInit, OnDestroy {
 
     try {
       const groupedData = this.groupedData[groupKey];
-      groupedData.data = await this.historyService.getAttestations(groupedData.navigationState);
+      let filter = groupedData.navigationState?.filter;
+      if(this.parameters?.filter){
+        filter =[...(groupedData.navigationState?.filter ?? []),...(this.parameters?.filter ??[])].filter (elem=> elem != null);
+      }
+      const navigationState = {...groupedData.navigationState, filter}
+      groupedData.data = await this.historyService.getAttestations(navigationState);
       groupedData.settings = {
         displayedColumns: this.dstSettings.displayedColumns,
         dataSource: groupedData.data,

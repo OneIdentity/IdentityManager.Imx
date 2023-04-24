@@ -70,6 +70,9 @@ class MockUserMessageComponent {
     };
 
     const mockImxAppConfigService = {
+      onConfigTitleUpdated: { 
+        subscribe: () => { return { unsubscribe: () => { } } }
+      },
       getImxConfig: jasmine.createSpy('getImxConfig').and.returnValue(Promise.resolve({ProductName: null})),
       Config: {
         Basepath: '',

@@ -129,29 +129,25 @@ export class ItshopPatternCreateService {
     const duplicateItems: DuplicatePatternItem[] = [];
     let newAssignedObjects = 0;
 
-    await this.handlePromiseLoader(
-      Promise.all(
-        serviceItemUids.map(async (uid) => {
-          let patternItem: PortalItshopPatternItem;
-          try {
-            patternItem = this.qerClient.typedClient.PortalItshopPatternItem.createEntity();
-            patternItem.UID_ShoppingCartPattern.value = uidPattern;
-            patternItem.UID_AccProduct.value = uid;
-            await patternItem.GetEntity().Commit(true);
-            newAssignedObjects++;
-          } catch (exception) {
-            // 810303 == the combination of the fields Role/organization, Service item, Request template must be unique.
-            if (exception?.dataItems.length && exception.dataItems[0].Number === 810303) {
-              const serviceItem = serviceItemsForPersons.find(item => item.UidAccProduct === uid);
-              duplicateItems.push(new DuplicatePatternItem(serviceItem, exception.dataItems[0]));
-            } else {
-              this.errorHandler.handleError(exception);
-            }
-          }
-        })
-      )
-    );
-
+    for (const uid of serviceItemUids) {
+      let patternItem: PortalItshopPatternItem;
+      try {
+        patternItem = this.qerClient.typedClient.PortalItshopPatternItem.createEntity();
+        patternItem.UID_ShoppingCartPattern.value = uidPattern;
+        patternItem.UID_AccProduct.value = uid;
+        await patternItem.GetEntity().Commit(true);
+        newAssignedObjects++;
+      } catch (exception) {
+        // 810303 == the combination of the fields Role/organization, Service item, Request template must be unique.
+        if (exception?.dataItems.length && exception.dataItems[0].Number === 810303) {
+          const serviceItem = serviceItemsForPersons.find(item => item.UidAccProduct === uid);
+          duplicateItems.push(new DuplicatePatternItem(serviceItem, exception.dataItems[0]));
+        } 
+        else {
+          this.errorHandler.handleError(exception);
+        }
+      }
+    }
 
     if (duplicateItems.length > 0) {
       const dialogRef = this.dialogService.open(DuplicatePatternItemsComponent, {

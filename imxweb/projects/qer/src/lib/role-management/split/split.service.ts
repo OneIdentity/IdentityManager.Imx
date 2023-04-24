@@ -24,16 +24,28 @@
  *
  */
 
-import { PolicyFilterData, PortalAttestationPolicyEdit } from 'imx-api-att';
-export interface Policy {
-  policy: PortalAttestationPolicyEdit;
-  filterData: PolicyFilterData;
-  isNew?: boolean;
-  isComplienceFrameworkEnabled: boolean;
-  showSampleDataWarning?: boolean;
-}
+import { Injectable } from '@angular/core';
+import { IRoleSplitItem, RoleSplitInput, UiActionData } from 'imx-api-qer';
+import { QerApiService } from '../../qer-api-client.service';
 
-export interface PolicyCopyData {
-  data: PortalAttestationPolicyEdit;
-  pickCategorySkipped: boolean;
+@Injectable({
+  providedIn: 'root',
+})
+export class SplitService {
+  constructor(private readonly apiService: QerApiService) {}
+
+  public async getSplitItems(roletype: string, uidrole: string, newroletype: string, newroleid: string): Promise<IRoleSplitItem[]> {
+    return await this.apiService.v2Client.portal_roles_split_get(roletype, uidrole, newroletype, newroleid);
+  }
+
+  public async getSplitOptions
+(
+    roletype: string,
+    uidrole: string,
+    newroletype: string,
+    newroleid: string,
+    inputData: RoleSplitInput
+  ): Promise<UiActionData[]> {
+    return await this.apiService.v2Client.portal_roles_split_post(roletype, uidrole, newroletype, newroleid, inputData);
+  }
 }

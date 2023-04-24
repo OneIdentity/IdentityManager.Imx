@@ -30,6 +30,20 @@ eui-alert {
   margin-bottom: 10px;
 }
 
+.eui-sidesheet-content{
+  overflow: hidden;
+}
+
+.imx-stepper-card{
+  height: 100%;
+  display: flex;
+
+  .imx-stepper-content {
+    overflow: auto;
+    flex: 1 1 auto;
+  }
+}
+
 .imx-step-button,
 .imx-step-button-save {
   margin-top: 10px;

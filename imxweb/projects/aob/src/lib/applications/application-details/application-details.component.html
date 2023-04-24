@@ -1,5 +1,5 @@
 <div class="imx-application-details-content" *ngIf='application'>
-  <mat-card class="imx-application-properties">
+  <mat-card class="imx-application-properties mat-elevation-z0">
     <mat-card-title>
       {{ '#LDS#General' | translate }}
     </mat-card-title>
@@ -20,8 +20,8 @@
       </imx-application-property>
     </mat-card-content>
   </mat-card>
-  <mat-card class="imx-application-state">
-    <mat-card class="imx-application-publish">
+  <mat-card class="imx-application-state mat-elevation-z0">
+    <mat-card class="imx-application-publish mat-elevation-z0">
       <mat-card-title>
         {{ '#LDS#Publication status' | translate }}
 
@@ -39,11 +39,11 @@
           {{ '#LDS#Published' | translate }}
         </span>
         <div *ngIf="willPublish()" class="imx-application-publish-date">
-          <span>{{ application.ActivationDate.Column.GetDisplayValue() }}</span>
+          <span>{{ application.ActivationDate.value |shortDate }}</span>
         </div>
       </mat-card-content>
     </mat-card>
-    <mat-card class="imx-application-progress">
+    <mat-card class="imx-application-progress mat-elevation-z0">
       <mat-card-title>
         {{ '#LDS#Progress' | translate }}
       </mat-card-title>
@@ -82,7 +82,7 @@
       </mat-card-content>
     </mat-card>
   </mat-card>
-  <mat-card class="imx-application-additionalDetails">
+  <mat-card class="imx-application-additionalDetails mat-elevation-z0">
     <mat-card-title>
       {{ '#LDS#Additional details' | translate }}
     </mat-card-title>

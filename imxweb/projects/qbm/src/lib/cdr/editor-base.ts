@@ -46,15 +46,17 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
 
   public isBusy = false;
   public lastError: ServerError;
+  public get maxlength(): number | undefined {
+    return this.columnContainer?.metaData?.GetMaxLength();
+  }
 
   private readonly subscribers: Subscription[] = [];
   private isWriting = false;
 
-
-  public constructor(protected readonly logger: ClassloggerService, protected readonly errorHandler?: ErrorHandler) { }
+  public constructor(protected readonly logger: ClassloggerService, protected readonly errorHandler?: ErrorHandler) {}
 
   public ngOnDestroy(): void {
-    this.subscribers.forEach(s => s.unsubscribe());
+    this.subscribers.forEach((s) => s.unsubscribe());
   }
 
   public get validationErrorMessage(): string {
@@ -62,7 +64,6 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
       return this.lastError.toString();
     }
   }
-
 
   /**
    * Binds a column dependent reference to the component
@@ -74,19 +75,27 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
 
       this.setControlValue();
 
-      this.subscribers.push(this.control.valueChanges.subscribe(async value => this.writeValue(value)));
+      this.subscribers.push(this.control.valueChanges.subscribe(async (value) => this.writeValue(value)));
 
       // bind to entity change event
-      this.subscribers.push(this.columnContainer.subscribe(() => {
-        if (this.isWriting) { return; }
+      this.subscribers.push(
+        this.columnContainer.subscribe(() => {
+          if (this.isWriting) {
+            return;
+          }
 
-        if (this.control.value !== this.columnContainer.value) {
-          this.logger.trace(this, `Control (${this.columnContainer.name}) set to new value:`,
-            this.columnContainer.value, this.control.value);
-          this.setControlValue();
-        }
-        this.valueHasChanged.emit({value: this.control.value});
-      }));
+          if (this.control.value !== this.columnContainer.value) {
+            this.logger.trace(
+              this,
+              `Control (${this.columnContainer.name}) set to new value:`,
+              this.columnContainer.value,
+              this.control.value
+            );
+            this.setControlValue();
+          }
+          this.valueHasChanged.emit({ value: this.control.value });
+        })
+      );
 
       this.logger.trace(this, 'Control initialized');
     } else {

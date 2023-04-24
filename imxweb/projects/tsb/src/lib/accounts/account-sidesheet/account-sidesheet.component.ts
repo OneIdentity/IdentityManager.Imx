@@ -39,7 +39,7 @@ import {
 import { DbObjectKey } from 'imx-qbm-dbts';
 import { EuiLoadingService, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { AccountSidesheetData } from '../accounts.models';
-import { IdentitiesService } from 'qer';
+import { IdentitiesService, ProjectConfigurationService } from 'qer';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { AccountsService } from '../accounts.service';
 import { EuiDownloadOptions } from '@elemental-ui/core';
@@ -72,10 +72,11 @@ export class AccountSidesheetComponent implements OnInit {
     private readonly snackbar: SnackBarService,
     private readonly sidesheet: EuiSidesheetService,
     private readonly elementalUiConfigService: ElementalUiConfigService,
+    private readonly configService: ProjectConfigurationService,
     private readonly identitiesService: IdentitiesService,
     private readonly accountsService: AccountsService,
     private readonly reports: AccountsReportsService,
-    private readonly tabService: ExtService,
+    private readonly tabService: ExtService
   ) {
     this.detailsFormGroup = new FormGroup({ formArray: formBuilder.array([]) });
 
@@ -150,8 +151,6 @@ export class AccountSidesheetComponent implements OnInit {
     }
   }
 
-
-
   private async setup(): Promise<void> {
     /**
      * Resolve an issue where the mat-tab navigation arrows could appear on first load
@@ -160,21 +159,12 @@ export class AccountSidesheetComponent implements OnInit {
       TabControlHelper.triggerResizeEvent();
     });
 
-    this.cdrList = [
-      new BaseCdr(this.selectedAccount.displayColumn)
-    ];
+    const cols = (await this.configService.getConfig()).OwnershipConfig.EditableFields[this.parameters.objecttable]
 
-    if (this.selectedAccount.uidPersonColumn) {
-      this.cdrList.push(new BaseCdr(this.selectedAccount.uidPersonColumn));
-    }
-
-    if (this.selectedAccount.uidADSDomain) {
-      this.cdrList.push(new BaseCdr(this.selectedAccount.uidADSDomain));
-    }
-
-    if (this.selectedAccount.isNeverConnectManualColumn) {
-      this.cdrList.push(new BaseCdr(this.selectedAccount.isNeverConnectManualColumn));
-    }
+      this.cdrList = cols
+        .map(column => 
+          this.getCdr(column,this.selectedAccount)
+        ).filter(elem=> elem != null);
 
     this.dynamicTabs = (await this.tabService.getFittingComponents<TabItem>('accountSidesheet',
     (ext) =>  ext.inputData.checkVisibility(this.parameters)))
@@ -213,5 +203,11 @@ export class AccountSidesheetComponent implements OnInit {
     return undefined;
   }
 
+  private getCdr (column: string, entity: AccountTypedEntity): ColumnDependentReference{
+    try{
+      const col = entity.GetEntity().GetColumn(column) ;
+      return new BaseCdr(col);
+    } catch{ return undefined;} 
+   }
 
 }

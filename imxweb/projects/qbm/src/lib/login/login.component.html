@@ -7,7 +7,10 @@
       <img class="custom-logo" [src]="logoUrl">
     </div>
     <h1 data-imx-identifier="product-name-title">{{ product.name }}
-      <br>{{ title }}
+      <br>
+      <ng-container *ngIf="!appConfigService.Config.DoNotShowAppNameWithProduct">
+        {{ title }}
+      </ng-container>
     </h1>
     <imx-usermessage class="usermessage" panelClass="imx-small-message"></imx-usermessage>
     <div *ngIf="sessionState?.isOAuth;else loginMask" class="imx-loginButtonpanel">

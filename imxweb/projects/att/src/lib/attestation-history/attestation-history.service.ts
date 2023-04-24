@@ -80,8 +80,10 @@ export class AttestationHistoryService {
   }
 
   public async getGroupInfo(parameters: AttestationCaseLoadParameters = {}): Promise<GroupInfo[]> {
+    // remove groupFilter from parameters
+    const { groupFilter, ...paramsWithoutGroupFilter } = parameters;
     return this.attClient.client.portal_attestation_case_group_get({
-      ...parameters,
+      ...paramsWithoutGroupFilter,
       withcount: true,
       filter: parameters.groupFilter
     });

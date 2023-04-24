@@ -25,7 +25,8 @@
  */
 
 import { HttpClient } from '@angular/common/http';
-import { Injectable, ErrorHandler, Injector } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
+import { Subject } from 'rxjs';
 
 import { AppConfig } from './appconfig.interface';
 import { ApiClientFetch } from '../api-client/api-client-fetch';
@@ -51,6 +52,8 @@ export class AppConfigService {
   private config: AppConfig;
   private baseUrl: string;
 
+  public onConfigTitleUpdated = new Subject();
+
   constructor(
     private readonly httpClient: HttpClient,
     private readonly logger: ClassloggerService,
@@ -68,6 +71,11 @@ export class AppConfigService {
     const basepathArray = window.location.pathname.split('html');
     this.config.Basepath = basepathArray[0].slice(0, -1);
     this.initialize(apiServerUrl);
+  }
+
+  public setTitle(title: string) {
+    this.config.Title = title;
+    this.onConfigTitleUpdated.next();
   }
 
   public async loadSchema(): Promise<void> {
