@@ -6,7 +6,7 @@
 
 ### April 24, 2023
 
-- The branch `v90` is now up to date with the 9.0 CU2 of Identity Manager. The repository has been
+- The branch `v90` is now up to date with the 9.0 CU2 of Identity Manager.
 - The repository has been updated with fixes for the following issues. 
   - 407514 Fixed the password profile tab selection on the profile page.
   - 319131 Fixed a bug when adding a service item to a request template.
