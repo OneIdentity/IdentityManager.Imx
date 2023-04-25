@@ -28,6 +28,7 @@ import { Component, Inject, Input, OnInit } from '@angular/core';
 import { EuiLoadingService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { ICartItemCheck } from 'imx-api-qer';
 import { EntitySchema } from 'imx-qbm-dbts';
+import { SystemInfoService } from 'qbm';
 import { RequestParameterDataEntity } from 'qer';
 import { ApplicableRule, ViolationDetail } from '../../item-validator/cart-item-compliance-check/cart-item-compliance-check.component';
 import { ItemValidatorService } from '../../item-validator/item-validator.service';
@@ -44,11 +45,13 @@ export class ComplianceViolationDetailsComponent implements OnInit {
 
   public rules: ApplicableRule[] = [];
   public schema: EntitySchema;
+  public hasRiskIndex: boolean;
 
   constructor(
     private readonly validator: ItemValidatorService,
     private complianceApi: ComplianceViolationService,
     private readonly loadingService: EuiLoadingService,
+    private readonly systemInfoService: SystemInfoService,
     @Inject(EUI_SIDESHEET_DATA) public data?: ICartItemCheck | any
   ) {
 
@@ -58,6 +61,7 @@ export class ComplianceViolationDetailsComponent implements OnInit {
     const ref = this.loadingService.show();
 
     try {
+      this.hasRiskIndex = (await this.systemInfoService.get()).PreProps.includes("RISKINDEX");
       this.schema = this.validator.getRulesSchema();
       this.isICartItemCheck(this.data) ? await this.loadCartItemViolations(this.data) : await this.loadRequestViolations(this.pwoId);
     } finally {

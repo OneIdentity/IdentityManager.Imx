@@ -4,6 +4,31 @@
 
 ## Change log
 
+### April 24, 2023
+
+- The branch `v90` is now up to date with the 9.0 CU2 of Identity Manager.
+- The repository has been updated with fixes for the following issues. 
+  - 407514 Fixed the password profile tab selection on the profile page.
+  - 319131 Fixed a bug when adding a service item to a request template.
+  - 358311, 405872 Fixed a bug when copying an attestation policy.
+  - 305110 Fixed a bug when creating dynamic groups.
+  - 399901 Fixed a bug in the grouped view of attestation cases.
+  - 395047 Fixed a bug on the password profile page.
+  - 322939 Fixed a bug that caused the page to load infinitely when loading password profile questions.
+  - 386166 Fixed the links on the Packages view of the Administration Portal.
+  - 36325 Fixed a bug that was causing the indirect reports view to only show direct reports.
+  - 366940 Fixed a bug when running the application without the `RISKINDEX` configuration parameter.
+  - 367251 Fixed a bug when approving policy violations.
+  - 393864 Fixed a bug in the grouped view of attestation runs.
+  - 332087 Fixed OAuth login to the Server Administration app.
+  - 352481 Fixed app titles.
+  - 386868/36143 Candidates for parameter values were not correctly reloaded.
+  - 332393/36057 Publishing of an application entitlement did not work correctly.
+  - 388710/36356 The detail sidesheet for a request template did not open correctly.
+  - 384912 Login errors were not being handled correctly.
+  - 386663 Fixed a bug when adding a service item to a request template.
+
+
 ### November 8, 2022
 
 - The repository has been updated with fixes for the following issues.

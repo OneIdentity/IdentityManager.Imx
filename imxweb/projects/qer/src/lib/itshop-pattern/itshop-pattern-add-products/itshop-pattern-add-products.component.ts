@@ -109,11 +109,7 @@ export class ItshopPatternAddProductsComponent implements OnInit, OnDestroy {
 
   public async ngOnInit(): Promise<void> {
     this.projectConfig = await this.projectConfigService.getConfig();
-
-    this.canRequestForSomebodyElse = (await this.userModelService.getUserConfig()).CanRequestForSomebodyElse;
-    if (this.canRequestForSomebodyElse) {
-      this.setupRecipient();
-    }
+    this.setupRecipient();
   }
 
   public ngOnDestroy(): void {
@@ -237,6 +233,8 @@ export class ItshopPatternAddProductsComponent implements OnInit, OnDestroy {
     }
   }
   private async setupRecipient(): Promise<void> {
+    this.canRequestForSomebodyElse = (await this.userModelService.getUserConfig()).CanRequestForSomebodyElse;
+
     const recipientsProperty = new LocalProperty();
     recipientsProperty.IsMultiValued = false;
     recipientsProperty.ColumnName = 'UID_PersonOrdered';

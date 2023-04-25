@@ -1,5 +1,6 @@
 {
   "Title": "CertAccess",
+  "WebAppIdentifier": "CertAccess",
   "WebAppIndex": "portal",
   "LocalDocPath": {
     "en-US": "imx/doc/StarlingCertAccess_WebPortal_UserGuide_en-us.html5/StarlingCertAccess_WebPortal_UserGuide.html",

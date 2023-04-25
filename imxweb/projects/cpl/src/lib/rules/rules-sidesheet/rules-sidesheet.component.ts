@@ -43,7 +43,8 @@ export class RulesSidesheetComponent {
   public cdrList: ColumnDependentReference[];
   constructor(
     @Inject(EUI_SIDESHEET_DATA) public data: {
-      selectedRule: PortalRules
+      selectedRule: PortalRules,
+      hasRiskIndex: boolean
     },
     private readonly rulesProvider: RulesService,
     elementalUiConfigService: ElementalUiConfigService,
@@ -52,8 +53,8 @@ export class RulesSidesheetComponent {
       new BaseReadonlyCdr(this.data.selectedRule.GetEntity().GetColumn(DisplayColumns.DISPLAY_PROPERTYNAME)),
       new BaseReadonlyCdr(this.data.selectedRule.Description.Column),
       new BaseReadonlyCdr(this.data.selectedRule.RuleNumber.Column),
-      new BaseReadonlyCdr(this.data.selectedRule.RiskIndex.Column),
-      this.data.selectedRule.RiskIndex.value !== this.data.selectedRule.RiskIndexReduced.value ?
+      data.hasRiskIndex ? new BaseReadonlyCdr(this.data.selectedRule.RiskIndex.Column) : null,
+      data.hasRiskIndex && this.data.selectedRule.RiskIndex.value !== this.data.selectedRule.RiskIndexReduced.value ?
         new BaseReadonlyCdr(this.data.selectedRule.RiskIndexReduced.Column) : null,
       new BaseReadonlyCdr(this.data.selectedRule.IsInActive.Column),
       new BaseReadonlyCdr(this.data.selectedRule.CountOpen.Column),

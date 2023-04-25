@@ -41,7 +41,7 @@ import {
   GroupInfo
 } from 'imx-qbm-dbts';
 
-import { ClassloggerService } from 'qbm';
+import { ClassloggerService, SystemInfoService } from 'qbm';
 import { ApiService } from '../api.service';
 import { RulesViolationsApproval } from './rules-violations-approval';
 import { RulesViolationsLoadParameters } from './rules-violations-load-parameters.interface';
@@ -61,6 +61,7 @@ export class RulesViolationsService {
     private readonly cplClient: ApiService,
     private readonly logger: ClassloggerService,
     private readonly busyService: EuiLoadingService,
+    private readonly systemInfoService: SystemInfoService,
     private readonly translate: TranslateService) {
   }
 
@@ -103,10 +104,11 @@ export class RulesViolationsService {
       ...parameters
     });
 
+    const hasRiskIndex = (await this.systemInfoService.get()).PreProps.includes("RISKINDEX");
     return {
       tableName: collection.tableName,
       totalCount: collection.totalCount,
-      Data: collection.Data.map((item: PortalRulesViolations, index: number) => new RulesViolationsApproval(item, this.translate))
+      Data: collection.Data.map((item: PortalRulesViolations, index: number) => new RulesViolationsApproval(item, hasRiskIndex, this.translate))
     };
   }
 

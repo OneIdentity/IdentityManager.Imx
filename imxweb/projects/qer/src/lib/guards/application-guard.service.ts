@@ -46,7 +46,7 @@ export class ApplicationGuardService implements CanActivate, OnDestroy {
     return new Observable<boolean>((observer) => {
       this.onSessionResponse = this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
         if (sessionState.IsLoggedIn) {
-          const isPortal = this.appConfig?.Config?.Title?.toLocaleLowerCase() === 'portal';
+          const isPortal = this.appConfig?.Config?.WebAppIdentifier?.toLocaleLowerCase() === 'portal';
           if (!isPortal) {
             this.router.navigate([this.appConfig.Config.routeConfig.start], { queryParams: {} });
           }

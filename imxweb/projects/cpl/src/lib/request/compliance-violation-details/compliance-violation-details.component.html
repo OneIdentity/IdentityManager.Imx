@@ -42,13 +42,13 @@
                 {{ item?.rule?.GetEntity().GetColumn('RuleNumber').GetDisplayValue() }}
               </p>
             </div>
-            <div *ngIf="item?.rule?.GetEntity().GetColumn('RiskIndex').GetValue()">
+            <div *ngIf="hasRiskIndex && item?.rule?.GetEntity().GetColumn('RiskIndex').GetValue()">
               <div class="imx-label">{{ schema.Columns['RiskIndex'].Display }}</div>
               <p class="imx-value">
                 {{ item?.rule?.GetEntity().GetColumn('RiskIndex').GetDisplayValue() }}
               </p>
             </div>
-            <div *ngIf="item?.rule?.GetEntity().GetColumn('RiskIndex').GetValue() !== item?.rule?.GetEntity().GetColumn('RiskIndexReduced').GetValue()">
+            <div *ngIf="hasRiskIndex && item?.rule?.GetEntity().GetColumn('RiskIndex').GetValue() !== item?.rule?.GetEntity().GetColumn('RiskIndexReduced').GetValue()">
               <div class="imx-label">{{ schema.Columns['RiskIndexReduced'].Display }}</div>
               <p class="imx-value">
                 {{ item?.rule?.GetEntity().GetColumn('RiskIndexReduced').GetDisplayValue() }}

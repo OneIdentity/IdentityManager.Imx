@@ -2,13 +2,13 @@
   <div *ngIf="mode === 'no-sync'">
     <eui-icon icon="sync"></eui-icon>
     <h1 translate>#LDS#Heading No Synchronization Configured</h1>
-    <p *ngIf="webApp === 'CertAccess'" translate>#LDS#Please configure a synchronization using the Starling CertAccess Agent.</p>
-    <p *ngIf="webApp === 'Portal'" translate>#LDS#Please configure a synchronization using the Synchronization Editor.</p>
+    <p *ngIf="webApp === 'certaccess'" translate>#LDS#Please configure a synchronization using the Starling CertAccess Agent.</p>
+    <p *ngIf="webApp === 'portal'" translate>#LDS#Please configure a synchronization using the Synchronization Editor.</p>
   </div>
   <div *ngIf="mode === 'no-data'">
     <eui-icon icon="database"></eui-icon>
     <h1 translate>#LDS#Heading No Data Synchronized</h1>
-    <p *ngIf="webApp === 'CertAccess'" translate>#LDS#A synchronization has been configured in the Starling CertAccess Agent, but not run yet.</p>
-    <p *ngIf="webApp === 'Portal'" translate>#LDS#A synchronization has been configured in the Synchronization Editor, but not run yet.</p>
+    <p *ngIf="webApp === 'certaccess'" translate>#LDS#A synchronization has been configured in the Starling CertAccess Agent, but not run yet.</p>
+    <p *ngIf="webApp === 'portal'" translate>#LDS#A synchronization has been configured in the Synchronization Editor, but not run yet.</p>
   </div>
 </div>

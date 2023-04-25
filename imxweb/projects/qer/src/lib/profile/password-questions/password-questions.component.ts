@@ -24,11 +24,9 @@
  *
  */
 
-import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatAccordion } from '@angular/material/expansion';
-import { MatTab, MatTabGroup } from '@angular/material/tabs';
-import { ActivatedRoute } from '@angular/router';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { PortalPasswordquestions, UserConfig } from 'imx-api-qer';
@@ -44,7 +42,7 @@ import { checkMatchValidator } from './password-questions-validator';
   templateUrl: './password-questions.component.html',
   styleUrls: ['./password-questions.component.scss'],
 })
-export class PasswordQuestionsComponent implements OnInit, AfterViewInit {
+export class PasswordQuestionsComponent implements OnInit {
   public PwdQuestionMode = PwdQuestionMode;
   public userConfig: UserConfig;
   public items: ExtendedTypedEntityCollection<PortalPasswordquestions, unknown>;
@@ -54,8 +52,6 @@ export class PasswordQuestionsComponent implements OnInit, AfterViewInit {
     StartIndex: 0,
   };
   public totalCount = 0;
-
-  @Input() public componentId: string;
 
   @ViewChild(MatAccordion) public accordion: MatAccordion;
 
@@ -69,23 +65,12 @@ export class PasswordQuestionsComponent implements OnInit, AfterViewInit {
     private readonly translate: TranslateService,
     private readonly ldsReplace: LdsReplacePipe,
     private readonly busy: EuiLoadingService,
-    private readonly tab: MatTab,
-    private readonly tabGroup: MatTabGroup,
-    private readonly activatedRoute: ActivatedRoute,
   ) {
   }
 
   public async ngOnInit(): Promise<void> {
     this.userConfig = await this.userService.getUserConfig();
     await this.getData();
-  }
-
-  public async ngAfterViewInit(): Promise<void> {
-    const param = this.activatedRoute.snapshot.paramMap.get('id');
-
-    if (param === this.componentId) {
-      this.tabGroup.selectedIndex = this.tab.position;
-    }
   }
 
   public async getData(): Promise<void> {
