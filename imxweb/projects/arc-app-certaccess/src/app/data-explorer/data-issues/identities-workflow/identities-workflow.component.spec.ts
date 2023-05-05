@@ -32,21 +32,25 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IdentitiesWorkflowComponent } from './identities-workflow.component';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DataIssuesService } from '../data-issues.service';
-import { UserModelService } from 'qer';
 
 describe('IdentitiesWorkflowComponent', () => {
   let component: IdentitiesWorkflowComponent;
   let fixture: ComponentFixture<IdentitiesWorkflowComponent>;
+
+  const workflowSpy = jasmine.createSpy('startIdentitiesManagerWorkflow').and.returnValue(Promise.resolve());  
+  const closeSpy = jasmine.createSpy('close');
 
   ArcGovernanceTestBed.configureTestingModule({
     declarations: [IdentitiesWorkflowComponent],
     providers: [
       {
         provide: MatDialogRef,
-        useValue: { close: () => {} },
+        useValue: { close: closeSpy },
       },
-      DataIssuesService,
-      UserModelService
+      {
+        provide: DataIssuesService,
+        useValue: { startIdentitiesManagerWorkflow: workflowSpy },
+      },
     ],
   });
 
@@ -61,12 +65,6 @@ describe('IdentitiesWorkflowComponent', () => {
   });
 
   it('start() should start identities manager workflow and then close modal', fakeAsync(() => {
-    const issues = TestBed.inject(DataIssuesService);
-    const fakePromise = Promise.resolve();
-
-    const workflowSpy = spyOn(issues, 'startIdentitiesManagerWorkflow').and.returnValue(fakePromise);
-    const closeSpy = spyOn(component.dialogRef, 'close');
-
     component.start();
 
     flush();

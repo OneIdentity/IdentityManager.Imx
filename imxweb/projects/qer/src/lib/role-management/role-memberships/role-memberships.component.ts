@@ -61,5 +61,4 @@ export class RoleMembershipsComponent {
   public canHavePrimaryMemberships(): boolean {
     return this.ownershipInfo && this.roleService.targetMap.get(this.ownershipInfo.TableName).membership.hasPrimaryMemberships();
   }
-
 }

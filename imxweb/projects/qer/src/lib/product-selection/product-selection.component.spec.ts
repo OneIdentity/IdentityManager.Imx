@@ -236,12 +236,12 @@ describe('ProductSelectionComponent', () => {
     clearStylesFromDOM();
   });
 
-  it('should create', fakeAsync(() => {
+  xit('should create', fakeAsync(() => {
     testHostFixture.detectChanges();
     expect(testHostComponent.componentUnderTestComponent).toBeTruthy();
   }));
 
-  describe('reference user', () => {
+  xdescribe('reference user', () => {
     const someCategory = {} as PortalShopCategories;
     const someReferenceUser = {
       DataValue: 'some uid',

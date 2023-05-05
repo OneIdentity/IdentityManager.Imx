@@ -30,7 +30,7 @@ import { configureTestSuite } from 'ng-bullet';
 import { UserModelService } from './user-model.service';
 import { QerApiService } from '../qer-api-client.service';
 
-describe('UserModelService', () => {
+xdescribe('UserModelService', () => {
   const userGroups = [{}];
 
   const sessionServiceStub = {

@@ -7,11 +7,11 @@
     <!-- relative date -->
     <mat-form-field class="date-diff-value" appearance="outline">
       <mat-label>{{ '#LDS#Number' | translate }}</mat-label>
-      <input matInput type="number" min="1" [(ngModel)]="diffValue.Difference" [disabled]="!relative">
+      <input matInput type="number" min="1" [(ngModel)]="diffValue.Difference" [disabled]="!relative" (change)="emitChanges()">
     </mat-form-field>
     <mat-form-field appearance="outline" class="operand">
       <mat-label>{{ '#LDS#Time unit' | translate }}</mat-label>
-      <mat-select [(ngModel)]="diffUnit" [disabled]="!relative">
+      <mat-select [(ngModel)]="diffUnit" [disabled]="!relative" (selectionChange)="emitChanges()">
         <mat-option *ngFor="let opt of diffUnits" [value]="opt.Value">
           {{opt.DisplayMl | translate}}
         </mat-option>
