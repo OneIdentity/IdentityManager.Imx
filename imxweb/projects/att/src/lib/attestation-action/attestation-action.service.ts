@@ -256,7 +256,7 @@ export class AttestationActionService {
         : '#LDS#{0} attestation cases have been successfully denied.',
       apply: async (attestationCase: AttestationCase) => {
         if (approve) {
-          await attestationCase.commit();
+          await attestationCase.commit(false /* avoid expensive reload */);
         }
         return this.attestationCases.makeDecision(attestationCase, {
           Reason: actionParameters.reason.column.GetValue(),

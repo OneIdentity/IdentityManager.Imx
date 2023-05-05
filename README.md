@@ -4,6 +4,16 @@
 
 ## Change log
 
+### May 5, 2023
+
+The `v82` branch has been updated with fixes for the following issues:
+
+- 410170: Fixed accessibility of cards on the dashboard
+- 35861: Avoid unnecessary reload after approving an attestation case
+- 36835 / 416107: Fixed error when showing department memberships in the Data Explorer
+- 36837 / 416492: Fixed redundant API calls for pending items
+- 36716 / 416493: Fixed redundant API calls in the service catalog
+
 ### March 28, 2023
 
 The `v82` branch has been updated with fixes for the following issues:

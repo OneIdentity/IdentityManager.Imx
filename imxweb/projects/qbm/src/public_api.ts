@@ -280,3 +280,5 @@ export { EntityColumnStub } from './lib/testing/entity-column-stub.spec';
 export { EntitySchemaStub } from './lib/testing/entity-schema-stub.spec';
 
 export { clearStylesFromDOM } from './lib/testing/clear-styles.spec';
+export { CacheService } from './lib/cache/cache.service';
+export { CachedPromise } from './lib/cache/cached-promise';

@@ -104,6 +104,7 @@ import { RouteGuardService } from './route-guard/route-guard.service';
 import { ClassloggerService } from './classlogger/classlogger.service';
 import { AuthenticationGuardService } from './authentication/authentication-guard.service';
 import { JobQueueOverviewModule } from './jobqueue-overview/jobqueue-overview.module';
+import { CacheService } from './cache/cache.service';
 
 export function initApp(registry: CdrRegistryService, resolver: ComponentFactoryResolver, logger: NGXLogger): () => Promise<any> {
   logger.debug('init qbm');
@@ -199,7 +200,8 @@ const routes: Routes = [
     ImxTreeTableComponent,
     TwoFactorAuthenticationService,
     ApiClientAngularService,
-    TableImageService
+    TableImageService,
+    CacheService
   ],
   exports: [
     TwoFactorAuthenticationComponent,

@@ -133,6 +133,15 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     this.authSubscription = authentication.onSessionResponse.subscribe((elem) => {
       this.userUid = elem.UserUid;
     });
+
+    // apply project configuration
+    this.projectConfigService.getConfig().then(config => {
+      this.projectConfig = config;
+      this.employeePreselected = this.projectConfig.ITShopConfig.VI_ITShop_Employee_Preselected;
+      this.canSelectFromTemplate = this.projectConfig.ITShopConfig.VI_ITShop_ProductSelectionFromTemplate;
+      this.canSelectByRefUser = this.projectConfig.ITShopConfig.VI_ITShop_ProductSelectionByReferenceUser;
+
+    });
   }
 
   public ngOnDestroy(): void {
@@ -190,12 +199,6 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
       });
       // TODO in this case, CanRequestForSomebodyElse is false
     }
-
-    // apply project configuration
-    this.projectConfig = await this.projectConfigService.getConfig();
-    this.employeePreselected = this.projectConfig.ITShopConfig.VI_ITShop_Employee_Preselected;
-    this.canSelectFromTemplate = this.projectConfig.ITShopConfig.VI_ITShop_ProductSelectionFromTemplate;
-    this.canSelectByRefUser = this.projectConfig.ITShopConfig.VI_ITShop_ProductSelectionByReferenceUser;
 
     this.cartItemRecipients = new BaseCdr(this.recipients.Column, '#LDS#Recipients');
 

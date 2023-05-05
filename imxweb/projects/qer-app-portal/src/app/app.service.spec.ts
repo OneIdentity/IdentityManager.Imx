@@ -41,7 +41,9 @@ describe('AppService', () => {
       addLangs: jasmine.createSpy('addLangs'),
       getBrowserCultureLang: jasmine.createSpy('getBrowserCultureLang').and.returnValue(''),
       setDefaultLang: jasmine.createSpy('setDefaultLang'),
-      use: jasmine.createSpy('use').and.returnValue(of({})),
+      get: x => { return { toPromise: () => Promise.resolve(x) }; },
+      use: jasmine.createSpy('use').and.returnValue(of({})),           
+      onLangChange: { subscribe: () => {}},
     };
 
     translationProvider = {
