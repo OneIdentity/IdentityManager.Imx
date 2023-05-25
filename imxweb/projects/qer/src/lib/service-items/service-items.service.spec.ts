@@ -112,7 +112,7 @@ describe('ServiceItemsService', () => {
   it('gets service items', async () => {
     const parameters = {};
     expect((await service.get(parameters)).totalCount).toEqual(testhelpers.mockServiceItems.length);
-    expect(sessionServiceStub.typedClient.PortalShopServiceitems.Get).toHaveBeenCalledWith(parameters);
+    expect(sessionServiceStub.typedClient.PortalShopServiceitems.Get).toHaveBeenCalledWith(parameters, jasmine.any(Object));
   });
 
   it('gets service item', async () => {
@@ -128,7 +128,8 @@ describe('ServiceItemsService', () => {
           Value1: testhelpers.mockServiceItems[0].key
         }
       ]
-    });
+    },
+    jasmine.any(Object));
   });
 
   [

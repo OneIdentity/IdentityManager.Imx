@@ -38,7 +38,16 @@ import { QerApiService } from '../qer-api-client.service';
   providedIn: 'root'
 })
 export class ServiceItemsService {
+
+  // AbortController
+  public abortController = new AbortController();
+
   constructor(private readonly qerClient: QerApiService) { }
+
+  public abortCall(): void {
+    this.abortController.abort();
+    this.abortController = new AbortController();
+  }
 
   public get PortalShopServiceItemsSchema(): EntitySchema {
     return this.qerClient.typedClient.PortalShopServiceitems.GetSchema();
@@ -52,7 +61,8 @@ export class ServiceItemsService {
     UID_PersonReference?: string;
     UID_PersonPeerGroup?: string;
   }): Promise<ExtendedTypedEntityCollection<PortalShopServiceitems, ServiceItemsExtendedData>> {
-    return this.qerClient.typedClient.PortalShopServiceitems.Get(parameters);
+    this.abortCall();
+    return this.qerClient.typedClient.PortalShopServiceitems.Get(parameters, {signal: this.abortController.signal});
   }
 
   public async getServiceItem(serviceItemUid: string, isSkippable?: boolean): Promise<PortalShopServiceitems> {

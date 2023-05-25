@@ -4,6 +4,12 @@
 
 ## Change log
 
+### May 25, 2023
+
+The `v82` branch has been updated with fixes for the following issues:
+
+ - 
+
 ### May 5, 2023
 
 The `v82` branch has been updated with fixes for the following issues:
