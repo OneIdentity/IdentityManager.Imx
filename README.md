@@ -4,6 +4,14 @@
 
 ## Change log
 
+### May 25, 2023
+
+The `v82` branch has been updated with fixes for the following issues:
+
+- 36870: Fixed inconsistency when searching for service items due to concurrent API requests.
+- Added general support for cancelling API requests. All API request methods have a new optional parameter [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal).
+- Note that the packages in the `imx-modules` folder have been updated. You will need to call `npm install` to install the updated package versions.
+
 ### May 5, 2023
 
 The `v82` branch has been updated with fixes for the following issues:

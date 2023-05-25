@@ -35,7 +35,7 @@ import { TranslateService } from '@ngx-translate/core';
 export class ApiClientFetch implements ApiClient {
     constructor(private readonly errorHandler: ErrorHandler,
         private readonly baseUrl: string = '',
-        logger: ClassloggerService,
+        private readonly logger: ClassloggerService,
         private readonly translation: TranslateService,
         private readonly http: { fetch(input: RequestInfo, init?: RequestInit): Promise<Response> } = window) {
 
@@ -53,7 +53,8 @@ export class ApiClientFetch implements ApiClient {
 
     private readonly xsrfProtectionEnabled: boolean;
 
-    public async processRequest<T>(methodDescriptor: MethodDescriptor<T>): Promise<T> {
+    public async processRequest<T>(methodDescriptor: MethodDescriptor<T>,
+         opts: { signal?: AbortSignal } = {}): Promise<T> {
         const method = new MethodDefinition(methodDescriptor);
         const headers = new Headers(method.headers);
 
@@ -65,9 +66,14 @@ export class ApiClientFetch implements ApiClient {
                 method: method.httpMethod,
                 credentials: method.credentials,
                 headers: headers,
+                signal: opts?.signal,
                 body: method.body
             });
         } catch {
+            if (opts?.signal?.aborted) {
+              this.logger.info(this, 'Request was aborted', opts.signal);
+              return;
+            }
             this.errorHandler.handleError(new ServerError(await this.GetUnexpectedErrorText()));
 
 //TODO: or throw?            
