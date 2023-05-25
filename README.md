@@ -8,7 +8,8 @@
 
 The `v82` branch has been updated with fixes for the following issues:
 
- - 
+- 36870: Fixed inconsistency when searching for service items due to concurrent API requests.
+- Added general support for cancelling API requests. All API request methods have a new optional parameter [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal).
 
 ### May 5, 2023
 
