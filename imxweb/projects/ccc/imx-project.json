@@ -1,0 +1,13 @@
+{
+    "Name": "ccc",
+    "Path": "imxweb\\projects\\ccc",
+    "ProjectType": "ng-lib",
+    "ProjectDependcies": [
+      "qbm",
+      "qer"
+    ],
+    "ChangePatterns": [
+      "imxweb\\projects\\ccc",
+      "imxweb\\shared\\assets"
+    ]
+  }

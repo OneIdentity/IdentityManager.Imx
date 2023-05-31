@@ -1880,11 +1880,17 @@
       "projectType": "library",
       "root": "projects/ccc",
       "sourceRoot": "projects/ccc/src",
-      "prefix": "lib",
+      "prefix": "imx",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
+            "tsConfig": "projects/ccc/tsconfig.lib.json",
             "project": "projects/ccc/ng-package.json"
           },
           "configurations": {
@@ -1893,6 +1899,9 @@
             },
             "development": {
               "tsConfig": "projects/ccc/tsconfig.lib.json"
+            },
+            "dynamic": {
+              "project": "projects/ccc/ng-package.dynamic.json"
             }
           },
           "defaultConfiguration": "production"
