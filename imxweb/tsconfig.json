@@ -19,8 +19,13 @@
       "qbm": ["dist/qbm"],
       "qbm/*": ["dist/qbm/*"],
       "qer": ["dist/qer"],
-      "qer/*": ["dist/qer/*"],
-      "aob": ["dist/aob"],
+      "aob": [
+        "dist/aob"
+      ],
+      "ccc": [
+        "dist/ccc/ccc",
+        "dist/ccc"
+      ],
       "aob/*": ["dist/aob/*"],
       "tsb": ["dist/tsb"],
       "tsb/*": ["dist/tsb/*"],

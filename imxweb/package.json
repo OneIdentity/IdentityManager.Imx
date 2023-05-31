@@ -114,6 +114,7 @@
     "imx-api-rps": "file:imx-modules/imx-api-rps.tgz",
     "imx-api-tsb": "file:imx-modules/imx-api-tsb.tgz",
     "imx-api-uci": "file:imx-modules/imx-api-uci.tgz",
-    "imx-qbm-dbts": "file:imx-modules/imx-qbm-dbts.tgz"
+    "imx-qbm-dbts": "file:imx-modules/imx-qbm-dbts.tgz",
+    "imx-api-ccc": "file:imx-modules/imx-api-ccc.tgz"
   }
 }

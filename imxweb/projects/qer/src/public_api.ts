@@ -156,3 +156,6 @@ export { FeatureConfigService } from './lib/admin/feature-config.service';
 export { ItshopRequest } from './lib/request-history/itshop-request';
 export { RequestParameterDataEntity } from './lib/itshop/request-info/request-parameter-data-entity.interface';
 export { BaseTreeRoleRestoreHandler } from './lib/role-management/restore/restore-handler';
+// CCC Start
+export { CreateNewIdentityComponent } from './lib/identities/create-new-identity/create-new-identity.component';
+// CCC End
