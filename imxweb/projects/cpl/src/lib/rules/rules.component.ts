@@ -30,7 +30,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { PortalRules } from 'imx-api-cpl';
 import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
-import { DataSourceToolbarFilter, DataSourceToolbarSettings, ClientPropertyForTableColumns } from 'qbm';
+import { DataSourceToolbarFilter, DataSourceToolbarSettings, ClientPropertyForTableColumns, SystemInfoService } from 'qbm';
 import { RuleParameter } from './rule-parameter';
 import { RulesSidesheetComponent } from './rules-sidesheet/rules-sidesheet.component';
 import { RulesService } from './rules.service';
@@ -52,6 +52,7 @@ export class RulesComponent implements OnInit {
   constructor(
     private readonly rulesProvider: RulesService,
     private readonly sideSheetService: EuiSidesheetService,
+    private readonly systemInfoService: SystemInfoService,
     private readonly translate: TranslateService
   ) {
     this.ruleSchema = rulesProvider.ruleSchema;
@@ -83,6 +84,9 @@ export class RulesComponent implements OnInit {
   }
 
   public async showDetails(selectedRule: PortalRules): Promise<void> {
+
+    const hasRiskIndex = (await this.systemInfoService.get()).PreProps.includes("RISKINDEX");
+
     await this.sideSheetService.open(RulesSidesheetComponent, {
       title: await this.translate.get('#LDS#Heading View Compliance Rule Details').toPromise(),
       padding: '0px',
@@ -91,7 +95,8 @@ export class RulesComponent implements OnInit {
       bodyColour: 'asher-gray',
       testId: 'rule-details-sidesheet',
       data: {
-        selectedRule
+        selectedRule,
+        hasRiskIndex
       }
     }).afterClosed().toPromise();
   }

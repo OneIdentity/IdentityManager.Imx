@@ -24,13 +24,14 @@
  *
  */
 
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { EuiLoadingService } from '@elemental-ui/core';
 
 import { PortalRulesViolations } from 'imx-api-cpl';
 import { configureTestSuite } from 'ng-bullet';
 
-import { ClassloggerService } from 'qbm';
+import { ClassloggerService, SettingsService, SystemInfoService } from 'qbm';
 import { ApiService } from '../api.service';
 
 import { RulesViolationsService } from './rules-violations.service';
@@ -75,7 +76,20 @@ describe('RulesViolationsService', () => {
           provide: EuiLoadingService,
           useValue: testHelper.euiLoadingServiceStub
         },
-      ]
+        {
+          provide: SettingsService,
+          useValue:{
+            PageSizeForAllElements: 30
+          }
+        },
+        { 
+          provide: SystemInfoService,
+          useValue: {}
+        },
+      ],
+      schemas: [
+        CUSTOM_ELEMENTS_SCHEMA
+      ],          
     });
     service = TestBed.inject(RulesViolationsService);
   });

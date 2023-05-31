@@ -36,7 +36,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { EuiCoreModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { ClassloggerService, RouteGuardService } from 'qbm';
+import { CdrModule, ClassloggerService, RouteGuardService } from 'qbm';
 import { InitService } from './init.service';
 import { TilesModule } from 'qer';
 import { DashboardPluginComponent } from './dashboard-plugin/dashboard-plugin.component';
@@ -50,6 +50,7 @@ import { RulesViolationsComponent } from './rules-violations/rules-violations.co
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ComplianceRulesGuardService } from './guards/compliance-rules-guard.service';
 import { RuleViolationsGuardService } from './guards/rule-violations-guard.service';
+import { MatCardModule } from '@angular/material/card';
 
 const routes: Routes = [
   {
@@ -75,9 +76,11 @@ const routes: Routes = [
   ],
   imports: [
     CommonModule,
+    CdrModule,
     EuiCoreModule,
     FormsModule,
     MatButtonModule,
+    MatCardModule,
     MatExpansionModule,
     MatFormFieldModule,
     MatIconModule,

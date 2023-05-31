@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   @ViewChild(ExtDirective, { static: true }) public directive: ExtDirective;
 
-  public readonly title: string;
+  public title: string;
   public readonly product: { name: string; copyright: string; } = {
     name: Globals.QIM_ProductNameFull,
     copyright: Globals.QBM_Copyright
@@ -62,18 +62,18 @@ export class LoginComponent implements OnInit, OnDestroy {
   private readonly subscriptions: Subscription[] = [];
 
   constructor(
+    public readonly appConfigService: AppConfigService,
     private readonly authentication: AuthenticationService,
     private readonly router: Router,
-    private readonly appConfigService: AppConfigService,
     private readonly logger: ClassloggerService,
     private readonly componentFactoryResolver: ComponentFactoryResolver,
     private readonly splash: EuiSplashScreenService,
     private readonly busyService: EuiLoadingService
   ) {
-
-    if (!this.appConfigService.Config.DoNotShowAppNameWithProduct) {
+    this.title = this.appConfigService.Config.Title;
+    this.subscriptions.push(this.appConfigService.onConfigTitleUpdated.subscribe(() => {
       this.title = this.appConfigService.Config.Title;
-    }
+    }));
 
     this.subscriptions.push(this.authentication.onSessionResponse.subscribe((sessionState: ISessionState) => {
       this.logger.debug(this, 'LoginComponent - subscription - onSessionResponse');

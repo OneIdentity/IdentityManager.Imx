@@ -290,7 +290,7 @@ export class EntitlementsComponent implements OnChanges {
             key: 'Entitlements/Roles Published'
           };
           if (publishData.publishFuture && publishData.date) {
-            const browserCulture = this.translateService.getBrowserCultureLang();
+            const browserCulture = this.translateService.currentLang;
             publishMessage = {
               key: '#LDS#The application entitlement will be published on {0} at {1} (your local time) if the application is published.',
               parameters: [

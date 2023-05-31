@@ -155,7 +155,7 @@ export class RoleMainDataComponent implements OnInit {
   }
 
   public async splitRole(): Promise<void> {
-    const result = await this.sidesheet.open(SplitComponent, {
+    await this.sidesheet.open(SplitComponent, {
       title: await this.translateService.get('#LDS#Heading Split').toPromise(),
       headerColour: 'iris-blue',
       bodyColour: 'asher-gray',
@@ -163,7 +163,5 @@ export class RoleMainDataComponent implements OnInit {
       width: 'max(600px, 60%)',
       testId: 'role-main-data-split-sidesheet',
     }).afterClosed().toPromise();
-
-    // if result === true, the role was split
   }
 }

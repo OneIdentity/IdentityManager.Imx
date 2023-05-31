@@ -27,7 +27,7 @@
 import { Component } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
-import { PortalRules } from 'imx-api-cpl';
+
 import { ICartItemCheck } from 'imx-api-qer';
 import { ComplianceViolationDetailsComponent } from '../../request/compliance-violation-details/compliance-violation-details.component';
 
@@ -44,7 +44,7 @@ export class CartItemComplianceCheckComponent {
   public async onOpenDetails(): Promise<void> {
     this.sidesheetService.open(ComplianceViolationDetailsComponent, {
       title: await this.translateService.get('#LDS#Heading View Rule Violation Details').toPromise(),
-      width: '800px',
+      width: 'max(550px,50%)',
       bodyColour: 'asher-gray',
       headerColour: 'iris-blue',
       data: this.check,
@@ -53,27 +53,3 @@ export class CartItemComplianceCheckComponent {
   }
 }
 
-export interface ApplicableRule {
-  rule?: PortalRules;
-  violationDetail: ViolationDetail;
-}
-
-export interface ViolationDetail {
-  DisplayElement: string;
-  DisplayPerson: string;
-  DisplayRule: string;
-  IsNoEffectivePerson: boolean;
-  ObjectKeyElement: string;
-  UidComplianceRule: string;
-  UidComplianceSubRule: string;
-  UidPerson: string;
-  UidPersonWantsOrg: string;
-  UidShoppingCartItem: string;
-  ViolationType: string;
-  ContributingEntitlements: DetailContributingEntitlements[];
-}
-
-export interface DetailContributingEntitlements {
-  Display: string;
-  ObjectKeyEntitlement: string;
-}

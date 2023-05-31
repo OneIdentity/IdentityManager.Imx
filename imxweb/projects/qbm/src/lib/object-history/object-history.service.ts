@@ -47,7 +47,9 @@ export class ObjectHistoryService {
       this.dataCached = (await this.apiService.getHistoryData(
         parameters.table,
         parameters.uid
-      ))[0].Events;
+      ))
+        .map(x => x.Events)
+        .reduce((a, b) => a.concat(b));
     }
 
     return this.dataCached;

@@ -47,6 +47,7 @@ import { AobApiService } from '../../aob-api-client.service';
 import { EditApplicationComponent } from '../edit-application/edit-application.component';
 import { AccountDetails } from './account-details.interface';
 import { AobPermissionsService } from '../../permissions/aob-permissions.service';
+
 @Component({
   selector: 'imx-application-details',
   templateUrl: './application-details.component.html',
@@ -131,7 +132,7 @@ export class ApplicationDetailsComponent implements OnChanges, OnInit {
       testId: 'edit-application',
       disableClose: true,
     }).afterClosed().toPromise();
-
+    this.applicationprovider.applicationRefresh.next(true);
     this.application = await this.applicationprovider.reload(this.application.UID_AOBApplication.value);
     this.reloadData();
   }
@@ -156,7 +157,7 @@ export class ApplicationDetailsComponent implements OnChanges, OnInit {
               key: '#LDS#The application was successfully published. It takes a moment for the changes to take effect.'
             };
             if (publishData.publishFuture && publishData.date) {
-              const browserCulture = this.translateService.getBrowserCultureLang();
+              const browserCulture = this.translateService.currentLang;
               publishMessage = {
                 key: '#LDS#The application will be published on {0} at {1} (your local time).',
                 parameters: [

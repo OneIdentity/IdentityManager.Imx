@@ -24,10 +24,16 @@
  *
  */
 
-describe('RMB placeholder test', () => {
+import { ComplianceViolation, PortalRules } from 'imx-api-cpl';
+import { ColumnDependentReference } from 'qbm';
 
-  
-    it('should be executed', () => {
-      expect(true).toBeTruthy();
-    });
-});
+export interface ApplicableRule {
+  rule?: PortalRules;
+  violationDetail: ComplianceViolation;
+  cdrLists: RuleCdrs;
+}
+
+export interface RuleCdrs {
+  common: ColumnDependentReference[];
+  sources?: ColumnDependentReference[];
+}

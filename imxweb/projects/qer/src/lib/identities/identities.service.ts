@@ -113,20 +113,17 @@ export class IdentitiesService {
   }
 
   /**
-   * Gets a direct reports (subordinated identities) of a person.
+   * Gets the reports (directly/indirectly subordinated identities) of a person.
    *
    * @param navigationState Page size, start index, search and filtering options etc,.
    *
    * @returns Wrapped list of Persons.
    */
-  public async getDirectReportsOfManager(navigationState: CollectionLoadParameters):
+  public async getReportsOfManager(navigationState: CollectionLoadParameters):
     Promise<TypedEntityCollectionData<PortalPersonReports>> {
-    this.logger.debug(this, `Retrieving direct reports of the manager`);
+    this.logger.debug(this, `Retrieving reports of the manager`);
     this.logger.trace('Navigation state', navigationState);
-    return this.qerClient.typedClient.PortalPersonReports.Get({
-      OnlyDirect: true, // direct reports only,
-      ...navigationState
-    });
+    return this.qerClient.typedClient.PortalPersonReports.Get(navigationState);
   }
 
   public async getGroupedAllPerson(columns: string, navigationState: CollectionLoadParameters): Promise<GroupInfo[]> {

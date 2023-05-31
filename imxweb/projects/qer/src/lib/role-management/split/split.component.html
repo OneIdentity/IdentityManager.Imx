@@ -1,83 +1,88 @@
-<mat-spinner *ngIf="busy"></mat-spinner>
+<div eui-sidesheet-content>
+  <mat-card class="imx-stepper-card">
+    <div class="imx-stepper-content">
+      <mat-vertical-stepper [linear]="true" *ngIf="!busy" (selectionChange)="selectedStepChanged($event)">
+        <mat-step label="{{ '#LDS#Specify data of the new object' | translate }}" [stepControl]="newRoleFormGroup">
+          <mat-form-field appearance="outline" *ngIf="canChangeRoleType">
+            <mat-label><span translate>#LDS#Type of the new object</span></mat-label>
+            <mat-select [(value)]="newRoleType" data-imx-identifier="reports-select-options" (selectionChange)="roleTypeChanged()">
+              <mat-option *ngFor="let type of candidateTables" [value]="type.tableName" [attr.data-imx-identifier]="'split-options-' + type.tableName">
+                <span [translate]="type.display"></span>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
 
-<mat-vertical-stepper [linear]="true" *ngIf="!busy">
-	<mat-step label="{{'#LDS#Specify data of the new object' | translate}}" [stepControl]="newRoleFormGroup">
+          <ng-container *ngIf="newRoleType">
+            <eui-alert [condensed]="true" [colored]="true" type="info">{{ ldsInfoMessage | translate }} </eui-alert>
 
-		<mat-form-field appearance="outline" *ngIf="canChangeRoleType">
-			<mat-label><span translate>#LDS#Type of the new object</span></mat-label>
-			<mat-select [(value)]="newRoleType" data-imx-identifier="reports-select-options"
-				(selectionChange)="roleTypeChanged()">
-				<mat-option *ngFor="let type of candidateTables" [value]="type.tableName"
-					[attr.data-imx-identifier]="'split-options-' + type.tableName">
-					<span [translate]="type.display"></span>
-				</mat-option>
-			</mat-select>
-		</mat-form-field>
+            <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="addControl(newRoleFormGroup, cdr.column.ColumnName, $event)"></imx-cdr-editor>
+          </ng-container>
+          <div class="imx-step-button">
+            <button mat-raised-button color="primary" data-imx-identifier="split-step-1-next" matStepperNext [disabled]="newRoleFormGroup.invalid">
+              {{ '#LDS#Next' | translate }}
+            </button>
+          </div>
+        </mat-step>
+        <mat-step label="{{ '#LDS#Select assignments that should be copied or moved to the new object' | translate }}">
+          <eui-alert class="imx-top-alert" type="info" [condensed]="true" [colored]="true" *ngIf="splitItems.length === 0 && !isLoading">
+            {{ noRoleText | translate }}
+          </eui-alert>
+          <div *ngFor="let item of splitItems" class="splititem">
+            <div class="item">
+              <div>{{ item.Display }}</div>
+              <div class="subtext">{{ getTableDisplay(item.ObjectType) }}</div>
+            </div>
+            <mat-form-field class="splittypeselect" appearance="outline">
+              <mat-label translate>#LDS#RoleSplitActionsLabel</mat-label>
+              <mat-select [(ngModel)]="item.SplitType" data-imx-identifier="split-item-select">
+                <mat-option *ngFor="let type of types; let index = index" [value]="index">{{ type }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
 
-		<ng-container *ngIf="newRoleType">
-			<eui-alert [condensed]="true" [colored]="true" type="info">{{LdsInfoMessage | translate}}
-			</eui-alert>
+          <div class="imx-step-button">
+            <button mat-raised-button data-imx-identifier="split-step-2-back" matStepperPrevious>
+              {{ '#LDS#Back' | translate }}
+            </button>
+            <button color="primary" mat-raised-button data-imx-identifier="split-step-2-next" matStepperNext>
+              {{ '#LDS#Next' | translate }}
+            </button>
+          </div>
+        </mat-step>
 
-			<imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"
-				(controlCreated)="addControl(newRoleFormGroup, cdr.column.ColumnName, $event)"></imx-cdr-editor>
+        <mat-step label="{{ '#LDS#Review actions' | translate }}">
+          <eui-alert class="imx-top-alert" type="info" [condensed]="true" [colored]="true" *ngIf="actions.length === 0 && !isLoading">
+            <eui-alert-header>
+              {{ noChangesText | translate }}
+            </eui-alert-header>
+            <eui-alert-content>
+              {{ noChangesTextLong | translate }}
+            </eui-alert-content>
+          </eui-alert>
 
+          <mat-selection-list [(ngModel)]="uidActions">
+            <mat-list-option
+              checkboxPosition="before"
+              *ngFor="let action of actions"
+              [value]="action.Id"
+              [disabled]="!action.CanExecute"
+              [attr.data-imx-identifier]="'multi-select-action-' + action.Id"
+            >
+              <div>{{ action.Display }}</div>
+              <div class="subtext">{{ action.ObjectDisplay }}</div>
+            </mat-list-option>
+          </mat-selection-list>
 
-			<div class="imx-step-button">
-				<button mat-raised-button color="primary" data-imx-identifier="split-step-1-next" matStepperNext
-					(click)="loadSplitItems()" [disabled]="newRoleFormGroup.invalid">{{'#LDS#Next' | translate}}</button>
-			</div>
-		</ng-container>
-	</mat-step>
-	<mat-step label="{{'#LDS#Select assignments that should be copied or moved to the new object' | translate}}">
-		<eui-alert class="imx-top-alert" type="info" [condensed]="true" [colored]="true" *ngIf="splitItems.length === 0 && !isLoading">
-			{{noRoleText | translate}}
-		</eui-alert>
-		<div *ngFor="let item of splitItems" class="splititem">
-			<div class="item">
-				<div>{{ item.Display}}</div>
-				<div class="subtext">{{ getTableDisplay(item.ObjectType) }}</div>
-			</div>
-			<mat-form-field class="splittypeselect" appearance="outline">
-				<mat-label translate>#LDS#RoleSplitActionsLabel</mat-label>
-				<mat-select [(ngModel)]="item.SplitType" data-imx-identifier="split-item-select">
-					<mat-option *ngFor="let type of types; let index = index" [value]="index">{{type}}</mat-option>
-				</mat-select>
-			</mat-form-field>
-		</div>
-
-		<div class="imx-step-button">
-			<button mat-raised-button data-imx-identifier="split-step-2-back" matStepperPrevious>{{'#LDS#Back' |
-				translate}}</button>
-			<button mat-raised-button data-imx-identifier="split-step-2-next" (click)="WizardPage2_OnNext()"
-				matStepperNext>{{'#LDS#Next' | translate}}</button>
-		</div>
-	</mat-step>
-
-	<mat-step label="{{'#LDS#Review actions' | translate}}">
-
-		<eui-alert class="imx-top-alert" type="info" [condensed]="true" [colored]="true" *ngIf="actions.length === 0 && !isLoading">
-			<eui-alert-header>
-				{{noChangesText | translate}}
-			</eui-alert-header>
-			<eui-alert-content>
-				{{noChangesTextLong | translate}}
-			</eui-alert-content>
-		</eui-alert>
-
-		<mat-selection-list [(ngModel)]="uidActions">
-			<mat-list-option checkboxPosition="before" *ngFor="let action of actions" [value]="action.Id"
-				[disabled]="!action.CanExecute" [attr.data-imx-identifier]="'multi-select-action-' + action.Id">
-				<div>{{action.Display }}</div>
-				<div class="subtext">{{action.ObjectDisplay }}</div>
-			</mat-list-option>
-		</mat-selection-list>
-
-		<div class="imx-step-button">
-			<button mat-raised-button data-imx-identifier="split-step-3-back" matStepperPrevious>{{'#LDS#Back' |
-				translate}}</button>
-			<button mat-raised-button data-imx-identifier="split-step-3-next" color="primary" matStepperNext
-				(click)="Execute()">{{'#LDS#Next' | translate}}</button>
-		</div>
-	</mat-step>
-
-</mat-vertical-stepper>
+          <div class="imx-step-button">
+            <button mat-raised-button data-imx-identifier="split-step-3-back" matStepperPrevious>
+              {{ '#LDS#Back' | translate }}
+            </button>
+            <button mat-raised-button data-imx-identifier="split-step-3-next" color="primary" matStepperNext (click)="execute()">
+              {{ '#LDS#Split' | translate }}
+            </button>
+          </div>
+        </mat-step>
+      </mat-vertical-stepper>
+    </div>
+  </mat-card>
+</div>

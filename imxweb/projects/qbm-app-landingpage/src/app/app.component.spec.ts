@@ -83,6 +83,7 @@ describe('AppComponent', () => {
             public addLangs = jasmine.createSpy('addLangs').and.callThrough();
             public setDefaultLang = jasmine.createSpy('setDefaultLang').and.callThrough();
             public getBrowserCultureLang = jasmine.createSpy('getBrowserCultureLang').and.callThrough();
+            public onLangChange = { subscribe: () => { } };
           }
         },
         {

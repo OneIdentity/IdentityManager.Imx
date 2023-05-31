@@ -30,7 +30,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { configureTestSuite } from 'ng-bullet';
 import { of, Subject } from 'rxjs';
 
-import { AuthenticationService, clearStylesFromDOM, SplashService } from 'qbm';
+import { AppConfigService, AuthenticationService, clearStylesFromDOM, SplashService } from 'qbm';
 import { AppComponent } from './app.component';
 import { ProjectConfigurationService } from 'qer';
 
@@ -86,6 +86,10 @@ for (const navigationState of [
           {
             provide: SplashService,
             useValue: splashServiceStub
+          },
+           {
+            provide: AppConfigService,
+            useValue: {Config: {routeConfig: {start: 'dashboard'}}}
           }
         ]
       });

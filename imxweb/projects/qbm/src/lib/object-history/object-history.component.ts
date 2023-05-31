@@ -33,6 +33,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { ObjectHistoryEvent } from 'imx-qbm-dbts';
 import { ObjectHistoryService, ObjectHistoryParameters } from './object-history.service';
 
+import { DateAdapter } from '@angular/material/core';
+import moment from 'moment-timezone';
 
 class ViewMode {
   public value: string;
@@ -65,10 +67,11 @@ export class ObjectHistoryComponent implements OnInit {
 
   private parameters: ObjectHistoryParameters;
 
-  public get effectiveViewMode() {
+  public get effectiveViewMode(): string {
     // the viewMode passed as an input takes precedence
-    if (this.viewMode)
+    if (this.viewMode) {
       return this.viewMode;
+    }
     return this.viewModeValue;
   }
 
@@ -76,7 +79,8 @@ export class ObjectHistoryComponent implements OnInit {
     private translate: TranslateService,
     private activatedRoute: ActivatedRoute,
     private busyService: EuiLoadingService,
-    private historyService: ObjectHistoryService
+    private historyService: ObjectHistoryService,
+    private dateAdapter: DateAdapter<any>
   ) { }
 
   public async ngOnInit(): Promise<void> {
@@ -92,6 +96,11 @@ export class ObjectHistoryComponent implements OnInit {
 
     await this.refresh();
 
+  }
+
+  public setLocale(locale: string): void {
+    moment.locale(locale);
+    this.dateAdapter.setLocale(locale);
   }
 
   public async refresh(): Promise<void> {

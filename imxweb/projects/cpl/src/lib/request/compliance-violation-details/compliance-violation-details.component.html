@@ -1,12 +1,23 @@
 <div class="imx-main-container">
-  <ng-container *ngIf="request == null || request.UiOrderState.value === 'OrderProduct'">
+  <ng-container *ngIf="request == null || request?.UiOrderState.value === 'OrderProduct'">
     <eui-alert *ngIf="request != null" type="info" [condensed]="true" [colored]="true" [dismissable]="false">
-      {{ '#LDS#Here you can get an overview of the rule violations this request may cause.' | translate }}
+      {{
+        (rules.length > 1
+          ? '#LDS#Here you can get an overview of the rule violations this request may cause.'
+          : '#LDS#Here you can see the rule violation this request may cause.'
+        ) | translate
+      }}
     </eui-alert>
 
-    <div class="imx-content-container">
+    <mat-card *ngIf="rules.length === 1">
+      <mat-card-content>
+        <ng-container *ngTemplateOutlet="ruleViolationTemplate; context: { $implicit: rules[0] }"></ng-container>
+      </mat-card-content>
+    </mat-card>
+
+    <div *ngIf="rules.length > 1" class="imx-content-container">
       <mat-accordion class="imx-accordion" multi>
-        <mat-expansion-panel *ngFor="let item of rules">
+        <mat-expansion-panel *ngFor="let item of rules; let isFirst = first" [expanded]="isFirst">
           <mat-expansion-panel-header>
             <mat-panel-title>
               {{ item?.violationDetail?.DisplayRule }}
@@ -15,54 +26,7 @@
               {{ item?.violationDetail?.DisplayPerson }}
             </mat-panel-description>
           </mat-expansion-panel-header>
-
-          <div class="imx-label">{{ '#LDS#Product' | translate }}</div>
-          <p class="imx-description imx-value">
-            {{ item?.violationDetail?.DisplayElement }}
-          </p>
-
-          <ng-container *ngIf="item?.rule?.GetEntity().GetColumn('Description').GetValue()">
-            <div class="imx-label">{{ schema.Columns['Description'].Display }}</div>
-            <p class="imx-description imx-value">
-              {{ item?.rule?.GetEntity().GetColumn('Description').GetDisplayValue() }}
-            </p>
-          </ng-container>
-
-          <ng-container *ngIf="item?.violationDetail?.DisplayPerson">
-            <div class="imx-label">{{ '#LDS#Identity' | translate }}</div>
-            <p class="imx-value">
-              {{ item?.violationDetail?.DisplayPerson }}
-            </p>
-          </ng-container>
-
-          <div class="imx-horizontal-container">
-            <div *ngIf="item?.rule?.GetEntity().GetColumn('RuleNumber').GetValue()">
-              <div class="imx-label">{{ schema.Columns['RuleNumber'].Display }}</div>
-              <p class="imx-value">
-                {{ item?.rule?.GetEntity().GetColumn('RuleNumber').GetDisplayValue() }}
-              </p>
-            </div>
-            <div *ngIf="item?.rule?.GetEntity().GetColumn('RiskIndex').GetValue()">
-              <div class="imx-label">{{ schema.Columns['RiskIndex'].Display }}</div>
-              <p class="imx-value">
-                {{ item?.rule?.GetEntity().GetColumn('RiskIndex').GetDisplayValue() }}
-              </p>
-            </div>
-            <div *ngIf="item?.rule?.GetEntity().GetColumn('RiskIndex').GetValue() !== item?.rule?.GetEntity().GetColumn('RiskIndexReduced').GetValue()">
-              <div class="imx-label">{{ schema.Columns['RiskIndexReduced'].Display }}</div>
-              <p class="imx-value">
-                {{ item?.rule?.GetEntity().GetColumn('RiskIndexReduced').GetDisplayValue() }}
-              </p>
-            </div>
-          </div>
-
-          <ng-container *ngIf="item?.violationDetail?.ContributingEntitlements && item?.violationDetail?.ContributingEntitlements.length > 0">
-            <mat-divider></mat-divider>
-            <div class="imx-label imx-first-section-item">{{ '#LDS#Contributing entitlements' | translate }}</div>
-            <div class="imx-list-container">
-              <div *ngFor="let ceItem of item.violationDetail.ContributingEntitlements" class="imx-list-value">{{ ceItem.Display }}</div>
-            </div>
-          </ng-container>
+          <ng-container *ngTemplateOutlet="ruleViolationTemplate; context: { $implicit: item }"></ng-container>
         </mat-expansion-panel>
       </mat-accordion>
     </div>
@@ -74,7 +38,7 @@
   </div>
 
   <eui-alert
-    *ngIf="request != null && request.UiOrderState.value != 'OrderProduct' && !request.complianceRuleViolation"
+    *ngIf="request != null && request?.UiOrderState.value != 'OrderProduct' && !request?.complianceRuleViolation"
     type="info"
     [condensed]="true"
     [colored]="true"
@@ -84,7 +48,24 @@
   </eui-alert>
 
   <imx-workflow-violation-details
-    *ngIf="request != null && request.UiOrderState.value != 'OrderProduct' && request.complianceRuleViolation"
-    [pwoData]="request.pwoData"
+    *ngIf="request != null && request?.UiOrderState.value != 'OrderProduct' && request?.complianceRuleViolation"
+    [pwoData]="request?.pwoData"
   ></imx-workflow-violation-details>
 </div>
+
+
+<ng-template #ruleViolationTemplate let-item>
+  <imx-cdr-editor *ngFor="let cdr of item?.cdrLists.common" [cdr]="cdr"> </imx-cdr-editor>
+
+  <ng-container *ngIf="item?.cdrLists?.sources?.length > 0">
+    <imx-cdr-editor *ngFor="let cdr of item?.cdrLists.sources" [cdr]="cdr"> </imx-cdr-editor>
+  </ng-container>
+
+  <ng-container *ngIf="item?.violationDetail?.ContributingEntitlements && item?.violationDetail?.ContributingEntitlements.length > 0">
+    <mat-divider></mat-divider>
+    <div class="imx-label imx-first-section-item">{{ '#LDS#Contributing entitlements' | translate }}</div>
+    <ul class="imx-list-container">
+      <li *ngFor="let ceItem of item.violationDetail.ContributingEntitlements" class="imx-list-value">{{ ceItem.Display }}</li>
+    </ul>
+  </ng-container>
+</ng-template>

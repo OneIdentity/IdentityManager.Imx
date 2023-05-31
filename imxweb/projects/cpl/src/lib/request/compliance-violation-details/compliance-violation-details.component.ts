@@ -25,13 +25,17 @@
  */
 
 import { Component, Inject, Input, OnInit } from '@angular/core';
-import { EuiLoadingService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+
+import { ComplianceViolation, ContributingEntitlement, PortalRules } from 'imx-api-cpl';
 import { ICartItemCheck } from 'imx-api-qer';
-import { EntitySchema } from 'imx-qbm-dbts';
+import { DbObjectKey, EntityData, EntitySchema, IEntityColumn, ValType } from 'imx-qbm-dbts';
 import { RequestParameterDataEntity } from 'qer';
-import { ApplicableRule, ViolationDetail } from '../../item-validator/cart-item-compliance-check/cart-item-compliance-check.component';
+import { ApplicableRule, RuleCdrs } from '../compliance-violation-model';
 import { ItemValidatorService } from '../../item-validator/item-validator.service';
 import { ComplianceViolationService } from './compliance-violation.service';
+import { TranslateService } from '@ngx-translate/core';
+import { BaseReadonlyCdr, ColumnDependentReference, EntityService, MetadataService, SystemInfoService } from 'qbm';
 
 @Component({
   selector: 'imx-compliance-violation-details',
@@ -45,14 +49,19 @@ export class ComplianceViolationDetailsComponent implements OnInit {
   public rules: ApplicableRule[] = [];
   public schema: EntitySchema;
 
+  private hasRiskIndex: boolean;
+
   constructor(
     private readonly validator: ItemValidatorService,
     private complianceApi: ComplianceViolationService,
     private readonly loadingService: EuiLoadingService,
+    private readonly metaData: MetadataService,
+    private readonly entityService: EntityService,
+    private readonly euiSidesheetRef: EuiSidesheetRef,
+    private readonly translate: TranslateService,
+    private readonly systemInfoService: SystemInfoService,
     @Inject(EUI_SIDESHEET_DATA) public data?: ICartItemCheck | any
-  ) {
-
-  }
+  ) { }
 
   public async ngOnInit(): Promise<void> {
     const ref = this.loadingService.show();
@@ -60,27 +69,115 @@ export class ComplianceViolationDetailsComponent implements OnInit {
     try {
       this.schema = this.validator.getRulesSchema();
       this.isICartItemCheck(this.data) ? await this.loadCartItemViolations(this.data) : await this.loadRequestViolations(this.pwoId);
+      this.hasRiskIndex = (await this.systemInfoService.get()).PreProps.includes("RISKINDEX");
+      this.checkHistoryForViolations();
     } finally {
       this.loadingService.hide(ref);
     }
   }
 
+  private getDisplayForSource(item: ContributingEntitlement): string {
+    return this.metaData.tables[DbObjectKey.FromXml(item.ObjectKeyEntitlement).TableName]?.DisplaySingular ?? '';
+  }
+
+  private async loadTableNamesForSources(violations: ComplianceViolation[]): Promise<void> {
+    const sourecedRules = violations.filter((elem) => elem.Sources.length > 0);
+
+    if (sourecedRules.length > 0) {
+      for (const source of sourecedRules) {
+        await this.metaData.update(source.Sources.map((item) => DbObjectKey.FromXml(item.ObjectKeyEntitlement).TableName));
+      }
+    }
+  }
+
   private async loadCartItemViolations(cartItemCheck: ICartItemCheck): Promise<void> {
     let rules = (await this.validator.getRules()).Data;
+    await this.loadTableNamesForSources(cartItemCheck.Detail.Violations);
+
     this.rules = [];
-    cartItemCheck.Detail.Violations.forEach((item) => {
-      this.rules.push({ rule: rules.find((x) => x.GetEntity().GetKeys()[0] === item.UidComplianceRule), violationDetail: item });
+
+    cartItemCheck.Detail.Violations.forEach(async (item: ComplianceViolation) => {
+      const rule = rules.find((x) => x.GetEntity().GetKeys()[0] === item.UidComplianceRule);
+      this.rules.push({
+        rule,
+        violationDetail: item,
+        cdrLists: await this.buildCdrForViolations(rule, item),
+      });
     });
   }
 
   private async loadRequestViolations(id: string): Promise<void> {
     const violations = await this.complianceApi.getRequestViolations(id);
+    await this.loadTableNamesForSources(violations);
     this.rules = [];
-    violations.forEach((violation) => {
+    violations.forEach(async (violation: ComplianceViolation) => {
       this.rules.push({
-        violationDetail: violation as ViolationDetail,
+        violationDetail: violation,
+        cdrLists: await this.buildCdrForViolations(undefined, violation),
       });
     });
+  }
+
+  private async buildCdrForViolations(rule: PortalRules, detail: ComplianceViolation): Promise<RuleCdrs> {
+    //Build common elments
+    const cdrColumns = [
+      this.buildColumn('DisplayElement', await this.translate.get('#LDS#Product').toPromise(), detail.DisplayElement),
+      rule
+        ? rule.GetEntity().GetColumn('Description')
+        : this.buildColumn('Description', this.schema.Columns['Description'].Display, detail.Description),
+      this.buildColumn('DisplayPerson', await this.translate.get('#LDS#Identity').toPromise(), detail.DisplayPerson),
+      rule
+        ? rule.GetEntity().GetColumn('RuleNumber')
+        : this.buildColumn('RuleNumber', this.schema.Columns['RuleNumber'].Display, detail.RuleNumber),
+    ];
+
+    if (this.hasRiskIndex) {
+      cdrColumns.push(rule
+        ? rule.GetEntity().GetColumn('RiskIndex')
+        : this.buildColumn('RiskIndex', this.schema.Columns['RiskIndex'].Display, detail.RiskIndex, ValType.Double),
+      );
+      if (rule != null && rule.GetEntity().GetColumn('RiskIndex').GetValue() !== rule.GetEntity().GetColumn('RiskIndexReduced').GetValue()) {
+        cdrColumns.push(rule.GetEntity().GetColumn('RiskIndexReduced'));
+      } else {
+        if (detail.RiskIndex !== detail.RiskIndexReduced) {
+          cdrColumns.push(
+            this.buildColumn('RiskIndexReduced', this.schema.Columns['RiskIndexReduced'].Display, detail.RiskIndexReduced, ValType.Double)
+          );
+        }
+      }
+    }
+
+    let sources: ColumnDependentReference[] | undefined;
+    if (detail.Sources?.length > 0) {
+      sources = detail.Sources.map(
+        (source, index) => new BaseReadonlyCdr(this.buildColumn(`source ${index}`, this.getDisplayForSource(source), source.Display))
+      );
+    }
+
+    return { common: cdrColumns.map((column) => new BaseReadonlyCdr(column)), sources };
+  }
+
+  private buildColumn(columnName: string, display: string, value: any, type: ValType = ValType.String): IEntityColumn {
+    return this.entityService.createLocalEntityColumn(
+      {
+        ColumnName: columnName,
+        Type: type,
+        Display: display,
+      },
+      undefined,
+      { Value: value }
+    );
+  }
+
+  private checkHistoryForViolations(): void {
+    if (this.request?.pwoData && this.request.pwoData.WorkflowHistory && this.request.pwoData.WorkflowHistory.Entities) {
+      this.request.pwoData.WorkflowHistory.Entities.forEach((wh: EntityData) => {
+        const uid = wh.Columns && wh.Columns['UID_ComplianceRule'] ? wh.Columns['UID_ComplianceRule'].Value : '';
+        if (uid.length > 0) {
+          this.request.complianceRuleViolation = true;
+        }
+      });
+    }
   }
 
   // ICartItemCheck type guard

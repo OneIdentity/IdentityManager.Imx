@@ -3,7 +3,7 @@
         {{ columnContainer?.display | translate }}
     </mat-label>
     <input matInput type="text" [formControl]="control" [readonly]="!columnContainer?.canEdit"
-        [attr.data-imx-identifier]="'cdr-edit-default-input-' + columnContainer?.name"
+        [attr.data-imx-identifier]="'cdr-edit-default-input-' + columnContainer?.name" [maxlength]="maxlength"
         [required]="columnContainer.isValueRequired">
         <div matSuffix class="imx-suffix-container">
             <mat-spinner diameter="30" *ngIf="isBusy"></mat-spinner>

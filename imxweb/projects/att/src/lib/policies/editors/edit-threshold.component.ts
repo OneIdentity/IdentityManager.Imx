@@ -68,8 +68,8 @@ export class EditThresholdComponent implements OnInit, OnDestroy {
       this.valueChanged.emit({
         ParameterValue: this.lowerControl.value?.toLocaleString('en-us'),
         ParameterValue2: this.upperControl.value?.toLocaleString('en-us'),
-        displays: [(this.lowerControl.value * 100).toLocaleString(this.translateService.getBrowserCultureLang())
-          + ' - ' + (this.upperControl.value * 100).toLocaleString(this.translateService.getBrowserCultureLang())]
+        displays: [(this.lowerControl.value * 100).toLocaleString(this.translateService.currentLang)
+          + ' - ' + (this.upperControl.value * 100).toLocaleString(this.translateService.currentLang)]
       })
     );
   }
