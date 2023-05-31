@@ -9,7 +9,7 @@ import {OwnershipInformation} from 'imx-api-qer';
 @Injectable({
   providedIn: 'root'
 })
-export class CccService {
+export class CccInitService {
   constructor(
     private readonly extService: ExtService,
     private readonly router: Router,

@@ -22,7 +22,7 @@
     ],
     "dest": "../../html/ccc",
     "lib": {
-        "entryFile": "src/projects.ts",
+        "entryFile": "src/public_api.ts",
         "styleIncludePaths": ["../../shared/assets"]
     }
 }

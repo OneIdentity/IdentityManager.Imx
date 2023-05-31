@@ -1877,9 +1877,9 @@
       }
     },
     "ccc": {
-      "projectType": "library",
       "root": "projects/ccc",
       "sourceRoot": "projects/ccc/src",
+      "projectType": "library",
       "prefix": "imx",
       "schematics": {
         "@schematics/angular:component": {

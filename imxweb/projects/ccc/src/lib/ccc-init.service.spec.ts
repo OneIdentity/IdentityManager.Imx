@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { CccService } from './ccc.service';
+import { CccInitService } from './ccc-init.service';
 
-describe('CccService', () => {
-  let service: CccService;
+describe('CccInitService', () => {
+  let service: CccInitService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(CccService);
+    service = TestBed.inject(CccInitService);
   });
 
   it('should be created', () => {
