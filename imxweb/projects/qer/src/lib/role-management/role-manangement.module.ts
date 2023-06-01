@@ -72,6 +72,30 @@ import { MatListModule } from '@angular/material/list';
 
 const routes: Routes = [
   {
+    path: 'resp/:tablename/locality',
+    component: RolesOverviewComponent,
+    canActivate: [RouteGuardService],
+    resolve: [RouteGuardService],
+  },
+  {
+   path: 'resp/:tablename/department',
+    component: RolesOverviewComponent,
+    canActivate: [RouteGuardService],
+    resolve: [RouteGuardService],
+  },
+  {
+   path: 'resp/:tablename/profitcenter',
+    component: RolesOverviewComponent,
+    canActivate: [RouteGuardService],
+    resolve: [RouteGuardService],
+  },
+  {
+   path: 'resp/:tablename/aerole',
+    component: RolesOverviewComponent,
+    canActivate: [RouteGuardService],
+    resolve: [RouteGuardService],
+  },
+  {
     path: 'resp/:tablename',
     component: RolesOverviewComponent,
     canActivate: [RouteGuardService],
