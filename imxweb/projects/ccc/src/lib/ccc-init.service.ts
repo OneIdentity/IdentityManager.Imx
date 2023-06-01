@@ -26,13 +26,11 @@ export class CccInitService {
   }
 
 
-
   public async onInit(routes: Route[]): Promise<void> {
     this.addRoutes(routes);
     // Ist notwenig sonst ist ownerships leer
     // TODO: Führt zu leichen wenn zwei user mit unterschiedlichen rechten sich nacheinander an/ab melden
     this.authService.onSessionResponse.subscribe(async session => {
-      console.log('ccc-session change', session?.IsLoggedIn ? 'login' :  session?.IsLoggedOut ? 'logout' : '???')
       if (session.IsLoggedIn) {
         this.ownerships = (await this.userModelService.getUserConfig()).Ownerships;
       }
