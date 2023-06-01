@@ -142,7 +142,7 @@ export class CccInitService {
         items.push(
           {
             id: 'CCC_Department',
-            navigationCommands: {commands: ['resp', 'Department']},
+            navigationCommands: {commands: ['resp', 'Department', 'department']},
             title: '#LDS#Heading My Departments',
             sorting: '30-60',
           },
@@ -153,7 +153,7 @@ export class CccInitService {
         items.push(
           {
             id: 'CCC_Locality',
-            navigationCommands: {commands: ['resp', 'Locality']},
+            navigationCommands: {commands: ['resp', 'Locality', 'locality']},
             title: '#LDS#Heading My Localities',
             sorting: '30-70',
           },
@@ -164,7 +164,7 @@ export class CccInitService {
         items.push(
           {
             id: 'CCC_ProfitCenter',
-            navigationCommands: {commands: ['resp', 'ProfitCenter']},
+            navigationCommands: {commands: ['resp', 'ProfitCenter', 'profitcenter']},
             title: '#LDS#Heading My Cost Centres',
             sorting: '30-80',
           },
@@ -175,7 +175,7 @@ export class CccInitService {
         items.push(
           {
             id: 'CCC_AERole',
-            navigationCommands: {commands: ['resp', 'AERole']},
+            navigationCommands: {commands: ['resp', 'AERole', 'aerole']},
             title: '#LDS#Heading My AERoles',
             sorting: '30-90',
           },
