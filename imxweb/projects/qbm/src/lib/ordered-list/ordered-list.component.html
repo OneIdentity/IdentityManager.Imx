@@ -1,22 +1,20 @@
 <div *ngIf="data.length > 0" cdkDropList class="ordered-list" (cdkDropListDropped)="drop($event)">
   <div class="ordered-box" *ngFor="let elem of data; let idx = index; trackBy:trackByFn" cdkDrag>
     <mat-form-field appearance="outline" class="ordered-formfield">
-
-      <mat-select (selectionChange)="optionSelected()" class="ordered-select"
-        [(ngModel)]="data[idx]">
+      <mat-label>{{placeholder}}</mat-label>
+      <div class="ordered-list--placeholder" *cdkDragPlaceholder></div>
+      <mat-select [disabled]="isReadOnly" (selectionChange)="optionSelected()" class="ordered-select" [(ngModel)]="data[idx]">
         <mat-option *ngFor="let pr of dataSource" [value]="pr.Name">
           {{pr.Display}}
         </mat-option>
       </mat-select>
     </mat-form-field>
-    <button mat-icon-button [attr.aria-label]="deleteText" [attr.data-imx-identifier]="testId + '-delete'"
-      (click)="deleteElement(idx)">
+    <button [disabled]="isReadOnly" mat-icon-button [attr.aria-label]="deleteText" [attr.data-imx-identifier]="testId + '-delete'" (click)="deleteElement(idx)">
       <eui-icon icon="delete"></eui-icon>
     </button>
   </div>
 </div>
 
 <div class="buttonbar">
-  <button [attr.data-imx-identifier]="testId + '-add'" mat-raised-button color="primary"
-    (click)="addNew()">{{addNewText}}</button>
+  <button [disabled]="isReadOnly" [attr.data-imx-identifier]="testId + '-add'" mat-raised-button color="primary" (click)="addNew()">{{ addNewText }}</button>
 </div>

@@ -45,6 +45,7 @@ import { CartItemInteractiveService } from './cart-item-edit/cart-item-interacti
 
 @Injectable()
 export class CartItemsService {
+
   public get PortalCartitemSchema(): EntitySchema {
     return this.qerClient.typedClient.PortalCartitem.GetSchema();
   }
@@ -99,75 +100,51 @@ export class CartItemsService {
     const cartitemReferences: string[] = [];
     const cartItemsWithoutParams: PortalCartitem[] = [];
 
-    const sortedRequestables: RequestableProductForPerson[] = [];
-    const sortedUids: string[] = [];
-    // We need to order the items such that we can order them sequentially
-    let result = 0;
-    requestableServiceItemsForPersons.forEach(item => {
-      const uidProdAndPerson = item.UidAccProduct + item.UidPerson;
-      if (item?.UidAccProductParent) {
-        const uidParentAndPerson = item.UidAccProductParent + item.UidPerson;
-        // If this item has a parent, look if its in the list already
-        const insertPosition = sortedUids.findIndex(uid => uid === uidParentAndPerson) + 1;
-        if (insertPosition === 0) {
-          // Push item to the end of the array
-          sortedUids.push(uidProdAndPerson);
-          sortedRequestables.push(item);
-        } else {
-          // Push item behind parent
-          sortedUids.splice(insertPosition, 0, uidProdAndPerson);
-          sortedRequestables.splice(insertPosition, 0, item);
-        }
-      } else {
-        // This item does not have a parent, so push it to the front
-        sortedUids.unshift(uidProdAndPerson);
-        sortedRequestables.unshift(item);
-      }
-    });
-
-    for await (const requestable of sortedRequestables) {
+    for await (const requestable of requestableServiceItemsForPersons) {
       let parentCartUid: string;
       if (requestable?.UidAccProductParent) {
-        // We check through already ordered items to link this item to a parent
-        const uidParentAndPerson = requestable.UidAccProductParent + requestable.UidPerson;
-        const index = sortedUids.findIndex((uid) => uid === uidParentAndPerson);
-        if (index === -1) {
-          // The parent is a mandatory item and we don't have this locally. We need to view the current state of the shopping cart for this.
-          parentCartUid =  await this.getFromExistingCartItems(addedItems[0].UID_ShoppingCartOrder.value, uidParentAndPerson);
-        } else {
-          // Use the local parent uid
-          parentCartUid = this.getKey(addedItems[index]);
-        }
+        // Get parent cart ID from known cart items
+        parentCartUid =  await this.getFromExistingCartItems(addedItems[0].UID_ShoppingCartOrder.value, requestable);
       }
       const cartItemCollection = await this.createAndPost(requestable, parentCartUid);
 
       addedItems.push(cartItemCollection.Data[0]);
       // TODO: this call does not work yet. await cartItem.GetEntity().Commit(true);
-      if (
         this.parameterDataService.hasParameters({
           Parameters: cartItemCollection.extendedData?.Parameters,
           index: 0,
         })
-      ) {
-        cartitemReferences.push(this.getKey(cartItemCollection.Data[0]));
-      } else {
-        cartItemsWithoutParams.push(cartItemCollection.Data[0]);
-      }
+        ? cartitemReferences.push(this.getKey(cartItemCollection.Data[0]))
+        : cartItemsWithoutParams.push(cartItemCollection.Data[0]);
     }
 
-    if (cartitemReferences.length > 0) {
-      result = await this.editItems(cartitemReferences, cartItemsWithoutParams);
-      return result;
-    } else {
-      return requestableServiceItemsForPersons.length;
-    }
+    return cartitemReferences.length > 0
+      ? await this.editItems(cartitemReferences, cartItemsWithoutParams)
+      : requestableServiceItemsForPersons.length;
   }
 
-  public async getFromExistingCartItems(cartUid: string, uidParentAndPerson: string): Promise<string> {
+  public async getFromExistingCartItems(cartUid: string, requestable: RequestableProductForPerson): Promise<string> {
+    // Get all cart items to see what is there, unfortunately we have to check each time due to mandatory items appearing
     const allItems = (await this.getItemsForCart(cartUid)).Data;
-    const parentItem = allItems.find(item => item.UID_AccProduct.value + item.UID_PersonOrdered.value === uidParentAndPerson);
-    return this.getKey(parentItem);
+
+    // Find all already ordered items with this UID + Person, get their parent cart uid
+    const dupItemsParents = allItems.filter(item =>
+      item.UID_AccProduct.value + item.UID_PersonOrdered.value === requestable.UidAccProduct + requestable.UidPerson
+    ).map(item => item.UID_ShoppingCartItemParent.value);
+
+    // Find all items with the correct ParentUID + Person
+    const parentItems = allItems.filter(item =>
+      item.UID_AccProduct.value + item.UID_PersonOrdered.value === requestable.UidAccProductParent + requestable.UidPerson
+    );
+    // Here we try assuming the mandatory item is there
+    let parentItem = parentItems.find(item => !dupItemsParents.includes(this.getKey(item)));
+    if (parentItem) {
+      return this.getKey(parentItem);
+    }
+    // Mandatory item isn't there, no well-defined fall back. Report error move on
+    this.errorHandler.handleError('There is a missing mandatory item, cannot link optional item to parent. Ordering with no parent.');
   }
+
 
   public async removeItems(cartItems: PortalCartitem[], filter?: (cartItem: PortalCartitem) => boolean): Promise<void> {
     await Promise.all(

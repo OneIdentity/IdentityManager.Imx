@@ -29,7 +29,7 @@ import { AbstractControl, FormArray, FormBuilder, FormGroup } from '@angular/for
 import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 
 import { ListReportDefinitionDto, ListReportDefinitionRead, PortalReportsEditInteractive } from 'imx-api-rps';
-import { ExtendedTypedEntityCollection, SqlWizardExpression, isExpressionInvalid, ValType, FkProviderItem, IEntityColumn } from 'imx-qbm-dbts';
+import { ExtendedTypedEntityCollection, SqlWizardExpression, isExpressionInvalid, ValType, FkProviderItem, IEntityColumn, SqlExpression } from 'imx-qbm-dbts';
 
 import {
   BaseCdr,
@@ -38,6 +38,7 @@ import {
   EntityService,
   SnackBarService,
   SqlWizardComponent,
+  BaseReadonlyCdr,
 } from 'qbm';
 import { ProjectConfigurationService } from 'qer';
 import { Subscription } from 'rxjs';
@@ -72,9 +73,11 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
   constructor(
     formBuilder: FormBuilder,
     public readonly svc: EditReportSqlWizardService,
-    @Inject(EUI_SIDESHEET_DATA) public data: {
-      report: ExtendedTypedEntityCollection<PortalReportsEditInteractive, ListReportDefinitionRead>,
-      asNew: boolean
+    @Inject(EUI_SIDESHEET_DATA)
+    public data: {
+      report: ExtendedTypedEntityCollection<PortalReportsEditInteractive, ListReportDefinitionRead>;
+      isNew: boolean;
+      isReadonly: boolean;
     },
     private readonly snackBar: SnackBarService,
     private readonly sideSheetRef: EuiSidesheetRef,
@@ -106,14 +109,14 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
     this.cdrList = c.OwnershipConfig.EditableFields[this.report.GetEntity().TypeName]
       .filter(elem => this.tryGetColumn(elem))
       .map(columnName =>
-        new BaseCdr(this.report.GetEntity().GetColumn(columnName))
+        this.data.isReadonly ? new BaseReadonlyCdr(this.report.GetEntity().GetColumn(columnName)) : new BaseCdr(this.report.GetEntity().GetColumn(columnName))
       );
 
     if (this.definition) // is it a list report?
     {
       this.cdrList.push(await this.buildTableCdr());
     }
-    this.cdrList.push(new BaseCdr(this.report.AvailableTo.Column));
+    this.cdrList.push(this.data.isReadonly ? new BaseReadonlyCdr(this.report.AvailableTo.Column): new BaseCdr(this.report.AvailableTo.Column));
   }
 
   public addCdr(control: AbstractControl): void {
@@ -168,7 +171,18 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
     // not initialized? avoid NG1000
     if (!this.sqlwizard || !this.sqlwizard.viewSettings) { return true; }
 
-    return isExpressionInvalid(this.sqlExpression);
+    // check if the sqlWizard has a valid expression
+    return isExpressionInvalid(this.sqlExpression) || !this.hasValuesSet(this.sqlExpression.Expression);
+  }
+
+  private hasValuesSet(sqlExpression: SqlExpression, checkCurrent: boolean = false): boolean {
+    const current = !checkCurrent || sqlExpression.Value != null;
+
+    if (sqlExpression.Expressions?.length > 0) {
+      return current && sqlExpression.Expressions.every((elem) => this.hasValuesSet(elem, true));
+    }
+
+    return current;
   }
 
   private async buildTableCdr(): Promise<BaseCdr> {
@@ -211,7 +225,9 @@ export class EditReportSidesheetComponent implements OnInit, OnDestroy {
       this.cdref.detectChanges();
     });
 
-    const tableCdr = new BaseCdr(tableCol, '#LDS#Include data from the table');
+    const tableCdr = this.data.isReadonly
+      ? new BaseReadonlyCdr(tableCol, '#LDS#Include data from the table')
+      : new BaseCdr(tableCol, '#LDS#Include data from the table');
     return tableCdr;
   }
 

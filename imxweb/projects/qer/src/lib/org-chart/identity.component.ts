@@ -28,6 +28,7 @@ import { Component, Input } from "@angular/core";
 import { PortalPersonOrgdata } from "imx-api-qer";
 import { XOrigin } from "imx-qbm-dbts";
 import { OrgChartService } from "./org-chart.service";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
   styleUrls: ['./identity.component.scss'],
@@ -35,7 +36,9 @@ import { OrgChartService } from "./org-chart.service";
   templateUrl: './identity.component.html'
 })
 export class IdentityComponent {
-  constructor(public readonly orgChartService: OrgChartService) { }
+  constructor(public readonly orgChartService: OrgChartService,
+    private readonly translator: TranslateService
+  ) { }
 
   @Input() public identity: PortalPersonOrgdata;
 
@@ -47,5 +50,25 @@ export class IdentityComponent {
     // TODO: this is not correct. the relationship is "Ordered" but it may be something
     // different than delegation
     return (this.identity.XOrigin.value & XOrigin.Ordered) == XOrigin.Ordered;
+  }
+
+  buildSubTitle(): string {
+    var strings = [];
+    if (this.isExternal()) {
+      strings.push(this.translator.instant('#LDS#External'));
+    }
+    if (this.isDelegated()) {
+      strings.push(this.translator.instant('#LDS#Delegated'));
+    }
+    var title = this.identity.PersonalTitle.Column.GetDisplayValue();
+    if (title) {
+      strings.push(title);
+    }
+    var employeeType = this.identity.EmployeeType.Column.GetDisplayValue();
+    if (employeeType) {
+      strings.push(employeeType);
+    }
+
+    return strings.reduce((a, b) => a + ", " + b);
   }
 }

@@ -6,7 +6,7 @@
   <mat-card *ngIf="definition?.TableName">
     <mat-card-title>{{'#LDS#Columns to be included' | translate}}*</mat-card-title>
 
-    <imx-ordered-list [addNewText]="'#LDS#Add column' | translate" [deleteText]="'#LDS#Delete' | translate"
+    <imx-ordered-list [isReadOnly]="data.isReadonly" [addNewText]="'#LDS#Add column' | translate" [deleteText]="'#LDS#Delete' | translate"
       [data]="definition.SelectedColumns" [dataSource]="definition.AvailableColumns"></imx-ordered-list>
   </mat-card>
 
@@ -30,7 +30,7 @@
 </div>
 <div eui-sidesheet-actions color="white">
   <button mat-raised-button color="primary" data-imx-identifier="report-sidesheet-button"
-    [disabled]="detailsFormGroup.invalid || isConditionInvalid()" (click)="save()">
-    {{ (data.asNew ? '#LDS#Create' : '#LDS#Save') | translate }}
+    [disabled]="detailsFormGroup.invalid || isConditionInvalid() || data.isReadonly" (click)="save()">
+    {{ (data.isNew ? '#LDS#Create' : '#LDS#Save') | translate }}
   </button>
 </div>

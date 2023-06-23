@@ -202,7 +202,7 @@ export class DynamicRoleComponent implements OnInit {
           }
         });
         // Sometimes the logOp is not set. Initalize it here
-        if (!this.sqlExpression?.Expression?.LogOperator) {
+        if (this.sqlExpression?.Expression && !this.sqlExpression?.Expression?.LogOperator) {
           this.sqlExpression.Expression.LogOperator = LogOp.AND;
         }
 
