@@ -4,6 +4,26 @@
 
 ## Change log
 
+### June 23, 2023
+
+This update addresses the following security issues.
+
+* 418453 The packages `karma` and `socket.io` have been updated to address security issue CVE-2023-32695.
+
+The `v91` branch has been updated with fixes for the following issues.
+
+* 416865 use string reduce to build comma-separated list of properties in `imxweb/projects/qer/src/lib/org-chart`
+* 410170 fixed accessibility of links on the dashboard
+* 416107 Data Explorer: error when showing department memberships (`Cannot read properties of undefined (reading 'markAsPristine')`)
+* 35861 Avoid unnecessary reload of attestation cases after approving them
+* 417211 New request: The dialog for request properties is cancelling the request when clicking by mistake outside the window
+* Fixes to `projects/rps/src/lib/reports/edit-report-sidesheet/edit-report-sidesheet.component.html`:
+  * Disabled save button, if the sidesheet is read only
+  * Removed placeholder string
+* 412957 Error when editing subscribable reports
+* 417337 Fix ordering of optional service items
+* 416793 Fixed validation of delegation requests
+
 ### April 24, 2023
 
 - The branch `v91` is now up to date with the 9.1.1 release of Identity Manager.
@@ -20,7 +40,7 @@
   - 358311, 405872 Fixed a bug when copying an attestation policy.
   - 322939 Fixed a bug that caused the page to load infinitely when loading password profile questions.
   - 395047 Fixed a bug on the password profile page.
-  - 403650 Configuration of `EditableFields` was not being used for accounts in the Data Explorer.
+  - 36635 / 403650 Configuration of `EditableFields` was not being used for accounts in the Data Explorer.
   - 394255 The API Documentation ("Swagger") page now submits XSRF protection tokens.
   - 405669 History data was not being loaded from all objects.
   - 278243 Add tags required to host the Password Reset Portal in the Password Manager Secure Password Extension.
