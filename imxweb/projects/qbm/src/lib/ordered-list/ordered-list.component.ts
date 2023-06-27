@@ -39,6 +39,7 @@ export class OrderedListComponent {
   @Input() testId: string = 'list';
   @Input() dataSource: { Name: string, Display: string }[] = [];
   @Input() data: string[] = [];
+  @Input() isReadOnly: boolean = false;
 
   ngOnInit(): void {
   }

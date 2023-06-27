@@ -92,10 +92,10 @@ export class AttestationCase extends PortalAttestationApprove implements Attesta
     this.directDecisionTarget = workflow.GetColumn('LevelNumber').GetValue();
   }
 
-  public async commit(): Promise<void> {
+  public async commit(reload = true): Promise<void> {
     this.baseObject.extendedData = this.parameterDataContainer.getEntityWriteDataColumns();
     try {
-      await this.baseObject.GetEntity().Commit(true);
+      await this.baseObject.GetEntity().Commit(reload);
     } catch (error) {
       await this.baseObject.GetEntity().DiscardChanges();
       this.baseObject.extendedData = undefined;

@@ -168,6 +168,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
   }
 
   public async ngOnInit(): Promise<void> {
+
     // define the recipients as a multi-valued property
     const recipientsProperty = new LocalProperty();
     recipientsProperty.IsMultiValued = true;
@@ -198,6 +199,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     }
 
     this.searchString = this.activatedRoute.snapshot.paramMap.get('ProductSearchString');
+
     if (this.searchString) {
       /* user can pass product search string by URL parameter -> load the data with this search string
        */
@@ -310,7 +312,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
       this.setReferenceUser(selection.candidates[0]);
     }
 
-    await this.updateInfoTooltip();
+    this.updateInfoTooltip();
   }
 
   public setReferenceUser(user: ValueStruct<string>): void {
@@ -328,7 +330,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  public async setPeerGroupPerson(uidPerson: string): Promise<void> {
+  public setPeerGroupPerson(uidPerson: string): void {
     this.showTemplates = false;
     this.uidPersonPeerGroup = uidPerson;
     this.selectedCategory = undefined;
@@ -337,7 +339,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
       this.referenceUser = undefined;
     }
 
-    await this.updateInfoTooltip();
+    this.updateInfoTooltip();
   }
 
   public cancelPeerOrReference(): void {
@@ -399,22 +401,18 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     const outgoingOrder: ServiceItemOrder = {
       serviceItems: this.selectedItems,
     };
-    if (this.projectConfig.ITShopConfig.VI_ITShop_AddOptionalProductsOnInsert) {
-      await this.openOptionalSideSheet(outgoingOrder);
-    } else {
-      await this.orderSelected(outgoingOrder, this.selectedTemplates, this.selectedRoles);
-    }
+    this.projectConfig.ITShopConfig.VI_ITShop_AddOptionalProductsOnInsert
+    ? await this.openOptionalSideSheet(outgoingOrder)
+    : await this.orderSelected(outgoingOrder, this.selectedTemplates, this.selectedRoles);
   }
 
   public async addItemToCart(serviceItem: PortalShopServiceitems): Promise<void> {
     const outgoingOrder: ServiceItemOrder = {
       serviceItems: [serviceItem],
     };
-    if (this.projectConfig.ITShopConfig.VI_ITShop_AddOptionalProductsOnInsert) {
-      await this.openOptionalSideSheet(outgoingOrder);
-    } else {
-      await this.orderSelected(outgoingOrder, this.selectedTemplates, this.selectedRoles);
-    }    
+    this.projectConfig.ITShopConfig.VI_ITShop_AddOptionalProductsOnInsert
+    ? await this.openOptionalSideSheet(outgoingOrder)
+    : await this.orderSelected(outgoingOrder, this.selectedTemplates, this.selectedRoles);
   }
 
   public async openOptionalSideSheet(outgoingOrder: ServiceItemOrder): Promise<void> {
@@ -422,7 +420,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     if (serviceItemTree?.totalOptional > 0) {
       const selectedOptionalOrder: ServiceItemOrder = await this.sideSheetService
         .open(OptionalItemsSidesheetComponent, {
-          title: await this.translate.get('#LDS#Heading Optional Products').toPromise(),
+          title: this.translate.instant('#LDS#Heading Optional Products'),
           padding: '0px',
           width: 'max(700px, 60%)',
           headerColour: 'iris-blue',
@@ -436,15 +434,12 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
         })
         .afterClosed()
         .toPromise();
+      // If there was an order, then continue, otherwise do nothing
       if (selectedOptionalOrder) {
-        outgoingOrder.optionalItems = selectedOptionalOrder.optionalItems;
         outgoingOrder.requestables = selectedOptionalOrder.requestables;
-      } else {
-        // Exited sidesheet
-        return;
+        await this.orderSelected(outgoingOrder, this.selectedTemplates, this.selectedRoles);
       }
     }
-    await this.orderSelected(outgoingOrder, this.selectedTemplates, this.selectedRoles);
   }
 
   public async addTemplateToCart(patternRequestable: PortalItshopPatternRequestable): Promise<void> {
@@ -478,7 +473,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     }
     await this.onRecipientsChanged();
 
-    await this.updateInfoTooltip();
+    this.updateInfoTooltip();
   }
 
   public async onRecipientsChanged(): Promise<void> {
@@ -542,47 +537,47 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     this.infoboxVisible = !this.infoboxVisible;
   }
 
-  public async updateInfoTooltip(): Promise<void> {
+  public updateInfoTooltip(): void {
 
     this.infoboxTooltip = '';
 
     if (this.referenceUser) {
       if (this.displayProducts) {
         this.infoboxTooltip = this.ldsReplace.transform(
-          await this.translate.get('#LDS#The following products are assigned to {0}.').toPromise(),
+          this.translate.instant('#LDS#The following products are assigned to {0}.'),
           this.referenceUser.DisplayValue
         );
       } else {
         this.infoboxTooltip = this.ldsReplace.transform(
-          await this.translate.get('#LDS#{0} is a member of the following organizational structures.').toPromise(),
+          this.translate.instant('#LDS#{0} is a member of the following organizational structures.'),
           this.referenceUser.DisplayValue
         );
       }
     } else {
       if (this.displayProducts) {
         this.infoboxTooltip = this.ldsReplace.transform(
-          await this.translate.get('#LDS#Other identities of the peer group of {0} requested the following products.').toPromise(),
+          this.translate.instant('#LDS#Other identities of the peer group of {0} requested the following products.'),
           this.recipients.Column.GetDisplayValue()
         );
       } else {
         this.infoboxTooltip = this.ldsReplace.transform(
-          await this.translate.get('#LDS#Other identities of the peer group of {0} are members of the following organizational structures.').toPromise(),
+          this.translate.instant('#LDS#Other identities of the peer group of {0} are members of the following organizational structures.'),
           this.recipients.Column.GetDisplayValue()
         );
       }
     }
 
     if (this.displayProducts) {
-      this.infoboxTooltip += await this.translate.get('#LDS#Select the products you also want to request for the selected recipient.').toPromise();
+      this.infoboxTooltip += this.translate.instant('#LDS#Select the products you also want to request for the selected recipient.');
     } else {
-      this.infoboxTooltip += await this.translate.get('#LDS#Select the organizational structures in which the selected recipient should also be a member.').toPromise();
+      this.infoboxTooltip += this.translate.instant('#LDS#Select the organizational structures in which the selected recipient should also be a member.');
     }
   }
 
   private async requestDetails(item: PortalShopServiceitems): Promise<void> {
     await this.sideSheetService
       .open(ProductDetailsSidesheetComponent, {
-        title: await this.translate.get('#LDS#Heading View Product Details').toPromise(),
+        title: this.translate.instant('#LDS#Heading View Product Details'),
         padding: '0px',
         width: 'max(700px, 60%)',
         headerColour: 'iris-blue',
@@ -600,7 +595,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
   private async requestTemplateDetails(items: PortalShopServiceitems[]): Promise<void> {
     await this.sideSheetService
       .open(PatternDetailsSidesheetComponent, {
-        title: await this.translate.get('#LDS#Heading View Request Template Details').toPromise(),
+        title: this.translate.instant('#LDS#Heading View Request Template Details'),
         padding: '0px',
         width: 'max(700px, 60%)',
         headerColour: 'iris-blue',
@@ -636,100 +631,102 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     templateItems: PortalItshopPatternRequestable[],
     roles?: PortalItshopPeergroupMemberships[]
   ): Promise<void> {
-    if (this.recipients) {
-      const recipientsUids = MultiValue.FromString(this.recipients.value).GetValues();
-      const recipientsDisplays = MultiValue.FromString(this.recipients.Column.GetDisplayValue()).GetValues();
+    if (!this.recipients) {
+      // We need recipients to continue, return early no dialog due to 91 release
+      return;
+    }
+    const recipientsUids = MultiValue.FromString(this.recipients.value).GetValues();
+    const recipientsDisplays = MultiValue.FromString(this.recipients.Column.GetDisplayValue()).GetValues();
 
-      let savedItems = 0;
-      let possibleItems = 0;
+    let savedItems = 0;
+    let possibleItems = 0;
 
-      if (outgoingOrder?.serviceItems && outgoingOrder.serviceItems.length > 0) {
-        setTimeout(() => this.busyIndicator.show());
-        let serviceItemsForPersons: RequestableProductForPerson[];
-        try {
-          serviceItemsForPersons = this.serviceItemsProvider.getServiceItemsForPersons(
-            outgoingOrder.serviceItems,
-            recipientsUids.map((uid, index) => ({
-              DataValue: uid,
-              DisplayValue: recipientsDisplays[index],
-            }))
-          );
-          if (outgoingOrder?.requestables) {
-            serviceItemsForPersons.push(...outgoingOrder.requestables);
-          }
-        } finally {
-          setTimeout(() => this.busyIndicator.hide());
+    if (outgoingOrder?.serviceItems && outgoingOrder.serviceItems.length > 0) {
+      this.busyIndicator.show();
+      let serviceItemsForPersons: RequestableProductForPerson[];
+      try {
+        serviceItemsForPersons = this.serviceItemsProvider.getServiceItemsForPersons(
+          outgoingOrder.serviceItems,
+          recipientsUids.map((uid, index) => ({
+            DataValue: uid,
+            DisplayValue: recipientsDisplays[index],
+          }))
+        );
+        if (outgoingOrder?.requestables) {
+          serviceItemsForPersons.push(...outgoingOrder.requestables);
         }
-        if (serviceItemsForPersons && serviceItemsForPersons.length > 0) {
-          const hasItems = await this.shelfService.setShops(serviceItemsForPersons);
-          if (hasItems) {
-            setTimeout(() => this.busyIndicator.show());
-            try {
-              
-              this.copyShopInfoForDups(serviceItemsForPersons);
-              const items = serviceItemsForPersons.filter((item) => item.UidITShopOrg?.length > 0);
-              possibleItems = items.length;
-              savedItems = await this.cartItemsProvider.addItems(items);
-            } finally {
-              setTimeout(() => this.busyIndicator.hide());
-            }
-          }
-        }
+      } finally {
+        this.busyIndicator.hide();
       }
+      if (serviceItemsForPersons && serviceItemsForPersons.length > 0) {
+        const hasItems = await this.shelfService.setShops(serviceItemsForPersons);
+        if (hasItems) {
+          setTimeout(() => this.busyIndicator.show());
+          try {
 
-      if (templateItems && templateItems.length > 0) {
-        let templateItemsForPersons: RequestableProductForPerson[];
-        try {
-          templateItemsForPersons = await this.patternItemsService.getPatternItemsForPersons(
-            templateItems,
-            recipientsUids.map((uid, index) => ({
-              DataValue: uid,
-              DisplayValue: recipientsDisplays[index],
-            }))
-          );
-        } finally {
-          setTimeout(() => this.busyIndicator.hide());
-        }
-        if (templateItemsForPersons && templateItemsForPersons.length > 0) {
-          const hasItems = await this.shelfService.setShops(templateItemsForPersons);
-          if (hasItems) {
-            setTimeout(() => this.busyIndicator.show());
-            try {
-              const items = templateItemsForPersons.filter((item) => item.UidITShopOrg?.length > 0);
-              possibleItems = items.length;
-              savedItems = await this.cartItemsProvider.addItems(items);
-            } finally {
-              setTimeout(() => this.busyIndicator.hide());
-            }
+            this.copyShopInfoForDups(serviceItemsForPersons);
+            const items = serviceItemsForPersons.filter((item) => item.UidITShopOrg?.length > 0);
+            possibleItems = items.length;
+            savedItems = await this.cartItemsProvider.addItems(items);
+          } finally {
+            setTimeout(() => this.busyIndicator.hide());
           }
         }
       }
+    }
 
-      if (roles && roles.length > 0) {
-        setTimeout(() => this.busyIndicator.show());
-        try {
-          await this.cartItemsProvider.addItemsFromRoles(
-            roles.map((item) => item.XObjectKey.value),
-            this.recipientsWrapper?.uids
-          );
-          possibleItems = roles.length;
-          savedItems = roles.length;
-        } finally {
-          setTimeout(() => this.busyIndicator.hide());
+    if (templateItems && templateItems.length > 0) {
+      let templateItemsForPersons: RequestableProductForPerson[];
+      try {
+        templateItemsForPersons = await this.patternItemsService.getPatternItemsForPersons(
+          templateItems,
+          recipientsUids.map((uid, index) => ({
+            DataValue: uid,
+            DisplayValue: recipientsDisplays[index],
+          }))
+        );
+      } finally {
+        setTimeout(() => this.busyIndicator.hide());
+      }
+      if (templateItemsForPersons && templateItemsForPersons.length > 0) {
+        const hasItems = await this.shelfService.setShops(templateItemsForPersons);
+        if (hasItems) {
+          setTimeout(() => this.busyIndicator.show());
+          try {
+            const items = templateItemsForPersons.filter((item) => item.UidITShopOrg?.length > 0);
+            possibleItems = items.length;
+            savedItems = await this.cartItemsProvider.addItems(items);
+          } finally {
+            setTimeout(() => this.busyIndicator.hide());
+          }
         }
       }
+    }
 
-      if (savedItems !== possibleItems) {
-        this.snackbar.open({
-          key: savedItems === 0 ? '#LDS#No item was added to your shopping cart' : '#LDS#{0} of {1} items could not be added to your shopping cart',
-          parameters: [possibleItems - savedItems, possibleItems],
-        });
+    if (roles && roles.length > 0) {
+      setTimeout(() => this.busyIndicator.show());
+      try {
+        await this.cartItemsProvider.addItemsFromRoles(
+          roles.map((item) => item.XObjectKey.value),
+          this.recipientsWrapper?.uids
+        );
+        possibleItems = roles.length;
+        savedItems = roles.length;
+      } finally {
+        setTimeout(() => this.busyIndicator.hide());
       }
-      if (savedItems > 0) {
-        this.router.navigate(['shoppingcart']);
-      } else {
-        this.onDeselectAll();
-      }
+    }
+
+    if (savedItems !== possibleItems) {
+      this.snackbar.open({
+        key: savedItems === 0 ? '#LDS#No item was added to your shopping cart' : '#LDS#{0} of {1} items could not be added to your shopping cart',
+        parameters: [possibleItems - savedItems, possibleItems],
+      });
+    }
+    if (savedItems > 0) {
+      this.router.navigate(['shoppingcart']);
+    } else {
+      this.onDeselectAll();
     }
   }
 

@@ -70,7 +70,7 @@ export class DependencyService {
       isChecked: boolean;
       isIndeterminate: boolean;
       parentChecked: boolean;
-      parent?: string;
+      parentUid?: string;
     }
   ): ServiceItemHierarchyExtended {
     const extendedTree: ServiceItemHierarchyExtended = {
@@ -80,14 +80,14 @@ export class DependencyService {
       Optional: [],
       ...options,
     };
-    const parent = tree.UidAccProduct;
+    const parentUid = tree.UidAccProduct;
     if (tree?.Mandatory.length > 0) {
       extendedTree.Mandatory = tree.Mandatory.map((childTree) =>
         this.extendTree(childTree, {
           isMandatory: true,
           isChecked: true,
-          isIndeterminate: !options.isChecked,
-          parent,
+          isIndeterminate: !(options.isChecked && options.parentChecked),
+          parentUid,
           parentChecked: options.isChecked,
         })
       );
@@ -97,8 +97,8 @@ export class DependencyService {
         this.extendTree(childTree, {
           isMandatory: false,
           isChecked: false,
-          isIndeterminate: !options.isChecked,
-          parent,
+          isIndeterminate: !(options.isChecked && options.parentChecked),
+          parentUid,
           parentChecked: options.isChecked,
         })
       );

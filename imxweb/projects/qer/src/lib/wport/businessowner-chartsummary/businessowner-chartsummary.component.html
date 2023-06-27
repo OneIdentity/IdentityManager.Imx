@@ -7,7 +7,7 @@
   <div class="imx-tile-content">
     <ul class="imx-valuelist">
       <li *ngFor="let currentOwnerships of ownerships">
-        <a (click)="openOwnership(currentOwnerships)">
+        <a (click)="openOwnership(currentOwnerships)" tabindex="0">
           <span class="imx-col imx-col80">{{currentOwnerships.TableNameDisplay}}</span>
           <span class="imx-col imx-col20 imx-colright">{{currentOwnerships.Count}}</span>
         </a>
@@ -47,7 +47,7 @@
   <div class="imx-tile-content">
     <ul class="imx-valuelist">
       <li *ngFor="let identity of reports">
-        <a (click)="openIdentitySidesheet(identity)">{{identity.GetEntity().GetDisplay()}}</a>
+        <a (click)="openIdentitySidesheet(identity)" tabindex="0">{{identity.GetEntity().GetDisplay()}}</a>
       </li>
     </ul>
   </div>

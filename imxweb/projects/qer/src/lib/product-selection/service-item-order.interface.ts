@@ -33,11 +33,6 @@ export interface ServiceItemOrder {
   serviceItems?: PortalShopServiceitems[];
 
   /**
-   * Optional items apart of order
-   */
-  optionalItems?: PortalShopServiceitems[];
-
-  /**
    * Any items-turned-requestable product apart of order
    */
   requestables?: RequestableProductForPerson[];
@@ -109,5 +104,5 @@ export interface ServiceItemHierarchyExtended {
   /**
    * parent uid
    */
-  parent?: string;
+  parentUid?: string;
 }

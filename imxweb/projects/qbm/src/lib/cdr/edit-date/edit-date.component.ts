@@ -96,6 +96,9 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
         }
       }));
 
+      if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
+        this.control.addValidators((control) => (control.value == undefined || control.value.length === 0 ? { required: true } : null));
+      }
     }
   }
 

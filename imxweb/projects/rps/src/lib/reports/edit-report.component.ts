@@ -28,8 +28,8 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PortalReports } from 'imx-api-rps';
-import { CollectionLoadParameters, DisplayColumns, ValType } from 'imx-qbm-dbts';
+import { ListReportDefinitionRead, PortalReports, PortalReportsEditInteractive } from 'imx-api-rps';
+import { CollectionLoadParameters, DisplayColumns, ExtendedTypedEntityCollection, ValType } from 'imx-qbm-dbts';
 
 import {
   ConfirmationService,
@@ -45,10 +45,9 @@ import { EditReportService } from './edit-report.service';
 @Component({
   selector: 'imx-edit-report',
   templateUrl: './edit-report.component.html',
-  styleUrls: ['./edit-report.component.scss']
+  styleUrls: ['./edit-report.component.scss'],
 })
 export class EditReportComponent implements OnInit, OnDestroy {
-
   public readonly dstWrapper: DataSourceWrapper<PortalReports>;
   @ViewChild('dataTable') private reportsTable: DataTableComponent<any>;
   public dstSettings: DataSourceToolbarSettings;
@@ -64,17 +63,16 @@ export class EditReportComponent implements OnInit, OnDestroy {
     private readonly confirmationService: ConfirmationService,
     private readonly snackBarService: SnackBarService
   ) {
-
     const entitySchema = this.reportService.reportSchema;
     this.dstWrapper = new DataSourceWrapper(
-      state => this.reportService.getReportsOwnedByUser(state),
+      (state) => this.reportService.getReportsOwnedByUser(state),
       [
         entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
         {
           ColumnName: 'actions',
           Type: ValType.String,
-          afterAdditionals: true
-        }
+          afterAdditionals: true,
+        },
       ],
       entitySchema
     );
@@ -85,7 +83,7 @@ export class EditReportComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   public async getData(parameter?: CollectionLoadParameters): Promise<void> {
@@ -105,48 +103,72 @@ export class EditReportComponent implements OnInit, OnDestroy {
   }
 
   public async createNew(): Promise<void> {
-    const report = await this.reportService.createNew();
-    await this.openSidesheet(report, true);
+    const overlay = this.busy.show();
+    let report;
+    try {
+      report = await this.reportService.createNew();
+    } finally {
+      this.busy.hide(overlay);
+    }
+
+    if (report) {
+      await this.openSidesheet(report, true, false);
+    }
   }
 
   public async viewDetails(selectedReport: PortalReports): Promise<void> {
-    const report = await this.reportService.getReport(selectedReport.GetEntity().GetKeys()[0]);
-    await this.openSidesheet(report, false);
+    const overlay = this.busy.show();
+    let report;
+    try {
+      report = await this.reportService.getReport(selectedReport.GetEntity().GetKeys()[0]);
+    } finally {
+      this.busy.hide(overlay);
+    }
+
+    if (report) {
+      await this.openSidesheet(report, false, selectedReport.IsOob.value);
+    }
   }
 
-  private async openSidesheet(report, asNew: boolean): Promise<void> {
-    const result = await this.sidesheet.open(EditReportSidesheetComponent, {
-      title: await this.translate.get(asNew ? '#LDS#Heading Create Report' : '#LDS#Heading Edit Report').toPromise(),
-      headerColour: 'iris-blue',
-      bodyColour: 'asher-gray',
-      panelClass: 'imx-sidesheet',
-      disableClose: true,
-      padding: '0',
-      width: 'max(768px, 80%)',
-      testId: 'report-details-sidesheet',
-      data: {
-        report,
-        asNew
-      }
-    }).afterClosed().toPromise();
+  private async openSidesheet(
+    report: ExtendedTypedEntityCollection<PortalReportsEditInteractive, ListReportDefinitionRead>,
+    isNew: boolean,
+    isReadonly: boolean
+  ): Promise<void> {
+    const result = await this.sidesheet
+      .open(EditReportSidesheetComponent, {
+        title: await this.translate.get(isNew ? '#LDS#Heading Create Report' : '#LDS#Heading Edit Report').toPromise(),
+        panelClass: 'imx-sidesheet',
+        disableClose: true,
+        padding: '0',
+        width: 'max(768px, 80%)',
+        testId: isNew ? 'report-create-sidesheet' : 'report-details-sidesheet',
+        data: {
+          report,
+          isNew,
+          isReadonly,
+        },
+      })
+      .afterClosed()
+      .toPromise();
 
     if (result) {
       this.getData();
     }
-
   }
 
   public canDeleteSelected(): boolean {
-    return this.selectedReports.length > 0
-      && this.selectedReports.filter(i => i.GetEntity().GetColumn("IsOob").GetValue()).length == 0;
+    return this.selectedReports.length > 0 && this.selectedReports.filter((i) => i.GetEntity().GetColumn('IsOob').GetValue()).length == 0;
   }
 
   public async deleteSelected(): Promise<void> {
-    if (await this.confirmationService.confirm({
-      Title: '#LDS#Heading Delete Reports',
-      Message: '#LDS#Are you sure you want to delete the selected reports?',
-      identifier: 'report-confirm-delete'
-    })) {
+    if (
+      await this.confirmationService.confirm({
+        Title: '#LDS#Heading Delete Reports',
+        Message: '#LDS#Are you sure you want to delete the selected reports?',
+        identifier: 'report-confirm-delete',
+      })
+    ) {
       const overlay = this.busy.show();
       try {
         for (var report of this.selectedReports) {
@@ -156,8 +178,7 @@ export class EditReportComponent implements OnInit, OnDestroy {
         this.snackBarService.open({ key: '#LDS#The reports have been successfully deleted.' }, '#LDS#Close');
         this.reportsTable.clearSelection();
         await this.getData();
-      }
-      finally {
+      } finally {
         this.busy.hide(overlay);
       }
     }
