@@ -150,6 +150,14 @@ export class DateComponent implements OnInit, OnDestroy {
   public shadowTime = new FormControl();
 
   /**
+ * @ignore
+ * the isDisabled status of the internal shadow form control.
+ * Useful to avoid unecessay update loop when changing the status to the input control.
+ */
+  public isDisabled = false;
+
+
+  /**
    * @ignore
    * the result of the internal shadow form control.
    * Useful to avoid unecessay update loop when writing back the value to the input control.
@@ -218,6 +226,7 @@ export class DateComponent implements OnInit, OnDestroy {
     this.subscriptions.push(this.shadowText.valueChanges.subscribe(x => this.handleShadowTextChanged()));
     this.subscriptions.push(this.shadowTime.valueChanges.subscribe(x => this.handleShadowTimeChanged()));
     this.subscriptions.push(this.shadowDate.valueChanges.subscribe(x => this.handleShadowDateChanged()));
+    this.subscriptions.push(this.control.statusChanges.subscribe(x => this.handleControlStatusChanged()));
   }
 
   /**
@@ -234,7 +243,7 @@ export class DateComponent implements OnInit, OnDestroy {
    *  Bound internally to the click on the calendar icon button.
    */
   public toggleDatePickerOpen(event: Event): void {
-    this.isDatePickerOpen = !this.isDatePickerOpen;
+    this.isDatePickerOpen = !this.isDatePickerOpen && !this.isDisabled;
     event.stopPropagation();
   }
 
@@ -320,7 +329,7 @@ export class DateComponent implements OnInit, OnDestroy {
 
     if (this.shadowDate.value) {
       const d = moment(this.shadowDate.value);
-      value = moment({year: d.year(), month: d.month(), day: d.date()});
+      value = moment({ year: d.year(), month: d.month(), day: d.date() });
     }
 
     if (this.shadowTime.value) {
@@ -354,6 +363,13 @@ export class DateComponent implements OnInit, OnDestroy {
         this.updateShadowTime(this.control.value);
       }
     }
+  }
+
+  private handleControlStatusChanged(): void {
+    const status = this.control.status;
+    this.isDisabled = status === 'DISABLED';
+    this.updateShadowDisableStatus(this.isDisabled);
+    this.updateShadowTimeStatus(this.isDisabled);
   }
 
   /**
@@ -400,6 +416,36 @@ export class DateComponent implements OnInit, OnDestroy {
   private updateShadowDate(value: Moment): void {
     const shadow = DateParser.asDateOnly(value);
     this.shadowDate.setValue(shadow, { emitEvent: false });
+  }
+
+  /**
+ * @ignore
+ *
+ * updates the disable status of the internal text shadow form
+ */
+  private updateShadowDisableStatus(disable: boolean): void {
+    if (disable !== this.shadowText.disabled) {
+      if (disable) {
+        this.shadowText.disable();
+        return;
+      }
+      this.shadowText.enable();
+    }
+  }
+
+  /**
+   * @ignore
+   *
+   * upates the value of the internal time shadow form
+   */
+  private updateShadowTimeStatus(disable: boolean): void {
+    if (disable !== this.shadowText.disabled) {
+      if (disable) {
+        this.shadowTime.disable();
+        return;
+      }
+      this.shadowTime.enable();
+    }
   }
 
   /**
