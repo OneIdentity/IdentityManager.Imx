@@ -199,6 +199,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     }
 
     this.searchString = this.activatedRoute.snapshot.queryParams["ProductSearchString"];
+
     if (this.searchString) {
       /* user can pass product search string by URL parameter -> load the data with this search string
        */
