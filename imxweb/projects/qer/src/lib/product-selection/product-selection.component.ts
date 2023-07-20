@@ -198,7 +198,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
       // TODO load all according to this.categoryModel.SelectedCategory
     }
 
-    this.searchString = this.activatedRoute.snapshot.queryParams["ProductSearchString"];
+    this.searchString = this.activatedRoute.snapshot.queryParams['ProductSearchString'];
 
     if (this.searchString) {
       /* user can pass product search string by URL parameter -> load the data with this search string
