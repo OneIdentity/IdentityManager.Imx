@@ -46,7 +46,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly authentication: AuthenticationService,
     private readonly router: Router,
     private readonly splash: SplashService,
-    private readonly config: AppConfigService,
+    private readonly config: AppConfigService
   ) {
     this.subscriptions.push(
       this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
@@ -54,7 +54,7 @@ export class AppComponent implements OnInit, OnDestroy {
           // Needs to close here when there is an error on sessionState
           this.splash.close();
         } else {
-          if (sessionState.IsLoggedOut) {
+          if (sessionState.IsLoggedOut && !this.isOnUserActivation()) {
             this.showPageContent = false;
           }
         }
@@ -77,6 +77,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
+
+  private isOnUserActivation(): boolean {
+    return this.router.url.startsWith('/useractivation');
   }
 
   private setupRouter(): void {

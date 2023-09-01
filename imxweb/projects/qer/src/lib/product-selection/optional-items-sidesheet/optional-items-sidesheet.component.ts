@@ -176,14 +176,15 @@ export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
     children.forEach((child) => {
       child.isIndeterminate = !parent.isChecked || parent.isIndeterminate;
       child.parentChecked = parent.isChecked;
-      // Change selection count for checked and optional items based on indetermacy
-      if (!child.isMandatory && child.isChecked) {
-        child.isIndeterminate ? this.selected -= 1 : this.selected += 1;
+      // Change selection count for checked and optional items based on indetermacy, we can stop walking if an optional is not checked
+      if (child.isChecked) {
+        if (!child.isMandatory) {
+          child.isIndeterminate ? (this.selected -= 1) : (this.selected += 1);
+        }
+        this.walkChildren(child, [...child.Mandatory, ...child.Optional]);
       }
-      this.walkChildren(child, [...child.Mandatory, ...child.Optional]);
     });
   }
-
 
   public onChange(value: MatCheckboxChange, leaf: ServiceItemHierarchyExtended): void {
     // Change state of this leaf

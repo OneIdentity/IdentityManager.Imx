@@ -9,21 +9,9 @@
 	<mat-spinner *ngIf="busy"></mat-spinner>
 
 	<ng-container *ngIf="!busy">
-		<ng-container *ngIf="data">
-
-			<!-- ApprovalState meanings: 0=Certified, 1=New, 3=Denied-->
-			<eui-alert *ngIf="data.ApprovalState == 0">{{ldsAlreadyCompleted| translate}}</eui-alert>
-			<eui-alert *ngIf="data.ApprovalState == 1">{{ldsConfirmationText| translate}}</eui-alert>
-			<eui-alert *ngIf="data.ApprovalState == 3">{{ldsRegistrationDenied| translate}}</eui-alert>
-		</ng-container>
-
-		<eui-alert *ngIf="!data && missingCase && !hasProblems">{{ldsCompletionFailed| translate}}</eui-alert>
-		<eui-alert *ngIf="!data && !missingCase && !hasProblems">{{ldsResendEmail| translate}}</eui-alert>
-		<eui-alert *ngIf="!missingCase && hasProblems">{{ldsLoadingProblems| translate}}</eui-alert>
-
-
+    <eui-alert>{{ldsText| translate}}</eui-alert>
 		<div class="button-bar">
-			<button mat-raised-button *ngIf="!missingCase && !hasProblems" (click)="ReSendMail()">{{ldsSendAgain |
+			<button mat-raised-button *ngIf="hasFormat && !hasProblems" (click)="ReSendMail()">{{'#LDS#Send confirmation email again' |
 				translate}}
 			</button>
 
