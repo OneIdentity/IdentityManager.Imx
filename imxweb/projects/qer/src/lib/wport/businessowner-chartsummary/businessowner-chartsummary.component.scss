@@ -1,9 +1,10 @@
 @use '@angular/material' as mat;
 @import '@elemental-ui/core/src/styles/_palette.scss';
+@import "../../../../../qbm/src/lib/tile/tile-variables.scss";
 
 :host {
   display: flex;
-  flex-wrap: wrap ;
+  flex-wrap: wrap;
 }
 
 .imx-valuelist {
@@ -106,3 +107,46 @@
 .imx-colright {
   text-align: right;
 }
+
+:host > .imx-create-identity-tile {
+  ::ng-deep .mat-card {
+    height: 140px;
+    display: flex;
+    width: $tile-width;
+    min-width: $tile-width;
+    flex-direction: column;
+    cursor: auto;
+    padding: 25px;
+    padding-bottom: 10px;
+  }
+
+  .mat-card-title {
+    font-size: 1.15em;
+    font-weight: 600;
+    display: flex;
+    cursor: auto;
+  }
+  
+  .mat-card-subtitle {
+    flex: 1;
+    font-size: small;
+    text-align: left;
+    overflow: auto;
+    overflow-x: hidden;
+    color: $black-9;
+    margin-bottom: 0;
+  }
+  
+  .mat-card-actions {
+    margin-left: 0;
+    margin-right: 0;
+    display: flex;
+  }
+
+  .mat-card-actions:last-child {
+    margin-bottom: 0;
+    margin-left: -16px;
+    margin-top: -10px;
+  }
+}
+

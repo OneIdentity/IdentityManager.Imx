@@ -4,6 +4,20 @@
 
 ## Change log
 
+### September 1, 2023
+
+The `v91` branch has been updated with fixes for the following issues.
+
+- 426598 The counter of selected optional products was sometimes showing an incorrect value
+- 427961/37144 Adding items to the shopping cart did not work
+- 426872 Policy violation was not using the correct set of standard justifications
+- 426767 Fixed UI layout in request approval sidesheet
+- 415340 Password Reset Portal was sometimes hanging at the loading screen
+- 424223 Refactoring of sidesheet closing (https://github.com/OneIdentity/IdentityManager.Imx/pull/65)
+- 419508 Application Governance KPIs were not correctly adapting to the screens ize
+- 423861/36856/423948 Fix UI when a manager has only indirect, but no direct reports
+- 421566 Fix LDS keys for product names
+
 ### June 23, 2023
 
 This update addresses the following security issues.

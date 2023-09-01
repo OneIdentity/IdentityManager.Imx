@@ -24,35 +24,28 @@
  *
  */
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { PersonActivationDto } from 'imx-api-att';
-import { AuthenticationService, SessionState, SnackBarService } from 'qbm';
+import { AuthenticationService, SessionState, SnackBarService, SplashService } from 'qbm';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../api.service';
 
 @Component({
   templateUrl: './user-activation.component.html',
-  styleUrls: ['./user-activation.component.scss']
+  styleUrls: ['./user-activation.component.scss'],
 })
 export class UserActivationComponent implements OnDestroy {
-
-  public missingCase = true;
   public busy = true;
   public data: PersonActivationDto;
-  public ldsConfirmationText = '#LDS#Confirm your email address and activate your account or send the confirmation email again (if the passcode has expired) by clicking one of the following buttons.';
-  public ldsAlreadyCompleted = '#LDS#You already have completed the registration process. Please log in with your credentials. If you have forgotten your credentials, ask your manager for a passcode.';
-  public ldsRegistrationDenied = '#LDS#Your registration was denied.';
-  public ldsCompletionFailed = '#LDS#The registration process could not be completed. The submitted registration process could not be found. You may already have completed the registration process. Please log in with your credentials. If you have forgotten your credentials, ask your manager for a passcode.';
-  public ldsResendEmail = '#LDS#The registration process could not be completed. Please click "Send confirmation email again" and follow the instructions in the new confirmation email.';
-  public ldsSendAgain = '#LDS#Send confirmation email again';
-  public ldsLoadingProblems = '#LDS#This attestation case has already been approved or denied.';
-  public hasProblems = false; 
+  public ldsText: string;
+  public hasProblems = false;
 
   private readonly subscription: Subscription;
   private passcode: string;
+  private uidCase: string;
 
   constructor(
     private readonly attApiService: ApiService,
@@ -61,30 +54,33 @@ export class UserActivationComponent implements OnDestroy {
     private readonly authService: AuthenticationService,
     private readonly translateService: TranslateService,
     private readonly busyService: EuiLoadingService,
+    private readonly splashService: SplashService,
     private readonly router: Router
   ) {
-    this.subscription = route.queryParamMap.subscribe(async p => {
+    this.subscription = route.queryParamMap.subscribe(async (params) => {
       this.busy = true;
       try {
-        const uidCase = p.get('aeweb_UID_AttestationCase');
-        this.missingCase = !uidCase;
-        if (this.missingCase) {
+        this.uidCase = params.get('aeweb_UID_AttestationCase');
+        this.passcode = params.get('aeweb_PassCode');
+        if (!this.hasFormat) {
           return;
         }
-        this.passcode = p.get('aeweb_PassCode');
-        this.data = await this.attApiService.client.passwordreset_activation_init_post(uidCase);
+        this.data = await this.attApiService.client.passwordreset_activation_init_post(this.uidCase);
 
-        const preferredCulture = this.data.Culture;
-        if (preferredCulture) {
-          // apply preferred culture
-          this.useCulture(preferredCulture);
-        }
+        // Apply culture
+        this.data?.Culture ? this.useCulture(this.data.Culture) : null;
       } catch {
         this.hasProblems = true;
       } finally {
+        this.determineText();
+        this.splashService.close();
         this.busy = false;
       }
     });
+  }
+
+  public get hasFormat(): boolean {
+    return !!this.uidCase && !!this.passcode;
   }
 
   public ngOnDestroy(): void {
@@ -96,8 +92,7 @@ export class UserActivationComponent implements OnDestroy {
     try {
       await this.attApiService.client.passwordreset_activation_resendemail_post();
       this.snackbar.open({ key: '#LDS#An email has been sent to your specified email address.' }, '#LDS#Close');
-    }
-    catch {
+    } catch {
       this.hasProblems = true;
     } finally {
       this.busyService.hide(overlayRef);
@@ -109,7 +104,7 @@ export class UserActivationComponent implements OnDestroy {
     try {
       await this.authService.processLogin(async () => {
         const s = await this.attApiService.client.passwordreset_activation_confirm_post({
-          PassCode: this.passcode
+          PassCode: this.passcode,
         });
         return new SessionState(s);
       });
@@ -119,6 +114,37 @@ export class UserActivationComponent implements OnDestroy {
       this.router.navigate(['']);
     } finally {
       this.busyService.hide(overlayRef);
+    }
+  }
+
+  private determineText(): void {
+    if (this.data) {
+      // We got a response from the server and can show the state of the case
+      switch (this.data.ApprovalState) {
+        case 0:
+          this.ldsText =
+            '#LDS#You already have completed the registration process. Please log in with your credentials. If you have forgotten your credentials, ask your manager for a passcode.';
+          break;
+        case 1:
+          this.ldsText =
+            '#LDS#Confirm your email address and activate your account or send the confirmation email again (if the passcode has expired) by clicking one of the following buttons.';
+          break;
+        case 3:
+          this.ldsText = '#LDS#Your registration was denied.';
+          break;
+      }
+      return;
+    }
+
+    // Here something went wrong and either the params were missing or the server failed
+    if (this.hasFormat && this.hasProblems) {
+      this.ldsText = '#LDS#This attestation case has already been approved or denied.';
+    } else if (this.hasFormat && !this.hasProblems) {
+      this.ldsText =
+        '#LDS#The registration process could not be completed. Please click "Send confirmation email again" and follow the instructions in the new confirmation email.';
+    } else if (!this.hasFormat && !this.hasProblems) {
+      this.ldsText =
+        '#LDS#The registration process could not be completed. The submitted registration process could not be found. You may already have completed the registration process. Please log in with your credentials. If you have forgotten your credentials, ask your manager for a passcode.';
     }
   }
 

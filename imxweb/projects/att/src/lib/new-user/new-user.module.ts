@@ -34,7 +34,17 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router, Routes } from '@angular/router';
 import { EuiCoreModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { AuthConfigProvider, AuthenticationService, CaptchaModule, CdrModule, CustomAuthFlow, MastHeadModule, ParameterizedTextModule, UserMessageModule } from 'qbm';
+import {
+  AuthConfigProvider,
+  AuthenticationService,
+  CaptchaModule,
+  CdrModule,
+  CustomAuthFlow,
+  MastHeadModule,
+  ParameterizedTextModule,
+  UserMessageModule,
+  ClassloggerService,
+} from 'qbm';
 import { ApiService } from '../api.service';
 import { ConfirmDialogComponent } from './confirm-dialog.component';
 import { NewUserComponent } from './new-user.component';
@@ -44,8 +54,8 @@ import { UserActivationComponent } from './user-activation.component';
 const routes: Routes = [
   {
     path: 'useractivation',
-    component: UserActivationComponent
-  }
+    component: UserActivationComponent,
+  },
 ];
 
 @NgModule({
@@ -63,49 +73,40 @@ const routes: Routes = [
     ParameterizedTextModule,
     UserMessageModule,
     TranslateModule,
-    EuiCoreModule
+    EuiCoreModule,
   ],
-  declarations: [
-    OpenSidesheetComponent,
-    NewUserComponent,
-    UserActivationComponent,
-    ConfirmDialogComponent
-  ],
+  declarations: [OpenSidesheetComponent, NewUserComponent, UserActivationComponent, ConfirmDialogComponent],
 })
 export class NewUserModule {
-  constructor(authService: AuthenticationService, router: Router, apiService: ApiService) {
-
+  constructor(authService: AuthenticationService, router: Router, apiService: ApiService, private readonly logger: ClassloggerService) {
     const newUserAuthProvider: AuthConfigProvider = {
       display: '#LDS#Create new account',
       name: 'NewUser',
       authProps: [],
-      customAuthFlow: new NewUserFlow()
+      customAuthFlow: new NewUserFlow(),
     };
 
-    apiService.client.register_featureconfig_get().then(c => {
+    apiService.client.register_featureconfig_get().then((c) => {
       if (c.SelfRegistrationEnabled) {
         authService.registerAuthConfigProvider(newUserAuthProvider);
       }
     });
 
-
+    this.logger.info(this, '▶️ NewUser initialized');
     this.addRoutes(router);
   }
 
   private addRoutes(router: Router): void {
     const config = router.config;
-    routes.forEach(route => {
+    routes.forEach((route) => {
       config.unshift(route);
     });
     router.resetConfig(config);
   }
-
 }
 
 class NewUserFlow implements CustomAuthFlow {
-
   public getEntryComponent() {
     return OpenSidesheetComponent;
   }
 }
-

@@ -91,7 +91,7 @@ export class PolicyViolationsService {
     setTimeout(() => busyIndicator = this.busyService.show());
 
     try {
-      justification = await this.justificationService.createCdr(JustificationType.approve);
+      justification = await this.justificationService.createCdr(JustificationType.approvePolicyViolation);
     } finally {
       setTimeout(() => this.busyService.hide(busyIndicator));
     }
@@ -128,7 +128,7 @@ export class PolicyViolationsService {
     setTimeout(() => busyIndicator = this.busyService.show());
 
     try {
-      justification = await this.justificationService.createCdr(JustificationType.deny);
+      justification = await this.justificationService.createCdr(JustificationType.denyPolicyViolation);
     } finally {
       setTimeout(() => this.busyService.hide(busyIndicator));
     }

@@ -30,7 +30,7 @@ import { Router } from '@angular/router';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { configureTestSuite } from 'ng-bullet';
 
-import { OwnershipInformation } from 'imx-api-qer';
+import { OwnershipInformation, PortalPersonReportsInteractive } from 'imx-api-qer';
 import { clearStylesFromDOM } from 'qbm';
 import { BusinessOwnerChartSummaryComponent } from './businessowner-chartsummary.component';
 import { UserModelService } from '../../user/user-model.service';
@@ -38,6 +38,8 @@ import { QerApiService } from '../../qer-api-client.service';
 import { of } from 'rxjs';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
 import { QerPermissionsService } from '../../admin/qer-permissions.service';
+import { IdentitiesService } from '../../identities/identities.service';
+import { IdentitiesCommonTestData } from '../../identities/test/common-test-mocks.spec';
 
 @Component({
   selector: 'imx-tile',
@@ -95,6 +97,13 @@ describe('BusinessOwnerChartSummaryComponent', () => {
     }
   };
 
+  const personReportInteractive = {
+    GetEntity: () => IdentitiesCommonTestData.mockEntity,
+    DefaultEmailAddress: { Column: IdentitiesCommonTestData.mockEntityColumn },
+    UID_PersonHead: { Column: IdentitiesCommonTestData.mockEntityColumn },
+    IsInActive: { Column: IdentitiesCommonTestData.mockEntityColumn },
+  } as PortalPersonReportsInteractive;
+
   const sideSheetTestHelper = new class {
     afterClosedResult = false;
     readonly servicestub = {
@@ -126,6 +135,14 @@ describe('BusinessOwnerChartSummaryComponent', () => {
         {
           provide: ProjectConfigurationService,
           useValue: mockConfigService,
+        },
+        {
+          provide: IdentitiesService,
+          useValue: {
+            createEmptyEntity: jasmine.createSpy('createEmptyEntity').and.returnValue(Promise.resolve(
+              personReportInteractive              
+            )),
+          }
         },
         {
           provide: QerApiService,

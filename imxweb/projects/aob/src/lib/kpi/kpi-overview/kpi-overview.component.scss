@@ -1,5 +1,4 @@
-@use '@angular/material' as mat;
-@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host{
   flex: 1 1 auto;
@@ -9,12 +8,12 @@
 
 .imx-kpi-site {
   padding: 16px 40px;
-  background-color: mat.get-color-from-palette($asher-gray-palette, 100);
   height: auto;
   min-height: 100%;
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
+  overflow: auto;
 }
 
 li {
@@ -22,7 +21,6 @@ li {
   margin: 0 10px 10px 0;
 
   .mat-card {
-    background-color: $white;
     width: 340px;
     height: 68px;
     display: grid;
@@ -40,13 +38,13 @@ li {
 
 h2 {
   font-size: 20px;
-  color: $black-3;
+  color: $color-gray-30;
   margin-bottom: 8px;
 }
 
 p {
   font-size: 14px;
-  color: $black-9;
+  color: $color-gray-80;
   margin-top: 0;
 }
 
@@ -94,8 +92,6 @@ h4 {
   font-size: 24px;
   line-height: 38px;
   font-weight: 900;
-  margin: 0 20px 0 0px;
-  color: $aspen-green;
   grid-column: 1;
 }
 
@@ -106,6 +102,7 @@ h4 {
   > li > .mat-card {
     display: flex;
     height: 100%;
+    justify-content: space-between;
   }
 }
 
@@ -124,9 +121,6 @@ h4 {
   margin: 0px 0 10px;
 }
 
-.imx-fail {
-  color: $phoenix-red;
-}
 
 .imx-title-text {
   text-align: center;
@@ -143,18 +137,44 @@ h4 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 10px;
-  margin-top: 10px;
-  background-color: mat.get-color-from-palette($asher-gray-palette, 100);
-  height: auto;
-  min-height: calc(100% - 20px);
+  justify-content: center;
+  height: 100%;
 
   h2 {
     font-weight: 600;
-    margin-top: 30px;
+  }
+}
+
+:host {
+  .imx-kpi-site {
+    background-color: $color-gray-2;
+    }
+
+  .imx-aob-kpi-empty {
+    background-color: $color-gray-2;
+    color: $color-gray-50;
   }
 
-  >.eui-icon {
-    color: $black-b;
+  .imx-pass {
+    color: $color-green-60;
+  }
+
+  .imx-fail {
+    color: $color-red-60;
+  }
+}
+
+
+::ng-deep .kpi-overview-modal {
+  .imx-title-text {
+    color: $color-gray-80;
+  }
+
+  .imx-pass {
+    color: $color-green-60;
+  }
+
+  .imx-fail {
+    color: $color-red-60;
   }
 }

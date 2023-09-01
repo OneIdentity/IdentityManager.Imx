@@ -410,14 +410,14 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     const outgoingOrder: ServiceItemOrder = {
       serviceItems: [serviceItem],
     };
-    this.projectConfig.ITShopConfig.VI_ITShop_AddOptionalProductsOnInsert
+    this.projectConfig?.ITShopConfig?.VI_ITShop_AddOptionalProductsOnInsert
     ? await this.openOptionalSideSheet(outgoingOrder)
     : await this.orderSelected(outgoingOrder, this.selectedTemplates, this.selectedRoles);
   }
 
   public async openOptionalSideSheet(outgoingOrder: ServiceItemOrder): Promise<void> {
     const serviceItemTree = await this.optionalItemsService.checkForOptionalTree(outgoingOrder.serviceItems, this.recipients);
-    if (serviceItemTree?.totalOptional > 0) {
+    if (serviceItemTree?.totalOptional && serviceItemTree?.totalOptional > 0) {
       const selectedOptionalOrder: ServiceItemOrder = await this.sideSheetService
         .open(OptionalItemsSidesheetComponent, {
           title: this.translate.instant('#LDS#Heading Optional Products'),
@@ -434,11 +434,14 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
         })
         .afterClosed()
         .toPromise();
-      // If there was an order, then continue, otherwise do nothing
+      // OptionalItemsSidesheet: If the user click on the AddToCart button add the selected items to the cart, otherwise do nothing
       if (selectedOptionalOrder) {
         outgoingOrder.requestables = selectedOptionalOrder.requestables;
         await this.orderSelected(outgoingOrder, this.selectedTemplates, this.selectedRoles);
       }
+    } else {
+      // if there are no optional items go ahead with the order
+      await this.orderSelected(outgoingOrder, this.selectedTemplates, this.selectedRoles);
     }
   }
 

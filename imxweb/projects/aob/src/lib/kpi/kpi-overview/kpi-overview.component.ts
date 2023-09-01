@@ -110,7 +110,7 @@ export class KpiOverviewComponent implements OnChanges {
    */
   public showDetails(chart: ChartDto, isFail: boolean): void {
     if (!this.hasDetails(chart)) { return; }
-    this.matDialog.open(this.chartDialog, { data: { chart: this.getChartData(chart), failed: isFail }, width: '600px', autoFocus: false });
+    this.matDialog.open(this.chartDialog, { data: { chart: this.getChartData(chart), failed: isFail }, width: '600px', autoFocus: false, panelClass: 'kpi-overview-modal' });
   }
 
   /**
@@ -189,6 +189,10 @@ export class KpiOverviewComponent implements OnChanges {
         text: this.errorThreshhold
       }
     ];
+    lineChartOptions.size = {
+      height: 400,
+      width: 500
+    }
     this.logger.debug(this, 'Options', lineChartOptions.options);
     return lineChartOptions.options;
   }

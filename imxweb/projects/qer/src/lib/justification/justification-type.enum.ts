@@ -32,5 +32,7 @@ export enum JustificationType {
   deny = 16,
   denyAttestation = 32,
   approveRuleViolation = 64,
-  denyRuleViolation = 128
+  denyRuleViolation = 128,
+  approvePolicyViolation = 256,
+  denyPolicyViolation = 512 
 }

@@ -99,7 +99,7 @@ export class CreateNewIdentityComponent implements OnDestroy {
       try {
         await this.data.selectedIdentity.GetEntity().Commit(false);
         this.snackbar.open({ key: '#LDS#The identity has been successfully created.' });
-        this.sidesheetRef.close();
+        this.sidesheetRef.close(true);
       } finally {
         this.busyService.hide(overlayRef);
       }
@@ -192,14 +192,14 @@ export class CreateNewIdentityComponent implements OnDestroy {
 
   private setup(): void {
 
-    this.subscriptions.push(this.sidesheetRef.closeClicked().subscribe(async (result) => {
+    this.subscriptions.push(this.sidesheetRef.closeClicked().subscribe(async () => {
       if (this.identityForm.dirty) {
         const close = await this.confirm.confirmLeaveWithUnsavedChanges();
         if (close) {
-          this.sidesheetRef.close();
+          this.sidesheetRef.close(false);
         }
       } else {
-        this.sidesheetRef.close(result);
+        this.sidesheetRef.close(false);
       }
     }));
 
