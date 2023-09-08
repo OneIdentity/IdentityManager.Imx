@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,26 +25,38 @@
  */
 
 import { RoleExtendedDataWrite } from 'imx-api-qer';
-import { EntitySchema, ExtendedTypedEntityCollection, WriteExtTypedEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection, WriteExtTypedEntity } from 'imx-qbm-dbts';
+import { DataSourceToolbarExportMethod } from 'qbm';
 import { IRoleRestoreHandler } from './restore/restore-handler';
 import { IRoleDataModel } from './role-data-model.interface';
 import { IRoleEntitlements } from './role-entitlements/entitlement-handlers';
 import { IRoleMembershipType } from './role-memberships/membership-handlers';
 
 type InteractiveEntityType = {
-  GetSchema(): EntitySchema,
-  Get_byid(id: string): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>>,
-  Get(): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>>
+  GetSchema(): EntitySchema;
+  Get_byid(id: string): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>>;
+  Get(): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>>;
+};
+
+export interface RoleTranslateKeys {
+  create?: string;
+  createChild?: string;
+  createHeading?: string;
+  editHeading?: string;
+  createSnackbar?: string;
 }
 
 export interface RoleObjectInfo {
   table: string;
-  
+
   /** Returns a flag indicating whether roles of this type can be split. */
   canBeSplitSource: boolean;
 
   /** Returns a flag indicating whether roles of this type can be created by splitting an existing role. */
   canBeSplitTarget: boolean;
+
+  /**Returns a flag indicating whether roles of this type can have statistics */
+  canHaveStatistics?: boolean;
 
   restore?: IRoleRestoreHandler;
 
@@ -53,9 +65,16 @@ export interface RoleObjectInfo {
   resp?: any;
   admin?: any;
   adminSchema?: EntitySchema;
+  adminHasHierarchy?:boolean;
+  respHasHierarchiy?: boolean;
   dataModel?: IRoleDataModel;
+  adminCanCreate?: boolean;
+  respCanCreate?: boolean;
   interactiveResp?: InteractiveEntityType;
   interactiveAdmin?: InteractiveEntityType;
   entitlements?: IRoleEntitlements;
   membership?: IRoleMembershipType;
+  canUseRecommendations?: boolean;
+  translateKeys?: RoleTranslateKeys;
+  exportMethod?: (navigationState: CollectionLoadParameters, isAdmin: boolean) => DataSourceToolbarExportMethod
 }

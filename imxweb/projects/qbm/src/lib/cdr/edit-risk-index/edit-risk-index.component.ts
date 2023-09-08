@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { EditorBase } from '../editor-base';
 
 @Component({
@@ -34,7 +34,7 @@ import { EditorBase } from '../editor-base';
   styleUrls: ['./edit-risk-index.component.scss']
 })
 export class EditRiskIndexComponent extends EditorBase<number> {
-  public readonly control = new FormControl(undefined, { updateOn: 'blur' });
+  public readonly control = new UntypedFormControl(undefined, { updateOn: 'blur' });
   public sliderFocused = false;
 
   public formatLabel(value: number): string {

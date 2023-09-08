@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,25 +25,27 @@
  */
 
 import { HttpClientModule } from '@angular/common/http';
+import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule, APP_INITIALIZER, ErrorHandler } from '@angular/core';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { MissingTranslationHandler, TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
-import { TranslateModule, TranslateLoader, MissingTranslationHandler, TranslateService } from '@ngx-translate/core';
 
+import { APP_BASE_HREF } from '@angular/common';
 import {
-  ImxTranslateLoader,
+  AuthenticationModule,
+  CustomThemeModule,
+  GlobalErrorHandler,
   ImxMissingTranslationHandler,
+  ImxTranslateLoader,
+  LdsReplacePipe,
   MastHeadModule,
   MenuModule,
-  UserMessageModule,
-  GlobalErrorHandler,
   Paginator,
-  LdsReplacePipe,
-  QbmModule,
-  AuthenticationModule
+  UserMessageModule,
 } from 'qbm';
+import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AppService } from './app.service';
@@ -52,14 +54,17 @@ import {
   PasswordModule,
   QaLoginModule,
   PasscodeLoginModule,
+  ProfileModule,
+  QerModule,
 } from 'qer';
-import { environment } from '../environments/environment';
 import appConfigJson from '../appconfig.json';
 
+export const HEADLESS_BASEHREF = '/headless';
+export function getBaseHref(): string {
+  return location.href.includes('headless') ? HEADLESS_BASEHREF : '';
+}
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent],
   imports: [
     AppRoutingModule,
     AuthenticationModule,
@@ -72,20 +77,22 @@ import appConfigJson from '../appconfig.json';
     MastHeadModule,
     MenuModule,
     QaLoginModule,
-    QbmModule,
+    QerModule,
     PasscodeLoginModule,
     PasswordModule,
+    CustomThemeModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useClass: ImxTranslateLoader
+        useClass: ImxTranslateLoader,
       },
       missingTranslationHandler: {
         provide: MissingTranslationHandler,
-        useClass: ImxMissingTranslationHandler
-      }
+        useClass: ImxMissingTranslationHandler,
+      },
     }),
-    UserMessageModule
+    UserMessageModule,
+    ProfileModule,
   ],
   providers: [
     { provide: 'environment', useValue: environment },
@@ -94,21 +101,22 @@ import appConfigJson from '../appconfig.json';
       provide: APP_INITIALIZER,
       useFactory: AppService.init,
       deps: [AppService],
-      multi: true
+      multi: true,
     },
     {
       provide: ErrorHandler,
-      useClass: GlobalErrorHandler
+      useClass: GlobalErrorHandler,
     },
     {
       provide: MatPaginatorIntl,
       useFactory: Paginator.Create,
-      deps: [
-        TranslateService,
-        LdsReplacePipe
-      ]
-    }
+      deps: [TranslateService, LdsReplacePipe],
+    },
+    {
+      provide: APP_BASE_HREF,
+      useValue: getBaseHref(),
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

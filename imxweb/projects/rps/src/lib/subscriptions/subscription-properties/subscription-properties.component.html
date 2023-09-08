@@ -10,7 +10,7 @@
 
   <div>
     <h4>
-      {{'#LDS#Parameter' | translate}}
+      {{'#LDS#Heading Parameters' | translate}}
     </h4>
     <div *ngIf="parameterCdrList.length > 0">
       <imx-cdr-editor *ngFor="let cdr of parameterCdrList" [cdr]="cdr"
@@ -18,7 +18,7 @@
       </imx-cdr-editor>
     </div>
     <div *ngIf="parameterCdrList.length === 0 && withTitles">
-      {{'#LDS#No parameter' | translate}}
+      {{'#LDS#There are no parameters for this subscription.' | translate}}
     </div>
   </div>
 </div>

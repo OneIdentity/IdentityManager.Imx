@@ -11,13 +11,13 @@
   <mat-card class="imx-content-card">
     <div *ngIf="data.entitlementToAdd.totalCount > 0" class="imx-info-grid">
       <div>
-        <span bold translate>#LDS#Matching entitlements</span>
+        <span bold translate>#LDS#Matching application entitlements</span>
         <span>{{getCount('')}}</span>
-        <span bold translate>#LDS#Entitlements to add</span>
+        <span bold translate>#LDS#Application entitlements to add</span>
         <span>{{getCount('add')}}</span>
-        <span bold translate>#LDS#Entitlements already assigned to this application</span>
+        <span bold translate>#LDS#Application entitlements already assigned to this application</span>
         <span>{{getCount('assigned')}}</span>
-        <span bold translate>#LDS#Entitlements assigned to another application</span>
+        <span bold translate>#LDS#Application entitlements assigned to another application</span>
         <span>{{getCount('conflicted')}}</span>
       </div>
     </div>
@@ -26,10 +26,10 @@
 
     <div class="imx-table-container">
       <imx-data-table [dst]="dst" mode="manual" [detailViewVisible]="false" 
-      [noDataText]="'#LDS#No matching entitlements found' | translate"
+      [noDataText]="'#LDS#There are no matching application entitlements.' | translate"
         data-imx-identifier="mapped-entitlements-preview-datatable">
         <imx-data-table-column [entityColumn]="entitySchema?.Columns.DisplayName"
-          columnLabel="{{'#LDS#Display' | translate }}">
+          columnLabel="{{'#LDS#Application entitlement' | translate }}">
           <ng-template let-entity>
             <div>{{ entity.DisplayName.Column.GetDisplayValue() }}</div>
             <div subtitle>{{ entity.CanonicalName.Column.GetDisplayValue()}}</div>
@@ -39,14 +39,14 @@
           <ng-template let-entity>
             <eui-badge *ngIf="entity.IsAssignedToMe.value || entity.IsAssignedToOther.value"
               [color]="entity.IsAssignedToMe.value ? 'green' : 'orange'">
-              {{(entity.IsAssignedToMe.value ? '#LDS#Already assigned' :'#LDS#Assigned to other application') |
+              {{(entity.IsAssignedToMe.value ? '#LDS#Already assigned to this application' :'#LDS#Assigned to other application') |
               translate}}
             </eui-badge>
           </ng-template>
         </imx-data-table-column>
 
         <imx-data-table-column [entityColumn]="entitySchema?.Columns.UID_AOBApplicationConflicted"
-          columnLabel="{{'#LDS#Conflicted application' | translate }}">
+          columnLabel="{{'#LDS#Already assigned to following application' | translate }}">
         </imx-data-table-column>
       </imx-data-table>
     </div>
@@ -55,10 +55,10 @@
 <div eui-sidesheet-actions color="white" *ngIf="data.withSave">
   <mat-slide-toggle class="justify-start" #mappedslider checked="true"
     data-imx-identifier="mapped-entitlements-preview-slider-with-mapping">
-    {{'#LDS#Assign system entitlements after saving' |translate}}
+    {{'#LDS#Assign application entitlements after saving' |translate}}
   </mat-slide-toggle>
   <button mat-raised-button data-imx-identifier="mapped-entitlements-preview-button-save" color="primary"
     (click)="apply(mappedslider.checked)">
-    {{'#LDS#Save condition' |translate}}
+    {{'#LDS#Save automatic assignment' |translate}}
   </button>
 </div>

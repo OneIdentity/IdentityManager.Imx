@@ -1,14 +1,23 @@
-.flex-container {
-  position: absolute;
-  top: 32px;
-  bottom: 32px;
-  left: 32px;
-  right: 32px;
+
+:host{
   display: flex;
   flex-flow: column;
-  align-items: stretch;
-}
+  flex: 1;
 
-.fingerprint {
-  font-family: monospace;
+  .content-container {
+    padding: 0.5em 0.5em 0.5em 0;
+    overflow: auto;
+
+    &.loading{
+      justify-content: center;
+      flex: 1;
+      align-content: center;
+      align-items: center;
+      display: flex;
+    }
+  }
+
+  .fingerprint {
+    font-family: monospace;
+  }
 }

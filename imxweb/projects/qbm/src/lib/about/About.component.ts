@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,8 +32,8 @@ import { AboutService } from './About.service';
 import { ExtService } from '../ext/ext.service';
 import { Globals, CollectionLoadParameters, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
 import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
-import { AppConfigService } from '../appConfig/appConfig.service';
 import { SettingsService } from '../settings/settings-service';
+import { SystemInfoService } from '../system-info/system-info.service';
 
 @Component({
   templateUrl: './About.component.html',
@@ -55,7 +55,7 @@ export class AboutComponent implements OnInit {
 
   constructor(
     private aboutInfoService: AboutService,
-    private readonly config: AppConfigService,
+    private readonly systemInfoService: SystemInfoService,
     private extService: ExtService,
     private readonly settings: SettingsService,
     private readonly busyService: EuiLoadingService
@@ -79,7 +79,7 @@ export class AboutComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    const imxConfig = await this.config.getImxConfig();
+    const imxConfig = await this.systemInfoService.getImxConfig();
     const name = imxConfig.ProductName;
     if (name)
       this.product['Name'] = name;

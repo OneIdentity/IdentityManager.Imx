@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { Injectable } from '@angular/core';
 
 import { ParameterData } from 'imx-qbm-dbts';
-import { FkProviderItem, InteractiveEntityWriteData } from 'imx-qbm-dbts';
+import { FkProviderItem, IFkCandidateProvider, InteractiveEntityWriteData } from 'imx-qbm-dbts';
 import { QerApiService } from '../../qer-api-client.service';
 
 @Injectable({
@@ -39,51 +39,60 @@ export class CartItemFkService {
   public getFkProviderItemsInteractive(
     interactiveEntity: { InteractiveEntityWriteData: InteractiveEntityWriteData },
     parameterData: ParameterData
-  ): FkProviderItem[] {
-    if (parameterData.Property.FkRelation) {
-      return [
-        this.getFkProviderItemInteractive(interactiveEntity, parameterData.Property.ColumnName, parameterData.Property.FkRelation.ParentTableName)
-      ];
-    }
+  ): IFkCandidateProvider {
+    
+    const qerClient = this.qerClient;
 
-    if (parameterData.Property.ValidReferencedTables) {
-      return parameterData.Property.ValidReferencedTables.map(parentTableRef =>
-        this.getFkProviderItemInteractive(interactiveEntity, parameterData.Property.ColumnName, parentTableRef.TableName)
-      );
-    }
+    return new class implements IFkCandidateProvider {
+      getProviderItem(_columnName, fkTableName) {
+        if (parameterData.Property.FkRelation) {
+          return this.getFkProviderItemInteractive(interactiveEntity, parameterData.Property.ColumnName, parameterData.Property.FkRelation.ParentTableName);
+        }
 
-    return [];
-  }
+        if (parameterData.Property.ValidReferencedTables) {
+          const t = parameterData.Property.ValidReferencedTables.map(parentTableRef =>
+            this.getFkProviderItemInteractive(interactiveEntity, parameterData.Property.ColumnName, parentTableRef.TableName)
+          ).filter(t => t.fkTableName == fkTableName);
+          if (t.length == 1)
+            return t[0];
+          return null;
+        }
 
-  private getFkProviderItemInteractive(
-    interactiveEntity: { InteractiveEntityWriteData: InteractiveEntityWriteData },
-    columnName: string,
-    fkTableName: string
-  ): FkProviderItem {
-    return {
-      columnName,
-      fkTableName,
-      parameterNames: [
-        'OrderBy',
-        'StartIndex',
-        'PageSize',
-        'filter',
-        'search'
-      ],
-      load: async (__, parameters?) => {
-        return this.qerClient.client.portal_cartitem_interactive_parameter_candidates_post(
+        return null;
+      }
+    
+      private getFkProviderItemInteractive(
+        interactiveEntity: { InteractiveEntityWriteData: InteractiveEntityWriteData },
+        columnName: string,
+        fkTableName: string
+      ): FkProviderItem {
+        return {
           columnName,
           fkTableName,
-          interactiveEntity.InteractiveEntityWriteData,
-          parameters
-        );
-      },
-      getDataModel: async () => ({}),
-      getFilterTree: async (__, parentkey) => {
-        return this.qerClient.client.portal_cartitem_interactive_parameter_candidates_filtertree_post(
-          columnName, fkTableName, interactiveEntity.InteractiveEntityWriteData, { parentkey: parentkey }
-        );
+          parameterNames: [
+            'OrderBy',
+            'StartIndex',
+            'PageSize',
+            'filter',
+            'search'
+          ],
+          load: async (__, parameters?) => {
+            return qerClient.client.portal_cartitem_interactive_parameter_candidates_post(
+              columnName,
+              fkTableName,
+              interactiveEntity.InteractiveEntityWriteData,
+              parameters
+            );
+          },
+          getDataModel: async () => ({}),
+          getFilterTree: async (__, parentkey) => {
+            return qerClient.client.portal_cartitem_interactive_parameter_candidates_filtertree_post(
+              columnName, fkTableName, interactiveEntity.InteractiveEntityWriteData, { parentkey: parentkey }
+            );
+          }
+        };
       }
     };
   }
+
 }

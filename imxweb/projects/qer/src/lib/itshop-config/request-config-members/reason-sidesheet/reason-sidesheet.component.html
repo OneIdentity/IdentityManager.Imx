@@ -1,0 +1,25 @@
+<div eui-sidesheet-content class="imx-flex-content">
+  <mat-card class="imx-full-card">
+    <imx-decision-reason
+      class="imx-decision-reason"
+      [reasonStandard]="data.actionParameters.justification"
+      [reasonFreetext]="data.actionParameters.reason"
+      (controlCreated)="formGroup.addControl('reason', $event)"
+      data-imx-identifier="request-config-parameter-reason"
+    >
+    </imx-decision-reason>
+  </mat-card>
+</div>
+
+<div eui-sidesheet-actions class="request-config__action-buttons">
+  <button
+    mat-stroked-button
+    color="warn"
+    [disabled]="formGroup.invalid"
+    (click)="sendReason()"
+    data-imx-identifier="requests-selector-apply-selection"
+  >
+    <eui-icon icon="delete"></eui-icon>
+    <span translate>#LDS#Exclude members</span>
+  </button>
+</div>

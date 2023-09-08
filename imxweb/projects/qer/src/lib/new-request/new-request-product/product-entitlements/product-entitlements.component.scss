@@ -1,0 +1,11 @@
+:host {
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+
+  imx-data-source-toolbar {
+    margin-top: 16px;
+    margin-bottom: 12px;
+  }
+}

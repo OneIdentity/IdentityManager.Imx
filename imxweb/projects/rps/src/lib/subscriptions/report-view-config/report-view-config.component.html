@@ -1,17 +1,44 @@
-<div eui-sidesheet-content>
-  <form [formGroup]="reportFormGroup">
-    <imx-report-selector formControlName="reportTable"></imx-report-selector>
-
-    <imx-cdr-editor *ngFor="let cdr of parameterCdrList" [cdr]="cdr" (controlCreated)="addFormControl($event)">
-    </imx-cdr-editor>
-  </form>
-
+<div eui-sidesheet-content class="imx-flex-content">
   <!-- report generation errors should appear here -->
   <imx-usermessage class="errormessages" panelClass="imx-small-message" [target]="'sidesheet'"></imx-usermessage>
 
+  <form [formGroup]="reportFormGroup" class="imx-report-form">
+    <mat-card>
+      <imx-report-selector [controlHeigth]="400" formControlName="reportTable"></imx-report-selector>
+    </mat-card>
+    <mat-card *ngIf="reportFormGroup.controls.reportTable.value" class="imx-flex-card">
+      <imx-busy-indicator *ngIf="isLoading"></imx-busy-indicator>
+
+      <div class="imx-cdr-container" *ngIf="!isLoading">
+        <div class="imx-export-type">
+          <mat-radio-group formControlName="viewType" *ngIf="isListReport">
+            <mat-radio-button [value]="'view'" data-imx-identifier="export-view-config-view-in-browser">
+              {{ '#LDS#View in browser' | translate }}
+            </mat-radio-button>
+            <mat-radio-button [value]="'export'" data-imx-identifier="export-view-config-export">
+              {{ '#LDS#Export' | translate }}
+            </mat-radio-button>
+          </mat-radio-group>
+          <imx-cdr-editor
+            *ngIf="formatCdr && reportFormGroup.controls.viewType.value === 'export'"
+            [cdr]="formatCdr"
+            (controlCreated)="reportFormGroup.controls.exportType = $event"
+          >
+          </imx-cdr-editor>
+        </div>
+        <imx-cdr-editor *ngFor="let cdr of parameterCdrList" [cdr]="cdr" (controlCreated)="addFormControl($event)"> </imx-cdr-editor>
+        <div class="imx-no-results" *ngIf="!hasParameter">
+          <eui-icon icon="reports"></eui-icon>
+          <p translate>#LDS#For this report, no parameters must be specified.</p>
+        </div>
+      </div>
+    </mat-card>
+  </form>
 </div>
 
-<div eui-sidesheet-actions color="white">
-  <button color="primary" mat-raised-button (click)="viewReport()" [disabled]="reportFormGroup.invalid"
-    data-imx-identifier="view-config-view-report-button">{{'#LDS#View report' |translate}}</button>
+<div eui-sidesheet-actions>
+  <button color="primary" mat-raised-button (click)="viewReport()" [disabled]="reportFormGroup.invalid || isLoading" data-imx-identifier="view-config-view-report-button">
+    <eui-icon icon="reports"></eui-icon>
+    <span translate>#LDS#View report</span>
+  </button>
 </div>

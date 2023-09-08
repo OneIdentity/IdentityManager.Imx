@@ -1,11 +1,50 @@
-<div eui-sidesheet-content>
-  <mat-card>
-    <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"></imx-cdr-editor>
-  </mat-card>
-</div>
+<mat-tab-group>
+  <mat-tab [label]="'#LDS#Heading Information' | translate">
+    <ng-template matTabContent>
+      <div eui-sidesheet-content>
+        <mat-card>
+          <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"></imx-cdr-editor>
+        </mat-card>
+      </div>
 
-<div eui-sidesheet-actions color="white">
-  <button mat-stroked-button [euiDownload]="reportDownload" class="justify-start" data-imx-identifier="rules-sidesheet-button-download-report">
-    {{ '#LDS#Download report' | translate }}
-  </button>
-</div>
+      <div eui-sidesheet-actions>
+        <button mat-stroked-button [euiDownload]="reportDownload" class="justify-start" data-imx-identifier="rules-sidesheet-button-download-report">
+          {{ '#LDS#Download report' | translate }}
+        </button>
+      </div>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab *ngIf="data" [label]="'#LDS#Heading Rule Violations' | translate">
+    <ng-template matTabContent>
+      <div class="imx-mat-tab-container">
+        <imx-violations-per-rule
+          [uidRule]="data.selectedRule.GetEntity().GetKeys()[0]"
+          [isMControlPerViolation]="data.isMControlPerViolation">
+        </imx-violations-per-rule>
+      </div>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab *ngIf="data" [label]="'#LDS#Heading Mitigating Controls' | translate">
+    <ng-template matTabContent>
+      <imx-mitigating-controls-rules
+        [isMControlPerViolation]="data.isMControlPerViolation"
+        [mControls]="data.mControls"
+        [uidNonCompliance]="uidNonCompliance"
+        [uidCompliance]="uidCompliance"
+        [sidesheetRef]="sidesheetRef"
+        [canEdit]="data.canEdit"
+      ></imx-mitigating-controls-rules
+    ></ng-template>
+  </mat-tab>
+
+  <mat-tab label="{{'#LDS#Heading Hyperview' | translate}}">
+    <ng-template matTabContent>
+      <imx-object-hyperview
+        [objectType]="data?.selectedRule?.GetEntity()?.TypeName"
+        [objectUid]="data?.selectedRule?.GetEntity()?.GetKeys()[0]">
+      </imx-object-hyperview>
+    </ng-template>
+  </mat-tab>
+</mat-tab-group>

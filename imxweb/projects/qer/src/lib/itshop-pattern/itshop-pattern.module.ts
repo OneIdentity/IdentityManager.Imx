@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -39,9 +39,12 @@ import {
   ClassloggerService,
   DataSourceToolbarModule,
   DataTableModule,
+  HELP_CONTEXTUAL,
+  HelpContextualModule,
   MenuItem,
   MenuService,
   RouteGuardService,
+  SelectedElementsModule,
   UserMessageModule
 } from 'qbm';
 import { ItshopPatternComponent } from './itshop-pattern.component';
@@ -52,13 +55,17 @@ import { ServiceItemsModule } from '../service-items/service-items.module';
 import { DuplicatePatternItemsComponent } from './duplicate-pattern-items/duplicate-pattern-items.component';
 import { UserModule } from '../user/user.module';
 import { ItshopPatternGuardService } from '../guards/itshop-pattern-guard.service';
+import { ItshopPatternItemEditComponent } from './itshop-pattern-item-edit/itshop-pattern-item-edit.component';
 
 const routes: Routes = [
   {
     path: 'itshop/requesttemplates',
     component: ItshopPatternComponent,
     canActivate: [RouteGuardService, ItshopPatternGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
+    data:{
+      contextId: HELP_CONTEXTUAL.RequestTemplates
+    }
   }
 ];
 
@@ -68,7 +75,8 @@ const routes: Routes = [
     ItshopPatternSidesheetComponent,
     ItshopPatternCreateSidesheetComponent,
     ItshopPatternAddProductsComponent,
-    DuplicatePatternItemsComponent
+    DuplicatePatternItemsComponent,
+    ItshopPatternItemEditComponent
   ],
   imports: [
     CdrModule,
@@ -83,7 +91,9 @@ const routes: Routes = [
     TranslateModule,
     RouterModule.forChild(routes),
     UserMessageModule,
-    UserModule
+    UserModule,
+    SelectedElementsModule,
+    HelpContextualModule,
   ]
 })
 export class ItshopPatternModule {
@@ -98,7 +108,7 @@ export class ItshopPatternModule {
 
   private setupMenu(): void {
     this.menuService.addMenuFactories(
-      (preProps: string[], groups: string[], projectConfig: QerProjectConfig & ProjectConfig) => {
+      (preProps: string[], features: string[], projectConfig: QerProjectConfig & ProjectConfig) => {
         const items: MenuItem[] = [];
         const requestTemplatesEnabled = projectConfig.ITShopConfig.VI_ITShop_ProductSelectionFromTemplate;
 
@@ -109,7 +119,7 @@ export class ItshopPatternModule {
               navigationCommands: {
                 commands: ['itshop', 'requesttemplates']
               },
-              title: '#LDS#Menu Entry Request templates',
+              title: '#LDS#Menu Entry Product bundles',
               sorting: '10-50',
             }
           );

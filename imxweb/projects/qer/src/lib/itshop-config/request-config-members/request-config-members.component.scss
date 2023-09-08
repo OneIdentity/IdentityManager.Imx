@@ -1,27 +1,44 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
-.membership-view-toggle {
-  margin: 32px 32px 0;
-
-  .mat-button-toggle-group {
-    .mat-button-toggle-checked {
-      background-color: $corbin-pastel;
-    }
+:host {
+  .membership-view-toggle {
+    margin-bottom: 32px;
+    display: flex;
+    justify-content: space-between;
   }
 }
 
-.request-config {
-  .request-config__content {
-    .request-config__content-main {
-      &.no-top-padding {
-        padding-top: 16px;
+// Theming section
+:host {
+  .membership-view-toggle {
+    .mat-button-toggle-group {
+      .mat-button-toggle-checked {
+        background-color: $color-orange-20;
       }
     }
   }
 }
 
-@media screen and (max-width: 768px) {
-  .mat-button-toggle-group {
-    width: 100%;
+.eui-dark-theme {
+  :host {
+    .membership-view-toggle {
+      .mat-button-toggle-group {
+        .mat-button-toggle-checked {
+          background-color: $color-orange-80;
+        }
+      }
+    }
+  }
+}
+
+.eui-contrast-theme{
+  :host {
+    .membership-view-toggle {
+      .mat-button-toggle-group {
+        .mat-button-toggle-checked {
+          background-color: $color-orange-40;
+        }
+      }
+    }
   }
 }

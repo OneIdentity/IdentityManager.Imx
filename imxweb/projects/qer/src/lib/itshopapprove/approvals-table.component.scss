@@ -1,80 +1,182 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '../../../../../shared/scss/common-table.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  flex-grow: 1;
-}
+  @include imx-flex-fill-control-hidden-overflow();
 
-.recommendation-approve-icon {
-  color: $aspen-green;
-}
+  .mat-stroked-button,
+  .mat-raised-button {
+    @include imx-icon-for-image-button();
+  }
 
-.recommendation-deny-icon {
-  color: $phoenix-red;
-}
+  .recommendation-approve-icon {
+    color: $color-green-60;
+  }
 
-.escalation-approver-toggle {
-  margin: 0.5em;
-}
+  .recommendation-deny-icon {
+    color: $color-red-60;
+  }
 
-.imx-table-container {
-  flex-grow: 1;
-  overflow: auto;
-  margin-top: 10px;
-}
+  .escalation-approver-toggle {
+    margin: 0.5em;
+  }
 
-.imx-button-bar {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 10px;
+  .imx-table-container {
+    flex-grow: 1;
+    overflow: auto;
+  }
 
-  > * {
-    margin-left: 5px;
+  .imx-button-bar {
+    @include imx-button-bar();
+  }
+
+  .imx-decision {
+    @include imx-button-column-right();
+    > button:not(:last-of-type) {
+      margin-right: 5px;
+    }
+  }
+
+  @media only screen and (max-width: 1024px) {
+    ::ng-deep .mat-column-OrderDate,
+    ::ng-deep .mat-column-decision {
+      display: none;
+    }
+  }
+
+  .toggle-wrapper {
+    /* so that the tooltip on the toggle is centered */
+    flex-grow: 0;
+    display: inline;
+  }
+
+  .imx-badge-container {
+    margin: 5px 5px 5px 0;
+  }
+
+  imx-data-source-toolbar {
+    margin-top: 8px;
+  }
+
+  .imx-data-tree-container {
+    overflow: hidden;
+    background-color: $color-gray-0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .imx-icons-container {
+    padding-right: 15px;
+    .table-icon {
+      display: flex;
+      align-items: center;
+      font-weight: 600;
+      height: 14px;
+      &:not(:first-of-type) {
+        margin-left: 8px;
+        padding-left: 8px;
+      }
+      .mat-icon,
+      .eui-icon {
+        padding-right: 6px;
+      }
+    }
   }
 }
 
-.imx-decision {
-  > * {
-    margin-right: 5px;
-    margin-bottom: 3px;
-    margin-top: 3px;
+:host {
+  .imx-icons-container {
+    .table-icon {
+      color: $color-gray-60;
+      &--warning {
+        .eui-icon {
+          color: $color-orange-60;
+        }
+      }
+      &--primary {
+        .mat-icon {
+          color: $color-blue-60;
+        }
+      }
+      &--alert {
+        .eui-icon,
+        span {
+          color: $color-red-60;
+        }
+      }
+      &:not(:first-of-type) {
+        border-left: 1px solid $color-gray-20;
+      }
+    }
   }
 }
 
-/* Priority=low */
-.imx-priority-100 {
-  color: $aspen-green;
-}
+.eui-dark-theme {
+  :host {
+    .imx-data-tree-container {
+      background-color: $color-gray-70;
+    }
+    .imx-icons-container {
+      .table-icon {
+        color: $color-gray-10;
 
-/* Priority=medium */
-.imx-priority-200 {
-  color: $corbin-orange;
-}
-
-/* Priority=high */
-.imx-priority-300 {
-  color: $phoenix-red;
-}
-
-@media only screen and (max-width: 1024px) {
-  ::ng-deep .mat-column-OrderDate,
-  ::ng-deep .mat-column-decision {
-    display: none;
+        &--warning {
+          .eui-icon {
+            color: $color-orange-40;
+          }
+        }
+        &--primary {
+          .mat-icon {
+            color: $color-blue-40;
+          }
+        }
+        &--alert {
+          .eui-icon,
+          span {
+            color: $color-red-40;
+          }
+        }
+        &:not(:first-of-type) {
+          border-left: 1px solid $color-gray-10;
+        }
+      }
+    }
   }
 }
 
-.toggle-wrapper {
-  /* so that the tooltip on the toggle is centered */
-  flex-grow: 0;
-  display: inline;
+.eui-contrast-theme {
+  :host {
+    .imx-data-tree-container {
+      background-color: $color-gray-100;
+    }
+    .imx-icons-container {
+      .table-icon {
+        color: $color-gray-0;
+        &--warning {
+          .eui-icon {
+            color: $color-orange-40;
+          }
+        }
+        &--primary {
+          .mat-icon {
+            color: $color-blue-40;
+          }
+        }
+        &--alert {
+          .eui-icon,
+          span {
+            color: $color-red-40;
+          }
+        }
+        &:not(:first-of-type) {
+          border-left: 1px solid $color-gray-10;
+        }
+      }
+    }
+  }
 }
 
-.imx-badge-container {
-  margin: 5px 5px 5px 0;
-}
-
-imx-data-source-toolbar {
-  margin: 8px 0;
+.hidden {
+  visibility: hidden;
 }

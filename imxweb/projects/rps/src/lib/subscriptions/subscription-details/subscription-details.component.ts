@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, Inject, OnDestroy } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 import { OverlayRef } from '@angular/cdk/overlay';
@@ -39,7 +39,7 @@ import { ReportSubscription } from '../report-subscription/report-subscription';
 })
 export class SubscriptionDetailsComponent implements OnDestroy {
 
-  public readonly formGroup = new FormGroup({});
+  public readonly formGroup = new UntypedFormGroup({});
   public readonly cdrList: ColumnDependentReference[];
   public closeClickSubscription: Subscription;
   public reload = false;
@@ -66,7 +66,7 @@ export class SubscriptionDetailsComponent implements OnDestroy {
     let overlayRef: OverlayRef;
     setTimeout(() => overlayRef = this.busyService.show());
     try {
-      await this.subscription.submit();
+      await this.subscription.submit(true);
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
       this.reload = true;

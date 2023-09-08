@@ -1,4 +1,7 @@
-<h1 class="mat-headline">{{'#LDS#Heading Shopping Cart' | translate}}</h1>
+<h1 class="mat-headline">
+  <span>{{'#LDS#Heading Shopping Cart' | translate}}</span>
+  <imx-help-contextual></imx-help-contextual>
+</h1>
 
 <div mat-card-avatar>
   <mat-icon>shopping_cart</mat-icon>
@@ -6,7 +9,7 @@
 <h2> {{'#LDS#Your shopping cart is currently empty.' | translate}} </h2>
 
 <mat-card class="mat-elevation-z0">
-  <button mat-raised-button color="primary" type="button" [routerLink]="['/productselection']"
+  <button mat-raised-button color="primary" type="button" [routerLink]="['/newrequest/allProducts']"
     data-imx-identifier="emptycart-link-newproducts">
     {{ '#LDS#Start new request' | translate }}
   </button>

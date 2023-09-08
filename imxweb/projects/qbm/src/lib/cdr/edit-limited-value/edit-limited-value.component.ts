@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 
 import { EditorBase } from '../editor-base';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
@@ -36,12 +36,18 @@ import { ClassloggerService } from '../../classlogger/classlogger.service';
 @Component({
   selector: 'imx-edit-limited-value',
   templateUrl: './edit-limited-value.component.html',
-  styleUrls: ['./edit-limited-value.component.scss']
+  styleUrls: ['./edit-limited-value.component.scss'],
 })
 export class EditLimitedValueComponent extends EditorBase<string | number> {
-  public readonly control = new FormControl(undefined, { updateOn: 'blur' });
+  public readonly control = new UntypedFormControl(undefined, { updateOn: 'blur' });
 
   constructor(logger: ClassloggerService) {
     super(logger);
+  }
+
+  public removeAssignment(evt: Event){
+    evt.stopPropagation();
+    this.control.setValue('');
+    this.control.markAsDirty();
   }
 }

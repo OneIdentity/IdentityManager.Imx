@@ -1,0 +1,15 @@
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '../new-request-global.scss';
+
+:host {
+  .imx-discard-button {
+    background-color: $color-red-60;
+    color: $color-gray-0;
+  }
+
+  .imx-action-button {
+    display: flex;
+    align-items: center;
+    column-gap: 5px;
+  }
+}

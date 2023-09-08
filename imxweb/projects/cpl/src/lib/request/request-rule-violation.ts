@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -43,14 +43,9 @@ export class RequestRuleViolation implements IExtension {
     if (this.dstSettings.extendedData) {
       for (let i = 0; i < this.dstSettings.dataSource.Data.length; i++) {
         const item = this.dstSettings.dataSource.Data[i] as ItshopRequest;
-
-        this.dstSettings.extendedData.forEach((element) => {
-          element.WorkflowHistory.Entities.forEach((wh: EntityData) => {
-            if (wh.Columns['UID_ComplianceRule'].Value) {
-              item.complianceRuleViolation = true;
-            }
-          });
-        });
+        item.complianceRuleViolation = item.pwoData.WorkflowHistory.Entities.filter((wh: EntityData) =>
+          wh.Columns['UID_ComplianceRule']?.Value?.length > 0
+        ).length > 0;
       }
     }
 

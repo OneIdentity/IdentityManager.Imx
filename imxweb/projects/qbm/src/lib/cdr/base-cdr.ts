@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,16 +27,28 @@
 import { IEntityColumn } from 'imx-qbm-dbts';
 
 import { ColumnDependentReference } from './column-dependent-reference.interface';
+import { Subject } from 'rxjs';
 
 /**
  * Generic implementation of a ColumnDependentReference.
  */
 export class BaseCdr implements ColumnDependentReference {
   public hint: string;
+  public minLength?: number;
+  public minlengthSubject = new Subject<number>();
 
-  constructor(public readonly column: IEntityColumn, public readonly display?: string) { }
+  constructor(public readonly column: IEntityColumn, public readonly display?: string, public readonly isReadOnlyColumn?: boolean) {}
 
   public isReadOnly(): boolean {
-    return this.column == null || !this.column.GetMetadata().CanEdit();
+    if (this.isReadOnlyColumn !== undefined) {
+      return this.column == null || this.isReadOnlyColumn || !this.column.GetMetadata().CanEdit();
+    } else {
+      return this.column == null || !this.column.GetMetadata().CanEdit();
+    }
+  }
+
+  public updateMinLength(value: number): void {
+    this.minLength = value;
+    this.minlengthSubject.next(value);
   }
 }

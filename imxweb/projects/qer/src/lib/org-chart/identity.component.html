@@ -9,10 +9,6 @@
     {{ identity.GetEntity().GetDisplay() }}
   </div>
   <div class="identity-title">
-    <ng-container *ngIf="isExternal()"> {{'#LDS#External'|translate}}, </ng-container>
-    <ng-container *ngIf="isDelegated()">{{'#LDS#Delegated'|translate}}, </ng-container>
-    {{ identity.PersonalTitle.Column.GetDisplayValue() }}<ng-container
-      *ngIf="identity.PersonalTitle.Column.GetDisplayValue()">, </ng-container>
-    {{ identity.EmployeeType.Column.GetDisplayValue() }}
+    {{ buildSubTitle() }}
   </div>
 </div>

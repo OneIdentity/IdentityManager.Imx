@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,30 +25,44 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Router, Route } from '@angular/router';
-import { PortalPersonGroupmemberships, UnsConfig } from 'imx-api-tsb';
-import { DynamicMethodService, ExtService, MenuService, TabItem } from 'qbm';
+import { Route, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+
+import { UnsConfig } from 'imx-api-tsb';
+import { CachedPromise } from 'imx-qbm-dbts';
+import {
+  AuthenticationService,
+  CacheService,
+  DynamicMethodService,
+  ExtService,
+  HELP_CONTEXTUAL,
+  ISessionState,
+  MenuService,
+  TabItem
+} from 'qbm';
 import {
   DataExplorerRegistryService,
-  IdentityRoleMembershipsService,
   IRequestableEntitlementType,
-  ObjectSheetService,
+  MyResponsibilitiesRegistryService,
+  QerPermissionsService,
+  RequestableEntitlementType,
   RequestableEntitlementTypeService,
 } from 'qer';
 import { AccountsExtComponent } from './accounts/account-ext/accounts-ext.component';
 import { DataExplorerAccountsComponent } from './accounts/accounts.component';
 import { isTsbNameSpaceAdminBase } from './admin/tsb-permissions-helper';
 import { DataExplorerGroupsComponent } from './groups/groups.component';
-import { RequestableEntitlementType } from 'qer';
-import { UnsGroupObjectSheetComponent } from './objectsheet-unsgroup/unsgroup.component';
-import { TsbApiService } from './tsb-api-client.service';
 import { ReportButtonExtComponent } from './report-button-ext/report-button-ext.component';
+import { TsbApiService } from './tsb-api-client.service';
+import { GroupMembershipsExtComponent } from './groups/group-memberships-ext/group-memberships-ext.component';
+
 @Injectable({ providedIn: 'root' })
 export class InitService {
-  private cachedUnsConfig: Promise<UnsConfig>;
+  private cachedUnsConfig: CachedPromise<UnsConfig>;
+  private onSessionResponse: Subscription;
 
   constructor(
-    private readonly objectsheetSvc: ObjectSheetService,
+    private readonly authentication: AuthenticationService,
     private readonly router: Router,
     private readonly dataExplorerRegistryService: DataExplorerRegistryService,
     private readonly entlTypeService: RequestableEntitlementTypeService,
@@ -56,36 +70,52 @@ export class InitService {
     private readonly dynamicMethodService: DynamicMethodService,
     private readonly menuService: MenuService,
     private readonly extService: ExtService,
-    private readonly identityRoleService: IdentityRoleMembershipsService
-  ) {
+    private readonly cacheService: CacheService,
+    private readonly myResponsibilitiesRegistryService: MyResponsibilitiesRegistryService,
+    private readonly permissions: QerPermissionsService
+  ) {}
+
+  public ngOnDestroy(): void {
+    if (this.onSessionResponse) {
+      this.onSessionResponse.unsubscribe();
+    }
   }
 
   public async onInit(routes: Route[]): Promise<void> {
-    this.objectsheetSvc.register('UNSGroup', UnsGroupObjectSheetComponent);
-    this.extService.register('identityReports', {
-      instance: ReportButtonExtComponent
+    this.cachedUnsConfig = this.cacheService.buildCache(() => this.tsbApiService.client.portal_uns_config_get());
+
+    this.onSessionResponse = this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
+      if (sessionState.IsLoggedIn) {
+        if(await this.permissions.isPersonManager()){
+          this.extService.register('identityReportsManager', {
+            instance: ReportButtonExtComponent,
+            inputData: {
+              caption: '#LDS#Download report on user accounts of identities you are directly responsible for'
+            }
+          });
+        }
+      }
     });
     this.extService.register('identityAssignment', {
       instance: AccountsExtComponent,
-      inputData:
-      {
+      inputData: {
         id: 'userAccounts',
         label: '#LDS#User accounts',
-        checkVisibility: async _ => true
-      }, sortOrder: 10
+        checkVisibility: async (_) => true,
+      },
+      sortOrder: 10,
     } as TabItem);
 
-    this.identityRoleService.addTarget({
-      table: 'UNSAccountInUNSGroup',
-      entitySchema: this.tsbApiService.typedClient.PortalPersonGroupmemberships.GetSchema(),
-      type: PortalPersonGroupmemberships,
-      controlInfo: {
-        label: '#LDS#System entitlements',
-        index: 20
-      },
-      get: async (uidPerson:string, parameter: any) => this.tsbApiService.client.portal_person_groupmemberships_get(
-        uidPerson, parameter)
-    });
+     this.extService.register('identityAssignment', {
+       instance: GroupMembershipsExtComponent,
+       inputData: {
+         id: 'groups',
+         label: '#LDS#System entitlements',
+         checkVisibility: async (_) => true,
+       },
+       sortOrder: 10,
+     } as TabItem);
+
 
     this.addRoutes(routes);
     this.setupMenu();
@@ -93,8 +123,8 @@ export class InitService {
     this.entlTypeService.Register(() => this.loadUnsTypes());
 
     this.dataExplorerRegistryService.registerFactory(
-      (preProps: string[], groups: string[]) => {
-        if (!preProps.includes('ITSHOP') || !isTsbNameSpaceAdminBase(groups)) {
+      (preProps: string[], features: string[]) => {
+        if (!preProps.includes('ITSHOP') || !isTsbNameSpaceAdminBase(features)) {
           return;
         }
         return {
@@ -102,11 +132,11 @@ export class InitService {
           sortOrder: 2,
           name: 'accounts',
           caption: '#LDS#User accounts',
-          icon: 'account'
+          icon: 'account',
         };
       },
-      (preProps: string[], groups: string[]) => {
-        if (!preProps.includes('ITSHOP') || !isTsbNameSpaceAdminBase(groups)) {
+      (preProps: string[], features: string[]) => {
+        if (!preProps.includes('ITSHOP') || !isTsbNameSpaceAdminBase(features)) {
           return;
         }
         return {
@@ -114,38 +144,39 @@ export class InitService {
           sortOrder: 3,
           name: 'groups',
           caption: '#LDS#System entitlements',
-          icon: 'usergroup'
+          icon: 'usergroup',
+          contextId: HELP_CONTEXTUAL.DataExplorerGroups
         };
-      },
+      }
     );
 
     this.entlTypeService.Register(async () => [
-      new RequestableEntitlementType('TSBAccountDef',
-        this.tsbApiService.apiClient,
-        'UID_TSBAccountDef',
-        this.dynamicMethodService)
+      new RequestableEntitlementType('TSBAccountDef', this.tsbApiService.apiClient, 'UID_TSBAccountDef', this.dynamicMethodService),
     ]);
+    this.myResponsibilitiesRegistryService.registerFactory((preProps: string[], features: string[]) => ({
+      instance: DataExplorerGroupsComponent,
+      sortOrder: 3,
+      name: 'UNSGroup',
+      caption: '#LDS#System entitlements',
+      icon: 'usergroup',
+      contextId: HELP_CONTEXTUAL.MyResponsibilitiesGroups
+    }));
   }
 
   private async loadUnsTypes(): Promise<IRequestableEntitlementType[]> {
-    // cache the UnsConfig
-    if (!this.cachedUnsConfig) {
-      this.cachedUnsConfig = this.tsbApiService.client.portal_uns_config_get();
-    }
-    const config = await this.cachedUnsConfig;
+    const config = await this.cachedUnsConfig.get();
     const types: IRequestableEntitlementType[] = [];
     for (const key of Object.keys(config.ShopAssign)) {
-      types.push(new RequestableEntitlementType(key,
-        this.tsbApiService.apiClient,
-        config.ShopAssign[key].GroupColumnName,
-        this.dynamicMethodService));
+      types.push(
+        new RequestableEntitlementType(key, this.tsbApiService.apiClient, config.ShopAssign[key].GroupColumnName, this.dynamicMethodService)
+      );
     }
     return types;
   }
 
   private addRoutes(routes: Route[]): void {
     const config = this.router.config;
-    routes.forEach(route => {
+    routes.forEach((route) => {
       config.unshift(route);
     });
     this.router.resetConfig(config);
@@ -168,12 +199,12 @@ export class InitService {
               route: 'claimgroup',
               title: '#LDS#Menu Entry System entitlement ownership',
               sorting: '30-20',
-            }
-          ]
+            },
+          ],
         };
       },
-      (preProps: string[], groups: string[]) => {
-        if (!preProps.includes('ITSHOP') || !isTsbNameSpaceAdminBase(groups)) {
+      (preProps: string[], features: string[]) => {
+        if (!preProps.includes('ITSHOP') || !isTsbNameSpaceAdminBase(features)) {
           return null;
         }
 
@@ -188,7 +219,7 @@ export class InitService {
               title: '#LDS#Menu Entry Data Explorer',
               sorting: '40-10',
             },
-          ]
+          ],
         };
       }
     );

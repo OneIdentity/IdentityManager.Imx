@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,13 @@
  *
  */
 
-import { PortalCartitemInteractive } from 'imx-api-qer';
+import { Observable } from 'rxjs';
+import { PortalCartitem } from 'imx-api-qer';
 import { ExtendedEntityWrapper } from '../../parameter-data/extended-entity-wrapper.interface';
 
 export interface CartItemEditParameter {
-    entityWrapper: ExtendedEntityWrapper<PortalCartitemInteractive>;
+    entityWrapper: ExtendedEntityWrapper<PortalCartitem>;
+    multiple: boolean;
     cloneItem?: () => Promise<void>;
+    updated: Observable<any>;
 }

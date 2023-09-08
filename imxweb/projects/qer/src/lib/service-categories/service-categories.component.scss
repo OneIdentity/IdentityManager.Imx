@@ -1,20 +1,22 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import '../../../../../shared/scss/common-table.scss';
 
 :host {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  height: 100%;
 }
 
 .heading-wrapper {
   display: flex;
+  align-items: flex-start;
 
   .helper-alert {
     display: flex;
     margin: 0 0 20px auto;
     align-self: flex-end;
     width: 50%;
-
     span {
       display: block;
     }
@@ -26,23 +28,43 @@
 }
 
 .imx-data-tree {
-  overflow: auto;
-  background-color: $white;
-  display: flex;
-  flex-direction: column;
+ @include imx-flex-fill-control-hidden-overflow();
+  margin-bottom: 3px;
+  margin-right: 3px;
+  background-color: $color-gray-0;
 
-  >:first-child {
+  > :first-child {
     flex: 1 1 auto;
-  }
-
-  .imx-create-button {
-    margin-top: 20px;
-    display: flex;
-    justify-content: end;
   }
 
   .imx-edit-category-button {
     align-self: center;
     margin-left: 5px;
+  }
+
+  .imx-service-category-empty {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.imx-button-bar {
+  @include imx-button-bar();
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-data-tree {
+      background-color: $color-gray-70;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-data-tree {
+      background-color: $color-gray-90;
+    }
   }
 }

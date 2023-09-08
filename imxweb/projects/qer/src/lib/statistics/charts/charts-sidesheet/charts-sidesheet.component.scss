@@ -1,0 +1,328 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import '../../stat-mixins.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+
+  ::ng-deep .mat-tab-group {
+    height: 100%;
+    flex: 1 1 auto;
+    overflow: auto;
+
+    ::ng-deep .mat-tab-body-wrapper {
+      height: 100%;
+    }
+
+    ::ng-deep .mat-tab-body-active {
+      position: unset;
+    }
+  }
+
+  .tab-wrapper {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .point-status-container {
+    display: flex;
+    margin-bottom: 20px;
+    @include EUI-Elevation-1;
+  }
+
+  .status-wrapper {
+    display: flex;
+    align-items: flex-start;
+
+    .status-item {
+      padding: 0 16px;
+    }
+
+    > :last-child {
+      padding-right: 0;
+    }
+  }
+
+  .chart-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    @include EUI-Elevation-1;
+  }
+
+  .chart-title {
+    font-weight: 400;
+    margin-bottom: 10px;
+  }
+
+  .chart-wrapper {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    margin: auto;
+  }
+
+  .chart-zoomable {
+    cursor: crosshair;
+  }
+
+  .imx-no-data {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    .imx-no-data-top {
+      display: flex;
+      align-items: center;
+
+      eui-icon {
+        font-size: min(70px, max(10vw, 48px));
+        margin-right: 20px;
+      }
+
+      .imx-no-data-text {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        h2 {
+          font-size: min(50px, max(5vw, 20px));
+          font-weight: 700;
+        }
+      }
+    }
+  }
+
+  .below-tabs {
+    display: flex;
+    padding: 0 20px 20px;
+    justify-content: space-between;
+    
+    button {
+      display: flex;
+      @include EUI-Elevation-1;
+      @include Ease-Transition;
+      eui-icon {
+        margin-left: 24px;
+      }
+    }
+  }
+}
+
+// Theming
+:host {
+  @include Stat-Colors;
+  @include Point-Stat-Colors;
+
+  ::ng-deep .mat-tab-labels {
+    background-color: $color-gray-0;
+  }
+
+  .status-title {
+    color: $color-gray-40;
+  }
+
+  .point-status-container,
+  .chart-container {
+    border: 1px solid $color-gray-10;
+  }
+
+  .status-wrapper > :not(:last-child) {
+    border-right: 1px solid $color-gray-10;
+  }
+
+  .imx-no-data-top {
+    h2,
+    eui-icon {
+      color: $color-gray-20;
+    }
+    span {
+      color: $color-gray-60;
+    }
+  }
+
+  ::ng-deep .bb-zoom-reset {
+    background-color: $color-gray-0;
+    border-color: $color-gray-20;
+    @include EUI-Elevation-1;
+
+    &:hover {
+      background-color: $color-orange-20;
+      @include Ease-Transition;
+    }
+  }
+
+  .toggle-button-wrapper {
+    button {
+      border: 1px solid $color-gray-20;
+    }
+
+    > :hover {
+      background-color: $color-orange-20;
+    }
+  }
+
+  .colored-org-icon,
+  .colored-org-text {
+    color: $color-blue-60;
+  }
+
+  .colored-favorite-icon,
+  .colored-favorite-text {
+    color: $color-orange-60;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    @include Stat-Colors(eui-dark-theme);
+    @include Point-Stat-Colors(eui-dark-theme);
+
+    ::ng-deep .mat-tab-labels {
+      background-color: $color-gray-70;
+    }
+
+    .point-status-container,
+    .chart-container {
+      border: 1px solid $color-gray-50;
+    }
+
+    .status-title {
+      color: $color-gray-30;
+    }
+
+    .status-wrapper > :not(:last-child) {
+      border-right: 1px solid $color-gray-60;
+    }
+
+    ::ng-deep .bb-zoom-reset {
+      background-color: $color-gray-70;
+      border-color: $color-gray-60;
+
+      &:hover {
+        @include Ease-Transition;
+        background-color: $color-orange-80;
+      }
+    }
+
+    .imx-no-data-top {
+      h2,
+      eui-icon {
+        color: $color-gray-20;
+      }
+      span {
+        color: $color-gray-10;
+      }
+    }
+
+    .toggle-button-wrapper {
+      button {
+        border: 1px solid $color-gray-60;
+      }
+
+      > :hover {
+        background-color: $color-orange-80;
+      }
+    }
+
+    .colored-org-icon,
+    .colored-org-text {
+      color: $color-blue-40;
+    }
+
+    .colored-favorite-icon,
+    .colored-favorite-text {
+      color: $color-orange-40;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+   
+    ::ng-deep .mat-tab-labels {
+      background-color: $color-gray-80;
+    }
+    @include Stat-Colors(eui-dark-theme);
+    @include Point-Stat-Colors(eui-dark-theme);
+
+    .point-status-container,
+    .chart-container {
+      border: 1px solid $color-gray-70;
+    }
+
+    .status-title {
+      color: $color-gray-30;
+    }
+
+    .status-wrapper > :not(:last-child) {
+      border-right: 1px solid $color-gray-80;
+    }
+
+    ::ng-deep .bb-zoom-reset {
+      background-color: $color-gray-90;
+      border-color: $color-gray-80;
+
+      &:hover {
+        @include Ease-Transition;
+        background-color: $color-orange-90;
+      }
+    }
+
+    ::ng-deep .bb-axis line,
+    ::ng-deep .bb-axis .domain {
+      stroke: $color-gray-0;
+    }
+
+    ::ng-deep .bb-axis text,
+    ::ng-deep .bb-legend text {
+      fill: $color-gray-0;
+    }
+
+    ::ng-deep .bb-tooltip-container,
+    ::ng-deep .bb-tooltip th {
+      color: $color-gray-100;
+    }
+
+    ::ng-deep .bb-color-pattern {
+      background-image: url('#{$color-blue-40};#{$color-red-40};#{$color-green-40};#{$color-yellow-40};#{$color-purple-40};#{$color-pink-40};#{$color-gray-60};');
+    }
+
+    .imx-no-data-top {
+      h2,
+      eui-icon {
+        color: $color-gray-20;
+      }
+      span {
+        color: $color-gray-10;
+      }
+    }
+
+    .toggle-button-wrapper {
+      button {
+        border: 1px solid $color-gray-80;
+      }
+
+      > :hover {
+        background-color: $color-orange-80;
+      }
+    }
+
+    .colored-org-icon,
+    .colored-org-text {
+      color: $color-blue-40;
+    }
+
+    .colored-favorite-icon,
+    .colored-favorite-text {
+      color: $color-orange-40;
+    }
+  }
+}

@@ -1,5 +1,5 @@
 @import 'variables';
-
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 /* Elemental UI */
 .imx-eui-icon {
@@ -515,11 +515,6 @@ textarea:focus {
   position: absolute !important;
 }
 
-.imx-loss-preview-dialog-wrapper .mat-dialog-container {
-  padding: 0;
-  overflow: hidden;
-}
-
 /* #region Elemental UI fixes */
 
 .mat-form-field-infix .mat-select-trigger {
@@ -610,3 +605,27 @@ mat-form-field {
 .cdk-overlay-pane .mat-menu-panel {
     max-width: initial;
 }
+
+.eui-dark-theme {
+    .imx-title {
+      color: $color-gray-5;
+    }
+
+    .simpleText {
+      color: $color-gray-5;
+    }
+}
+
+.eui-contrast-theme {
+  .imx-title {
+    color: $color-gray-0;
+  }
+
+  .simpleText {
+    color: $color-gray-0;
+  }
+}
+
+// Fix tooltip flash bug on delayed tooltips: https://github.com/angular/components/issues/24614
+.mat-tooltip-hide { display: none!important; }
+

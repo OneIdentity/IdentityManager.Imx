@@ -1,51 +1,65 @@
 <div *ngIf="data?.fkRelations" class="imx-fk-selector">
   <!-- more than 3 candidate tables -> show combo box -->
-  <mat-select *ngIf="data.fkRelations.length > 3" [(ngModel)]="selectedTable" (selectionChange)="tableChanged()"
-    data-imx-identifier="cdr-fkadvancedpicker-select-tables">
+  <mat-select *ngIf="data.fkRelations.length > 3" [(ngModel)]="selectedTable" (selectionChange)="tableChanged()" data-imx-identifier="cdr-fkadvancedpicker-select-tables">
     <mat-option *ngFor="let item of data.fkRelations" [value]="item">
       {{ metadataProvider.tables[item.TableName]?.DisplaySingular || item.TableName }}
     </mat-option>
   </mat-select>
 
   <!-- if more than 1 candidate table -> show radio buttons -->
-  <mat-radio-group *ngIf="data.fkRelations.length <= 3 && data.fkRelations.length > 1" [(ngModel)]="selectedTable"
-    (change)="tableChanged()" data-imx-identifier="cdr-fkadvancedpicker-radiogroup-tables">
-    <mat-radio-button *ngFor="let item of data.fkRelations" [value]="item"
-      data-imx-identifier="cdr-fkadvancedpicker-radiogroup-tables">
+  <mat-radio-group
+    *ngIf="data.fkRelations.length <= 3 && data.fkRelations.length > 1"
+    [(ngModel)]="selectedTable"
+    (change)="tableChanged()"
+    data-imx-identifier="cdr-fkadvancedpicker-radiogroup-tables"
+  >
+    <mat-radio-button *ngFor="let item of data.fkRelations" [value]="item" data-imx-identifier="cdr-fkadvancedpicker-radiogroup-tables">
       {{ metadataProvider.tables[item.TableName]?.DisplaySingular || item.TableName }}
     </mat-radio-button>
   </mat-radio-group>
 
-  <ng-container *ngIf="settings?.dataSource && selectedTable">
-    <imx-data-source-toolbar #dst [settings]="settings"
-      (navigationStateChanged)="loadTableData($event)" [preSelection]="preselectedEntities"
+  <ng-container *ngIf="true">
+    <imx-data-source-toolbar
+      #dst
+      [settings]="settings"      
+      [busyService]="busyService"
+      (navigationStateChanged)="loadTableData($event)"
+      [preSelection]="preselectedEntities"
       (filterTreeSelectionChanged)="filterByTree($event)"
-      [options]="['search','filterTree','filter', 'settings']"
+      [options]="['search', 'filterTree', 'filter', 'settings']"
       (search)="search($event)"
-      data-imx-identifier="cdr-fkadvancedpicker-dst">
+      data-imx-identifier="cdr-fkadvancedpicker-dst"
+    >
     </imx-data-source-toolbar>
     <div class="imx-table-container">
-      <imx-data-table [dst]="dst" mode="manual" [detailViewVisible]="false" [selectable]="data.isMultiValue"
-        (selectionChanged)="selectionChanged($event)" [showSelectedItemsMenu]="false"
-        data-imx-identifier="cdr-fkadvancedpicker-datatable">
-        <imx-data-table-column [entityColumn]="settings.entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
-          <ng-template let-item>
-            <div>{{ item?.GetEntity().GetDisplay() }}</div>
-          </ng-template>
-        </imx-data-table-column>
-        <imx-data-table-generic-column *ngIf="!data.isMultiValue" columnName="Actions" columnLabel="{{ '#LDS#Actions' | translate }}">
+      <imx-data-table
+        [dst]="dst"
+        mode="manual"
+        [detailViewVisible]="false"
+        [selectable]="data.isMultiValue"
+        (selectionChanged)="selectionChanged($event)"
+        [showSelectedItemsMenu]="false"
+        data-imx-identifier="cdr-fkadvancedpicker-datatable"
+      >
+        <imx-data-table-generic-column *ngIf="!data.isMultiValue" columnName="Select">
           <ng-template let-item>
             <ng-container *ngIf="!amIDisabled(item)">
-              <button mat-button color="primary" (click)="selectObject(item)"
-                data-imx-identifier="cdr-fkadvancedpicker-datatable-button-assign">
-                {{ '#LDS#Assign' | translate }}
-              </button>
+              <mat-radio-button
+                [value]="item"
+                (click)="selectObject(item)"
+                class="imx-radio-button"
+              ></mat-radio-button>
             </ng-container>
           </ng-template>
         </imx-data-table-generic-column>
+
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+          <ng-template let-item>
+            <div class="imx-main-display" #mainDisplay [ngClass]="setSelectedClass(item)">{{ item?.GetEntity()?.GetDisplay() }}</div>
+          </ng-template>
+        </imx-data-table-column>
       </imx-data-table>
     </div>
-    <imx-data-source-paginator [dst]="dst" data-imx-identifier="cdr-fkadvancedpicker-paginator">
-    </imx-data-source-paginator>
+    <imx-data-source-paginator [dst]="dst" data-imx-identifier="cdr-fkadvancedpicker-paginator"> </imx-data-source-paginator>
   </ng-container>
 </div>

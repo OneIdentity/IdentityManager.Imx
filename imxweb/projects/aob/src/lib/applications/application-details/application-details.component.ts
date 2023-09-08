@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,6 @@
  *
  */
 
-
 import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, Input, OnChanges, ViewChild, TemplateRef, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -34,7 +33,7 @@ import { Platform } from '@angular/cdk/platform';
 import { TranslateService } from '@ngx-translate/core';
 
 import { PortalApplication } from 'imx-api-aob';
-import { ClassloggerService, ConfirmationService, SnackBarService, TextContainer } from 'qbm';
+import { BusyService, ClassloggerService, ConfirmationService, SnackBarService, TextContainer } from 'qbm';
 import { ShopsService } from '../../shops/shops.service';
 import { EntitlementsService } from '../../entitlements/entitlements.service';
 import { EntitlementFilter } from '../../entitlements/entitlement-filter';
@@ -47,14 +46,16 @@ import { AobApiService } from '../../aob-api-client.service';
 import { EditApplicationComponent } from '../edit-application/edit-application.component';
 import { AccountDetails } from './account-details.interface';
 import { AobPermissionsService } from '../../permissions/aob-permissions.service';
+import { ServiceCategoryComponent } from '../edit-application/service-category/service-category.component';
+
 @Component({
   selector: 'imx-application-details',
   templateUrl: './application-details.component.html',
-  styleUrls: ['./application-details.component.scss']
+  styleUrls: ['./application-details.component.scss'],
 })
 export class ApplicationDetailsComponent implements OnChanges, OnInit {
   /**
-   * The AobApplication
+   * The {@link PortalApplication | AobApplication}
    */
   @Input() public application: PortalApplication;
 
@@ -73,10 +74,13 @@ export class ApplicationDetailsComponent implements OnChanges, OnInit {
   public readonly shopsDisplay: string;
   public readonly accountsDisplay: string;
 
+  public busyService = new BusyService();
+  public isLoading;
+
   constructor(
     private entitlementsProvider: EntitlementsService,
     public readonly shopsProvider: ShopsService,
-    private readonly busyService: EuiLoadingService,
+    private readonly euiBusyService: EuiLoadingService,
     private readonly logger: ClassloggerService,
     public readonly accountsProvider: AccountsService,
     private readonly dialog: MatDialog,
@@ -91,14 +95,14 @@ export class ApplicationDetailsComponent implements OnChanges, OnInit {
   ) {
     this.shopsDisplay = this.aobApiService.typedClient.PortalShops.GetSchema().Display;
     this.accountsDisplay = this.aobApiService.typedClient.PortalApplicationusesaccount.GetSchema().Display;
+    this.busyService.busyStateChanged.subscribe((elem) => (this.isLoading = elem));
   }
 
   public ngOnInit(): void {
-    this.accountsInformation =
-    {
+    this.accountsInformation = {
       count: 0,
       first: null,
-      uidApplication: this.application.UID_AOBApplication.value
+      uidApplication: this.application.UID_AOBApplication.value,
     };
   }
 
@@ -106,63 +110,79 @@ export class ApplicationDetailsComponent implements OnChanges, OnInit {
     return this.reloadData();
   }
 
+  /**
+   * Deletes the displayed application, after confirming the process by the user
+   */
   public async deleteApplication(): Promise<void> {
-    if (await this.confirmation.confirm({
-      Title: '#LDS#Heading Delete Application',
-      Message: '#LDS#Are you sure you want to delete the application?'
-    })) {
+    if (
+      await this.confirmation.confirm({
+        Title: '#LDS#Heading Delete Application',
+        Message: '#LDS#Are you sure you want to delete the application?',
+      })
+    ) {
       let overlayRef: OverlayRef;
-      setTimeout(() => overlayRef = this.busyService.show());
+      setTimeout(() => ((overlayRef = this.euiBusyService.show())));
       try {
         await this.applicationprovider.deleteApplication(this.application.UID_AOBApplication.value);
       } finally {
-        setTimeout(() => this.busyService.hide(overlayRef));
+        setTimeout(() => this.euiBusyService.hide(overlayRef));
       }
     }
   }
 
+  /**
+   * Edits the information of the associated application
+   */
   public async editApplication(): Promise<void> {
-    await this.sidesheetService.open(EditApplicationComponent, {
-      title: await this.translateService.get('#LDS#Heading Edit Application').toPromise(),
-      bodyColour: 'asher-gray',
-      headerColour: 'iris-blue',
-      width: '768px',
-      data: this.application,
-      testId: 'edit-application',
-      disableClose: true,
-    }).afterClosed().toPromise();
-
+    await this.sidesheetService
+      .open(EditApplicationComponent, {
+        title: await this.translateService.get('#LDS#Heading Edit Application').toPromise(),
+        subTitle: this.application.GetEntity().GetDisplay(),
+        width: '768px',
+        padding: '0',
+        data: this.application,
+        testId: 'edit-application',
+        disableClose: true,
+      })
+      .afterClosed()
+      .toPromise();
+    this.applicationprovider.applicationRefresh.next(true);
     this.application = await this.applicationprovider.reload(this.application.UID_AOBApplication.value);
     this.reloadData();
   }
 
+  /**
+   * Opens a dialog for publishing the application
+   * @ignore @param _ unused mouse event
+   */
   public async publishApplication(_: MouseEvent): Promise<void> {
     if (await this.updateShops()) {
       const dialogConfig = {
         data: {
           action: LifecycleAction.Publish,
-          elements: [this.application], shops: this.assignedShops, type: 'AobApplication'
+          elements: [this.application],
+          shops: this.assignedShops,
+          type: 'AobApplication',
         },
-        height: this.platform.TRIDENT ? '550px' : 'auto'
+        height: this.platform.TRIDENT ? '550px' : 'auto',
       };
       const dialogRef = this.dialog.open(LifecycleActionComponent, dialogConfig);
-      dialogRef.afterClosed().subscribe(async publishData => {
+      dialogRef.afterClosed().subscribe(async (publishData) => {
         if (publishData) {
-          this.logger.debug(this,
-            `Publishing application) ${publishData.date && publishData.publishFuture ? `on ${publishData.date}` : 'now'}`);
+          this.logger.debug(
+            this,
+            `Publishing application) ${publishData.date && publishData.publishFuture ? `on ${publishData.date}` : 'now'}`
+          );
 
           if (await this.applicationprovider.publish(this.application, publishData)) {
             let publishMessage: TextContainer = {
-              key: '#LDS#The application was successfully published. It takes a moment for the changes to take effect.'
+              key: '#LDS#The application was successfully published. It takes a moment for the changes to take effect.',
             };
             if (publishData.publishFuture && publishData.date) {
-              const browserCulture = this.translateService.getBrowserCultureLang();
+              const browserCulture = this.translateService.currentLang;
               publishMessage = {
                 key: '#LDS#The application will be published on {0} at {1} (your local time).',
-                parameters: [
-                  publishData.date.toLocaleDateString(browserCulture),
-                  publishData.date.toLocaleTimeString(browserCulture)
-                ]
+                parameters: [publishData.date.toLocaleDateString(browserCulture), publishData.date.toLocaleTimeString(browserCulture)],
               };
             }
             this.snackbar.open(publishMessage, '#LDS#Close');
@@ -176,17 +196,26 @@ export class ApplicationDetailsComponent implements OnChanges, OnInit {
     }
   }
 
+  /**
+   * Opens a dialog for unpublishing the application
+   * @ignore @param _ unused mouse event
+   */
   public unpublishApplication(_: MouseEvent): void {
     const dialogConfig = {
-      data: { action: LifecycleAction.Unpublish, elements: [this.application], type: 'AobApplication' }, width: '800px', height: '500px'
+      data: { action: LifecycleAction.Unpublish, elements: [this.application], type: 'AobApplication' },
+      width: '800px',
+      height: '500px',
     };
     const dialogRef = this.dialog.open(LifecycleActionComponent, dialogConfig);
-    dialogRef.afterClosed().subscribe(async result => {
+    dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
         this.logger.debug(this, 'Unpublish application...');
 
         if (await this.applicationprovider.unpublish(this.application)) {
-          this.snackbar.open({ key: '#LDS#The application was successfully unpublished. It takes a moment for the changes to take effect.' }, '#LDS#Close');
+          this.snackbar.open(
+            { key: '#LDS#The application was successfully unpublished. It takes a moment for the changes to take effect.' },
+            '#LDS#Close'
+          );
         } else {
           this.logger.error(this, 'Attempt to unpublish the  application failed');
         }
@@ -213,13 +242,11 @@ export class ApplicationDetailsComponent implements OnChanges, OnInit {
   // TODO 222863: Use the same filter as for entitlements:
 
   public notPublished(): boolean {
-    return this.application.IsInActive && this.application.IsInActive.value &&
-      !this.application.ActivationDate.value;
+    return this.application.IsInActive && this.application.IsInActive.value && !this.application.ActivationDate.value;
   }
 
   public willPublish(): boolean {
-    return this.application.IsInActive && this.application.IsInActive.value &&
-      this.application.ActivationDate.value != null;
+    return this.application.IsInActive && this.application.IsInActive.value && this.application.ActivationDate.value != null;
   }
 
   public published(): boolean {
@@ -236,27 +263,50 @@ export class ApplicationDetailsComponent implements OnChanges, OnInit {
     event.stopImmediatePropagation();
   }
 
+  /**
+   *
+   * @param elements Opens a dialog, that shows additional elements (because in the beginning there are only 3 elements displayed)
+   * @param title A title for the dialog
+   * @param iconText name of a cadence icon, that should be used
+   */
   public showMore(elements: TypedEntity[], title: string, iconText?: string): void {
-    const content = { parts: elements.map(part => part.GetEntity().GetDisplay()), caption: title, icon: iconText };
+    const content = { parts: elements.map((part) => part.GetEntity().GetDisplay()), caption: title, icon: iconText };
 
     this.dialog.open(this.chartDialog, { data: content, width: '600px', height: '400px' });
   }
 
+  /**
+   * Shows a dialog, that displays additionals accounts (because in the beginning there are only 3 elements displayed)
+   */
   public async showMoreAccounts(): Promise<void> {
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => ((overlayRef = this.euiBusyService.show())));
     try {
-      const elements = await this.accountsProvider.getAssigned(this.application.UID_AOBApplication.value,
-        { PageSize: this.accountsInformation.count });
+      const elements = await this.accountsProvider.getAssigned(this.application.UID_AOBApplication.value, {
+        PageSize: this.accountsInformation.count,
+      });
       this.showMore(elements, this.accountsDisplay);
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      setTimeout(() => this.euiBusyService.hide(overlayRef));
     }
   }
 
+  public async editServiceCategories(): Promise<void> {
+    await this.sidesheetService
+      .open(ServiceCategoryComponent, {
+        title: await this.translateService.get('#LDS#Heading Edit Service Categories').toPromise(),
+        subTitle: this.application.GetEntity().GetDisplay(),
+        width: 'max(700px,70%)',
+        padding: '0',
+        data: this.application,
+        testId: 'edit-application-servicecategory'
+      })
+      .afterClosed()
+      .toPromise();
+  }
+
   private async reloadData(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    const isBusy = this.busyService.beginBusy();
     try {
       if (this.application.AuthenticationRoot.value) {
         this.application.AuthenticationRootHelper.value = this.application.AuthenticationRoot.value;
@@ -268,7 +318,8 @@ export class ApplicationDetailsComponent implements OnChanges, OnInit {
       const accountInfo = await this.accountsProvider.getFirstAndCount(this.application.UID_AOBApplication.value);
       this.accountsInformation = {
         ...this.accountsInformation,
-        ...{ count: accountInfo.count, first: accountInfo.first }
+        ...{ count: accountInfo.count, first: accountInfo.first },
+        ...{ count: accountInfo.count, first: accountInfo.first },
       };
 
       const applicationEntitlements = await this.entitlementsProvider.getEntitlementsForApplication(this.application);
@@ -277,14 +328,14 @@ export class ApplicationDetailsComponent implements OnChanges, OnInit {
         this.hasPublishedEntitlements = applicationEntitlements.Data.filter(entitlementFilter.published).length > 0;
         this.hasAssignedEntitlements = applicationEntitlements.Data.length > 0;
         const publishedAndWillBePublished = applicationEntitlements.Data.filter(
-          elem => entitlementFilter.published(elem)
-            || entitlementFilter.willPublish(elem));
-        this.canBeDeleted = await this.permissions.isAobApplicationAdmin() && publishedAndWillBePublished.length === 0;
+          (elem) => entitlementFilter.published(elem) || entitlementFilter.willPublish(elem)
+        );
+        this.canBeDeleted = (await this.permissions.isAobApplicationAdmin()) && publishedAndWillBePublished.length === 0;
       } else {
         this.logger.error(this, 'TypedEntityCollectionData<PortalEntitlement> is undefined');
       }
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      isBusy.endBusy();
     }
   }
 

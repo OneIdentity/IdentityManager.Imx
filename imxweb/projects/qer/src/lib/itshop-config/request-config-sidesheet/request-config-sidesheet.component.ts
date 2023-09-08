@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,13 +24,13 @@
  *
  */
 
-
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
-import { EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+
 import { PortalShopConfigStructure } from 'imx-api-qer';
 import { TypedEntityCollectionData } from 'imx-qbm-dbts';
-import { BaseCdr, ClassloggerService, ColumnDependentReference, StorageService, HELPER_ALERT_KEY_PREFIX, TabControlHelper } from 'qbm';
+import { BaseCdr, ClassloggerService, ColumnDependentReference, StorageService, HELPER_ALERT_KEY_PREFIX, ConfirmationService, HELP_CONTEXTUAL } from 'qbm';
 import { ACTION_DISMISS, RequestsService } from '../requests.service';
 
 export interface RequestConfigSidesheetData {
@@ -43,25 +43,33 @@ const helperAlertKey = `${HELPER_ALERT_KEY_PREFIX}_requestShopDetails`;
 @Component({
   selector: 'imx-request-config-sidesheet',
   templateUrl: './request-config-sidesheet.component.html',
-  styleUrls: ['../request-config-sidesheet-common.scss']
+  styleUrls: ['../request-config-sidesheet-common.scss'],
 })
 export class RequestConfigSidesheetComponent implements OnInit {
-
-  public readonly detailsFormGroup: FormGroup;
+  public readonly detailsFormGroup: UntypedFormGroup;
   public cdrList: ColumnDependentReference[] = [];
   public shelfData: TypedEntityCollectionData<PortalShopConfigStructure>;
+  public detailsContextIds = HELP_CONTEXTUAL.ConfigurationRequestsDetail;
   private shelfCount: number;
   private memberCount: number;
+  private reload= false;
 
   constructor(
-    formBuilder: FormBuilder,
+    formBuilder: UntypedFormBuilder,
     public requestsService: RequestsService,
     @Inject(EUI_SIDESHEET_DATA) public data: RequestConfigSidesheetData,
     private readonly storageService: StorageService,
     private readonly logger: ClassloggerService,
-    private readonly sidesheet: EuiSidesheetService
+    private readonly sidesheetRef: EuiSidesheetRef,
+    confirm: ConfirmationService
   ) {
-    this.detailsFormGroup = new FormGroup({ formArray: formBuilder.array([]) });
+    this.detailsFormGroup = new UntypedFormGroup({ formArray: formBuilder.array([]) });
+    sidesheetRef.closeClicked().subscribe(async () => {
+      if (this.detailsFormGroup.pristine || (await confirm.confirmLeaveWithUnsavedChanges())) {
+        this.data.requestConfig.GetEntity().DiscardChanges();
+        sidesheetRef.close(this.reload);
+      }
+    });
   }
 
   get selectedRequestConfigKey(): string {
@@ -89,16 +97,12 @@ export class RequestConfigSidesheetComponent implements OnInit {
     return !this.storageService.isHelperAlertDismissed(helperAlertKey);
   }
 
-  get formArray(): FormArray {
-    return this.detailsFormGroup.get('formArray') as FormArray;
+  get formArray(): UntypedFormArray {
+    return this.detailsFormGroup.get('formArray') as UntypedFormArray;
   }
 
   public async ngOnInit(): Promise<void> {
     this.setup();
-  }
-
-  public cancel(): void {
-    this.sidesheet.close();
   }
 
   public onShelfCountUpdated(count: number): void {
@@ -112,7 +116,7 @@ export class RequestConfigSidesheetComponent implements OnInit {
   public async delete(): Promise<void> {
     await this.requestsService.deleteRequestConfiguration(this.selectedRequestConfigKey);
     this.requestsService.openSnackbar(this.requestsService.LdsShopHasBeenDeleted, ACTION_DISMISS);
-    this.sidesheet.close();
+    this.sidesheetRef.close(true);
   }
 
   public async saveRequestConfig(): Promise<void> {
@@ -129,6 +133,7 @@ export class RequestConfigSidesheetComponent implements OnInit {
           this.requestsService.handleCloseLoader();
         }
       }
+      this.reload = true;
     }
   }
 
@@ -161,13 +166,6 @@ export class RequestConfigSidesheetComponent implements OnInit {
   }
 
   private async setup(): Promise<void> {
-    /**
-     * Resolve an issue where the mat-tab navigation arrows could appear on first load
-     */
-    setTimeout(() => {
-      TabControlHelper.triggerResizeEvent();
-    });
-
     this.cdrList = [
       new BaseCdr(this.data.requestConfig.Ident_Org.Column),
       new BaseCdr(this.data.requestConfig.Description.Column),
@@ -177,5 +175,4 @@ export class RequestConfigSidesheetComponent implements OnInit {
       new BaseCdr(this.data.requestConfig.UID_PersonHeadSecond.Column),
     ];
   }
-
 }

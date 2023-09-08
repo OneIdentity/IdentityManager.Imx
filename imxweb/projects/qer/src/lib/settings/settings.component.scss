@@ -1,0 +1,26 @@
+:host {
+  .setting-form-fields {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    min-height: 230px;
+
+    imx-cdr-editor {
+      width: 100%;
+    }
+  }
+
+  .auto-space{
+    flex:auto
+  }
+}
+
+:host ::ng-deep {
+  eui-theme-switcher {
+    width: 100%;
+
+    .mat-form-field {
+      width: 100%;
+    }
+  }
+}

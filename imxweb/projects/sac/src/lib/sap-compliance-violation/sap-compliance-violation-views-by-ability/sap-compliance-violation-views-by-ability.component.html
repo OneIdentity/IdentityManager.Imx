@@ -1,0 +1,39 @@
+<mat-card class="sap-analysis">
+  <div class="sap-analysis__table">
+    <imx-data-source-toolbar
+      #dst
+      data-imx-identifier="role-recommendation-result-data-source-toolbar"
+      [settings]="dstSettings"
+      [options]="['search', 'groupBy']"
+      (search)="onSearch($event)"
+      (navigationStateChanged)="onNavigationStateChanged($event)"
+    >
+    </imx-data-source-toolbar>
+    <div class="imx-data-table-container">
+      <imx-data-table
+        [selectable]="false"
+        [showSelectionInfo]="false"
+        [showSelectedItemsMenu]="false"
+        [showGroupPaginator]="false"
+        [dst]="dst"
+        [groupData]="groupData"
+        [mode]="'manual'"
+        data-imx-identifier="role-recommendation-result-data-table"
+        detailViewVisible="false"
+        (groupDataChanged)="onGroupingChange($event)"
+      >
+        <imx-data-table-column [entityColumn]="entitySchema.Columns.Ident_SAPProfile" [columnLabel]="'#LDS#Authentication' | translate"> </imx-data-table-column>
+        <imx-data-table-column [entityColumn]="entitySchema.Columns.Ident_SAPAuthObject" [columnLabel]="'#LDS#Object' | translate"> </imx-data-table-column>
+        <imx-data-table-column [entityColumn]="entitySchema.Columns.Ident_SAPField" [columnLabel]="'#LDS#Field' | translate"> </imx-data-table-column>
+        <imx-data-table-column [entityColumn]="entitySchema.Columns.LowerLimit" [columnLabel]="'#LDS#Lower limit' | translate"> </imx-data-table-column>
+        <imx-data-table-column [entityColumn]="entitySchema.Columns.UpperLimit" [columnLabel]="'#LDS#Upper limit' | translate"> </imx-data-table-column>
+        <imx-data-table-column [entityColumn]="entitySchema.Columns.DisplaySapFunctionInstance" [columnLabel]="'#LDS#SAP function instance' | translate"> </imx-data-table-column>
+        <imx-data-table-column [entityColumn]="entitySchema.Columns.DisplaySapTransaction" [columnLabel]="'#LDS#SAP transaction' | translate"> </imx-data-table-column>
+      </imx-data-table>
+    </div>
+    <div *ngIf="dataSource.Data.length == 0" class="no-results">
+      <eui-icon [icon]="'table'"></eui-icon>
+      <p>{{ '#LDS#No data' | translate }}</p>
+    </div>
+  </div>
+</mat-card>

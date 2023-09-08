@@ -1,0 +1,23 @@
+<div class="flex-container">
+  <h1 class="mat-headline" translate>#LDS#Plugins</h1>
+
+  <table class="plugin-table" data-imx-identifier="admin-status-plugins">
+    <tbody>
+      <tr *ngFor="let p of plugins">
+        <td>
+          {{p.Plugin}}
+        </td>
+        <td>
+          <eui-alert *ngIf="p.Exception" [dismissable]="false" type="error" class="mat-elevation-z0">
+            <eui-alert-header class="mat-elevation-z0">{{ p.Exception }}</eui-alert-header>
+          </eui-alert>
+
+          <ng-container *ngIf="!p.Exception">
+            <mat-icon icon="check">check</mat-icon>
+            {{'#LDS#Running' |translate}}
+          </ng-container>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

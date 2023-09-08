@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,7 +30,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
 import { PortalItshopPatternAdmin, PortalItshopPatternPrivate } from 'imx-api-qer';
-import { CollectionLoadParameters, DisplayColumns, TypedEntity, ValType } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DisplayColumns, TypedEntity } from 'imx-qbm-dbts';
 
 import {
   AuthenticationService,
@@ -39,6 +39,8 @@ import {
   DataSourceToolbarSettings,
   DataSourceWrapper,
   DataTableComponent,
+  HELP_CONTEXTUAL,
+  HelpContextualValues,
   SnackBarService,
 } from 'qbm';
 import { QerPermissionsService } from '../admin/qer-permissions.service';
@@ -48,7 +50,7 @@ import { ItshopPatternCreateService } from './itshop-pattern-create-sidesheet/it
 import { ItShopPatternChangedType } from './itshop-pattern-changed.enum';
 
 /**
- * Component that shows all list of all itshop pattern of the current user
+ * Component that shows a list of all product bundles (internal names are itshop pattern and request templates) of the current user
  * or all itshop pattern of all other users, if the user is a shop admin.
  */
 @Component({
@@ -58,22 +60,32 @@ import { ItShopPatternChangedType } from './itshop-pattern-changed.enum';
 })
 export class ItshopPatternComponent implements OnInit, OnDestroy {
 
+  /**
+   * the wrapper component for the  {@link DataSourceToolbar|dataSourceToolbar}.
+   */  
   public dstWrapper: DataSourceWrapper<PortalItshopPatternAdmin>;
+
   public dstSettings: DataSourceToolbarSettings;
+
+  /**
+   * The list of all selected product bundles.
+   */
   public selectedPatterns: PortalItshopPatternAdmin[] = [];
+
+  /**
+   * Indicates wether the component should be shown for shop admins or not.
+   */
   public adminMode: boolean;
 
   @ViewChild(DataTableComponent) public table: DataTableComponent<TypedEntity>;
 
   public readonly status = {
-    enabled: (pattern: PortalItshopPatternAdmin): boolean => this.isMyPattern(pattern)
+    enabled: (pattern: PortalItshopPatternAdmin): boolean => this.canBeEditedAndDeleted(pattern)
   };
-  public infoText: string;
+  public helpContextId: HelpContextualValues;
 
   private readonly subscriptions: Subscription[] = [];
   private currentUserUid: string;
-  private infoTextAdmin = '#LDS#Here you can manage request templates. You can edit and share your own request templates and create copies of request templates created by others.';
-  private infoTextUser = '#LDS#Here you can manage your request templates. You can edit your request templates, delete them and share them with others.';
 
   constructor(
     private readonly patternService: ItshopPatternService,
@@ -94,12 +106,11 @@ export class ItshopPatternComponent implements OnInit, OnDestroy {
   }
 
   public async ngOnInit(): Promise<void> {
-
     this.patternService.handleOpenLoader();
     try {
       this.adminMode = await this.qerPermissionService.isShopAdmin();
 
-      this.infoText = this.adminMode ? this.infoTextAdmin : this.infoTextUser;
+      this.helpContextId = this.adminMode ? HELP_CONTEXTUAL.RequestTemplates: HELP_CONTEXTUAL.RequestTemplatesUser;
 
       const entitySchema = this.adminMode
         ? this.patternService.itshopPatternAdminSchema
@@ -112,11 +123,6 @@ export class ItshopPatternComponent implements OnInit, OnDestroy {
           entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
           entitySchema.Columns.UID_Person,
           entitySchema.Columns.IsPublicPattern,
-          {
-            ColumnName: 'actions',
-            Type: ValType.String,
-            afterAdditionals: true
-          }
         ],
         entitySchema,
         undefined,
@@ -132,28 +138,32 @@ export class ItshopPatternComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
 
-  public isMyPattern(pattern: PortalItshopPatternAdmin): boolean {
+  public isMyPattern(pattern: PortalItshopPatternPrivate | PortalItshopPatternAdmin): boolean {
     return this.currentUserUid === pattern.UID_Person.value;
   }
 
-  public async delete(selectedPattern?: PortalItshopPatternPrivate): Promise<void> {
+  public canBeEditedAndDeleted(pattern: PortalItshopPatternPrivate | PortalItshopPatternAdmin): boolean {
+    return this.isMyPattern(pattern) || this.adminMode;
+  }
+
+  public async delete(selectedPattern?: PortalItshopPatternPrivate | PortalItshopPatternAdmin): Promise<void> {
     if (await this.confirmationService.confirm({
-      Title: '#LDS#Heading Delete Request Templates',
-      Message: '#LDS#Are you sure you want to delete the selected request templates?'
+      Title: '#LDS#Heading Delete Product Bundles',
+      Message: '#LDS#Are you sure you want to delete the selected product bundles?'
     })) {
-      await this.patternService.delete(selectedPattern ? [selectedPattern] : this.selectedPatterns);
+      await this.patternService.delete(selectedPattern ? [selectedPattern] : this.selectedPatterns, this.adminMode);
       this.getData();
       this.table.clearSelection();
     }
   }
 
-  public async publish(selectedPatterns: PortalItshopPatternAdmin[]): Promise<void> {
+  public async publish(selectedPatterns: PortalItshopPatternPrivate[] | PortalItshopPatternAdmin[]): Promise<void> {
     await this.patternService.makePublic(selectedPatterns, true);
     this.getData();
     this.table.clearSelection();
   }
 
-  public async unpublish(selectedPatterns: PortalItshopPatternAdmin[]): Promise<void> {
+  public async unpublish(selectedPatterns: PortalItshopPatternPrivate[] | PortalItshopPatternAdmin[]): Promise<void> {
     await this.patternService.makePublic(selectedPatterns, false);
     this.getData();
     this.table.clearSelection();
@@ -165,7 +175,7 @@ export class ItshopPatternComponent implements OnInit, OnDestroy {
     }
   }
 
-  public async getData(parameter?: CollectionLoadParameters): Promise<void> {
+  public async getData(parameter?: CollectionLoadParameters): Promise<void> {    
     this.patternService.handleOpenLoader();
     try {
       const parameters = {
@@ -173,7 +183,7 @@ export class ItshopPatternComponent implements OnInit, OnDestroy {
         ...{ OrderBy: 'Ident_ShoppingCartPattern asc' }
       };
       this.dstSettings = await this.dstWrapper.getDstSettings(parameters);
-    } finally {
+    } finally {      
       this.patternService.handleCloseLoader();
     }
   }
@@ -193,7 +203,7 @@ export class ItshopPatternComponent implements OnInit, OnDestroy {
   public selectedItemsCanBeDeleted(): boolean {
     return this.selectedPatterns != null
       && this.selectedPatterns.length > 0
-      && this.selectedPatterns.every(item => this.isMyPattern(item));
+      && this.selectedPatterns.every(item => this.canBeEditedAndDeleted(item));
   }
 
   public onSelectionChanged(items: PortalItshopPatternAdmin[]): void {
@@ -201,17 +211,24 @@ export class ItshopPatternComponent implements OnInit, OnDestroy {
     this.selectedPatterns = items;
   }
 
+  public async onHighlightedEntityChanged(selectedPattern: PortalItshopPatternPrivate | PortalItshopPatternAdmin): Promise<void> {
+    await this.viewDetails(selectedPattern);
+  }
 
-  public async viewDetails(selectedPattern: PortalItshopPatternAdmin): Promise<void> {
+  private async viewDetails(selectedPattern: PortalItshopPatternPrivate | PortalItshopPatternAdmin): Promise<void> {
     const isMyPattern = this.isMyPattern(selectedPattern);
+    const canEditAndDelete = this.canBeEditedAndDeleted(selectedPattern);
     const pattern = isMyPattern
       ? await this.patternService.getPrivatePattern(selectedPattern.GetEntity().GetKeys()[0])
       : selectedPattern;
 
+    const title = await this.translate.get(canEditAndDelete
+      ? '#LDS#Heading Edit Product Bundle'
+      : '#LDS#Heading View Product Bundle Details').toPromise();
+
     const result = await this.sidesheet.open(ItshopPatternSidesheetComponent, {
-      title: await this.translate.get('#LDS#Heading Edit Request Template').toPromise(),
-      headerColour: 'iris-blue',
-      bodyColour: 'asher-gray',
+      title,
+      subTitle: pattern.Ident_ShoppingCartPattern.value,
       panelClass: 'imx-sidesheet',
       disableClose: true,
       padding: '0',
@@ -220,12 +237,13 @@ export class ItshopPatternComponent implements OnInit, OnDestroy {
       data: {
         pattern,
         isMyPattern,
-        adminMode: this.adminMode
+        adminMode: this.adminMode,
+        canEditAndDelete
       }
     }).afterClosed().toPromise();
 
     if (result === ItShopPatternChangedType.Saved) {
-      const snackBarMessage = '#LDS#The request template has been successfully saved.';
+      const snackBarMessage = '#LDS#The product bundle has been successfully saved.';
       this.snackBar.open({ key: snackBarMessage });
       this.getData();
     } else if (result) {

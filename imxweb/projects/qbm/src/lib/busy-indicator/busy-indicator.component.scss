@@ -1,0 +1,17 @@
+:host {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
+
+  > div {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+  }
+
+
+  .imx-loading-text{
+    margin-top: 40px;
+  }
+}

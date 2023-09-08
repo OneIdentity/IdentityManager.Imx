@@ -1,0 +1,89 @@
+<div eui-sidesheet-actions class="tool-bar" *ngIf="state">
+  <div class="tool-bar-left">
+    <button [disabled]="!canAddMore" data-imx-identifier="export-add-column" [attr.aria-label]="'#LDS#Add column' | translate" mat-stroked-button color="primary" (click)="addNewColumn()">
+      <eui-icon icon="add"></eui-icon>
+      <span>
+        {{'#LDS#Add column'| translate }}
+      </span>
+    </button>
+
+    <eui-select
+    hideClearButton="true"
+    smallInput="true"
+    [label]="'#LDS#Export format' | translate"
+    [inputControl]="state.selectedExport"
+    [options]="state.exportOptions"
+    [filterFunction]="columnExportService.exportOptionsFilter"
+    (selectionChange)="changeType($event)"
+    [attr.aria-label]="'#LDS#Export format' | translate"
+    data-imx-identifier="export-type-select"
+    >
+    </eui-select>
+  </div>
+
+  <div class="tool-bar-right" *ngIf="currentDataCount < allDataCount">
+    <span class="primary-text">{{'#LDS#Data to be exported' | translate}}:</span>
+    <mat-radio-group
+    color="accent"
+    [(ngModel)]="state.isAllData"
+    (change)="setUrl()"
+    data-imx-identifier="export-all-data-toggle"
+    >
+      <mat-radio-button [value]="false" [aria-label]="'#LDS#Displayed data' | translate" data-imx-identifier="export-displayed-data-radio-button">
+        <span>{{'#LDS#Displayed data' | translate}}</span>
+        <span>{{'#LDS#{0} items' | translate | ldsReplace:currentDataCount}}</span>
+      </mat-radio-button>
+      <mat-radio-button [value]="true" [aria-label]="'#LDS#All data' | translate" data-imx-identifier="export-all-data-radio-button">
+        <span>{{'#LDS#All data' | translate}}</span>
+        <span>{{'#LDS#{0} items' | translate | ldsReplace:allDataCount}}</span>
+      </mat-radio-button>
+    </mat-radio-group>
+  </div>
+</div>
+
+<div eui-sidesheet-content>
+  <eui-alert
+  class="imx-info"
+  type="info"
+  condensed="true"
+  colored="true"
+  dismissable="true"
+  >
+    <span translate>#LDS#Here you can export data. Select all columns whose contents you want to export. Additionally, you can change the order using drag and drop. Move the mouse pointer over the corresponding area on the left and drag the element to the desired location.</span>
+  </eui-alert>
+  <mat-card class="card-container" cdkScrollable *ngIf="state">
+    <div cdkDropList class="export-column-container" (cdkDropListDropped)="drop($event)">
+      <div cdkDrag class="export-column" [cdkDragPreviewClass]="theme" *ngFor="let inputFormControl of state.columns; let idx = index;">
+        <div class="export-column--placeholder" *cdkDragPlaceholder></div>
+        <button tabindex="-1" class="export-column--handle mat-icon-button" cdkDragHandle mat-button>
+          <eui-icon icon="draghandles"></eui-icon>
+        </button>
+        <eui-select class="export-column--field"
+        enableFormFieldMargin="true"
+        [label]="'#LDS#Column to export' | translate"
+        [inputControl]="inputFormControl"
+        [options]="getFilteredOptions(inputFormControl.value)"
+        [filterFunction]="columnExportService.columnOptionsFilter"
+        (selectionChange)="setUrl()"
+        [attr.aria-label]="'#LDS#Column to export' | translate"
+        [attr.data-imx-identifier]="'export-column-' + idx.toString()"
+        [feedbackMessages]="feedbackMessages"
+        >
+          <mat-error>
+            <span *ngIf="inputFormControl.hasError('required')">{{'#LDS#Select a column to be exported.' | translate}}</span>
+          </mat-error>
+        </eui-select>
+        <button mat-button [disabled]="controlsCount === 1" color="warn" class="mat-icon-button" [attr.aria-label]="'#LDS#Remove column' | translate" [attr.data-imx-identifier]="'export-column-delete-' + idx.toString()"
+        (click)="deleteColumn(idx)" [matTooltip]="'#LDS#Delete' | translate">
+          <eui-icon icon="delete"></eui-icon>
+        </button>
+      </div>
+    </div>
+  </mat-card>
+</div>
+
+<div eui-sidesheet-actions class="action-bar">
+  <button mat-raised-button color="primary" [attr.aria-label]="'#LDS#Export' | translate" [disabled]="!canExport" [euiDownload]="downloadOptions" data-imx-identifier="export-button">
+    {{ '#LDS#Export' | translate }}
+  </button>
+</div>

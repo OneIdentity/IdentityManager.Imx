@@ -1,0 +1,125 @@
+<div class="imx-reference-toolbar">
+  <mat-chip-list (change)="onChipListChange($event)" selectable>
+    <mat-chip (click)="onChipClicked(0)">
+      <span translate>#LDS#Products</span>
+    </mat-chip>
+    <mat-chip (click)="onChipClicked(1)">
+      <span translate>#LDS#Organizational structures</span>
+    </mat-chip>
+  </mat-chip-list>
+  <span class="imx-info-button-caption" translate>#LDS#Information about this tab:</span>
+  <imx-info-button [title]="'#LDS#Heading Products by Reference User' | translate" [templateRef]="infoDialogContent">
+  </imx-info-button>
+</div>
+
+<mat-card class="imx-card-container">
+  <imx-data-table
+    *ngIf="selectedChipIndex == 0 && productDst"
+    [dst]="productDst"
+    [detailViewVisible]="false"
+    [selectable]="true"
+    [noDataText]="noDataText"
+    mode="manual"
+    fallbackIcon="DefaultTypeNameImage"
+    (selectionChanged)="onProductSelectionChanged($event)"
+    (highlightedEntityChanged)="onRowSelected($event)"
+    [showSelectedItemsMenu]="false"
+  >
+    <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns[DisplayColumns?.DISPLAY_PROPERTYNAME]" columnLabel="{{ '#LDS#Product' | translate }}">
+      <ng-template let-prod>
+        <div class="imx-request-col-image">
+          <img *ngIf="productDetailsService.getProductImage(prod); else noImage" [src]="productDetailsService.getProductImage(prod)" />
+          <ng-template #noImage>
+            <eui-icon icon="application" class="larger-icon colored-icon"></eui-icon>
+          </ng-template>
+          &nbsp;&nbsp;
+          <span class="imx-request-col-display">{{ prod.GetEntity()?.GetDisplay() }} </span>
+        </div>
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns['ServiceCategoryFullPath']">
+      <ng-template let-prod>
+        <div class="imx-request-col-text">
+          {{ prod.ServiceCategoryFullPath?.Column?.GetDisplayValue() }}
+        </div>
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns['TableName']">
+      <ng-template let-prod>
+        <div class="imx-request-col-text">
+          {{ prod.TableName?.Column?.GetDisplayValue() }}
+        </div>
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns['Description']">
+      <ng-template let-prod>
+        <div class="imx-request-col-text">
+          {{ prod.Description?.Column?.GetDisplayValue() }}
+        </div>
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns['OrderableStatus']" columnLabel="{{ '#LDS#Status' | translate }}" align="center">
+      <ng-template let-prod>
+        <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, ['PERSONHASOBJECT', 'PERSONHASASSIGNMENTORDER', 'ASSIGNED'])" class="imx-request-col-status">
+          <eui-icon icon="approvals" [matTooltip]="'#LDS#This product has already been assigned to {0}.' | translate | ldsReplace: recipients.Column?.GetDisplayValue()"></eui-icon>
+        </div>
+        <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, 'ORDER')" class="imx-request-col-status">
+          <eui-icon icon="request" [matTooltip]="'#LDS#This product has already been requested.' | translate"></eui-icon>
+        </div>
+        <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, 'NOTORDERABLE')" class="imx-request-col-status">
+          <eui-icon icon="error" [matTooltip]="'#LDS#This product cannot currently be requested.' | translate"></eui-icon>
+        </div>
+        <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, 'CART')" class="imx-request-col-status">
+          <eui-icon icon="cart" [matTooltip]="'#LDS#This product is already in your shopping cart.' | translate"></eui-icon>
+        </div>
+      </ng-template>
+    </imx-data-table-column>
+  </imx-data-table>
+  <imx-data-table
+  *ngIf="selectedChipIndex == 1 && membershipDst"
+  [dst]="membershipDst"
+  [detailViewVisible]="false"
+  [selectable]="true"
+  [noDataText]="noDataText"
+  mode="manual"
+  fallbackIcon="DefaultTypeNameImage"
+  (selectionChanged)="onProductSelectionChanged($event)"
+  [showSelectedItemsMenu]="false"
+  >
+  <imx-data-table-column [entityColumn]="membershipApi.PortalItshopPeergroupMembershipsSchema?.Columns[DisplayColumns?.DISPLAY_PROPERTYNAME]">
+    <ng-template let-prod>
+      <div>
+        <span class="imx-request-col-display">{{ prod.GetEntity()?.GetDisplay() }} </span>
+      </div>
+    </ng-template>
+  </imx-data-table-column>
+  <imx-data-table-column [entityColumn]="membershipApi.PortalItshopPeergroupMembershipsSchema?.Columns['FullPath']">
+    <ng-template let-prod>
+      <div class="imx-request-col-text">
+        {{ prod.FullPath?.Column?.GetDisplayValue() }}
+      </div>
+    </ng-template>
+  </imx-data-table-column>
+  <imx-data-table-column [entityColumn]="membershipApi.PortalItshopPeergroupMembershipsSchema?.Columns['Description']">
+    <ng-template let-prod>
+      <div class="imx-request-col-text">
+        {{ prod.Description?.Column?.GetDisplayValue() }}
+      </div>
+    </ng-template>
+  </imx-data-table-column>
+
+</imx-data-table>
+<imx-data-source-paginator *ngIf="selectedChipIndex == 0 && productDst" [dst]="productDst"></imx-data-source-paginator>
+<imx-data-source-paginator *ngIf="selectedChipIndex == 1 && membershipDst" [dst]="membershipDst"></imx-data-source-paginator>
+</mat-card>
+
+<!-- Template for the info dialog -->
+<ng-template #infoDialogContent>
+  <p class="no-top">
+    {{'#LDS#The following products and organizational structures are assigned to {0}. You can request products that this identity already owns.' | translate | ldsReplace: orchestration.referenceUser?.DisplayValue}}
+  </p>
+  <p translate>
+    #LDS#Select the products and/or organizational structures you also want to request for the selected recipient.
+  </p>
+  <!-- TODO: This needs to link to the help page when that page exists  -->
+</ng-template>

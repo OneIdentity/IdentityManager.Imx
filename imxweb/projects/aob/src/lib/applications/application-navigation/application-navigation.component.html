@@ -1,8 +1,9 @@
-<div class="imx-main-container" *ngIf="dstSettings?.dataSource">
+<div class="imx-main-container" >
   <div class="imx-title-area">
     <h1> {{'#LDS#Applications' | translate}}</h1>
-    <button *ngIf="isAdmin" mat-icon-button (click)="onCreateNew()" class="mat-elevation-z4" data-imx-identifier="navigation-button-create-app">
-    <eui-icon size="20px" icon="add"></eui-icon>
+    <imx-help-contextual></imx-help-contextual>
+    <button *ngIf="isAdmin" mat-icon-button (click)="onCreateNew()" class="mat-elevation-z4 imx-icon-button" data-imx-identifier="navigation-button-create-app">
+      <eui-icon size="20px" icon="add"></eui-icon>
     </button>
   </div>
   <mat-checkbox (change)="filterApplicationsWithKpiIssues()" [(ngModel)]="filterKpiChecked" [disabled]="!dstSettings?.dataSource?.totalCount">
@@ -14,6 +15,7 @@
     [options]="['search']"
     [hideCustomToolbar]="hideCustomToolbar"
     [itemStatus]="status"
+    [busyService]="busyService"
     (search)="onSearch($event)"
     [alwaysVisible]="true">
   </imx-data-source-toolbar>
@@ -27,7 +29,10 @@
     fallbackIcon="application"
     [titleObject]="entitySchema?.Columns['Ident_AOBApplication']"
     [subtitleObject]="entitySchema?.Columns['Description']"
-    (selectionChanged)="onSelectionChanged($event)">
+    (selectionChanged)="onSelectionChanged($event)"
+    [selectedEntity]="selectedEntity"
+    (selectionChanged)="onSelectionChanged($event)"
+    (selected)="onTileSelected($event)">
   </imx-data-tiles>
 
   <imx-data-source-paginator class="mat-elevation-z2" [dst]="dst" ></imx-data-source-paginator>

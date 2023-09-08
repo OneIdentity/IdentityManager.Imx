@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -90,9 +90,9 @@ export class RequestFilterComponent implements OnInit {
             }
         } else if (this.setuseraudit) {
             if (this.showfor('Requester')) {
-                this.headLine = await this.translator.get('#LDS#The page displays all requests of the selected employee.').toPromise();
+                this.headLine = await this.translator.get('#LDS#This page displays all requests of the selected identity.').toPromise();
             } else if (this.showfor('Approver')) {
-                this.headLine = await this.translator.get('#LDS#The page displays all approvals of the selected employee where the selected employee was involved in the approval process.').toPromise();
+                this.headLine = await this.translator.get('#LDS#The page displays all approvals of the selected identity where the selected identity was involved in the approval process.').toPromise();
             }
         } else if (!this.showaudit && !this.setuseraudit) {
             if (this.showfor('Approver')) {

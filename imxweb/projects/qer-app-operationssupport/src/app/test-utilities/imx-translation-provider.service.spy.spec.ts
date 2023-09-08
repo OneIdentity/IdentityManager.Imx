@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,6 +32,5 @@ export class TranslationProviderServiceSpy {
     public multilanguageTranslationDict = {};
     public Translate = jasmine.createSpy('Translate').and.callFake((text: TextContainer) => of(text.key + '_übersetzt'));
     public GetColumnDisplay = jasmine.createSpy('GetColumnDisplay').and.callThrough();
-    public MultiLanguageCaptions = {};
     public currentLang = 'en-us';
 }

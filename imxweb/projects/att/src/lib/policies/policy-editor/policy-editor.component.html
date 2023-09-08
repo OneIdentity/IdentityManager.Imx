@@ -1,5 +1,5 @@
 <div class="imx-title">
-  <h2 class="imx-filter-header">{{ '#LDS#Heading Objects To Be Attested by This Attestation Policy' | translate }}</h2>
+  <h2 class="imx-filter-header">{{ '#LDS#Heading Objects to be Attested by this Attestation Policy' | translate }}</h2>
   <imx-selected-objects
     [isTotal]="true"
     testId="total-objects"
@@ -10,13 +10,12 @@
   </imx-selected-objects>
 </div>
 <eui-alert class="helper-alert" type="warning" condensed="true" [colored]="true" *ngIf="showWarning" [dismissable]="true">
-  <div>{{ '#LDS#This policy affects many objects. Note that running this policy may take some time and generate notifications to many approvers' | translate }}</div>
+  <div>{{ '#LDS#This policy affects many objects. Running this policy may take some time and generate notifications to many approvers.' | translate }}</div>
 </eui-alert>
 
 <ng-container *ngIf="isEnabled; else disabledView">
   <ng-container *ngIf="parametersReady && filterModel.uidAttestationObject != null; else noPolicy">
-    <span class="imx-radio-group-caption" *ngIf="filterArray.controls.length > 1">{{ '#LDS#How many conditions must
-            be met?' | translate }}</span>
+    <span class="imx-radio-group-caption" *ngIf="filterArray.controls.length > 1">{{ '#LDS#How many conditions must be met?' | translate }}</span>
     <mat-radio-group [formControl]="filterFormGroup.get('concatenationType')" *ngIf="filterArray.controls.length > 1">
       <mat-radio-button [value]="'AND'" data-imx-identifier="policy-editor-radio-and">
         {{ '#LDS#All conditions have to be met.' | translate }}

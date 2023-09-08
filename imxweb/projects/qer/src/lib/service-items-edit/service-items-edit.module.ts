@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,18 +31,22 @@ import { RouterModule, Routes } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CdrModule, ClassloggerService, DataSourceToolbarModule, DataTableModule, MenuItem, MenuService, RouteGuardService } from 'qbm';
+import { CdrModule, ClassloggerService, DataSourceToolbarModule, DataTableModule, HELP_CONTEXTUAL, HelpContextualModule, MenuItem, MenuService, RouteGuardService } from 'qbm';
 import { ServiceItemsEditComponent } from './service-items-edit.component';
 import { ServiceItemsEditSidesheetComponent } from './service-items-edit-sidesheet/service-items-edit-sidesheet.component';
 import { ShopAdminGuardService } from '../guards/shop-admin-guard.service';
 import { isShopAdmin } from '../admin/qer-permissions-helper';
 import { ServiceItemsEditFormModule } from './service-items-edit-form/service-items-edit-form.module';
+import { ObjectHyperviewModule } from '../object-hyperview/object-hyperview.module';
 
 const routes: Routes = [
   {
     path: 'admin/serviceitems',
     component: ServiceItemsEditComponent,
     canActivate: [RouteGuardService, ShopAdminGuardService],
+    data:{
+      contextId: HELP_CONTEXTUAL.ServiceItems
+    }
   },
 ];
 
@@ -58,10 +62,12 @@ const routes: Routes = [
     DataTableModule,
     EuiCoreModule,
     EuiMaterialModule,
+    ObjectHyperviewModule,
     ReactiveFormsModule,
     RouterModule.forChild(routes),
     ServiceItemsEditFormModule,
-    TranslateModule
+    TranslateModule,
+    HelpContextualModule,
   ]
 })
 export class ServiceItemsEditModule {
@@ -75,17 +81,17 @@ export class ServiceItemsEditModule {
 
   private setupMenu(): void {
     this.menuService.addMenuFactories(
-      (preProps: string[], groups: string[]) => {
+      (preProps: string[], features: string[]) => {
 
         const items: MenuItem[] = [];
 
-        if (isShopAdmin(groups)) {
+        if (isShopAdmin(features)) {
           items.push(
             {
               id: 'QER_ServiceItems',
               navigationCommands: { commands: ['admin', 'serviceitems'] },
               title: '#LDS#Menu Entry Service items',
-              sorting: '50-40',
+              sorting: '60-40',
             },
           );
         }
@@ -96,7 +102,7 @@ export class ServiceItemsEditModule {
         return {
           id: 'ROOT_Setup',
           title: '#LDS#Setup',
-          sorting: '50',
+          sorting: '60',
           items
         };
       },

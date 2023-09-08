@@ -4,7 +4,7 @@
       <span translate>#LDS#Here you can get an overview of attestors who still have to approve attestation cases in the selected attestation run. Additionally, you can select attestors and send them reminders.</span>
    </eui-alert>
 
-   <mat-card *ngIf="dstSettings">
+   <mat-card *ngIf="dstSettings" class="imx-pending-approvers-container">
       <imx-data-source-toolbar #dst [settings]="dstSettings" [hidden]="true">
       </imx-data-source-toolbar>
       <div class="imx-table-container">
@@ -25,7 +25,7 @@
       </div>
    </mat-card>
 </div>
-<div class="imx-button-bar">
+<div eui-sidesheet-actions>
   <button mat-stroked-button color="primary" data-imx-identifier="run-approvers-button-send-reminder"
     [disabled]="!selected.length" (click)="sendReminder.emit(selected)">
     {{ '#LDS#Send reminder' | translate }}

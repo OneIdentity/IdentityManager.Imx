@@ -1,13 +1,7 @@
-<h1 class="mat-headline">
-  {{auditMode 
-    ? ('#LDS#Heading Auditing'| translate) + ' - ' + form === 'Approver' ? ('#LDS#Heading Approvals'| translate) : ('#LDS#Heading Requests'| translate) 
-    : form === 'Approver' ? ('#LDS#Heading Approval History'| translate) : ('#LDS#Heading Request History'| translate) 
-  }}
-</h1>
-
-<!-- TODO: Advanced Search -->
-<!-- <imx-request-filter [filter]="filter" [form]="form" [showaudit]="auditMode">
-</imx-request-filter> -->
-
-<imx-request-table [isReadOnly]="auditMode">
-</imx-request-table>
+<div class="imx-header">
+  <h1 class="mat-headline">
+    <span>{{ '#LDS#Heading Request History' | translate }}</span>
+    <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
+  </h1>
+</div>
+<imx-request-table></imx-request-table>

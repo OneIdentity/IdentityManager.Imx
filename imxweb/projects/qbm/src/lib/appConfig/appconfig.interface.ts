@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,6 +31,7 @@ export interface AppConfig {
   Basepath?: string;
   Title: string;
   WebAppIndex: string;
+  WebAppIdentifier?: string;
   NotificationUpdateInterval?: number;
   DatastoreIssueTreshold?: number;
   Translation?: TranslationConfiguration;

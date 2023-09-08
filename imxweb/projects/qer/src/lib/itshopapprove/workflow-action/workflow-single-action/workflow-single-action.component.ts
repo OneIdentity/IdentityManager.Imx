@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,11 +25,12 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { AbstractControl, FormGroup } from '@angular/forms';
+import { AbstractControl, UntypedFormGroup } from '@angular/forms';
 import { IEntity } from 'imx-qbm-dbts';
 import { BaseCdr, BaseReadonlyCdr, ColumnDependentReference } from 'qbm';
 import { Approval } from '../../approval';
 import { WorkflowActionEdit } from '../workflow-action-edit.interface';
+import { DecisionStepSevice } from '../../decision-step.service';
 
 /**
  * @ignore since this is only an internal component.
@@ -40,10 +41,9 @@ import { WorkflowActionEdit } from '../workflow-action-edit.interface';
 @Component({
   selector: 'imx-workflow-single-action',
   templateUrl: './workflow-single-action.component.html',
-  styleUrls: ['./workflow-single-action.component.scss']
+  styleUrls: ['./workflow-single-action.component.scss'],
 })
 export class WorkflowSingleActionComponent implements OnInit {
-
   /**
    * @ignore since this is only an internal component.
    *
@@ -56,7 +56,7 @@ export class WorkflowSingleActionComponent implements OnInit {
    *
    * The form group to which the necessary form fields will be added.
    */
-  @Input() public formGroup: FormGroup;
+  @Input() public formGroup: UntypedFormGroup;
 
   /**
    * @ignore since this is only public because of databinding to the template
@@ -65,6 +65,12 @@ export class WorkflowSingleActionComponent implements OnInit {
    *
    */
   public readonly columns: ColumnDependentReference[] = [];
+
+  /**
+   * @ignore since this is only public because of databinding to the template
+   * the display value of the current step
+   */
+  public currentStepCdr: ColumnDependentReference;
 
   /**
    * @ignore since this is only public because of databinding to the template
@@ -81,6 +87,7 @@ export class WorkflowSingleActionComponent implements OnInit {
    */
   public request: Approval;
 
+  constructor(private stepService: DecisionStepSevice) {}
 
   /**
    * @ignore since this is only an internal component
@@ -89,6 +96,8 @@ export class WorkflowSingleActionComponent implements OnInit {
    */
   public ngOnInit(): void {
     this.request = this.data.requests[0];
+
+    this.columns.push(new BaseReadonlyCdr(this.request.OrderState.Column));
 
     if (this.data.actionParameters.uidPerson) {
       this.columns.push(this.data.actionParameters.uidPerson);
@@ -103,9 +112,12 @@ export class WorkflowSingleActionComponent implements OnInit {
     }
 
     if (this.request.parameterColumns) {
-      this.request.parameterColumns.forEach(pCol => 
-        this.requestParameterColumns.push(this.data.approve ? new BaseCdr(pCol) : new BaseReadonlyCdr(pCol)));
+      this.request.parameterColumns.forEach((pCol) =>
+        this.requestParameterColumns.push(this.data.approve ? new BaseCdr(pCol) : new BaseReadonlyCdr(pCol))
+      );
     }
+
+    this.currentStepCdr = this.stepService.getCurrentStepCdr(this.request, this.request.pwoData, '#LDS#Current approval step');
   }
 
   /**
@@ -118,9 +130,7 @@ export class WorkflowSingleActionComponent implements OnInit {
    */
   public onFormControlCreated(name: string, control: AbstractControl): void {
     // use setTimeout to make addControl asynchronous in order to avoid "NG0100: Expression has changed after it was checked"
-    setTimeout(() =>
-      this.formGroup.addControl(name, control)
-    );
+    setTimeout(() => this.formGroup.addControl(name, control));
   }
 
   /**
@@ -136,6 +146,4 @@ export class WorkflowSingleActionComponent implements OnInit {
       this.request.updateDirectDecisionTarget(entity);
     }
   }
-
-
 }

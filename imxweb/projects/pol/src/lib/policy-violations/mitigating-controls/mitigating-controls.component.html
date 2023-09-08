@@ -1,0 +1,54 @@
+<div class="imx-content">
+  <eui-alert class="imx-helper-alert" type="info" colored="true" *ngIf="isMControlPerViolation">
+    <eui-alert-header>{{ '#LDS#Heading Mitigating Controls Can Be Assigned Individually' | translate }}</eui-alert-header>
+    <eui-alert-content>{{ '#LDS#Here you can assign mitigating controls to the policy violation. NOTE: If no mitigating controls have been assigned to the violated company policy, you cannot assign any mitigating controls to the policy violation either.' | translate }}</eui-alert-content>
+  </eui-alert>
+
+  <mat-card class="imx-mitigating-controls-card">
+    <div class="imx-data-no-results" *ngIf="!mControls || mControls.length == 0">
+      <eui-icon icon="table"></eui-icon>
+      <ng-container *ngIf="options.length > 0">
+        <p [translate]="'#LDS#There are currently no mitigating controls assigned to the policy violation.'"></p>
+        <button data-imx-identifier="mitigating-controls-button-add" mat-stroked-button color="primary" (click)="addMitigatingControl()">{{ '#LDS#Assign mitigating controls' | translate }}</button>
+      </ng-container>
+      <ng-container *ngIf="options.length === 0">
+        <p [translate]="'#LDS#You cannot assign mitigating controls to the policy violation because no mitigating controls are assigned to the underlying company policy.'"></p>
+      </ng-container>
+    </div>
+    <form class="imx-mitigating-form" [formGroup]="mitigatingForm" *ngIf="mControls && mControls.length > 0">
+      <div *ngFor="let mcontrol of mControls; let i = index" class="imx-mitigating-control">
+        <eui-select
+          *ngIf="mcontrol.editable"
+          (selectionChange)="onSelectionChange(mcontrol, $event.value)"
+          [label]="mitigatingCaption"
+          [filterFunction]="filter"
+          [options]="options"
+          [inputControl]="mcontrol.formControl"
+          [hideClearButton]="true"
+          [attr.data-imx-identifier]="'mitigating-controls-' + i + '-select'"
+        >
+          <mat-error *ngIf="mcontrol.formControl.errors?.['required']">
+            {{ '#LDS#This field is mandatory.' | translate }}
+          </mat-error>
+          <mat-error *ngIf="mcontrol.formControl.errors?.['duplicated']">
+            {{ '#LDS#This mitigating control has already been assigned. You can assign a mitigating control only once.' | translate }}
+          </mat-error>
+        </eui-select>
+        <imx-cdr-editor *ngIf="!mcontrol.editable" [cdr]="mcontrol.mitigatingCdr" [attr.data-imx-identifier]="'mitigating-controls-' + i + '-readOnly'"></imx-cdr-editor>
+        <button mat-button class="mat-icon-button" [attr.aria-label]="deleteText" [attr.data-imx-identifier]="'mitigating-controls-' + i + '-delete'" (click)="delete(i)">
+          <eui-icon class="delete-icon" icon="delete"></eui-icon>
+        </button>
+      </div>
+      <button [matTooltip]="'#LDS#Assigns a mitigating control' |translate" data-imx-identifier="mitigating-controls-button-add" [attr.aria-label]="'#LDS#Assign mitigating control' | translate" mat-button class="mat-icon-button" (click)="addMitigatingControl()">
+        <eui-icon class="add-icon" icon="add"></eui-icon>
+      </button>
+    </form>
+  </mat-card>
+
+  <mat-card eui-sidesheet-actions class="mat-elevation-z0">
+    <div class="imx-spacer"></div>
+    <button data-imx-identifier="mitigating-controls-button-save" class="imx-save-button" color="primary" [disabled]="notSaveable" mat-raised-button (click)="save()">
+      {{ '#LDS#Save' | translate }}
+    </button>
+  </mat-card>
+</div>

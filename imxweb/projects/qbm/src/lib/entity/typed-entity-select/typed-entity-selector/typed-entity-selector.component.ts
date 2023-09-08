@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -79,10 +79,9 @@ export class TypedEntitySelectorComponent {
   public async showSelected(): Promise<void> {
     this.sidesheet.open(TypedEntityCandidateSidesheetComponent, {
       title: await this.translate.get('#LDS#Heading Selected Items').toPromise(),
-      headerColour: 'iris-blue',
-      bodyColour: 'asher-gray',
       padding: '0',
       width: 'max(550px, 55%)',
+      testId: 'typed-entity-selector-candidates-sidesheet',
       data: { entities: this.selectedItems, tables: this.fkRelationData.fkTables?.map(elem => elem.TableName) }
     }
     );

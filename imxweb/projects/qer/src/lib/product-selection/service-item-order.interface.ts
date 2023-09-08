@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,11 +31,6 @@ export interface ServiceItemOrder {
    * Service items apart of order
    */
   serviceItems?: PortalShopServiceitems[];
-
-  /**
-   * Optional items apart of order
-   */
-  optionalItems?: PortalShopServiceitems[];
 
   /**
    * Any items-turned-requestable product apart of order
@@ -109,5 +104,5 @@ export interface ServiceItemHierarchyExtended {
   /**
    * parent uid
    */
-  parent?: string;
+  parentUid?: string;
 }

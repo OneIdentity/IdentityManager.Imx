@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,29 +25,34 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Router, Route } from '@angular/router';
+import { Route, Router } from '@angular/router';
 
-import { PortalAdminRoleOrg, PortalPersonRolemembershipsOrg, PortalRespOrg } from 'imx-api-rmb';
+import { DynamicMethodService, ImxTranslationProviderService, imx_SessionService, MenuService, ExtService, HELP_CONTEXTUAL } from 'qbm';
+import { PortalAdminRoleOrg, PortalPersonRolemembershipsOrg, PortalRespOrg, V2ApiClientMethodFactory } from 'imx-api-rmb';
 import {
-  QerApiService,
-  RoleService,
   BaseTreeEntitlement,
-  DataExplorerRegistryService,
-  RolesOverviewComponent,
   BaseTreeRoleRestoreHandler,
-  IdentityRoleMembershipsService
+  DataExplorerRegistryService,
+  IdentityRoleMembershipsService,
+  MyResponsibilitiesRegistryService,
+  QerApiService,
+  QerPermissionsService,
+  RoleService,
+  RolesOverviewComponent,
+  isAuditor,
+  isRoleAdmin,
+  isRoleStatistics,
 } from 'qer';
-import { DynamicMethodService, ImxTranslationProviderService, imx_SessionService, MenuService } from 'qbm';
+import { OrgDataModel } from './org-data-model';
 import { OrgMembership } from './org-membership';
 import { RmbApiService } from './rmb-api-client.service';
-import { OrgDataModel } from './org-data-model';
-import { EntitySchema, ExtendedTypedEntityCollection, WriteExtTypedEntity, CollectionLoadParameters } from 'imx-qbm-dbts';
+import { EntitySchema, ExtendedTypedEntityCollection, WriteExtTypedEntity, CollectionLoadParameters, EntityCollectionData, MethodDescriptor, MethodDefinition } from 'imx-qbm-dbts';
 import { RoleExtendedDataWrite } from 'imx-api-qer';
-
+import { TeamRoleComponent } from './team-role/team-role.component';
+import { ProjectConfig } from 'imx-api-qbm';
 
 @Injectable({ providedIn: 'root' })
 export class InitService {
-
   protected readonly orgTag = 'Org';
 
   constructor(
@@ -60,29 +65,34 @@ export class InitService {
     private readonly dataExplorerRegistryService: DataExplorerRegistryService,
     private readonly menuService: MenuService,
     private readonly roleService: RoleService,
-    private readonly identityRoleMembershipService: IdentityRoleMembershipsService
-  ) {
-  }
+    private readonly identityRoleMembershipService: IdentityRoleMembershipsService,
+    private readonly myResponsibilitiesRegistryService: MyResponsibilitiesRegistryService,
+    private readonly extService: ExtService,
+    private readonly qerPermissionsService: QerPermissionsService
+  ) {}
 
   public onInit(routes: Route[]): void {
     this.addRoutes(routes);
 
-
     // wrapper class for interactive methods
     class ApiWrapper {
-
-      constructor(private getApi: {
-        GetSchema(): EntitySchema,
-        Get(): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>>
-      }, private getByIdApi: {
-        Get_byid(id: string): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>>
-      }) { }
+      constructor(
+        private getApi: {
+          GetSchema(): EntitySchema;
+          Get(): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>>;
+        },
+        private getByIdApi: {
+          Get_byid(id: string): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>>;
+        }
+      ) {}
 
       Get(): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>> {
         return this.getApi.Get();
       }
 
-      GetSchema() { return this.getApi.GetSchema(); }
+      GetSchema() {
+        return this.getApi.GetSchema();
+      }
 
       Get_byid(id: string): Promise<ExtendedTypedEntityCollection<WriteExtTypedEntity<RoleExtendedDataWrite>, unknown>> {
         return this.getByIdApi.Get_byid(id);
@@ -92,8 +102,8 @@ export class InitService {
     const restore = new BaseTreeRoleRestoreHandler(
       () => this.api.client.portal_roles_Org_restore_get(),
       () => this.api.client.portal_resp_Org_restore_get(),
-      uid => this.api.client.portal_roles_Org_restore_byid_get(uid),
-      uid => this.api.client.portal_resp_Org_restore_byid_get(uid),
+      (uid) => this.api.client.portal_roles_Org_restore_byid_get(uid),
+      (uid) => this.api.client.portal_resp_Org_restore_byid_get(uid),
       (uidRole, actions) => this.api.client.portal_roles_Org_restore_byid_post(uidRole, actions),
       (uidRole, actions) => this.api.client.portal_resp_Org_restore_byid_post(uidRole, actions)
     );
@@ -105,25 +115,51 @@ export class InitService {
       respType: PortalRespOrg,
       resp: this.api.typedClient.PortalRespOrg,
       adminType: PortalAdminRoleOrg,
+      adminHasHierarchy: true,
       admin: {
-        get: async (parameter: any) => this.api.client.portal_admin_role_org_get(parameter)
+        get: async (parameter: any) => this.api.client.portal_admin_role_org_get(parameter),
       },
       adminSchema: this.api.typedClient.PortalAdminRoleOrg.GetSchema(),
       dataModel: new OrgDataModel(this.api),
-      interactiveResp: new ApiWrapper(
-        this.api.typedClient.PortalRespOrgInteractive,
-        this.api.typedClient.PortalRespOrgInteractive
-      ),
+      interactiveResp: new ApiWrapper(this.api.typedClient.PortalRespOrgInteractive, this.api.typedClient.PortalRespOrgInteractive),
       interactiveAdmin: new ApiWrapper(
         this.api.typedClient.PortalAdminRoleOrgInteractive,
-        this.api.typedClient.PortalAdminRoleOrgInteractive,
+        this.api.typedClient.PortalAdminRoleOrgInteractive
       ),
-      entitlements: new BaseTreeEntitlement(this.qerApi, this.session, this.dynamicMethodService, this.translator,
-        this.orgTag, e => e.GetColumn('UID_OrgRoot').GetValue()),
+      adminCanCreate: true,
+      respCanCreate: true,
+      entitlements: new BaseTreeEntitlement(this.qerApi, this.session, this.dynamicMethodService, this.translator, this.orgTag, (e) =>
+        e.GetColumn('UID_OrgRoot').GetValue()
+      ),
       membership: new OrgMembership(this.api, this.session, this.translator),
-      restore: restore
+      canUseRecommendations: true,
+      restore,
+      exportMethod: (navigationState: CollectionLoadParameters, isAdmin: boolean) => {
+        const factory = new V2ApiClientMethodFactory();
+        return {
+          getMethod: (withProperties: string, PageSize?: number) => {
+            let method: MethodDescriptor<EntityCollectionData>;
+            if (PageSize) {
+              method = isAdmin
+                ? factory.portal_admin_role_org_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 })
+                : factory.portal_resp_org_get({ ...navigationState, withProperties, PageSize, StartIndex: 0 });
+            } else {
+              method = isAdmin
+                ? factory.portal_admin_role_org_get({ ...navigationState, withProperties })
+                : factory.portal_resp_org_get({ ...navigationState, withProperties });
+            }
+            return new MethodDefinition(method);
+          },
+        };
+      },
+      translateKeys: {
+        create: '#LDS#Create business role',
+        createChild: '#LDS#Create child business role',
+        createHeading: '#LDS#Heading Create Business Role',
+        editHeading: '#LDS#Heading Edit Business Role',
+        createSnackbar: '#LDS#The business role has been successfully created.',
+      },
     });
-
 
     this.identityRoleMembershipService.addTarget({
       table: this.orgTag,
@@ -133,66 +169,70 @@ export class InitService {
         label: '#LDS#Menu Entry Business roles',
         index: 70,
       },
-      get: async (uidPerson: string, parameter: CollectionLoadParameters) => this.api.client.portal_person_rolememberships_Org_get(
-        uidPerson, parameter),
-      withAnalysis: true
+      get: async (uidPerson: string, parameter: CollectionLoadParameters) =>
+        this.api.client.portal_person_rolememberships_Org_get(uidPerson, parameter),
+      withAnalysis: true,
     });
 
     this.setupMenu();
 
-    this.dataExplorerRegistryService.registerFactory(
-      (preProps: string[], groups: string[]) => {
-        if (!this.isRoleAdmin(groups)) {
-          return;
-        }
-        return {
-          instance: RolesOverviewComponent,
-          data: {
-            TableName: this.orgTag,
-            Count: 0,
-          },
-          sortOrder: 7,
-          name: 'businessroles',
-          caption: '#LDS#Menu Entry Business roles',
-        };
+    this.dataExplorerRegistryService.registerFactory((preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
+      if (!isRoleAdmin(features) && !isRoleStatistics(features) && !isAuditor(groups)) {
+        return;
       }
-    );
+      return {
+        instance: RolesOverviewComponent,
+        data: {
+          TableName: this.orgTag,
+          Count: 0,
+        },
+        contextId: HELP_CONTEXTUAL.DataExplorerBusinessRoles,
+        sortOrder: 7,
+        name: 'businessroles',
+        caption: '#LDS#Menu Entry Business roles',
+      };
+    });
+
+    this.myResponsibilitiesRegistryService.registerFactory((preProps: string[], features: string[]) => ({
+      instance: RolesOverviewComponent,
+      sortOrder: 7,
+      name: this.orgTag,
+      caption: '#LDS#Menu Entry Business roles',
+      data: {
+        TableName: this.orgTag,
+        Count: 0,
+      },
+      contextId: HELP_CONTEXTUAL.MyResponsibilitiesBusinessRoles
+    }));
+    this.extService.register('Dashboard-MediumTiles', { instance: TeamRoleComponent });
   }
 
   private setupMenu(): void {
-    this.menuService.addMenuFactories(
-      (preProps: string[], groups: string[]) => {
-        if (!this.isRoleAdmin(groups)) {
-          return null;
-        }
-        const menu = {
-          id: 'ROOT_Data',
-          title: '#LDS#Data administration',
-          sorting: '40',
-          items: [
-            {
-              id: 'QER_DataExplorer',
-              navigationCommands: { commands: ['admin', 'dataexplorer'] },
-              title: '#LDS#Menu Entry Data Explorer',
-              sorting: '40-10',
-            },
-          ]
-        };
+    this.menuService.addMenuFactories((preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
+      if (!isRoleAdmin(features) && !isRoleStatistics(features) && !isAuditor(groups)) {
+        return null;
+      }
+      const menu = {
+        id: 'ROOT_Data',
+        title: '#LDS#Data administration',
+        sorting: '40',
+        items: [
+          {
+            id: 'QER_DataExplorer',
+            navigationCommands: { commands: ['admin', 'dataexplorer'] },
+            title: '#LDS#Menu Entry Data Explorer',
+            sorting: '40-10',
+          },
+        ],
+      };
 
-        return menu;
-      });
-  }
-
-  private isRoleAdmin(groups: string[]): boolean {
-    return groups.find((group) => {
-      const groupName = group.toUpperCase();
-      return groupName === 'VI_4_ROLEADMIN_ADMIN';
-    }) ? true : false;
+      return menu;
+    });
   }
 
   private addRoutes(routes: Route[]): void {
     const config = this.router.config;
-    routes.forEach(route => {
+    routes.forEach((route) => {
       config.unshift(route);
     });
     this.router.resetConfig(config);

@@ -1,0 +1,17 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: inherit;
+
+  imx-attestation-history {
+    flex: 1 1 auto;
+  }
+}
+
+.mat-card {
+  display: flex;
+  flex: 1 1 auto;
+  overflow: hidden;
+  margin: 3px;
+}

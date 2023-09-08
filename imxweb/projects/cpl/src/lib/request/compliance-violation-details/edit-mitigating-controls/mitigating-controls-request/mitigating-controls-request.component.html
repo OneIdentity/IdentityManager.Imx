@@ -1,0 +1,68 @@
+<div class="control-container" eui-sidesheet-content>
+  <eui-alert class="imx-helper-alert" type="info" [colored]="true">
+    <eui-alert-header>{{ headertext | translate }}</eui-alert-header>
+    <eui-alert-content>
+      <div *ngIf="!readOnly">
+        {{
+          '#LDS#Here you can assign mitigating controls to the rule violation. NOTE: If no mitigating controls have been assigned to the violated compliance rule, you cannot assign any mitigating controls to the rule violation either.'
+            | translate
+        }}
+      </div>
+      <div>
+        {{ itemText | translate }}
+      </div>
+    </eui-alert-content>
+  </eui-alert>
+  <ng-container *ngIf="mControls != null && mControls.length > 0">
+    <mat-card class="imx-mitigating-control-content" *ngIf="!readOnly; else readOnlyView">
+      <imx-mitigating-control-container [mControls]="mControls" [formArray]="formArray" [options]="options" (controlsRequested)="onCreateControl()" (controlDeleted)="onControlDeleted($event)"></imx-mitigating-control-container>
+    </mat-card>
+  </ng-container>
+
+  <mat-card class="imx-no-mitigating-controls" *ngIf="!mControls || mControls.length == 0">
+    <div class="imx-data-no-results">
+      <eui-icon icon="table"></eui-icon>
+      <p>
+        {{
+          (options.length > 0
+            ? '#LDS#There are currently no mitigating controls assigned to this rule violation.'
+            : '#LDS#There are currently no mitigating controls that can be assigned to this rule violation.'
+          ) | translate
+        }}
+      </p>
+      <button *ngIf="options.length > 0" mat-stroked-button color="primary" data-imx-identifier="mitigating-controls-request-button-add" (click)="onCreateControl()">
+        {{ '#LDS#Assign mitigating controls' | translate }}
+      </button>
+    </div>
+  </mat-card>
+</div>
+
+<mat-card eui-sidesheet-actions *ngIf="!readOnly && isMControlPerViolation && options.length > 0">
+  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="notSaveable" data-imx-identifier="mitigating-controls-request-button-save">
+    {{ '#LDS#Save' | translate }}
+  </button>
+</mat-card>
+
+<ng-template #readOnlyView>
+  <mat-accordion multi *ngIf="mControls.length > 0">
+    <mat-expansion-panel [expanded]="true" *ngIf="hasItems('active')">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{ '#LDS#Active mitigating controls' | translate }}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <imx-cdr-editor *ngFor="let mControl of mControls | filtered : 'active'" [cdr]="mControl.cdrs[0]"></imx-cdr-editor>
+    </mat-expansion-panel>
+    <mat-expansion-panel [expanded]="true" *ngIf="hasItems('inactive')">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{ '#LDS#Inactive mitigating controls' | translate }}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <imx-cdr-editor *ngFor="let mControl of mControls | filtered : 'inactive'" [cdr]="mControl.cdrs[0]"></imx-cdr-editor>
+    </mat-expansion-panel>
+  </mat-accordion>
+  <mat-card *ngIf="hasItems('deferred')">
+    <imx-cdr-editor *ngFor="let mControl of mControls | filtered : 'deferred'" [cdr]="mControl.cdrs[0]"></imx-cdr-editor>
+  </mat-card>
+</ng-template>

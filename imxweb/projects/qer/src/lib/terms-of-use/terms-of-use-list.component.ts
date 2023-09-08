@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, OnInit, Input } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { EuiDownloadOptions } from '@elemental-ui/core';
 
 import { PortalTermsofuse } from 'imx-api-qer';
@@ -40,36 +40,40 @@ import { TermsOfUseService } from './terms-of-use.service';
 @Component({
   selector: 'imx-terms-of-use-list',
   templateUrl: './terms-of-use-list.component.html',
-  styleUrls: ['./terms-of-use-list.component.scss']
+  styleUrls: ['./terms-of-use-list.component.scss'],
 })
 export class TermsOfUseListComponent implements OnInit {
-
   /** The {@link items|TermsOfUseItem} for determining the list of {@link PortalTermsofuse|terms of use}. */
   @Input() public items: TermsOfUseItem[];
 
   /** The {@link FormGroup} for the list of terms of use. */
-  @Input() public readonly formGroup: FormGroup;
+  @Input() public formGroup: UntypedFormGroup;
 
-  @Input() public readonly itemsHeading: string;
+  @Input() public itemsHeading: string;
+
+  public isLoading: boolean = false;
 
   /** The list of {@link PortalTermsofuse|terms of use} which have been determined by the {@link TermsOfUseItem|TermsOfUseItem}. */
   public termsOfUse: PortalTermsofuse[] = [];
 
-  constructor(
-    private readonly termsOfUseService: TermsOfUseService,
-  ) { }
+  constructor(private readonly termsOfUseService: TermsOfUseService) {}
 
   public async ngOnInit(): Promise<void> {
     // get the distinct terms-of-use identifiers
-    const termsOfUseUids = Array.from(new Set(this.items.map(c => c.UID_QERTermsOfUse.value)));
-    this.termsOfUse = await this.termsOfUseService.getTermsOfUse(termsOfUseUids);
+    this.isLoading = true;
+    try {
+      const termsOfUseUids = Array.from(new Set(this.items.map((c) => c.UID_QERTermsOfUse.value)));
+      this.termsOfUse = await this.termsOfUseService.getTermsOfUse(termsOfUseUids);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   /**
    * Gets the {@link TermsOfUseItem|TermsOfUseItem} for the given comma-separated list of UIDs.
    */
   public getTermsOfUseItems(uidTermsOfUse: string): TermsOfUseItem[] {
-    return this.items.filter(x => x.UID_QERTermsOfUse.value === uidTermsOfUse);
+    return this.items.filter((x) => x.UID_QERTermsOfUse.value === uidTermsOfUse);
   }
 
   /**
@@ -78,5 +82,4 @@ export class TermsOfUseListComponent implements OnInit {
   public getDownloadOptions(key: string, display: string): EuiDownloadOptions {
     return this.termsOfUseService.getDownloadOptions(key, display);
   }
-
 }

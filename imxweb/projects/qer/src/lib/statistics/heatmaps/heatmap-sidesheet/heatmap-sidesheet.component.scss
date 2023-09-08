@@ -1,0 +1,369 @@
+
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import '../../stat-mixins.scss';
+
+:host {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .content-container {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .toolbar-container {
+    margin-bottom: 20px;
+  }
+
+  .card-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    flex-grow: 1;
+    height: 75%;
+    justify-content: space-between;
+    @include EUI-Elevation-1;
+  }
+
+  .chart {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .under-chart {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .imx-no-data {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    eui-icon {
+      font-size: 100px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 18px;
+    }
+  }
+
+  ::ng-deep .imx-data-source-toolbar {
+    overflow: auto;
+    justify-content: flex-end;
+    > .imx-data-source-toolbar-left {
+      width: 100%;
+    }
+  }
+
+  .imx-toolbar-template {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    > * {
+      margin-right: 20px;
+    }
+  }
+
+  ::ng-deep .mat-form-field-wrapper {
+    padding-bottom: 0;
+    margin: 0;
+  }
+
+  ::ng-deep .mat-form-field-infix {
+    width: fit-content;
+  }
+
+
+}
+
+// Under card
+.under-card {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+
+
+.legend-gradient {
+  display: flex;
+  width: 100%;
+  margin: auto;
+  align-items: center;
+  justify-content: center;
+
+  .gradient-base {
+    height: 30px;
+    width: 50%;
+    display: flex;
+    border-radius: 5px;
+  }
+
+  .gradient-base:hover {
+    filter: brightness(.85);
+  }
+
+  .gradient-full {
+    background-image: linear-gradient(to right, var(--stat-ok), var(--stat-warn), var(--stat-error));
+  }
+
+  .gradient-no-lower {
+    background-image: linear-gradient(to right, var(--stat-warn), var(--stat-error));
+  }
+
+  .gradient-no-upper {
+    background-image: linear-gradient(to right, var(--stat-ok), var(--stat-warn));
+  }
+}
+
+.value-subtitle {
+  font-size: small;
+  color: $color-gray-40;
+}
+
+.lower-bound {
+  margin-right: 20px;
+  .value {
+    text-align: end;
+    font-weight: bold;
+  }
+}
+
+.upper-bound {
+  margin-left: 20px;
+  .value {
+    font-weight: bold;
+  }
+}
+
+.toggle-button-wrapper {
+  display: flex;
+  flex-direction: column;
+  button {
+    @include EUI-Elevation-1;
+  }
+}
+
+.hide-button {
+  visibility: hidden;
+  height: 0;
+}
+
+.align-right {
+  margin-left: auto;
+}
+
+.align-left {
+  margin-right: auto;
+}
+
+.toggle-button-content {
+  display: flex;
+  > .eui-icon {
+    margin-left: 24px;
+  }
+}
+
+// Blocks
+.block {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 5px;
+  border: 2px solid rgba($color: $color-gray-0, $alpha: 0);
+}
+
+// Block color states
+.block-error {
+  background-color: var(--stat-error);
+  color: var(--stat-light);
+}
+
+.block-error:hover {
+  background-color: var(--stat-error-darker);
+  border-color: rgba($color: $color-red-90, $alpha: 1.0);
+}
+
+.block-severe-warn {
+  background-color: var(--stat-severe-warn);
+  color: var(--stat-light);
+}
+
+.block-severe-warn:hover {
+  background-color: var(--stat-severe-warn-darker);
+  border-color: rgba($color: $color-orange-90, $alpha: 1.0);
+}
+
+.block-warn {
+  background-color: var(--stat-warn);
+  color: var(--stat-dark);
+}
+
+.block-warn:hover {
+  background-color: var(--stat-warn-darker);
+  border-color: rgba($color: $color-yellow-90, $alpha: 1.0);
+}
+
+.block-light-warn {
+  background-color: var(--stat-light-warn);
+  color: var(--stat-dark);
+}
+
+.block-light-warn:hover {
+  background-color: var(--stat-light-warn-darker);
+  border-color: rgba($color: $color-green-90, $alpha: 1.0);
+}
+
+.block-ok {
+  background-color: var(--stat-ok);
+  color: var(--stat-light);
+}
+
+.block-ok:hover {
+  border-style: solid;
+  background-color: var(--stat-ok-darker);
+  border-color: rgba($color: $color-green-90, $alpha: 1.0);
+}
+
+.block-history:hover {
+  filter: brightness(.85)
+}
+
+.block-text {
+  text-align: center;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Tooltips
+mat-tooltip-component .mat-tooltip.custom-tooltip {
+  background: $color-gray-0;
+  color: $color-gray-100;
+  margin: 5px;
+  max-width: unset;
+  font-size: 12px;
+  border: 1px solid $color-gray-80;
+  border-radius: 4px;
+}
+
+
+// Theming
+:host {
+  @include Stat-Colors;
+
+  .toolbar-container, .card-container {
+    border: 1px solid $color-gray-10;
+  }
+
+  .toggle-button-wrapper {
+    button {
+      border: 1px solid $color-gray-20;
+    }
+
+    > :hover {
+      background-color: $color-orange-20;
+      @include Ease-Transition;
+    }
+  }
+
+  .colored-favorite-icon, .colored-favorite-text {
+    color: $color-orange-60;
+  }
+
+  .colored-org-icon, .colored-org-text {
+    color: $color-blue-60;
+  }
+
+  .imx-no-data {
+    eui-icon {
+      color: $color-gray-20;
+    }
+    p {
+      color: $color-gray-40;
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    @include Stat-Colors(eui-dark-theme);
+
+    .toolbar-container, .card-container {
+      border: 1px solid $color-gray-50;
+    }
+
+    .toggle-button-wrapper {
+      button {
+        border: 1px solid $color-gray-60;
+      }
+
+      > :hover {
+        background-color: $color-orange-80;
+        @include Ease-Transition;
+      }
+    }
+
+    .colored-favorite-icon, .colored-favorite-text {
+      color: $color-orange-40;
+    }
+
+    .colored-org-icon, .colored-org-text {
+      color: $color-blue-40;
+    }
+    .imx-no-data {
+      eui-icon {
+        color: $color-gray-20;
+      }
+      p {
+        color: $color-gray-10;
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    @include Stat-Colors(eui-dark-theme);
+
+    .toolbar-container, .card-container {
+      border: 1px solid $color-gray-50;
+    }
+
+    .toggle-button-wrapper {
+      button {
+        border: 1px solid $color-gray-80;
+      }
+
+      > :hover {
+        background-color: $color-orange-80;
+        @include Ease-Transition;
+      }
+    }
+
+    .colored-favorite-icon, .colored-favorite-text {
+      color: $color-orange-40;
+    }
+
+    .colored-org-icon, .colored-org-text {
+      color: $color-blue-40;
+    }
+    .imx-no-data {
+      eui-icon {
+        color: $color-gray-10;
+      }
+      p {
+        color: $color-gray-0;
+      }
+    }
+  }
+}

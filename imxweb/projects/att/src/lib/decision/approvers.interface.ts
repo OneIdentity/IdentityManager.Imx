@@ -1,4 +1,4 @@
-﻿/*
+/*
  * ONE IDENTITY LLC. PROPRIETARY INFORMATION
  *
  * This software is confidential.  One Identity, LLC. or one of its affiliates or
@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR

@@ -26,10 +26,15 @@
 
 .imx-action {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
   padding: 16px 32px;
 
   .justify-start {
     margin-right: auto;
+
+    eui-icon {
+      font-size: 14px;
+      margin-right: 4px;
+    }
   }
 }

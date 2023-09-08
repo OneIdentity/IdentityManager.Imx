@@ -1,0 +1,106 @@
+@import '@elemental-ui/core/src/styles/_palette.scss';
+
+$SearchBarWidth: 535px;
+$SearchBarHeight: 45px;
+:host {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
+
+  mat-card {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    margin: 3px;
+  }
+}
+.imx-searchbar-card {
+  max-width: $SearchBarWidth;
+  width: $SearchBarWidth;
+  padding: 0px 10px;
+  display: inline-block;
+}
+
+.mat-paginator {
+  box-shadow: none;
+  margin-bottom: 6px;
+}
+
+.imx-procces-action{
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.mat-card .imx-searchbar-input {
+  border: 0 solid transparent;
+  font-size: 1.2em;
+  margin-bottom: 0;
+  width: 450px;
+  height: $SearchBarHeight;
+  box-sizing: border-box;
+  flex-grow: 0;
+  flex-shrink: 0;
+  /* use flex-basis, because of flex shorthand with calc()s doesn't work in IE */
+  flex-basis: calc(100% - 52px);
+}
+.mat-card .imx-searchbar-input::placeholder {
+  font-style: italic;
+}
+.imx-searchbar-input::-ms-clear {
+  /* hide input-clear button (the 'X') in > IE 10 */
+  display: none;
+  width: 0;
+  height: 0;
+}
+.mat-radio-button{
+  margin-left: 15px;
+}
+
+.flex-property{
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+.imx_MatTableRow{
+  cursor: pointer;
+}
+.imx_MatTableHeaderRow{
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.imx-change-table-no-results {
+  text-align: center;
+  margin: 20px 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: $color-gray-0;
+  .eui-icon {
+    font-size: 100px;
+    color: $color-gray-10;
+  }
+  p {
+    margin: 0;
+    font-size: 18px;
+    color: $color-gray-80;
+  }
+}
+
+.eui-dark-theme {
+  :host{
+    .imx-change-table-no-results {
+      background-color: $color-gray-70;
+      eui-icon {
+        color: $color-gray-20;
+      }
+      p {
+        color: $color-gray-10;
+      }
+    }
+  }
+}

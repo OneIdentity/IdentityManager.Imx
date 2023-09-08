@@ -1,16 +1,75 @@
-<h1 class="mat-headline" *ngIf="!isAdmin">
-  {{ ownershipInfo?.TableNameDisplay }}
-</h1>
+<mat-card class="imx-data-tree-container">
+  <div class="data-explorer-card-header">
+    <div class="data-explorer-card-header-bg">
+      <span>{{ ownershipInfo?.TableNameDisplay }}</span>
+      <ng-container *ngIf="contextId">
+        <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
+      </ng-container>
+    </div>
+  </div>
+  <div class="imx-card-content" *ngIf="isAdmin; else pageView">
+    <imx-data-tree-wrapper
+      *ngIf="useTree; else tableView"
+      data-imx-identifier="roles-overview-data-tree"
+      [database]="treeDatabase"
+      (nodeSelected)="onNodeSelected($event)"
+      [withSelectedNodeHighlight]="false"
+      [filters]="filterOptions"
+      [isNodeSelectable]="true"
+    >
+    </imx-data-tree-wrapper>
+  </div>
+</mat-card>
 
-<ng-container *ngIf="!useTree">
-  <imx-data-source-toolbar #dst data-imx-identifier="roles-overview-data-source-toolbar" [settings]="dstSettings"
-    [options]="['search', 'filter', 'groupBy']" [searchBoxText]="'#LDS#Search' | translate"
-    (navigationStateChanged)="onNavigationStateChanged($event)" (search)="onSearch($event)">
+<div class="data-explorer-bottom-button-row">
+  <button mat-stroked-button data-imx-identifier="roles-overview-button-restore" (click)="restoreDeletedRole()" *ngIf="restoreHandler" class="imx-right-button">
+    <span translate>#LDS#Restore deleted object</span>
+  </button>
+  <button mat-raised-button data-imx-identifier="roles-overview-button-create-new" color="primary" (click)="createNew($event)" *ngIf="canCreate">
+    <eui-icon icon="add"></eui-icon>
+    <span translate>{{ getCreationText() }}</span>
+  </button>
+</div>
+
+<ng-template #pageView>
+  <div class="imx-page-card">
+    <imx-data-tree-wrapper
+      *ngIf="useTree; else tableView"
+      data-imx-identifier="roles-overview-data-tree"
+      [database]="treeDatabase"
+      (nodeSelected)="onNodeSelected($event)"
+      [withSelectedNodeHighlight]="false"
+      [filters]="filterOptions"
+      [isNodeSelectable]="true"
+    >
+    </imx-data-tree-wrapper>
+  </div>
+</ng-template>
+
+<ng-template #tableView>
+  <imx-data-source-toolbar
+    #dst
+    data-imx-identifier="roles-overview-data-source-toolbar"
+    [settings]="dstSettings"
+    [busyService]="busyService"
+    [options]="['search', 'sort', 'filter', 'groupBy', 'settings']"
+    [searchBoxText]="'#LDS#Search' | translate"
+    (navigationStateChanged)="onNavigationStateChanged($event)"
+    (updateConfig)="updateConfig($event)"
+    (deleteConfigById)="deleteConfigById($event)"
+    (search)="onSearch($event)"
+  >
   </imx-data-source-toolbar>
-  <imx-data-table #dataTable data-imx-identifier="roles-overview-data-table" [dst]="dst" detailViewVisible="false"
-    mode="manual">
-    <imx-data-table-column *ngIf="entitySchema"
-      [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+  <imx-data-table
+    class="imx-table"
+    #dataTable
+    data-imx-identifier="roles-overview-data-table"
+    [dst]="dst"
+    (highlightedEntityChanged)="showDetails($event)"
+    detailViewVisible="false"
+    mode="manual"
+  >
+    <imx-data-table-column *ngIf="entitySchema" [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
       <ng-template let-item>
         <div>
           {{ item?.GetEntity()?.GetDisplay() }}
@@ -20,39 +79,20 @@
         </div>
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-generic-column columnName="details">
+    <imx-data-table-generic-column *ngIf="hasHierarchy && canCreate" columnName="actions" [columnLabel]="''">
       <ng-template let-item>
-        <button mat-button data-imx-identifier="roles-overview-detail-button" color="primary"
-          (click)="showDetails(item)">
-          {{ '#LDS#Edit' | translate }}
-        </button>
+        <div class="imx-button-column">
+          <button
+            mat-stroked-button
+            (click)="createNew($event, item.GetEntity())"
+            [attr.data-imx-identifier]="'roles-overview-edit-element-button-' + item.GetEntity().GetKeys().join('-')"
+          >
+            <eui-icon icon="add"></eui-icon>
+            <span translate>{{ getChildCreationText() }}</span>
+          </button>
+        </div>
       </ng-template>
     </imx-data-table-generic-column>
   </imx-data-table>
   <imx-data-source-paginator data-imx-identifier="roles-overview-paginator" [dst]="dst"></imx-data-source-paginator>
-</ng-container>
-
-<mat-card *ngIf="useTree" class="imx-data-tree-container">
-  <div class="data-explorer-card-header">
-    <div class="data-explorer-card-header-bg">
-      <span>{{ ownershipInfo?.TableNameDisplay }}</span>
-    </div>
-  </div>
-  <div class="imx-card-content">
-    <imx-data-tree-wrapper data-imx-identifier="roles-overview-data-tree" [database]="treeDatabase"
-    [withSelectedNodeHighlight]="false" [filters]="filterOptions">
-      <ng-template let-entity>
-        <button class="imx-edit-role-button" mat-button color="primary"
-        [attr.data-imx-identifier]="'roles-overview-edit-element-button-' + entity.GetKeys().join('-')"
-        (click)="onNodeSelected(entity)">{{'#LDS#Edit' |translate}}</button>
-      </ng-template>
-    </imx-data-tree-wrapper>
-  </div>
-</mat-card>
-
-<div class="data-explorer-bottom-button-row">
-  <button mat-stroked-button data-imx-identifier="roles-overview-button-restore" (click)="restoreDeletedRole()"
-    *ngIf="restoreHandler" class="imx-right-button">
-    <span translate>#LDS#Restore a deleted role</span>
-  </button>
-</div>
+</ng-template>

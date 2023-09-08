@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,30 +25,30 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, OnDestroy, Inject, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, FormArray, FormControl } from '@angular/forms';
+import { Component, OnDestroy, Inject, OnInit, ViewChild } from '@angular/core';
+import { UntypedFormGroup, UntypedFormControl } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { MatTabGroup } from '@angular/material/tabs';
 import { Router } from '@angular/router';
-import { EuiLoadingService, EuiSidesheetService, EUI_SIDESHEET_DATA, EuiDownloadOptions, EuiSidesheetRef } from '@elemental-ui/core';
+import { EuiLoadingService, EuiSidesheetService, EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
 import { IdentitiesService } from '../identities.service';
-import { FeatureConfig, PortalAdminPerson, PortalPersonReportsInteractive, QerProjectConfig } from 'imx-api-qer';
+import { FeatureConfig, PortalAdminPerson, PortalPersonReports, QerProjectConfig } from 'imx-api-qer';
 import {
   ColumnDependentReference,
   ClassloggerService,
   BaseCdr,
-  TabControlHelper,
   SnackBarService,
-  ElementalUiConfigService,
   AuthenticationService,
   SystemInfoService,
   ConfirmationService,
   TabItem,
-  ExtService
+  ExtService,
+  CdrFactoryService,
 } from 'qbm';
-import { DbObjectKey, DisplayColumns } from 'imx-qbm-dbts';
+import { DbObjectKey } from 'imx-qbm-dbts';
 import { IdentitiesReportsService } from '../identities-reports.service';
 import { PasscodeService } from '../../ops/passcode.service';
 import { QerApiService } from '../../qer-api-client.service';
@@ -61,18 +61,18 @@ import { FeatureConfigService } from '../../admin/feature-config.service';
   styleUrls: ['./identity-sidesheet.component.scss'],
 })
 export class IdentitySidesheetComponent implements OnInit, OnDestroy {
-  public readonly detailsFormGroup: FormGroup;
+  @ViewChild('tabs') public tabs: MatTabGroup;
+
+  public readonly detailsFormGroup: UntypedFormGroup;
   public cdrList: ColumnDependentReference[] = [];
   public cdrListPersonal: ColumnDependentReference[] = [];
   public cdrListOrganizational: ColumnDependentReference[] = [];
   public cdrListLocality: ColumnDependentReference[] = [];
   public valueChanges$: Subscription;
-  public reportDownload: EuiDownloadOptions;
-  public managedReportDownload: EuiDownloadOptions;
-  public readonly parameters: { objecttable: string; objectuid: string; };
+  public readonly parameters: { objecttable: string; objectuid: string };
   public canAnalyzeRisk = false;
-  public isActiveFormControl = new FormControl();
-  public isSecurityIncidentFormControl = new FormControl();
+  public isActiveFormControl = new UntypedFormControl();
+  public isSecurityIncidentFormControl = new UntypedFormControl();
   public dynamicTabs: TabItem[] = [];
 
   private readonly subscriptions: Subscription[] = [];
@@ -80,14 +80,14 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
   private featureConfig: FeatureConfig;
 
   constructor(
-    formBuilder: FormBuilder,
-    @Inject(EUI_SIDESHEET_DATA) public data: {
-      isAdmin: boolean,
-      projectConfig: QerProjectConfig
-      selectedIdentity: PortalPersonReportsInteractive | PortalAdminPerson
+    @Inject(EUI_SIDESHEET_DATA)
+    public data: {
+      isAdmin: boolean;
+      projectConfig: QerProjectConfig;
+      selectedIdentity: PortalPersonReports | PortalAdminPerson;
+      canEdit: boolean;
     },
     public identities: IdentitiesService,
-    private readonly elementalUiConfigService: ElementalUiConfigService,
     private readonly reports: IdentitiesReportsService,
     private readonly logger: ClassloggerService,
     private readonly busyService: EuiLoadingService,
@@ -100,47 +100,36 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
     private readonly router: Router,
     private readonly systemInfoService: SystemInfoService,
     private readonly translate: TranslateService,
-    private readonly extService: ExtService,
+    private readonly extService: ExtService,    
     private readonly featureConfigService: FeatureConfigService,
+    private readonly cdrFactoryService: CdrFactoryService,
     authentication: AuthenticationService,
     confirm: ConfirmationService
   ) {
-
-    this.subscriptions.push(this.sidesheetRef.closeClicked().subscribe(async (result) => {
-      if (this.detailsFormGroup.dirty) {
-        const close = await confirm.confirmLeaveWithUnsavedChanges();
-        if (close) {
-          this.sidesheetRef.close();
-        }
-      } else {
-        this.sidesheetRef.close(result);
-      }
-    }));
-
     this.subscriptions.push(
-      authentication.onSessionResponse.subscribe((sessionState) =>
-        this.currentUserUid = sessionState.UserUid
-      )
+      this.sidesheetRef.closeClicked().subscribe(async (result) => {
+        if (this.detailsFormGroup.dirty) {
+          const close = await confirm.confirmLeaveWithUnsavedChanges();
+          if (close) {
+            this.sidesheetRef.close();
+          }
+        } else {
+          this.sidesheetRef.close(result);
+        }
+      })
     );
 
-    this.detailsFormGroup = new FormGroup({});
-    this.reportDownload = {
-      ... this.elementalUiConfigService.Config.downloadOptions,
-      url: this.reports.personsReport(30, this.data.selectedIdentity.GetEntity().GetKeys()[0]),
-    };
+    this.subscriptions.push(authentication.onSessionResponse.subscribe((sessionState) => (this.currentUserUid = sessionState.UserUid)));
 
-    this.managedReportDownload = {
-      ... this.elementalUiConfigService.Config.downloadOptions,
-      url: this.reports.personsManagedReport(30, this.data.selectedIdentity.GetEntity().GetKeys()[0]),
-    };
-
+    this.detailsFormGroup = new UntypedFormGroup({});
     this.parameters = {
-      objecttable: PortalPersonReportsInteractive.GetEntitySchema().TypeName,
+      objecttable: PortalPersonReports.GetEntitySchema().TypeName,
       objectuid: data.selectedIdentity.GetEntity().GetKeys()[0],
     };
 
-    this.systemInfoService.get().then(i => this.canAnalyzeRisk = i.PreProps.includes('RISKINDEX')
-      && data.selectedIdentity.RiskIndexCalculated.value > 0);
+    this.systemInfoService
+      .get()
+      .then((i) => (this.canAnalyzeRisk = i.PreProps.includes('RISKINDEX') && data.selectedIdentity.RiskIndexCalculated.value > 0));
   }
 
   get isIdentityMarkedForDelete(): boolean {
@@ -168,18 +157,31 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
       this.valueChanges$.unsubscribe();
     }
 
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   public cancel(): void {
     this.closeSidesheet();
   }
 
+  public async personsManagedReport(): Promise<void> {
+    this.reports.personsManagedReport(
+      this.data.selectedIdentity.GetEntity().GetKeys()[0],
+      '#LDS#Download report on identities this identity is directly responsible for'
+    );
+  }
+
+  public async personsReport(): Promise<void> {
+    this.reports.personsReport(this.data.selectedIdentity);
+  }
+
   public async initiateDelete(): Promise<void> {
-    if (await this.confirmationService.confirm({
-      Title: '#LDS#Heading Delete Identity',
-      Message: '#LDS#Are you sure you want to delete the identity?'
-    })) {
+    if (
+      await this.confirmationService.confirm({
+        Title: '#LDS#Heading Delete Identity',
+        Message: '#LDS#Are you sure you want to delete the identity?',
+      })
+    ) {
       const overlayRef = this.busyService.show();
       try {
         const result = await this.identities.deleteIdentity(this.data.selectedIdentity.GetEntity().GetKeys()[0]);
@@ -218,7 +220,7 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
 
     const result = await this.confirmationService.confirm({
       Title: title,
-      Message: message
+      Message: message,
     });
 
     if (!result) {
@@ -239,17 +241,18 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
   public async analyzeRisk(): Promise<void> {
     this.sidesheet.open(RiskAnalysisSidesheetComponent, {
       title: await this.translate.get('#LDS#Heading Analyze Risk').toPromise(),
-      headerColour: 'blue',
+      subTitle: this.data.selectedIdentity.GetEntity().GetDisplay(),
       padding: '0px',
       width: '60%',
-      data: { objectKey: new DbObjectKey('Person', this.data.selectedIdentity.GetEntity().GetKeys()[0]).ToXmlString() }
+      testId: 'identity-sidesheet-analyze-risk-sidesheet',
+      data: { objectKey: new DbObjectKey('Person', this.data.selectedIdentity.GetEntity().GetKeys()[0]).ToXmlString() },
     });
   }
 
   public async generatePasscode(): Promise<void> {
     let passcode;
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
       passcode = await this.passcodeService.getPasscodeWithPortalLogin(this.data.selectedIdentity.GetEntity().GetKeys()[0]);
     } finally {
@@ -262,7 +265,8 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
       passcode,
       this.data.selectedIdentity.GetEntity().GetDisplay(),
       null,
-      await this.passcodeService.getValidationDuration());
+      await this.passcodeService.getValidationDuration()
+    );
   }
 
   public async onAssignManager(): Promise<void> {
@@ -277,73 +281,65 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
       }
 
       await this.api.typedClient.PortalPersonRequestmanagerchange.Post(this.data.selectedIdentity.GetEntity().GetKeys()[0], param);
-
     } finally {
       this.busyService.hide();
       this.sidesheetRef.close();
       this.snackbar.open({ key: '#LDS#The assignment of the manager has been successfully added to your shopping cart.' });
       this.router.navigate(['shoppingcart']);
     }
-
   }
 
   public update(cdr: ColumnDependentReference, list: ColumnDependentReference[]): void {
-    const index = list.findIndex(elem => elem.column.ColumnName === cdr.column.ColumnName);
-    if (index === -1) { return; }
+    const index = list.findIndex((elem) => elem.column.ColumnName === cdr.column.ColumnName);
+    if (index === -1) {
+      return;
+    }
 
     this.detailsFormGroup.removeControl(cdr.column.ColumnName);
     list.splice(index, 1, new BaseCdr(cdr.column));
   }
 
   private closeSidesheet(): void {
-    this.sidesheet.close();
+    this.sidesheetRef.close();
   }
 
   private async setup(): Promise<void> {
-    /**
-     * Resolve an issue where the mat-tab navigation arrows could appear on first load
-     */
-    setTimeout(() => {
-      TabControlHelper.triggerResizeEvent();
-    });
+    // Resolve an issue where the mat-tab navigation arrows could appear on first load
+    this.subscriptions.push(
+      this.sidesheetRef.componentInstance.onOpen().subscribe(() => {
+        // Recalculate header
+        this.tabs.updatePagination();
+      })
+    );
 
-    if (this.data.isAdmin) {
-      this.cdrList = [
-        new BaseCdr(this.data.selectedIdentity.GetEntity().GetColumn(DisplayColumns.DISPLAY_PROPERTYNAME)),
-        new BaseCdr(this.data.selectedIdentity.DefaultEmailAddress.Column),
-        new BaseCdr(this.data.selectedIdentity.UID_PersonHead.Column),
-      ];
-      // Handle the IsInActive column outside the context of a CDR editor so the UI can invert the meaning to make more sense to the user
-      // This should be inversed on the api data response at some point, but until then we handle it in the UI
-      this.isActiveFormControl.setValue(!this.data.selectedIdentity.IsInActive.value);
-      this.detailsFormGroup.addControl(this.data.selectedIdentity.IsInActive.Column.ColumnName, this.isActiveFormControl);
+    // Handle the IsInActive column outside the context of a CDR editor so the UI can invert the meaning to make more sense to the user
+    // This should be inversed on the api data response at some point, but until then we handle it in the UI
+    this.isActiveFormControl.setValue(!this.data.selectedIdentity.IsInActive.value);
+    this.detailsFormGroup.addControl(this.data.selectedIdentity.IsInActive.Column.ColumnName, this.isActiveFormControl);
 
-    } else {
-      const personalColumns = this.data.projectConfig.PersonConfig.VI_Employee_MasterData_Attributes;
-      this.cdrListPersonal = personalColumns.map(col => new BaseCdr(this.data.selectedIdentity.GetEntity().GetColumn(col)));
+    const personalColumns = this.data.projectConfig.PersonConfig.VI_Employee_MasterData_Attributes;
+    this.cdrListPersonal = this.cdrFactoryService.buildCdrFromColumnList(this.data.selectedIdentity.GetEntity(), personalColumns, !this.data.canEdit);
 
-      const organizationalColumns = this.data.projectConfig.PersonConfig.VI_Employee_MasterData_OrganizationalAttributes;
-      this.cdrListOrganizational = organizationalColumns.map(col => new BaseCdr(this.data.selectedIdentity.GetEntity().GetColumn(col)));
+    const organizationalColumns = this.data.projectConfig.PersonConfig.VI_Employee_MasterData_OrganizationalAttributes;
+    this.cdrListOrganizational = this.cdrFactoryService.buildCdrFromColumnList(
+      this.data.selectedIdentity.GetEntity(),
+      organizationalColumns, !this.data.canEdit
+    );
 
-      const localityColumns = this.data.projectConfig.PersonConfig.VI_Employee_MasterData_LocalityAttributes;
-      this.cdrListLocality = localityColumns.map(col => new BaseCdr(this.data.selectedIdentity.GetEntity().GetColumn(col)));
-    }
+    const localityColumns = this.data.projectConfig.PersonConfig.VI_Employee_MasterData_LocalityAttributes;
+    this.cdrListLocality = this.cdrFactoryService.buildCdrFromColumnList(this.data.selectedIdentity.GetEntity(), localityColumns, !this.data.canEdit);
 
     this.isSecurityIncidentFormControl.setValue(this.data.selectedIdentity.IsSecurityIncident.value);
-    this.detailsFormGroup.addControl(
-      this.data.selectedIdentity.IsSecurityIncident.Column.ColumnName, this.isSecurityIncidentFormControl);
-
+    this.detailsFormGroup.addControl(this.data.selectedIdentity.IsSecurityIncident.Column.ColumnName, this.isSecurityIncidentFormControl);
 
     this.busyService.show();
     try {
       this.featureConfig = await this.featureConfigService.getFeatureConfig();
-      this.dynamicTabs = (await this.extService.getFittingComponents<TabItem>('identitySidesheet',
-        (ext) => ext.inputData.checkVisibility(this.parameters)))
-        .sort((tab1: TabItem, tab2: TabItem) => tab1.sortOrder - tab2.sortOrder);
+      this.dynamicTabs = (
+        await this.extService.getFittingComponents<TabItem>('identitySidesheet', (ext) => ext.inputData.checkVisibility(this.parameters))
+      ).sort((tab1: TabItem, tab2: TabItem) => tab1.sortOrder - tab2.sortOrder);
     } finally {
       this.busyService.hide();
     }
   }
-
 }
-

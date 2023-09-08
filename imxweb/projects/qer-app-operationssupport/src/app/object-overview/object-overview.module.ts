@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -41,15 +41,16 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import {
   DataSourceToolbarModule,
   DataTableModule,
-  HyperViewModule,
   ObjectHistoryModule,
   ObjectHistoryApiService,
   QbmModule,
 } from 'qbm';
-import { OpsModule } from 'qer';
+import { ObjectHyperviewModule, ObjectHyperviewService, OpsModule } from 'qer';
 import { ObjectOverviewComponent } from './object-overview.component';
 import { ObjectOverviewService } from './object-overview.service';
 import { OpSupportHistoryApiService } from './opsupport-history-api.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { OpsHyperviewService } from '../hyperview/ops-hyperview.service';
 
 
 @NgModule({
@@ -59,7 +60,6 @@ import { OpSupportHistoryApiService } from './opsupport-history-api.service';
   imports: [
     CommonModule,
     ObjectHistoryModule,
-    HyperViewModule,
     DataTableModule,
     DataSourceToolbarModule,
     EuiCoreModule,
@@ -67,9 +67,12 @@ import { OpSupportHistoryApiService } from './opsupport-history-api.service';
     MatTabsModule,
     MatButtonModule,
     MatCardModule,
+    MatProgressSpinnerModule,
     MatTooltipModule,
     MatFormFieldModule,
     MatSelectModule,
+    MatTabsModule,
+    ObjectHyperviewModule,
     TranslateModule,
     MatTableModule,
     MatPaginatorModule,
@@ -80,7 +83,11 @@ import { OpSupportHistoryApiService } from './opsupport-history-api.service';
     {
       provide: ObjectHistoryApiService,
       useClass: OpSupportHistoryApiService
-    },
+    },    
+    {
+      provide: ObjectHyperviewService,
+      useClass: OpsHyperviewService
+    }, 
     ObjectOverviewService
   ]
 })

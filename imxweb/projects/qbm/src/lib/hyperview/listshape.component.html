@@ -1,7 +1,8 @@
 <imx-hyperview-shape [shape]="shape">
     <ul ShapeContent>
         <li *ngFor="let elem of shape.Elements">
-            <a (click)="click(elem)" title="{{ elem.DisplayValue }}">{{ elem.DisplayValue }}</a>
+            <a *ngIf="isLinkEnabled()" (click)="click(elem)">{{ elem.DisplayValue }}</a>
+            <ng-container *ngIf="!isLinkEnabled()">{{elem.DisplayValue}}</ng-container>
         </li>
     </ul>
 </imx-hyperview-shape>

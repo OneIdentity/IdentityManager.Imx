@@ -17,12 +17,41 @@
   overflow: hidden;
   height: inherit;
   margin: 40px 60px;
-  flex: 1 1 auto;
+
+  &--full-page {
+    margin: 0;
+    overflow: auto;
+  }
 
   @media #{$IMX_Mediaquery_Smartphone} {
     margin: 10px 15px;
+
+    &--full-page {
+      margin: 0;
+    }
   }
   @media #{$IMX_Mediaquery_SmallDesktops} {
     margin: 20px 30px;
+
+    &--full-page {
+      margin: 0;
+    }
+  }
+}
+
+@media only screen and (max-width: 768px) {
+
+  .eui-top-navigation-mobile {
+    .eui-top-navigation-mobile-footer {
+      .mat-button {
+        &.imx-masthead--icon-button {
+          width: 100%;
+
+          .mat-button-wrapper span {
+            display: inline-block;
+          }
+        }
+      }
+    }
   }
 }

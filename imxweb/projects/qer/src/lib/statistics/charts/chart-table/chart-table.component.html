@@ -1,0 +1,26 @@
+<div class="above">
+  <imx-data-source-toolbar #dst
+  [alwaysVisible]="true"
+  [settings]="dstSettings"
+  [options]="['search']"
+  [searchBoxText]="'#LDS#Search' | translate"
+  [isDataSourceLocal]="true"
+  [localSearchColumns]="hasUniqueObjectDisplay ? ['Name', 'ObjectDisplay'] : ['Name']"
+  useThemedStyle="true"
+  isStandaloneToolbar="true"
+  data-imx-identifier="chart-details-toolbar"
+  >
+  </imx-data-source-toolbar>
+</div>
+
+<mat-card class="imx-table-container">
+  <imx-data-table [dst]="dst" detailViewVisible="false"
+  data-imx-identifier="chart-details-table">
+  </imx-data-table>
+  <imx-data-source-paginator
+    data-imx-identifier="chart-details-paginator"
+    [dst]="dst"
+    showFirstLastButtons="true"
+  >
+  </imx-data-source-paginator>
+</mat-card>

@@ -1,0 +1,5 @@
+<button *ngIf="!isLoading" mat-stroked-button (click)="onOpenSelectionDialog()" [disabled]="!selectedElements?.length">
+  <eui-icon icon="check"></eui-icon>
+  {{ caption }}
+  ({{ selectedElements?.length > 0 ? selectedElements?.length : 0 }})
+</button>

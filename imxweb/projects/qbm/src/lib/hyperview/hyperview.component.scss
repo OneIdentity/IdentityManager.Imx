@@ -1,25 +1,37 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   overflow: auto;
+  flex-grow: 1;
+  position: relative;
+  min-height: 100%;
 }
 
 .imx-hyperview {
   width: 100%;
   height: 100%;
-  > ol {
+  position: relative;
+  transform-origin: center center;
+  .imx-hyperview-container{
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    overflow: visible;
+    transform-origin: top left;
+    > ol {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow: visible;
+    }
   }
 }
 
 .imx-hyperview-shapes {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   overflow: visible;
 }
 
@@ -32,38 +44,95 @@
 .imx-hyperviewshape {
   position: absolute;
   z-index: 100;
-  flex: 1 1 auto;
+  margin: 0;
   width: 360px;
   padding: 7px;
-  background-color: $white;
-  color: $asher-gray;
-}
-
-.hyperviewelement:focus,
-.hyperviewelement:hover {
-  box-shadow: 0 0 5px 3px $black-4;
+  font-size: small;
 }
 
 div[data-role='hyperview'],
 path {
-  /*pointer-events: none;*/
-  -webkit-tap-highlight-color: $iris-blue;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -o-user-select: none;
   user-select: none;
-  /* -ms-touch-select:   none; */
 }
 
 .connector {
   fill: none;
-  stroke: $black-3;
   stroke-width: 2;
   stroke-linejoin: miter;
   stroke-miterlimit: 4;
   stroke-linecap: butt;
   opacity: 1.0;
+}
+button{
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+  background: $color-gray-0;
+}
+
+//theming
+:host{
+
+  .imx-hyperview > ol {
+    background-color: $color-gray-80;
+  }
+
+  .imx-hyperviewshape {
+    background-color: $color-gray-0;
+    color: $color-gray-2;
+  }
+
+  .hyperviewelement:focus,
+  .hyperviewelement:hover {
+    box-shadow: 0 0 5px 3px $color-gray-70;
+  }
+
+  div[data-role='hyperview'],
+  path {
+    -webkit-tap-highlight-color: $color-blue-60;
+  }
+
+  .connector {
+    stroke: $color-gray-60;
+  }
+
+}
+
+
+.eui-dark-theme {
+  :host{
+    .connector {
+      stroke: $color-gray-30
+    }
+
+    .imx-hyperview > ol {
+      background-color: $color-gray-70;
+    }
+
+    .hyperviewelement:focus,
+    .hyperviewelement:hover {
+      box-shadow: 0 0 5px 3px rgba($color: $color-gray-0, $alpha: 0.7);
+    }
+    button{
+      background: $color-gray-70;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host{
+    .connector {
+      stroke: $color-gray-10
+    }
+
+    .imx-hyperview > ol {
+      background-color: $color-gray-90;
+    }
+
+    .hyperviewelement:focus,
+    .hyperviewelement:hover {
+      box-shadow: 0 0 5px 3px rgba($color: $color-gray-0, $alpha: 0.7);
+    }
+  }
 }

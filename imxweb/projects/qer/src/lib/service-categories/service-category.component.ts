@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Platform } from '@angular/cdk/platform';
 import { Component, Inject, OnDestroy } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl } from '@angular/forms';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
@@ -34,7 +34,7 @@ import { ColumnDependentReference, BaseCdr, ConfirmationService } from 'qbm';
 import { IEntity } from 'imx-qbm-dbts';
 import { ServiceCategoryChangedType } from './service-category-changed.enum';
 import { TypedEntitySelectionData } from '../service-items/service-item-select/typed-entity-selection-data.interface';
-import { PortalServicecategoriesInteractive } from 'imx-api-qer';
+import { PortalServicecategories } from 'imx-api-qer';
 
 @Component({
   selector: 'imx-service-category',
@@ -44,7 +44,7 @@ import { PortalServicecategoriesInteractive } from 'imx-api-qer';
 export class ServiceCategoryComponent implements OnDestroy {
   public readonly canDelete: boolean;
   public readonly editMode: boolean;
-  public readonly form = new FormGroup({});
+  public readonly form = new UntypedFormGroup({});
   public readonly cdrList: ColumnDependentReference[] = [];
   public readonly serviceItemData: TypedEntitySelectionData;
 
@@ -52,7 +52,7 @@ export class ServiceCategoryComponent implements OnDestroy {
 
   constructor(
     @Inject(EUI_SIDESHEET_DATA) data: {
-      serviceCategory: PortalServicecategoriesInteractive;
+      serviceCategory: PortalServicecategories;
       editMode: boolean;
       serviceItemData: TypedEntitySelectionData;
       serviceCategoryEditableFields: string[];
@@ -112,7 +112,7 @@ export class ServiceCategoryComponent implements OnDestroy {
     }
   }
 
-  public addFormControl(columnName: string, control: FormControl): void {
+  public addFormControl(columnName: string, control: UntypedFormControl): void {
     // Add control after timeout to prevent expression changed error
     setTimeout(() => {
       this.form.addControl(columnName, control);

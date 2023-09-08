@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, EventEmitter, OnDestroy } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { UntypedFormControl, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { UrlValidatorService } from './url-validator.service';
@@ -36,10 +36,10 @@ import { EntityColumnContainer } from '../entity-column-container';
 @Component({
   selector: 'imx-edit-url',
   templateUrl: './edit-url.component.html',
-  styleUrls: ['./edit-url.component.scss']
+  styleUrls: ['./edit-url.component.scss'],
 })
 export class EditUrlComponent implements CdrEditor, OnDestroy {
-  public readonly control = new FormControl('', { updateOn: 'blur' });
+  public readonly control = new UntypedFormControl('', { updateOn: 'blur' });
 
   public readonly columnContainer = new EntityColumnContainer<string>();
   public readonly valueHasChanged = new EventEmitter<ValueHasChangedEventArg>();
@@ -47,10 +47,10 @@ export class EditUrlComponent implements CdrEditor, OnDestroy {
   private readonly subscribers: Subscription[] = [];
   private isWriting = false;
 
-  constructor(private readonly urlValidator: UrlValidatorService) { }
+  constructor(private readonly urlValidator: UrlValidatorService) {}
 
   public ngOnDestroy(): void {
-    this.subscribers.forEach(s => s.unsubscribe());
+    this.subscribers.forEach((s) => s.unsubscribe());
   }
 
   public bind(cdref: ColumnDependentReference): void {
@@ -64,17 +64,34 @@ export class EditUrlComponent implements CdrEditor, OnDestroy {
         validators.push(Validators.required);
       }
 
-      this.subscribers.push(this.columnContainer.subscribe(() => {
-        if (this.isWriting) { return; }
-        if (this.control.value !== this.columnContainer.value) {
-          this.control.setValue(this.columnContainer.value, { emitEvent: false });
-        }
-        this.valueHasChanged.emit({ value: this.control.value });
-      }));
+      if (cdref.minlengthSubject) {
+        this.subscribers.push(
+          cdref.minlengthSubject.subscribe((elem) => {
+            const validators = this.urlValidator.validators.slice();
+
+            if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
+              validators.push(Validators.required);
+            }
+            this.control.setValidators(validators);
+          })
+        );
+      }
+
+      this.subscribers.push(
+        this.columnContainer.subscribe(() => {
+          if (this.isWriting) {
+            return;
+          }
+          if (this.control.value !== this.columnContainer.value) {
+            this.control.setValue(this.columnContainer.value, { emitEvent: false });
+          }
+          this.valueHasChanged.emit({ value: this.control.value });
+        })
+      );
 
       this.control.setValidators(validators);
 
-      this.subscribers.push(this.control.valueChanges.subscribe(async value => this.writeValue(value)));
+      this.subscribers.push(this.control.valueChanges.subscribe(async (value) => this.writeValue(value)));
     }
   }
 

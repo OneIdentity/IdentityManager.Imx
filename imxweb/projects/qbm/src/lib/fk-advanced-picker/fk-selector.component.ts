@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,8 +25,6 @@
  */
 
 import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
-import { EuiLoadingService } from '@elemental-ui/core';
-import { OverlayRef } from '@angular/cdk/overlay';
 
 import {
   TypedEntityBuilder,
@@ -48,6 +46,8 @@ import { CandidateEntity } from './candidate-entity';
 import { DataTableComponent } from '../data-table/data-table.component';
 import { ForeignKeyPickerData } from './foreign-key-picker-data.interface';
 import { SettingsService } from '../settings/settings-service';
+import { ClientPropertyForTableColumns } from '../data-source-toolbar/client-property-for-table-columns';
+import { BusyService } from '../base/busy.service';
 
 @Component({
   selector: 'imx-fk-selector',
@@ -68,6 +68,8 @@ export class FkSelectorComponent implements OnInit {
   @Output() public tableselected = new EventEmitter<IForeignKeyInfo>();
   @Output() public selectedCandidatesChanges = new EventEmitter();
 
+  public busyService = new BusyService();
+
   private readonly builder = new TypedEntityBuilder(CandidateEntity);
   private readonly entitySchema = CandidateEntity.GetEntitySchema();
   private filters: DataModelFilter[];
@@ -75,15 +77,13 @@ export class FkSelectorComponent implements OnInit {
 
   constructor(
     public readonly metadataProvider: MetadataService,
-    private readonly busyService: EuiLoadingService,
     private readonly settingsService: SettingsService,
     private readonly logger: ClassloggerService) {
   }
 
   public async ngOnInit(): Promise<void> {
-    let over: OverlayRef;
+    const isBusy = this.busyService.beginBusy();
 
-    setTimeout(() => over = this.busyService.show());
     if (this.data.fkRelations && this.data.fkRelations.length > 0) {
       this.logger.trace(this, 'Pre-select the first candidate table');
       this.selectedTable = this.data.fkRelations.find(fkr => fkr.TableName === this.data.selectedTableName) || this.data.fkRelations[0];
@@ -100,7 +100,8 @@ export class FkSelectorComponent implements OnInit {
       this.selectedCandidates = this.preselectedEntities;
     }
     this.logger.debug(this, 'Pre selected elements', this.selectedCandidates.length);
-    setTimeout(() => this.busyService.hide(over));
+
+    isBusy.endBusy();    
   }
 
   public search(keywords: string): void {
@@ -110,6 +111,17 @@ export class FkSelectorComponent implements OnInit {
 
   public amIDisabled(item: TypedEntity): boolean {
     return this.data.disabledIds?.find( x => x === item.GetEntity().GetKeys()[0]) ? true : false;
+  }
+
+  /**
+   * @ignore
+   */
+  public setSelectedClass(item: TypedEntity): any {
+    if (this.data.isMultiValue || this.selectedCandidates.length === 0) {
+      return;
+    }
+
+    return this.selectedCandidates[0] === item ?  {'imx-selected-row': true} : {};
   }
 
   /**
@@ -156,8 +168,7 @@ export class FkSelectorComponent implements OnInit {
    */
   public async loadTableData(newState?: CollectionLoadParameters): Promise<void> {
     if (this.selectedTable) {
-      setTimeout(() => this.busyService.show());
-
+      const isBusy = this.busyService.beginBusy();
       try {
         let navigationState = this.settings && this.settings.navigationState ?
           this.settings.navigationState :
@@ -168,16 +179,17 @@ export class FkSelectorComponent implements OnInit {
         }
 
         this.logger.debug(this, 'LoadTableData - loading with navigationState', navigationState);
-        const displayedColumns = [
-          DisplayColumns.DISPLAY_PROPERTY
-        ];
+        const displayedColumns: ClientPropertyForTableColumns[] = [];
 
         if (!this.data.isMultiValue) {
           displayedColumns.push({
             Type: ValType.String,
-            ColumnName: 'Actions'
-          });
+            ColumnName: 'Select',
+            untranslatedDisplay: '#LDS#Selection'
+      });
         }
+
+        displayedColumns.push(DisplayColumns.DISPLAY_PROPERTY);
 
         this.settings = {
           dataSource: this.builder.buildReadWriteEntities(
@@ -195,7 +207,7 @@ export class FkSelectorComponent implements OnInit {
           }
         };
       } finally {
-        setTimeout(() => this.busyService.hide());
+        isBusy.endBusy();
       }
     }
   }
@@ -206,9 +218,7 @@ export class FkSelectorComponent implements OnInit {
    */
   private async getPreselectedEntities(): Promise<void> {
     if (this.data.fkRelations && this.data.fkRelations.length > 0 && this.data.idList && this.data.idList.length > 0) {
-      let over: OverlayRef;
-      setTimeout(() => over = this.busyService.show());
-
+      const isBusy = this.busyService.beginBusy();
       try {
         const preselectedTemp: TypedEntity[] = [];
         this.preselectedEntities = null;
@@ -249,7 +259,7 @@ export class FkSelectorComponent implements OnInit {
         this.preselectedEntities = preselectedTemp;
         this.logger.debug(this, `Retrieved ${this.preselectedEntities.length} preselected entities`);
       } finally {
-        setTimeout(() => this.busyService.hide(over));
+        isBusy.endBusy();
       }
     }
   }

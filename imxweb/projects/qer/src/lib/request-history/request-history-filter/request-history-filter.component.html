@@ -1,0 +1,10 @@
+<ng-container *ngIf="!hideFilter && personData && personData.length > 0">
+  <p>
+    {{ '#LDS#Recipient or requester' | translate }}
+  </p>
+  <eui-select [label]="'#LDS#Identity' | translate" 
+    [filterFunction]="customFilterFn" (selectionChange)="personSelected($event)"
+    (optionsClear)="clearPersonFilterSelection(false)" [options]="directReportsOptions"
+    [isPending]="pendingAsyncApiCall" class="imx-person-filter" #personSelect>
+  </eui-select>
+</ng-container>

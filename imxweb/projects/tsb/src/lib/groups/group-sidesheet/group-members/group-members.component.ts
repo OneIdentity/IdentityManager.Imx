@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,16 +26,19 @@
 
 import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { MatButtonToggleChange } from '@angular/material/button-toggle';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PortalTargetsystemUnsDirectmembers, PortalTargetsystemUnsGroupServiceitem, PortalTargetsystemUnsNestedmembers } from 'imx-api-tsb';
+import { 
+  PortalTargetsystemUnsDirectmembers, 
+  PortalTargetsystemUnsGroupServiceitem, 
+  PortalTargetsystemUnsNestedmembers 
+} from 'imx-api-tsb';
 import {
   CollectionLoadParameters,
   EntitySchema,
-  IClientProperty,
   TypedEntity,
   TypedEntityCollectionData,
   ValType
@@ -78,7 +81,7 @@ export class GroupMembersComponent implements OnInit {
    */
   public navigationState: CollectionLoadParameters;
   public nestedNavigationState: CollectionLoadParameters;
-  public viewDirectMemberships = new FormControl(true);
+  public viewDirectMemberships = new UntypedFormControl(true);
 
   public showUnsubscribeWarning = false;
 
@@ -132,22 +135,12 @@ export class GroupMembersComponent implements OnInit {
       this.entitySchemaGroupDirectMemberships.Columns.XDateInserted,
       this.entitySchemaGroupDirectMemberships.Columns.OrderState,
       this.entitySchemaGroupDirectMemberships.Columns.ValidUntil,
-      this.entitySchemaGroupDirectMemberships.Columns.XMarkedForDeletion,
-      {
-        Type: ValType.String,
-        ColumnName: 'details',
-        afterAdditionals: true
-      }
+      this.entitySchemaGroupDirectMemberships.Columns.XMarkedForDeletion
     ];
     this.nestedDisplayColumns = [
       this.entitySchemaGroupNestedMemberships.Columns.UID_Person,
       this.entitySchemaGroupNestedMemberships.Columns.UID_UNSGroupChild,
-      this.entitySchemaGroupNestedMemberships.Columns.XMarkedForDeletion,
-      {
-        Type: ValType.String,
-        ColumnName: 'details',
-        afterAdditionals: true
-      }
+      this.entitySchemaGroupNestedMemberships.Columns.XMarkedForDeletion
     ];
 
     this.groupId = this.unsGroupDbObjectKey.Keys[0];
@@ -203,8 +196,8 @@ export class GroupMembersComponent implements OnInit {
 
   public async deleteMembers(): Promise<void> {
     if (await this.confirmationService.confirm({
-      Title: '#LDS#Heading Delete Memberships',
-      Message: '#LDS#The deletion of memberships may take some time. The displayed data may differ from the actual state. Are you sure you want to delete the selected memberships?',
+      Title: '#LDS#Heading Remove Memberships',
+      Message: '#LDS#The removal of memberships may take some time. The displayed data may differ from the actual state. Are you sure you want to remove the selected memberships?',
       identifier: 'group-members-confirm-delete-memberships'
     })) {
       this.handleOpenLoader();
@@ -224,11 +217,12 @@ export class GroupMembersComponent implements OnInit {
 
   public async requestMembership(serviceItem: PortalTargetsystemUnsGroupServiceitem): Promise<void> {
     const sidesheetRef = this.sidesheet.open(FkAdvancedPickerComponent, {
-      title: await this.translate.get(`#LDS#Heading Select Identities`).toPromise(),
-      headerColour: 'blue',
+      title: await this.translate.get('#LDS#Heading Request Memberships').toPromise(),
+      subTitle: serviceItem.GetEntity().GetDisplay(),
       padding: '0px',
       width: 'max(600px, 60%)',
       icon: 'usergroup',
+      testId: 'systementitlements-reqeust-memberships',
       data: {
         fkRelations: this.membershipService.getFKRelation(),
         isMultiValue: true
@@ -288,11 +282,11 @@ export class GroupMembersComponent implements OnInit {
     };
     this.sidesheet.open(SourceDetectiveSidesheetComponent, {
       title: await this.translate.get('#LDS#Heading View Assignment Analysis').toPromise(),
-      headerColour: 'orange',
+      subTitle: item.GetEntity().GetDisplay(),
       padding: '0px',
       width: '800px',
       disableClose: false,
-      testId: 'role-membership-details',
+      testId: 'systementitlements-membership-assingment-analysis',
       data,
     });
   }

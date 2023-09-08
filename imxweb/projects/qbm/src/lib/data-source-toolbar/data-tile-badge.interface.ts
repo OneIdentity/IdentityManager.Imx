@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,23 @@
  *
  */
 
+/**
+ * Defines badge properties, that can be used to add a badge to a {@link DataTileComponent | data tile}
+ */
 export interface DataTileBadge {
+
+  /**
+   * The text of a badge
+   */
   content: string;
+
+  /**
+   * The main color of the badge
+   */
   color: string;
+
+  /**
+   * The text color of the badge
+   */
+  textColor?: string;
 }

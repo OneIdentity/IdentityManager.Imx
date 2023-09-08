@@ -1,0 +1,61 @@
+@import "@elemental-ui/core/src/styles/_palette.scss";
+
+:host {
+  .mat-tab-group, ::ng-deep .mat-tab-body-wrapper {
+    height: 100%;
+    overflow: auto;
+  }
+
+  ::ng-deep .mat-tab-body-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .imx-mat-tab-container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+  }
+
+  .imx-table-container {
+    margin-top: 1rem;
+    height: calc(100% - 57px);
+
+    &.overflow-auto {
+      overflow: auto;
+    }
+
+    th, td {
+      width: 50%;
+    }
+  }
+
+  .no-results {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: inherit;
+  }
+
+  .mat-accordion > :not(:last-child) {
+    margin-bottom: 10px;
+  }
+
+  mat-panel-title {
+    font-weight: bold;
+  }
+}
+
+.eui-sidesheet-actions {
+  ::ng-deep .mat-button-wrapper {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .justify-start {
+    margin-right: auto;
+  }
+}

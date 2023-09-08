@@ -1,14 +1,11 @@
 <div eui-sidesheet-content>
   <imx-usermessage class="imx-errormessages" panelClass="imx-small-message" [target]="'sidesheet'"></imx-usermessage>
-  <eui-alert class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" [dismissable]="true">
-    {{ detailsInfoText | translate}}
-  </eui-alert>
   <mat-card>
     <eui-badge *ngIf="!data.pattern.IsPublicPattern.value">
-      {{ '#LDS#Private request template' | translate}}
+      {{ '#LDS#Private product bundle' | translate}}
     </eui-badge>
     <eui-badge color="green" *ngIf="data?.pattern?.IsPublicPattern?.value">
-      {{'#LDS#Public request template' | translate}}
+      {{'#LDS#Public product bundle' | translate}}
     </eui-badge>
     <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="formArray.push($event)">
     </imx-cdr-editor>

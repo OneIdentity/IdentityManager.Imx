@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -43,12 +43,4 @@ export interface AddEntitlementParameter {
 export interface EntitlementSourceType {
   entitlementsType: EntitlementsType;
   display: string;
-}
-
-export function tryGetColumn(entity: TypedEntity, name: string): IEntityColumn {
-  try {
-    return entity.GetEntity().GetColumn(name);
-  } catch {
-    return undefined;
-  }
 }

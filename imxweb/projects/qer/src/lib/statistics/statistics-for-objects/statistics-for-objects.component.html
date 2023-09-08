@@ -1,0 +1,57 @@
+<ng-container *ngIf="isLoading; else showStats">
+  <!-- Loading for all stats -->
+  <mat-card class="imx-loading">
+    <ng-container *ngTemplateOutlet="loading"></ng-container>
+  </mat-card>
+</ng-container>
+
+<ng-template #showStats>
+  <ng-container *ngIf="!hasData; else allStats">
+    <!-- No stats for this object -->
+    <mat-card class="imx-no-data">
+      <div class="imx-no-data-top">
+        <eui-icon icon="content-alert"></eui-icon>
+        <div class="imx-no-data-text">
+          <h2>{{ '#LDS#Heading No Statistics Available' | translate }}</h2>
+          <span>{{ '#LDS#There are no statistics associated with this object.' | translate }}</span>
+        </div>
+      </div>
+    </mat-card>
+  </ng-container>
+</ng-template>
+
+<ng-template #allStats>
+  <!-- Show tiles of statistics -->
+  <mat-card class="cards-container">
+    <div class="checkbox-container">
+      <mat-checkbox color="primary" labelPosition="before" [(ngModel)]="hideEmpty">{{'Hide missing data?'}}</mat-checkbox>
+    </div>
+    <eui-scroll [options]="{ alwaysShowTracks: true }">
+      <div class="grid-container">
+        <mat-card class="stat-card" *ngFor="let chart of charts" [ngClass]="{ 'stat-card--disabled': !chartHasData(chart), 'stat-card--hidden': hideEmpty && !chartIsLoading(chart) && !chartHasData(chart) }" (click)="openStatistic(chart)">
+          <span [matTooltip]="chart?.Description" matTooltipPosition="above">
+            {{ chart.Title }}
+          </span>
+          <div class="card-content center-content" *ngIf="!chartIsLoading(chart); else loading">
+            <div *ngIf="chartHasData(chart); else noStat">
+              <imx-chart-tile [summaryStat]="getSummaryStat(chart)" (chartDetails)="getDetails(chart, $event)"></imx-chart-tile>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+    </eui-scroll>
+  </mat-card>
+</ng-template>
+
+<ng-template #noStat>
+  <div  class="card-no-data center-content">
+    <eui-icon icon="content-alert"></eui-icon>
+    <p>{{ '#LDS#Missing data' | translate }}</p>
+  </div>
+</ng-template>
+
+<ng-template #loading>
+  <div class="center-content">
+    <mat-spinner [diameter]="100" [attr.aria-label]="'#LDS#Loading...' | translate"></mat-spinner>
+  </div>
+</ng-template>

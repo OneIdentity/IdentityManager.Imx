@@ -1,11 +1,12 @@
-:host {
+.eui-sidesheet-content {
   display: flex;
   flex-direction: column;
-  margin: 20px 40px;
-  max-height: calc(100% - 50px);
+  overflow: hidden;
+  height: 100%;
+  padding: 18px;
 }
 
-.imx-button-bar {
+.eui-sidesheet-actions {
   display: flex;
   flex-direction: row;
   margin-top: 5px;
@@ -28,4 +29,23 @@
   .imx-decision-reason {
     flex: 0 0 auto;
   }
+}
+
+.mat-card .mat-divider-horizontal {
+  position: inherit;
+}
+
+.imx-additional-elements{
+  margin-bottom: 20px;
+}
+
+.imx-decision-card {
+  margin-bottom: 20px;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.imx-top-alert {
+  display: block;
+  margin: 1em 0;
 }

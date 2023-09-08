@@ -1,9 +1,38 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
 :host {
   padding: 30px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  flex: 1 1 auto;
+
+  .imx-identities-content {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    overflow: hidden;
     flex: 1 1 auto;
+    overflow: hidden;
+  }
+
+  ::ng-deep .mat-paginator {
+    background-color: transparent;
+  }
 }
 
+.eui-dark-theme {
+  :host {
+    ::ng-deep .mat-paginator {
+      background-color: transparent;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    background-color: $color-gray-100;
+  }
+  ::ng-deep .mat-paginator {
+    background-color: transparent;
+  }
+}

@@ -1,78 +1,224 @@
 /* You can add styles to this file, and also import other style files */
-@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   overflow-y: auto;
   flex-grow: 1;
   height: 100%;
-  background-color: $white;
-}
+  background-color: $color-gray-0;
+  display: flex;
+  flex-direction: column;
 
-.imx-data-table__hidden {
-  display: none;
-}
+  .imx-data-table__hidden {
+    display: none;
+  }
 
-.imx-data-table-grouped {
-  .spaced-left {
-    margin-left: 5px;
+  .imx-data-table-grouped {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .spaced-left {
+      margin-left: 5px;
+    }
+    imx-data-table{
+      overflow-y: unset;
+    }
+    td.mat-cell {
+      padding-top: 12px;
+
+      div {
+        overflow: hidden;
+
+        &.group-row-expanded {
+          margin-bottom: 15px;
+        }
+      }
+    }
+
+    .imx-data-table-grouped-content {
+      flex: 1 1 auto;
+      overflow: auto;
+    }
+  }
+
+  .imx-data-table-no-results {
+    text-align: center;
+    margin: 20px 0;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .eui-icon {
+      font-size: 100px;
+      color: $color-gray-10;
+    }
+
+    p {
+      margin: 0;
+      font-size: 18px;
+      color: $color-gray-80;
+    }
+  }
+
+  // Handle background row coloring
+  .imx-data-table-highlightedActive .mat-row:hover {
+    background-color: $color-blue-10;
+  }
+
+  // Handle cursor icons, make sure divs are minimal so we don't have the text icon too much
+  .imx-data-table-highlightedActive ::ng-deep.mat-cell {
+    &:hover {
+      cursor: pointer;
+    }
+
+    // Make sure to exclude checkboxes as they behave differently with content fitting
+    > *:not(.mat-checkbox) {
+      display: flex;
+      height: fit-content;
+
+      &:hover {
+        cursor: text;
+      }
+    }
+
+    > .mat-button,
+    .mat-stroked-button,
+    .mat-raised-button,
+    .mat-flat-button,
+    .mat-icon-button {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .imx-data-table-row-highlighted {
+    background-color: $color-gray-5;
+  }
+
+  .imx-data-table-row-conditional {
+    background-color: $color-red-20;
+  }
+
+  .mat-column-select {
+    overflow: initial;
+    max-width: 50px;
+    width: 15px;
   }
 
   td.mat-cell {
-    padding-top: 12px;
+    padding-right: 10px;
+  }
 
-    div {
-      overflow: hidden;
+  table.mat-table {
+    box-shadow: none;
+    padding: 1px;
+  }
+  .imx-table-column {
+    padding-right: 15px;
+  }
 
-      &.group-row-expanded {
-        margin-bottom: 15px;
+  .hidden {
+    display: none;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    background-color: $color-gray-70;
+
+    .mat-table {
+      background-color: $color-gray-70;
+    }
+
+    .imx-data-table-row-highlighted {
+      background-color: $color-gray-60;
+    }
+    .imx-data-table-highlightedActive .mat-row:hover {
+      background-color: $color-gray-60;
+    }
+
+    .imx-data-table-row-conditional {
+      background-color: $color-red-80;
+    }
+
+    ::ng-deep .custom-row td {
+      border-bottom-color: $color-gray-60;
+    }
+
+    .imx-data-table-no-results {
+      eui-icon {
+        color: $color-gray-20;
+      }
+
+      p {
+        color: $color-gray-10;
       }
     }
   }
 }
 
-.imx-data-table-no-results {
-  text-align: center;
-  margin: 20px 0;
+.eui-contrast-theme {
+  :host {
+    background-color: $color-gray-90;
 
-  .eui-icon {
-    font-size: 100px;
-    color: rgba($black-c, 0.55);
+    .mat-table {
+      background-color: $color-gray-90;
+    }
+
+    .imx-data-table-row-highlighted,
+    .imx-data-table-highlightedActive .mat-row:hover {
+      background-color: $color-gray-0;
+
+      ::ng-deep td.mat-cell {
+        color: $color-gray-100;
+      }
+
+      ::ng-deep .mat-checkbox-frame,
+      ::ng-deep .mat-radio-outer-circle {
+        border-color: $color-gray-100;
+      }
+    }
+
+    table {
+      border-top: none;
+    }
+
+    ::ng-deep th:after,
+    ::ng-deep th:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      width: 100%;
+    }
+    ::ng-deep th:before {
+      top: 0;
+      border-top: 1px solid white;
+    }
+    ::ng-deep th:after {
+      bottom: 0;
+      border-bottom: 1px solid white;
+    }
+
+    .imx-data-table-row-conditional {
+      background-color: $color-red-80;
+    }
+
+    .imx-data-table-selection-info {
+      color: $color-blue-40;
+    }
+
+    .imx-data-table-no-results {
+      eui-icon {
+        color: $color-gray-10;
+      }
+
+      p {
+        color: $color-gray-0;
+      }
+    }
   }
-
-  p {
-    margin: 0;
-    font-size: 18px;
-    color: $black-9;
-  }
-}
-
-.imx-data-table-row-highlighted {
-  background-color: $asher-gray;
-}
-
-.imx-data-table-row-conditional {
-  background-color: $phoenix-pastel;
-}
-
-.imx-data-table-column-select {
-  overflow: initial;
-}
-
-.imx-data-table-selection-info {
-  align-self: flex-end;
-  padding-right: 5px;
-  color: $iris-blue;
-}
-
-td.mat-cell {
-  padding-right: 10px;
-}
-
-tr.mat-row {
-  cursor: default;
-}
-
-table.mat-table {
-  box-shadow: none;
-  padding: 1px;
 }

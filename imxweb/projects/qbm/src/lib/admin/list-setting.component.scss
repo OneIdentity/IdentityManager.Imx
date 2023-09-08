@@ -61,3 +61,21 @@
 .setting-value-list.cdk-drop-list-dragging .setting-value-box:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
+
+.eui-dark-theme {
+  :host {
+    .setting-value-box {
+      color: $color-gray-20;
+      background-color: $color-gray-70;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .setting-value-box {
+      color: $color-gray-10;
+      background-color: $color-gray-100;
+    }
+  }
+}

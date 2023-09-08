@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,7 +35,7 @@ export class MetadataService {
   public readonly tables: { [id: string]: MetaTableData } = {};
 
   /**
-   * DEPRECATED: Use tables instead.
+   * @deprecated Use tables instead.
    */
   private tableMetadata: { [id: string]: MetaTableData } = {};
 
@@ -65,7 +65,7 @@ export class MetadataService {
   }
 
   /**
-   * DEPRECATED: Use use the method update and the property tables instead. Will be removed.
+   * @deprecated Use use the method update and the property tables instead. Will be removed.
    * @param table The name of the table to update and get metadata for
    */
   public async GetTableMetadata(table: string): Promise<MetaTableData> {

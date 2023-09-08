@@ -1,5 +1,5 @@
-<span> 
-  {{ property.Type === ValType.Date 
+<span>
+  {{ property?.Type === ValType.Date
     ? (column?.GetValue() | shortDate )
     : column?.GetDisplayValue()
   }}

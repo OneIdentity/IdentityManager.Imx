@@ -1,4 +1,6 @@
 @import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
 
 :host {
   overflow: hidden;
@@ -48,11 +50,27 @@
   flex-direction: column;
   flex: 1 1 auto;
   overflow-y: auto;
-  padding: 32px;
 
   .imx-rule-violation-table-container {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    flex: 1 1 auto;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-card-header {
+      background-color: $color-gray-80;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-card-header {
+      background-color: $color-gray-100;
+    }
   }
 }

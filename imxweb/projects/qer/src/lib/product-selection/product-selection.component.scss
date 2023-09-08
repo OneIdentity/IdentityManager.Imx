@@ -158,17 +158,6 @@ h1 {
   display: flex;
   margin-top: 10px;
 
-  ::ng-deep .imx-badge.eui-badge .eui-badge-content {
-    font-size: 14px;
-    line-height: 14px;
-    margin-left: 10px;
-  }
-
-  .imx-selected-products {
-    margin: 0;
-    line-height: 36px;
-  }
-
   button {
     margin-left: 10px;
     align-self: center;
@@ -215,4 +204,8 @@ h1 {
   .imx-categories {
     grid-column-end: 5;
   }
+}
+
+imx-selected-elements {
+  margin-left: 10px;
 }

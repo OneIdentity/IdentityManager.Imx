@@ -1,0 +1,9 @@
+<mat-table [dataSource]="data" class="flex-property">
+  <ng-container *ngFor="let columnDef of columnDefs" [matColumnDef]="columnDef.id">
+    <mat-header-cell class="imx_ColumnHeader" *matHeaderCellDef>{{ columnDef.getTitle() }}</mat-header-cell>
+    <mat-cell class="imx_ColumnCell" *matCellDef="let row">{{ columnDef.getValue(row) }}
+    </mat-cell>
+  </ng-container>
+  <mat-header-row class="imx_MatTableHeaderRow" *matHeaderRowDef="columns sticky: true"></mat-header-row>
+  <mat-row class="imx_MatTableRow" *matRowDef="let row; columns: columns; " (click)="displayChangedPropertyListSidesheet(row)" ></mat-row>
+</mat-table>

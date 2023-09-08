@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { Injectable } from '@angular/core';
 
 import { EntityWriteDataColumn, ParameterData } from 'imx-qbm-dbts';
-import { FkProviderItem, WriteExtTypedEntity } from 'imx-qbm-dbts';
+import { IFkCandidateProvider, ReadWriteExtTypedEntity } from 'imx-qbm-dbts';
 import { ParameterDataWrapper } from '../../parameter-data/parameter-data-wrapper.interface';
 import { ParameterCategoryColumn } from '../../parameter-data/parameter-category-column.interface';
 import { ParameterDataService } from '../../parameter-data/parameter-data.service';
@@ -42,8 +42,9 @@ export class RequestParametersService {
 
   public createInteractiveParameterCategoryColumns(
     parameterDataWrapper: ParameterDataWrapper,
-    getFkProviderItems: (parameter: ParameterData) => FkProviderItem[],
-    typedEntity: WriteExtTypedEntity<CategoryParameterWrite>
+    getFkProvider: (parameter: ParameterData) => IFkCandidateProvider,
+    typedEntity: ReadWriteExtTypedEntity<{ Parameters?: { [key: string]: ParameterData[][]; } }, CategoryParameterWrite>,
+    callbackOnChange?: () => void
   ): ParameterCategoryColumn[] {
     if (parameterDataWrapper?.Parameters == null) {
       return undefined;
@@ -54,8 +55,9 @@ export class RequestParametersService {
 
     return this.parameterDataService.createInteractiveParameterCategoryColumns(
       parameterCategories,
-      getFkProviderItems,
-      typedEntity
+      getFkProvider,
+      typedEntity,
+      callbackOnChange
     );
   }
 

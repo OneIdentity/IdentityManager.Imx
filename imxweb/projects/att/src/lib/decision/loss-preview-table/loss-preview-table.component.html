@@ -2,7 +2,7 @@
   <h1 *ngIf="showTitle" class="mat-headline">
     {{'#LDS#Heading Entitlement Loss' | translate}}
   </h1>
-  <div class="alert-wrapper">
+  <div class="alert-wrapper" [ngClass]="{'alert-wrapper--shortened': showTitle}">
     <eui-alert class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="false">
       <span>
         {{'#LDS#Here you can get an overview of all entitlements that will be withdrawn if the attestation case is denied.' | translate }}
@@ -11,7 +11,13 @@
   </div>
 </div>
 <mat-card class="imx-attestation-case-loss-preview">
-  <table mat-table [dataSource]="lossPreviewItems">
+  <div class="imx-spinner-center" *ngIf="isLoading; else CardContent">
+    <mat-spinner diameter="60"></mat-spinner>
+  </div>
+</mat-card>
+
+<ng-template #CardContent>
+  <table mat-table *ngIf="lossPreviewItems.length > 0" [dataSource]="lossPreviewItems">
     <ng-container matColumnDef="Display">
       <th mat-header-cell *matHeaderCellDef>{{ lossPreviewDisplayKeys.Display | translate }}</th>
       <td mat-cell class="table-row-tall" *matCellDef="let row">
@@ -36,4 +42,8 @@
     <tr mat-header-row *matHeaderRowDef="lossPreviewHeaders"></tr>
     <tr mat-row *matRowDef="let row; columns: lossPreviewHeaders;"></tr>
   </table>
-</mat-card>
+  <div class="imx-data-no-results" *ngIf="lossPreviewItems.length === 0">
+    <eui-icon size="xl" icon="table"></eui-icon>
+    <p [translate]="'#LDS#There are no entitlement losses associated with this approval decision.'"></p>
+  </div>
+</ng-template>

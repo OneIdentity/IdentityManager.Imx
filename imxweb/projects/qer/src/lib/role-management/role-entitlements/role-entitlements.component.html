@@ -1,60 +1,83 @@
 <div class="imx-tab-content">
-  <div class="imx-tab-content-body">
+  <div eui-sidesheet-content class="imx-tab-content-body">
     <mat-card>
-      <imx-data-source-toolbar #dst data-imx-identifier="roles-entitlements-dst" [settings]="dstSettings"
-        [searchBoxText]="'#LDS#Search' | translate" (navigationStateChanged)="onNavigationStateChanged($event)"
-        [itemStatus]="itemStatus" (search)="onSearch($event)"
-        [options]="['filter', 'groupBy']">
+      <imx-data-source-toolbar
+        #dst
+        data-imx-identifier="roles-entitlements-dst"
+        [settings]="dstSettings"
+        [busyService]="busyService"
+        [searchBoxText]="'#LDS#Search' | translate"
+        (navigationStateChanged)="onNavigationStateChanged($event)"
+        [itemStatus]="itemStatus"
+        (search)="onSearch($event)"
+        [options]="['filter', 'groupBy']"
+      >
       </imx-data-source-toolbar>
-      <imx-data-table #dataTable data-imx-identifier="roles-entitlements-table" [dst]="dst" detailViewVisible="false"
-        [noDataText]="'#LDS#There are currently no entitlements assigned.'|translate" mode="manual" [selectable]="true"
-        [showSelectionInfo]="false" (selectionChanged)="onSelectionChanged($event)">
+      <imx-data-table
+        #dataTable
+        data-imx-identifier="roles-entitlements-table"
+        [dst]="dst"
+        detailViewVisible="false"
+        [noDataText]="'#LDS#There are currently no entitlements assigned.' | translate"
+        mode="manual"
+        [selectable]="canEdit"
+        [showSelectionInfo]="false"
+        (selectionChanged)="onSelectionChanged($event)"
+      >
         <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns?.DISPLAY_PROPERTYNAME]">
           <ng-template let-item>
-            <div>{{item.GetEntity().GetDisplay()}}</div>
+            <div>{{ item.GetEntity().GetDisplay() }}</div>
             <div class="imx-subtext">{{ entitlementTypes.get(item.GetEntity().GetKeys().toString()) }}</div>
           </ng-template>
         </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns.XOrigin"
-          [columnLabel]="'#LDS#Origin' | translate">
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns.XOrigin" [columnLabel]="'#LDS#Origin' | translate">
           <ng-template let-item>
-            <div>{{item.GetEntity().GetColumn('XOrigin').GetDisplayValue()}}</div>
+            <div>{{ item.GetEntity().GetColumn('XOrigin').GetDisplayValue() }}</div>
             <eui-badge *ngIf="item.GetEntity().GetColumn('XMarkedForDeletion').GetValue() > 0" class="spaced-badge">
-              {{item.GetEntity().GetColumn('XMarkedForDeletion').GetDisplayValue()}}
+              {{ item.GetEntity().GetColumn('XMarkedForDeletion').GetDisplayValue() }}
             </eui-badge>
-            <eui-badge color="gray" *ngIf="isNotEffective(item)">{{'#LDS#Not effective' | translate}}
-            </eui-badge>
+            <eui-badge color="gray" *ngIf="isNotEffective(item)">{{ '#LDS#Not effective' | translate }} </eui-badge>
           </ng-template>
         </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns.XDateInserted"
-          [columnLabel]="'#LDS#Added on' | translate">
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns.XDateInserted" [columnLabel]="'#LDS#Added on' | translate">
           <ng-template let-item>
-            <div>{{item.GetEntity().GetColumn('XDateInserted').GetValue() | date}}</div>
+            <div>{{ item.GetEntity().GetColumn('XDateInserted').GetValue() | date }}</div>
           </ng-template>
         </imx-data-table-column>
         <imx-data-table-column [entityColumn]="entitySchema?.Columns.ValidUntil">
           <ng-template let-item>
-            <eui-badge *ngIf="item.GetEntity().GetColumn('ValidUntil').GetValue()" color="blue" textColor="white">{{
-              getValidUntil(item) }}</eui-badge>
+            <eui-badge *ngIf="item.GetEntity().GetColumn('ValidUntil').GetValue()" color="blue" textColor="white">{{ getValidUntil(item) }}</eui-badge>
           </ng-template>
         </imx-data-table-column>
       </imx-data-table>
-      <imx-data-source-paginator data-imx-identifier="roles-entitlements-paginator" [dst]="dst">
-      </imx-data-source-paginator>
+      <imx-data-source-paginator data-imx-identifier="roles-entitlements-paginator" [dst]="dst"> </imx-data-source-paginator>
     </mat-card>
   </div>
-  <mat-card class="imx-action-buttons">
-    <p class="imx-selected-items">
-      <span>
-        {{'#LDS#Selected entitlements' | translate}}
-      </span>
-      <eui-badge data-imx-identifier="roles-entitlements-selection-badge" class="imx-badge" color="orange">
-        {{dataTable.numOfSelectedItems}}</eui-badge>
-    </p>
+
+  <div eui-sidesheet-actions *ngIf="canEdit || hasRecommendations">
+    <imx-selected-elements *ngIf="canEdit" [selectedElements]="selectedEntities"></imx-selected-elements>
     <div class="imx-menu-spacer"></div>
-    <button data-imx-identifier="roles-entitlements-request-button" mat-stroked-button
-      (click)="onSelectEntitlements()">{{"#LDS#Request entitlements" | translate }}</button>
-    <button data-imx-identifier="roles-entitlements-remove-button" mat-raised-button color="primary"
-      [disabled]="!canDeleteAllSelected()" (click)="onDeleteEntitlements()">{{"#LDS#Remove" | translate }}</button>
-  </mat-card>
+    <button
+      *ngIf="hasRecommendations"
+      data-imx-identifier="roles-entitlements-recommendation-button"
+      mat-stroked-button
+      (click)="onShowRecommendations()"
+    >
+      {{ '#LDS#Show recommended entitlements' | translate }}
+    </button>
+    <button *ngIf="canEdit" data-imx-identifier="roles-entitlements-request-button" mat-stroked-button (click)="onSelectEntitlements()">
+      {{ '#LDS#Request entitlements' | translate }}
+    </button>
+    <button
+      *ngIf="canEdit"
+      data-imx-identifier="roles-entitlements-remove-button"
+      mat-stroked-button
+      color="warn"
+      [disabled]="!canDeleteAllSelected()"
+      (click)="onDeleteEntitlements()"
+    >
+      <eui-icon icon="delete"></eui-icon>
+      {{ '#LDS#Remove' | translate }}
+    </button>
+  </div>
 </div>

@@ -1,0 +1,42 @@
+<div eui-sidesheet-content class="imx-sidesheet-content">
+  <!-- XOR to determine if we should use the tabs or only one of the two -->
+  <ng-container *ngIf="useTabs; else singleContent">
+    <mat-tab-group (selectedTabChange)="onSelectedTabChange($event)">
+      <mat-tab *ngIf="hasPredefinedFilters" [label]="'#LDS#Heading Default Filter' | translate" [id]="FTIPredefined">
+        <imx-predefined-filter></imx-predefined-filter>
+      </mat-tab>
+      <!-- TODO Add filter tree -->
+      <!-- <mat-tab *ngIf="containsTargetSystemFilter()" [label]="'#LDS#Heading Target System' | translate" [id]="FTITargetSystem">
+        <imx-predefined-filter-tree></imx-predefined-filter-tree>
+      </mat-tab> -->
+      <mat-tab *ngIf="canUseCustomFilters" [label]="'#LDS#Heading Custom Filter' | translate" [id]="FTICustom">
+        <ng-container *ngTemplateOutlet="customContent"></ng-container>
+      </mat-tab>
+    </mat-tab-group>
+  </ng-container>
+</div>
+<div eui-sidesheet-actions class="imx-sidesheet-actions">
+  <button mat-stroked-button (click)="onClearFilters()" [disabled]="!canRemoveCustomFilter()" color="warn" data-imx-identifier="clear-filter-button">
+    <div class="imx-button-clear-filters"><eui-icon icon="delete" size="s"></eui-icon>&nbsp;{{ '#LDS#Clear filters' | translate }}</div>
+  </button>
+  <span class="imx-sidesheet-actions-spacer"></span>
+  <button mat-flat-button (click)="onApplyFilters()" [disabled]="!canApplyCustomFilters()" color="primary" data-imx-identifier="apply-filter-button">
+    {{ '#LDS#Apply filter' | translate }}
+  </button>
+</div>
+
+<ng-template #singleContent>
+  <ng-container *ngIf="canUseCustomFilters">
+    <ng-container *ngTemplateOutlet="customContent"></ng-container>
+  </ng-container>
+  <ng-container *ngIf="hasPredefinedFilters">
+    <imx-predefined-filter></imx-predefined-filter>
+  </ng-container>
+</ng-template>
+
+<ng-template #customContent>
+  <mat-card class="imx-content-container mat-elevation-z4">
+    <imx-sqlwizard [tableName]="data?.settings?.entitySchema?.TypeName" [expression]="sqlExpression?.Expression" (change)="checkChanges()" data-imx-identifier="sqlwizard">
+    </imx-sqlwizard>
+  </mat-card>
+</ng-template>

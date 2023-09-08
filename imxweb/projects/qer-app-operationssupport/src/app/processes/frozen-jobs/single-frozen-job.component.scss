@@ -1,13 +1,23 @@
 :host {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   flex-grow: 1;
+
+  .imx-flex-container{
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    padding-bottom: 20px;
+  }
+
+  imx-busy-indicator{
+    justify-self: center;
+    align-self: center;
+  }
 }
 
 .imx-table-container {
   flex: 1 1 auto;
-  overflow-y: auto;
 
   > :nth-child(2) {
     flex: 1 1 auto;
@@ -16,14 +26,15 @@
 
 .imx-refresh-line {
   margin-bottom: 10px;
+  display: flex;
+  flex-direction: row;
 }
 
 .reactivate-radio {
   display: block;
-  margin-bottom: 1em;
 }
 
-.reactivate-card {
+.inner-card {
   margin-top: 1em;
 
   mat-card-content {
@@ -33,4 +44,19 @@
 
 .showmessage {
   margin-left: 1em;
+}
+
+.objecttype {
+  font-style: italic;
+  font-size: smaller;
+}
+
+.objectlist {
+  list-style-type: initial;
+}
+
+.small-busy {
+  margin-left: 1em;
+  align-self: center;
+  flex: 1 1 auto;
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,11 +28,13 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { ClassloggerService } from './classlogger.service';
+import { LoggerModule } from 'ngx-logger';
 
 @NgModule({
   declarations: [],
   imports: [
-    CommonModule
+    CommonModule,
+    LoggerModule
   ],
   providers: [
     ClassloggerService

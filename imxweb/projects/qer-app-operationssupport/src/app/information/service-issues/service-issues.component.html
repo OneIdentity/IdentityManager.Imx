@@ -1,5 +1,7 @@
 <div>
-  <h2 class="startSubTitle">{{'#LDS#Service issues' | translate}}</h2>
+  <h2 class="startSubTitle">{{'#LDS#Service issues' | translate}}
+    <mat-spinner class="imx-spinner" diameter="16" *ngIf="service.isLoading"></mat-spinner>
+  </h2>
   <div *ngIf="issues.length==0" class="no-issue-detected">
     <imx-icon-stack class="imx-ops-icon" [icon1]="'setdefault'" [icon2]="'server'"
       [text]="'#LDS#No service issues detected' | translate"></imx-icon-stack>

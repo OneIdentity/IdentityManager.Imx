@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,7 +36,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 
-import { DataSourceToolbarModule, DataTableModule, CdrModule, LdsReplaceModule, DataTreeModule, ExtModule, DynamicTabsModule } from 'qbm';
+import { DataSourceToolbarModule, DataTableModule, CdrModule, LdsReplaceModule, DataTreeModule, ExtModule, DynamicTabsModule, BusyIndicatorModule, HelpContextualModule } from 'qbm';
 import { DataExplorerAccountsComponent } from '../accounts/accounts.component';
 import { AccountSidesheetComponent } from '../accounts/account-sidesheet/account-sidesheet.component';
 import { DataFiltersModule } from '../data-filters/data-filters.module';
@@ -44,6 +44,7 @@ import { NoDataModule } from '../no-data/no-data.module';
 import { GroupsModule } from '../groups/groups.module';
 import { AccountsExtComponent } from './account-ext/accounts-ext.component';
 import { TargetSystemReportComponent } from './target-system-report/target-system-report.component';
+import { ObjectHyperviewModule } from 'qer';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import { TargetSystemReportComponent } from './target-system-report/target-syste
     CommonModule,
     FormsModule,
     GroupsModule,
+    BusyIndicatorModule,
     ReactiveFormsModule,
     EuiCoreModule,
     EuiMaterialModule,
@@ -68,13 +70,15 @@ import { TargetSystemReportComponent } from './target-system-report/target-syste
     MatSidenavModule,
     MatCardModule,
     MatButtonModule,
+    ObjectHyperviewModule,
     TranslateModule,
     DataSourceToolbarModule,
     DataTableModule,
     LdsReplaceModule,
     DataTreeModule,
     ExtModule,
-    DynamicTabsModule
+    DynamicTabsModule,
+    HelpContextualModule
   ],
   exports: [
     DataExplorerAccountsComponent,

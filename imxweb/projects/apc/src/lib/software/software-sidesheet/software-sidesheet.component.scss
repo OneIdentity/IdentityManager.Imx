@@ -1,0 +1,117 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+
+  .mat-tab-group {
+    flex-grow: 1;
+    overflow: auto;
+  }
+
+  ::ng-deep .mat-tab-body-wrapper {
+    height: 100%;
+  }
+
+  ::ng-deep .mat-tab-body-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  ::ng-deep .mat-tab-group {
+    height: 100%;
+
+    .mat-tab-header {
+      padding: 0 32px;
+    }
+  }
+
+  .imx-tab-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .imx-tab-content-body {
+      flex: 1 1 auto;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+
+      .mat-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding: 16px;
+
+        > form {
+          padding-right: 10px;
+          overflow: auto;
+        }
+      }
+    }
+
+    .imx-cdr-group {
+      flex: 1 1 auto;
+      overflow: auto;
+      padding-right: 10px;
+    }
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .imx-content-card {
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .imx-service-item-form {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      overflow: auto;
+    }
+  }
+}
+
+:host {
+  .imx-tab-content {
+    .imx-action-buttons {
+      background-color: $color-gray-0;
+    }
+  }
+
+  .eui-sidesheet-content {
+    ::ng-deep .mat-tab-group {
+      .mat-tab-header {
+        background-color: $color-gray-0;
+      }
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-tab-content {
+      .imx-action-buttons {
+        background-color: $color-gray-70;
+      }
+    }
+
+    .eui-sidesheet-content {
+      ::ng-deep .mat-tab-group {
+        .mat-tab-header {
+          background-color: $color-gray-80;
+        }
+      }
+    }
+    .imx-tab-content .imx-action-buttons {
+      background-color: $color-gray-70;
+    }
+  }
+}

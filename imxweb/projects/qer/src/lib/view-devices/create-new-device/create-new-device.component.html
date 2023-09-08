@@ -1,0 +1,26 @@
+<div eui-sidesheet-content class="imx-new-device-sidesheet">
+  <mat-card>
+    <form [formGroup]="formGroup">
+      <div *ngIf="cdrList?.length > 0" class="imx-property-container">
+        <imx-cdr-editor
+          *ngFor="let cdr of cdrList"
+          [cdr]="cdr"
+          (controlCreated)="formGroup.addControl(cdr.column.ColumnName, $event)"
+          [attr.data-imx-identifier]="'new-device-form-cdr-' + cdr.column.ColumName"
+        >
+        </imx-cdr-editor>
+      </div>
+    </form>
+  </mat-card>
+</div>
+<div eui-sidesheet-actions>
+  <button
+    mat-flat-button
+    color="primary"
+    data-imx-identifier="new-device-sidesheet-button-save"
+    (click)="createDevice()"
+    [disabled]="formGroup.pristine || formGroup.invalid"
+    >
+    {{'#LDS#Create'| translate}}
+  </button>
+</div>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { AfterContentInit, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { AbstractControl, FormControl, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormControl, Validators } from '@angular/forms';
 import { EuiSelectOption } from '@elemental-ui/core';
 
 import { IClientProperty, IEntity } from 'imx-qbm-dbts';
@@ -36,7 +36,7 @@ import { IClientProperty, IEntity } from 'imx-qbm-dbts';
   styleUrls: ['./entity-select.component.scss']
 })
 export class EntitySelectComponent implements OnChanges, AfterContentInit {
-  public readonly control = new FormControl(undefined, Validators.required);
+  public readonly control = new UntypedFormControl(undefined, Validators.required);
 
   public options: EuiSelectOption[];
 

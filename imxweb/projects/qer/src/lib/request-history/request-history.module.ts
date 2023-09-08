@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -39,11 +39,15 @@ import {
   DataSourceToolbarModule,
   DataTableModule,
   DateModule,
+  InfoModalDialogModule,
   MenuItem,
   MenuService,
   ParameterizedTextModule,
   QbmModule,
-  RouteGuardService
+  BusyIndicatorModule,
+  RouteGuardService,
+  SelectedElementsModule,
+  HelpContextualModule
 } from 'qbm';
 
 import { DefaultRequestDisplayComponent } from './request-display/default-request-display.component';
@@ -58,6 +62,7 @@ import { RequestTableComponent } from './request-table.component';
 import { ItshopModule } from '../itshop/itshop.module';
 import { RequestsFeatureGuardService } from '../requests-feature-guard.service';
 import { JustificationModule } from '../justification/justification.module';
+import { RequestHistoryFilterComponent } from './request-history-filter/request-history-filter.component';
 
 const routes: Routes = [
   {
@@ -78,13 +83,17 @@ const routes: Routes = [
     DateModule,
     EuiCoreModule,
     EuiMaterialModule,
+    InfoModalDialogModule,
     ItshopModule,
     JustificationModule,
     QbmModule,
     ParameterizedTextModule,
     ReactiveFormsModule,
+    BusyIndicatorModule,
     RouterModule.forChild(routes),
-    TranslateModule
+    TranslateModule,
+    SelectedElementsModule,
+    HelpContextualModule,
   ],
   declarations: [
     DefaultRequestDisplayComponent,
@@ -93,10 +102,13 @@ const routes: Routes = [
     RequestDisplayComponent,
     RequestFilterComponent,
     RequestHistoryComponent,
-    RequestTableComponent
+    RequestHistoryFilterComponent,
+    RequestTableComponent,
   ],
   exports: [
-    RequestDisplayComponent
+    RequestDisplayComponent,
+    RequestHistoryFilterComponent,
+    RequestTableComponent
   ],
   providers: [
     RequestDisplayService,
@@ -114,7 +126,7 @@ export class RequestHistoryModule {
 
   private setupMenu(): void {
     this.menuService.addMenuFactories(
-      (preProps: string[], groups: string[]) => {
+      (preProps: string[], features: string[]) => {
 
         const items: MenuItem[] = [];
 

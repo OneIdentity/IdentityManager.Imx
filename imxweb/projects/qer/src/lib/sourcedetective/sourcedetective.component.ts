@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { ImxTranslationProviderService, MetadataService, LdsReplacePipe, AuthenticationService, ParameterizedText } from 'qbm';
+import { ImxTranslationProviderService, MetadataService, LdsReplacePipe, AuthenticationService, ParameterizedText, TextToken } from 'qbm';
 import { ITShopConfig, SourceNode } from 'imx-api-qer';
 import { DbObjectKey } from 'imx-qbm-dbts';
 import { QerApiService } from '../qer-api-client.service';
@@ -41,12 +41,10 @@ import { ItshopRequest } from '../request-history/itshop-request';
 import { ItshopRequestData } from '../itshop/request-info/itshop-request-data';
 import { ItshopRequestService } from '../itshop/itshop-request.service';
 import { SourceDetectiveType } from './sourcedetective-type.enum';
-import { MatCardModule } from '@angular/material/card';
-import { OverlayRef } from '@angular/cdk/overlay';
-
 
 type SourceNodeEnriched = SourceNode & {
     Description: ParameterizedText;
+    TextTokens?: TextToken[];
     ObjectTypeDisplay: string;
     Children: SourceNodeEnriched[];
     Level: number;
@@ -68,6 +66,7 @@ export class SourceDetectiveComponent implements OnInit, OnChanges, OnDestroy {
     public dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
     public dataReady: boolean;
+    public busy = false;
 
     @Input() public UID_Person: string;
     @Input() public TableName: string;
@@ -98,11 +97,11 @@ export class SourceDetectiveComponent implements OnInit, OnChanges, OnDestroy {
     public hasChild = (node: SourceNodeEnriched) => !!node.Children && node.Children.length > 0;
 
     public async ngOnInit(): Promise<void> {
-        const overlay = this.loader.show();
+        this.busy = true;
         try {
             this.itShopConfig = (await this.projectConfig.getConfig()).ITShopConfig;
         } finally {
-            this.loader.hide(overlay);
+            this.busy = false;
         }
         this.reload();
     }
@@ -126,6 +125,9 @@ export class SourceDetectiveComponent implements OnInit, OnChanges, OnDestroy {
             const collection = await this.apiClient.typedClient.PortalItshopRequests.Get({
                 uidpwo: uidPwo
             });
+            if (collection.Data.length < 0) {
+                throw new Error(await this.translator.get("#LDS#The request could not be found. You may not have permission to view this request.").toPromise())
+            }
             const pwoEntity = collection.Data[0];
 
             const requestData = new ItshopRequestData({ ...collection.extendedData, index: 0 });
@@ -146,16 +148,24 @@ export class SourceDetectiveComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (data) {
+          // We need to find the node with the object display that matches the assignment Display
+          const parameterizedText = data.personWantsOrg.GetEntity().GetColumn('Assignment').GetDisplayValue();
+          const parentNode = this.dataSource.data.find(item => item.Description.value === parameterizedText);
+
             this.sidesheet.open(RequestDetailComponent, {
                 title: await this.translator.get('#LDS#Heading View Request Details').toPromise(),
-                headerColour: 'iris-blue',
-                bodyColour: 'asher-gray',
+                subTitle: parentNode && parentNode.TextTokens ? parentNode.TextTokens.map(token => token.value).join('') : undefined,
                 testId: 'sourcedetective-request-details-sidesheet',
                 padding: '0px',
-                width: '600px',
+                width: 'max(700px, 40%)',
                 data
             });
         }
+    }
+
+    public grabText(node: SourceNodeEnriched, textTokens: TextToken[]): void {
+      // Set the parameter-filled text tokens back into the node
+      node.TextTokens = textTokens;
     }
 
     private isDirectAssignment(node: SourceNode): boolean {
@@ -168,7 +178,7 @@ export class SourceDetectiveComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     private async getObjectTypeDisplay(node: SourceNode): Promise<string> {
-        if (!node.ObjectType) { return null; }
+        if (!node.ObjectType) { return ''; }
         await this.metadata.update([node.ObjectType]);
 
         return this.metadata.tables[node.ObjectType].DisplaySingular;
@@ -177,13 +187,13 @@ export class SourceDetectiveComponent implements OnInit, OnChanges, OnDestroy {
     private async reload(): Promise<void> {
         if (this.UID && this.TableName && this.UID_Person) {
             this.dataReady = false;
-            const overlay = this.loader.show();
+            this.busy = true;
 
             try {
                 const data = await this.apiClient.client.portal_detective_get(this.UID_Person, this.TableName, this.UID);
                 this.dataSource.data = await this.Enrich(data);
             } finally {
-                this.loader.hide(overlay);
+                this.busy = false;
                 this.dataReady = true;
             }
         }
@@ -192,7 +202,7 @@ export class SourceDetectiveComponent implements OnInit, OnChanges, OnDestroy {
     private async Enrich(nodes: SourceNode[], level: number = 0): Promise<SourceNodeEnriched[]> {
         const result: SourceNodeEnriched[] = [];
         for (const node of nodes) {
-            const children = node.Children ? await this.Enrich(node.Children, level + 1) : null;
+            const children = node.Children ? await this.Enrich(node.Children, level + 1) : [];
             result.push({
                 ...node,
                 Level: level,
@@ -208,14 +218,17 @@ export class SourceDetectiveComponent implements OnInit, OnChanges, OnDestroy {
         return {
             value: await this.GetDescription(node),
             marker: { start: '"%', end: '%"' },
-            getParameterValue: columnName => node.ObjectDisplayParameters[columnName]
+            getParameterValue: (columnName: string) => node.ObjectDisplayParameters[columnName]
         };
     }
 
     private async GetDescription(node: SourceNode): Promise<string> {
         const tableName = node.ObjectKey ? DbObjectKey.FromXml(node.ObjectKey).TableName : null;
         if (this.isDirectAssignment(node)) {
-            return this.translationProvider.Translate('#LDS#The identity is directly assigned to this object.').toPromise();
+            if ('Person' === tableName) {
+                return this.translationProvider.Translate('#LDS#The identity is directly assigned to this object.').toPromise();
+            }
+            return this.translationProvider.Translate('#LDS#The entitlement is directly assigned to this object.').toPromise();
         }
         else if (this.isByDynamicGroup(node)) {
             return this.translationProvider.Translate('#LDS#The identity is a member of the dynamic role.').toPromise();

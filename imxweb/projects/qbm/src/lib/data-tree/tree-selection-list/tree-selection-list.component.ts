@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,8 +27,9 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 
-import { DbObjectKey, IEntity, IEntityColumn } from 'imx-qbm-dbts';
+import { DbObjectKey, IEntity} from 'imx-qbm-dbts';
 import { MetadataService } from '../../base/metadata.service';
+import { CdrFactoryService } from '../../cdr/cdr-factory.service';
 
 @Component({
   templateUrl: './tree-selection-list.component.html',
@@ -54,7 +55,7 @@ export class TreeSelectionListComponent implements OnInit {
   }
 
   private getTableName(entity: IEntity): string {
-    const column = this.tryGetColumn(entity, 'XObjectKey');
+    const column = CdrFactoryService.tryGetColumn(entity, 'XObjectKey');
     if (!column || column.GetValue() === '') {
       return '';
     }
@@ -62,15 +63,5 @@ export class TreeSelectionListComponent implements OnInit {
     const tableName = DbObjectKey.FromXml(column.GetValue()).TableName;
     return this.metadataProvider.tables[tableName]?.DisplaySingular || tableName;
   }
-
-
-  private tryGetColumn(entity: IEntity, name: string): IEntityColumn {
-    try {
-      return entity.GetColumn(name);
-    } catch {
-      return undefined;
-    }
-  }
-
 
 }

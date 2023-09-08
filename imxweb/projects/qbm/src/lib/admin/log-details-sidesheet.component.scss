@@ -1,0 +1,40 @@
+@import '@elemental-ui/core/src/styles/_palette.scss';
+
+.imx-readonly-view {
+  margin-bottom: 20px;
+  span {
+    display: block;
+    word-wrap: break-word;
+    &.column-display {
+      font-size: 12px;
+      color: $black-9;
+      padding-bottom: 5px;
+    }
+  }
+}
+
+.column {
+  float: left;
+  width: 33.33%;
+}
+  
+ 
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+  
+textarea {
+  white-space: pre-line;
+  text-align: justify;
+  width: 100%;
+}
+
+.message {
+  height: 100px;
+}
+
+.stacktrace {
+  height: 200px;
+}

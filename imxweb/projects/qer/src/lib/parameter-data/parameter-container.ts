@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,36 +24,42 @@
  *
  */
 
-import { ParameterData, FkProviderItem, IEntityColumn, WriteExtTypedEntity } from "imx-qbm-dbts";
-import { ReadWriteEntityColumn } from "imx-qbm-dbts/dist/ReadWriteEntityColumn";
-import { ClassloggerService, EntityService } from "qbm";
+import { EventEmitter } from '@angular/core';
+import { ParameterData, LocalEntityColumn, IFkCandidateProvider, IEntityColumn, WriteExtTypedEntity } from 'imx-qbm-dbts';
+import { ReadWriteEntityColumn } from 'imx-qbm-dbts/dist/ReadWriteEntityColumn';
+import { ClassloggerService, ImxTranslationProviderService } from 'qbm';
 
 export class ParameterContainer<TExtendedData> {
-
-  constructor(private readonly entityService: EntityService,
-    private readonly getFkProviderItems: (parameter: ParameterData) => FkProviderItem[],
+  constructor(
+    private readonly translator: ImxTranslationProviderService,
+    private readonly getFkProvider: (parameter: ParameterData) => IFkCandidateProvider,
     private readonly logger: ClassloggerService,
-    private readonly typedEntity: WriteExtTypedEntity<TExtendedData>) {
-  }
+    private readonly typedEntity: WriteExtTypedEntity<TExtendedData>
+  ) {}
+
+  public updateExtendedDataTriggered = new EventEmitter<string>();
+  public exceptionOccured = new EventEmitter<string>();
 
   private parameterObjects = new Map<string, ParameterData & { column: ReadWriteEntityColumn }>();
 
   add(uniqueId: string, parameter: ParameterData, extendedDataGenerator: (newValue: any) => TExtendedData): IEntityColumn {
-    const column = <ReadWriteEntityColumn>this.entityService.createLocalEntityColumn(
+    const column = new LocalEntityColumn(
       parameter.Property,
-      this.getFkProviderItems(parameter),
+      this.translator,
+      this.getFkProvider(parameter),
       parameter.Value,
-      async (oldValue, newValue) => {
-
+      async (column, oldValue, newValue) => {
+        this.updateExtendedDataTriggered.emit(parameter.Property.ColumnName);
         // a single value has changed -> update extendedData to send to server
         const extendedData = extendedDataGenerator(newValue);
-        this.typedEntity.extendedData = extendedData;
+        await this.typedEntity.setExtendedData(extendedData);
       }
     );
+
     // save parameter for later use
     this.parameterObjects.set(uniqueId, {
       ...parameter,
-      column: column
+      column: column,
     });
     return column;
   }
@@ -61,15 +67,13 @@ export class ParameterContainer<TExtendedData> {
   update(uniqueId: string, parameter: ParameterData) {
     const existingParameter = this.parameterObjects.get(uniqueId);
     if (existingParameter) {
-      this.logger.trace(this, "updating parameter " + uniqueId);
+      this.logger.trace(this, 'updating parameter ' + uniqueId);
       // assign new value and metadata
       Object.assign(existingParameter.Property, parameter.Property);
       existingParameter.column.apply(parameter.Value);
-    }
-    else {
+    } else {
       // TODO: add parameters not previously known
-      this.logger.warn(this, "Not updating unknown parameter " + uniqueId);
+      this.logger.warn(this, 'Not updating unknown parameter ' + uniqueId);
     }
   }
-
 }

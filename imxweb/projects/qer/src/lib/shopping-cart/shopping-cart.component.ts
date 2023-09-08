@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,6 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -32,7 +31,7 @@ import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { map } from 'rxjs/operators';
 
-import { CartCheckResult, CheckMode, ITShopConfig, PortalCartitem, PortalItshopCart, RequestableProductForPerson } from 'imx-api-qer';
+import { CartCheckResult, CheckMode, ITShopConfig, PortalCartitem, PortalItshopCart } from 'imx-api-qer';
 import { ClassloggerService, SnackBarService, LdsReplacePipe, ConfirmationService } from 'qbm';
 import { UserModelService } from '../user/user-model.service';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
@@ -45,6 +44,7 @@ import { ShoppingCartValidator } from './shopping-cart-validator';
 import { ItshopPatternCreateService } from '../itshop-pattern/itshop-pattern-create-sidesheet/itshop-pattern-create.service';
 import { TermsOfUseAcceptComponent } from '../terms-of-use/terms-of-use-accept.component';
 import { CartItemCheckStatus } from './cart-items/cart-item-check-status.enum';
+import { PatternItemCandidate } from '../itshop-pattern/pattern-item-candidate.interface';
 
 @Component({
   templateUrl: './shopping-cart.component.html',
@@ -107,27 +107,24 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
     }
   }
 
-  public async createItshopPattern(cartItems?: PortalCartitem[]): Promise<void> {
-    const cartItemUids = cartItems.map(item => item.UID_AccProduct.value);
-
-    const serviceItemsForPersons = cartItems.map(item => {
-      return {
-        Display: item.GetEntity().GetDisplay(),
-        DisplayRecipient: item.UID_PersonOrdered.Column.GetDisplayValue(),
-        UidITShopOrg: item.UID_ITShopOrg.value,
-        UidAccProduct: item.UID_AccProduct.value
-      } as RequestableProductForPerson;
+  public async createItshopPattern(cartItems: PortalCartitem[]): Promise<void> {
+    const newPatternItems = cartItems.map(item => { 
+      return { 
+        uidAccProduct: item.UID_AccProduct.value, 
+        display:  item.GetEntity().GetDisplay() 
+      } as PatternItemCandidate;
     });
-    if ((await this.patternCreateService.assignItemsToPattern(cartItemUids, serviceItemsForPersons)) > 0) {
+
+    if ((await this.patternCreateService.assignItemsToPattern(newPatternItems)) > 0) {
       await this.getData(true);
 
       const snackbarRef = this.snackBarService.open(
-        { key: '#LDS#The request template has been successfully created.' },
-        '#LDS#View my request templates');
+        { key: '#LDS#The product bundle has been successfully created.' },
+        '#LDS#View my product bundles');
       snackbarRef.onAction().subscribe(() => this.router.navigate(['itshop/requesttemplates']));
 
     } else {
-      this.snackBarService.open({ key: '#LDS#The request template could not be created.' });
+      this.snackBarService.open({ key: '#LDS#The product bundle could not be created.' });
     }
   }
 
@@ -310,18 +307,19 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
       this.logger.debug(this,
         `There are ${itemsWithTermsOfUseToAccecpt.length} service items with terms of use the user have to accepted.`);
 
-      const termsOfUseAccepted = await this.sideSheet.open(TermsOfUseAcceptComponent, {
-        title: await this.translate.get('#LDS#Heading Accept Terms Of Use').toPromise(),
-        headerColour: 'iris-blue',
-        bodyColour: 'asher-gray',
-        padding: '0px',
-        width: 'max(600px, 60%)',
-        data: {
-          acceptCartItems: true,
-          cartItems: itemsWithTermsOfUseToAccecpt,
-        },
-        testId: 'terms-of-use-accept-sidesheet'
-      }).afterClosed().toPromise();
+      const termsOfUseAccepted = await this.sideSheet
+        .open(TermsOfUseAcceptComponent, {
+          title: await this.translate.get('#LDS#Heading Accept Terms of Use').toPromise(),
+          padding: '0px',
+          width: 'max(600px, 60%)',
+          data: {
+            acceptCartItems: true,
+            cartItems: itemsWithTermsOfUseToAccecpt,
+          },
+          testId: 'terms-of-use-accept-sidesheet',
+        })
+        .afterClosed()
+        .toPromise();
 
       if (termsOfUseAccepted) {
         this.logger.debug(this, 'all terms of use were accepted.');

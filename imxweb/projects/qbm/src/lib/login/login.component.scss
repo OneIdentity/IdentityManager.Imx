@@ -1,5 +1,5 @@
-@use '@angular/material' as mat;
 @import "variables.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 $inputWidth: calc(40vw + 2px);
 
@@ -49,7 +49,6 @@ $inputWidth: calc(40vw + 2px);
     input {
       width: $propertylabelwidth;
       box-sizing: content-box;
-      border: 1px solid mat.get-color-from-palette($asher-gray-palette, 900);
       margin-bottom: 9px;
       height: 30px;
       padding-left: 6px;
@@ -77,14 +76,13 @@ $inputWidth: calc(40vw + 2px);
 
 .imx-loginButtonpanel {
   text-align: center;
-  padding-top: 30px;
-  height: 60px;
+  padding: 30px 0;
   margin: 0 auto;
   width: 100%;
   display: inline-block;
 
   button {
-    background-color: $VI_Common_Color_Blue_3;
+    margin: 0 10px;
   }
 }
 
@@ -186,4 +184,58 @@ mat-form-field {
 
 .usermessage {
   margin-top: 1em;
+}
+
+.eui-dark-theme {
+  :host{
+    .imx-loginPage{
+      background-color: $color-gray-80;
+    }
+    .imx-loginInput {
+      ::ng-deep {
+        input {
+          background-color: $color-gray-70;
+          border: none;
+          color: $color-gray-0;
+        }
+
+        .mat-form-field-infix {
+          color: $color-gray-0
+        }
+
+        .mat-form-field-flex {
+          background-color:$color-gray-70;
+        }
+
+      }
+    }
+
+  }
+}
+
+.eui-contrast-theme {
+  :host{
+    .imx-loginPage{
+      background-color: $color-gray-100;
+    }
+    .imx-loginInput {
+      ::ng-deep {
+        input {
+          background-color: $color-gray-90;
+          border: none;
+          color: $color-gray-0;
+        }
+
+        .mat-form-field-infix {
+          color: $color-gray-0
+        }
+
+        .mat-form-field-flex {
+          background-color:$color-gray-90;
+        }
+
+      }
+    }
+
+  }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,14 +32,18 @@ import {
   DataModelFilter,
   EntitySchema,
   FilterTreeData,
-  DataModel
+  DataModel,
+  EntityCollectionData,
+  MethodDescriptor,
+  MethodDefinition
 } from 'imx-qbm-dbts';
 import { TsbApiService } from '../tsb-api-client.service';
-import { PortalTargetsystemUnsAccount } from 'imx-api-tsb';
+import { PortalTargetsystemUnsAccount, V2ApiClientMethodFactory } from 'imx-api-tsb';
 import { TargetSystemDynamicMethodService } from '../target-system/target-system-dynamic-method.service';
 import { AccountTypedEntity } from './account-typed-entity';
 import { DbObjectKeyBase } from '../target-system/db-object-key-wrapper.interface';
 import { AcountsFilterTreeParameters as AccountsFilterTreeParameters } from './accounts.models';
+import { DataSourceToolbarExportMethod } from 'qbm';
 
 @Injectable({ providedIn: 'root' })
 export class AccountsService {
@@ -61,6 +65,21 @@ export class AccountsService {
    */
   public async getAccounts(navigationState: CollectionLoadParameters): Promise<TypedEntityCollectionData<PortalTargetsystemUnsAccount>> {
     return this.tsbClient.typedClient.PortalTargetsystemUnsAccount.Get(navigationState);
+  }
+
+  public exportAccounts(navigationState: CollectionLoadParameters): DataSourceToolbarExportMethod {
+    const factory = new V2ApiClientMethodFactory();
+    return {
+      getMethod: (withProperties: string, PageSize?: number) => {
+        let method: MethodDescriptor<EntityCollectionData>;
+        if (PageSize) {
+          method = factory.portal_targetsystem_uns_account_get({...navigationState, withProperties, PageSize, StartIndex: 0})
+        } else {
+          method = factory.portal_targetsystem_uns_account_get({...navigationState, withProperties})
+        }
+        return new MethodDefinition(method);
+      }
+    }
   }
 
   public async getAccount(dbObjectKey: DbObjectKeyBase, columnName?: string): Promise<AccountTypedEntity> {

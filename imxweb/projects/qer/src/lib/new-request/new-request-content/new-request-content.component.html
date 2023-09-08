@@ -1,0 +1,36 @@
+<nav mat-tab-nav-bar class="imx-nav-bar">
+  <a
+    mat-tab-link
+    *ngFor="let navLink of navLinks"
+    [routerLink]="navLink.link"
+    routerLinkActive
+    #rla="routerLinkActive"
+    [active]="rla.isActive"
+    (click)="onSelectedTabChange(navLink)"
+  >
+    {{ navLink.title | translate }}
+  </a>
+  <span class="imx-spacer"></span>
+  <mat-slide-toggle
+    #catSlider
+    *ngIf="showCatSlider && selectedCategory?.HasChildren.value"
+    (change)="onCatSliderChanged($event)"
+    [checked]="orchestration.includeChildCategories"
+    class="imx-tab-group-slider">
+    {{ '#LDS#Show products from child categories' | translate }}
+  </mat-slide-toggle>
+</nav>
+<router-outlet></router-outlet>
+<div class="imx-toolbar">
+  <ng-container *ngIf="selectionService.selectedProducts && selectionService.selectedProducts.length > 0">
+    <button mat-stroked-button (click)="openSelected()"><eui-icon icon="check"></eui-icon>&nbsp;<span translate>#LDS#Show selected ({{ selectionService.selectedProducts.length }})</span></button>
+    <button mat-stroked-button (click)="deselectCandidates()">
+      <eui-icon class="text-red-60" icon="close"></eui-icon>&nbsp;<span class="text-red-60" translate>#LDS#Deselect all</span>
+    </button>
+  </ng-container>
+  <span class="imx-spacer"></span>
+  <button mat-stroked-button routerLink="/shoppingcart"><eui-icon icon="forward"></eui-icon>&nbsp;<span translate>#LDS#Go to cart</span></button>
+  <button mat-raised-button color="primary" class="primary-action" (click)="pushCandidatesToCart()" [disabled]="selectionService.selectedProducts == null || selectionService.selectedProducts.length === 0">
+    <eui-icon icon="cart"></eui-icon>&nbsp;<span translate>#LDS#Add to cart</span>
+  </button>
+</div>

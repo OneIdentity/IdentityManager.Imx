@@ -1,4 +1,5 @@
 @import "@elemental-ui/core/src/styles/_palette.scss";
+@import "../../../shared/assets/variables.scss";
 
 :host {
   display: flex;
@@ -7,19 +8,33 @@
   height: 100%;
 }
 
+.sub-headline {
+  font-style: italic;
+  font-weight: lighter;
+  margin-top: -2em;
+  margin-bottom: .5em;
+
+  @media #{$IMX_Mediaquery_Smartphone} {
+    margin-top: -0.5em;
+  }
+  @media #{$IMX_Mediaquery_SmallDesktops} {
+    margin-top: -0.5em;
+  }
+}
+
 :host ::ng-deep .mat-tab-body {
   margin: 30px 0px;
+
+  .mat-tab-body-content {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 .imx-job-queue-div {
   border-bottom: 1px solid $black-3;
   padding-bottom: 30px;
   margin-bottom: 30px;
-}
-
-.imx-object-overview-tab-header {
-  font-weight: 600;
-  font-size: large;
 }
 
 .imx-object-overview-tab-text {
@@ -52,7 +67,6 @@
 
 .imx-table-container {
   margin-right: 30px;
-  margin-top: -30px;
   max-height: 500px;
   overflow: hidden;
   display: flex;
@@ -63,37 +77,3 @@
   margin-right: 5px;
   height: 50px;
 }
-
-
-.heading-wrapper {
-  display: flex;
-
-  > :first-child {
-    flex: 1 1 auto;
-  }
-
-  .mat-card {
-    width: 50%;
-    align-self: flex-end;
-  }
-
-  .mat-card-title {
-    font-size: medium;
-    font-weight: 600;
-    padding: 10px 10px 0 10px;
-  }
-
-  .mat-card-content {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 10px;
-    padding: 10px;
-    font-size: medium;
-
-    > .imx-caption {
-      font-weight: 600;
-    }
-  }
-}
-
-

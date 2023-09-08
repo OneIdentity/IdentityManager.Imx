@@ -1,0 +1,11 @@
+:host {
+  .eui-sidesheet-content{
+    display: flex;
+    flex-direction: column;
+    .mat-card {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+    }
+  }
+}

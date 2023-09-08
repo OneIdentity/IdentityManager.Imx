@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,21 +25,13 @@
  */
 
 import { DisplayColumns, IEntityColumn, TypedEntity } from 'imx-qbm-dbts';
+import { CdrFactoryService } from 'qbm';
 
 export class AccountTypedEntity extends TypedEntity {
-
   // TODO fix this: we are in TSB, not ADS
   public readonly displayColumn = this.GetEntity().GetColumn(DisplayColumns.DISPLAY_PROPERTYNAME);
-  public readonly isNeverConnectManualColumn = this.tryGetColumn('IsNeverConnectManual');
-  public readonly objectKeyManagerColumn = this.tryGetColumn('ObjectKeyManager');
-  public readonly uidPersonColumn = this.tryGetColumn('UID_Person');
-  public readonly uidADSDomain = this.tryGetColumn('UID_ADSDomain');
-
-  private tryGetColumn(name: string): IEntityColumn {
-    try {
-      return this.GetEntity().GetColumn(name);
-    } catch {
-      return undefined;
-    }
-  }
+  public readonly isNeverConnectManualColumn = CdrFactoryService.tryGetColumn(this.GetEntity(), 'IsNeverConnectManual');
+  public readonly objectKeyManagerColumn = CdrFactoryService.tryGetColumn(this.GetEntity(), 'ObjectKeyManager');
+  public readonly uidPersonColumn = CdrFactoryService.tryGetColumn(this.GetEntity(), 'UID_Person');
+  public readonly uidADSDomain = CdrFactoryService.tryGetColumn(this.GetEntity(), 'UID_ADSDomain');
 }

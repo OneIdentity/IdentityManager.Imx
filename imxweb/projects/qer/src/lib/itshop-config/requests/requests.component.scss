@@ -1,85 +1,82 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
-
+@import '../../../../../../shared/scss/common-table.scss';
 :host {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   height: 100%;
-}
 
-.request-config {
-  &.request-config--full-page {
-    background-color: inherit;
+  .imx-shop-content-card {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
 
-    div.imx-table-container {
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      height: inherit;
+  div.imx-table-container {
+   @include imx-flex-fill-control-hidden-overflow();
 
-      .imx-requests-table {
-        flex-grow: 1;
-        overflow: auto;
-      }
+    .imx-requests-table {
+      flex-grow: 1;
+      overflow: auto;
+    }
+  }
+
+  .heading-wrapper {
+    display: flex;
+    margin-bottom: 16px;
+
+    h1 {
+      margin: 6px 0 40px;
     }
 
-    > div {
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
+    .helper-alert {
+      margin-bottom: 15px;
     }
 
-    .heading-wrapper {
-      display: flex;
+    .alert-wrapper {
+      margin: 0 0 0 auto;
+      align-self: flex-end;
+      width: 50%;
+    }
+  }
 
-      .helper-alert {
-        margin-bottom: 15px;
-      }
-
-      .alert-wrapper {
-        margin: 0 0 0 auto;
-        align-self: flex-end;
-        width: 50%;
-      }
+  ::ng-deep {
+    .imx-data-table-row-highlighted {
+      background-color: inherit;
     }
 
-
-    ::ng-deep {
-      .imx-data-table-row-highlighted {
-        background-color: inherit;
-      }
-
-      .mat-row:hover {
-        cursor: pointer;
-        background-color: rgba($black-c, 0.2) !important;
-      }
+    .mat-row:hover {
+      cursor: pointer;
+      background-color: rgba($black-c, 0.2);
     }
-
-    .request-config__action-buttons {
-      display: flex;
-      justify-content: flex-end;
-      background-color: $white;
-      padding: 16px 32px;
-      margin: 0;
-      border-radius: unset;
-      box-shadow: unset;
-    }
+  }
+  .request-config__action-buttons {
+    @include imx-button-bar();
   }
 }
 
 @media screen and (max-width: 768px) {
-  .request-config {
-    &.request-config--full-page {
-      .heading-wrapper {
-        display: block;
+  :host {
+    .heading-wrapper {
+      display: block;
 
-        .alert-wrapper {
-          margin: 0 0 20px 0;
-          width: 100%;
-        }
+      .alert-wrapper {
+        margin: 0 0 20px 0;
+        width: 100%;
       }
-
     }
   }
 }
 
+.eui-contrast-theme {
+  :host {
+    .request-config {
+      &.request-config--full-page {
+        .request-config__action-buttons {
+          background-color: $color-gray-90;
+        }
+      }
+    }
+  }
+}

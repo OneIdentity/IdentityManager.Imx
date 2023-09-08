@@ -1,4 +1,4 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
 
 :host {
   display: flex;
@@ -32,28 +32,55 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    height:100%;
+
+     > :first-child {
+      height: 100%;
+     }
   }
 }
 
-.imx-button-bar {
+imx-selected-elements {
+  margin: 10px 0 0 10px;
+}
+
+.eui-sidesheet-actions {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  border-top: $black-c 1px solid;
-  background-color: $white;
   padding: 0px 20px 20px;
   margin: 16px -20px -20px;
 
   > * {
-    margin-left: 10px;
     margin-top: 20px;
+
+    .mat-icon {
+      margin-right: 5px;
+      font-size: 24px;
+    }
   }
 
   button:not(:last-of-type) {
-    margin-right: 10px;
+    margin-right: 16px;
   }
 
   button:disabled:hover {
     cursor: not-allowed;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-button-bar {
+      background-color: $color-gray-70;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-button-bar {
+      background-color: $color-gray-90;
+    }
   }
 }

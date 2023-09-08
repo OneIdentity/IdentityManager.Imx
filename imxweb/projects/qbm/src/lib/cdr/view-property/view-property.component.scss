@@ -1,5 +1,9 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
 
+:host {
+  flex-grow: 1;
+}
+
 .imx-readonly-view {
   margin-bottom: 20px;
   span {

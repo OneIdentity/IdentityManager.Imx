@@ -1,0 +1,36 @@
+<div class="calls-sidesheet">
+  <mat-tab-group>
+    <mat-tab [label]="'#LDS#Heading Details' | translate">
+      <div class="calls-sidesheet__tab-content">
+        <div eui-sidesheet-content class="calls-sidesheet__tab-content-body" [ngClass]="!sidesheetData.isNew ? 'eui-sidesheet-content--no-padding-top' : ''">
+          <imx-help-contextual [contextId]="contexId" [title]="'#LDS#Information about this tab:'" *ngIf="!sidesheetData.isNew"></imx-help-contextual>
+          <mat-card>
+            <form [formGroup]="detailsFormGroup">
+              <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="detailsFormGroup.addControl(cdr.column.ColumnName, $event)"></imx-cdr-editor>
+            </form>
+          </mat-card>
+        </div>
+        <div eui-sidesheet-actions class="calls-sidesheet__action-buttons">
+          <button data-imx-identifier="create-ticket-button" mat-flat-button color="primary" [disabled]="detailsFormGroup.pristine || detailsFormGroup.invalid" (click)="save()">
+            <span *ngIf="sidesheetData.isNew" translate>#LDS#Create</span>
+            <span *ngIf="!sidesheetData.isNew" translate>#LDS#Save</span>
+          </button>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab *ngIf="!sidesheetData?.isNew" [label]="'#LDS#Heading History' | translate">
+      <div class="calls-sidesheet__tab-content">
+        <div eui-sidesheet-content class="calls-sidesheet__tab-content-body">
+          <imx-calls-history [ticket]="ticket"></imx-calls-history>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab *ngIf="!sidesheetData?.isNew" [label]="'#LDS#Heading Attachments' | translate">
+      <div class="calls-sidesheet__tab-content">
+        <div eui-sidesheet-content class="calls-sidesheet__tab-content-body">
+          <imx-calls-attachment [callId]="getTicketId"></imx-calls-attachment>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

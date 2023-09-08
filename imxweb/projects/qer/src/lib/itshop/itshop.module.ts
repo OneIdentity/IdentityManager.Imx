@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,7 +33,7 @@ import { MatListModule } from '@angular/material/list';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { ShelfSelectionComponent } from './shelf-selection.component';
-import { CdrModule, DataSourceToolbarModule, DataTableModule, DateModule, ExtModule, LdsReplaceModule } from 'qbm';
+import { BusyIndicatorModule, CdrModule, DataSourceToolbarModule, DataTableModule, DateModule, ExtModule, LdsReplaceModule } from 'qbm';
 import { ItshopService } from './itshop.service';
 import { DecisionHistoryComponent } from './request-info/decision-history.component';
 import { RequestInfoComponent } from './request-info/request-info.component';
@@ -43,6 +43,7 @@ import { PeerGroupComponent } from './peer-group/peer-group.component';
 import { ShelfService } from './shelf.service';
 import { ServiceItemDetailComponent } from './request-info/service-item-detail/service-item-detail.component';
 import { ProductEntitlementsComponent } from './request-info/service-item-detail/product-entitlements/product-entitlements.component';
+import { MatExpansionModule } from '@angular/material/expansion';
 @NgModule({
   declarations: [
     DecisionHistoryComponent,
@@ -60,12 +61,14 @@ import { ProductEntitlementsComponent } from './request-info/service-item-detail
     ProductEntitlementsComponent
   ],
   imports: [
+    BusyIndicatorModule,
     CdrModule,
     CommonModule,
     LdsReplaceModule,
     MatButtonModule,
     MatCardModule,
     MatListModule,
+    MatExpansionModule,
     TranslateModule,
     EuiCoreModule,
     EuiMaterialModule,

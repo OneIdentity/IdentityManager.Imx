@@ -1,0 +1,63 @@
+<h1 class="mat-headline">
+  <span>{{ '#LDS#Heading Tickets' | translate }}</span>
+  <imx-help-contextual></imx-help-contextual>
+</h1>
+
+<mat-card>
+  <imx-data-source-toolbar
+    #dst
+    data-imx-identifier="calls-data-source-toolbar"
+    [settings]="dstSettings"
+    [busyService]="busyService"
+    [options]="['search', 'filter']"
+    [hiddenFilters]="['namespace']"
+    [searchBoxText]="'#LDS#Search' | translate"
+    (navigationStateChanged)="onNavigationStateChanged($event)"
+    (search)="onSearch($event)"
+  >
+  </imx-data-source-toolbar>
+  <div class="calls-data-table">
+    <imx-data-table data-imx-identifier="calls-data-table" [dst]="dst" (highlightedEntityChanged)="onSelected($event)" [mode]="'manual'">
+      <imx-data-table-column [entityColumn]="entitySchema.Columns.CallNumber"> </imx-data-table-column>
+      <imx-data-table-generic-column columnName="description" data-imx-identifier="calls-table-column-ellipsis" [columnLabel]="entitySchema.Columns.DescriptionHotline.Display">
+        <ng-template let-item>
+          <div class="calls-table-column-ellipsis" title="{{ getTicketItemValue(item, 'DescriptionHotline') }}">
+            {{ getTicketItemValue(item, 'DescriptionHotline') }}
+          </div>
+        </ng-template>
+      </imx-data-table-generic-column>
+      <imx-data-table-column [entityColumn]="entitySchema.Columns.IsClosed"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema.Columns.IsHistory"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema.Columns.IsHold"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_PersonHotline"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_PersonInTrouble"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_PersonInTroubleAdditional"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_TroubleCallState"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_TroubleEscalationLevel_E"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_TroubleProduct"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_TroubleSeverity"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_TroubleTypeHotline"> </imx-data-table-column>
+      <imx-data-table-generic-column columnName="actionHotLine" data-imx-identifier="calls-table-column-ellipsis" [columnLabel]="entitySchema.Columns.ActionHotline.Display">
+        <ng-template let-item>
+          <div class="calls-table-column-ellipsis" title="{{ getTicketItemValue(item, 'ActionHotline') }}">
+            {{ getTicketItemValue(item, 'ActionHotline') }}
+          </div>
+        </ng-template>
+      </imx-data-table-generic-column>
+    </imx-data-table>
+  </div>
+  <imx-data-source-paginator data-imx-identifier="calls-data-source-paginator" [dst]="dst"></imx-data-source-paginator>
+</mat-card>
+<div class="imx-button-bar">
+  <span class="imx-menu-spacer"></span>
+  <button
+    data-imx-identifier="create-help-desk-support-call"
+    mat-raised-button
+    color="primary"
+    class="mat-focus-indicator mat-raised-button mat-button-base mat-primary create-ticket-button"
+    (click)="createTicket()"
+  >
+    <eui-icon icon="add"></eui-icon>
+    <span translate>#LDS#Create ticket</span>
+  </button>
+</div>

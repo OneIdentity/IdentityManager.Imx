@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,37 +25,47 @@
  */
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ConfigService } from './config.service';
+
 import { AppConfigService } from '../appConfig/appConfig.service';
 
 @Component({
-    templateUrl: './dashboard.component.html',
-    styleUrls: ['./dashboard.component.scss']
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
+  constructor(private readonly appConfigService: AppConfigService, private readonly configService: ConfigService) {}
 
-    constructor(private readonly appConfigService: AppConfigService) {
-    }
+  src: EventSource;
 
-    src: EventSource;
+  statusData: {
+    CacheHits: number;
+    CacheMisses: number;
+    OpenSessions: number;
+    TotalSessions: number;
+  };
 
-    statusData: {
-        CacheHits: number,
-        CacheMisses: number,
-        OpenSessions: number,
-        TotalSessions: number
-    };
+  selectedPage: string = '';
 
-    selectedPage: string = '';
+  documentationUiEnabled: boolean = true;
 
-    selectPage(page: string) {
-        this.selectedPage = page;
-    }
+  selectPage(page: string) {
+    this.selectedPage = page;
+  }
 
-    async ngOnInit() {
-    }
+  async ngOnInit() {
+    this.loadDocumentationUi();
+    this.configService.submitChanges?.subscribe(() => {
+      this.loadDocumentationUi();
+    })
+  }
 
-    ngOnDestroy() {
-        if (this.src)
-            this.src.close();
-    }
+  ngOnDestroy() {
+    if (this.src) this.src.close();
+  }
+
+  private async loadDocumentationUi(): Promise<void>{
+    let state = await this.appConfigService.client.admin_apiconfigsingle_get('imx', 'ServerLevelConfig/ApiDocumentation');
+    this.documentationUiEnabled = state == 'SwaggerUi';
+  }
 }

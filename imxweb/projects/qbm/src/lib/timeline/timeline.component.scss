@@ -1,0 +1,165 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+.imx-timeline-content {
+  border: 1px solid $color-blue-20;
+  border-radius: 4px;
+  background-color: $color-blue-10;
+  padding: 1rem;
+
+  .imx-timeline-events-group {
+    position: relative;
+    display: flex;
+    gap: 8px;
+    min-height: 40px;
+    color: $color-blue-60;
+    font-weight: 700;
+    pointer-events: none;
+
+    &:hover {
+      .imx-timeline-date {
+        color: $color-orange-60;
+      }
+
+      .imx-timeline-separator {
+        &-marker {
+          border: 2px solid $color-orange-60;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          &-hover-circle {
+            border-radius: 50%;
+            width: 6px;
+            height: 6px;
+            background-color: $color-orange-40;
+          }
+        }
+      }
+    }
+
+    .imx-timeline-separator {
+      flex: 0;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+
+      &-marker {
+        border: 2px solid $color-blue-60;
+        border-radius: 50%;
+        width: 1rem;
+        height: 1rem;
+        background-color: $color-gray-0;
+      }
+
+      &-connector {
+        flex-grow: 1;
+        width: 2px;
+        background-color: $color-blue-20;
+      }
+    }
+
+    .imx-timeline-events {
+      font-weight: 600;
+      padding-bottom: 20px;
+
+      mat-card {
+        padding: 0;
+        pointer-events: none;
+
+        &:hover {
+          box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.20);
+        }
+
+        .imx-timeline-event {
+          padding: 1rem;
+          pointer-events: auto;
+
+          &:hover {
+            background-color: $color-orange-10;
+
+            &:first-child {
+              border-top-left-radius: 4px;
+              border-top-right-radius: 4px;
+            }
+
+            &:last-child {
+              border-bottom-left-radius: 4px;
+              border-bottom-right-radius: 4px;
+            }
+          }
+
+          &:nth-child(n+2) {
+            background-image: linear-gradient(to right, $color-gray-10 33%, rgba(255,255,255,0) 0%);
+            background-position: top;
+            background-size: 13px 1px;
+            background-repeat: repeat-x;
+          }
+
+          &-time {
+            padding-right: 1rem;
+          }
+
+          &-display {
+            font-weight: 400;
+          }
+        }
+      }
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-timeline-content {
+      border: 1px solid $color-blue-60;
+      background-color: $color-blue-80;
+
+      .imx-timeline-events-group {
+        color: $color-blue-40;
+
+        &:hover {
+          .imx-timeline-date {
+            color: $color-orange-40;
+          }
+
+          .imx-timeline-separator {
+            &-marker {
+              border: 2px solid $color-orange-40;
+
+              &-hover-circle {
+                background-color: $color-gray-0;
+              }
+            }
+          }
+        }
+
+        .imx-timeline-separator {
+          &-marker {
+            border: 2px solid $color-blue-40;
+            background-color: $color-gray-70;
+          }
+
+          &-connector {
+            background-color: $color-blue-60;
+          }
+        }
+
+        .imx-timeline-events {
+          .imx-timeline-event {
+            &:hover {
+              background-color: $color-gray-80;
+            }
+
+            &:nth-child(n+2) {
+              background-image: linear-gradient(to right, $color-gray-60 33%, rgba(255,255,255,0) 0%);
+              background-position: top;
+              background-size: 13px 1px;
+              background-repeat: repeat-x;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+

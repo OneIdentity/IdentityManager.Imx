@@ -1,0 +1,99 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import '../new-request-global.scss';
+
+:host {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .imx-nav-bar {
+    margin: 0 24px;
+
+    a.mat-tab-link:hover {
+      text-decoration: none;
+    }
+  }
+ 
+  .imx-toolbar {
+    display: flex;
+    justify-content: flex-start;
+    align-items: baseline;
+    column-gap: 10px;
+    margin: 0 24px 10px 24px;
+
+    button {
+      @include EUI-Elevation-1;
+    }
+  }
+
+  .mat-tab-group {
+    overflow: hidden;
+  }
+
+  ::ng-deep .mat-tab-body-wrapper {
+    height: 100%;
+    padding: 10px;
+  }
+
+  .imx-tab-group {
+    overflow: auto;
+    height: 100%;
+  }
+
+  .imx-tab-group-slider {
+    align-self: center;
+    margin-right: 46px;
+    font-size: 14px;
+    font-weight: 400;
+  }
+}
+
+// Theming
+:host {
+  background-color: $color-gray-0;
+  
+  .imx-nav-bar {
+    a.mat-tab-link:hover {
+      color: initial;
+    }
+
+    ::ng-deep .mat-tab-link-container .mat-tab-links .mat-tab-link.cdk-program-focused {
+      background-color: transparent;
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    background-color: unset;
+
+    .imx-nav-bar {
+      background-color: $color-gray-70;
+
+      a.mat-tab-link:hover {
+        color: unset;
+        background-color: $color-gray-60;
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    background-color: unset;
+    .imx-nav-bar {
+      background-color: $color-gray-100;
+
+      a.mat-tab-link:hover {
+        color: unset;
+        background-color: $color-gray-80;
+      }
+    }
+
+    .primary-action:hover {
+      @include Ease-Transition;
+      background-color: $color-orange-40;
+    }
+  }
+}

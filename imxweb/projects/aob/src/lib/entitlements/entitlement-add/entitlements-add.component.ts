@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,11 +36,12 @@ import {
   HELPER_ALERT_KEY_PREFIX,
   StorageService,
   MetadataService,
-  DataSourceToolbarFilter
+  DataSourceToolbarFilter,
+  CdrFactoryService
 } from 'qbm';
-import { CollectionLoadParameters, IClientProperty, EntitySchema, DisplayColumns, TypedEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, IClientProperty, EntitySchema, DisplayColumns, TypedEntity, FilterData } from 'imx-qbm-dbts';
 import { EntitlementsService } from '../entitlements.service';
-import { AddEntitlementParameter, EntitlementSourceType, EntitlementsType, tryGetColumn } from '../entitlements.model';
+import { AddEntitlementParameter, EntitlementSourceType, EntitlementsType } from '../entitlements.model';
 import { EntitlementSystemRoleInput } from 'imx-api-aob';
 import { SystemRoleConfigComponent } from './system-role-config/system-role-config.component';
 
@@ -86,7 +87,7 @@ export class EntitlementsAddComponent implements OnInit {
     this.selectedSourceType = data.defaultType;
     this.isSystemRolesEnabled = data.isSystemRolesEnabled;
 
-    this.browserCulture = translateService.getBrowserCultureLang();
+    this.browserCulture = translateService.currentLang;
   }
 
   public async ngOnInit(): Promise<void> {
@@ -131,8 +132,6 @@ export class EntitlementsAddComponent implements OnInit {
     const entitlementSystemRoleInput: EntitlementSystemRoleInput
       = await this.sidesheet.open(SystemRoleConfigComponent, {
         title: await this.translateService.get('#LDS#Heading Merge Application Entitlements into System Role').toPromise(),
-        headerColour: 'iris-blue',
-        bodyColour: 'asher-gray',
         padding: '0px',
         width: 'max(500px, 50%)',
         testId: 'add-to-existing-role-sidesheet',
@@ -144,7 +143,7 @@ export class EntitlementsAddComponent implements OnInit {
       return;
     }
 
-    const keys = this.selections.map((elem: TypedEntity) => tryGetColumn(elem, 'XObjectKey')?.GetValue())
+    const keys = this.selections.map((elem: TypedEntity) => CdrFactoryService.tryGetColumn(elem.GetEntity(), 'XObjectKey')?.GetValue())
       .filter((elem: string) => elem != null);
 
     if (keys.length < this.selections.length) {
@@ -174,6 +173,11 @@ export class EntitlementsAddComponent implements OnInit {
     this.logger.debug(this, `Searching for: ${keywords}`);
     this.navigationState.StartIndex = 0;
     this.navigationState.search = keywords;
+    this.updateCandidates();
+  }
+
+  public async onFilterByTree(filters: FilterData[]): Promise<void> {
+    this.navigationState.filter = filters;
     this.updateCandidates();
   }
 
@@ -207,7 +211,17 @@ export class EntitlementsAddComponent implements OnInit {
         displayedColumns: this.displayedColumns,
         entitySchema: this.entitySchema,
         navigationState: this.navigationState,
-        filters: this.filters
+        filters: this.filters,
+        filterTree: this.selectedSourceType === EntitlementsType.UnsGroup ?
+          {
+            filterMethode: async (parentkey) => {
+              return this.entitlementsProvider.getEntitlementsFilterTree({
+                parentkey,
+              });
+            },
+            multiSelect: false,
+          }
+          : undefined
       };
 
       if (data == null) {

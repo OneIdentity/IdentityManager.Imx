@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,10 +26,12 @@
 
 import { Injectable } from '@angular/core';
 import { Router, Route } from '@angular/router';
+import { additionalColumnsForServiceItemsKey } from 'qer';
 
 import { ExtService, MenuItem, MenuService } from 'qbm';
 import { KpiTileComponent } from './global-kpi/kpi-tile/kpi-tile.component';
 import { isAobApplicationAdmin, isAobApplicationOwner } from './permissions/aob-permissions-helper';
+import { LockInfoAlertExtension } from './extensions/service-items-edit/lock-info-alert/lock-info-alert-extension';
 
 @Injectable({
   providedIn: 'root'
@@ -45,9 +47,17 @@ export class AobService {
 
   public onInit(routes: Route[]): void {
     this.addRoutes(routes);
+
+    this.extService.register(additionalColumnsForServiceItemsKey, {
+      inputData: {
+        columnName: 'UID_AOBApplication'
+      }
+    });
     this.extService.register('Dashboard-MediumTiles', {
       instance: KpiTileComponent
     });
+
+    this.extService.register(LockInfoAlertExtension.id, new LockInfoAlertExtension());
   }
 
   private addRoutes(routes: Route[]): void {
@@ -59,9 +69,9 @@ export class AobService {
   }
 
   private setupMenu(): void {
-    this.menuService.addMenuFactories((preProps: string[], groups: string[]) => {
+    this.menuService.addMenuFactories((preProps: string[], features: string[]) => {
       const items: MenuItem[] = [];
-      if (isAobApplicationAdmin(groups) || isAobApplicationOwner(groups)) {
+      if (isAobApplicationAdmin(features) || isAobApplicationOwner(features)) {
         items.push(
           {
             id: 'AOB_Data_Applications',

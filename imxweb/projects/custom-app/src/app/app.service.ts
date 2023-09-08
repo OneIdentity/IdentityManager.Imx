@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,7 +34,9 @@ import {
   AuthenticationService,
   imx_SessionService,
   ImxTranslationProviderService,
-  SplashService
+  SplashService,
+  SystemInfoService,
+  ISessionState
 } from 'qbm';
 import { environment } from '../environments/environment';
 import { TypedClient } from 'imx-api-qbm';
@@ -45,6 +47,7 @@ import { TypedClient } from 'imx-api-qbm';
 export class AppService {
   constructor(
     private readonly config: AppConfigService,
+    private readonly systemInfoService: SystemInfoService,
     private readonly translateService: TranslateService,
     private readonly session: imx_SessionService,
     private readonly translationProvider: ImxTranslationProviderService,
@@ -63,7 +66,7 @@ export class AppService {
     await this.translateService.use(browserCulture).toPromise();
 
     // If the session defines another culture, update the translation provider
-    this.authentication.onSessionResponse.subscribe(sessionState => this.translationProvider.init(sessionState?.culture));
+    this.authentication.onSessionResponse.subscribe((sessionState: ISessionState) => this.translationProvider.init(sessionState?.culture, sessionState?.cultureFormat));
 
     this.translateService.onLangChange.subscribe(() => {
       this.setTitle();
@@ -75,7 +78,7 @@ export class AppService {
   }
 
   private async setTitle(): Promise<void> {
-    const imxConfig = await this.config.getImxConfig();
+    const imxConfig = await this.systemInfoService.getImxConfig();
     const name = imxConfig.ProductName || Globals.QIM_ProductNameFull;
     const title = `${name} ${this.config.Config.Title}`;
     this.title.setTitle(title);

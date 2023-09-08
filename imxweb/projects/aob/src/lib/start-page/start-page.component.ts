@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,6 +34,7 @@ import { UserModelService } from 'qer';
 import { Subscription } from 'rxjs';
 import { ApplicationsService } from '../applications/applications.service';
 import { ImageService } from '../images/image.service';
+import { AobPermissionsService } from '../permissions/aob-permissions.service';
 
 @Component({
   selector: 'imx-start',
@@ -54,6 +55,7 @@ export class StartPageComponent implements OnInit, OnDestroy {
     private readonly logger: ClassloggerService,
     private readonly userService: UserModelService,
     private readonly imageProvider: ImageService,
+    private readonly aobPermissionsService: AobPermissionsService,
     authentication: AuthenticationService,
   ) {
     this.authSubscription = authentication.onSessionResponse?.subscribe(async sessionState => {
@@ -79,7 +81,7 @@ export class StartPageComponent implements OnInit, OnDestroy {
         this.logger.error(this, 'TypedEntityCollectionData<AobApplication> is undefined');
       }
 
-      this.isAdmin = (await this.userService.getGroups()).some(ug => ug.Name === 'AOB_4_AOB_Admin');
+      this.isAdmin = await this.aobPermissionsService.isAobApplicationAdmin();
 
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));

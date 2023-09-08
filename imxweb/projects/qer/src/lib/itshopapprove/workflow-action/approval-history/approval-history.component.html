@@ -1,0 +1,44 @@
+<eui-alert type="info" condensed="true" [colored]="true" [dismissable]="true" class="imx-alert">
+  {{ alertText | translate }}
+</eui-alert>
+<mat-card>
+  <imx-data-source-toolbar
+    #dst
+    [options]="['search', 'settings', 'filter']"
+    [settings]="dstSettings"
+    [alwaysVisible]="true"
+    data-imx-identifier="approval-history-table-dst"
+    (search)="onSearch($event)"
+    [hiddenFilters]="['filtermode']"
+    [showClearFilterOption]="false"
+    (navigationStateChanged)="onNavigationStateChanged($event)"
+    (customSelectedFilterRemoved)="historyFilter.onCustomFilterClearedExternally($event)"
+  >
+    <div imx-data-source-toolbar-custom-filter (click)="$event.stopPropagation()">
+      <imx-history-filter [filter]="filters" [dst]="dst" [filtermode]="filtermode" (selectedFiltersChanged)="filterChanged($event)" #historyFilter></imx-history-filter>
+    </div>
+  </imx-data-source-toolbar>
+  <div class="imx-table-container" *ngIf="hasFilterApplied; else noFilterWarning">
+    <imx-data-table [dst]="dst" [detailViewVisible]="false" mode="manual" (highlightedEntityChanged)="viewDetails($event)" data-imx-identifier="approval-history-table">
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns.UID_PersonOrdered"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns.OrderDate"> </imx-data-table-column>
+      <imx-data-table-generic-column columnName="decision" [columnLabel]="'#LDS#Approval decision' | translate" [hidden]="!isSameStepActive">
+        <ng-template let-pwo>
+          <eui-badge *ngIf="isApproved(pwo); let approver" [color]="approver.color">
+            {{ approver.caption }}
+          </eui-badge>
+        </ng-template>
+      </imx-data-table-generic-column>
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns.UiOrderState"> </imx-data-table-column>
+    </imx-data-table>
+    <imx-data-source-paginator data-imx-identifier="approval-history-paginator" [dst]="dst"></imx-data-source-paginator>
+  </div>
+</mat-card>
+
+<ng-template #noFilterWarning>
+  <div class="imx-data-table-no-results">
+    <eui-icon icon="warning"></eui-icon>
+    <div headline translate>#LDS#Heading No Filter Applied</div>
+    <div>{{ '#LDS#Select at least one filter.' | translate }}</div>
+  </div>
+</ng-template>

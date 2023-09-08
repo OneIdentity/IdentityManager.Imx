@@ -1,0 +1,60 @@
+<div class="above-card" *ngIf="hasData && !isSearch">
+  <div class="ancestor-path unselectable-ancestor">
+    <h3>
+      {{ '#LDS#Heading Favorite Statistics ({0})' | translate | ldsReplace : favStats.length }}
+    </h3>
+  </div>
+  <button mat-stroked-button color="primary" (click)="openFavoriteSideSheet()" data-imx-identifier="favorites-open-sidesheet">
+    <eui-icon icon="edit"></eui-icon>
+    <span>{{ '#LDS#Manage favorite statistics' | translate }}</span>
+  </button>
+</div>
+<div class="above-card--search" *ngIf="isSearch">
+  <button mat-button disabled>
+    <h3>
+      {{ '#LDS#Heading Search Results' | translate }}
+    </h3>
+  </button>
+</div>
+<mat-card class="cards-container">
+  <eui-scroll *ngIf="(hasData && !isSearch) || (isSearch && searchHasData) else noData" [options]="{ alwaysShowTracks: true }">
+    <!-- Show search results in the grid -->
+    <div *ngIf="isSearch && searchHasData" class="grid-container">
+      <imx-statistics-cards-visuals *ngFor="let stat of searchStats" [stat]="stat"> </imx-statistics-cards-visuals>
+    </div>
+    <!-- Show normal cards in the grid -->
+    <div *ngIf="!isSearch" class="grid-container">
+      <imx-statistics-cards-visuals *ngFor="let stat of favStats" [stat]="stat"> </imx-statistics-cards-visuals>
+    </div>
+  </eui-scroll>
+
+  <ng-template #noData>
+    <!-- No search results, show message -->
+    <div *ngIf="isSearch && !searchHasData" class="imx-no-data">
+      <div class="imx-no-data-top">
+        <eui-icon icon="content-alert"></eui-icon>
+        <div class="imx-no-data-text">
+          <h2>{{ '#LDS#Heading No Matching Results' | translate }}</h2>
+          <span>{{ '#LDS#There are no favorite statistics that match your search.' | translate }}</span>
+        </div>
+      </div>
+    </div>
+    <!-- No data, show default page -->
+    <div *ngIf="!hasData" class="imx-no-data">
+      <div class="imx-no-data-top">
+        <eui-icon icon="content-alert"></eui-icon>
+        <div class="imx-no-data-text">
+          <h2>{{ '#LDS#Heading No Favorite Statistics' | translate }}</h2>
+          <span>{{
+            '#LDS#Currently, you have not favorited any statistics.'
+              | translate
+          }}</span>
+        </div>
+      </div>
+      <button mat-raised-button color="primary" (click)="openFavoriteSideSheet()" data-imx-identifier="favorites-open-sidesheet">
+        <eui-icon icon="star"></eui-icon>
+        <span>{{ '#LDS#Select favorite statistics' | translate }}</span>
+      </button>
+    </div>
+  </ng-template>
+</mat-card>

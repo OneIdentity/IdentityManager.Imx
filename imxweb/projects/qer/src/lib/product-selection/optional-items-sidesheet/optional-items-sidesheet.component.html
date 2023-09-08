@@ -59,8 +59,7 @@
   <div class="imx-tree-root" *ngIf="node?.Recipients?.length > 1">
     <span>{{ node.Display }}</span>
     <div class="imx-subtext">
-      {{node.Recipients.length}}
-      {{'#LDS# recipients selected' | translate}}
+      {{getRecipientText(node)}}
     </div>
   </div>
 </ng-template>

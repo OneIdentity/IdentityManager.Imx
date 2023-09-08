@@ -24,6 +24,15 @@
 .imx-card {
   margin: 0;
   margin-bottom: -16px;
+
+  .governance-sidesheet-action-buttons {
+    .justify-start {
+      eui-icon {
+        font-size: 14px;
+        margin-right: 4px;
+      }
+    }
+  }
 }
 
 @media screen and (max-width: 480px) {

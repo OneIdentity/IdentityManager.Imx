@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,83 +24,49 @@
  *
  */
 
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormControl } from '@angular/forms';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatCardModule } from '@angular/material/card';
-import { MatRadioModule } from '@angular/material/radio';
-import { configureTestSuite } from 'ng-bullet';
+import { UntypedFormControl } from '@angular/forms';
+import { MockBuilder, MockRender } from 'ng-mocks';
 
-import { clearStylesFromDOM } from 'qbm';
+import { clearStylesFromDOM, CdrEditorComponent } from 'qbm';
 import { OwnerCandidateOptions } from './owner.model';
 import { OwnerControlComponent } from './owner-control.component';
+import { OwnerControlModule } from './owner-control.module';
 import { OwnerControlService } from './owner-control.service';
-
-
-@Component({
-  selector: 'imx-cdr-editor',
-  template: '<p>MockRequestTable</p>'
-})
-class MockCdr {
-  @Input() cdr: any;
-  @Output() controlCreated = new EventEmitter<any>();
-}
 
 describe('OwnerControlComponent', () => {
   let component: OwnerControlComponent;
-  let fixture: ComponentFixture<OwnerControlComponent>;
 
-  configureTestSuite(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        MatRadioModule,
-        MatCardModule,
-        MatTooltipModule
-      ],
-      declarations: [
-        OwnerControlComponent,
-        MockCdr
-      ],
-      providers: [
-        {
-          provide: OwnerControlService,
-          useValue: {
-            createGroupOwnerPersonCdr: jasmine.createSpy('createGroupOwnerPersonCdr')
-          }
-        }
-      ]
-    })
+  beforeEach(() =>{
+    return MockBuilder(OwnerControlComponent, OwnerControlModule)
+    .mock(CdrEditorComponent)
+    .mock(OwnerControlService);
   });
+
+  beforeEach(()=>{
+    component = MockRender(OwnerControlComponent).point.componentInstance;
+  })
 
   afterAll(() => {
     clearStylesFromDOM();
   });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(OwnerControlComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should be created', () => {
+    expect(component).toEqual(jasmine.any(OwnerControlComponent));
   });
 
   for (const testcase of [
-    {options:OwnerCandidateOptions.people, createHandler:true},
-    {options:OwnerCandidateOptions.people, createHandler:false},
-    {options:OwnerCandidateOptions.roles, createHandler:true},
-    {options:OwnerCandidateOptions.roles, createHandler:false},
+    { options: OwnerCandidateOptions.people, createHandler: true },
+    { options: OwnerCandidateOptions.people, createHandler: false },
+    { options: OwnerCandidateOptions.roles, createHandler: true },
+    { options: OwnerCandidateOptions.roles, createHandler: false },
   ]) {
     it('calls right editor', () => {
-      const control = new FormControl('');
+      const control = new UntypedFormControl('');
+      component.onFormControlCreated(control, testcase.options, testcase.createHandler);
 
       expect(() => {
-        component.onFormControlCreated(control,testcase.options,testcase.createHandler);
+        component.onFormControlCreated(control, testcase.options, testcase.createHandler);
       }).not.toThrowError();
-      
-    });  
+    });
   }
-  
 });

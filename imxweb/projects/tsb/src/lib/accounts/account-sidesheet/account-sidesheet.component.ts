@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,21 +25,21 @@
  */
 
 import { Component, OnInit, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, UntypedFormArray, UntypedFormControl } from '@angular/forms';
 import {
   ColumnDependentReference,
   BaseCdr,
   ClassloggerService,
-  TabControlHelper,
   SnackBarService,
   ElementalUiConfigService,
   TabItem,
-  ExtService
+  ExtService,
+  CdrFactoryService,
 } from 'qbm';
 import { DbObjectKey } from 'imx-qbm-dbts';
-import { EuiLoadingService, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { AccountSidesheetData } from '../accounts.models';
-import { IdentitiesService } from 'qer';
+import { IdentitiesService, ProjectConfigurationService } from 'qer';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { AccountsService } from '../accounts.service';
 import { EuiDownloadOptions } from '@elemental-ui/core';
@@ -52,40 +52,41 @@ import { AccountTypedEntity } from '../account-typed-entity';
   styleUrls: ['./account-sidesheet.component.scss'],
 })
 export class AccountSidesheetComponent implements OnInit {
-  public readonly detailsFormGroup: FormGroup;
+  public readonly detailsFormGroup: UntypedFormGroup;
   public cdrList: ColumnDependentReference[] = [];
   public linkedIdentitiesManager: DbObjectKey;
   public unsavedSyncChanges = false;
   public initialAccountManagerValue: string;
   public reportDownload: EuiDownloadOptions;
-  public neverConnectFormControl = new FormControl();
-  public parameters: { objecttable: string; objectuid: string; };
+  public neverConnectFormControl = new UntypedFormControl();
+  public parameters: { objecttable: string; objectuid: string };
 
   public dynamicTabs: TabItem[] = [];
 
-
   constructor(
-    formBuilder: FormBuilder,
+    formBuilder: UntypedFormBuilder,
     @Inject(EUI_SIDESHEET_DATA) public readonly sidesheetData: AccountSidesheetData,
     private readonly logger: ClassloggerService,
     private readonly busyService: EuiLoadingService,
     private readonly snackbar: SnackBarService,
-    private readonly sidesheet: EuiSidesheetService,
+    private readonly sidesheetRef: EuiSidesheetRef,
     private readonly elementalUiConfigService: ElementalUiConfigService,
+    private readonly configService: ProjectConfigurationService,
     private readonly identitiesService: IdentitiesService,
     private readonly accountsService: AccountsService,
     private readonly reports: AccountsReportsService,
     private readonly tabService: ExtService,
+    private cdrFactory: CdrFactoryService
   ) {
-    this.detailsFormGroup = new FormGroup({ formArray: formBuilder.array([]) });
+    this.detailsFormGroup = new UntypedFormGroup({ formArray: formBuilder.array([]) });
 
     this.parameters = {
       objecttable: sidesheetData.unsDbObjectKey?.TableName,
-      objectuid: sidesheetData.unsDbObjectKey?.Keys.join(',')
+      objectuid: sidesheetData.unsDbObjectKey?.Keys.join(','),
     };
 
     this.reportDownload = {
-      ... this.elementalUiConfigService.Config.downloadOptions,
+      ...this.elementalUiConfigService.Config.downloadOptions,
       url: this.reports.accountsReport(30, this.selectedAccount.GetEntity().GetKeys()[0], this.sidesheetData.tableName),
     };
   }
@@ -95,7 +96,7 @@ export class AccountSidesheetComponent implements OnInit {
   }
 
   public cancel(): void {
-    this.sidesheet.close();
+    this.sidesheetRef.close();
   }
 
   public async save(): Promise<void> {
@@ -106,7 +107,7 @@ export class AccountSidesheetComponent implements OnInit {
         await this.selectedAccount.GetEntity().Commit(true);
         this.detailsFormGroup.markAsPristine();
         this.snackbar.open({ key: '#LDS#The user account has been successfully saved.' });
-        this.sidesheet.close(true);
+        this.sidesheetRef.close(true);
       } finally {
         this.unsavedSyncChanges = false;
         this.busyService.hide(overlayRef);
@@ -118,8 +119,8 @@ export class AccountSidesheetComponent implements OnInit {
     return this.sidesheetData.selectedAccount;
   }
 
-  get formArray(): FormArray {
-    return this.detailsFormGroup.get('formArray') as FormArray;
+  get formArray(): UntypedFormArray {
+    return this.detailsFormGroup.get('formArray') as UntypedFormArray;
   }
 
   get identityManagerMatchesAccountManager(): boolean {
@@ -127,10 +128,7 @@ export class AccountSidesheetComponent implements OnInit {
 
     const objectKeyManager = this.selectedAccount?.objectKeyManagerColumn?.GetValue();
 
-    if (
-      this.linkedIdentitiesManager &&
-      objectKeyManager?.length
-    ) {
+    if (this.linkedIdentitiesManager && objectKeyManager?.length) {
       isMatch = objectKeyManager === this.linkedIdentitiesManager.ToXmlString();
     }
     return isMatch;
@@ -150,35 +148,14 @@ export class AccountSidesheetComponent implements OnInit {
     }
   }
 
-
-
   private async setup(): Promise<void> {
-    /**
-     * Resolve an issue where the mat-tab navigation arrows could appear on first load
-     */
-    setTimeout(() => {
-      TabControlHelper.triggerResizeEvent();
-    });
+    const cols = (await this.configService.getConfig()).OwnershipConfig.EditableFields[this.parameters.objecttable];
 
-    this.cdrList = [
-      new BaseCdr(this.selectedAccount.displayColumn)
-    ];
+    this.cdrList = this.cdrFactory.buildCdrFromColumnList(this.selectedAccount.GetEntity(), cols);
 
-    if (this.selectedAccount.uidPersonColumn) {
-      this.cdrList.push(new BaseCdr(this.selectedAccount.uidPersonColumn));
-    }
-
-    if (this.selectedAccount.uidADSDomain) {
-      this.cdrList.push(new BaseCdr(this.selectedAccount.uidADSDomain));
-    }
-
-    if (this.selectedAccount.isNeverConnectManualColumn) {
-      this.cdrList.push(new BaseCdr(this.selectedAccount.isNeverConnectManualColumn));
-    }
-
-    this.dynamicTabs = (await this.tabService.getFittingComponents<TabItem>('accountSidesheet',
-    (ext) =>  ext.inputData.checkVisibility(this.parameters)))
-    .sort((tab1: TabItem, tab2: TabItem) => tab1.sortOrder - tab2.sortOrder);
+    this.dynamicTabs = (
+      await this.tabService.getFittingComponents<TabItem>('accountSidesheet', (ext) => ext.inputData.checkVisibility(this.parameters))
+    ).sort((tab1: TabItem, tab2: TabItem) => tab1.sortOrder - tab2.sortOrder);
 
     this.setupIdentityManagerSync();
   }
@@ -187,10 +164,7 @@ export class AccountSidesheetComponent implements OnInit {
     this.initialAccountManagerValue = this.selectedAccount.objectKeyManagerColumn?.GetValue();
     const linkedIdentityId = this.selectedAccount.uidPersonColumn?.GetValue();
     if (linkedIdentityId) {
-      this.linkedIdentitiesManager = await this.getLinkedIdentitiesManager(
-        linkedIdentityId,
-        this.sidesheetData.unsDbObjectKey.TableName
-      );
+      this.linkedIdentitiesManager = await this.getLinkedIdentitiesManager(linkedIdentityId, this.sidesheetData.unsDbObjectKey.TableName);
     }
   }
 
@@ -200,7 +174,7 @@ export class AccountSidesheetComponent implements OnInit {
       const managerAccountData = await this.accountsService.getAccount(
         {
           TableName: tableName,
-          Keys: [identityData.UID_PersonHead.value]
+          Keys: [identityData.UID_PersonHead.value],
         },
         'UID_Person'
       );
@@ -212,6 +186,4 @@ export class AccountSidesheetComponent implements OnInit {
 
     return undefined;
   }
-
-
 }

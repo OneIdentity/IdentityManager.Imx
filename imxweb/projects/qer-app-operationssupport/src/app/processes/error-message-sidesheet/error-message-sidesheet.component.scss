@@ -1,0 +1,21 @@
+.eui-sidesheet-content {
+  flex-direction: column;
+  display: flex;
+}
+
+.imx-text-container {
+  overflow: auto;
+  white-space: pre-line;
+  margin-bottom: 10px;
+}
+
+.mat-card{
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  max-height: 100%;
+
+  .mat-card-content{
+   overflow: auto; 
+  }
+}

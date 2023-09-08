@@ -1,7 +1,12 @@
 <div class="page">
   <ng-container *ngIf="isLoggedIn">
-    <imx-mast-head></imx-mast-head>
-    <imx-menu [hidden]="hideMenu" [menuItems]="menuItems"></imx-menu>
+    <imx-mast-head [menuItems]="menuItems">
+      <span imx-profile-menu-items>       
+        <button mat-menu-item data-imx-identifier="user-menu-settings" (click)="openSettingsDialog()">
+          <span translate>#LDS#Menu Entry User interface settings</span>
+        </button>
+      </span>
+    </imx-mast-head>
   </ng-container>
   <div class="pageContent">
     <imx-usermessage *ngIf="isLoggedIn" [hidden]="hideUserMessage"></imx-usermessage>

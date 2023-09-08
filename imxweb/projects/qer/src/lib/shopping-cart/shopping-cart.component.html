@@ -1,12 +1,13 @@
-<h1 *ngIf="!isEmpty" class="mat-headline">{{ '#LDS#Heading Shopping Cart' | translate }}</h1>
+<h1 *ngIf="!isEmpty" class="mat-headline">
+  <span>{{ '#LDS#Heading Shopping Cart' | translate }}</span>
+  <imx-help-contextual></imx-help-contextual>
+</h1>
 
 <imx-shopping-cart-empty *ngIf="isEmpty"></imx-shopping-cart-empty>
 
 <div *ngIf="!isEmpty" class="imx-shoppingcart-top-container">
   <div>
-    <p class="imx-itshop-info">{{ "#LDS#The following requests are currently in your shopping cart." | translate }}</p>
-
-    <ng-container *ngIf="shoppingCartCandidates.length > 1">
+      <ng-container *ngIf="shoppingCartCandidates.length > 1">
       <p class="imx-itshop-info">
           {{ '#LDS#You currently have more than one shopping cart. Select the shopping cart you want to use.' | translate }}
       </p>
@@ -74,7 +75,7 @@
           </button>
       </mat-menu>
         <button mat-raised-button color="primary" data-imx-identifier="shoppingcart-submit-button"
-            (click)="submitShoppingCart()" [disabled]="shoppingCart.totalCount === 0 || shoppingCart.hasErrors || selectedItems?.length > 0">
+            (click)="submitShoppingCart()" [disabled]="shoppingCart.totalCount === 0 || shoppingCart.hasErrors">
             {{ '#LDS#Submit' | translate }}
         </button>
         <mat-menu data-imx-identifier="shoppingcart-actions-menu" #actionsMenu="matMenu">
@@ -83,7 +84,7 @@
               {{ '#LDS#Check shopping cart' | translate }}
             </button>
             <button data-imx-identifier="shoppingcart-delete-all-requests-button"
-              title="{{ '#LDS#Removes all products from your shopping cart' | translate }}"  mat-menu-item (click)="deleteCart()">
+              title="{{ '#LDS#Removes all products from your shopping cart' | translate }}" mat-menu-item (click)="deleteCart()">
               {{ '#LDS#Delete shopping cart' | translate }}
             </button>
             <button data-imx-identifier="shoppingcart-goto-save-for-later-link"
@@ -93,7 +94,7 @@
             <mat-divider></mat-divider>
             <button *ngIf="canCreateRequestTemplates" [disabled]="!cartItems?.haveSelectedItems()" data-imx-identifier="shoppingcart-create-itshoppattern-button-selected-products"
               mat-menu-item (click)="createItshopPattern(selectedItems)">
-              {{'#LDS#Create request template' | translate}}
+              {{'#LDS#Create product bundle' | translate}}
             </button>
             <button *ngIf="cartItems?.forLater; else moveToLater" mat-menu-item data-imx-identifier="imx-table-actions-move-menu" [disabled]="!cartItems?.itemsCanBeMoved()"
                 title="{{ '#LDS#Moves the selected products to your shopping cart' | translate }}" (click)="cartItems?.moveSelectedToCart()">
@@ -108,6 +109,10 @@
             <button data-imx-identifier="imx-table-actions-remove-menu" [disabled]="!cartItems?.itemsCanBeDeleted()"
               title="{{'#LDS#Removes the selected products from your shopping cart'| translate }}" mat-menu-item (click)="cartItems?.removeSelectedItems()">
                 {{'#LDS#Remove selected' | translate  }}
+            </button>
+            <button data-imx-identifier="imx-table-actions-edit-menu" [disabled]="!cartItems?.itemsCanBeEdited()"
+              title="{{'#LDS#Lets you edit common request properties for the selected products'| translate }}" mat-menu-item (click)="cartItems?.editSelectedItems()">
+                {{'#LDS#Edit selected' | translate  }}
             </button>
         </mat-menu>
       </div>

@@ -1,92 +1,112 @@
-<div class="request-config request-config--no-margin">
-
+<div eui-sidesheet-content class="imx-flex-content">
   <div class="membership-view-toggle" *ngIf="managedByDynamicGroup">
     <mat-button-toggle-group #buttonToggle value="members" (change)="onToggleChanged($event)" [vertical]="isMobile">
       <mat-button-toggle value="members">{{ '#LDS#Assigned members' | translate }}</mat-button-toggle>
       <mat-button-toggle value="exclusions">{{ '#LDS#Excluded members' | translate }}</mat-button-toggle>
     </mat-button-toggle-group>
+    <imx-help-contextual [contextId]="accessContextIds" [title]="'#LDS#Information about this tab:'"></imx-help-contextual>
   </div>
 
   <ng-container *ngIf="membershipViewMode === 'members'">
+    <eui-alert *ngIf="showHelperAlert" class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true" (dismissed)="onHelperDismissed()">
+      <span>{{ requestsService.LdsSpecifyMembers | translate }}</span>
+    </eui-alert>
 
-    <div class="request-config__content">
-      <div class="request-config__content-main" [ngClass]="{'no-top-padding': managedByDynamicGroup}">
+    <mat-card class="imx-full-card">
+      <imx-data-source-toolbar
+        #dst
+        [settings]="dstSettings"
+        [options]="['search', 'filter']"
+        [hiddenFilters]="['namespace']"
+        [searchBoxText]="'#LDS#Search' | translate"
+        (navigationStateChanged)="onNavigationStateChanged($event)"
+        (search)="onSearch($event)"
+      ></imx-data-source-toolbar>
 
-        <eui-alert *ngIf="showHelperAlert" class="helper-alert" type="info" condensed="true" [colored]="true"
-          [dismissable]="true" (dismissed)="onHelperDismissed()">
-          <span>{{requestsService.LdsSpecifyMembers | translate}}</span>
-        </eui-alert>
-
-        <imx-data-source-toolbar
-          #dst
-          [settings]="dstSettings"
-          [options]="['search', 'filter']"
-          [hiddenFilters]="['namespace']"
-          [searchBoxText]="'#LDS#Search' | translate"
-          (navigationStateChanged)="onNavigationStateChanged($event)"
-          (search)="onSearch($event)"
-        ></imx-data-source-toolbar>
-
-        <mat-card>
-          <imx-data-table class="no-row-selection" #dataTable [dst]="dst" detailViewVisible="false" [selectable]="true" (selectionChanged)="onMemberSelected($event)"
-            noDataText="#LDS#There are currently no members." noDataIcon="usergroup" noMatchingDataText="#LDS#There are no matching members."></imx-data-table>
-          <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
-        </mat-card>
-
-      </div>
-    </div>
-
-    <mat-card class="request-config__action-buttons">
-      <button class="justify-start" mat-button color="warn" [disabled]="selectedMembers.length === 0" data-imx-identifier="delete-request-config-member"
-        (click)="removeMembers()">
-        <span translate>#LDS#Remove</span>
-      </button>
-
-      <button mat-raised-button color="primary" data-imx-identifier="add-new-request-config-member"
-        [disabled]="selectedMembers.length > 0"
-        (click)="openMemberSelector()">{{'#LDS#Add members' | translate}}
-      </button>
+      <imx-data-table
+        class="no-row-selection imx-requests-table"
+        #dataTable
+        [dst]="dst"
+        detailViewVisible="false"
+        [selectable]="true"
+        (selectionChanged)="onMemberSelected($event)"
+        noDataText="#LDS#There are currently no members."
+        noDataIcon="usergroup"
+        noMatchingDataText="#LDS#There are no members matching your search."
+      ></imx-data-table>
+      <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
     </mat-card>
-
+    <imx-selected-elements [selectedElements]="selectedMembers"></imx-selected-elements>
   </ng-container>
 
   <ng-container *ngIf="membershipViewMode === 'exclusions'">
+    <eui-alert *ngIf="showHelperAlert" class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true" (dismissed)="onHelperDismissed()">
+      <span>{{ requestsService.LdsMembersByDynamicRole | translate }}</span>
+    </eui-alert>
 
-    <div class="request-config__content">
-      <div class="request-config__content-main" [ngClass]="{'no-top-padding': managedByDynamicGroup}">
+    <mat-card class="imx-full-card">
+      <imx-data-source-toolbar
+        #dstExcluded
+        [settings]="dstSettingsExcludedMembers"
+        [options]="['search', 'filter']"
+        [hiddenFilters]="['namespace']"
+        [searchBoxText]="'#LDS#Search' | translate"
+        (navigationStateChanged)="onNavigationStateExcludedChanged($event)"
+        (search)="onSearchExcluded($event)"
+      ></imx-data-source-toolbar>
 
-        <eui-alert *ngIf="showHelperAlert" class="helper-alert" type="info" condensed="true" [colored]="true"
-          [dismissable]="true" (dismissed)="onHelperDismissed()">
-          <span>{{ requestsService.LdsMembersByDynamicRole | translate }}</span>
-        </eui-alert>
-
-        <imx-data-source-toolbar
-          #dstExcluded
-          [settings]="dstSettingsExcludedMembers"
-          [options]="['search', 'filter']"
-          [hiddenFilters]="['namespace']"
-          [searchBoxText]="'#LDS#Search' | translate"
-          (navigationStateChanged)="onNavigationStateExcludedChanged($event)"
-          (search)="onSearchExcluded($event)"
-        ></imx-data-source-toolbar>
-
-        <mat-card>
-          <imx-data-table class="no-row-selection" #dataTableExclusions [dst]="dstExcluded" detailViewVisible="false" [selectable]="true" (selectionChanged)="onExcusionSelected($event)"
-            noDataText="#LDS#There are currently no excluded members." noDataIcon="usergroup" noMatchingDataText="#LDS#There are no matching excluded members."></imx-data-table>
-          <imx-data-source-paginator [dst]="dstExcluded"></imx-data-source-paginator>
-        </mat-card>
-
-      </div>
-    </div>
-
-    <mat-card class="request-config__action-buttons">
-      <button class="justify-start" mat-button color="warn" [disabled]="selectedExclusions.length === 0" data-imx-identifier="remove-member-exclusion"
-        (click)="removeExclusions()">
-        <span translate>#LDS#Remove exclusion</span>
-      </button>
+      <imx-data-table
+        class="no-row-selection imx-requests-table"
+        #dataTableExclusions
+        [dst]="dstExcluded"
+        detailViewVisible="false"
+        [selectable]="true"
+        (selectionChanged)="onExcusionSelected($event)"
+        noDataText="#LDS#There are currently no excluded members."
+        noDataIcon="usergroup"
+        noMatchingDataText="#LDS#There are no excluded members matching your search."
+      ></imx-data-table>
+      <imx-data-source-paginator [dst]="dstExcluded"></imx-data-source-paginator>
     </mat-card>
 
+    <imx-selected-elements [selectedElements]="selectedExclusions" style="margin-left: 16px"></imx-selected-elements>
   </ng-container>
-
-
 </div>
+
+<!-- actions -->
+
+<ng-container *ngIf="membershipViewMode === 'members'">
+  <div eui-sidesheet-actions class="request-config__action-buttons">
+    <button
+      class="justify-start"
+      mat-stroked-button
+      color="warn"
+      [disabled]="selectedMembers.length === 0"
+      data-imx-identifier="delete-request-config-member"
+      (click)="removeMembers()"
+    >
+      <eui-icon icon="delete"></eui-icon>
+      <span translate>#LDS#Remove</span>
+    </button>
+
+    <button mat-raised-button color="primary" data-imx-identifier="add-new-request-config-member" [disabled]="selectedMembers.length > 0" (click)="openMemberSelector()">
+      {{ '#LDS#Add members' | translate }}
+    </button>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="membershipViewMode === 'exclusions'">
+  <div eui-sidesheet-actions class="request-config__action-buttons">
+    <button
+      class="justify-start"
+      mat-stroked-button
+      color="warn"
+      [disabled]="selectedExclusions.length === 0"
+      data-imx-identifier="remove-member-exclusion"
+      (click)="removeExclusions()"
+    >
+      <eui-icon icon="delete"></eui-icon>
+      <span translate>#LDS#Remove exclusion</span>
+    </button>
+  </div>
+</ng-container>

@@ -1,4 +1,5 @@
 @import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 .mat-expansion-panel {
   margin-bottom: 20px;
@@ -37,3 +38,24 @@
   }
 }
 
+.eui-dark-theme {
+  :host {
+    .governance-sidesheet{
+        background-color: $color-gray-80;
+        ::ng-deep .mat-tab-group mat-tab-header{
+          background-color: $color-gray-80;
+        }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .governance-sidesheet{
+        background-color: $color-gray-100;
+        ::ng-deep .mat-tab-group mat-tab-header{
+          background-color: $color-gray-90;
+        }
+    }
+  }
+}

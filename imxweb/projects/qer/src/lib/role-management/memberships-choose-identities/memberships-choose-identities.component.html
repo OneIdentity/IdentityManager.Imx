@@ -1,12 +1,17 @@
-<imx-data-source-toolbar #dst
-data-imx-identifier="role-select-identities-dst"
-[settings]="dstSettings"
-[options]="['search', 'filter', 'groupBy', 'settings']"
-[searchBoxText]="'#LDS#Search' | translate"
-(navigationStateChanged)="onNavigationStateChanged($event)"
-(search)="onSearch($event)"></imx-data-source-toolbar>
+<imx-data-source-toolbar
+  #dst
+  data-imx-identifier="role-select-identities-dst"
+  [settings]="dstSettings"
+  [options]="['search', 'filter', 'groupBy', 'settings']"
+  [searchBoxText]="'#LDS#Search' | translate"
+  (navigationStateChanged)="onNavigationStateChanged($event)"
+  (updateConfig)="updateConfig($event)"
+  (deleteConfigById)="deleteConfigById($event)"
+  (search)="onSearch($event)"
+></imx-data-source-toolbar>
 
-<imx-data-table #dataTable
+<imx-data-table
+  #dataTable
   data-imx-identifier="role-select-identities-table"
   [dst]="dst"
   detailViewVisible="false"
@@ -14,27 +19,28 @@ data-imx-identifier="role-select-identities-dst"
   [selectable]="true"
   [showSelectionInfo]="false"
   [showSelectedItemsMenu]="false"
-  (selectionChanged)="onSelectionChanged($event)">
-  <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" 
-  data-imx-identifier="role-select-identities-column-display">
+  (selectionChanged)="onSelectionChanged($event)"
+>
+  <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" data-imx-identifier="role-select-identities-column-display">
     <ng-template let-item>
       <div data-imx-identifier="role-select-identities-datatable-display">{{ item.GetEntity().GetDisplay() }}</div>
       <div subtitle data-imx-identifier="role-select-identities-datatable-description">
         {{ getSubtitle(item, dst.additionalListElements) }}
       </div>
     </ng-template>
-</imx-data-table-column>
+  </imx-data-table-column>
 </imx-data-table>
 <imx-data-source-paginator data-imx-identifier="role-select-identities-paginator" [dst]="dst"></imx-data-source-paginator>
 <div class="imx-button-bar">
-  <p class="imx-selected-items">
-    <span>
-      {{'#LDS#Selected identities' | translate}}
-    </span>
-    <eui-badge data-imx-identifier="role-select-identities-selection-badge" class="imx-badge" color="orange">{{dataTable.numOfSelectedItems}}</eui-badge>
-  </p>
+  <imx-selected-elements [selectedElements]="selection" [caption]="'#LDS#Selected identities' | translate" [dialogHeader]="'#LDS#Heading Selected Identities' | translate"></imx-selected-elements>
   <div class="imx-menu-spacer"></div>
-  <button data-imx-identifier="role-select-identities-request-button" mat-raised-button color="primary" [disabled]="dataTable.numOfSelectedItems === 0" (click)="onRequestMemberships()">{{"#LDS#Request memberships" | translate }}</button>
+  <button
+    data-imx-identifier="role-select-identities-apply-button"
+    mat-raised-button
+    color="primary"
+    [disabled]="dataTable.numOfSelectedItems === 0"
+    (click)="onRequestMemberships()"
+  >
+    {{ '#LDS#Request memberships' | translate }}
+  </button>
 </div>
-
-

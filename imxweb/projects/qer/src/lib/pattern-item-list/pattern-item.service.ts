@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,10 +25,28 @@
  */
 
 import { Injectable } from '@angular/core';
-import { PortalItshopPatternRequestable, PortalShopServiceitems, RequestableProductForPerson } from 'imx-api-qer';
-import { CollectionLoadParameters, EntityData, EntitySchema, ExtendedTypedEntityCollection, ValueStruct } from 'imx-qbm-dbts';
+import {
+  CartPatternItemDataRead,
+  PortalItshopPatternItem,
+  PortalItshopPatternRequestable,
+  PortalShopServiceitems,
+  RequestableProductForPerson,
+  portal_itshop_pattern_get_args,
+} from 'imx-api-qer';
+import {
+  ApiRequestOptions,
+  CollectionLoadParameters,
+  CompareOperator,
+  EntityData,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  FilterType,
+  ValueStruct,
+} from 'imx-qbm-dbts';
 import { QerApiService } from '../qer-api-client.service';
 import { ServiceItemsService } from '../service-items/service-items.service';
+import { RequestableProduct } from '../shopping-cart/requestable-product.interface';
+import { ItshopPatternService } from '../itshop-pattern/itshop-pattern.service';
 
 @Injectable({
   providedIn: 'root',
@@ -36,6 +54,7 @@ import { ServiceItemsService } from '../service-items/service-items.service';
 export class PatternItemService {
   constructor(
     private readonly qerClient: QerApiService,
+    private readonly patternItemsService: ItshopPatternService,
     private readonly serviceItemsProvider: ServiceItemsService
     ) {}
 
@@ -43,16 +62,26 @@ export class PatternItemService {
     return this.qerClient.typedClient.PortalItshopPatternRequestable.GetSchema();
   }
 
+  public get PortalItshopPatternItemSchema(): EntitySchema {
+    return this.qerClient.typedClient.PortalItshopPatternItem.GetSchema();
+  }
+
   public async get(
     parameters: CollectionLoadParameters & {
       UID_Persons?: string;
-    }
+    },
+    requestOpts?: ApiRequestOptions
   ): Promise<ExtendedTypedEntityCollection<PortalItshopPatternRequestable, unknown>> {
-    return this.qerClient.typedClient.PortalItshopPatternRequestable.Get(parameters);
+    return this.qerClient.typedClient.PortalItshopPatternRequestable.Get(parameters, requestOpts);
   }
 
-  public async getServiceItemEntities(patternRequestable: PortalItshopPatternRequestable): Promise<EntityData[]> {
-    return (await this.qerClient.v2Client.portal_itshop_pattern_get(patternRequestable.UID_ShoppingCartPattern.value)).Entities;
+  public async getServiceItemEntities(
+    patternRequestable: PortalItshopPatternRequestable,
+    options: portal_itshop_pattern_get_args = {},
+    requestOpts?: ApiRequestOptions
+  ): Promise<EntityData[]> {
+    return (await this.qerClient.v2Client.portal_itshop_pattern_get(patternRequestable.UID_ShoppingCartPattern.value, options, requestOpts))
+      .Entities;
   }
 
   public async getServiceItems(patternRequestable: PortalItshopPatternRequestable): Promise<PortalShopServiceitems[]> {
@@ -63,16 +92,58 @@ export class PatternItemService {
     return serviceItems.filter((item) => item !== null);
   }
 
+  public async getPatternItemList(
+    patternRequestable: PortalItshopPatternRequestable,
+    parameters: CollectionLoadParameters & {
+      UID_Persons?: string;
+    } = {},
+    requestOpts?: ApiRequestOptions,
+    getAllItems?: boolean,
+  ): Promise<ExtendedTypedEntityCollection<PortalItshopPatternItem, CartPatternItemDataRead>> {
+    let params: CollectionLoadParameters = {
+      ...parameters,
+      ...{
+        filter: [
+          {
+            ColumnName: 'UID_ShoppingCartPattern',
+            Type: FilterType.Compare,
+            CompareOp: CompareOperator.Equal,
+            Value1: patternRequestable.UID_ShoppingCartPattern.value,
+          },
+        ],
+      },
+    };
+
+    if (getAllItems) {
+      let getAllItemsParams: CollectionLoadParameters = {
+        ...params,
+        ...{
+          PageSize: -1
+        },
+      }; 
+      const totalCount = (await this.qerClient.typedClient.PortalItshopPatternItem.Get(getAllItemsParams, requestOpts)).totalCount;
+      params = {
+        ...params,
+        ...{
+          PageSize: totalCount
+
+        },
+      }; 
+    }
+    return await this.qerClient.typedClient.PortalItshopPatternItem.Get(params, requestOpts);
+  }
+
   public async getPatternItemsForPersons(
     patternRequestables: PortalItshopPatternRequestable[],
     recipients: ValueStruct<string>[],
-    uidITShopOrg?: string
+    uidITShopOrg?: string,
+    onlySelected?: boolean
   ): Promise<RequestableProductForPerson[]> {
     const serviceItemEntities = await Promise.all(
       patternRequestables.map(async (patternRequestable) => this.getServiceItemEntities(patternRequestable))
     );
     const serviceItemsEntitesFlat = serviceItemEntities.reduce((a, b) => a.concat(b), []);
-    return serviceItemsEntitesFlat
+    let allItems = serviceItemsEntitesFlat
       .map((serviceItem) =>
         recipients.map((recipient) => ({
           UidPerson: recipient.DataValue,
@@ -83,5 +154,25 @@ export class PatternItemService {
         }))
       )
       .reduce((a, b) => a.concat(b), []);
+
+    let selectedItems = [];
+    let selectedItemsWithDuplicates = [];
+
+    if (onlySelected) {
+      selectedItemsWithDuplicates = allItems.filter((itemAll) => {
+        return patternRequestables.some((item) => {
+          return itemAll.UidAccProduct === item.GetEntity().GetColumn('UID_AccProduct').GetValue();
+        });
+      });
+      // selectedItems =  [...new Map(selectedItemsWithDuplicates.map(v => [v.UidAccProduct, v])).values()];
+      selectedItems = selectedItemsWithDuplicates.reduce((accumulator, current) => {
+        if (!accumulator.find((item) => item.UidAccProduct === current.UidAccProduct && item.UidPerson === item.UidPerson)) {
+          accumulator.push(current);
+        }
+        return accumulator;
+      }, []);
+    }
+
+    return onlySelected ? selectedItemsWithDuplicates : allItems;
   }
 }

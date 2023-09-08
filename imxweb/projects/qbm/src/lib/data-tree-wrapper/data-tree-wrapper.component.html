@@ -1,14 +1,34 @@
-<imx-data-source-toolbar #dst data-imx-identifier="data-tree-wrapper-data-source-toolbar-for-tree"
-  [alwaysVisible]="true" [settings]="dstSettings" [options]="['search', 'filter', 'groupBy', 'filterTree']" [searchBoxText]="'#LDS#Search' | translate" (navigationStateChanged)="onTreeNavigationStateChanged($event)"
-  (search)="onTreeSearch($event)">
+<imx-data-source-toolbar
+  #dst
+  data-imx-identifier="data-tree-wrapper-data-source-toolbar-for-tree"
+  [alwaysVisible]="true"
+  [busyService]="database?.busyService"
+  [settings]="dstSettings"
+  [options]="['search', 'filter', 'groupBy', 'filterTree']"
+  [searchBoxText]="'#LDS#Search' | translate"
+  (navigationStateChanged)="onTreeNavigationStateChanged($event)"
+  (search)="onTreeSearch($event)"
+>
 </imx-data-source-toolbar>
 
-<imx-data-tree #tree [navigationState]="navigationStateTree" [emptyNodeCaption]="emptyNodeCaption" data-imx-identifier="data-tree-wrapper-data-tree"
-  [database]="database" [selectedEntities]="selectedEntities" [noDataText]="noDataText" [noDataIcon]="noDataIcon"
-  [withMultiSelect]="withMultiSelect" [withSelectedNodeHighlight]="withSelectedNodeHighlight" (nodeSelected)="nodeSelected.emit($event)"
-  (checkedNodesChanged)="checkedNodesChanged.emit()">
+<imx-data-tree
+  #tree
+  [navigationState]="navigationStateTree"
+  [emptyNodeCaption]="emptyNodeCaption"
+  data-imx-identifier="data-tree-wrapper-data-tree"
+  [database]="database"
+  [selectedEntities]="selectedEntities"
+  [noDataText]="noDataText"
+  [noDataIcon]="noDataIcon"
+  [hideSelection]="hideSelection"
+  [withMultiSelect]="withMultiSelect"
+  [withSelectedNodeHighlight]="withSelectedNodeHighlight"
+  (nodeSelected)="nodeSelected.emit($event)"
+  (checkedNodesChanged)="checkedNodesChanged.emit()"
+  (treeRendered)="treeRendered.emit()"
+  [isNodeSelectable]="isNodeSelectable"
+>
   <ng-template let-entity>
-    <ng-container *ngTemplateOutlet="templateRef; context: {$implicit:  entity}">
-    </ng-container>
+    <ng-container *ngTemplateOutlet="templateRef; context: { $implicit: entity }"> </ng-container>
   </ng-template>
 </imx-data-tree>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { AbstractControl, FormControl } from '@angular/forms';
+import { AbstractControl, UntypedFormControl } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 
 @Component({
@@ -36,7 +36,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 })
 export class ServiceItemTagsComponent implements OnInit {
   public readonly separatorKeysCodes: number[] = [ENTER, COMMA];
-  public readonly control = new FormControl();
+  public readonly control = new UntypedFormControl();
   public readonly label = '#LDS#Tags';
 
   @Input() public selection: string[] = [];

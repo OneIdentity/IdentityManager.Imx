@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,6 +36,7 @@ import { QbmModule } from 'qbm';
 import { ServiceIssueComponent } from './service-issue.component';
 import { ServiceIssuesComponent } from './service-issues.component';
 import { ServiceIssuesService } from './service-issues.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 
 
@@ -46,6 +47,7 @@ import { ServiceIssuesService } from './service-issues.service';
     MatButtonModule,
     MatCardModule,
     MatGridListModule,
+    MatProgressSpinnerModule,
     QbmModule,
     EuiCoreModule,
     TranslateModule

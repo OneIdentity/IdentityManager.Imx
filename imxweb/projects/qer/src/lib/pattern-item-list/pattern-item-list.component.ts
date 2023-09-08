@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -39,6 +39,7 @@ import {
   ValType,
 } from 'imx-qbm-dbts';
 import {
+  ClientPropertyForTableColumns,
   DataSourceToolbarComponent,
   DataSourceToolbarSettings,
   DataTileBadge,
@@ -69,26 +70,26 @@ export class PatternItemListComponent implements AfterViewInit, OnChanges, OnDes
   public filterType: PatternItemListFilterType = PatternItemListFilterType.All;
   public readonly entitySchema: EntitySchema;
   public DisplayColumns = DisplayColumns;
-  public displayedColumns: IClientProperty[];
+  public displayedColumns: ClientPropertyForTableColumns[];
 
   public filterTypes = [
     {
       type: PatternItemListFilterType.All,
-      display: '#LDS#All request templates'
+      display: '#LDS#All product bundles'
     },
     {
       type: PatternItemListFilterType.Public,
-      display: '#LDS#Public request templates'
+      display: '#LDS#Public product bundles'
     },
     {
       type: PatternItemListFilterType.Private,
-      display: '#LDS#Private request templates'
+      display: '#LDS#Private product bundles'
     }
   ];
 
   public badgeContent = {
-    isPublic: '#LDS#Public request template',
-    isPrivate: '#LDS#Private request template',
+    isPublic: '#LDS#Public product bundle',
+    isPrivate: '#LDS#Private product bundle',
   };
   public readonly status = {
     getBadges: (prod: PortalItshopPatternRequestable): DataTileBadge[] => {
@@ -127,11 +128,13 @@ export class PatternItemListComponent implements AfterViewInit, OnChanges, OnDes
       this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
       {
         ColumnName: 'badges',
-        Type: ValType.String
+        Type: ValType.String,
+        untranslatedDisplay: '#LDS#Type'
       },
       {
         ColumnName: 'actions',
         Type: ValType.String,
+        untranslatedDisplay: '#LDS#Actions'
       },
     ];
   }
@@ -254,8 +257,11 @@ export class PatternItemListComponent implements AfterViewInit, OnChanges, OnDes
       });
 
       try {
-        const items = await this.patternItemService.getServiceItems(item.typedEntity as PortalItshopPatternRequestable);
-        this.handleAction.emit({ serviceItems: items, name: item.name });
+        const items = await this.patternItemService.getServiceItems(patternRequestable ?? item.typedEntity as PortalItshopPatternRequestable);
+        this.handleAction.emit({ 
+          serviceItems: items, 
+          patternItem: patternRequestable ?? item.typedEntity as PortalItshopPatternRequestable,
+          name: item.name });
       } finally {
         setTimeout(() => {
           this.busyService.hide(overlayRef);

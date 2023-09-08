@@ -1,6 +1,20 @@
-<imx-badge-tile data-imx-identifier="start-tile-att-approvals" [caption]="'#LDS#Heading Pending Attestations' | translate"
-  *ngIf="attEnabled && 0 < pendingItems?.OpenAttestation" [value]="pendingItems?.OpenAttestation" [identifier]="'att-approvals'"
-  (actionClick)="router.navigate(['attestation', 'decision'])">
+<imx-badge-tile
+  data-imx-identifier="start-tile-att-approvals"
+  [caption]="'#LDS#Heading Pending Attestations' | translate"
+  *ngIf="attEnabled && 0 < pendingItems?.OpenAttestation"
+  [value]="pendingItems?.OpenAttestation"
+  [identifier]="'att-approvals'"
+  (actionClick)="router.navigate(['attestation', 'decision'])"
+>
+</imx-badge-tile>
+<imx-badge-tile
+  data-imx-identifier="start-tile-att-inquiries"
+  [caption]="'#LDS#Heading Attestation Inquiries' | translate"
+  *ngIf="attEnabled && 0 < pendingItems?.OpenInquiriesAttestation"
+  [value]="pendingItems?.OpenInquiriesAttestation"
+  [identifier]="'att-inquiries'"
+  (actionClick)="goToAttestationInquiries()"
+>
 </imx-badge-tile>
 
 <!--

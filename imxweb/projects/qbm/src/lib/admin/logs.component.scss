@@ -1,0 +1,104 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+:host {
+  width: 100%;
+  height: 100%;
+
+  mat-tab-group {
+    height: inherit;
+  }
+
+  .imx-log-timeline-container {
+    height: inherit;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+.flex-container {
+  display: flex;
+  align-items: stretch;
+  margin-top: 2em;
+}
+
+.imx-error-icon {
+  color: $color-red-60;
+}
+
+.imx-warning-icon {
+  color: $color-orange-60;
+}
+
+.imx-primary-icon {
+  color: $color-blue-60;
+}
+
+.no-data, .no-result {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+    .eui-icon {
+      font-size: 100px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 18px;
+    }
+  }
+
+.mat-spinner {
+  align-self: center;
+  margin: auto;
+  margin-top: 100px;
+}
+
+  mat-nav-list {
+    height: calc(100vh - 280px);
+    overflow: auto;
+  }
+
+  imx-data-source-toolbar {
+    flex: 1 1 auto;
+    min-width: 0px;
+    transition: 1s;
+  }
+
+.slide-toggle {
+  margin-left: 10px;
+  margin-top: 13px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.imx-info-button {
+  margin-top: 5px;
+}
+
+  p {
+    color: $color-gray-40;
+  }
+
+}
+
+.imx-error-message {
+  display: flex;
+  align-items: center;
+  color: $color-red-60;
+
+  eui-icon {
+    margin-right: 8px;
+  }
+
+}
+
+@media only screen and (max-width: 1024px) {
+  imx-data-source-toolbar {
+    flex-basis: 60%;
+    transition: 1s;
+  }
+}

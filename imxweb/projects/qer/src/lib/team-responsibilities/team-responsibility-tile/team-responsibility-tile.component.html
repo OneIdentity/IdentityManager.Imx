@@ -1,0 +1,5 @@
+<imx-badge-tile data-imx-identifier="imx-dashboard-team-responsibilities-tile"
+  [caption]="'#LDS#Heading Responsibilities of Leaving Identities' | translate" *ngIf="inactiveResponsibilitiesCount > 0"
+  [value]="inactiveResponsibilitiesCount" [identifier]="'imx-team-responsibilities-tile'"
+  (actionClick)="router.navigate(['teamresponsibilities'])">
+</imx-badge-tile>

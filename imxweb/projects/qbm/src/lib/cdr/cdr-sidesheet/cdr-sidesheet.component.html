@@ -1,0 +1,12 @@
+<div eui-sidesheet-content>
+  <mat-card>
+    <form [formGroup]="cdrFormGroup">
+      <imx-cdr-editor *ngFor="let cdr of config.cdrs" [cdr]="cdr" (controlCreated)="addFormControl(cdr.column.columnName, $event)">
+      </imx-cdr-editor>
+    </form>
+  </mat-card>  
+</div>
+<div eui-sidesheet-actions>
+  <button data-imx-identifier="cdr-sidesheet-close-button" mat-raised-button color="primary" [disabled]="cdrFormGroup.invalid" (click)="sidesheetRef.close(true)">
+    {{(config.buttonCaption ?? '#LDS#Save') |translate}}</button>
+</div>

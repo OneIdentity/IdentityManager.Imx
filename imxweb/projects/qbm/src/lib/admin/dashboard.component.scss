@@ -1,4 +1,6 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import '../../../../../shared/scss/side-navigation.scss';
 
 :host {
   height: 100%;
@@ -85,6 +87,7 @@
     .mat-sidenav-content {
       padding: 32px;
       position: relative;
+      display: flex;
 
       &.snavigation--backdrop-showing {
         overflow: hidden;
@@ -133,9 +136,30 @@
         }
       }
     }
+  }
+}
 
-    .mat-sidenav-content {
-      padding: 16px;
+.eui-dark-theme {
+  :host {
+    .snavigation {
+      .mat-sidenav-container{
+        background-color: $color-gray-80;
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .snavigation {
+      .mat-sidenav-container{
+        background-color: $color-gray-90;
+      }
+
+      .snavigation-item--selected {
+        border-top: 1px solid $color-gray-0;
+        border-bottom: 1px solid $color-gray-0;
+      }
     }
   }
 }

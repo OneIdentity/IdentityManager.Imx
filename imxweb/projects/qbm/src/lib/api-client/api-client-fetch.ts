@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,11 +24,14 @@
  *
  */
 
-import { MethodDefinition, MethodDescriptor, ApiClient } from 'imx-qbm-dbts';
+import { MethodDefinition, MethodDescriptor, ApiClient, Globals } from 'imx-qbm-dbts';
 import { ServerExceptionError } from '../base/server-exception-error';
 import { ServerError } from '../base/server-error';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 import { TranslateService } from '@ngx-translate/core';
+import { defer, of, throwError } from 'rxjs';
+import { delay, concatMap, retryWhen } from 'rxjs/operators';
+import { isDevMode } from '@angular/core';
 
 export class ApiClientFetch implements ApiClient {
     constructor(
@@ -37,26 +40,61 @@ export class ApiClientFetch implements ApiClient {
         private readonly translation: TranslateService,
         private readonly http: { fetch(input: RequestInfo, init?: RequestInit): Promise<Response> } = window) {
     }
+    private readonly maxRetries = 5;
+    private readonly delayMilli = 1000;
 
-    public async processRequest<T>(methodDescriptor: MethodDescriptor<T>): Promise<T> {
+    public async processRequest<T>(methodDescriptor: MethodDescriptor<T>,
+         opts: { signal?: AbortSignal } = {}): Promise<T> {
         const method = new MethodDefinition(methodDescriptor);
         const headers = new Headers(method.headers);
 
-        this.addXsrfProtectionHeader<T>(headers, method);
+        if (isDevMode()) {
+          headers.set("X-FORWARDED-PROTO", 'https');
+        }
 
-        var response: Response;
-        try {
-            response = await this.http.fetch(this.baseUrl + method.path, {
+        this.addXsrfProtectionHeader<T>(headers, method);
+        this.addVersionHeader(headers);
+
+        const observable = defer(() => {
+            return this.http.fetch(this.baseUrl + method.path, {
                 method: method.httpMethod,
                 credentials: method.credentials,
                 headers: headers,
+                signal: opts?.signal,
                 body: method.body
             });
+        }).pipe(
+            retryWhen(error =>
+                error.pipe(
+                    concatMap((error, count) => {
+                        if (count <= this.maxRetries &&
+                            (error.status == 0 /* connection error */
+                                || error.status == 503 /* service unavailable */)) {
+                            return of(error);
+                        }
+                        return throwError(error);
+                    }),
+                    delay(this.delayMilli)
+                )
+            )
+        );
+
+        var response: Response;
+        try {
+            response = await observable.toPromise();
         } catch (e) {
+          if (opts?.signal?.aborted) {
+            this.logger.info(this, 'Request was aborted', opts.signal);
+            return;
+          }
             throw new ServerError(await this.GetUnexpectedErrorText());
         }
 
         if (response) {
+
+            if (response.status == 0) {
+                // server API connection error
+            }
 
             // empty response, but success
             if (response.status === 204) {
@@ -67,7 +105,7 @@ export class ApiClientFetch implements ApiClient {
 
             function getFirstContentType() { return actualContentType.split(';')[0]; }
 
-            if (response.status === 200) {
+            if (response.status >= 200 && response.status <= 299) {
                 if (method.responseType === 'blob')
                     return <any>response.blob();
 
@@ -113,6 +151,15 @@ export class ApiClientFetch implements ApiClient {
                 headers.set("X-XSRF-TOKEN", token);
             }
         }
+    }
+
+    private addVersionHeader(headers: Headers) {
+        // The (.NET assembly) version is added as a request header
+        // so that the server can verify that the client and server
+        // versions match.
+
+        headers.set("imx-version", Globals.AssemblyVersion);
+
     }
 
     private getCookie(name) {

@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
 
 :host {
   display: flex;
@@ -55,12 +55,12 @@
 
     >span:first-child {
       font-size: 12px;
-      color: $black-9;
+      color: $color-gray-40;
       padding-bottom: 5px;
     }
 
     .help-icon {
-      color: $iris-blue;
+      color: $color-blue-60;
       font-size: 16px;
       margin-left: 5px;
       margin-top: -3px;
@@ -82,11 +82,9 @@
   }
 }
 
-.imx-button-bar {
-  background-color: $white;
+.eui-sidesheet-actions {
   display: flex;
   justify-content: flex-end;
-  border-top: $black-c 1px solid;
   padding: 0px 20px 20px 8px;
   flex-wrap: wrap;
   margin: 0 -20px -20px;
@@ -106,7 +104,7 @@
 
     &.column-display {
       font-size: 12px;
-      color: $black-9;
+      color: $color-gray-40;
       padding-bottom: 5px;
     }
   }
@@ -121,7 +119,7 @@
 
     &.column-display {
       font-size: 12px;
-      color: $black-9;
+      color: $color-gray-40;
       padding-bottom: 5px;
     }
   }
@@ -133,18 +131,15 @@ eui-badge {
 }
 
 .imx-run-info-category-content {
-  display: grid;
-  grid-template-columns: auto 1fr;
+  display: flex;
+  flex-direction: row;
+
 }
 
 .seperator {
-  border-bottom: 1px solid $black-9;
+  border-bottom: 1px solid $color-gray-40;
   margin-bottom: 10px;
   margin-top: -10px;
-}
-
-:host ::ng-deep .mat-tab-header {
-  background-color: $white;
 }
 
 .imx-tab-content-body {
@@ -153,4 +148,28 @@ eui-badge {
   flex: 1;
   padding: 20px;
   overflow: auto;
+}
+
+.eui-dark-theme {
+  :host {
+    ::ng-deep .mat-tab-header {
+      background-color: $color-gray-80;
+    }
+
+    .imx-button-bar {
+      background-color: $color-gray-70;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    ::ng-deep .mat-tab-header {
+      background-color: $color-gray-90;
+    }
+
+    .imx-button-bar {
+      background-color: $color-gray-80;
+    }
+  }
 }

@@ -31,7 +31,9 @@
       "o3t": ["dist/o3t"],
       "o3t/*": ["dist/o3t/*"],
       "aad": ["dist/aad"],
-      "aad/*": ["dist/aad/*"]
+      "aad/*": ["dist/aad/*"],
+      "apc": ["dist/apc"],
+      "apc/*": ["dist/apc/*"]
     },
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
@@ -41,7 +43,7 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2017",
+    "target": "es2020",
     "module": "es2020",
     "lib": [
       "es2020",
@@ -54,6 +56,5 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": false,
     "strictNullInputTypes": false,
-    "enableIvy": false
   }
 }

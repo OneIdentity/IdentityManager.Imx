@@ -1,78 +1,117 @@
+<mat-spinner *ngIf="busy"></mat-spinner>
+
 <ng-container *ngIf="dstSettings">
-  <h1 class="mat-headline">{{'#LDS#Heading Outstanding Objects' | translate}}</h1>
-  <eui-alert *ngIf="showHelper" class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true"
-    (dismissed)="onHelperDismissed()">
-    <span translate>#LDS#Objects which do not exist in the target system are marked as outstanding. Here you can get an overview of outstanding objects, delete these objects in the database or add these objects to the target system again. Additionally, you can reset the status of these objects so that they are no longer marked as outstanding.</span>
+  <h1 class="mat-headline">{{ '#LDS#Heading Outstanding Objects' | translate }}</h1>
+  <eui-alert *ngIf="showHelper" class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true" (dismissed)="onHelperDismissed()">
+    {{ LdsOutstandingText | translate }}
   </eui-alert>
 
-  <div>
+  <div class="filters">
     <mat-form-field class="namespace-selector">
-      <mat-label>{{'#LDS#Target system type' | translate}}</mat-label>
-      <mat-select (selectionChange)="optionSelected($event.value)" [(value)]="selectedNamespace"
-        data-imx-identifier="outstanding-namespace-select">
+      <mat-label>{{ '#LDS#Target system type' | translate }}</mat-label>
+      <mat-select required (selectionChange)="optionSelected($event.value)" [(value)]="selectedNamespace" data-imx-identifier="outstanding-namespace-select">
         <mat-option *ngFor="let pr of namespaces" [value]="pr" [attr.data-imx-identifier]="'outstanding-namespace-option-' + pr.GetEntity().GetDisplay()">
-          {{pr.GetEntity().GetDisplay()}}
+          {{ pr.GetEntity().GetDisplay() }}
         </mat-option>
       </mat-select>
     </mat-form-field>
 
     <mat-form-field class="table-selector">
-      <mat-label>{{'#LDS#Object type' | translate}}</mat-label>
-      <mat-select [disabled]="tabledata.length == 0" (selectionChange)="tableSelected($event.value)"
-        [(value)]="selectedTable" data-imx-identifier="outstanding-table-select">
+      <mat-spinner *ngIf="loadingTableData" matPrefix></mat-spinner>
+      <mat-label>{{ '#LDS#Object type' | translate }}</mat-label>
+      <mat-select [disabled]="tabledata.length == 0" (selectionChange)="tableSelected($event.value)" [(value)]="selectedTable" data-imx-identifier="outstanding-table-select">
         <mat-option *ngFor="let pr of tabledata" [value]="pr" [attr.data-imx-identifier]="'outstanding-table-option-' + pr.GetEntity().GetDisplay()">
-          {{pr.GetEntity().GetDisplay()}} ({{pr.CountOutstanding.value}})
+          {{ pr.GetEntity().GetDisplay() }} ({{ pr.CountOutstanding.value }})
         </mat-option>
       </mat-select>
     </mat-form-field>
-
+    <mat-checkbox (change)="onShowAllData()" [(ngModel)]="showAllData" [disabled]="!selectedNamespace || loadingTableData" >
+      {{ !!selectedNamespaceTitle && !loadingTableData ?
+        ('#LDS#Show all outstanding objects of {0} ({1})' | translate | ldsReplace: selectedNamespaceTitle : tableDataCount):
+        ('#LDS#Show all outstanding objects of the target system type' | translate)
+      }}
+    </mat-checkbox>
   </div>
 
-  <imx-data-source-toolbar #dst [settings]="dstSettings" (navigationStateChanged)="getData($event)" [options]="['filter']">
-  </imx-data-source-toolbar>
+  <imx-data-source-toolbar #dst [settings]="dstSettings" (navigationStateChanged)="getData($event)" [options]="['filter']" [hidden]="busyLoadingTable"> </imx-data-source-toolbar>
 
-  <div class="scroll-container">
-    <imx-data-table #dataTable [dst]="dst" [detailViewVisible]="false" [selectable]="true" [showSelectedItemsMenu]="false"
-      (selectionChanged)="selectionChanged($event)" mode="manual"
-      [noDataText]="getNoDataText()" data-imx-identifier="outstanding-objects-table">
-
+  <mat-card class="scroll-container">
+    <mat-spinner *ngIf="busyLoadingTable"></mat-spinner>
+    <imx-data-table
+      #dataTable
+      [dst]="dst"
+      [detailViewVisible]="false"
+      [selectable]="true"
+      [showSelectedItemsMenu]="false"
+      [ngClass]="{ loadingtable: busyLoadingTable }"
+      (selectionChanged)="selectionChanged($event)"
+      mode="manual"
+      [noDataText]="getNoDataText()"
+      data-imx-identifier="outstanding-objects-table"
+      *ngIf="!busyLoadingTable"
+    >
       <imx-data-table-generic-column columnName="Display" columnLabel="{{ '#LDS#Display name' | translate }}">
         <ng-template let-data>
-          {{ data.Display.value }}
-          <div class="object-type">{{ data.ObjectType.value }}</div>
+          <div class="first-cell">
+            <div class="first-col">
+              {{ data.Display.value }}
+              <div class="object-type">{{ data.ObjectType.value }}</div>
+            </div>
+            <eui-badge *ngIf="data.CanDeleteRestrictionReason.value" [matTooltip]="data.CanDeleteRestrictionReason.value">
+              {{ '#LDS#Cannot delete' | translate }}
+            </eui-badge>
+            <eui-badge *ngIf="data.CanPublishRestrictionReason.value" [matTooltip]="data.CanPublishRestrictionReason.value">
+              {{ '#LDS#Cannot add' | translate }}
+            </eui-badge>
+          </div>
         </ng-template>
       </imx-data-table-generic-column>
-      <imx-data-table-column [entityColumn]="schema?.Columns.LastLogEntry">
-      </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="schema?.Columns.LastMethodRun">
-      </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="schema?.Columns.LastLogEntry"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="schema?.Columns.LastMethodRun"> </imx-data-table-column>
     </imx-data-table>
-  </div>
-
+  </mat-card>
   <div class="imx-button-bar">
-    <div class="imx-justify-start">
-      <span>
-        <button [disabled]="selected.length === 0" data-imx-identifier="outstanding-selected-items-button" mat-button color="primary" (click)="showSelected(selected)">
-          {{ '#LDS#Selected items' | translate }}
-          <eui-badge class="imx-badge" color="orange">{{ selected.length }}</eui-badge>
-        </button>
-      </span>
-    </div>
-    <mat-checkbox class="bulkmodecheckbox"
-      matTooltip="{{ '#LDS#If you activate bulk processing, the selected objects are processed in parallel. This speeds up the performed action. If an error occurs during processing, the action is stopped and all changes are discarded. To locate errors, deactivate bulk processing. Thus, the objects are processed sequentially. All changes made until the error occurred are saved.' | translate }}"
-      [(ngModel)]="bulk"> {{'#LDS#Bulk processing' | translate }}</mat-checkbox>
+    <imx-selected-elements [selectedElements]="selected"></imx-selected-elements>
+    <div class="imx-menu-spacer"></div>
+    <mat-checkbox
+      class="bulkmodecheckbox"
+      matTooltip="{{
+        '#LDS#If you activate bulk processing, the selected objects are processed in parallel. This speeds up the performed action. If an error occurs during processing, the action is stopped and all changes are discarded. To locate errors, deactivate bulk processing. Thus, the objects are processed sequentially. All changes made until the error occurred are saved.'
+          | translate
+      }}"
+      [(ngModel)]="bulk"
+    >
+      {{ '#LDS#Bulk processing' | translate }}</mat-checkbox
+    >
 
-    <button mat-raised-button color="warn" [disabled]="selected.length === 0"
+    <button
+      mat-raised-button
+      color="warn"
+      [disabled]="selected.length === 0 || !canDeleteAllSelected()"
       data-imx-identifier="outstanding-delete-button"
-      matTooltip="{{ '#LDS#Deletes the selected objects in the database' | translate }}" (click)="deleteObjects()">
-      {{ '#LDS#Delete' | translate }}</button>
-    <button mat-raised-button [disabled]="selected.length === 0" data-imx-identifier="outstanding-reset-button"
-      matTooltip="{{ '#LDS#Removes the Outstanding label for the selected objects' | translate }}" (click)="resetObjects()">
-      {{ '#LDS#Reset' | translate }}</button>
-    <button mat-raised-button [disabled]="selected.length === 0 || !canPublishAllSelected()" color="primary"
+      matTooltip="{{ '#LDS#Deletes the selected objects in the database' | translate }}"
+      (click)="deleteObjects()"
+    >
+      {{ '#LDS#Delete' | translate }}
+    </button>
+    <button
+      mat-raised-button
+      [disabled]="selected.length === 0"
+      data-imx-identifier="outstanding-reset-button"
+      matTooltip="{{ '#LDS#Removes the Outstanding label for the selected objects' | translate }}"
+      (click)="resetObjects()"
+    >
+      {{ '#LDS#Reset' | translate }}
+    </button>
+    <button
+      mat-raised-button
+      [disabled]="selected.length === 0 || !canPublishAllSelected()"
+      color="primary"
       data-imx-identifier="outstanding-publish-button"
       matTooltip="{{ '#LDS#Adds the selected objects to the target system' | translate }}"
-      (click)="publishObjects()">{{ '#LDS#Add to target system' | translate }}</button>
-
+      (click)="publishObjects()"
+    >
+      {{ '#LDS#Add to target system' | translate }}
+    </button>
   </div>
 </ng-container>

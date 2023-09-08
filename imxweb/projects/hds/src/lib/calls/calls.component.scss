@@ -1,0 +1,41 @@
+@import '../../../../../shared/scss/common-table.scss';
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+
+  .mat-card {
+    @include imx-flex-fill-control-hidden-overflow();
+  }
+}
+
+.create-ticket-button {
+  align-self: flex-start;
+}
+:host ::ng-deep .calls-data-table {
+  .mat-table {
+    tbody {
+      .mat-row {
+        .mat-cell {
+          .calls-table-column-ellipsis {
+            width: 120px;
+            display: block;
+            white-space: nowrap;
+            overflow-x: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+  }
+}
+
+.calls-data-table {
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.imx-button-bar {
+  @include imx-button-bar();
+}

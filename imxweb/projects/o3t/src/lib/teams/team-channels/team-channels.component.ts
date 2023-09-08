@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,6 +26,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
+import { TranslateService } from '@ngx-translate/core';
 import { PortalTargetsystemTeamsChannels } from 'imx-api-o3t';
 import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
 import { ClassloggerService, DataSourceToolbarFilter, DataSourceToolbarSettings, SettingsService } from 'qbm';
@@ -52,6 +53,7 @@ export class TeamChannelsComponent implements OnInit {
     private readonly logger: ClassloggerService,
     settingsService: SettingsService,
     private readonly teamsService: TeamsService,
+    private readonly translate: TranslateService
   ) {
     this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchemaTeamChannels = this.teamsService.teamChannelsSchema;
@@ -84,7 +86,7 @@ export class TeamChannelsComponent implements OnInit {
   public async onTeamChannelChanged(channel: PortalTargetsystemTeamsChannels): Promise<void> {
     this.logger.debug(this, `Selected channel changed`);
     this.logger.trace(this, `New channel selected`, channel);
-    this.openDetailsSidesheet(channel.GetEntity().GetDisplay(), channel);
+    this.openDetailsSidesheet(channel);
   }
 
   private async navigate(): Promise<void> {
@@ -105,13 +107,14 @@ export class TeamChannelsComponent implements OnInit {
     }
   }
 
-  private async openDetailsSidesheet(title: string, channel: PortalTargetsystemTeamsChannels): Promise<void> {
+  private async openDetailsSidesheet(channel: PortalTargetsystemTeamsChannels): Promise<void> {
     const sidesheetRef = this.sideSheet.open(TeamChannelDetailsComponent, {
-      title,
-      headerColour: 'green',
+      title: await this.translate.get('#LDS#Heading View Microsoft Teams Channel Details').toPromise(),
+      subTitle: channel.GetEntity().GetDisplay(),
       padding: '0px',
       width: `max(650px, 60%)`,
       icon: 'usergroup',
+      testId: 'teams-channel-view-team-channel-details',
       data: channel
     });
     // After the sidesheet closes, reload the current data to refresh any changes that might have been made

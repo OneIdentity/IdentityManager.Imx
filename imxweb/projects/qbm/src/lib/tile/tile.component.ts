@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -44,6 +44,7 @@ export class TileComponent {
   @Input() public highlight: boolean;
   @Input() public contentType: 'Text' | 'Image' | 'Container';
   @Input() public hideActionButton: boolean;
+  @Input() public loadingState: boolean = false;
 
   @Output() public actionClick: EventEmitter<any> = new EventEmitter();
 

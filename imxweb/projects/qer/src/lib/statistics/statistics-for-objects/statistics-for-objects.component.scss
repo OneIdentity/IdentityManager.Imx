@@ -1,0 +1,109 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import '../stat-mixins.scss';
+
+:host {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .cards-container {
+    height: 100%;
+    @include EUI-Elevation-1;
+  }
+
+  .checkbox-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+  }
+
+  .grid-container {
+    @include Stat-Grid;
+  }
+
+  .stat-card {
+    @include Stat-Card;
+  }
+
+  .stat-card--disabled {
+    background-color: transparent;
+  }
+
+  .stat-card--hidden {
+    display: none;
+  }
+
+  .card-no-data {
+    @include Empty-Card;
+  }
+
+  .center-content {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+  }
+
+  .imx-loading {
+    display: flex;
+    flex-grow: 1;
+  }
+
+  .imx-no-data {
+    @include Stats-No-Data;
+  }
+}
+
+// Theming
+:host {
+  .cards-container {
+    background-color: $color-gray-5;
+    border: 1px solid $color-gray-10;
+  }
+
+  .stat-card {
+    @include Stat-Card-Theme;
+  }
+
+  .imx-no-data-top,
+  .card-no-data {
+    @include Stats-No-Data-Theme;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .cards-container {
+      background-color: $color-gray-60;
+      border: 1px solid $color-gray-50;
+    }
+
+    .stat-card {
+      @include Stat-Card-Theme(dark);
+    }
+
+    .imx-no-data-top,
+    .card-no-data {
+      @include Stats-No-Data-Theme(dark);
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .cards-container {
+      background-color: $color-gray-100;
+      border: 1px solid $color-gray-90;
+    }
+
+    .stat-card {
+      @include Stat-Card-Theme(contrast);
+    }
+
+    .imx-no-data-top,
+    .card-no-data {
+      @include Stats-No-Data-Theme(contrast);
+    }
+  }
+}

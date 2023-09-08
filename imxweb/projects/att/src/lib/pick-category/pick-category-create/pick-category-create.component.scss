@@ -1,10 +1,15 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
 @import "../pick-category-common.scss";
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
 
 :host {
-  background-color: $asher-gray;
+  background-color: $color-gray-2;
 
   .eui-sidesheet-content {
+    > .mat-card {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
     .imx-dst-selected-identities {
       display: none;
@@ -41,13 +46,12 @@
               max-height: calc(100% - 36px);
 
               imx-data-source-toolbar {
-                background-color: $white;
+                background-color: $color-gray-0;
               }
             }
 
             .imx-stepper-button-container {
               @include imx-flex-row-container();
-              justify-content: end;
               gap: 20px;
             }
           }
@@ -56,6 +60,50 @@
 
       .imx-summary-intro {
         margin: 15px 0;
+      }
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    background-color: $color-gray-80;
+
+    .eui-sidesheet-content {
+      .mat-stepper-vertical {
+        ::ng-deep .mat-step {
+          .mat-vertical-content-container {
+            .mat-vertical-content {
+              imx-pick-category-select-identities {
+                imx-data-source-toolbar {
+                  background-color: $color-gray-80;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    background-color: $color-gray-100;
+
+    .eui-sidesheet-content {
+      .mat-stepper-vertical {
+        ::ng-deep .mat-step {
+          .mat-vertical-content-container {
+            .mat-vertical-content {
+              imx-pick-category-select-identities {
+                imx-data-source-toolbar {
+                  background-color: $color-gray-100;
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

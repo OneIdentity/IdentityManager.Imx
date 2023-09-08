@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -86,7 +86,7 @@ export class AttestationHistoryActionService {
     this.applied.next();
   }
 
-  public async revokeDelegation(attestationCases: PortalAttestationCase[]): Promise<void> {
+  public async revokeAdditional(attestationCases: PortalAttestationCase[]): Promise<void> {
     const actionParameters = {
       reason: this.createCdrReason({ mandatory: true })
     };
@@ -119,7 +119,7 @@ export class AttestationHistoryActionService {
   private async editAction(config: any): Promise<void> {
     const result = await this.sidesheet.open(AttestationActionComponent, {
       title: await this.translate.get(config.title).toPromise(),
-      headerColour: config.headerColour ?? 'iris-blue',
+      subTitle: config.data.attestationCases.length === 1 ? config.data.attestationCases[0].GetEntity().GetDisplay() : '' ,
       panelClass: 'imx-sidesheet',
       padding: '0',
       width: '600px',

@@ -1,0 +1,53 @@
+<mat-card class="imx-mat-card-container">
+  <imx-data-source-toolbar
+    #dst
+    [options]="['search', 'sort', 'settings']"
+    [settings]="dstSettings"
+    [busyService]="busyService"
+    data-imx-identifier="inquiries-dst"
+    (search)="onSearch($event)"
+    (navigationStateChanged)="getData($event)"
+    (updateConfig)="updateConfig($event)"
+    (deleteConfigById)="deleteConfigById($event)"
+  >
+  </imx-data-source-toolbar>
+
+  <div class="imx-table-container">
+    <imx-data-table #dataTable [dst]="dst" [detailViewVisible]="false" mode="manual" [selectable]="false" (highlightedEntityChanged)="editCase($event)"
+    [noDataText]="'#LDS#There are currently no inquiries.' |translate"
+    data-imx-identifier="inquiries-data-table">
+    <imx-data-table-column [entityColumn]="entitySchema.Columns.UiText" data-imx-identifier="attestations-inquiries-column-attestationCaseDisplay">
+      <ng-template let-item>
+        <imx-attestation-display [additionalColumns]="dst.additionalListElements" [attestation]="item"></imx-attestation-display>
+      </ng-template>
+    </imx-data-table-column>
+      <imx-data-table-generic-column columnName="query" [columnLabel]="AttestationInquiry.queryCaption | translate">
+        <ng-template let-item>
+          {{ getInquiryText(item) }}
+        </ng-template>
+      </imx-data-table-generic-column>
+      <imx-data-table-generic-column columnName="inquirer" [columnLabel]="AttestationInquiry.headCaption | translate">
+        <ng-template let-item>
+          {{ getInquirer(item) }}
+        </ng-template>
+      </imx-data-table-generic-column>
+      <imx-data-table-generic-column columnName="queryDate" [columnLabel]="AttestationInquiry.queryDate | translate">
+        <ng-template let-item>
+          {{ getQueryDate(item) | shortDate }}
+        </ng-template>
+      </imx-data-table-generic-column>
+
+      <imx-data-table-generic-column columnName="edit">
+        <ng-template let-item>
+          <div class="imx-button-column">
+          <button mat-stroked-button (click)="$event.stopPropagation(); actionService.answerQuestion(item, userUid)" data-imx-identifier="inquiries-row-button-answer-question-details">
+             <eui-icon icon="undo"></eui-icon>
+            {{ '#LDS#Reply to inquiry' | translate }}
+          </button>
+         </div>
+        </ng-template>
+      </imx-data-table-generic-column>
+    </imx-data-table>
+  </div>
+  <imx-data-source-paginator [dst]="dst" data-imx-identifier="inquiries-paginator"></imx-data-source-paginator>
+</mat-card>

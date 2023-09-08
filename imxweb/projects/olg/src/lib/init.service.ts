@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,28 +28,29 @@ import { Injectable } from '@angular/core';
 import { Route, Router } from '@angular/router';
 import { ExtService } from 'qbm';
 import { MfaComponent } from './mfa/mfa.component';
+import { MfaFormControlComponent } from './mfa-form-control/mfa-form-control.component';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class InitService {
-
-  constructor(
-    private readonly extService: ExtService,
-    private readonly router: Router,
-  ) { }
+  constructor(private readonly extService: ExtService, private readonly router: Router) {}
 
   public onInit(routes: Route[]): void {
     this.addRoutes(routes);
 
     this.extService.register('mfaComponent', {
-      instance: MfaComponent
+      instance: MfaComponent,
+    });
+    
+    this.extService.register('authenticator', {
+      instance: MfaFormControlComponent,
     });
   }
 
   private addRoutes(routes: Route[]): void {
     const config = this.router.config;
-    routes.forEach(route => {
+    routes.forEach((route) => {
       config.unshift(route);
     });
     this.router.resetConfig(config);

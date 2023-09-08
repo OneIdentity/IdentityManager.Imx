@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,8 +26,7 @@
 
 import { Component, Inject, ViewChild, OnInit, ElementRef, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { EuiSidesheetRef, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { TranslateService } from '@ngx-translate/core';
+import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 
 import {
   TypedEntity,
@@ -39,40 +38,38 @@ import { MetadataService } from '../base/metadata.service';
 import { ForeignKeyPickerData } from './foreign-key-picker-data.interface';
 import { FkSelectorComponent } from './fk-selector.component';
 import { ConfirmationService } from '../confirmation/confirmation.service';
-import { TypedEntityCandidateSidesheetComponent } from '../entity/typed-entity-candidate-sidesheet/typed-entity-candidate-sidesheet.component';
-
 
 @Component({
   templateUrl: './fk-advanced-picker.component.html',
-  styleUrls: ['./fk-advanced-picker.component.scss']
+  styleUrls: ['./fk-advanced-picker.component.scss'],
 })
-
 export class FkAdvancedPickerComponent implements OnInit, OnDestroy {
-
   @ViewChild(FkSelectorComponent) public selector: FkSelectorComponent;
   public selectedTable: IForeignKeyInfo;
   private isChanged = false;
   private closeClickSubscription: Subscription;
+
+  public tableNames: string[];
+  public selectedEntityCandidates: TypedEntity[] = [];
 
   constructor(
     public sidesheetRef: EuiSidesheetRef,
     @Inject(EUI_SIDESHEET_DATA) public readonly data: ForeignKeyPickerData,
     public readonly metadataProvider: MetadataService,
     private readonly logger: ClassloggerService,
-    private readonly sidesheet: EuiSidesheetService,
-    private readonly translate: TranslateService,
     private readonly confirmation: ConfirmationService,
-    private readonly elementRef: ElementRef) {
+    private readonly elementRef: ElementRef
+  ) {
     this.closeClickSubscription = this.sidesheetRef.closeClicked().subscribe(async () => {
-      if (!this.isChanged
-        || await this.confirmation.confirmLeaveWithUnsavedChanges()) {
+      if (!this.isChanged || (await this.confirmation.confirmLeaveWithUnsavedChanges())) {
         this.sidesheetRef.close();
       }
     });
   }
 
   public ngOnInit(): void {
-    this.selectedTable = this.data.fkRelations.find(fkr => fkr.TableName === this.data.selectedTableName) || this.data.fkRelations[0];
+    this.selectedTable = this.data.fkRelations.find((fkr) => fkr.TableName === this.data.selectedTableName) || this.data.fkRelations[0];
+    this.tableNames = this.data.fkRelations?.map((elem) => elem.TableName);
     this.elementRef.nativeElement.setAttribute('data-imx-identifier', `cdr-picker-${this.selectedTable.ColumnName}`);
   }
 
@@ -104,32 +101,19 @@ export class FkAdvancedPickerComponent implements OnInit, OnDestroy {
     const entityList = selected == null ? this.selector.selectedCandidates : [selected];
     this.sidesheetRef.close({
       table: this.selector.selectedTable,
-      candidates: entityList.map(typedEntity => {
+      candidates: entityList.map((typedEntity) => {
         const entity = typedEntity.GetEntity();
         return {
           DataValue: this.getKey(entity),
           DisplayValue: entity.GetDisplay(),
-          displayLong: entity.GetDisplayLong()
+          displayLong: entity.GetDisplayLong(),
         };
-      })
+      }),
     });
   }
 
   public onSelectedCandidatesChanges(): void {
     this.isChanged = this.data.isMultiValue;
-  }
-
-  public async showSelected(entities: TypedEntity[]): Promise<void> {
-    this.sidesheet.open(TypedEntityCandidateSidesheetComponent, {
-      title: await this.translate.get('#LDS#Heading Selected Items').toPromise(),
-      headerColour: 'iris-blue',
-      bodyColour: 'asher-gray',
-      padding: '0',
-      width: 'max(550px, 55%)',
-      data: { entities, tables: this.data.fkRelations?.map(elem => elem.TableName) },
-      testId: 'fk-advanced-picker-selected-elements'
-    }
-    );
   }
 
   private getKey(entity: IEntity): string {

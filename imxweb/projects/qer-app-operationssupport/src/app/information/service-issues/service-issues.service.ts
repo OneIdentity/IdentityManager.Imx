@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,11 +36,9 @@ import { SystemStatusService } from '../system-status/system-status.service';
 import { UnresolvedRefsService } from '../../unresolved-refs/unresolved-refs.service';
 import { SyncService } from '../../sync/sync.service';
 
-
 @Injectable()
 export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]> {
-
-
+  public isLoading = false;
   private jobDisabled = false;
   private dbDisabled = false;
 
@@ -60,11 +58,16 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
 
   // ToDo PBI 278888 Laden Status anzeigen
   public async updateItems(): Promise<void> {
-    await this.checkFrozenJobs();
-    await this.checkSystemStatus();
-    await this.checkInactiveServers();
-    await this.checkUnresolvedRefs();
-    await this.checkSyncIssues();
+    this.isLoading = true;
+    try {
+      await this.checkFrozenJobs();
+      await this.checkSystemStatus();
+      await this.checkInactiveServers();
+      await this.checkUnresolvedRefs();
+      await this.checkSyncIssues();
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   private async checkFrozenJobs(): Promise<void> {
@@ -87,13 +90,13 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
         '#LDS#Process issues',
         {
           key: '#LDS#{0} processes in queue "{1}" are frozen or overflown',
-          parameters: [queue.Count.value, queue.QueueName.value]
+          parameters: [queue.Count.value, queue.QueueName.value],
         },
         'task',
         'warningBubble issueBubble',
         {
           caption: '#LDS#View',
-          action: () => this.goToQueue(queue.QueueName.value)
+          action: () => this.goToQueue(queue.QueueName.value),
         },
         queue.QueueName.value
       );
@@ -132,7 +135,7 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
         'warningBubble issueBubble',
         {
           caption: '#LDS#Button Start',
-          action: async () => this.changeStatus(false, this.dbDisabled)
+          action: async () => this.changeStatus(false, this.dbDisabled),
         }
       );
     } else {
@@ -147,7 +150,7 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
         'warningBubble issueBubble',
         {
           caption: '#LDS#Button Start',
-          action: async () => this.changeStatus(this.jobDisabled, false)
+          action: async () => this.changeStatus(this.jobDisabled, false),
         }
       );
     } else {
@@ -168,7 +171,7 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
 
   private async checkInactiveServers(): Promise<void> {
     const result = await this.sessionService.TypedClient.OpsupportJobservers.Get({
-      nofetchjob: true
+      nofetchjob: true,
     });
 
     if (result == null) {
@@ -188,7 +191,7 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
       'warningBubble issueBubble',
       {
         caption: '#LDS#View',
-        action: () => this.router.navigate(['/ServicesInactive'])
+        action: () => this.router.navigate(['/ServicesInactive']),
       }
     );
   }
@@ -199,8 +202,8 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
         ColumnName: this.syncJournalService.syncJournalSchema.Columns.ProjectionState.ColumnName,
         Type: FilterType.Compare,
         CompareOp: CompareOperator.Equal,
-        Value1: 'Error'
-      }
+        Value1: 'Error',
+      },
     ];
 
     const result = await this.syncJournalService.getSyncJournal({ PageSize: -1, filter });
@@ -224,8 +227,8 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
         caption: '#LDS#View',
         action: () =>
           this.router.navigate(['/SyncJournal/'], {
-            queryParams: { filter: JSON.stringify(filter) }
-          })
+            queryParams: { filter: JSON.stringify(filter) },
+          }),
       }
     );
   }
@@ -250,13 +253,13 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
       '#LDS#Unresolved references',
       {
         key: '#LDS#{0} objects with unresolved references',
-        parameters: [totalCount]
+        parameters: [totalCount],
       },
       'unlink',
       'warningBubble issueBubble',
       {
         caption: '#LDS#View',
-        action: () => this.router.navigate(['/unresolvedRefs'])
+        action: () => this.router.navigate(['/unresolvedRefs']),
       }
     );
   }
@@ -282,9 +285,9 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
     let issueItem: ServiceIssueItem;
 
     if (serviceType === ServiceIssueType.FrozenJobs) {
-      issueItem = this.itemsInternal.find(item => item.id === id);
+      issueItem = this.itemsInternal.find((item) => item.id === id);
     } else {
-      issueItem = this.itemsInternal.find(item => item.type === serviceType);
+      issueItem = this.itemsInternal.find((item) => item.type === serviceType);
     }
 
     if (issueItem == null) {
@@ -300,17 +303,19 @@ export class ServiceIssuesService extends SubscriptionService<ServiceIssueItem[]
     issueItem.title = await this.translater.get(title).toPromise();
     const tranlatedKey = await this.translater.get(text.key).toPromise();
     // workaround, weil er aus text.parameters[0], text.parameters[1] aus irgendeinem Grund "text.parameters[0], text.parameters[1]" macht
-    issueItem.text = this.ldsPipe.transform(tranlatedKey,
+    issueItem.text = this.ldsPipe.transform(
+      tranlatedKey,
       text.parameters?.length > 0 ? text.parameters[0] : '',
-      text.parameters?.length > 1 ? text.parameters[1] : '');
+      text.parameters?.length > 1 ? text.parameters[1] : ''
+    );
     if (action) {
       issueItem.action.caption = await this.translater.get(action.caption).toPromise();
     }
   }
 
   private remove(serviceType: ServiceIssueType, excludes?: string[]): void {
-    const issueItems = this.itemsInternal.filter(item => {
-      if (excludes && excludes.some(id => item.id === id)) {
+    const issueItems = this.itemsInternal.filter((item) => {
+      if (excludes && excludes.some((id) => item.id === id)) {
         return false;
       }
       return item.type === serviceType;

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,20 +26,18 @@
 
 import { Injectable } from '@angular/core';
 import { Router, Route } from '@angular/router';
-import { IdentityRoleMembershipsService, ShoppingCartValidationDetailService } from 'qer';
+import { IdentityRoleMembershipsService, NotificationRegistryService, ShoppingCartValidationDetailService } from 'qer';
 
-import { ExtService, MenuItem, MenuService, TabItem } from 'qbm';
+import { ExtService, MenuItem, MenuService, TabItem} from 'qbm';
 
 import { DashboardPluginComponent } from './dashboard-plugin/dashboard-plugin.component';
 import { CartItemComplianceCheckComponent } from './item-validator/cart-item-compliance-check/cart-item-compliance-check.component';
-import { isCiso, isRuleOwner } from './rules/admin/permissions-helper';
+import { isRuleStatistics } from './rules/admin/permissions-helper';
 import { RequestRuleViolation } from './request/request-rule-violation';
 import { RequestRuleViolationDetail } from './request/request-rule-violation-detail';
 import { RoleComplianceViolationsService } from './role-compliance-violations/role-compliance-violations.service';
 import { RoleComplianceViolationsComponent } from './role-compliance-violations/role-compliance-violations.component';
-import { PortalPersonRolemembershipsNoncompliance } from 'imx-api-cpl';
 import { ApiService } from './api.service';
-import { CollectionLoadParameters } from 'imx-qbm-dbts';
 import { IdentityRuleViolationsComponent } from './identity-rule-violations/identity-rule-violations.component';
 
 @Injectable({ providedIn: 'root' })
@@ -50,6 +48,7 @@ export class InitService {
     private readonly menuService: MenuService,
     private readonly api: ApiService,
     private readonly cplService: RoleComplianceViolationsService,
+    private readonly notificationService: NotificationRegistryService,
     private readonly validationDetailService: ShoppingCartValidationDetailService,
     private readonly identityRoleMembershipService: IdentityRoleMembershipsService
   ) {
@@ -82,6 +81,14 @@ export class InitService {
       }, sortOrder: 20
     } as TabItem);
     this.validationDetailService.register(CartItemComplianceCheckComponent, 'CartItemComplianceCheck');
+
+    // Register handler for compliance notifications
+    this.notificationService.registerRedirectNotificationHandler({
+      id: 'OpenNonCompliance',
+      message: '#LDS#There are new rule violations for which you can grant or deny exceptions.',
+      route: 'compliance/rulesviolations/approve'
+    });
+
   }
 
   private async checkCompliances(referrer: any): Promise<boolean> {
@@ -106,14 +113,14 @@ export class InitService {
   }
 
   private setupMenu(): void {
-    this.menuService.addMenuFactories((preProps: string[], groups: string[]) => {
-      if (!preProps.includes('COMPLIANCE') || (!isCiso(groups) && !isRuleOwner(groups))) {
+    this.menuService.addMenuFactories((preProps: string[], features: string[]) => {
+      if (!preProps.includes('COMPLIANCE') || !isRuleStatistics(features)) {
         return null;
       }
 
       const items = [];
 
-      if (isCiso(groups) || isRuleOwner(groups)) {
+      if (isRuleStatistics(features)) {
         items.push({
           id: 'CPL_Compliance_Rules',
           route: 'compliance/rules',

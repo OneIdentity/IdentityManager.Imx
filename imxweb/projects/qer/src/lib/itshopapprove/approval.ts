@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,8 +32,19 @@ import { RequestParameterDataEntity } from '../itshop/request-info/request-param
 import { WorkflowDataWrapper } from '../itshop/workflow-data-wrapper';
 
 export class Approval extends PortalItshopApproveRequests implements RequestParameterDataEntity {
-  public get decisionOffset(): number { return this.directDecisionTarget - this.DecisionLevel.value; }
-  public get canEscalateDecision(): boolean { return this.workflowWrapper.canEscalateDecision(this.DecisionLevel.value); }
+  public get decisionOffset(): number {
+    return this.directDecisionTarget - this.DecisionLevel.value;
+  }
+  public get canEscalateDecision(): boolean {
+    return this.workflowWrapper.canEscalateDecision(this.DecisionLevel.value);
+  }
+  public get hasAskedLastQuestion(): boolean {
+    return this.workflowWrapper.userAskedLastQuestion(this.currentUser, this.DecisionLevel.value);
+  }
+
+  public get canRecallInquiry(): boolean {
+    return this.IsReserved.value && this.hasAskedLastQuestion;
+  }
 
   public readonly parameterColumns: IEntityColumn[];
   public readonly propertyInfo: BaseReadonlyCdr[] = [];
@@ -41,6 +52,7 @@ export class Approval extends PortalItshopApproveRequests implements RequestPara
   public readonly key: string;
 
   private directDecisionTarget: number;
+  private currentUser: string;
 
   private readonly workflowWrapper: WorkflowDataWrapper;
 
@@ -72,11 +84,18 @@ export class Approval extends PortalItshopApproveRequests implements RequestPara
       this.UID_Department,
       this.UID_ProfitCenter,
       this.OrderReason,
-      this.IsCrossFunctional
-    ].filter(property =>
-      property.value != null && property.value !== '' && property.value !== false
-      && !this.parameterColumns.find(column => column.ColumnName === property.Column.ColumnName)
-    ).map(property => new BaseReadonlyCdr(property.Column));
+      this.IsCrossFunctional,
+    ]
+      .filter(
+        (property) =>
+          property.value != null &&
+          property.value !== '' &&
+          property.value !== false &&
+          !this.parameterColumns.find((column) => column.ColumnName === property.Column.ColumnName)
+      )
+      .map((property) => new BaseReadonlyCdr(property.Column));
+
+    this.currentUser = entityWrapper.uidCurrentUser;
   }
 
   public async commit(): Promise<void> {
@@ -84,17 +103,16 @@ export class Approval extends PortalItshopApproveRequests implements RequestPara
   }
 
   public canSetValidFrom(): boolean {
-    return this.ValidFrom.GetMetadata().CanEdit() &&
-      !this.entityWrapper.isChiefApproval &&
-      this.OrderState.value !== 'OrderUnsubscribe';
+    return this.ValidFrom.GetMetadata().CanEdit() && !this.entityWrapper.isChiefApproval && this.OrderState.value !== 'OrderUnsubscribe';
   }
 
   public canSetValidUntil(itShopConfig: ITShopConfig): boolean {
-    return this.ValidUntil.GetMetadata().CanEdit() &&
-    !this.entityWrapper.isChiefApproval &&
-    this.OrderState.value !== 'OrderUnsubscribe' &&
-      (!itShopConfig.VI_ITShop_ShowValidUntilQERReuse ||
-        this.TableName.value !== 'QERReuse');
+    return (
+      this.ValidUntil.GetMetadata().CanEdit() &&
+      !this.entityWrapper.isChiefApproval &&
+      this.OrderState.value !== 'OrderUnsubscribe' &&
+      (!itShopConfig.VI_ITShop_ShowValidUntilQERReuse || this.TableName.value !== 'QERReuse')
+    );
   }
 
   public updateDirectDecisionTarget(workflow: IEntity): void {
@@ -102,21 +120,19 @@ export class Approval extends PortalItshopApproveRequests implements RequestPara
   }
 
   public getLevelNumbers(userUid: string): number[] {
-    return this.workflowWrapper?.getDirectSteps(userUid, this.DecisionLevel.value)?.map(step => step + this.DecisionLevel.value);
+    return this.workflowWrapper?.getDirectSteps(userUid, this.DecisionLevel.value)?.map((step) => step + this.DecisionLevel.value);
   }
 
   public canRerouteDecision(userUid: string): boolean {
-    return this.workflowWrapper?.getDirectSteps(userUid, this.DecisionLevel.value)?.some(value => value !== 0);
+    return this.workflowWrapper?.getDirectSteps(userUid, this.DecisionLevel.value)?.some((value) => value !== 0);
   }
 
   public canAddApprover(userUid: string): boolean {
-    return !this.IsReserved.value &&
-    this.workflowWrapper?.isAdditionalAllowed(userUid, this.DecisionLevel.value);
+    return !this.IsReserved.value && this.workflowWrapper?.isAdditionalAllowed(userUid, this.DecisionLevel.value);
   }
 
   public canDelegateDecision(userUid: string): boolean {
-    return !this.IsReserved.value &&
-      this.workflowWrapper?.isInsteadOfAllowed(userUid, this.DecisionLevel.value);
+    return !this.IsReserved.value && this.workflowWrapper?.isInsteadOfAllowed(userUid, this.DecisionLevel.value);
   }
 
   public canWithdrawAdditionalApprover(userUid: string): boolean {
@@ -124,7 +140,10 @@ export class Approval extends PortalItshopApproveRequests implements RequestPara
   }
 
   public canDenyApproval(userUid: string): boolean {
-    return !this.IsReserved.value &&
-    this.workflowWrapper?.canDenyDecision(userUid, this.DecisionLevel.value);
+    return !this.IsReserved.value && this.workflowWrapper?.canDenyDecision(userUid, this.DecisionLevel.value);
+  }
+
+  public canResetReservation(isChiefApprover: boolean): boolean {
+    return this.IsReserved.value && (this.hasAskedLastQuestion || isChiefApprover);
   }
 }

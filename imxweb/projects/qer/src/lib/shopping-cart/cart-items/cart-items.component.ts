@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,22 +30,26 @@ import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 
-import { PortalCartitem, PortalCartitemInteractive } from 'imx-api-qer';
+import { PortalCartitem } from 'imx-api-qer';
 import {
   DataSourceToolbarSettings,
   SnackBarService,
   ClassloggerService,
   DataTableComponent,
   ConfirmationService,
-  ClientPropertyForTableColumns
+  ClientPropertyForTableColumns,
+  LdsReplacePipe
 } from 'qbm';
-import { DisplayColumns, EntitySchema, IClientProperty, TypedEntity, ValType } from 'imx-qbm-dbts';
+import { DisplayColumns, EntitySchema, TypedEntity, ValType, ValueStruct } from 'imx-qbm-dbts';
 import { CartItemEditComponent } from '../cart-item-edit/cart-item-edit.component';
 import { CartItemsService } from '../cart-items.service';
 import { ShoppingCart } from '../shopping-cart';
 import { CartItemCheckStatus } from './cart-item-check-status.enum';
 import { CartItemValidationOverviewComponent } from '../cart-item-validation-overview/cart-item-validation-overview.component';
 import { CartItemCloneService } from '../cart-item-edit/cart-item-clone.service';
+import { ExtendedEntityWrapper } from '../../parameter-data/extended-entity-wrapper.interface';
+import { Subject } from 'rxjs';
+import { CartItemEditParameter } from '../cart-item-edit/cart-item-edit-parameter.interface';
 
 @Component({
   templateUrl: './cart-items.component.html',
@@ -89,7 +93,8 @@ export class CartItemsComponent implements OnInit, OnChanges {
     private readonly snackBarService: SnackBarService,
     private readonly translateService: TranslateService,
     private readonly sidesheetService: EuiSidesheetService,
-    private readonly cartItemClone: CartItemCloneService
+    private readonly cartItemClone: CartItemCloneService,
+    private readonly ldsReplace: LdsReplacePipe,
   ) {
     this.entitySchema = cartItemsService.PortalCartitemSchema;
     this.displayedColumns = [
@@ -98,7 +103,8 @@ export class CartItemsComponent implements OnInit, OnChanges {
       {
         ColumnName: 'removeItemButton',
         Type: ValType.String,
-        afterAdditionals: true
+        afterAdditionals: true,
+        untranslatedDisplay: '#LDS#Remove'
       }
 
     ];
@@ -132,42 +138,47 @@ export class CartItemsComponent implements OnInit, OnChanges {
   }
 
   public async editCartItem(portalCartitem: PortalCartitem): Promise<void> {
+    this.busyService.show();
+    const observable = new Subject<any>();
     const entityWrapper = await this.cartItemsService.getInteractiveCartitem(
-      portalCartitem.GetEntity().GetKeys().join('')
+      portalCartitem.GetEntity().GetKeys().join(''),
+      () => {
+        observable.next();
+      }
     );
-
+    this.busyService.hide();
     const cartItem = entityWrapper.typedEntity;
-
     let reloadItems = false;
 
-    const title = await this.translateService.get(
-      `${cartItem.GetEntity().GetDisplay()} - ${cartItem.UID_PersonOrdered.Column.GetDisplayValue()}`
-    ).toPromise();
-
-    const sidesheetRef = this.sidesheetService.open(
-      CartItemEditComponent,
-      {
-        title,
-        width: '700px',
-        headerColour: 'iris-blue',
-        data: {
-          entityWrapper,
-          cloneItem: this.itemCanBeCloned(cartItem) ?
-            () => {
-              reloadItems = true;
-              this.logger.trace(this, 'shopping cart must be reloaded');
-              this.cartItemClone.cloneItemForPersons({
-                personOrderedFkRelations: cartItem.UID_PersonOrdered.GetMetadata().GetFkRelations(),
-                accProduct: {
-                  DataValue: cartItem.UID_AccProduct.value,
-                  DisplayValue: cartItem.UID_AccProduct.Column.GetDisplayValue()
-                },
-                uidITShopOrg: cartItem.UID_ITShopOrg.value,
-                display: cartItem.GetEntity().GetDisplay()
-              });
-            }
-            : undefined
+    const itemEditParameter: CartItemEditParameter = {
+      entityWrapper,
+      multiple: false,
+      updated: observable,
+      cloneItem: this.itemCanBeCloned(cartItem) ?
+        async () => {
+          reloadItems = true;
+          this.logger.trace(this, 'shopping cart must be reloaded');
+          this.cartItemClone.cloneItemForPersons({
+            personOrderedFkRelations: cartItem.UID_PersonOrdered.GetMetadata().GetFkRelations(),
+            accProduct: {
+              DataValue: cartItem.UID_AccProduct.value,
+              DisplayValue: cartItem.UID_AccProduct.Column.GetDisplayValue()
+            },
+            uidITShopOrg: cartItem.UID_ITShopOrg.value,
+            display: cartItem.GetEntity().GetDisplay()
+          });
         }
+        : undefined
+    };
+    
+    const sidesheetRef = this.sidesheetService.open(CartItemEditComponent,
+      {
+        title: await this.translateService.get('#LDS#Heading Edit Product').toPromise(),
+        subTitle: await this.getSubtitleDisplay(portalCartitem),
+        disableClose: true,
+        width: '700px',
+        testId: 'cart-item-edit-sidesheet',
+        data: itemEditParameter
       });
 
 
@@ -230,6 +241,42 @@ export class CartItemsComponent implements OnInit, OnChanges {
     this.removeRequests(this.selectedItems, false);
   }
 
+  public async editSelectedItems(): Promise<void>{
+    this.busyService.show()
+    let entityWrappers: ExtendedEntityWrapper<PortalCartitem>[] = [];
+    for await (const selectedItem of this.selectedItems){
+      entityWrappers.push(await this.cartItemsService.getInteractiveCartitem(
+        selectedItem.GetEntity().GetKeys().join('')
+      ))
+    }
+    const baseCartItem = await this.createBaseCartItem(entityWrappers);
+    this.busyService.hide();
+
+    const sidesheetRef = this.sidesheetService.open(CartItemEditComponent,
+      {
+        title: this.ldsReplace.transform(await this.translateService.get('#LDS#Heading Edit Common Request Properties ({0})').toPromise(), this.selectedItems.length),
+        width: '700px',
+        disableClose: true,
+        testId: 'cart-item-edit-sidesheet',
+        data: {
+          entityWrapper: baseCartItem,
+          multiple: true
+        }
+      });
+
+    sidesheetRef.afterClosed().subscribe(async doSave => {
+      if (doSave) {
+        this.busyService.show();
+        try {
+          await this.saveCartItems(baseCartItem, entityWrappers);
+          this.logger.debug(this, 'data is cart item saved.');
+        } finally {
+          setTimeout(() => this.busyService.hide());
+          this.dataChange.emit(false);
+        }
+      }
+    });
+  }
 
   public HasSelectedItems(): boolean {
     return this.selectedItems != null && this.selectedItems.length > 0;
@@ -258,6 +305,10 @@ export class CartItemsComponent implements OnInit, OnChanges {
     return this.itemsCanBeMoved(true);
   }
 
+  public itemsCanBeEdited(): boolean{
+    return this.HasSelectedItems() && this.selectedItems.every(item => !item.IsNoCopyParametersPerson.value);
+  }
+
   public getCheckStatusIcon(cartItem: PortalCartitem): string {
     switch (cartItem.CheckResult.value) {
       case CartItemCheckStatus.ok:
@@ -275,13 +326,12 @@ export class CartItemsComponent implements OnInit, OnChanges {
     if (cartItem.CheckResult.value === CartItemCheckStatus.notChecked) {
       return;
     }
-
-    this.sidesheetService.open(
-      CartItemValidationOverviewComponent,
+    this.sidesheetService.open(CartItemValidationOverviewComponent,
       {
         title: await this.translateService.get('#LDS#Heading View Validation Results').toPromise(),
+        subTitle: await this.getSubtitleDisplay(cartItem),
         width: '750px',
-        headerColour: 'iris-blue',
+        testId: 'cart-item-validation-results-sidesheet',
         data: {
           checkResult: this.shoppingCart.getCartItemCheckResult(cartItem),
           personOrderedDisplay: cartItem.UID_PersonOrdered.Column.GetDisplayValue(),
@@ -298,7 +348,13 @@ export class CartItemsComponent implements OnInit, OnChanges {
     }
   }
 
-  private itemCanBeCloned(cartitem: PortalCartitemInteractive): boolean {
+  private async getSubtitleDisplay(cartItem: PortalCartitem): Promise<string> {
+    return this.translateService.get(
+      `${cartItem.GetEntity().GetDisplay()} - ${cartItem.UID_PersonOrdered.Column.GetDisplayValue()}`
+    ).toPromise();
+  }
+
+  private itemCanBeCloned(cartitem: PortalCartitem): boolean {
     return !this.forLater &&
       cartitem.CanCopy.value &&
       (cartitem.UID_ShoppingCartItemParent.value == null || cartitem.UID_ShoppingCartItemParent.value.length === 0) &&
@@ -386,5 +442,45 @@ export class CartItemsComponent implements OnInit, OnChanges {
         this.cartItemsTable?.clearSelection();
       }
     }
+  }
+
+  private async createBaseCartItem(cartItems: ExtendedEntityWrapper<PortalCartitem>[]): Promise<ExtendedEntityWrapper<PortalCartitem>>{
+    const baseCartItem = await this.cartItemsService.getInteractiveCartitem();
+    if(cartItems.filter(cartItem => !!cartItem.typedEntity.ValidFrom.value && cartItem.typedEntity.ValidFrom.value === cartItems[0].typedEntity.ValidFrom.value).length === cartItems.length){
+      await baseCartItem.typedEntity.ValidFrom.Column.PutValue(new Date(cartItems[0].typedEntity.ValidFrom.value));
+    }
+    if(cartItems.filter(cartItem => !!cartItem.typedEntity.ValidUntil.value && cartItem.typedEntity.ValidUntil.value === cartItems[0].typedEntity.ValidUntil.value).length === cartItems.length){
+      await baseCartItem.typedEntity.ValidUntil.Column.PutValue(new Date(cartItems[0].typedEntity.ValidUntil.value));
+    }
+    if(cartItems.filter(cartItem => cartItem.typedEntity.OrderReason.value === cartItems[0].typedEntity.OrderReason.value).length === cartItems.length){
+      await baseCartItem.typedEntity.OrderReason.Column.PutValue(cartItems[0].typedEntity.OrderReason.value);
+    }
+    if(cartItems.filter(cartItem => cartItem.typedEntity.UID_QERJustificationOrder.value === cartItems[0].typedEntity.UID_QERJustificationOrder.value).length === cartItems.length){
+      await baseCartItem.typedEntity.UID_QERJustificationOrder.Column.PutValue(cartItems[0].typedEntity.UID_QERJustificationOrder.value);
+    }
+    return baseCartItem;
+  }
+
+  private async saveCartItems(baseCartItem: ExtendedEntityWrapper<PortalCartitem>, cartItems: ExtendedEntityWrapper<PortalCartitem>[]): Promise<void>{
+
+    const newValidFrom = baseCartItem.typedEntity.ValidFrom.Column.GetValue();
+    const newValidUntil = baseCartItem.typedEntity.ValidUntil.Column.GetValue();
+    const newOrderReason = baseCartItem.typedEntity.OrderReason.Column.GetValue();
+    const newJustificationOrder = baseCartItem.typedEntity.UID_QERJustificationOrder.Column.GetValue();
+    for await (const cartItem of cartItems) {
+      if(!!newValidFrom){
+        await cartItem.typedEntity.ValidFrom.Column.PutValue(new Date(newValidFrom));
+      }
+      if(!!newValidUntil){
+        await cartItem.typedEntity.ValidUntil.Column.PutValue(new Date(newValidUntil));
+      }
+      if(!!newOrderReason){
+        await cartItem.typedEntity.OrderReason.Column.PutValue(newOrderReason);
+      }
+      if(!!newJustificationOrder){
+        await cartItem.typedEntity.UID_QERJustificationOrder.Column.PutValue(newJustificationOrder);
+      }
+    };
+    await this.cartItemsService.saveItems(cartItems);
   }
 }

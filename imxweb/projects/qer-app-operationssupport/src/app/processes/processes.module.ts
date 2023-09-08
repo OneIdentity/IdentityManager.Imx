@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -37,10 +37,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatMenuModule } from '@angular/material/menu';
 import { FormsModule } from '@angular/forms';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 
-import { DataSourceToolbarModule, DataTableModule, JobQueueOverviewModule, LdsReplaceModule, QbmModule } from 'qbm';
+import { BusyIndicatorModule, DataSourceToolbarModule, DataTableModule, JobQueueOverviewModule, LdsReplaceModule, ObjectHistoryModule, QbmModule } from 'qbm';
 import { FrozenJobsComponent } from './frozen-jobs/frozen-jobs.component';
 import { SingleFrozenJobComponent } from './frozen-jobs/single-frozen-job.component';
 import { JobChainsComponent } from './job-chains/job-chains.component';
@@ -54,6 +54,14 @@ import { JobPerformanceQueuesService } from './job-performance/job-performance-q
 import { JobPerformanceService } from './job-performance/job-performance.service';
 import { QueueJobsService } from './jobs/queue-jobs.service';
 import { MatRadioModule } from '@angular/material/radio';
+import { ObjectsByIdComponent } from './objects-by-id/objects-by-id.component';
+import { ObjectByIdService } from './objects-by-id/object-by-id.service';
+import { JobHistoryComponent } from './job-history/job-history.component';
+import { ErrorMessageSidesheetComponent } from './error-message-sidesheet/error-message-sidesheet.component';
+import { ChangeOperationSidesheetComponent } from './objects-by-id/change-operation-sidesheet/change-operation-sidesheet.component';
+import { ChangeOperationTableComponent } from './objects-by-id/change-operation-table.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 
 @NgModule({
@@ -64,6 +72,11 @@ import { MatRadioModule } from '@angular/material/radio';
     JobsGridviewComponent,
     JobsComponent,
     JobPerformanceComponent,
+    ObjectsByIdComponent,
+    JobHistoryComponent,
+    ErrorMessageSidesheetComponent,
+    ChangeOperationSidesheetComponent,
+    ChangeOperationTableComponent,
   ],
   imports: [
     CommonModule,
@@ -85,8 +98,12 @@ import { MatRadioModule } from '@angular/material/radio';
     MatCardModule,
     MatMenuModule,
     FormsModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
     MatSlideToggleModule,
-    JobQueueOverviewModule
+    JobQueueOverviewModule,
+    ObjectHistoryModule,
+    BusyIndicatorModule
   ],
   providers: [
     QueueTreeService,
@@ -95,6 +112,7 @@ import { MatRadioModule } from '@angular/material/radio';
     JobPerformanceQueuesService,
     JobPerformanceService,
     FrozenJobsService,
+    ObjectByIdService
   ]
 })
 export class ProcessesModule { }

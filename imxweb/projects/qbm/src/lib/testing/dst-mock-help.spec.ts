@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,26 +30,21 @@ export const mockDSTColumns: IClientProperty[] = [
   {
     Type: ValType.String,
     ColumnName: 'AutoUpdateLevel',
-    IsValidColumnForFiltering: true,
   },
   {
     Type: ValType.String,
     ColumnName: 'BaseURL',
-    IsValidColumnForFiltering: true,
   },
   {
     Type: ValType.String,
     ColumnName: 'IsDebug',
-    IsValidColumnForFiltering: true,
   },
   {
     Type: ValType.String,
     ColumnName: 'IsPrivate',
-    IsValidColumnForFiltering: true,
   },
   {
     Type: ValType.String,
     ColumnName: 'UID_DialogProduct',
-    IsValidColumnForFiltering: true,
   }
 ];

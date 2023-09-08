@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -53,10 +53,10 @@ export class AppComponent implements OnInit, OnDestroy {
         if (sessionState.hasErrorState) {
           // Needs to close here when there is an error on sessionState
           this.splash.close();
-        }
-
-        if (sessionState.IsLoggedOut) {
-          this.showPageContent = false;
+        }else {
+          if (sessionState.IsLoggedOut) {
+            this.showPageContent = false;
+          }
         }
 
         this.isLoggedIn = sessionState.IsLoggedIn;

@@ -1,0 +1,98 @@
+<div class="sap-analysis">
+  <mat-card [ngClass]="{ 'mat-card--decreased': !extendRole }">
+    <div class="mat-card__header">
+      <h3 class="mat-card__header__title">{{'#LDS#Heading Rule Analysis by Role' | translate}}</h3>
+      <button
+        data-imx-identifier="sidenav-tree-expand-toggle"
+        mat-button
+        color="primary"
+        (click)="toggleRoleExpand()"
+        [matTooltip]="(extendRole ? '#LDS#Hide roles' : '#LDS#Show roles') | translate"
+        *ngIf="selectedProfiles.length > 0"
+      >
+        <eui-icon icon="collapseleft"></eui-icon>
+        <h3>SAP Analysis Roles</h3>
+      </button>
+    </div>
+    <div class="sap-analysis__table">
+      <table mat-table [dataSource]="dataSource">
+        <ng-container matColumnDef="GroupName">
+          <th mat-header-cell *matHeaderCellDef>
+            <span [style.paddingLeft.px]="40">{{'#LDS#Group name' | translate}}</span>
+          </th>
+          <td mat-cell *matCellDef="let data" class="td--no-wrap">
+            <button mat-icon-button [style.visibility]="!data.expandable ? 'hidden' : ''" [style.marginLeft.px]="data.level * 16" (click)="treeControl.toggle(data)">
+              <mat-icon class="mat-icon-rtl-mirror">
+                {{ treeControl.isExpanded(data) ? 'expand_more' : 'chevron_right' }}
+              </mat-icon>
+            </button>
+
+            {{ data.GroupName }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="Description">
+          <th mat-header-cell *matHeaderCellDef>{{'#LDS#Description' | translate}}</th>
+          <td mat-cell *matCellDef="let data" ><span class="imx-table-column-ellipsis" title="{{data.Description}}">{{ data.Description }}</span></td>
+        </ng-container>
+        <ng-container matColumnDef="GroupType">
+          <th mat-header-cell *matHeaderCellDef>{{'#LDS#Group type' | translate}}</th>
+          <td mat-cell *matCellDef="let data">{{ data.GroupType }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" [ngClass]="{'sap-analysis-table-row-highlighted': hasProfiles(row) }" (click)="updateProfiles(row)"></tr>
+      </table>
+    </div>
+  </mat-card>
+  <mat-card *ngIf="showProfiles" [ngClass]="{ 'mat-card--decreased': !extendProfiles }">
+    <div class="mat-card__header">
+      <button
+        data-imx-identifier="sidenav-tree-expand-toggle"
+        mat-button
+        color="primary"
+        (click)="toggleProfilesExpand()"
+        [matTooltip]="(extendProfiles ? '#LDS#Hide profiles' : '#LDS#Show profiles') | translate"
+      >
+        <eui-icon icon="collapseright"></eui-icon>
+        <h3>{{'#LDS#Profiles' | translate}}</h3>
+      </button>
+      <h3 class="mat-card__header__title mat-card__header__title--wide" >{{'#LDS#Heading Selected Role' | translate}}: {{selectedRole?.GroupName}}</h3>
+    </div>
+    <eui-search
+      [placeholder]="'#LDS#Search' | translate"
+      [searchControl]="profileSearchControl"
+      size="s"
+      width="100%"
+    >
+    </eui-search>
+    <div class="sap-analysis__table">
+      <table mat-table matSort [dataSource]="profileDataSource" *ngIf="profileDataSource.data.length > 0">
+        <ng-container matColumnDef="Ident_SAPProfile">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'#LDS#Authentication' | translate}}</th>
+          <td mat-cell *matCellDef="let data">{{ data.Ident_SAPProfile }}</td>
+        </ng-container>
+        <ng-container matColumnDef="Objects">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'#LDS#Objects' | translate}}</th>
+          <td mat-cell *matCellDef="let data">{{ data.Objects }}</td>
+        </ng-container>
+        <ng-container matColumnDef="Field">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'#LDS#Field' | translate}}</th>
+          <td mat-cell *matCellDef="let data">{{ data.Field }}</td>
+        </ng-container>
+        <ng-container matColumnDef="LowerLimit">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'#LDS#From' | translate}}</th>
+          <td mat-cell *matCellDef="let data">{{ data.LowerLimit }}</td>
+        </ng-container>
+        <ng-container matColumnDef="UpperLimit">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'#LDS#To' | translate}}</th>
+          <td mat-cell *matCellDef="let data">{{ data.UpperLimit }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedProfileColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedProfileColumns"></tr>
+      </table>
+      <div *ngIf="profileDataSource.data.length == 0" class="no-results">
+        <eui-icon [icon]="'table'"></eui-icon>
+        <p>{{ '#LDS#No data' | translate}}</p>
+      </div>
+    </div>
+  </mat-card>
+</div>

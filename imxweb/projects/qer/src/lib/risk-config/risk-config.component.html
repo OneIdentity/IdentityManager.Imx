@@ -1,0 +1,48 @@
+<div class="imx-risk-config-page">
+  <div class="heading-wrapper">
+    <h1 class="mat-headline">
+      <span>{{ '#LDS#Heading Risk Index Functions' | translate }}</span>
+      <imx-help-contextual></imx-help-contextual>
+    </h1>
+  </div>
+  <mat-card>
+    <div class="imx-table-container">
+      <imx-data-source-toolbar
+        #dst
+        [options]="['search', 'settings', 'filter']"
+        [settings]="dstSettings"
+        [busyService]="busyService"
+        (search)="getData({ search: $event })"
+        (navigationStateChanged)="getData($event)"
+        data-imx-identifier="risk-config-dst"
+      >
+      </imx-data-source-toolbar>
+      <imx-data-table
+        #dataTable
+        [dst]="dst"
+        class="imx-pickcategory-table"
+        [detailViewVisible]="false"
+        mode="manual"
+        [showSelectedItemsMenu]="false"
+        data-imx-identifier="risk-config-datatable"
+        (highlightedEntityChanged)="onHighlightedEntityChanged($event)"
+      >
+        <imx-data-table-column data-imx-identifier="risk-config-table-column-display" [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"> </imx-data-table-column>
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns.TargetTable"></imx-data-table-column>
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns.Description"></imx-data-table-column>
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns.IsInActive"></imx-data-table-column>
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns.IsExecuteImmediate"></imx-data-table-column>
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns.Weight"></imx-data-table-column>
+      </imx-data-table>
+      <imx-data-source-paginator data-imx-identifier="risk-config-paginator" [dst]="dst"> </imx-data-source-paginator>
+    </div>
+  </mat-card>
+  <div class="imx-risk-config-page-actions" >
+    <button data-imx-identifier="risk-config-recalculate-button" mat-raised-button color="primary" (click)="onRecalculate()" [disabled]="recalculatingInProcess">
+      {{ '#LDS#Recalculate risk index' | translate }}
+    </button>
+    <div class="spinner" *ngIf="recalculatingInProcess">
+      <mat-spinner diameter="30"></mat-spinner>
+    </div>
+  </div>
+</div>

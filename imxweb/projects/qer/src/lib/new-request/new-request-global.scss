@@ -1,0 +1,198 @@
+@import '@elemental-ui/core/src/styles/_palette.scss';
+
+// $header-type: Values: body, title, label, emphasize, description
+// $primary: Sets the text color, Values: Boolean, default: false
+@mixin imx-text($header-type: body, $primary: false) {
+  font-size: 14px;
+  font-weight: 600;
+
+  @if $header-type == title {
+    font-size: 26px;
+    line-height: 33px;
+  } @else if $header-type == emphasize {
+    font-size: 20px;
+    line-height: 25px;
+  } @else if $header-type == label {
+    line-height: 18px;
+  } @else if $header-type == description {
+    color: $color-gray-40;
+    font-weight: 400;
+    line-height: 18px;
+    margin-left: 5px;
+  }
+
+}
+
+@mixin EUI-Elevation-1 {
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.14), 0px 2px 1px rgba(0, 0, 0, 0.12), 0px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+@mixin EUI-Elevation-2 {
+  box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.14), 0px 1px 10px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+@mixin Ease-Transition($duration: .4s) {
+  transition: all $duration ease;
+}
+
+.imx-spacer {
+  flex: 1 1 auto;
+}
+
+@mixin Layout-Styles {
+  :host {
+    height: 100%;
+    display: flex;
+    padding: 16px 24px;
+    row-gap: 10px;
+    column-gap: 24px;
+    overflow: hidden;
+
+    .imx-card-container {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+      @include EUI-Elevation-1;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    .image-category {
+      width: 24px;
+      height: auto;
+    }
+
+    .mat-chip {
+      cursor: pointer;
+    }
+  }
+
+  // Theming
+  :host {
+    .colored-icon {
+      color: $color-blue-60;
+    }
+
+    .imx-card-container {
+      border: 1px solid $color-gray-20;
+    }
+  }
+
+  .eui-dark-theme {
+    :host {
+      .colored-icon {
+        color: $color-blue-40;
+      }
+
+      .imx-card-container {
+        border: 1px solid $color-gray-60;
+      }
+    }
+  }
+}
+
+
+@mixin Table-Styles {
+  :host {    
+    img {
+      width: 32px;
+      height: auto;
+    }
+
+    .larger-icon {
+      font-size: 32px;
+      line-height: 32px;
+    }
+ 
+    .imx-progress-bar {
+      display: flex;
+      column-gap: 5px;
+      align-items: baseline;
+
+      .mat-progress-bar {
+        width: 200px;
+      }
+    }
+
+    .imx-request-col-image {
+      display: flex;
+      align-items: center;
+    }
+
+    .imx-request-col-display {
+      font-weight: 700;
+      font-size: 14px;
+      // line-height: 48px;
+    }
+
+    .imx-request-col-text {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 48px;
+    }
+
+    .imx-request-col-status {
+      font-weight: 400;
+      font-size: 24px;
+      line-height: 24px;
+    }
+
+    imx-data-table ::ng-deep tr.mat-header-row {
+      height: 50px;
+    }
+  }
+
+  // Theming
+  :host {
+    .imx-request-col-text, .imx-request-col-status {
+      color: $color-gray-60;
+    }
+  }
+
+  .eui-dark-theme {
+    :host {
+      .imx-request-col-text, .imx-request-col-status {
+        color: $color-gray-20;
+      }
+    }
+  }
+
+  .eui-contrast-theme {
+    :host {
+      imx-data-table ::ng-deep .mat-table.imx-data-table-highlightedActive {
+
+        tr.mat-row:hover,
+        tr.mat-row:hover .imx-request-col-text,
+        tr.mat-row:hover .imx-request-col-status {
+          color: $color-gray-100;
+        }
+      }    
+
+      imx-data-table ::ng-deep {
+        margin: 10px;
+        tr.mat-row.imx-data-table-row-highlighted {
+          margin: 10px;
+        }
+
+        tr.mat-row.imx-data-table-row-highlighted,
+        tr.mat-row.imx-data-table-row-highlighted .imx-request-col-text,
+        tr.mat-row.imx-data-table-row-highlighted .imx-request-col-status {
+          color: $color-gray-100;
+        }
+      }    
+
+      .imx-request-col-text, .imx-request-col-status {
+        color: $color-gray-0;
+      }
+
+      .colored-icon {
+        color: $color-blue-40;
+      }
+
+      .imx-card-container {
+        border: 1px solid $color-gray-80;
+      }
+    }
+  }
+}

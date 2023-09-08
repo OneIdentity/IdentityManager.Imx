@@ -1,0 +1,29 @@
+<div eui-sidesheet-content class="imx-flex-content">
+  <mat-card class="imx-full-card">
+    <imx-fk-candidates #fkSelector [busyService] ="busyService" [data]="data" (itemPicked)="applySelection($event)" (selectionChanged)="selectionChanged($event)"></imx-fk-candidates>
+  </mat-card>
+</div>
+
+<div eui-sidesheet-actions class="request-config__action-buttons">
+  <button
+    class="justify-start"
+    *ngIf="data?.isMultiValue"
+    [disabled]="selectedItems?.length === 0"
+    mat-stroked-button
+    type="button"
+    (click)="fkSelector.clearSelection()"
+    data-imx-identifier="requests-selector-clear-selection"
+  >
+    <span translate>#LDS#Clear selection</span>
+  </button>
+  <button
+    *ngIf="data?.isMultiValue"
+    mat-raised-button
+    color="primary"
+    [disabled]="selectedItems?.length === 0"
+    (click)="applySelection()"
+    data-imx-identifier="requests-selector-apply-selection"
+  >
+    <span translate>#LDS#Add members</span>
+  </button>
+</div>

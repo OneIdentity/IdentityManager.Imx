@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, EventEmitter, OnDestroy } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { UntypedFormControl, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
@@ -40,10 +40,10 @@ import { MultiValueService } from '../../multi-value/multi-value.service';
 @Component({
   selector: 'imx-edit-multi-value',
   templateUrl: './edit-multi-value.component.html',
-  styleUrls: ['./edit-multi-value.component.scss']
+  styleUrls: ['./edit-multi-value.component.scss'],
 })
 export class EditMultiValueComponent implements CdrEditor, OnDestroy {
-  public readonly control = new FormControl(undefined, { updateOn: 'blur' });
+  public readonly control = new UntypedFormControl(undefined, { updateOn: 'blur' });
 
   public readonly columnContainer = new EntityColumnContainer<string>();
 
@@ -52,10 +52,10 @@ export class EditMultiValueComponent implements CdrEditor, OnDestroy {
   private readonly subscribers: Subscription[] = [];
   private isWriting = false;
 
-  constructor(private readonly logger: ClassloggerService, private readonly multiValueProvider: MultiValueService) { }
+  constructor(private readonly logger: ClassloggerService, private readonly multiValueProvider: MultiValueService) {}
 
   public ngOnDestroy(): void {
-    this.subscribers.forEach(subscriber => subscriber.unsubscribe());
+    this.subscribers.forEach((subscriber) => subscriber.unsubscribe());
   }
 
   /**
@@ -70,14 +70,32 @@ export class EditMultiValueComponent implements CdrEditor, OnDestroy {
         this.logger.debug(this, 'value is required');
         this.control.setValidators(Validators.required);
       }
-      this.subscribers.push(this.columnContainer.subscribe(() => {
-        if (!this.isWriting) { return; }
-        if (this.control.value !== this.columnContainer.value) {
-          this.control.setValue(this.columnContainer.value);
-        }
-        this.valueHasChanged.emit({value: this.control.value});
-      }));
-      this.subscribers.push(this.control.valueChanges.subscribe(async value => this.writeValue(this.fromTextArea(value))));
+
+      if (cdref.minlengthSubject) {
+        this.subscribers.push(
+          cdref.minlengthSubject.subscribe(() => {
+            if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
+              this.logger.debug(this, 'value is required');
+              this.control.setValidators(Validators.required);
+            } else {
+              this.control.setValidators(null);
+            }
+          })
+        );
+      }
+
+      this.subscribers.push(
+        this.columnContainer.subscribe(() => {
+          if (!this.isWriting) {
+            return;
+          }
+          if (this.control.value !== this.columnContainer.value) {
+            this.control.setValue(this.columnContainer.value);
+          }
+          this.valueHasChanged.emit({ value: this.control.value });
+        })
+      );
+      this.subscribers.push(this.control.valueChanges.subscribe(async (value) => this.writeValue(this.fromTextArea(value))));
       this.logger.trace(this, 'Control initialized');
     } else {
       this.logger.error(this, 'The Column Dependent Reference is undefined');
@@ -109,7 +127,7 @@ export class EditMultiValueComponent implements CdrEditor, OnDestroy {
       }
     }
 
-    this.valueHasChanged.emit({value, forceEmit: true});
+    this.valueHasChanged.emit({ value, forceEmit: true });
   }
 
   private toTextArea(value: string): string {

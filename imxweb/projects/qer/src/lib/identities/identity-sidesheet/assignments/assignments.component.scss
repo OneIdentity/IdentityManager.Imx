@@ -1,5 +1,6 @@
 @import "@elemental-ui/core/src/styles/_palette.scss";
-
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import '../../../../../../../shared/scss/side-navigation.scss';
 :host {
   height: 100%;
 }
@@ -78,7 +79,7 @@
     }
 
     .mat-sidenav-content {
-      padding: 30px;
+      padding: 20px;
       position: relative;
       display: flex;
       flex-direction: column;
@@ -130,6 +131,26 @@
 
     .mat-sidenav-content {
       padding: 16px;
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host{
+    .snavigation .mat-sidenav-container{
+      background-color: $color-gray-80;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host{
+    .snavigation .mat-sidenav-container{
+      background-color: $color-gray-100;
+    }
+
+    .snavigation-item--selected {
+      border: 1px solid $color-gray-0
     }
   }
 }

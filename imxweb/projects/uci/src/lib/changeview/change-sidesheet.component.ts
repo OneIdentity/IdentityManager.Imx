@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,35 +24,40 @@
  *
  */
 
-import { Component, Inject } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from "@elemental-ui/core";
-import { ManualChangeOperation, ManualChangeOperationData, OpsupportUciChangedetail } from "imx-api-uci";
-import { ExtendedTypedEntityCollection, IEntityColumn, LocalEntityColumn } from "imx-qbm-dbts";
-import { ImxTranslationProviderService, MessageDialogComponent, MessageDialogResult } from "qbm";
-import { UciApiService } from "../uci-api-client.service";
+import { Component, Inject } from '@angular/core';
+
+import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+
+import { ManualChangeOperation, ManualChangeOperationData, OpsupportUciChangedetail } from 'imx-api-uci';
+import { ExtendedTypedEntityCollection, IEntityColumn, LocalEntityColumn } from 'imx-qbm-dbts';
+import { ConfirmationService } from 'qbm';
+
+import { UciApiService } from '../uci-api-client.service';
 
 @Component({
   templateUrl: './change-sidesheet.component.html',
-  styleUrls: ['./change-sidesheet.component.scss']
+  styleUrls: ['./change-sidesheet.component.scss'],
 })
 export class ChangeSidesheetComponent {
+  public changeDetail: OpsupportUciChangedetail[] = [];
+  public manualChangeData: ManualChangeOperation[][] = [];
+  public changeProperties: IEntityColumn[][] = [];
 
   constructor(
     @Inject(EUI_SIDESHEET_DATA) change: ExtendedTypedEntityCollection<OpsupportUciChangedetail, ManualChangeOperationData>,
-    private translator: ImxTranslationProviderService,
     private readonly uciApi: UciApiService,
-    private readonly sidesheetRef: EuiSidesheetRef,
-    private dialogService: MatDialog) {
+    private readonly sidesheetRef: EuiSidesheetRef,    
+    private readonly confirmation: ConfirmationService
+    ) {
+
     this.changeDetail = change.Data;
     this.manualChangeData = change.extendedData.Operations;
 
     // build entity columns from extended data
-    this.changeProperties = this.manualChangeData.map(d => {
-      return d.map(c => {
-
+    this.changeProperties = this.manualChangeData.map((d) => {
+      return d.map((c) => {
         const prop = new LocalEntityColumn(c.Property, null, null, {
-          Value: c.DiffValue
+          Value: c.DiffValue,
         });
 
         return prop;
@@ -60,50 +65,31 @@ export class ChangeSidesheetComponent {
     });
   }
 
-  public changeDetail: OpsupportUciChangedetail[] = [];
-  public manualChangeData: ManualChangeOperation[][] = [];
-  public changeProperties: IEntityColumn[][] = [];
-
   public async MarkAsDone(detail: OpsupportUciChangedetail): Promise<void> {
-    const dialogRef = this.dialogService.open(MessageDialogComponent, {
-      data: {
-        ShowCancel: true,
-        ShowOk: true,
-        Title: await this.translator.Translate("#LDS#Confirm").toPromise(),
-        Message: await this.translator.Translate("#LDS#Confirm that you have made the requested change on the target system.").toPromise()
-      }, panelClass: 'imx-messageDialog'
-    });
-
-    const result = await dialogRef.afterClosed().toPromise();
-    if (result === MessageDialogResult.OkResult) {
-      await this.Save(detail, true);
+    if (await this.confirmation.confirm({
+      Title: '#LDS#Heading Mark As Successful',
+      Message: '#LDS#The provisioning process will be marked as successful. Are you sure you have made the requested change in the cloud application?'
+    })) {
+      await this.save(detail, true);
     };
 
-  }
-
-  private async Save(detail: OpsupportUciChangedetail, success: boolean) {
-    await this.uciApi.client.opsupport_uci_changes_post(detail.GetEntity().GetKeys()[0], { Success: success });
-    this.sidesheetRef.close(true /* reload */);
   }
 
   public async MarkAsError(detail: OpsupportUciChangedetail): Promise<void> {
-    const dialogRef = this.dialogService.open(MessageDialogComponent, {
-      data: {
-        ShowCancel: true,
-        ShowOk: true,
-        Title: await this.translator.Translate("#LDS#Confirm").toPromise(),
-        Message: await this.translator.Translate("#LDS#Confirm that the requested change cannot be made on the target system.").toPromise()
-      }, panelClass: 'imx-messageDialog'
-    });
-
-    const result = await dialogRef.afterClosed().toPromise();
-    if (result === MessageDialogResult.OkResult) {
-      await this.Save(detail, false);
+    if (await this.confirmation.confirm({
+      Title: '#LDS#Heading Mark As Failed',
+      Message: '#LDS#The provisioning process will be marked as failed. Are you sure you cannot make the requested change in the cloud application?'
+    })) {
+      await this.save(detail, false);
     };
   }
 
-  CanMarkAsDone(detail: OpsupportUciChangedetail): boolean {
-    return detail.IsProcessed.value == 0;
+  public canMarkAsDone(detail: OpsupportUciChangedetail): boolean {
+    return detail.IsProcessed.value === 0;
   }
 
+  private async save(detail: OpsupportUciChangedetail, success: boolean): Promise<void> {
+    await this.uciApi.client.opsupport_uci_changes_post(detail.GetEntity().GetKeys()[0], { Success: success });
+    this.sidesheetRef.close(true /* reload */);
+  }
 }

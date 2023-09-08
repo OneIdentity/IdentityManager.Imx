@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,12 +24,10 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { EuiLoadingService } from '@elemental-ui/core';
 
-import { PendingItemsType, UserModelService } from 'qer';
+import { DashboardService, PendingItemsType, UserModelService } from 'qer';
 import { AttestationFeatureGuardService } from '../attestation-feature-guard.service';
 
 @Component({
@@ -42,21 +40,24 @@ export class DashboardPluginComponent implements OnInit {
 
   constructor(
     public readonly router: Router,
-    private readonly busyService: EuiLoadingService,
+    private readonly dashboardSvc: DashboardService,
     private readonly userModelSvc: UserModelService,
     private readonly attFeatureGuard: AttestationFeatureGuardService
   ) { }
 
   public async ngOnInit(): Promise<void> {
 
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    const busy = this.dashboardSvc.beginBusy();
 
     try {
       this.pendingItems = await this.userModelSvc.getPendingItems();
       this.attEnabled = (await this.attFeatureGuard.getAttestationConfig()).IsAttestationEnabled;
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      busy.endBusy();
     }
+  }
+
+  public goToAttestationInquiries(): void {
+    this.router.navigate(['attestation', 'decision'], {queryParams: {inquiries:true}});
   }
 }

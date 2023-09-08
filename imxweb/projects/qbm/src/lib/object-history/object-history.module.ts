@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -40,14 +40,34 @@ import { TranslateModule } from '@ngx-translate/core';
 import { DataSourceToolbarModule } from '../data-source-toolbar/data-source-toolbar.module';
 import { DataTableModule } from '../data-table/data-table.module';
 import { ObjectHistoryGridviewComponent } from './object-history-gridview/object-history-gridview.component';
-import { ObjectHistoryTimelineComponent } from './object-history-timeline/object-history-timeline.component';
 import { ObjectHistoryComponent } from './object-history.component';
+import { ObjectHistoryStateComparisonComponent } from './object-history-state-comparison/object-history-state-comparison.component';
+import { ObjectHistoryStateOverviewComponent } from './object-history-state-overview/object-history-state-overview.component';
+
+import {MomentDateAdapter} from '@angular/material-moment-adapter';
+ import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { TimelineComponent } from '../timeline/timeline.component';
+
+ export const EUI_DATE_FORMATS = {
+   parse: {
+     dateInput: ['LL', 'L'],
+   },
+   display: {
+     dateInput: 'LL',
+     monthYearLabel: 'MMM YYYY',
+     dateA11yLabel: 'LL',
+     monthYearA11yLabel: 'MMMM YYYY',
+   },
+ };
 
 @NgModule({
   declarations: [
     ObjectHistoryGridviewComponent,
-    ObjectHistoryTimelineComponent,
     ObjectHistoryComponent,
+    ObjectHistoryStateComparisonComponent,
+    ObjectHistoryStateOverviewComponent,
+    TimelineComponent
   ],
   imports: [
     CommonModule,
@@ -64,9 +84,15 @@ import { ObjectHistoryComponent } from './object-history.component';
     TranslateModule,
     MatTableModule,
     MatPaginatorModule,
+    MatButtonToggleModule,
+  ],
+  providers: [
+    {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
+    {provide: MAT_DATE_FORMATS, useValue: EUI_DATE_FORMATS}
   ],
   exports: [
-    ObjectHistoryComponent
+    ObjectHistoryComponent,
+    ObjectHistoryGridviewComponent
   ]
 })
 export class ObjectHistoryModule {

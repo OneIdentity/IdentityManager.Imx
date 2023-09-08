@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,50 +24,63 @@
  *
  */
 
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { EuiTheme } from '@elemental-ui/core';
 
 @Component({
-  selector: "imx-ordered-list",
+  selector: 'imx-ordered-list',
   templateUrl: './ordered-list.component.html',
-  styleUrls: ['./ordered-list.component.scss']
+  styleUrls: ['./ordered-list.component.scss'],
 })
 export class OrderedListComponent {
-
   @Input() addNewText: string;
   @Input() deleteText: string;
+  @Input() placeholder: string;
   @Input() testId: string = 'list';
-  @Input() dataSource: { Name: string, Display: string }[] = [];
+  @Input() dataSource: { Name: string; Display: string }[] = [];
   @Input() data: string[] = [];
+  @Input() isReadOnly: boolean = false;
 
-  ngOnInit(): void {
+  @Output() valueChanged = new EventEmitter<void>();
+
+  /** Gets the theme, that is currently applied to the web page */
+  public get theme(): string {
+    const bodyClasses = document.body.classList;
+    return bodyClasses.contains(EuiTheme.LIGHT)
+      ? EuiTheme.LIGHT
+      : bodyClasses.contains(EuiTheme.DARK)
+      ? EuiTheme.DARK
+      : bodyClasses.contains(EuiTheme.CONTRAST)
+      ? EuiTheme.CONTRAST
+      : '';
   }
 
-  drop(event: CdkDragDrop<string[]>) {
+  public drop(event: CdkDragDrop<string[]>): void {
     moveItemInArray(this.data, event.previousIndex, event.currentIndex);
     this.notifyChange();
   }
 
-  deleteElement(ind: number) {
+  public deleteElement(ind: number): void {
     this.data.splice(ind, 1);
     this.notifyChange();
   }
 
-  addNew() {
+  public addNew(): void {
     this.data.push(null);
     this.notifyChange();
   }
 
-  optionSelected() {
+  public optionSelected(): void {
     this.notifyChange();
   }
 
   private notifyChange() {
-
+    this.valueChanged.emit();
   }
 
   // https://stackoverflow.com/questions/42322968/angular2-dynamic-input-field-lose-focus-when-input-changes
-  trackByFn(index: any, item: any) {
+  public trackByFn(index: any, item: any) {
     return index;
   }
 }

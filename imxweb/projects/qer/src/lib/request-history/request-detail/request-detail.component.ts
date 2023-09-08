@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -48,7 +48,7 @@ export class RequestDetailComponent implements OnDestroy {
     public readonly actionService: RequestActionService,
     private readonly sideSheetRef: EuiSidesheetRef
   ) {
-    this.allowedActionCount = [
+    this.allowedActionCount = data.disableActions === true ? 0 : [
       // TODO Later: this.data.personWantsOrg.ResendRequestAllowed.value,
       this.data.personWantsOrg.canProlongate,
       this.data.personWantsOrg.CancelRequestAllowed.value,
@@ -56,7 +56,8 @@ export class RequestDetailComponent implements OnDestroy {
       this.data.personWantsOrg.canWithdrawAdditionalApprover && this.data.itShopConfig.VI_ITShop_OrderHistory_CancelOrder,
       this.data.personWantsOrg.canRecallLastQuestion,
       this.data.personWantsOrg.canRevokeHoldStatus,
-      this.data.personWantsOrg.canRecallDecision
+      this.data.personWantsOrg.canRecallDecision,
+      this.data.personWantsOrg.canCopyItems
     ].filter(condition => condition).length;
 
     this.subscriptions.push(this.actionService.applied.subscribe(() => this.sideSheetRef.close(true)));

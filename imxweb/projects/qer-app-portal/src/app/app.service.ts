@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -37,10 +37,15 @@ import {
   ClassloggerService,
   AuthenticationService,
   PluginLoaderService,
-  SplashService
+  SplashService,
+  SystemInfoService
 } from 'qbm';
+import {
+  NotificationStreamService
+} from 'qer';
 import { environment } from '../environments/environment';
 import { TypedClient } from 'imx-api-qbm';
+import { PortalDocConfigurationService } from './portal-doc-configuration.service';
 
 import * as QBM from 'qbm';
 import * as QER from 'qer';
@@ -55,27 +60,21 @@ export class AppService {
     public readonly registry: CdrRegistryService,
     private readonly logger: ClassloggerService,
     private readonly config: AppConfigService,
+    private readonly systemInfoService: SystemInfoService,
     private readonly translateService: TranslateService,
     private readonly session: imx_SessionService,
     private readonly translationProvider: ImxTranslationProviderService,
     private readonly title: Title,
     private readonly pluginLoader: PluginLoaderService,
     private readonly authentication: AuthenticationService,
+    private readonly notificationService: NotificationStreamService,
     private readonly splash: SplashService,
+    private readonly docSvc: PortalDocConfigurationService,
   ) { }
 
   public async init(): Promise<void> {
     this.showSplash();
-
     await this.config.init(environment.clientUrl);
-
-    const imxConfig = await this.config.getImxConfig();
-    const name = imxConfig.ProductName || Globals.QIM_ProductNameFull;
-    const title = `${name} ${this.config.Config.Title}`;
-    this.logger.debug(this, `Set page title to ${title}`);
-    this.title.setTitle(title);
-
-    await this.updateSplash(title);
 
     this.translateService.addLangs(this.config.Config.Translation.Langs);
     const browserCulture = this.translateService.getBrowserCultureLang();
@@ -83,14 +82,37 @@ export class AppService {
     this.translateService.setDefaultLang(browserCulture);
     await this.translateService.use(browserCulture).toPromise();
 
-    this.authentication.onSessionResponse.subscribe(sessionState => this.translationProvider.init(sessionState?.culture));
+    this.translateService.onLangChange.subscribe(() => {
+      this.setTitle();
+    });
+
+    this.setTitle();
+
+    this.authentication.onSessionResponse.subscribe(sessionState => {
+      if(sessionState && sessionState.IsLoggedIn) {
+        // when the user logs in, start listening to notifications
+        this.notificationService.openStream();
+      }
+    });
 
     this.session.TypedClient = new TypedClient(this.config.v2client, this.translationProvider);
+
+    this.docSvc.setupPaths();
 
     SystemJS.set('qbm', SystemJS.newModule(QBM));
     SystemJS.set('qer', SystemJS.newModule(QER));
 
     await this.pluginLoader.loadModules(environment.appName);
+  }
+
+  private async setTitle(): Promise<void> {
+    const imxConfig = await this.systemInfoService.getImxConfig();
+    const name = imxConfig.ProductName || Globals.QIM_ProductNameFull;
+    this.config.Config.Title = await this.translateService.get('#LDS#Heading Web Portal').toPromise();
+    const title = `${name} ${this.config.Config.Title}`;
+    this.title.setTitle(title);
+
+    await this.updateSplash(title);
   }
 
   public static init(app: AppService): () => Promise<any> {

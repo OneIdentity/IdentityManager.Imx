@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,6 +25,9 @@
  */
 
 import { Injectable } from '@angular/core';
+import { EuiTopNavigationItem, EuiTopNavigationItemType } from '@elemental-ui/core';
+import { TranslateService } from '@ngx-translate/core';
+
 import { ProjectConfig } from 'imx-api-qbm';
 
 import { MenuFactory, MenuItem } from './menu-item/menu-item.interface';
@@ -35,6 +38,10 @@ import { MenuFactory, MenuItem } from './menu-item/menu-item.interface';
 export class MenuService {
   private factories: MenuFactory[] = [];
 
+  constructor(
+    private readonly translate: TranslateService
+  ) { }
+
   public addMenuFactories(...factories: MenuFactory[]): void {
     this.factories.push(...factories);
   }
@@ -43,15 +50,11 @@ export class MenuService {
     this.factories = [];
   }
 
-  public getMenuItems(
-    preProps: string[],
-    groups: string[],
-    allowEmpty: boolean = false,
-    projectConfig?: ProjectConfig): MenuItem[] {
+  public async getMenuItems(preProps: string[], features: string[], allowEmpty: boolean = false, projectConfig?: ProjectConfig, groups?: string[]): Promise<EuiTopNavigationItem[]> {
     const menuItems: MenuItem[] = [];
 
     this.factories
-      .map(factory => factory(preProps, groups, projectConfig))
+      .map(factory => factory(preProps, features, projectConfig, groups || []))
       .filter(menu => menu && (allowEmpty || (menu.items && menu.items.length > 0)))
       .sort((item1, item2) => this.compareMenuItems(item1, item2))
       .forEach(menu => {
@@ -68,7 +71,33 @@ export class MenuService {
         }
       });
 
-    return menuItems;
+    return await this.getNavigationItems(menuItems);
+  }
+
+  private async getNavigationItems(menuItems: MenuItem[]): Promise<EuiTopNavigationItem[]> {
+    const navItems: EuiTopNavigationItem[] = [];
+
+    for (const menuItem of menuItems) {
+      const hasSubItems = menuItem.items && menuItem.items.length > 0;
+      const caption = await this.translate.get(menuItem.title).toPromise();
+      const navItem: EuiTopNavigationItem = {
+        type: hasSubItems ? EuiTopNavigationItemType.Menu : EuiTopNavigationItemType.RouterLink,
+        text: caption,
+        routerLinkActiveOptions: {
+          matrixParams: 'exact',
+          queryParams: 'exact',
+          paths: 'subset',
+          fragment: 'exact'
+        },
+      };
+      if (hasSubItems) {
+        navItem.items = await this.getNavigationItems(menuItem.items);
+      } else {
+        navItem.url = menuItem.route ? menuItem.route : menuItem.navigationCommands.commands;
+      }
+      navItems.push(navItem);
+    }
+    return navItems;
   }
 
   private sortMenuItems(items: MenuItem[]): MenuItem[] {

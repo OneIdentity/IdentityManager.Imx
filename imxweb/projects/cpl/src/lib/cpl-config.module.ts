@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,33 +36,38 @@ import { Routes, RouterModule } from '@angular/router';
 import { EuiCoreModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { ClassloggerService, RouteGuardService } from 'qbm';
+import { CdrModule, ClassloggerService, HELP_CONTEXTUAL, RouteGuardService } from 'qbm';
 import { InitService } from './init.service';
 import { TilesModule } from 'qer';
 import { DashboardPluginComponent } from './dashboard-plugin/dashboard-plugin.component';
 import { CartItemComplianceCheckComponent } from './item-validator/cart-item-compliance-check/cart-item-compliance-check.component';
 import { RulesComponent } from './rules/rules.component';
-import { ComplianceViolationDetailsComponent } from './request/compliance-violation-details/compliance-violation-details.component';
-import { WorkflowViolationDetailsComponent } from './request/workflow-violation-details/workflow-violation-details.component';
+
 import { IdentityRuleViolationsModule } from './identity-rule-violations/identity-rule-violations.module';
 import { RulesViolationsModule } from './rules-violations/rules-violations.module';
 import { RulesViolationsComponent } from './rules-violations/rules-violations.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ComplianceRulesGuardService } from './guards/compliance-rules-guard.service';
-import { RuleViolationsGuardService } from './guards/rule-violations-guard.service';
-
+import { MatCardModule } from '@angular/material/card';
+import { RequestModule} from './request/request.module';
 const routes: Routes = [
   {
     path: 'compliance/rules',
     component: RulesComponent,
     canActivate: [RouteGuardService, ComplianceRulesGuardService],
     resolve: [RouteGuardService],
+    data:{
+      contextId: HELP_CONTEXTUAL.ComplianceRules
+    }
   },
   {
     path: 'compliance/rulesviolations/approve',
     component: RulesViolationsComponent,
-    canActivate: [RouteGuardService, RuleViolationsGuardService],
-    resolve: [RouteGuardService]
+    canActivate: [RouteGuardService, ComplianceRulesGuardService],
+    resolve: [RouteGuardService],
+    data:{
+      contextId: HELP_CONTEXTUAL.ComplianceRulesViolationsApprove
+    }
   },
 ];
 
@@ -70,14 +75,14 @@ const routes: Routes = [
   declarations: [
     DashboardPluginComponent,
     CartItemComplianceCheckComponent,
-    ComplianceViolationDetailsComponent,
-    WorkflowViolationDetailsComponent,
   ],
   imports: [
     CommonModule,
+    CdrModule,
     EuiCoreModule,
     FormsModule,
     MatButtonModule,
+    MatCardModule,
     MatExpansionModule,
     MatFormFieldModule,
     MatIconModule,
@@ -86,6 +91,7 @@ const routes: Routes = [
     ReactiveFormsModule,
     RouterModule.forChild(routes),
     RulesViolationsModule,
+    RequestModule,
     TilesModule,
     TranslateModule,
     EuiCoreModule,
@@ -96,6 +102,6 @@ export class CplConfigModule {
   constructor(private readonly initializer: InitService, private readonly logger: ClassloggerService) {
     this.logger.info(this, '🔥 CPL loaded');
     this.initializer.onInit(routes);
-    this.logger.info(this, '▶️ CPL initialized');
+    this.logger.info(this, '▶︝ CPL initialized');
   }
 }

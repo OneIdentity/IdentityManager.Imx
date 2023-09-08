@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,16 +24,16 @@
  *
  */
 
-import { Component, Input, OnInit } from '@angular/core';
-import { AbstractControl, FormGroup } from '@angular/forms';
-import { EuiLoadingService, EuiSidesheetRef, EuiSidesheetService } from '@elemental-ui/core';
+import { Component, OnInit } from '@angular/core';
+import { AbstractControl, UntypedFormGroup } from '@angular/forms';
+import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { OwnershipInformation } from 'imx-api-qer';
-import { IEntity, TypedEntity } from 'imx-qbm-dbts';
-import { BaseCdr, ColumnDependentReference, SnackBarService } from 'qbm';
+import { TypedEntity } from 'imx-qbm-dbts';
+import { ColumnDependentReference, SnackBarService, CdrFactoryService } from 'qbm';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
 import { CompareComponent } from '../compare/compare.component';
+import { DataManagementService } from '../data-management.service';
 import { RoleService } from '../role.service';
 import { RollbackComponent } from '../rollback/rollback.component';
 import { SplitComponent } from '../split/split.component';
@@ -45,47 +45,47 @@ import { SplitComponent } from '../split/split.component';
   styleUrls: ['./role-main-data.component.scss'],
 })
 export class RoleMainDataComponent implements OnInit {
-  @Input() public item: IEntity;
-  @Input() public isAdmin: boolean;
-  @Input() public ownershipInfo: OwnershipInformation;
-  @Input() public editableFields: string[];
+  public editableFields: string[];
 
   public properties: ColumnDependentReference[] = [];
-  public readonly formGroup = new FormGroup({});
+  public readonly formGroup = new UntypedFormGroup({});
   public canCompare: boolean;
+  public canEdit: boolean;
 
   private entity: TypedEntity;
   public canSplitRole: boolean;
 
   constructor(
     private readonly roleService: RoleService,
+    private dataManagementService: DataManagementService,
     private readonly projectConfig: ProjectConfigurationService,
     private readonly busyService: EuiLoadingService,
-    private readonly sidesheetRef: EuiSidesheetRef,
     private readonly sidesheet: EuiSidesheetService,
     private readonly translateService: TranslateService,
+    private readonly cdrfactoryService: CdrFactoryService,
     private snackbar: SnackBarService) {
+      this.canEdit = roleService.canEdit;
     this.formGroup.valueChanges.subscribe(() => {
-      this.formGroup.dirty || this.formGroup.invalid ? this.roleService.dataDirty(true) : this.roleService.dataDirty(false);
+      this.formGroup.dirty || this.formGroup.invalid ? this.dataManagementService.mainDataDirty(true) : this.dataManagementService.mainDataDirty(false);
     });
   }
 
   public async ngOnInit(): Promise<void> {
     this.busyService.show();
     try {
-      this.entity = await this.roleService.getInteractive(this.ownershipInfo.TableName, this.item.GetKeys()[0], this.isAdmin);
+      this.entity = this.dataManagementService.entityInteractive;
+      this.editableFields = await this.roleService.getEditableFields(this.roleService.ownershipInfo.TableName, this.dataManagementService.entityInteractive.GetEntity());
 
       const config = await this.projectConfig.getConfig();
 
-      this.canSplitRole = (this.isAdmin 
+      this.canSplitRole = (this.roleService.isAdmin
         ? config.RoleMgmtConfig.Allow_Roles_Split_By_Admin
         : config.RoleMgmtConfig.Allow_Roles_Split_By_Business_Owner)
-        && this.roleService.getRoleTypeInfo(this.ownershipInfo.TableName).canBeSplitSource;
+        && this.roleService.getRoleTypeInfo().canBeSplitSource;
       this.setCdrs();
 
       // can we compare this role to another role?
-      this.roleService.getComparisonConfig().then(c =>
-        this.canCompare = c.filter(x => x.FkParentTableName == this.ownershipInfo.TableName).length > 0);
+      this.canCompare = await this.roleService.canCompare()
 
     } finally {
       this.busyService.hide();
@@ -103,9 +103,9 @@ export class RoleMainDataComponent implements OnInit {
   public async onSave(): Promise<void> {
     this.busyService.show();
     try {
-      await this.entity.GetEntity().Commit(false);
+      await this.dataManagementService.refreshInteractive();
       this.formGroup.markAsPristine();
-      this.sidesheetRef.close();
+      this.dataManagementService.mainDataDirty(false);
       this.snackbar.open({
         key: '#LDS#Your changes have been successfully saved.'
       });
@@ -115,66 +115,43 @@ export class RoleMainDataComponent implements OnInit {
   }
 
   private setCdrs(): void {
-    if (this.properties.length > 0) {
-      this.properties = [];
-    }
-
-    let cdr: ColumnDependentReference;
-    const entity = this.entity.GetEntity();
-    for (const columnName of this.editableFields) {
-      if (!entity.GetSchema().Columns[columnName])
-        continue;
-      cdr = new BaseCdr(entity.GetColumn(columnName));
-      this.properties.push(cdr);
-    }
+       const entity = this.entity.GetEntity();
+    this.properties = this.cdrfactoryService.buildCdrFromColumnList(entity,this.editableFields);
+ 
   }
 
   public async openCompareSidesheet(): Promise<void> {
     this.sidesheet.open(CompareComponent, {
       title: await this.translateService.get('#LDS#Heading Compare and Merge').toPromise(),
-      headerColour: 'iris-blue',
-      bodyColour: 'asher-gray',
+      subTitle: this.entity.GetEntity().GetDisplay(),
       padding: '0px',
       width: 'max(600px, 60%)',
       testId: 'role-main-data-compare-sidesheet',
-      data: {
-        isAdmin: this.isAdmin,
-        roleType: this.entity.GetEntity().TypeName,
-        uidRole: this.item.GetKeys()[0]
-      }
     });
   }
 
   public async openRollbackSidesheet(): Promise<void> {
+    const entity = this.entity.GetEntity();
     this.sidesheet.open(RollbackComponent, {
-      title: await this.translateService.get('#LDS#Heading Rollback to a previous state').toPromise(),
-      headerColour: 'iris-blue',
-      bodyColour: 'asher-gray',
+      title: await this.translateService.get('#LDS#Heading Reset to Previous State').toPromise(),
+      subTitle:  this.entity.GetEntity().GetDisplay(),
       padding: '0px',
       width: 'max(600px, 60%)',
       testId: 'role-main-data-rollback-sidesheet',
       data: {
-        tableName: this.entity.GetEntity().TypeName,
-        uid: this.item.GetKeys()[0]
+        tableName: entity.TypeName,
+        uid: entity.GetKeys()[0]
       }
     });
   }
 
   public async splitRole(): Promise<void> {
-    const result = await this.sidesheet.open(SplitComponent, {
+    await this.sidesheet.open(SplitComponent, {
       title: await this.translateService.get('#LDS#Heading Split').toPromise(),
-      headerColour: 'iris-blue',
-      bodyColour: 'asher-gray',
+      subTitle: this.entity.GetEntity().GetDisplay(),
       padding: '0px',
       width: 'max(600px, 60%)',
       testId: 'role-main-data-split-sidesheet',
-      data: {
-        isAdmin: this.isAdmin,
-        roleType: this.entity.GetEntity().TypeName,
-        uidRole: this.item.GetKeys()[0]
-      }
     }).afterClosed().toPromise();
-
-    // if result === true, the role was split
   }
 }

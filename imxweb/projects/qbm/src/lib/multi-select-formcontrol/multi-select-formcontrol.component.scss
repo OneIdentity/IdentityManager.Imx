@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   margin-top: 10px;
@@ -66,20 +66,12 @@
     flex-direction: row;
 
     .imx-candidate-display {
-      color: $black-3;
       font-size: 14px;
       line-height: 14px;
       flex: 1;
       text-overflow: ellipsis;
       overflow: hidden;
       width: 100vw;
-    }
-
-    .imx-candidate-longdisplay {
-      color: $black-9;
-      font-size: 12px;
-      text-overflow: ellipsis;
-      overflow: hidden;
     }
   }
 }
@@ -89,11 +81,20 @@
 }
 
 mat-list-item:hover {
-  background-color: $asher-gray;
+  background-color: $color-gray-2;
 }
 
 eui-icon {
   cursor: pointer;
+}
+
+mat-form-field {
+  button {
+    eui-icon {
+      font-size: 14px;
+      margin-right: 4px;
+    }
+  }
 }
 
 

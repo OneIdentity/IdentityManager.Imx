@@ -1,11 +1,11 @@
 :host {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .imx-terms-of-use-accept-button-container {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 
 .heading-wrapper {
@@ -21,6 +21,25 @@
     font-size: larger;
     font-weight: 600;
   }
+}
+
+.hidden {
+  display: none;
+}
+
+imx-busy-indicator {
+  align-self: center;
+  justify-self: center;
+}
+
+eui-alert,
+.imx-success-message {
+  margin-bottom: 20px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
 }
 
 .eui-sidesheet-actions {

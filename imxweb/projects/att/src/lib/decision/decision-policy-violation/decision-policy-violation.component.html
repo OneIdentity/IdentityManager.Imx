@@ -1,0 +1,76 @@
+<div class="heading-wrapper">
+  <div class="alert-wrapper">
+    <eui-alert class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="false">
+      <span>
+        {{'#LDS#Here you can get an overview of all policy violations of this attestation case.' | translate }}
+      </span>
+    </eui-alert>
+  </div>
+</div>
+<mat-accordion multi="true" *ngIf="policyViolations.length > 1" class="imx-accordion" data-imx-identifier="decision-policy-violation-accordion">
+    <mat-expansion-panel  *ngFor="let policyViolation of policyViolations; let isFirst = first" [expanded]="isFirst"
+    [attr.data-imx-identifier]="'decision-policy-violation-expansion-panel-'+policyViolation.DisplayObject">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <span>{{policyViolation.DisplayPolicy}}</span>
+          <eui-badge *ngIf="policyViolation.IsExceptionAllowed">
+            {{'#LDS#Exception allowed' | translate}}
+          </eui-badge>
+          <eui-badge color="orange" *ngIf="!policyViolation.IsExceptionAllowed">
+            {{'#LDS#Exception forbidden' | translate}}
+          </eui-badge>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div>
+        <div class="imx-label">{{'#LDS#Affected object' | translate}}</div>
+        <div>{{policyViolation.DisplayObject}}</div>
+      </div>
+        <div class="imx-risk-reduction-container" *ngIf="mitigatingControlsPerViolation && policyViolation.MitigatingControls.length > 0; else noMitigatingControls">
+          <div class="imx-label">{{ '#LDS#The following mitigating controls are available for the policy violation:' | translate }}</div>
+          <ul class="imx-risk-reduction">
+            <li class="imx-risk-reduction-item" *ngFor="let control of policyViolation.MitigatingControls">
+              {{control.Display}}
+            </li>
+          </ul>
+        </div>
+    </mat-expansion-panel>
+</mat-accordion>
+<ng-container *ngIf="policyViolations.length === 1">
+  <ng-content *ngTemplateOutlet="singleView; context: { $implicit: policyViolations[0] }"></ng-content>
+</ng-container>
+
+
+
+<ng-template #singleView let-policyViolation>
+<mat-card data-imx-identifier="decision-policy-violation-mat-card">
+  <mat-card-title>
+      <span>{{policyViolation.DisplayPolicy}}</span>
+      <eui-badge *ngIf="policyViolation.IsExceptionAllowed">
+        {{'#LDS#Exception allowed' | translate}}
+      </eui-badge>
+      <eui-badge color="orange" *ngIf="!policyViolation.IsExceptionAllowed">
+        {{'#LDS#Exception forbidden' | translate}}
+      </eui-badge>
+  </mat-card-title>
+  <ng-container *ngIf="mitigatingControlsPerViolation;">
+    <div class="mat-expansion-panel-content">
+      <div class="imx-label">{{'#LDS#Affected object' | translate}}</div>
+      <div>{{policyViolation.DisplayObject}}</div>
+    </div>
+    <div class="imx-risk-reduction-container" *ngIf="policyViolation.MitigatingControls.length > 0; else noMitigatingControls">
+      <div class="imx-label">{{ '#LDS#The following mitigating controls are available for the policy violation:' | translate }}</div>
+      <ul class="imx-risk-reduction">
+        <li class="imx-risk-reduction-item" *ngFor="let control of policyViolation.MitigatingControls">
+          {{control.Display}}
+        </li>
+      </ul>
+    </div>
+  </ng-container>
+</mat-card>
+</ng-template>
+
+<ng-template #noMitigatingControls>
+  <eui-alert class="imx-top-alert" [condensed]="true" [colored]="true" type="warning">
+    {{'#LDS#There are currently no mitigating controls assigned to the policy violation.' |translate}}
+  </eui-alert>
+</ng-template>

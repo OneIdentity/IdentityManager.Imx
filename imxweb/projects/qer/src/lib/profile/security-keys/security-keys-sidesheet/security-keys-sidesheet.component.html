@@ -1,0 +1,46 @@
+<div eui-sidesheet-content>
+  <mat-card>
+    <form [formGroup]="formGroup">
+      <mat-form-field appearance="outline" data-imx-identifier="key-details-form-cdr-DisplayName">
+        <mat-label>{{ '#LDS#Display name' | translate }}</mat-label>
+        <input matInput type="text" formControlName="DisplayName" required />
+        <mat-error *ngIf="formGroup.get('DisplayName').errors?.['required']">
+          {{ '#LDS#This field is mandatory.' | translate }}
+        </mat-error>
+      </mat-form-field>
+      <imx-cdr-editor
+      *ngFor="let cdr of cdrList"
+      [cdr]="cdr"
+      (controlCreated)="formGroup.addControl(cdr.column.ColumnName, $event)"
+      [attr.data-imx-identifier]="'key-details-form-cdr-' + cdr.column.ColumName"
+      ></imx-cdr-editor>
+    </form>
+  </mat-card>
+</div>
+<div eui-sidesheet-actions>
+  <span class="imx-justify-right">
+    <button
+      mat-flat-button
+      color="warn"
+      data-imx-identifier="edit-security-keys-sidesheet-button-delete"
+      (click)="deleteSecurityKey()"
+      >
+      <span class="mat-button-wrapper">
+        <eui-icon size="s" icon="delete"></eui-icon>
+        <span>{{'#LDS#Delete security key'| translate}}</span>
+      </span>
+    </button>
+  </span>
+  <button
+    mat-flat-button
+    color="primary"
+    data-imx-identifier="edit-security-keys-sidesheet-button-save"
+    (click)="saveSecurityKey()"
+    [disabled]="formGroup.pristine || formGroup.invalid"
+    >
+    <span class="mat-button-wrapper">
+      <eui-icon size="s" icon="save"></eui-icon>
+      <span>{{'#LDS#Save'| translate}}</span>
+    </span>
+  </button>
+</div>

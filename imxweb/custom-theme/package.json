@@ -1,0 +1,8 @@
+{
+  "name": "custom-theme",
+  "version": "9.2.0",
+  "private": true,
+  "scripts": {
+    "build": "sass custom-theme.scss:custom-theme.css --load-path=..\\node_modules"
+  }
+}

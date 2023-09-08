@@ -1,5 +1,26 @@
-<h1 class="mat-headline">{{ '#LDS#Heading Pending Requests' | translate }}</h1>
-<p class="imx-description">
-   {{ '#LDS#You can approve or deny the following requests.' | translate }}
-</p>
-<imx-approvals-table [params]="params"></imx-approvals-table>
+<imx-busy-indicator *ngIf="!viewReady"></imx-busy-indicator>
+
+<div class="heading-wrapper" *ngIf="viewReady">
+  <h1 class="mat-headline">
+    <span translate>#LDS#Heading Pending Requests</span>
+    <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
+  </h1>
+</div>
+
+<div class="imx-approvals-content" *ngIf="viewReady">
+  <mat-tab-group *ngIf="hasInquiries" [(selectedIndex)]="tabIndex">
+    <mat-tab [label]="'#LDS#Heading Requests' | translate">
+      <ng-template matTabContent>
+        <imx-approvals-table [params]="params"></imx-approvals-table>
+      </ng-template>
+    </mat-tab>
+    <mat-tab [label]="'#LDS#Heading Inquiries' | translate">
+      <ng-template matTabContent>
+        <imx-inquiries ></imx-inquiries>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+
+  <imx-approvals-table *ngIf="!hasInquiries" [params]="params"></imx-approvals-table>
+
+</div>

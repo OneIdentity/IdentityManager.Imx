@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { ChartOptions, LineOptions, ChartTypes, areaSpline, area, spline, line, zoom } from 'billboard.js';
+import { ChartOptions, GridLineOptions, ChartTypes, areaSpline, area, spline, line, zoom } from 'billboard.js';
 import { XAxisInformation } from './x-axis-information';
 import { YAxisInformation } from './y-axis-information';
 
@@ -49,7 +49,7 @@ export class LineChartOptions {
    * Gets or sets an array of additional Lines, that should be shown on the chart
    * (like a threshhold or an average value)
    */
-  public additionalLines: LineOptions[];
+  public additionalLines: GridLineOptions[];
 
   /**
    * Gets or sets whether the chart should use curved or streight lines
@@ -116,7 +116,7 @@ export class LineChartOptions {
         x: this.xAxisInformation.getAxisConfiguration(),
         y: this.yAxisInformation.getAxisConfiguration()
       },
-      legend: { hide: this.hideLegend },
+      legend: { hide: this.hideLegend, item: { onclick() {} } },
       grid: {
         y: {
           lines: this.additionalLines,

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { OverlayRef } from '@angular/cdk/overlay';
 import { AfterViewInit, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { AbstractControl, FormArray, FormControl, FormGroup, ValidatorFn } from '@angular/forms';
+import { AbstractControl, UntypedFormArray, UntypedFormControl, UntypedFormGroup, ValidatorFn } from '@angular/forms';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
@@ -47,13 +47,13 @@ export class PolicyEditorComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public parametersReady: boolean;
 
-  public filterArray = new FormArray([], PolicyEditorComponent.hasFiltersAttachedValidatorFn(this));
-  public filterFormGroup: FormGroup = new FormGroup({
+  public filterArray = new UntypedFormArray([], PolicyEditorComponent.hasFiltersAttachedValidatorFn(this));
+  public filterFormGroup: UntypedFormGroup = new UntypedFormGroup({
     filterArray: this.filterArray,
-    concatenationType: new FormControl('OR')
+    concatenationType: new UntypedFormControl('OR')
   });
 
-  @Input() public formGroup: FormGroup;
+  @Input() public formGroup: UntypedFormGroup;
   @Input() public filterModel: FilterModel;
   public isEnabled = true;
 
@@ -126,9 +126,9 @@ export class PolicyEditorComponent implements OnInit, OnDestroy, AfterViewInit {
         const model = this.filterModel.buildPolicyModel(element, this.filterModel.policyFilterData.InfoDisplay[index]);
         model.recalculateMatching();
         this.filterArray.push(
-          new FormGroup({
-            filterParameter: new FormControl(model),
-            type: new FormControl(element.AttestationSubType),
+          new UntypedFormGroup({
+            filterParameter: new UntypedFormControl(model),
+            type: new UntypedFormControl(element.AttestationSubType),
           }, PolicyEditorComponent.filterElementValidatorFn())
         );
       });
@@ -150,9 +150,9 @@ export class PolicyEditorComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public addCondition(): void {
     const newCondition = this.filterModel.addCondition();
-    this.filterArray.push(new FormGroup({
-      filterParameter: new FormControl(newCondition),
-      type: new FormControl(newCondition.attestationSubType),
+    this.filterArray.push(new UntypedFormGroup({
+      filterParameter: new UntypedFormControl(newCondition),
+      type: new UntypedFormControl(newCondition.attestationSubType),
     }, PolicyEditorComponent.filterElementValidatorFn()));
     this.filterArray.markAsDirty();
     this.logger.debug(this, 'new condition added');
@@ -233,7 +233,7 @@ export class PolicyEditorComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private static hasFiltersAttachedValidatorFn(maincontrol: PolicyEditorComponent): ValidatorFn {
     return (control: AbstractControl): { [key: string]: boolean } | null => {
-      const group = control as FormArray;
+      const group = control as UntypedFormArray;
       return (!maincontrol.isEnabled || group.length > 0) ? null : { nofilter: true };
     };
   }

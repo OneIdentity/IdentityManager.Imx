@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,14 +28,16 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { InitService } from './init.service';
+import { TeamRoleModule } from './team-role/team-role.module';
 
 const routes: Routes = [
 ];
 
 @NgModule({
   imports: [
-    RouterModule.forChild(routes)
-  ]
+    RouterModule.forChild(routes),
+    TeamRoleModule
+  ],
 })
 export class RmbConfigModule {
   constructor(private readonly initializer: InitService) {

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,8 +36,10 @@ export class Paginator extends MatPaginatorIntl {
     private constructor(private translateService: TranslateService, private readonly ldsReplace: LdsReplacePipe) {
         super();
         this.translateService.get('#LDS#Entries per page').subscribe((text: string) => this.itemsPerPageLabel = text + ':');
-        this.translateService.get('#LDS#Next page').subscribe((text: string) => this.nextPageLabel = text);
+        this.translateService.get('#LDS#First page').subscribe((text: string) => this.firstPageLabel = text);
         this.translateService.get('#LDS#Previous page').subscribe((text: string) => this.previousPageLabel = text);
+        this.translateService.get('#LDS#Next page').subscribe((text: string) => this.nextPageLabel = text);
+        this.translateService.get('#LDS#Last page').subscribe((text: string) => this.lastPageLabel = text);
         this.translateService.get('#LDS#{0} - {1} of {2}').subscribe((text: string) => this.rangeText = text);
         this.translateService.get('#LDS#0 of {0}').subscribe((text: string) => this.rangeTextFallback = text);
         this.getRangeLabel = (page: number, pageSize: number, length: number) => {

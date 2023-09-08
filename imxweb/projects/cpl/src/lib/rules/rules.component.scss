@@ -1,4 +1,5 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '../../../../../shared/scss/common-table.scss';
 
 div[subtitle] {
   font-size: smaller;
@@ -12,9 +13,32 @@ div[subtitle] {
   height: inherit;
 }
 
+.mat-card {
+  @include imx-flex-fill-control-hidden-overflow();
+  margin: 3px;
+}
+
 .imx-table-container {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  height: inherit;
+  flex: 1 1 auto;
+}
+
+.imx-button-column {
+  @include imx-button-column-right();
+}
+
+.imx-displayColumn {
+  display: flex;
+  flex-direction: row;
+
+  :first-child {
+    flex: 1 1 auto;
+  }
+
+  .imx-badge {
+    align-self: center;
+    margin-left: 15px;
+  }
 }

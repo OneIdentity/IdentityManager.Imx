@@ -1,0 +1,41 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.mat-dialog-content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.mat-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1 1 auto;
+}
+
+.imx-table-container {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: inherit;
+  max-width: 100%;
+  flex: 1 1 auto;
+}
+
+.mat-dialog-title {
+  margin: 10px 0 20px;
+}
+
+.mat-dialog-actions {
+  justify-content: flex-end;
+
+  > .mat-flat-button {
+    margin-bottom: 20px;
+  }
+}

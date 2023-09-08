@@ -1,91 +1,95 @@
-<mat-vertical-stepper [linear]="true">
-  <mat-step label="{{'#LDS#Select the object with which the selected object should be compared' | translate}}">
-
-    <imx-cdr-editor [cdr]="roleCdr"></imx-cdr-editor>
-
-    <div class="imx-step-button" *ngIf="roleCdr">
-      <button mat-raised-button color="primary" data-imx-identifier="compare-step-1-next" matStepperNext
-        [disabled]="!roleCdr.column.GetValue()" (click)="loadCompareItems()">{{'#LDS#Next' | translate}}</button>
-    </div>
-  </mat-step>
-  <mat-step label="{{'#LDS#View comparison result' | translate}}">
-
-    <mat-spinner *ngIf="busy"></mat-spinner>
-
-    <ng-container *ngIf="compareItems">
-
-      <table mat-table [dataSource]="compareItems.Items" class="mat-elevation-z2">
-        <ng-container [matColumnDef]="'Object'">
-          <th mat-header-cell *matHeaderCellDef> {{'#LDS#Assigned object' | translate}} </th>
-          <td mat-cell *matCellDef="let item">
-            <div>{{ item.Display }}</div>
-            <div class="subtext">{{ item.ObjectTypeDisplay }}</div>
-          </td>
+<div eui-sidesheet-content>
+  <mat-card class="imx-stepper-card">
+    <mat-stepper orientation="vertical" [linear]="true" (selectionChange)="selectedStepChanged($event)">
+      <mat-step [stepControl]="roleForm" label="{{ '#LDS#Select the object with which the selected object should be compared' | translate }}">
+        <form [formGroup]="roleForm">
+          <imx-cdr-editor [cdr]="roleCdr" (valueChange)="resetElements()" (controlCreated)="roleForm.addControl(roleCdr.column.ColumnName, $event)"></imx-cdr-editor>
+        </form>
+        <div class="imx-step-button" *ngIf="roleCdr">
+          <button mat-stroked-button color="primary" data-imx-identifier="compare-step-1-next" matStepperNext [disabled]="roleForm.invalid">
+            {{ '#LDS#Next' | translate }}
+          </button>
+        </div>
+      </mat-step>
+      <mat-step label="{{ '#LDS#View comparison result' | translate }}">
+        <eui-alert class="imx-top-alert" type="error" [condensed]="true" [colored]="true" *ngIf="showKeyMissingError">
+          {{ ldsKeyNotAvailable | translate }}
+        </eui-alert>
+        <ng-container *ngIf="compareItems && !showKeyMissingError">
+          <imx-data-source-toolbar #dst data-imx-identifier="compare-data-source-toolbar" [settings]="dstSettings" [options]=""> </imx-data-source-toolbar>
+          <div class="imx-step-data-table">
+            <imx-data-table
+              data-imx-identifier="compare-data-table"
+              [dst]="dst"
+              detailViewVisible="false"
+              mode="manual"
+              noDataText="#LDS#Currently, no objects are assigned to the two selected objects."
+            >
+              <imx-data-table-generic-column columnName="assigned" [columnLabel]="'#LDS#Assigned object' | translate">
+                <ng-template let-item>
+                  <div>{{ item.Display.value }}</div>
+                  <div class="subtext">{{ item.ObjectTypeDisplay.value }}</div>
+                </ng-template>
+              </imx-data-table-generic-column>
+              <imx-data-table-generic-column columnName="current" [columnLabel]="'#LDS#This object' | translate">
+                <ng-template let-item>
+                  <imx-role-compareitem class="compareitem" [val]="item.XOriginRole1.value" [captions]="compareItems.OriginCaptions"> </imx-role-compareitem>
+                </ng-template>
+              </imx-data-table-generic-column>
+              <imx-data-table-generic-column columnName="other" [columnLabel]="'#LDS#Comparison object' | translate">
+                <ng-template let-item>
+                  <imx-role-compareitem class="compareitem" [val]="item.XOriginRole2.value" [captions]="compareItems.OriginCaptions"> </imx-role-compareitem>
+                </ng-template>
+              </imx-data-table-generic-column>
+            </imx-data-table>
+          </div>
         </ng-container>
 
-        <ng-container [matColumnDef]="'Role1'">
-          <th mat-header-cell *matHeaderCellDef> {{'#LDS#This object' | translate}} </th>
-          <td mat-cell *matCellDef="let item">
-            <imx-role-compareitem class="compareitem" [val]="item.XOriginRole1"
-              [captions]="compareItems.OriginCaptions">
-            </imx-role-compareitem>
-          </td>
+        <div class="imx-step-button">
+          <button mat-stroked-button data-imx-identifier="compare-step-2-back" matStepperPrevious>{{ '#LDS#Back' | translate }}</button>
+          <button mat-stroked-button data-imx-identifier="compare-step-2-next" matStepperNext [matTooltip]="LdsPrepareMergeExplanation | translate" color="primary">
+            {{ '#LDS#Next' | translate }}
+          </button>
+        </div>
+      </mat-step>
+
+      <mat-step label="{{ '#LDS#Verify actions' | translate }}">
+        <eui-alert class="imx-top-alert" type="error" [condensed]="true" [colored]="true" *ngIf="showKeyMissingError">
+          {{ ldsKeyNotAvailable | translate }}
+        </eui-alert>
+        <ng-container *ngIf="!showKeyMissingError">
+          <eui-alert class="imx-top-alert" type="info" [condensed]="true" [colored]="true" *ngIf="mergeActions != null && mergeActions?.length === 0">
+            <ng-container *ngIf="mergePreventingReason">{{ mergePreventingReason }}</ng-container>
+            <ng-container *ngIf="!mergePreventingReason">{{ noChangesText | translate }}</ng-container>
+          </eui-alert>
+
+          <ng-container *ngIf="mergeActions != null && mergeActions?.length > 0">
+            <eui-alert class="imx-top-alert" type="info" [condensed]="true" [colored]="true">
+              {{ LdsMergeExplanation | translate }}
+            </eui-alert>
+
+            <mat-selection-list [(ngModel)]="uidActions">
+              <mat-list-option
+                checkboxPosition="before"
+                *ngFor="let action of mergeActions"
+                [value]="action.Id"
+                [disabled]="!action.CanExecute"
+                [attr.data-imx-identifier]="'multi-select-action-' + action.Id"
+              >
+                <div>{{ action.Display }}</div>
+                <div class="subtext">{{ action.ObjectDisplay }}</div>
+              </mat-list-option>
+            </mat-selection-list>
+          </ng-container>
         </ng-container>
 
-        <ng-container [matColumnDef]="'Role2'">
-          <th mat-header-cell *matHeaderCellDef> {{'#LDS#Comparison object' | translate}} </th>
-          <td mat-cell *matCellDef="let item">
-            <imx-role-compareitem class="compareitem" [val]="item.XOriginRole2"
-              [captions]="compareItems.OriginCaptions">
-            </imx-role-compareitem>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
-    </ng-container>
-
-    <div class="imx-step-button">
-      <button mat-raised-button data-imx-identifier="compare-step-2-back" matStepperPrevious>{{'#LDS#Back' |
-        translate}}</button>
-      <button mat-raised-button data-imx-identifier="compare-step-2-next" (click)="loadMergeActions()" matStepperNext
-        [matTooltip]="LdsPrepareMergeExplanation | translate" color="primary">{{'#LDS#Preview merge' |
-        translate}}</button>
-    </div>
-  </mat-step>
-
-  <mat-step label="{{'#LDS#Review actions' | translate}}">
-
-    <mat-spinner *ngIf="busy"></mat-spinner>
-
-    <ng-container *ngIf="!busy">
-
-      <eui-alert class="imx-top-alert" type="info" [condensed]="true" [colored]="true"
-        *ngIf="mergeActions.length === 0">
-        <ng-container *ngIf="mergePreventingReason">{{mergePreventingReason}}</ng-container>
-        <ng-container *ngIf="!mergePreventingReason">{{noChangesText | translate}}</ng-container>
-      </eui-alert>
-
-      <eui-alert class="imx-top-alert" type="info" [condensed]="true" [colored]="true" *ngIf="mergeActions.length > 0">
-        {{LdsMergeExplanation | translate}}
-      </eui-alert>
-
-      <mat-selection-list [(ngModel)]="uidActions">
-        <mat-list-option checkboxPosition="before" *ngFor="let action of mergeActions" [value]="action.Id"
-          [disabled]="!action.CanExecute" [attr.data-imx-identifier]="'multi-select-action-' + action.Id">
-          <div>{{action.Display }}</div>
-          <div class="subtext">{{action.ObjectDisplay }}</div>
-        </mat-list-option>
-      </mat-selection-list>
-
-      <div class="imx-step-button">
-        <button mat-raised-button data-imx-identifier="compare-step-3-back" matStepperPrevious>{{'#LDS#Back' |
-          translate}}</button>
-        <button mat-raised-button data-imx-identifier="compare-step-3-next" color="primary" matStepperNext
-          [disabled]="uidActions.length === 0" (click)="Execute()">{{'#LDS#Merge' | translate}}</button>
-      </div>
-    </ng-container>
-  </mat-step>
-
-</mat-vertical-stepper>
+        <div class="imx-step-button">
+          <button mat-stroked-button data-imx-identifier="compare-step-3-back" matStepperPrevious>{{ '#LDS#Back' | translate }}</button>
+          <button mat-stroked-button data-imx-identifier="compare-step-3-next" color="primary" matStepperNext [disabled]="uidActions?.length === 0" (click)="execute()">
+            {{ '#LDS#Merge' | translate }}
+          </button>
+        </div>
+      </mat-step>
+    </mat-stepper>
+  </mat-card>
+</div>

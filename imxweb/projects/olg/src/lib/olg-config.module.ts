@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,12 +36,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Routes, RouterModule } from '@angular/router';
 import { EuiCoreModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { CdrModule, ClassloggerService } from 'qbm';
+import { BusyIndicatorModule, CdrModule, ClassloggerService } from 'qbm';
 import { InitService } from './init.service';
 
 import { MfaComponent } from './mfa/mfa.component';
 import { MfaService } from './mfa/mfa.service';
 import { PortalMfaService } from './mfa/portal-mfa.service';
+import { MfaFormControlComponent } from './mfa-form-control/mfa-form-control.component';
 
 const routes: Routes = [
 ];
@@ -60,13 +61,18 @@ const routes: Routes = [
     TranslateModule,
     EuiCoreModule,
     CdrModule,
+    BusyIndicatorModule,
     MatProgressSpinnerModule
   ],
   declarations: [
-    MfaComponent
+    MfaComponent,
+    MfaFormControlComponent
   ],
   providers: [
     PortalMfaService
+  ],
+  exports: [
+    MfaFormControlComponent
   ]
 })
 export class OlgConfigModule {

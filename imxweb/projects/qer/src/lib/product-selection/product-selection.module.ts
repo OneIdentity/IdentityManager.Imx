@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -45,7 +45,10 @@ import {
   ClassloggerService,
   MenuService,
   MenuItem,
-  DataTreeWrapperModule
+  DataTreeWrapperModule,
+  HelpContextualModule,
+  SelectedElementsModule,
+  HELP_CONTEXTUAL
 } from 'qbm';
 import { ProductSelectionComponent } from './product-selection.component';
 import { ServiceCategoryListComponent } from './servicecategory-list/servicecategory-list.component';
@@ -59,74 +62,85 @@ import { RoleMembershipsComponent } from './role-memberships/role-memberships.co
 import { RequestsFeatureGuardService } from '../requests-feature-guard.service';
 import { ProductDetailsSidesheetComponent } from './product-details-sidesheet/product-details-sidesheet.component';
 import { PatternDetailsSidesheetComponent } from './pattern-details-sidesheet/pattern-details-sidesheet.component';
-import { ProductEntitlementsComponent } from '../itshop/request-info/service-item-detail//product-entitlements/product-entitlements.component';
 import { PatternItemsModule } from '../pattern-item-list/pattern-items.module';
 import { OptionalItemsSidesheetComponent } from './optional-items-sidesheet/optional-items-sidesheet.component';
 
+// const routes: Routes = [
+//   {
+//     path: 'productselection',
+//     component: ProductSelectionComponent,
+//     canActivate: [RouteGuardService, RequestsFeatureGuardService],
+//     resolve: [RouteGuardService]
+//   }
+// ];
 const routes: Routes = [
   {
     path: 'productselection',
     component: ProductSelectionComponent,
     canActivate: [RouteGuardService, RequestsFeatureGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
+    data:{
+      contextId: HELP_CONTEXTUAL.NewRequest
+    }
   }
 ];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    CdrModule,
-    ClassloggerModule,
-    DataSourceToolbarModule,
-    DataTableModule,
-    DataTilesModule,
-    DataTreeWrapperModule,
-    DisableControlModule,
-    EuiCoreModule,
-    EuiMaterialModule,
-    FormsModule,
-    LdsReplaceModule,
-    ReactiveFormsModule,
-    RouterModule.forChild(routes),
-    QbmModule,
-    TranslateModule,
-    ItshopModule,
-    ServiceItemsModule,
-    PatternItemsModule,
-    UserModule,
-    BulkPropertyEditorModule
-  ],
-  declarations: [
-    ProductSelectionComponent,
-    ServiceCategoryListComponent,
-    CategoryTreeComponent,
-    ServiceItemEditComponent,
-    RoleMembershipsComponent,
-    ProductDetailsSidesheetComponent,
-    PatternDetailsSidesheetComponent,
-    OptionalItemsSidesheetComponent
-  ],
-  providers: [
-    ProductSelectionService
-  ],
-  entryComponents: [
-    ProductDetailsSidesheetComponent,
-    PatternDetailsSidesheetComponent
-  ]
+    imports: [
+        CommonModule,
+        CdrModule,
+        ClassloggerModule,
+        DataSourceToolbarModule,
+        DataTableModule,
+        DataTilesModule,
+        DataTreeWrapperModule,
+        DisableControlModule,
+        EuiCoreModule,
+        EuiMaterialModule,
+        FormsModule,
+        LdsReplaceModule,
+        ReactiveFormsModule,
+        // RouterModule.forChild(routes),
+        QbmModule,
+        TranslateModule,
+        ItshopModule,
+        ServiceItemsModule,
+        PatternItemsModule,
+        UserModule,
+        BulkPropertyEditorModule,
+        HelpContextualModule,
+        SelectedElementsModule
+    ],
+    declarations: [
+        ProductSelectionComponent,
+        ServiceCategoryListComponent,
+        CategoryTreeComponent,
+        ServiceItemEditComponent,
+        RoleMembershipsComponent,
+        ProductDetailsSidesheetComponent,
+        PatternDetailsSidesheetComponent,
+        OptionalItemsSidesheetComponent
+    ],
+    providers: [
+        ProductSelectionService
+    ]
 })
 
+/**
+ * @deprecated Use NewRequestModule
+ */
 export class ProductSelectionModule {
   constructor(
     private readonly menuService: MenuService,
     logger: ClassloggerService
   ) {
     logger.info(this, '▶️ ProductSelectionModule loaded');
-    this.setupMenu();
+    // this.setupMenu();
   }
 
   private setupMenu(): void {
     this.menuService.addMenuFactories(
-      (preProps: string[], groups: string[]) => {
+      (preProps: string[], features: string[]) => {
 
         const items: MenuItem[] = [];
 

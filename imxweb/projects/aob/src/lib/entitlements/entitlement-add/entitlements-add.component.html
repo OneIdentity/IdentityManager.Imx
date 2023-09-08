@@ -19,9 +19,14 @@
     </div>
 
     <ng-container *ngIf="settings?.dataSource">
-      <imx-data-source-toolbar #dst [settings]="settings" (navigationStateChanged)="onNavigationStateChanged($event)"
-        [options]="['search', 'filter']"
-        (search)="onSearch($event)">
+      <imx-data-source-toolbar
+        #dst
+        [settings]="settings"
+        (navigationStateChanged)="onNavigationStateChanged($event)"
+        [options]="['search', 'filter', 'filterTree']"
+        (search)="onSearch($event)"
+        (filterTreeSelectionChanged)="onFilterByTree($event)"
+      >
       </imx-data-source-toolbar>
       <imx-data-table [dst]="dst" [selectable]="true" (selectionChanged)="onSelectionChanged($event)"
         (highlightedEntityChanged)="onHighlightedEntityChanged($event)" [detailViewVisible]="false" mode="manual">

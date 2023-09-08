@@ -1,0 +1,55 @@
+<h1 class="mat-headline">
+  {{ '#LDS#Heading Processes and Operations by Process ID' | translate }}
+</h1>
+
+<mat-card>
+  <div class="imx-procces-action">
+    <eui-search name="searchexample" [placeholder]="'#LDS#Search' | translate" [(searchControl)]="searchControl" width="500px"></eui-search>
+
+    <mat-radio-group [(ngModel)]="selectedType" (change)="typeChanged($event)">
+      <mat-radio-button
+        class="mx-5"
+        *ngFor="let processOption of filterOptions"
+        [value]="processOption.value"
+        [attr.data-imx-identifier]="'process-radiobutton-filtermenu-option-' + processOption.name"
+      >
+        <span>{{ processOption.name | translate }}</span>
+      </mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <ng-container *ngIf="processId; else noId">
+    <div class="imx-viewmode-changeoperation flex-property" *ngIf="selectedType === 1">
+      <div *ngIf="dataCollection && dataCollection.totalCount > 0" class="flex-property">
+        <div class="imx-change-table-content flex-property">
+          <imx-change-operation-table [data]="dataCollection.Data" class="flex-property"></imx-change-operation-table>
+        </div>
+        <mat-paginator
+          *ngIf="dataCollection.totalCount > 0"
+          [hidden]="paginatorConfig.hidden"
+          [pageSize]="paginatorConfig.size"
+          [pageSizeOptions]="paginatorConfig.sizeOptions"
+          [showFirstLastButtons]="paginatorConfig.showFirstLastButtons"
+          [length]="dataCollection.totalCount"
+          [pageIndex]="paginatorConfig.index"
+          (page)="handlePage($event)"
+        >
+        </mat-paginator>
+      </div>
+      <div class="imx-change-table-no-results" *ngIf="!dataCollection || dataCollection.totalCount == 0">
+        <eui-icon icon="table"></eui-icon>
+        <p>{{ noDataText | translate }}</p>
+      </div>
+    </div>
+
+    <imx-jobs-gridview [noData]="noDataText | translate" [withActions]="false" *ngIf="selectedType === 2" [style.display]="isShowGraph ? 'none' : 'flex'" class="imx-job-grid" [proccessId]="processId">
+    </imx-jobs-gridview>
+  </ng-container>
+</mat-card>
+
+<ng-template #noId>
+  <div class="imx-change-table-no-results flex-property">
+    <eui-icon icon="table"></eui-icon>
+    <p [translate]="'#LDS#Enter a process ID.'"></p>
+  </div>
+</ng-template>

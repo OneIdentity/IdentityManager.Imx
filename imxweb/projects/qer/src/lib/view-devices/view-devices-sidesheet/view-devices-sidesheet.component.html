@@ -1,0 +1,37 @@
+<div eui-sidesheet-content class="imx-devices-sidesheet">
+  <mat-card>
+    <form [formGroup]="formGroup">
+      <div *ngIf="cdrList?.length > 0" class="imx-property-container">
+        <imx-cdr-editor
+          *ngFor="let cdr of cdrList"
+          [cdr]="cdr"
+          (controlCreated)="formGroup.addControl(cdr.column.ColumnName, $event)"
+          [attr.data-imx-identifier]="'device-details-form-cdr-' + cdr.column.ColumName"
+        >
+        </imx-cdr-editor>
+      </div>
+    </form>
+  </mat-card>
+</div>
+<div eui-sidesheet-actions>
+  <button
+    mat-stroked-button
+    color="warn"
+    data-imx-identifier="imx-devices-button-delete-device"
+    [attr.aria-label]=" '#LDS#Delete' | translate "
+    (click)="deleteDevice()"
+    [disabled]="!canEdit"
+  >
+    <eui-icon icon="delete"></eui-icon>
+    {{ '#LDS#Delete' | translate }}
+  </button>
+  <button
+    mat-flat-button
+    color="primary"
+    data-imx-identifier="view-devices-sidesheet-button-save"
+    (click)="saveChanges()"
+    [disabled]="formGroup.pristine || formGroup.invalid"
+    >
+    {{'#LDS#Save'| translate}}
+  </button>
+</div>

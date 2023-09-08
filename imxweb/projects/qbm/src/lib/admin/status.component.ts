@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,48 +24,168 @@
  *
  */
 
-import { Component } from "@angular/core";
-import { ImxConfig, LoadedPlugin, MethodSetInfo, PingResult, SystemInfo, UpdaterState } from 'imx-api-qbm';
-import { AppConfigService } from "../appConfig/appConfig.service";
-import { ImxTranslationProviderService } from "../translation/imx-translation-provider.service";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ImxConfig, MethodSetInfo, PingResult, SystemInfo, UpdaterState, V2ApiClientMethodFactory } from 'imx-api-qbm';
+import { AppConfigService } from '../appConfig/appConfig.service';
+import { ClassloggerService } from "../classlogger/classlogger.service";
+import { ImxTranslationProviderService } from '../translation/imx-translation-provider.service';
+import { StatusService } from './status.service';
+import { ChartOptions } from 'billboard.js';
+import { interval, Observable } from "rxjs";
+import { YAxisInformation } from "../chart-options/y-axis-information";
+import { SeriesInformation } from "../chart-options/series-information";
+import { XAxisInformation } from "../chart-options/x-axis-information";
+import { LineChartOptions } from "../chart-options/line-chart-options";
+import { SystemInfoService } from '../system-info/system-info.service';
+
+export class StatusInfo {
+  date?: string;
+  sessions?: number;
+}
+export class StatusInfo2 {
+  date?: string[];
+  sessions?: number[];
+}
+export class StatusBuffer {
+  private len: number;
+  private buffer: StatusInfo[];
+  private data: number[][];
+  private pos: number;
+  private labels: any = [];
+
+  constructor(len: number) {
+    const buffer = new Array<StatusInfo>(len);
+
+    this.len = len;
+    this.buffer = buffer;
+    this.pos = 0;
+
+    this.labels = new Array<string>(len);
+    this.data = new Array<number[]>(1);
+
+    for (let i = 0; i < 1; i++) {
+      this.data[i] = new Array<number>(len);
+    }
+  }
+
+  public push(info: StatusInfo) {
+    this.buffer[this.pos] = info;
+    this.pos++;
+    if (this.pos >= this.len) this.pos = 0;
+  }
+
+  buildLabels(): string[] {
+    this.forEach((i, s) => (this.labels[i] = s.date));
+    return this.labels;
+  }
+
+  buildData(): number[][] {
+    this.forEach((i, s) => {
+      this.data[0][i] = s.sessions ?? 0;
+    });
+    return this.data;
+  }
+
+  private forEach(fn: (arg0: number, arg1: StatusInfo) => void) {
+    let pos = 0;
+
+    for (let i = this.pos; i < this.len; i++) {
+      const data = this.buffer[i];
+      if (data) fn(pos++, data);
+    }
+
+    for (let i = 0; i < this.pos; i++) {
+      const data = this.buffer[i];
+      if (data) fn(pos++, data);
+    }
+  }
+}
 
 @Component({
   selector: 'imx-status',
   templateUrl: './status.component.html',
-  styleUrls: ['./status.component.scss']
+  styleUrls: ['./shared.scss'],
+  host: {
+    '[class.loading]': '!dataReady',
+  },
 })
-export class StatusComponent {
-  constructor(private readonly appConfigService: AppConfigService, private readonly translator : ImxTranslationProviderService) {
+export class StatusComponent implements OnInit, OnDestroy {
+  constructor(private readonly appConfigService: AppConfigService,
+    private readonly systemInfoService: SystemInfoService,
+    private readonly logger: ClassloggerService,
+    private readonly translator: ImxTranslationProviderService,
+    private statusService: StatusService) {
   }
 
   pingResult: PingResult;
   apiProjects: MethodSetInfo[];
-  plugins: LoadedPlugin[];
   updaterState: UpdaterState;
   systemInfo: SystemInfo;
   config: ImxConfig;
   dataReady: boolean;
-  UpdateText : string;
+  UpdateText: string;
 
   UpdaterState = UpdaterState;
+  stream: EventSource;
+
+  statusData: {
+    CacheHits: number,
+    CacheMisses: number,
+    OpenSessions: number,
+    TotalSessions: number
+  };
+
+  private buffer: StatusBuffer;
+  public chartOptions: ChartOptions = null;
+  public show: boolean;
+
+  ngOnDestroy() {
+    if (this.stream)
+      this.stream.close();
+  }
 
 
-  ngOnInit() {
+  async ngOnInit() {
     this.Reload();
+
+    this.buffer = new StatusBuffer(120);
+    const routine = interval(1000);
+    await this.statusService.setUp(this.appConfigService.BaseUrl);
+    routine.subscribe(async () => {
+      (await this.getStatus()).subscribe((x) => {
+        this.buffer?.push(x);
+        this.updateChart();
+      });
+    });
+
+    // set up status stream
+    this.stream = new EventSource(this.appConfigService.BaseUrl + new V2ApiClientMethodFactory().admin_status_get().path, {
+      withCredentials: true
+    });
+
+    this.stream.onopen = () => {
+      this.logger.debug(this, "Status stream has been opened");
+    };
+
+    this.stream.onmessage = (evt) => {
+      const changeData = JSON.parse(evt.data);
+    };
+
+    this.stream.onerror = (err) => {
+    };
   }
 
   async Reload() {
+    this.dataReady = false;
 
-    this.UpdateText = await this.translator.Translate("#LDS#Installs updates and restarts the server.").toPromise();
+    this.UpdateText = await this.translator.Translate('#LDS#Installs updates and restarts the server.').toPromise();
 
-    // TODO add busy indicator
     const client = this.appConfigService.client;
     this.pingResult = await client.imx_ping_get();
     this.systemInfo = await client.imx_system_get();
     this.apiProjects = await client.admin_projects_get();
-    this.plugins = await client.admin_systeminfo_plugins_get();
     const s = await client.admin_systeminfo_software_status_get();
-    this.config = await this.appConfigService.getImxConfig();
+    this.config = await this.systemInfoService.getImxConfig();
 
     this.updaterState = s.Status;
     this.dataReady = true;
@@ -73,5 +193,61 @@ export class StatusComponent {
 
   StartUpdate() {
     this.appConfigService.client.admin_systeminfo_software_update_post();
+  }
+
+  private async buildOptions(chart: StatusInfo2): Promise<void> {
+    let seriesname = await this.translator.Translate("#LDS#Active sessions").toPromise();
+    const yAxis = new YAxisInformation([new SeriesInformation(seriesname,
+      chart.sessions.map((point: number) => point), 'blue'
+    )]);
+    yAxis.min = 0;
+    yAxis.tickConfiguration = {
+      format: (l) => l.toString(), stepSize: 1
+    };
+    const lineChartOptions = new LineChartOptions(
+      new XAxisInformation('string',
+        chart.date.map((point: string) => point), { culling: { max: 10, lines: false }, fit: false, centered: true }),
+      yAxis
+    );
+    lineChartOptions.useCurvedLines = false;
+    lineChartOptions.hideLegend = true;
+    lineChartOptions.showPoints = true;
+    lineChartOptions.hideLegend = false;
+    lineChartOptions.colorArea = false;
+    lineChartOptions.canZoom = true;
+    lineChartOptions.padding = { left: 20, right: 20, unit: 'px' };
+    this.chartOptions = lineChartOptions.options;
+  }
+
+  async getStatus(): Promise<Observable<StatusInfo>> {
+    return new Observable((subscriber) => {
+      let msg: StatusInfo = {
+        sessions: this.statusService.getStatusSessionData(),
+        date:
+          new Date().getHours() +
+          ':' +
+          new Date().getMinutes() +
+          ':' +
+          new Date().getSeconds() +
+          '',
+      };
+      subscriber.next(msg);
+    });
+  }
+
+
+  forceChartRefresh() {
+    this.show = false;
+    setTimeout(() => {
+      this.show = true;
+    }, 0);
+  }
+
+  updateChart() {
+    this.forceChartRefresh();
+    const sessions = this.buffer.buildData();
+    const dates = this.buffer.buildLabels();
+    const session: StatusInfo2 = { sessions: sessions[0], date: dates }
+    this.buildOptions(session);
   }
 }

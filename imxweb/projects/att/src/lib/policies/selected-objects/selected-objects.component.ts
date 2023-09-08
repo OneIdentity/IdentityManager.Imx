@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,10 +26,10 @@
 
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 import { PolicyFilter } from 'imx-api-att';
-import { ClassloggerService, isIE } from 'qbm';
+import { ClassloggerService } from 'qbm';
 import { SelectecObjectsInfo } from './selected-objects-info.interface';
 import { PolicyService } from '../policy.service';
 import { AttestationCasesComponentParameter } from '../attestation-cases/attestation-cases-component-parameter.interface';
@@ -94,12 +94,11 @@ export class SelectedObjectsComponent implements OnInit, OnDestroy {
     };
     this.sideSheet.open(AttestationCasesComponent, {
       title: this.popupTitle,
-      headerColour: 'iris-blue',
-      bodyColour: 'asher-gray',
+      subTitle: this.popupSubtitle,
       padding: '0px',
       width: 'max(600px, 60%)',
+      testId: 'selected-objects-showmatching-sidesheet',
       data,
-      testId: 'selected-objects-showmatching-sidesheet'
     });
   }
 

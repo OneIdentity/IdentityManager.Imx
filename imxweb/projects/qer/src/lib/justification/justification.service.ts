@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,7 +35,7 @@ import {
   FkProviderItem,
   IClientProperty,
   MetaTableRelationData,
-  ValType
+  ValType,
 } from 'imx-qbm-dbts';
 import { ImxTranslationProviderService } from 'qbm';
 import { BaseCdr, EntityService } from 'qbm';
@@ -43,7 +43,7 @@ import { QerApiService } from '../qer-api-client.service';
 import { JustificationType } from './justification-type.enum';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class JustificationService {
   private readonly parentColumnName = 'UID_QERJustification';
@@ -52,33 +52,32 @@ export class JustificationService {
     private readonly apiService: QerApiService,
     private readonly entityService: EntityService,
     private readonly translate: ImxTranslationProviderService
-  ) { }
+  ) {}
 
   public async get(uid: string): Promise<PortalJustifications> {
     const collection = await this.apiService.typedClient.PortalJustifications.Get({
-      filter: [{
-        ColumnName: this.parentColumnName,
-        Type: FilterType.Compare,
-        CompareOp: CompareOperator.Like,
-        Value1: uid
-      }]
+      filter: [
+        {
+          ColumnName: this.parentColumnName,
+          Type: FilterType.Compare,
+          CompareOp: CompareOperator.Like,
+          Value1: uid,
+        },
+      ],
     });
     return collection && collection.Data && collection.Data.length > 0 ? collection.Data[0] : undefined;
   }
 
-  public async createCdr(justificationType: JustificationType, reasonType?: number): Promise<BaseCdr> {
+  public async createCdr(justificationType: JustificationType): Promise<BaseCdr> {
     if ((await this.getByType(justificationType))?.TotalCount === 0) {
       return undefined;
     }
 
     const property = this.createProperty();
-    property.MinLen = reasonType === 1 ? 1 : 0;
-
     const fkProviderItem = this.createFkProviderItem(property.FkRelation, justificationType);
-
     const column = this.entityService.createLocalEntityColumn(property, [fkProviderItem]);
-
-    return new BaseCdr(column, '#LDS#Reason for your decision');
+    const cdr = new BaseCdr(column, '#LDS#Reason for your decision');
+    return cdr;
   }
 
   private createProperty(): IClientProperty {
@@ -86,15 +85,16 @@ export class JustificationService {
       ChildColumnName: 'Justification',
       ParentTableName: 'QERJustification',
       ParentColumnName: this.parentColumnName,
-      IsMemberRelation: false
+      IsMemberRelation: false,
     };
     return {
       ColumnName: fkRelation.ChildColumnName,
       Type: ValType.String,
       Display: this.translate.GetTranslation({
-        Key: 'Standard reason', UidColumn: 'QBM-D666A28FA9F3402BB17F80C68530E4CB'
+        Key: 'Standard reason',
+        UidColumn: 'QBM-D666A28FA9F3402BB17F80C68530E4CB',
       }),
-      FkRelation: fkRelation
+      FkRelation: fkRelation,
     };
   }
 
@@ -102,16 +102,10 @@ export class JustificationService {
     return {
       columnName: fkRelation.ChildColumnName,
       fkTableName: fkRelation.ParentTableName,
-      parameterNames: [
-        'OrderBy',
-        'StartIndex',
-        'PageSize',
-        'filter',
-        'search'
-      ],
+      parameterNames: ['OrderBy', 'StartIndex', 'PageSize', 'filter', 'search'],
       load: async (_, parameters = {}) => this.getByType(justificationType, parameters),
       getDataModel: async () => ({}),
-      getFilterTree: async () => ({})
+      getFilterTree: async () => ({}),
     };
   }
 
@@ -119,13 +113,13 @@ export class JustificationService {
     const collection = await this.apiService.client.portal_justifications_get(parameters);
 
     // tslint:disable-next-line:no-bitwise
-    const entities = collection.Entities.filter(entityData => (entityData.Columns.JustificationType.Value & justificationType) > 0);
+    const entities = collection.Entities.filter((entityData) => (entityData.Columns.JustificationType.Value & justificationType) > 0);
 
     return {
       TotalCount: entities.length,
       IsLimitReached: collection.IsLimitReached,
       Entities: entities,
-      TableName: collection.TableName
+      TableName: collection.TableName,
     };
   }
 }

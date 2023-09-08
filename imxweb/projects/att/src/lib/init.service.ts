@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,6 +28,7 @@ import { Injectable } from '@angular/core';
 import { Router, Route } from '@angular/router';
 
 import { ExtService, MenuItem, MenuService, TabItem } from 'qbm';
+import { NotificationRegistryService } from 'qer';
 import { canSeeAttestationPolicies, isAttestationAdmin } from './admin/permissions-helper';
 import { PermissionsService } from './admin/permissions.service';
 import { DashboardPluginComponent } from './dashboard-plugin/dashboard-plugin.component';
@@ -39,6 +40,7 @@ export class InitService {
     private readonly extService: ExtService,
     private readonly router: Router,
     private readonly menuService: MenuService,
+    private readonly notificationService: NotificationRegistryService,
     private readonly permissions: PermissionsService
   ) {
     this.setupMenu();
@@ -49,77 +51,106 @@ export class InitService {
 
     this.extService.register('Dashboard-SmallTiles', { instance: DashboardPluginComponent });
     this.extService.register('groupSidesheet', {
-      instance: AttestationWrapperComponent, inputData:
-      {
+      instance: AttestationWrapperComponent,
+      inputData: {
         id: 'attestations',
         label: '#LDS#Attestation',
-        checkVisibility: async _ => this.permissions.isAttestationAdmin()
+        checkVisibility: async (_) => this.permissions.isAttestationAdmin(),
       },
-      sortOrder: 0
+      sortOrder: 0,
     } as TabItem);
     this.extService.register('identitySidesheet', {
-      instance: AttestationWrapperComponent, inputData: {
+      instance: AttestationWrapperComponent,
+      inputData: {
         id: 'attestations',
         label: '#LDS#Attestation',
-        checkVisibility: async _ => this.permissions.isAttestationAdmin()
+        checkVisibility: async (_) => (await this.permissions.isAttestationAdmin()),
       },
-      sortOrder: 0
+      sortOrder: 0,
     } as TabItem);
+
+    // Register handler for attestation notifications
+    this.notificationService.registerRedirectNotificationHandler({
+      id: 'OpenAttestation',
+      message: '#LDS#There are new attestation cases that you can approve or deny.',
+      route: 'attestation/decision',
+    });
+
+    this.notificationService.registerRedirectNotificationHandler({
+      id: 'OpenInquiriesAttestation',
+      message: '#LDS#There are new attestation inquiries.',
+      route: 'attestation/decision',
+      routeParameters: { inquiries: true },
+    });
   }
 
   private addRoutes(routes: Route[]): void {
     const config = this.router.config;
-    routes.forEach(route => {
+    routes.forEach((route) => {
       config.unshift(route);
     });
     this.router.resetConfig(config);
   }
 
   private setupMenu(): void {
-    this.menuService.addMenuFactories((preProps: string[], groups: string[]) => {
+    this.menuService.addMenuFactories((preProps: string[], features: string[]) => {
       if (!preProps.includes('ATTESTATION')) {
         return null;
       }
 
-      const menu: MenuItem = {
-        id: 'ROOT_Attestation',
-        title: '#LDS#Attestation',
-        sorting: '20',
-        items: [
-          {
-            id: 'ATT_Attestation_PendingAttestations',
-            route: 'attestation/decision',
-            title: '#LDS#Menu Entry Pending attestations',
-            sorting: '20-10',
-          },
-          {
-            id: 'ATT_Attestation_AttestationHistory',
-            route: 'attestation/history',
-            title: '#LDS#Menu Entry Attestation history',
-            sorting: '20-20'
-          }
-        ]
-      };
+        const menu: MenuItem = {
+          id: 'ROOT_Attestation',
+          title: '#LDS#Attestation',
+          sorting: '20',
+          items: [
+            {
+              id: 'ATT_Attestation_MyAttestationCases',
+              route: 'attestation/myattestationcases',
+              title: '#LDS#Menu Entry My attestations',
+              sorting: '20-10',
+            },
+            {
+              id: 'ATT_Attestation_PendingAttestations',
+              route: 'attestation/decision',
+              title: '#LDS#Menu Entry Pending attestations',
+              sorting: '20-20',
+            },
+            {
+              id: 'ATT_Attestation_AttestationHistory',
+              route: 'attestation/history',
+              title: '#LDS#Menu Entry Attestation history',
+              sorting: '20-30',
+            },
+          ],
+        };
 
-      if (canSeeAttestationPolicies(groups)) {
-        menu.items.push({
-          id: 'ATT_Attestation_AttestationRuns',
-          route: 'attestation/runs',
-          title: '#LDS#Menu Entry Attestation runs',
-          description: '#LDS#Shows an overview of attestation runs along with a progress prediction.',
-          sorting: '20-30',
-        });
+        if (canSeeAttestationPolicies(features)) {
+          menu.items.push({
+            id: 'ATT_Attestation_AttestationRuns',
+            route: 'attestation/runs',
+            title: '#LDS#Menu Entry Attestation runs',
+            description: '#LDS#Shows an overview of attestation runs along with a progress prediction.',
+            sorting: '20-40',
+          });
 
-        menu.items.push({
-          id: 'ATT_Attestation_AttestationPolicies',
-          route: 'attestation/policies',
-          title: '#LDS#Menu Entry Attestation policies',
-          description: '#LDS#Shows an overview of attestation policies.',
-          sorting: '20-40',
-        });
-      }
+          menu.items.push({
+            id: 'ATT_Attestation_AttestationPolicies',
+            route: 'attestation/policies',
+            title: '#LDS#Menu Entry Attestation policies',
+            description: '#LDS#Shows an overview of attestation policies.',
+            sorting: '20-50',
+          });
 
-      if (isAttestationAdmin(groups)) {
+          menu.items.push({
+            id: 'ATT_Attestation_AttestationPolicyGroup',
+            route: 'attestation/policy-group',
+            title: '#LDS#Menu Entry Policy collections',
+            description: '#LDS#Shows an overview of policy collections.',
+            sorting: '20-70',
+          });
+        }
+
+      if (isAttestationAdmin(features)) {
         menu.items.push({
           id: 'ATT_Attestation_AttestationPreselection',
           route: 'attestation/preselection',
@@ -129,8 +160,8 @@ export class InitService {
         });
       }
 
-      return menu;
-    },
+        return menu;
+      },
       (preProps: string[], __: string[]) => {
         if (!preProps.includes('ITSHOP')) {
           return null;
@@ -146,9 +177,10 @@ export class InitService {
               route: 'claimdevice',
               title: '#LDS#Menu Entry Device ownership',
               sorting: '30-20',
-            }
-          ]
+            },
+          ],
         };
-      });
+      }
+    );
   }
 }

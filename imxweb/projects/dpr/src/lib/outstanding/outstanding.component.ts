@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -37,7 +37,7 @@ import {
   IClientProperty,
   ReadOnlyEntity,
   TypedEntityCollectionData,
-  ValType
+  ValType,
 } from 'imx-qbm-dbts';
 import { ConfirmationService, DataSourceToolbarSettings, SnackBarService } from 'qbm';
 import { DependenciesComponent } from './dependencies.component';
@@ -45,13 +45,11 @@ import { OutstandingObjectEntity } from './outstanding-object-entity';
 import { OutstandingService } from './outstanding.service';
 import { SelectedItemsComponent } from './selected-items/selected-items.component';
 
-
 @Component({
   templateUrl: './outstanding.component.html',
-  styleUrls: ['./outstanding.component.scss']
+  styleUrls: ['./outstanding.component.scss'],
 })
 export class OutstandingComponent implements OnInit {
-
   public namespaces: OpsupportNamespaces[] = [];
   public selectedNamespace: OpsupportNamespaces;
   public navigationState: CollectionLoadParameters = {};
@@ -65,6 +63,18 @@ export class OutstandingComponent implements OnInit {
   public selected: OutstandingObjectEntity[] = [];
 
   public schema: EntitySchema;
+  public busyLoadingTable = false;
+  public loadingTableData = false;
+  public showAllData = false;
+  public tableDataCount: number = 0;
+
+  public LdsOutstandingText =
+    '#LDS#Objects which do not exist in the target system are marked as outstanding. Here you can get an overview of outstanding objects, delete these objects in the database or add these objects to the target system again. Additionally, you can reset the status of these objects so that they are no longer marked as outstanding.';
+
+  private ldsPublishable: string;
+  private ldsActionFilter: string;
+  private ldsDeletable: string;
+  private currentFilterValue: string;
 
   constructor(
     private readonly apiService: OutstandingService,
@@ -73,25 +83,31 @@ export class OutstandingComponent implements OnInit {
     private readonly confirmationService: ConfirmationService,
     private readonly snackbar: SnackBarService,
     private readonly translate: TranslateService,
-    private readonly busyService: EuiLoadingService) {
-  }
+    private readonly busyService: EuiLoadingService
+  ) {}
+
+  public busy = false;
 
   public async ngOnInit(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    this.busy = true;
     try {
+      this.ldsPublishable = await this.translator.get('#LDS#Addable objects').toPromise();
+      this.ldsDeletable = await this.translator.get('#LDS#Deletable objects').toPromise();
+      this.ldsActionFilter = await this.translator.get('#LDS#Performable actions').toPromise();
+
       this.schema = await this.buildEntitySchema();
       this.buildDstSettings({ Data: [], totalCount: 0 });
       const typed = await this.apiService.getNamespaces();
       this.namespaces = typed.Data;
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busy = false;
     }
   }
 
   public async tableSelected(table: OpsupportOutstandingTables): Promise<void> {
     this.selectedTable = table;
     this.selected = [];
+    this.showAllData = false;
     await this.navigate();
   }
 
@@ -100,18 +116,43 @@ export class OutstandingComponent implements OnInit {
     this.tabledata = [];
     this.selectedTable = null;
     this.selected = [];
-    this.navigate();
+    this.tableDataCount = 0;
+    this.showAllData = false;
+    this.buildDstSettings({ Data: [], totalCount: 0 });
     if (newNamespace) {
-      let overlayRef: OverlayRef;
-      setTimeout(() => overlayRef = this.busyService.show());
+      this.loadingTableData = true;
       try {
-        this.tabledata = (await this.apiService.getTableData(newNamespace))
-          .Data
+        this.tabledata = (await this.apiService.getTableData(newNamespace)).Data
           // remove tables without outstanding objects
-          .filter(m => m.CountOutstanding.value > 0);
+          .filter((m) => m.CountOutstanding.value > 0)
+          // count outstanding objects
+          .map((table => {
+            this.tableDataCount += table.CountOutstanding.value;
+            return table;
+          }));
       } finally {
-        setTimeout(() => this.busyService.hide(overlayRef));
+        this.loadingTableData = false;
       }
+    }
+  }
+  public async onShowAllData(): Promise<void> {
+    if (this.showAllData && (!!this.selectedTable || this.dstSettings.dataSource.totalCount === 0)) {
+      this.confirmationService
+        .confirm({
+          Title: '#LDS#Heading Show All Outstanding Objects',
+          Message: '#LDS#Displaying all outstanding objects may take some time. Are you sure you want to display all outstanding objects?',
+          identifier: 'outstanding-objects-show-all-data',
+        })
+        .then((res) => {
+          if (res) {
+            this.selectedTable = null;
+            this.navigate();
+          } else {
+            this.showAllData = false;
+          }
+        });
+    } else {
+      this.buildDstSettings({ Data: [], totalCount: 0 });
     }
   }
 
@@ -131,24 +172,23 @@ export class OutstandingComponent implements OnInit {
   public async showSelected(objects: OutstandingObjectEntity[]): Promise<void> {
     this.sidesheet.open(SelectedItemsComponent, {
       title: await this.translate.get('#LDS#Heading Selected Items').toPromise(),
-      headerColour: 'iris-blue',
-      bodyColour: 'asher-gray',
       padding: '0',
       width: 'max(550px, 55%)',
       data: { objects, schema: this.schema },
-      testId: 'outstanding-objects-selected-elements-sidesheet'
-    }
-    );
+      testId: 'outstanding-objects-selected-elements-sidesheet',
+    });
   }
 
   public async confirmDependencies(action: OutstandingAction): Promise<boolean> {
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
 
     let dependencies: DependencyToConfirm[];
     try {
-      dependencies = await this.apiService.getDependencies(action,
-        this.selected.map(m => m.ObjectKey.value));
+      dependencies = await this.apiService.getDependencies(
+        action,
+        this.selected.map((m) => m.ObjectKey.value)
+      );
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
@@ -160,37 +200,44 @@ export class OutstandingComponent implements OnInit {
 
     const sidesheetRef = this.sidesheet.open(DependenciesComponent, {
       title: await this.translator.get('#LDS#Heading View Dependencies').toPromise(),
-      headerColour: 'iris-tint',
+      subTitle: this.selected.length === 1 ? this.selected[0].GetEntity().GetDisplay() : '',
       padding: '0px',
       width: 'max(600px, 55%)',
+      testId: 'outstanding-view-depedencies-sidesheet',
       data: {
         dependencies,
-        action
-      }
+        action,
+      },
     });
     const fromsidesheet = await sidesheetRef.afterClosed().toPromise();
     return fromsidesheet;
   }
 
   public canPublishAllSelected(): boolean {
-    return this.selected.every(elem => elem.CanPublish.value);
+    return this.selected.every((elem) => elem.CanPublish.value);
   }
 
-  public async deleteObjects(): Promise<void> {
+  public canDeleteAllSelected(): boolean {
+    return this.selected.every((elem) => elem.CanDelete.value);
+  }
+
+  public deleteObjects(): Promise<void> {
     return this.processWithConfirmation(OutstandingAction.Delete);
   }
 
-  public async resetObjects(): Promise<void> {
+  public resetObjects(): Promise<void> {
     return this.processWithConfirmation(OutstandingAction.DeleteState);
   }
 
-  public async publishObjects(): Promise<void> {
+  public publishObjects(): Promise<void> {
     return this.processWithConfirmation(OutstandingAction.Publish);
   }
 
   public getNoDataText(): string {
     return this.selectedNamespace
-      ? '#LDS#There are currently no outstanding objects.'
+      ? this.tabledata.length > 0
+        ? '#LDS#Select an object type.'
+        : '#LDS#There are currently no outstanding objects.'
       : '#LDS#Select a target system.';
   }
 
@@ -199,68 +246,110 @@ export class OutstandingComponent implements OnInit {
       navigationState: {},
       dataSource: data,
       entitySchema: this.schema,
-      displayedColumns: [
-        this.schema.Columns.Display,
-        this.schema.Columns.LastLogEntry
-      ]
+      filters: [
+        {
+          Description: this.ldsActionFilter,
+          Name: 'actionfilter',
+          Options: [
+            {
+              Display: this.ldsPublishable,
+              Value: 'publishable',
+            },
+            {
+              Display: this.ldsDeletable,
+              Value: 'deletable',
+            },
+          ],
+          CurrentValue: this.currentFilterValue,
+          Delimiter: ',',
+        },
+      ],
+      displayedColumns: [this.schema.Columns.Display, this.schema.Columns.LastLogEntry],
     };
   }
 
   private async navigate(): Promise<void> {
+    try {
+      this.busyLoadingTable = true;
+
+      await this.navigateWithoutBusy();
+    } finally {
+      this.busyLoadingTable = false;
+    }
+  }
+
+  private async navigateWithoutBusy(): Promise<void> {
     if (!this.selectedNamespace) {
       this.buildDstSettings({ Data: [], totalCount: 0 });
     }
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
 
-    try {
-      let baseObjects: OutstandingObject[];
-      if (this.selectedTable) {
-        baseObjects = await this.apiService.getOutstandingTable(this.selectedTable.TableName.value,
-          this.selectedNamespace.Ident_DPRNameSpace.value);
-      } else {
-        baseObjects = await this.apiService.getOutstandingNamespace(this.selectedNamespace.Ident_DPRNameSpace.value);
-      }
-      const typedEntities = baseObjects.map(obj => new OutstandingObjectEntity(new ReadOnlyEntity(this.dstSettings.entitySchema, {
-        Keys: [obj.ObjectKey],
-        Columns: {
-          ObjectKey: {
-            Value: obj.ObjectKey
-          },
-          CanDelete: {
-            Value: obj.CanDelete
-          },
-          CanPublish: {
-            Value: obj.CanPublish
-          },
-          Display: {
-            Value: obj.Display
-          },
-          LastLogEntry: {
-            Value: obj.LastLogEntry
-          },
-          ObjectType: {
-            Value: obj.ObjectType
-          },
-          LastMethodRun: {
-            Value: obj.LastMethodRun
-          }
-        }
-      })));
-      this.buildDstSettings({
-        Data: typedEntities,
-        totalCount: typedEntities.length
-      });
-    } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+    let baseObjects: OutstandingObject[];
+    this.currentFilterValue = this.navigationState.actionfilter;
+    if (this.selectedTable) {
+      baseObjects = await this.apiService.getOutstandingTable(
+        this.selectedTable.TableName.value,
+        this.selectedNamespace.Ident_DPRNameSpace.value,
+        this.currentFilterValue
+      );
+    } else {
+      baseObjects = await this.apiService.getOutstandingNamespace(
+        this.selectedNamespace.Ident_DPRNameSpace.value,
+        this.currentFilterValue
+      );
     }
+
+    const reduce: (input: string[]) => string = (m) => {
+      if (!m || m.length == 0) return null;
+      return m.reduce((p, v) => p + ' ' + v);
+    };
+    const typedEntities = baseObjects.map(
+      (obj) =>
+        new OutstandingObjectEntity(
+          new ReadOnlyEntity(this.dstSettings.entitySchema, {
+            Keys: [obj.ObjectKey],
+            Columns: {
+              ObjectKey: {
+                Value: obj.ObjectKey,
+              },
+              CanDelete: {
+                Value: obj.CanDelete,
+              },
+              CanPublish: {
+                Value: obj.CanPublish,
+              },
+              CanDeleteRestrictionReason: {
+                Value: reduce(obj.CanDeleteRestrictionReasons),
+              },
+              CanPublishRestrictionReason: {
+                Value: reduce(obj.CanPublishRestrictionReasons),
+              },
+              Display: {
+                Value: obj.Display,
+              },
+              LastLogEntry: {
+                Value: obj.LastLogEntry,
+              },
+              ObjectType: {
+                Value: obj.ObjectType,
+              },
+              LastMethodRun: {
+                Value: obj.LastMethodRun,
+              },
+            },
+          })
+        )
+    );
+    this.buildDstSettings({
+      Data: typedEntities,
+      totalCount: typedEntities.length,
+    });
   }
 
   private async processWithConfirmation(action: OutstandingAction): Promise<void> {
     let canProceed = await this.confirmationService.confirm({
       Title: this.getConfirmationTitle(action),
       Message: this.getConfirmationText(action),
-      identifier: 'shoppingcart-for-later-delete'
+      identifier: 'outstanding-objects-process-confirmation',
     });
 
     if (!canProceed) {
@@ -276,10 +365,14 @@ export class OutstandingComponent implements OnInit {
 
   private async process(action: OutstandingAction): Promise<void> {
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
 
     try {
-      await this.apiService.processObjects(action, this.bulk, this.selected.map(k => k.ObjectKey.value));
+      await this.apiService.processObjects(
+        action,
+        this.bulk,
+        this.selected.map((k) => k.ObjectKey.value)
+      );
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
       this.snackbar.open({ key: this.getSnackbarText(action) });
@@ -303,13 +396,16 @@ export class OutstandingComponent implements OnInit {
   private getConfirmationText(action: OutstandingAction): string {
     switch (action) {
       case OutstandingAction.Delete:
-        return this.selected.length > 1 ? '#LDS#Are you sure you want to delete the selected objects in the database?'
+        return this.selected.length > 1
+          ? '#LDS#Are you sure you want to delete the selected objects in the database?'
           : '#LDS#Are you sure you want to delete the selected object in the database?';
       case OutstandingAction.DeleteState:
-        return this.selected.length > 1 ? '#LDS#Are you sure you want to remove the Outstanding labels for the selected objects?'
+        return this.selected.length > 1
+          ? '#LDS#Are you sure you want to remove the Outstanding labels for the selected objects?'
           : '#LDS#Are you sure you want to remove the Outstanding label for the selected object?';
       case OutstandingAction.Publish:
-        return this.selected.length > 1 ? '#LDS#Are you sure you want to add the selected objects to the target system?'
+        return this.selected.length > 1
+          ? '#LDS#Are you sure you want to add the selected objects to the target system?'
           : '#LDS#Are you sure you want to add the selected object to the target system?';
     }
   }
@@ -317,13 +413,16 @@ export class OutstandingComponent implements OnInit {
   private getSnackbarText(action: OutstandingAction): string {
     switch (action) {
       case OutstandingAction.Delete:
-        return this.selected.length > 1 ? '#LDS#The objects have been successfully deleted in the database.'
+        return this.selected.length > 1
+          ? '#LDS#The objects have been successfully deleted in the database.'
           : '#LDS#The object has been successfully deleted in the database.';
       case OutstandingAction.DeleteState:
-        return this.selected.length > 1 ? '#LDS#The Outstanding labels have been successfully removed for the objects.'
+        return this.selected.length > 1
+          ? '#LDS#The Outstanding labels have been successfully removed for the objects.'
           : '#LDS#The Outstanding label has been successfully removed for the object.';
       case OutstandingAction.Publish:
-        return this.selected.length > 1 ? '#LDS#The objects have been successfully added to the target system.'
+        return this.selected.length > 1
+          ? '#LDS#The objects have been successfully added to the target system.'
           : '#LDS#The object has been successfully added to the target system.';
     }
   }
@@ -363,11 +462,30 @@ export class OutstandingComponent implements OnInit {
         ColumnName: 'CanPublish',
         Type: ValType.Bool,
         IsReadOnly: true,
-      }
+      },
+      CanDelete: {
+        ColumnName: 'CanDelete',
+        Type: ValType.Bool,
+        IsReadOnly: true,
+      },
+      CanPublishRestrictionReason: {
+        ColumnName: 'CanPublishRestrictionReason',
+        Type: ValType.String,
+        IsReadOnly: true,
+      },
+      CanDeleteRestrictionReason: {
+        ColumnName: 'CanDeleteRestrictionReason',
+        Type: ValType.String,
+        IsReadOnly: true,
+      },
     };
     columns[DisplayColumns.DISPLAY_PROPERTYNAME] = DisplayColumns.DISPLAY_PROPERTY;
     columns[DisplayColumns.DISPLAY_LONG_PROPERTYNAME] = DisplayColumns.DISPLAY_PROPERTY_LONG;
 
     return { TypeName: 'OutstandingObject', Columns: columns };
+  }
+
+  private get selectedNamespaceTitle(): string{
+    return this.selectedNamespace?.GetEntity()?.GetDisplayLong();
   }
 }

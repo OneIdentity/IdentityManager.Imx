@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,7 +38,8 @@ import {
   imx_SessionService,
   AuthenticationService,
   PluginLoaderService,
-  SplashService
+  SplashService,
+  SystemInfoService
 } from 'qbm';
 import { SystemOverviewComponent } from './information/system-overview/system-overview.component';
 import { environment } from '../environments/environment';
@@ -57,6 +58,7 @@ export class AppService {
     public readonly registry: CdrRegistryService,
     private readonly logger: ClassloggerService,
     private readonly config: AppConfigService,
+    private readonly systemInfoService: SystemInfoService,
     private readonly translateService: TranslateService,
     private readonly session: imx_SessionService,
     private readonly translationProvider: ImxTranslationProviderService,
@@ -84,8 +86,6 @@ export class AppService {
 
     this.setTitle();
 
-    this.authentication.onSessionResponse.subscribe(sessionState => this.translationProvider.init(sessionState?.culture));
-
     this.extService.register('SystemOverview', {
       instance: SystemOverviewComponent
     });
@@ -99,7 +99,7 @@ export class AppService {
   }
 
   private async setTitle(): Promise<void> {
-    const imxConfig = await this.config.getImxConfig();
+    const imxConfig = await this.systemInfoService.getImxConfig();
     const name = imxConfig.ProductName || Globals.QIM_ProductNameFull;
     this.config.Config.Title = await this.translateService.get('#LDS#Heading Operations Support Web Portal').toPromise();
     const title = `${name} ${this.config.Config.Title}`;

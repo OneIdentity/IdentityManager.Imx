@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, Inject } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { IEntityColumn } from 'imx-qbm-dbts';
@@ -39,7 +39,7 @@ import { BaseCdr, ColumnDependentReference } from 'qbm';
 export class MitigatingControlsComponent {
 
   public mitigatingControlCdr: ColumnDependentReference;
-  public formGroup = new FormGroup({});
+  public formGroup = new UntypedFormGroup({});
   constructor(
     @Inject(MAT_DIALOG_DATA) public readonly data: {
       column: IEntityColumn

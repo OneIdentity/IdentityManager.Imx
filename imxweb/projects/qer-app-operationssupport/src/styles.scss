@@ -61,9 +61,9 @@ $source_sans_pro_font_path: "~node_modules/@elemental-ui/core/assets/Source_Sans
   cursor: default;
 }
 
-.mat-checkbox-checked.mat-accent .mat-checkbox-background,
-.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
-  background-color: $iris-tint !important;
+.mat-table .mat-checkbox-checked.mat-accent .mat-checkbox-background,
+.mat-table .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+  background-color: $color-orange-60;
 }
 
 .mat-ripple-element {
@@ -468,15 +468,6 @@ imx-object-history {
   .imx-loader-hidden {
     visibility: hidden;
   }
-
-  imx-object-history-timeline {
-    display: block;
-    margin: 2px;
-    padding: 30px 0;
-    border-radius: 3px;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
-    background-color: $white;
-  }
 }
 
 .mat-option.mat-option-object-history {
@@ -501,10 +492,6 @@ imx-object-history {
 /*#endregion ObjectHistory styles*/
 
 /* #region ObjectOverview styles*/
-
-.imx-object-overview-tab-header {
-  font-weight: 600;
-}
 
 .imx-object-overview-tab-text {
   font-size: 18px;
@@ -533,3 +520,95 @@ imx-object-history {
 }
 
 /*#endregion*/
+.eui-dark-theme {
+  .page {
+      color: $color-gray-5;
+      background-color: $color-gray-80;
+  }
+  .pageContent {
+      color: $color-gray-5;
+      background-color: $color-gray-80;
+  }
+  .mat-card .mat-card-title{
+    color: $color-gray-5;
+  }
+  .imx-service-availability .mat-card{
+    color: $color-gray-5;
+  }
+  .mat-cell, .mat-footer-cell{
+    color: $color-gray-5;
+  }
+  .imx-normalCell ,.imx-title{
+    color: $color-gray-5;
+  }
+  .eui-sidesheet {
+    .mat-toolbar{
+      background-color: $color-blue-80;
+    }
+  }
+
+  imx-object-history {
+    .imx-viewmode-dropdown {
+      .mat-form-field-flex {
+        background-color: $color-gray-80;
+      }
+    }
+  }
+
+  imx-object-history-timeline {
+    background-color: $color-gray-80;
+  }
+
+  .mat-table .mat-checkbox-checked.mat-accent .mat-checkbox-background,
+  .mat-table .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+    background-color: $color-orange-40;
+  }
+}
+
+.eui-contrast-theme {
+  .page {
+      color: $color-gray-0;
+      background-color: $color-gray-100;
+  }
+  .pageContent {
+      color: $color-gray-0;
+      background-color: $color-gray-100;
+  }
+  .mat-card .mat-card-title{
+    color: $color-gray-0;
+  }
+  .imx-service-availability .mat-card{
+    color: $color-gray-0;
+  }
+  .mat-tab-label{
+    background-color: $color-gray-90;
+  }
+  .mat-cell, .mat-footer-cell{
+    color: $color-gray-0;
+  }
+  .imx-normalCell ,.imx-title{
+    color: $color-gray-0;
+  }
+  .eui-sidesheet {
+    .mat-toolbar{
+      background-color: $color-blue-80;
+    }
+  }
+
+  imx-object-history {
+    .imx-viewmode-dropdown {
+      .mat-form-field-flex {
+        background-color: $color-gray-100;
+      }
+    }
+  }
+
+  imx-object-history-timeline {
+    background-color: $color-gray-80;
+  }
+
+  .mat-table .mat-checkbox-checked.mat-accent .mat-checkbox-background,
+  .mat-table .mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+    background-color: $color-orange-40;
+  }
+}

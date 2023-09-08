@@ -1,0 +1,17 @@
+<mat-card class="imx-card" euiClickable="primary" (click)="openSidesheet()" [ngClass]="{'contains-button': nRecipients > 1}" [matTooltip]="'#LDS#Click to change the recipient' | translate">
+  <span class="imx-label">{{ '#LDS#Recipients' | translate}}:</span>
+  <span class="imx-description">({{ '#LDS#Click to change' | translate}})</span>
+  <div *ngIf="nRecipients === 1" class="imx-content">
+    <span>
+      {{ orchestration.recipients.Column.GetDisplayValue()}}
+    </span>
+  </div>
+  <div *ngIf="nRecipients > 1" class="imx-content">
+    <span>
+      {{'#LDS#{0} selected' | translate | ldsReplace: nRecipients}}
+    </span>
+    <button mat-icon-button (click)="clearRecipients(); $event.stopPropagation()">
+      <eui-icon icon="close"></eui-icon>
+    </button>
+  </div>
+</mat-card>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, ErrorHandler, EventEmitter, OnDestroy } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
@@ -45,7 +45,7 @@ import { DateFormat } from 'imx-qbm-dbts';
   styleUrls: ['./edit-date.component.scss']
 })
 export class EditDateComponent implements CdrEditor, OnDestroy {
-  public readonly control = new FormControl(undefined, { updateOn: 'blur' });
+  public readonly control = new UntypedFormControl(undefined, { updateOn: 'blur' });
 
   public readonly columnContainer = new EntityColumnContainer<Date>();
 
@@ -83,6 +83,14 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
 
       this.resetControlValue();
 
+      if (cdref.minlengthSubject) {
+        this.subscribers.push(
+          cdref.minlengthSubject.subscribe(() => {
+            this.resetControlValue();
+          })
+        );
+      }
+
       this.subscribers.push(this.control.valueChanges.subscribe(async value =>
         this.writeValue(this.control.value)
       ));
@@ -96,6 +104,9 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
         }
       }));
 
+      if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
+        this.control.addValidators((control) => (control.value == undefined || control.value.length === 0 ? { required: true } : null));
+      }
     }
   }
 

@@ -1,13 +1,19 @@
-<mat-card class="imx-memberships" >
-  <imx-data-source-toolbar #dst [settings]="dstSettings"
+<eui-alert class="helper-alert" condensed="true" [colored]="true" type="info" [dismissable]="false" *ngIf="withActions">
+  {{ '#LDS#Here you can get an overview of the memberships of the identity. Additionally, you can view the assignment analysis for each membership.' | translate }}
+</eui-alert>
+<mat-card class="imx-memberships">
+  <imx-data-source-toolbar
+    #dst
+    [settings]="dstSettings"
     [options]="['search']"
-    (navigationStateChanged)="onNavigationStateChanged($event)" (search)="onSearch($event)"></imx-data-source-toolbar>
+    [busyService]="busyService"
+    (navigationStateChanged)="onNavigationStateChanged($event)"
+    (search)="onSearch($event)"
+  ></imx-data-source-toolbar>
 
   <div class="imx-membership-table">
-    <imx-data-table [dst]="dst" detailViewVisible="false" data-imx-identifier="identity-role-memberships-table"
-      mode="manual">
-      <imx-data-table-column
-        [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+    <imx-data-table [dst]="dst" detailViewVisible="false" data-imx-identifier="identity-role-memberships-table" (highlightedEntityChanged)="onShowDetails($event)" mode="manual">
+      <imx-data-table-column [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
         <ng-template let-item>
           <div data-imx-identifier="identity-role-memberships-tabledata-display">{{ item.GetEntity().GetDisplay() }}</div>
           <div *ngIf="item.GetEntity().GetDisplay() !== item.GetEntity().GetDisplayLong()" subtitle>
@@ -15,16 +21,7 @@
           </div>
         </ng-template>
       </imx-data-table-column>
-      <imx-data-table-column *ngFor="let displayColumn of displayedColumns"
-        [entityColumn]="displayColumn">
-      </imx-data-table-column>
-
-      <imx-data-table-generic-column columnName="actions" *ngIf="withActions">
-        <ng-template let-dataItem>
-          <button mat-button color="primary" [attr.data-imx-identifier]="'identity-role-memberships-column-button' + dataItem.GetEntity().GetKeys().join(',')"
-           (click)="onShowDetails(dataItem)">{{'#LDS#Heading View Assignment Analysis' |translate}}</button>
-        </ng-template>
-      </imx-data-table-generic-column>
+      <imx-data-table-column *ngFor="let displayColumn of displayedColumns" [entityColumn]="displayColumn"> </imx-data-table-column>
     </imx-data-table>
     <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
   </div>

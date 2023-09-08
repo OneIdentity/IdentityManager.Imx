@@ -1,0 +1,152 @@
+@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '../../new-request-global.scss';
+
+
+@mixin imx-flex-column-container {
+  display: flex;
+  flex-direction: column;
+}
+
+:host {
+
+  .eui-sidesheet-content {
+    @include imx-flex-column-container();
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    .imx-helper-alert {
+      @include EUI-Elevation-1;
+      margin-bottom: 16px;
+    }
+
+    .mat-card {
+      @include imx-flex-column-container();
+      overflow: hidden;
+      margin-bottom: 20px;
+      padding-top: 8px;
+      @include EUI-Elevation-1;
+
+      ::ng-deep .mat-tab-group {
+        flex-grow: 1;
+        overflow: auto;
+
+        .mat-tab-header {
+          background-color: transparent;
+        }
+
+        .mat-tab-body-content {
+          @include imx-flex-column-container();
+
+          .tab-container {
+            flex: 1;
+            overflow: auto;
+            @include imx-flex-column-container();
+          }
+        }
+      }
+    }
+  }
+
+  .details-container {
+    display: flex;
+
+    .details-image {
+      width: 30%;
+      margin-top: 10px;
+    }
+
+    .details-image {
+      margin: 16px auto;
+      max-width: 30%;
+  
+      img {
+        width: 100%;
+      }
+    }
+
+    .details-text {
+      margin: 15px;
+      font-size: 14px;
+      width: 70%;
+
+      .details-item {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+
+        .details-label, 
+        .details-value {
+          display: flex;
+          flex-direction: column;
+          flex-basis: 100%;
+          flex: 1;
+          margin: 8px 0;
+        }
+
+        .details-label {
+          text-align: right;
+          padding-right: 15px;
+          max-width: 120px;
+        }
+      }
+    }
+  }
+  
+  .entitlement-info {
+    font-size: 14px;
+    display: flex;
+    text-align: center;
+  }
+}
+
+// Theming
+:host {
+  mat-card {
+    border: 1px solid $color-gray-20;
+  }
+
+  .details-label {
+    color: $color-gray-60;
+  }
+
+  .entitlement-info {
+    color: $color-gray-80;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+
+    mat-card {
+      border: 1px solid $color-gray-60;
+    }
+
+    .details-label {
+      color: $color-gray-20;
+    }
+
+    .entitlement-info {
+      color: $color-gray-10;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+
+    mat-card {
+      border: 1px solid $color-gray-80;
+    }
+
+    .details-label {
+      color: $color-gray-0;
+    }
+
+    .entitlement-info {
+      color: $color-gray-0;
+    }
+  }
+}

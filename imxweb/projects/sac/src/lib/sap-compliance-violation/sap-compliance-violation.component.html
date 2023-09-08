@@ -1,0 +1,31 @@
+<div eui-sidesheet-content>
+  <div class="imx-sap-compliance-selection" *ngIf="!loading">
+    <mat-form-field appearance="outline" class="namespace-selector" *ngIf="this.accounts?.length > 1">
+      <mat-label>{{ '#LDS#SAP user' | translate }}</mat-label>
+      <mat-select required (selectionChange)="onUserOptionSelected()" [(value)]="selectedAccount" [disabled]="loading" data-imx-identifier="sap-user-select">
+        <mat-option *ngFor="let account of accounts" [value]="account" [attr.data-imx-identifier]="'sap-user-option-' + account.GetEntity().GetDisplay()">
+          {{ account.GetEntity().GetDisplay() }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <span *ngIf="!hideChips">{{ '#LDS#Rule analysis' | translate }}:</span>
+    <mat-chip-list *ngIf="!hideChips">
+      <mat-chip *ngFor="let option of selectionOptions" (click)="onSelectionChange(option)" [selected]="isOptionSelected(option.value)" color="primary" [disabled]="loading">
+        {{ option.label | translate }}
+      </mat-chip>
+    </mat-chip-list>
+  </div>
+  <mat-spinner *ngIf="loading"></mat-spinner>
+  <imx-sap-compliance-violation-views-by-role
+    [resultByRole]="resultByRole"
+    *ngIf="!loading && isOptionSelected(sapSelectionTypeEnum.ROLE) && resultByRole.Elements?.length > 0"
+  ></imx-sap-compliance-violation-views-by-role>
+  <imx-sap-compliance-violation-views-by-ability
+    [resultByAbility]="resultByAbility"
+    *ngIf="!loading && isOptionSelected(sapSelectionTypeEnum.ABILITY) && resultByAbility.Data?.length > 0"
+  ></imx-sap-compliance-violation-views-by-ability>
+  <div *ngIf="!loading && showNoData" class="no-results">
+    <eui-icon [icon]="'table'"></eui-icon>
+    <p>{{ '#LDS#No data' | translate }}</p>
+  </div>
+</div>

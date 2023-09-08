@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -50,6 +50,7 @@ export interface ISessionState {
   isOAuth?: boolean;
   hasErrorState?: boolean;
   culture?: string;
+  cultureFormat?: string;
 }
 
 /**
@@ -76,6 +77,7 @@ export class SessionState implements ISessionState {
   public readonly configurationProviders: AuthConfigProvider[];
   public readonly externalLogoutUrl: string;
   public readonly culture: string;
+  public readonly cultureFormat: string;
 
   private currentAuthStep: AuthStepLevels = AuthStepLevels.LoggedOut;
 
@@ -86,6 +88,7 @@ export class SessionState implements ISessionState {
       this.externalLogoutUrl = this.sessionResponse.Status.ExternalLogoutUrl;
     }
     this.culture = this.sessionResponse?.Status?.Culture;
+    this.cultureFormat  = this.sessionResponse?.Status?.CultureFormat ;
   }
 
   private GetCurrentAuthStep(): AuthStepLevels {

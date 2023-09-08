@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -40,7 +40,7 @@ export class ServicecategoryTreeDatabase extends TreeDatabase {
   public recipients: IWriteValue<string>;
 
   constructor(
-    private readonly busyService: EuiLoadingService,
+    private readonly loadingServiceElemental: EuiLoadingService,
     private readonly settingsService: SettingsService,
     private productSelectionService: ProductSelectionService
   ) {
@@ -52,7 +52,7 @@ export class ServicecategoryTreeDatabase extends TreeDatabase {
     : Promise<TreeNodeResultParameter> {
     let entities: TreeNodeResultParameter;
     if (showLoading) {
-      setTimeout(() => this.busyService.show());
+      setTimeout(() => this.loadingServiceElemental.show());
     }
     let serviceCategories: TypedEntityCollectionData<PortalShopCategories>;
     try {
@@ -73,7 +73,7 @@ export class ServicecategoryTreeDatabase extends TreeDatabase {
       };
     } finally {
       if (showLoading) {
-        setTimeout(() => this.busyService.hide());
+        setTimeout(() => this.loadingServiceElemental.hide());
       }
     }
     return entities;

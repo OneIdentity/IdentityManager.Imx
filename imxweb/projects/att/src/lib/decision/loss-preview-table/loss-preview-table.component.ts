@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,23 +27,39 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { EntitlementLossDto } from 'imx-api-att';
 import { LossPreview } from '../loss-preview.interface';
+import { AttestationCasesService } from '../attestation-cases.service';
 
 @Component({
   selector: 'imx-loss-preview-table',
   templateUrl: './loss-preview-table.component.html',
-  styleUrls: ['./loss-preview-table.component.scss']
+  styleUrls: ['./loss-preview-table.component.scss'],
 })
 export class LossPreviewTableComponent implements OnInit {
-
   @Input() public lossPreview: LossPreview;
   @Input() public showTitle = false;
+  public isLoading = false;
   public lossPreviewItems: EntitlementLossDto[];
   public lossPreviewHeaders: string[];
   public lossPreviewDisplayKeys: EntitlementLossDto;
 
-  public ngOnInit(): void {
+  constructor(private caseService: AttestationCasesService) {}
+
+  public async ngOnInit(): Promise<void> {
+    if (this.lossPreview.Case) {
+      // If we pass in the case, then we still need to grab the loss items
+      await this.loadData();
+    }
     this.lossPreviewItems = this.lossPreview.LossPreviewItems;
     this.lossPreviewHeaders = this.lossPreview.LossPreviewHeaders;
     this.lossPreviewDisplayKeys = this.lossPreview.LossPreviewDisplayKeys;
+  }
+
+  public async loadData(): Promise<void> {
+    this.isLoading = true;
+    try {
+      this.lossPreview.LossPreviewItems = await this.caseService.getLossPreviewEntities(this.lossPreview.Case);
+    } finally {
+      this.isLoading = false;
+    }
   }
 }

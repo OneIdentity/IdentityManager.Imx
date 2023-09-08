@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -73,7 +73,7 @@ export class EntityColumnContainer<T = any> implements ValueWrapper<T> {
     }
 
     public get valueConstraint(): ValueConstraint {
-      return this.cdr && this.cdr.column ? this.cdr.column.GetMetadata().valueConstraint : undefined;
+      return this.cdr && (this.cdr.valueConstraint || (this.cdr.column ? this.cdr.column.GetMetadata().valueConstraint : undefined));
     }
 
     public get metaData(): IValueMetadata {
@@ -83,10 +83,6 @@ export class EntityColumnContainer<T = any> implements ValueWrapper<T> {
     public get hint(): string {
       return this.cdr?.hint;
     }
-
-    public get title(): string {
-      return this.cdr && this.cdr.title ? this.cdr.title : undefined;
-  }
 
     public limitedValuesContainer: LimitedValuesContainer;
 

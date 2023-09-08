@@ -1,150 +1,235 @@
-<h1 class="mat-headline">{{ '#LDS#Heading Pending Attestations' | translate }}</h1>
-<div class="imx-table-container">
-  <ng-container *ngIf="dstSettings">
-    <div class="toggle-wrapper">
-      <mat-slide-toggle *ngIf="isUserEscalationApprover" class="escalation-approver-toggle" color="primary"
-      [(ngModel)]="viewEscalation" (change)="switchEscalation()"
-      [matTooltip]="'#LDS#Activate this toggle to show only attestation cases that can be approved by the chief approval team. Members of the chief approval team are authorized to intervene in the approval process at any time.'|translate">
-      {{'#LDS#Show attestation cases to be approved by chief approval team' | translate}}
-      </mat-slide-toggle>
-    </div>
-    <imx-data-source-toolbar
-      #dst
-      [options]="['search', 'filter', 'groupBy', 'settings']"
-      [settings]="dstSettings"
-      data-imx-identifier="attestations-table-dst"
-      (navigationStateChanged)="getData($event)"
-      (search)="search($event)"
-    >
-    </imx-data-source-toolbar>
-    <div class="imx-attestationcase-table">
-      <imx-data-table
-        [dst]="dst"
-        [detailViewVisible]="false"
-        mode="manual"
-        [selectable]="true"
-        (selectionChanged)="onSelectionChanged($event)"
-        data-imx-identifier="attestations-table"
-        [groupData]="groupedData"
-        (groupDataChanged)="onGroupingChange($event)"
-      >
-        <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.UiText" data-imx-identifier="attestations-table-column-attestationCaseDisplay">
-          <ng-template let-item>
-            <imx-attestation-display [additionalColumns]="dst.additionalListElements" [attestation]="item"></imx-attestation-display>
-          </ng-template>
-        </imx-data-table-column>
-        <imx-data-table-generic-column columnName="badges" data-imx-identifier="attestations-table-column-edit">
-          <ng-template let-item>
-            <div class="imx-badge-container">
-              <div>
-                <eui-badge *ngIf="item.IsNotApprovedBefore.value === true">
-                  {{ '#LDS#New' | translate }}
-                </eui-badge>
-              </div>
-              <div>
-                <eui-badge color="red" *ngIf="item.RiskIndex.value > 0">
-                  {{ item.RiskIndex.GetMetadata().GetDisplay() + ': ' + item.RiskIndex.Column.GetDisplayValue() }}
-                </eui-badge>
-              </div>
-              <div>
-                <eui-badge color="red" *ngIf="item.isOverdue">
-                  {{ '#LDS#Overdue' | translate }}
-                </eui-badge>
-              </div>
-              <div>
-                <eui-badge color="orange" *ngIf="item.data.CanSeeComplianceViolations && item.data.ComplianceViolations.length > 0">
-                  {{ '#LDS#Compliance violation' | translate }}
-                </eui-badge>
-              </div>
-            </div>
-          </ng-template>
-        </imx-data-table-generic-column>
-        <imx-data-table-generic-column columnName="decision" data-imx-identifier="attestations-table-column-decision">
-          <ng-template let-item>
-            <div class="imx-decision">
-              <button mat-stroked-button (click)="attestationAction.checkForViolations([item])" data-imx-identifier="attestations-table-approve-button">
-                {{ '#LDS#Approve' | translate }}
-              </button>
-              <button mat-stroked-button (click)="openLossDialog('deny', [item])" data-imx-identifier="attestations-table-deny-button">
-                {{ '#LDS#Deny' | translate }}
-              </button>
-            </div>
-          </ng-template>
-        </imx-data-table-generic-column>
-        <imx-data-table-generic-column columnName="edit" data-imx-identifier="attestations-table-column-edit">
-          <ng-template let-item>
-            <button mat-button color="primary" (click)="edit(item)" data-imx-identifier="attestations-table-column-edit-button">
-              {{ '#LDS#Details' | translate }}
-            </button>
-          </ng-template>
-        </imx-data-table-generic-column>
-      </imx-data-table>
-    </div>
-    <imx-data-source-paginator [dst]="dst" *ngIf="!dstSettings?.groupData?.currentGrouping" data-imx-identifier="attestations-table-paginator"> </imx-data-source-paginator>
-    <div class="imx-button-bar">
-      <span class="imx-spacer"></span>
-      <button
-        mat-stroked-button
-        data-imx-identifier="attestations-button-actions"
-        title="{{ '#LDS#Actions' | translate }}"
-        [matMenuTriggerFor]="actionsMenu"
-        [disabled]="!canPerformActions"
-      >
-        <eui-icon icon="ellipsisvertical"></eui-icon>
-      </button>
-      <button data-imx-identifier="attestations-approve-selected-button" mat-stroked-button (click)="attestationAction.checkForViolations(selectedCases)" [disabled]="!selectedCases.length">
-        {{ '#LDS#Approve' | translate }}
-      </button>
-      <button data-imx-identifier="attestations-deny-selected-button" mat-stroked-button (click)="openLossDialog('deny', selectedCases)" [disabled]="!selectedCases.length">
-        {{ '#LDS#Deny' | translate }}
-      </button>
-    </div>
-  </ng-container>
+<h1 class="mat-headline">
+  <span>{{ '#LDS#Heading Pending Attestations' | translate }}</span>
+  <imx-help-contextual></imx-help-contextual>
+</h1>
+
+<div *ngIf="hasInquiries" class="imx-cases-content">
+  <mat-tab-group [(selectedIndex)]="tabIndex">
+    <mat-tab [label]="'#LDS#Heading Attestation Cases' | translate">
+      <ng-template matTabContent>
+        <ng-content *ngTemplateOutlet="tabContent"></ng-content>
+      </ng-template>
+    </mat-tab>
+    <mat-tab [label]="'#LDS#Heading Inquiries' | translate">
+      <ng-template matTabContent>
+        <imx-attestation-inquiries></imx-attestation-inquiries>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
 </div>
-<mat-menu data-imx-identifier="attestations-actions-menu" #actionsMenu="matMenu">
-  <button
-    mat-menu-item
-    *ngIf="canReRouteDecision"
-    data-imx-identifier="attestations-actions-menu-approvals-button"
-    title="{{ '#LDS#Reroutes the approval for the selected attestation cases' | translate }}"
-    (click)="attestationAction.directDecision(selectedCases, userUid)"
-  >
-    {{ '#LDS#Reroute approval' | translate }}
-  </button>
-  <button
-    mat-menu-item
-    *ngIf="canAddApprover"
-    data-imx-identifier="attestations-actions-menu-button-add-attestor"
-    title="{{ '#LDS#Adds an additional attestor for the selected attestation cases' | translate }}"
-    (click)="attestationAction.addAdditionalAttestor(selectedCases)"
-  >
-    {{ '#LDS#Add attestor' | translate }}
-  </button>
-  <button
-    mat-menu-item
-    *ngIf="canDelegateDecision"
-    data-imx-identifier="attestations-actions-menu-button-delegate-approvals"
-    title="{{ '#LDS#Delegates the approval for the selected attestation cases to another identity' | translate }}"
-    (click)="attestationAction.delegateDecision(selectedCases)"
-  >
-    {{ '#LDS#Delegate approval' | translate }}
-  </button>
-  <button
-    mat-menu-item
-    *ngIf="canWithdrawAddApprover"
-    data-imx-identifier="attestations-actions-menu-button-withdraw-additional-approver"
-    title="{{ '#LDS#Withdraws the additional attestors for the selected attestation cases' | translate }}"
-    (click)="attestationAction.revokeDelegation(selectedCases)"
-  >
-    {{ '#LDS#Withdraw additional attestor' | translate }}
-  </button>
-  <button
-    mat-menu-item
-    *ngIf="canDenyApproval"
-    data-imx-identifier="attestations-actions-menu-button-deny-approvals"
-    title="{{ '#LDS#Rejects the approval for the selected attestation cases and sends them back to the original attestors' | translate }}"
-    (click)="openLossDialog('denyDecisions', selectedCases)"
-  >
-    {{ '#LDS#Reject approval' | translate }}
-  </button>
-</mat-menu>
+
+<ng-container *ngIf="!hasInquiries">
+  <ng-content *ngTemplateOutlet="tabContent"></ng-content>
+</ng-container>
+
+<ng-template #tabContent>
+  <mat-card class="imx-table-container">
+    <ng-container>
+      <div class="toggle-wrapper" *ngIf="dstSettings">
+        <mat-slide-toggle
+          *ngIf="isUserEscalationApprover"
+          class="escalation-approver-toggle"
+          color="primary"
+          [(ngModel)]="viewEscalation"
+          (change)="switchEscalation()"
+          data-imx-identifier="attestation-decision-escalation-slider"
+          [matTooltip]="
+            '#LDS#Activate this toggle to show only attestation cases that can be approved by the chief approval team. Members of the chief approval team are authorized to intervene in the approval process at any time.'
+              | translate
+          "
+        >
+          {{ '#LDS#Show attestation cases to be approved by chief approval team' | translate }}
+        </mat-slide-toggle>
+      </div>
+      <imx-data-source-toolbar
+        #dst
+        [options]="['search', 'sort', 'filter', 'groupBy', 'settings']"
+        [busyService]="busyService"
+        [settings]="dstSettings"
+        data-imx-identifier="attestations-table-dst"
+        (navigationStateChanged)="getData($event)"
+        (search)="search($event)"
+        (updateConfig)="updateConfig($event)"
+        (deleteConfigById)="deleteConfigById($event)"
+      >
+      </imx-data-source-toolbar>
+      <div class="imx-attestationcase-table">
+        <imx-data-table
+          [dst]="dst"
+          [detailViewVisible]="false"
+          mode="manual"
+          [selectable]="true"
+          (highlightedEntityChanged)="edit($event)"
+          (selectionChanged)="onSelectionChanged($event)"
+          data-imx-identifier="attestations-table"
+          [groupData]="groupedData"
+          (groupDataChanged)="onGroupingChange($event)"
+        >
+          <imx-data-table-column [entityColumn]="entitySchema.Columns.UiText" data-imx-identifier="attestations-table-column-attestationCaseDisplay">
+            <ng-template let-item>
+              <imx-attestation-display [additionalColumns]="dst.additionalListElements" [attestation]="item"></imx-attestation-display>
+            </ng-template>
+          </imx-data-table-column>
+          <imx-data-table-generic-column columnName="badges" data-imx-identifier="attestations-table-column-edit">
+            <ng-template let-item>
+              <div class="imx-icons-container">
+                <div class="table-icon table-icon--warning" *ngIf="item.hasPolicyViolation === true">
+                  <eui-icon icon="warning" size="m"></eui-icon>
+                  {{ '#LDS#Policy violation' | translate }}
+                </div>
+                <div class="table-icon table-icon--new" *ngIf="item.IsNotApprovedBefore.value === true">
+                  <mat-icon class="material-icons-outlined">add_circle</mat-icon>
+                  {{ '#LDS#New' | translate }}
+                </div>
+                <div class="table-icon table-icon--alert" *ngIf="item.RiskIndex.value > 0">
+                  <eui-icon icon="piechart" size="m"></eui-icon>
+                  <span>{{ item.RiskIndex.Column.GetDisplayValue() }}</span>
+                </div>
+                <div class="table-icon table-icon--alert" *ngIf="item.isOverdue">
+                  <eui-icon icon="calendar" size="m"></eui-icon>
+                  {{ '#LDS#Overdue' | translate }}
+                </div>
+                <div class="table-icon table-icon--warning" *ngIf="item.data.CanSeeComplianceViolations && item.data.ComplianceViolations.length > 0">
+                  <eui-icon icon="warning" size="m"></eui-icon>
+                  {{ '#LDS#Rule violation' | translate }}
+                </div>
+                <div class="table-icon table-icon--info" *ngIf="item.IsReserved.value">
+                  <eui-icon icon="pause" size="m"></eui-icon>
+                  {{ '#LDS#Reserved' | translate }}
+                </div>
+              </div>
+            </ng-template>
+          </imx-data-table-generic-column>
+          <imx-data-table-generic-column columnName="decision" data-imx-identifier="attestations-table-column-decision">
+            <ng-template let-item>
+              <div class="imx-decision">
+                <button mat-stroked-button color="warn" (click)="openLossDialog('deny', [item])" data-imx-identifier="attestations-table-deny-button">
+                  <eui-icon icon="ignore"></eui-icon>
+                  <span translate>#LDS#Deny</span>
+                </button>
+                <button
+                  mat-stroked-button
+                  color="primary"
+                  (click)="attestationAction.checkForViolations([item])"
+                  data-imx-identifier="attestations-table-approve-button"
+                >
+                  <eui-icon icon="check"></eui-icon>
+                  <span translate>#LDS#Approve</span>
+                </button>
+              </div>
+            </ng-template>
+          </imx-data-table-generic-column>
+          <imx-data-table-generic-column columnName="recommendations">
+            <ng-template let-item>
+              <div class="recommendation-wrapper">
+                <button
+                  mat-stroked-button
+                  *ngIf="item.data?.Recommendation"
+                  (click)="viewRecommendationDetails(item)"
+                  data-imx-identifier="attestations-table-row-button-view-recommendations"
+                >
+                  <eui-icon
+                    *ngIf="item.data?.Recommendation?.Recommendation === recApprove"
+                    class="recommendation-approve-icon"
+                    icon="setdefault"
+                    [matTooltip]="'#LDS#Based on an analysis with currently available data, it is recommended you approve this request.' | translate"
+                  ></eui-icon>
+                  <eui-icon
+                    *ngIf="item.data?.Recommendation?.Recommendation === recDeny"
+                    class="recommendation-deny-icon"
+                    icon="error"
+                    [matTooltip]="'#LDS#Based on an analysis with currently available data, it is recommended you deny this request.' | translate"
+                  ></eui-icon>
+                  {{ '#LDS#Recommendation' | translate }}
+                </button>
+              </div>
+            </ng-template>
+          </imx-data-table-generic-column>
+        </imx-data-table>
+      </div>
+      <imx-data-source-paginator [dst]="dst" data-imx-identifier="attestations-table-paginator"> </imx-data-source-paginator>
+    </ng-container>
+  </mat-card>
+
+  <div class="imx-button-bar">
+    <imx-selected-elements [selectedElements]="selectedCases" [isLoading]="busyService.isBusy"></imx-selected-elements>
+     <div class="imx-menu-spacer"></div>
+    <button
+      mat-stroked-button
+      data-imx-identifier="attestations-button-actions"
+      title="{{ '#LDS#Actions' | translate }}"
+      [matMenuTriggerFor]="actionsMenu"
+      [disabled]="!canPerformActions"
+    >
+      <eui-icon icon="ellipsisvertical"></eui-icon>
+      <span translate>#LDS#Actions</span>
+    </button>
+    <button
+      data-imx-identifier="attestations-deny-selected-button"
+      mat-raised-button
+      color="warn"
+      (click)="openLossDialog('deny', selectedCases)"
+      [disabled]="!selectedCases.length"
+    >
+      <eui-icon icon="ignore"></eui-icon>
+      <span translate>#LDS#Deny</span>
+    </button>
+    <button
+      data-imx-identifier="attestations-approve-selected-button"
+      mat-raised-button
+      color="primary"
+      (click)="attestationAction.checkForViolations(selectedCases)"
+      [disabled]="!selectedCases.length"
+    >
+      <eui-icon icon="check"></eui-icon>
+      <span translate>#LDS#Approve</span>
+    </button>
+  </div>
+  <mat-menu yPosition="above" xPosition="before" data-imx-identifier="attestations-actions-menu" #actionsMenu="matMenu">
+    <button
+      mat-menu-item
+      *ngIf="canReRouteDecision"
+      data-imx-identifier="attestations-actions-menu-approvals-button"
+      title="{{ '#LDS#Reroutes the approval for the selected attestation cases' | translate }}"
+      (click)="attestationAction.directDecision(selectedCases, userUid)"
+    >
+      {{ '#LDS#Reroute approval' | translate }}
+    </button>
+    <button
+      mat-menu-item
+      *ngIf="canAddApprover"
+      data-imx-identifier="attestations-actions-menu-button-add-attestor"
+      title="{{ '#LDS#Adds an additional attestor for the selected attestation cases' | translate }}"
+      (click)="attestationAction.addAdditionalAttestor(selectedCases)"
+    >
+      {{ '#LDS#Add attestor' | translate }}
+    </button>
+    <button
+      mat-menu-item
+      *ngIf="canDelegateDecision"
+      data-imx-identifier="attestations-actions-menu-button-delegate-approvals"
+      title="{{ '#LDS#Delegates the approval for the selected attestation cases to another identity' | translate }}"
+      (click)="attestationAction.delegateDecision(selectedCases)"
+    >
+      {{ '#LDS#Delegate approval' | translate }}
+    </button>
+    <button
+      mat-menu-item
+      *ngIf="canWithdrawAddApprover"
+      data-imx-identifier="attestations-actions-menu-button-withdraw-additional-approver"
+      title="{{ '#LDS#Withdraws the additional attestors for the selected attestation cases' | translate }}"
+      (click)="attestationAction.revokeAdditional(selectedCases)"
+    >
+      {{ '#LDS#Withdraw additional attestor' | translate }}
+    </button>
+    <button
+      mat-menu-item
+      *ngIf="canDenyApproval"
+      data-imx-identifier="attestations-actions-menu-button-deny-approvals"
+      title="{{ '#LDS#Rejects the approval for the selected attestation cases and sends them back to the original attestors' | translate }}"
+      (click)="openLossDialog('denyDecisions', selectedCases)"
+    >
+      {{ '#LDS#Reject approval' | translate }}
+    </button>
+  </mat-menu>
+</ng-template>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { UntypedFormControl, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
@@ -38,7 +38,7 @@ import { FilterElementModel } from './filter-element-model';
 })
 export class EditUintComponent implements OnInit, OnDestroy {
 
-  public control: FormControl;
+  public control: UntypedFormControl;
   @Input() public filterElementModel: FilterElementModel;
   @Input() public identifier: string;
   @Input() public testId = '';
@@ -48,7 +48,7 @@ export class EditUintComponent implements OnInit, OnDestroy {
   private valueChangedSubscription: Subscription;
 
   constructor(private readonly translateService: TranslateService) {
-    this.control = new FormControl(undefined, { updateOn: 'blur', validators: Validators.min(0) });
+    this.control = new UntypedFormControl(undefined, { updateOn: 'blur', validators: Validators.min(0) });
   }
 
   public ngOnInit(): void {
@@ -59,7 +59,7 @@ export class EditUintComponent implements OnInit, OnDestroy {
     this.valueChangedSubscription = this.control.valueChanges.subscribe(() =>
       this.valueChanged.emit({
         ParameterValue: this.control.value,
-        displays: [this.control.value.toLocaleString(this.translateService.getBrowserCultureLang())]
+        displays: [this.control.value.toLocaleString(this.translateService.currentLang)]
       })
     );
   }

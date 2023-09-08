@@ -1,0 +1,68 @@
+:host
+{
+  min-width: 800px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  .content-container{
+    padding: 0.5em 0.5em 0 0;
+    overflow: auto;
+
+      &.loading{
+      display: flex;
+      justify-content: center;
+      flex: 1;
+      align-items: center;
+    }
+  }
+
+  table
+  {
+    table-layout: fixed;
+    border-collapse: collapse;
+    margin-bottom: 1em;
+  }
+
+  h2
+  {
+    margin-bottom: 1em;
+  }
+
+  td
+  {
+    padding: .5em;
+    vertical-align: top;
+    border: solid 1px lightgray;
+  }
+
+  table.status-table td:nth-child(1)
+  {
+    width: 40%;
+  }
+
+  table.plugin-table td:nth-child(2)
+  {
+    width: 30%;
+  }
+
+  .mat-icon
+  {
+    vertical-align: middle;
+  }
+
+  pre
+  {
+    margin: 0;
+  }
+
+  .button-bar {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+
+    button:first-child {
+      margin-right: auto;
+    }
+  }
+}

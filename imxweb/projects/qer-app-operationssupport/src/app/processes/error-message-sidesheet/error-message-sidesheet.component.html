@@ -1,0 +1,17 @@
+<div eui-sidesheet-content>
+  <mat-card *ngIf="data">
+    <mat-card-content class="imx-text-container">
+      <code>{{ data }}</code>
+    </mat-card-content>
+  </mat-card>
+</div>
+<div eui-sidesheet-actions>
+  <button
+    mat-raised-button
+    color="primary"
+    attr.data-imx-identifier="error-message-copy-button"
+    (click)="copyToClipboard()"
+  >
+    {{ '#LDS#Copy message to clipboard' | translate }}
+  </button>
+</div>

@@ -1,0 +1,43 @@
+<div eui-sidesheet-content>
+  <mat-card>
+    <div class="row">
+      <div class="column imx-readonly-view">
+        <span class="column-display">{{'#LDS#Sequence ID' | translate}}</span>
+        <span class="column-value">{{data.SequenceID}}</span>
+      </div>
+      <div class="column imx-readonly-view">
+        <span class="column-display">{{'#LDS#Level' | translate}}</span>
+        <span class="column-value">{{data.Level}}</span>
+      </div>
+      <div class="column imx-readonly-view">
+        <span class="column-display">{{'#LDS#Logger name' | translate}}</span>
+        <span class="column-value">{{data.LoggerName}}</span>
+      </div>
+    </div>
+    <div class="imx-readonly-view" *ngIf="data.Level != 'Error'">
+      <span class="column-display">{{'#LDS#Messages' | translate}}</span>
+      <span class="column-value">
+        <textarea class="message" readonly matInput>
+            {{ data.Message.trim() }}
+        </textarea>
+       </span>
+    </div>
+    <div class="imx-readonly-view" *ngIf="data.Level === 'Error'">
+      <span class="column-display">{{'#LDS#Error messages' | translate}}</span>
+      <span class="column-value">
+        <textarea class="message" readonly matInput>
+            {{ data.Exception.Messages.join('\n').trim() }}
+        </textarea>
+      </span>
+    </div>
+    <div class="imx-readonly-view" *ngIf="data.Level === 'Error'">
+      <span class="column-display">{{'#LDS#Stack trace' | translate}}</span>
+      <span class="column-value">
+        <textarea class="stacktrace" readonly matInput>
+          {{ data.Exception.StackTrace.join('\n').trim() }}
+        </textarea>
+       </span>
+    </div>
+  </mat-card>
+</div>
+

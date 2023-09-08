@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,12 +27,18 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { EuiCoreModule } from '@elemental-ui/core';
 
 import { HyperviewComponent } from './hyperview.component';
 import { PropertyShapeComponent } from './propertyshape.component';
 import { ListShapeComponent } from './listshape.component';
 import { SimpleShapeComponent } from './simpleshape.component';
 import { ShapeComponent } from './shape.component';
+import { ZoomPanDirective } from './zoom-pan.directive';
+import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule } from '@ngx-translate/core';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
     declarations: [
@@ -40,11 +46,16 @@ import { ShapeComponent } from './shape.component';
         PropertyShapeComponent,
         ListShapeComponent,
         SimpleShapeComponent,
-        ShapeComponent
+        ShapeComponent,
+        ZoomPanDirective
     ],
     imports: [
         CommonModule,
-        MatBadgeModule
+        EuiCoreModule,
+        MatTooltipModule,
+        MatBadgeModule,
+        TranslateModule,
+        MatButtonModule,
     ],
     exports: [
         HyperviewComponent

@@ -1,25 +1,68 @@
-<p *ngIf="data.description">{{ data.description | translate }}</p>
-<form [formGroup]="formGroup" class="imx-attestation-case-form">
-  <imx-bulk-editor data-imx-identifier="attestation-param-editor" class="imx-bulk-editor"
-    [entities]="attestationCases"
-    [hideButtons]="true"
-    (validationStateChanged)="validateItem($event)"
-    (controlCreated)="formGroup.addControl('attestation-parameters', $event)">
-  </imx-bulk-editor>
-  <imx-cdr-editor *ngIf="data.actionParameters.person" [cdr]="data.actionParameters.person"
-    (controlCreated)="formGroup.addControl('person', $event)"
-    data-imx-identifier="attestation-action-parameter-person">
-  </imx-cdr-editor>
-  <imx-decision-reason class="imx-decision-reason"
-    [reasonStandard]="data.actionParameters.justification"
-    [reasonFreetext]="data.actionParameters.reason"
-    (controlCreated)="formGroup.addControl('reason', $event)"
-    data-imx-identifier="attestation-action-parameter-reason">
-  </imx-decision-reason>
-</form>
-<div class="imx-button-bar">
-  <button data-imx-identifier="attestation-action-button-save" mat-raised-button color="primary"
-    (click)="sideSheetRef.close(true)" *ngIf="formGroup" [disabled]="formGroup.invalid">
+<div eui-sidesheet-content>
+  <eui-alert *ngIf="data.description" class="imx-top-alert" [condensed]="true" [colored]="true" type="info">
+    {{ data.description | translate }}
+  </eui-alert>
+  <mat-card class="imx-decision-card">
+    <imx-cdr-editor
+      *ngIf="data.actionParameters.person"
+      [cdr]="data.actionParameters.person"
+      (controlCreated)="formGroup.addControl('person', $event)"
+      data-imx-identifier="attestation-action-parameter-person"
+    >
+    </imx-cdr-editor>
+    <imx-decision-reason
+      class="imx-decision-reason"
+      [reasonStandard]="data.actionParameters.justification"
+      [reasonFreetext]="data.actionParameters.reason"
+      [maxReasonType]="data.maxReasonType ?? 0"
+      (controlCreated)="formGroup.addControl('reason', $event)"
+      data-imx-identifier="attestation-action-parameter-reason"
+    >
+    </imx-decision-reason>
+  </mat-card>
+
+  <form [formGroup]="formGroup" class="imx-attestation-case-form">
+    <imx-bulk-editor
+      *ngIf="data.attestationCases.length > 1"
+      data-imx-identifier="attestation-param-editor"
+      class="imx-bulk-editor"
+      [entities]="attestationCases"
+      [hideButtons]="true"
+      (validationStateChanged)="validateItem($event)"
+      (controlCreated)="formGroup.addControl('attestation-parameters', $event)"
+    >
+    </imx-bulk-editor>
+    <mat-card *ngIf="data.attestationCases.length === 1"  class="imx-decision-card">
+      <div class="imx-additional-elements" *ngIf="data.additionalInfo != null">
+        <imx-cdr-editor
+          *ngFor="let cdr of data.additionalInfo; let i = index"
+          [cdr]="cdr"
+          (controlCreated)="formGroup.addControl('additional_' + cdr.column.ColumnName + '_' + i, $event)"
+          [attr.data-imx-identifier]="'additional_column_' + cdr.column.ColumnName + '_' + i"
+        >
+        </imx-cdr-editor>
+        <mat-divider></mat-divider>
+      </div>     
+      <imx-cdr-editor
+        *ngFor="let cdr of attestationParameter; let i = index"
+        [cdr]="cdr"
+        (controlCreated)="formGroup.addControl(cdr.column.ColumnName + '_' + i, $event)"
+        [attr.data-imx-identifier]="'attestation-action-property-column_' + cdr.column.ColumnName + '_' + i"
+      >
+      </imx-cdr-editor>
+    </mat-card>
+  </form>
+</div>
+
+<div eui-sidesheet-actions>
+  <button
+    data-imx-identifier="attestation-action-button-save"
+    mat-raised-button
+    color="primary"
+    (click)="sideSheetRef.close(true)"
+    *ngIf="formGroup"
+    [disabled]="formGroup.invalid"
+  >
     {{ '#LDS#Save' | translate }}
   </button>
 </div>

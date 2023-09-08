@@ -1,5 +1,5 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
-
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import '../../../../../shared/scss/common-table.scss';
 .data-explorer {
   &.data-explorer--identities {
     &.identities--fullscreen {
@@ -8,42 +8,22 @@
       overflow: auto;
     }
 
-    .data-explorer-card-header {
-      border: 1px solid rgba($iris-blue, 0.6);
-
-      .data-explorer-card-header-bg {
-        background-color: $iris-pastel;
-
-        .eui-icon {
-          color: rgba($iris-blue, 0.6);
-        }
-      }
-    }
-
     .data-explorer-table ::ng-deep .mat-column-__Display {
       max-width: 40vw;
       word-wrap: break-word;
-    }
-
-    ::ng-deep .data-explorer-table {
-      .mat-row:hover {
-        background-color: rgba($iris-pastel, 0.2) !important;
-      }
-    }
-
-    ::ng-deep .data-explorer__action-buttons-wrapper {
-      background: $white;
-      .data-explorer__action-buttons {
-        padding: inherit;
-      }
     }
   }
 }
 
 .data-explorer-bottom-button-row {
-  display: flex;
-  flex-direction: row;
-  align-items: end;
-  margin-top: 15px;
-  align-self: end;
+  @include imx-button-bar();
+}
+
+.hidden {
+  display: none;
+}
+::ng-deep{
+  imx-report-button, imx-report-button-ext{
+    display: none;
+  }
 }

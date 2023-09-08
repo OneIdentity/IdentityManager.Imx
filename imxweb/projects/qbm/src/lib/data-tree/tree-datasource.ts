@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,8 +29,10 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 import { BehaviorSubject, Observable, merge, Subscription } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
 
-import { TreeNode } from './tree-node';
+import { TreeNode, TreeNodeInfo } from './tree-node';
 import { TreeDatabase } from './tree-database';
+import { IEntity } from 'imx-qbm-dbts';
+import * as _ from 'lodash';
 
 /** Datasource for the data-tree */
 export class TreeDatasource {
@@ -47,10 +49,7 @@ export class TreeDatasource {
    */
   private subscriptions: Subscription[] = [];
 
-  constructor(
-    private treeControl: FlatTreeControl<TreeNode>,
-    private dataService: TreeDatabase
-  ) { }
+  constructor(private treeControl: FlatTreeControl<TreeNode>, private dataService: TreeDatabase) {}
 
   public init(value: TreeNode[]): void {
     this.treeControl.dataNodes = value;
@@ -62,7 +61,7 @@ export class TreeDatasource {
    * Used by the CdkTree.  Called when it is destroyed
    */
   public disconnect(): void {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   /**
@@ -70,15 +69,14 @@ export class TreeDatasource {
    * Used by the CdkTree. Called when it connects to the data source.
    */
   public connect(collectionViewer: CollectionViewer): Observable<TreeNode[]> {
-    this.subscriptions.push(this.treeControl.expansionModel.changed
-      .pipe(
-        concatMap(async change => this.handleTreeControl(change))
-      )
-      .subscribe((treeDataHasChanged: boolean) => {
-        if (treeDataHasChanged) {
-          this.dataChange.next(this.data);
-        }
-      })
+    this.subscriptions.push(
+      this.treeControl.expansionModel.changed
+        .pipe(concatMap(async (change) => this.handleTreeControl(change)))
+        .subscribe((treeDataHasChanged: boolean) => {
+          if (treeDataHasChanged) {
+            this.dataChange.next(this.data);
+          }
+        })
     );
 
     return merge(collectionViewer.viewChange, this.dataChange).pipe(map(() => this.data));
@@ -87,19 +85,21 @@ export class TreeDatasource {
   /** Handle expand/collapse behaviors */
   public async handleTreeControl(change: SelectionChange<TreeNode>): Promise<boolean> {
     if (change.added && change.added.length > 0) {
-      return (await Promise.all(change.added
-        .filter(node => node.expandable)
-        .map(node => this.toggleNode(node, true))
-      )).some(result => result === true);
+      return (await Promise.all(change.added.filter((node) => node.expandable).map((node) => this.toggleNode(node, true)))).some(
+        (result) => result === true
+      );
     }
 
     if (change.removed && change.removed.length > 0) {
-      return (await Promise.all(change.removed
-        .filter(node => node.expandable)
-        .slice()
-        .reverse()
-        .map(node => this.toggleNode(node, false))))
-        .some(result => result === true);
+      return (
+        await Promise.all(
+          change.removed
+            .filter((node) => node.expandable)
+            .slice()
+            .reverse()
+            .map((node) => this.toggleNode(node, false))
+        )
+      ).some((result) => result === true);
     }
   }
 
@@ -118,9 +118,11 @@ export class TreeDatasource {
         nodes.push(new TreeNode(undefined, ParentKey + 'more', 'more', node.level, false, false, true));
       }
 
-      if (!ParentKey) { // root nodes
+      if (!ParentKey) {
+        // root nodes
         this.data.splice(-1, 1, ...nodes);
-      } else { // child nodes
+      } else {
+        // child nodes
         const index = this.data.indexOf(node);
         this.data.splice(index, 1, ...nodes);
       }
@@ -143,6 +145,48 @@ export class TreeDatasource {
     } else {
       return this.data[0];
     }
+  }
+
+  /**
+   * Adds a node to the tree, that contains the new entity
+   * @param parent the parent node, the new child should be added to
+   * @param childEntity a child entity, that should be added to to tree
+   */
+  public addChildNode(parent: TreeNode, childEntity: IEntity): void {
+    const childNode = this.dataService.createNode(childEntity, parent.level + 1);
+    const index = this.data.indexOf(parent);
+    this.data.splice(index + 1, 0, ...[childNode]);
+    this.dataChange.next(this.data);
+  }
+
+  /**
+   * Updates a node with new information
+   * @param node node, that should be updated
+   * @param newNodeInfo new node information
+   */
+  public updateNode(node: TreeNode, newNodeInfo: TreeNodeInfo) {
+    const index = this.data.findIndex((elem) => TreeDatabase.getId(elem.item) === TreeDatabase.getId(node.item));
+
+    const treenode = { ...node, ...newNodeInfo };
+    // create a new node to replace the old one, because otherwise the tree will not rerender it
+    this.data.splice(index, 1, ...[TreeNode.createNodeFromInfo(treenode)]);
+    this.dataChange.next(this.data);
+  }
+
+  /**
+   * removes a node from the tree
+   * @param node node to be removed
+   */
+  public removeNode(node: TreeNode, withChildren: boolean) {
+    const index = this.data.findIndex((elem) => TreeDatabase.getId(elem.item) === TreeDatabase.getId(node.item));
+    let count = 1;
+    if (withChildren) {
+      for (let i = index + 1; i < this.data.length && this.data[i].level > node.level; i++) {
+        count++;
+      }
+    }
+    this.data.splice(index, count);
+    this.dataChange.next(this.data);
   }
 
   /** removes the top most tree node */
@@ -175,7 +219,6 @@ export class TreeDatasource {
         children.nodes.push(new TreeNode(undefined, node.identifier + 'more', 'more', node.level + 1, false, false, true));
       }
       this.data.splice(index + 1, 0, ...children.nodes);
-
     } else {
       // find all index of nodes having to collapse
       let count = 0;

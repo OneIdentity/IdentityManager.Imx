@@ -1,0 +1,33 @@
+<div class="container">
+  <div class="imx-request-title" translate>#LDS#Heading New Request</div>
+  <!-- <imx-info-button class="imx-info-icon" [title]="'#LDS#Heading New Request' | translate" [templateRef]="infoDialogContent"></imx-info-button> -->
+  <imx-help-contextual></imx-help-contextual>
+  <imx-new-request-reference-user-card></imx-new-request-reference-user-card>
+
+  <!-- CHECK -->
+  <!-- <imx-help-contextual></imx-help-contextual> -->
+  <!-- <ng-container *ngIf="orchestration.referenceUser">
+    <mat-card class="imx-card" euiClickable="primary" routerLink="/newrequest/RequestReferenceUserComponentSelect">
+      <div translate class="imx-label">#LDS#Heading Products by Reference User</div>
+      <div class="imx-content">
+        <span>
+          {{ orchestration.referenceUser.DisplayValue }}
+        </span>
+      </div>
+    </mat-card>
+    <eui-icon icon="collapseright" class="imx-icon-separator"></eui-icon>
+  </ng-container> -->
+  <!-- END CHECK -->
+  <imx-new-request-recipients></imx-new-request-recipients>
+  <span class="imx-spacer"></span>
+  <imx-new-request-header-toolbar></imx-new-request-header-toolbar>
+</div>
+
+<!-- Template for the info dialog -->
+<ng-template #infoDialogContent>
+  <p translate class="no-top">
+    #LDS#Here you can request products for yourself or others.
+  </p>
+  <!-- TODO: This needs to link to the help page when that page exists  -->
+  <a href="#" onclick="return false;" target="_blank" rel="noopener noreferrer">{{'#LDS#Show help' | translate}}</a>
+</ng-template>

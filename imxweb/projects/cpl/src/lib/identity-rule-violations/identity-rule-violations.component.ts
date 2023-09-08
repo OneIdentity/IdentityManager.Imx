@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,7 +30,7 @@ import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { PortalPersonRolemembershipsNoncompliance } from 'imx-api-cpl';
 
-import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, ValType } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DisplayColumns, EntitySchema, ValType } from 'imx-qbm-dbts';
 import { DataSourceToolbarSettings, DynamicTabDataProviderDirective, ClientPropertyForTableColumns, MetadataService, SettingsService } from 'qbm';
 import { IdentityRuleViolationsMitigationControlComponent } from './identity-rule-violations-mitigation-control/identity-rule-violations-mitigation-control.component';
 import { IdentityRuleViolationService } from './identity-rule-violations.service';
@@ -108,8 +108,7 @@ export class IdentityRuleViolationsComponent implements OnInit {
     };
     this.sidesheet.open(IdentityRuleViolationsMitigationControlComponent, {
       title: await this.translate.get('#LDS#Heading View Mitigating Controls').toPromise(),
-      headerColour: 'orange',
-      bodyColour: 'asher-gray',
+      subTitle: entity.GetEntity().GetDisplay(),
       padding: '0px',
       width: 'max(600px,60%)',
       disableClose: false,
@@ -142,7 +141,7 @@ export class IdentityRuleViolationsComponent implements OnInit {
 
       const displayedColumns = this.displayedColumns;
       displayedColumns.unshift(this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]);
-      displayedColumns.push({ ColumnName: 'actions', Type: ValType.String, afterAdditionals: true });
+      displayedColumns.push({ ColumnName: 'actions', Type: ValType.String, afterAdditionals: true, untranslatedDisplay: '#LDS#Actions' });
 
       this.dstSettings = {
         displayedColumns,

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -70,7 +70,7 @@ export class GlobalKpiComponent implements OnInit {
     private readonly busyService: EuiLoadingService,
     readonly translateService: TranslateService,
   ) {
-    this.browserCulture = this.translateService.getBrowserCultureLang();
+    this.browserCulture = this.translateService.currentLang;
 
     translateService.get('#LDS#No data available')
       .subscribe((trans: string) => this.noDataLoaded = trans);

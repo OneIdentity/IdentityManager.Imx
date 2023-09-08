@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,9 +38,10 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { LdsReplaceModule, DataSourceToolbarModule, DataTableModule, CdrModule, ClassloggerModule } from 'qbm';
-import { UserModule } from 'qer';
+import { LdsReplaceModule, DataSourceToolbarModule, DataTableModule, CdrModule, ClassloggerModule, HelpContextualModule } from 'qbm';
+import { UserModule, StatisticsModule } from 'qer';
 import { EditNameComponent } from './editors/edit-name.component';
 import { EditGenericComponent } from './editors/edit-generic.component';
 import { EditOriginComponent } from './editors/edit-origin.component';
@@ -58,6 +59,7 @@ import { SelectedObjectsComponent } from './selected-objects/selected-objects.co
 import { PolicyDetailsComponent } from './policy-details/policy-details.component';
 import { AttestationRunsModule } from '../runs/attestation-runs.module';
 
+
 @NgModule({
     imports: [
         CdrModule,
@@ -74,6 +76,7 @@ import { AttestationRunsModule } from '../runs/attestation-runs.module';
         MatButtonModule,
         MatDialogModule,
         MatRadioModule,
+        MatProgressSpinnerModule,
         MatCheckboxModule,
         MatSlideToggleModule,
         MatMenuModule,
@@ -81,7 +84,10 @@ import { AttestationRunsModule } from '../runs/attestation-runs.module';
         TranslateModule,
         UserModule,
         ClassloggerModule,
-        AttestationRunsModule
+        AttestationRunsModule,
+        LdsReplaceModule,
+        StatisticsModule,
+        HelpContextualModule,
     ],
     declarations: [
         EditGenericComponent,

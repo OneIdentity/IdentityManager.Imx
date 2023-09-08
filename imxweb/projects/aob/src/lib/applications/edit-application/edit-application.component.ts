@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, Output, EventEmitter, ErrorHandler, Inject } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -38,10 +38,12 @@ import {
   SnackBarService,
   TypedEntitySelectionData,
   ConfirmationService,
-  LdsReplacePipe
+  LdsReplacePipe,
+  TranslationEditorComponent
 } from 'qbm';
 import { SelectionContainer } from './selection-container';
 import { ApplicationContent } from '../application-content.interface';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'imx-edit-application',
@@ -50,7 +52,7 @@ import { ApplicationContent } from '../application-content.interface';
 })
 
 export class EditApplicationComponent implements ApplicationContent {
-  public readonly applicationForm = new FormGroup({});
+  public readonly applicationForm = new UntypedFormGroup({});
 
   public shopsData: TypedEntitySelectionData;
   public accountsData: TypedEntitySelectionData;
@@ -71,7 +73,8 @@ export class EditApplicationComponent implements ApplicationContent {
     private readonly confirmation: ConfirmationService,
     private readonly translate: TranslateService,
     private readonly ldsReplace: LdsReplacePipe,
-    @Inject(EUI_SIDESHEET_DATA) public application: PortalApplication
+    @Inject(EUI_SIDESHEET_DATA) public application: PortalApplication,
+    private readonly dialog: MatDialog
   ) {
     this.sidesheetRef.closeClicked().subscribe(async () => {
       if (!this.hasUnsavedChanges()) {
@@ -133,6 +136,14 @@ export class EditApplicationComponent implements ApplicationContent {
 
     this.close.emit(this.application?.UID_AOBApplication?.value);
     this.sidesheetRef.close();
+  }
+
+  public editTranslation(){
+      const dialogConfig = {
+        data: this.application,
+        width: '600px'
+      }
+      this.dialog.open(TranslationEditorComponent,dialogConfig);
   }
 
   private getShopsData(): TypedEntitySelectionData {

@@ -1,0 +1,36 @@
+<div class="control-container" eui-sidesheet-content>
+  <eui-alert class="imx-helper-alert" type="info" [colored]="true">
+    <eui-alert-header>{{ '#LDS#Heading Mitigating Controls Can Be Assigned Individually' | translate }}</eui-alert-header>
+    <eui-alert-content>
+      <p>{{ '#LDS#Here you can assign mitigating controls to the rule violation. NOTE: If no mitigating controls have been assigned to the violated compliance rule, you cannot assign any mitigating controls to the rule violation either.' | translate }}</p>
+    </eui-alert-content>
+  </eui-alert>
+  <ng-container *ngIf="mControls != null && mControls.length > 0">
+    <mat-card class="imx-mitigating-control-content">
+      <imx-mitigating-control-container [mControls]="mControls" [mitigatingCaption]="mitigatingCaption" [formArray]="formArray" [options]="options" (controlsRequested)="onCreateControl()" (controlDeleted)="onDelete($event)"></imx-mitigating-control-container>
+    </mat-card>
+  </ng-container>
+
+  <mat-card class="imx-no-mitigating-controls" *ngIf="!mControls || mControls.length == 0">
+    <div class="imx-data-no-results">
+      <eui-icon icon="table"></eui-icon>
+      <p>
+        {{
+          (options.length > 0
+            ? '#LDS#There are currently no mitigating controls assigned to this rule violation.'
+            : '#LDS#There are currently no mitigating controls that can be assigned to this rule violation.'
+          ) | translate
+        }}
+      </p>
+      <button *ngIf="options.length > 0" mat-stroked-button color="primary" data-imx-identifier="mitigating-controls-person-button-add" (click)="onCreateControl()">
+        {{ '#LDS#Assign mitigating controls' | translate }}
+      </button>
+    </div>
+  </mat-card>
+</div>
+
+<mat-card eui-sidesheet-actions *ngIf="isMControlPerViolation && options.length > 0">
+  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="notSaveable" data-imx-identifier="mitigating-controls-person-button-save">
+    {{ '#LDS#Save' | translate }}
+  </button>
+</mat-card>

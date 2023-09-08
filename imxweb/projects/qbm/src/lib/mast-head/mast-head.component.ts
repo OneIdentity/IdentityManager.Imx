@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,10 +25,10 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { EuiLoadingService } from '@elemental-ui/core';
+import { EuiLoadingService, EuiSidesheetService, EuiTopNavigationItem } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
 import { AppConfigService } from '../appConfig/appConfig.service';
@@ -37,6 +37,11 @@ import { AuthenticationService } from '../authentication/authentication.service'
 import { ISessionState } from '../session/session-state';
 import { MastHeadService } from './mast-head.service';
 import { ConfirmationService } from '../confirmation/confirmation.service';
+import { SystemInfoService } from '../system-info/system-info.service';
+import { ConnectionComponent } from '../connection/connection.component';
+import { TranslateService } from '@ngx-translate/core';
+import { ExtService } from '../ext/ext.service';
+import { IExtension } from '../ext/extension';
 
 /**
  * Masthead of IMX web applications. It can contain dynamic menus or buttons, emitting menus/menu itmes when selected.
@@ -103,6 +108,11 @@ import { ConfirmationService } from '../confirmation/confirmation.service';
 })
 export class MastHeadComponent implements OnDestroy {
 
+  /**
+   * When these {@link EuiTopNavigationItem|items} are set, the menu is displayed.
+   */
+  @Input() public menuItems: EuiTopNavigationItem[];
+
   public get hasDocumentationConfig(): boolean {
     return !!this.appConfig.Config.LocalDocPath;
   }
@@ -117,29 +127,53 @@ export class MastHeadComponent implements OnDestroy {
 
   public sessionState: ISessionState;
   public logoUrl: string;
+  public productName: string;
+  public extensions: IExtension[] = [];
 
   private readonly subscriptions: Subscription[] = [];
 
   constructor(
     public readonly appConfig: AppConfigService,
+    private readonly systemInfoService: SystemInfoService,
     private readonly router: Router,
     private readonly dialog: MatDialog,
     private readonly confirmationService: ConfirmationService,
     private readonly busyService: EuiLoadingService,
     private readonly mastHeadService: MastHeadService,
-    private readonly authentication: AuthenticationService
+    private readonly authentication: AuthenticationService,
+    private readonly sideSheetService: EuiSidesheetService,
+    private readonly translate: TranslateService,
+    private readonly extService: ExtService,
   ) {
     this.subscriptions.push(this.authentication.onSessionResponse.subscribe((sessionState: ISessionState) =>
       this.sessionState = sessionState
     ));
 
     // apply custom logo from configuration
-    this.appConfig.getImxConfig().then(config => {
+    this.systemInfoService.getImxConfig().then(config => {
       if (config.CompanyLogoUrl) {
         // make relative URL absolute if needed
         this.logoUrl = new URL(config.CompanyLogoUrl, this.appConfig.BaseUrl).href;
       }
+      const name = config.ProductName;
+      if (name) {
+        this.productName = name;
+      }
+
     });
+
+    this.getDynamicExtensions();
+  }
+
+  public getDynamicExtensions(): void{
+    this.extensions = this.extService.Registry['mastHead'];
+
+  }
+
+  public showExtension(extension: IExtension): void {
+    if (!!extension.inputData.url) {
+      this.router.navigate([extension.inputData.url]);
+    }
   }
 
   public ngOnDestroy(): void {
@@ -161,12 +195,27 @@ export class MastHeadComponent implements OnDestroy {
   }
 
   /**
+   * Opens the Connection sidesheet.
+   */
+  public async openConnection(): Promise<void> {
+    const data = await this.mastHeadService.getConnectionData(this.appConfig.Config.WebAppIndex);
+
+    await this.sideSheetService.open(ConnectionComponent, {
+      icon: 'rss',
+      title: this.translate.instant('#LDS#Heading Connection Information'),
+      padding: '0px',
+      width: 'max(700px, 60%)',
+      data: data
+    }).afterClosed().toPromise();
+  }
+
+  /**
    * Logs out and kills the session.
    */
   public async logout(): Promise<void> {
     if (await this.confirmationService.confirm({
-      Title: '#LDS#Log off',
-      Message: '#LDS#Are you sure you want to log off?',
+      Title: '#LDS#Heading Log Out',
+      Message: '#LDS#Are you sure you want to log out?',
       identifier: 'confirm-logout-'
     })) {
       let overlayRef: OverlayRef;

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,8 @@
  *
  */
 
-import { Component, EventEmitter, OnDestroy } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { Component, ElementRef, EventEmitter, OnDestroy, ViewChild } from '@angular/core';
+import { UntypedFormControl, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
@@ -44,11 +44,14 @@ import { FileSelectorService } from '../../file-selector/file-selector.service';
   styleUrls: ['./edit-image.component.scss']
 })
 export class EditImageComponent implements CdrEditor, OnDestroy {
+
+  @ViewChild('file') public fileInput: ElementRef;
+
   public get fileFormatHint(): string {
     return this.fileFormatError ? '#LDS#Please select an image in PNG format.' : undefined;
   }
 
-  public readonly control = new FormControl(undefined);
+  public readonly control = new UntypedFormControl(undefined);
 
   public readonly columnContainer = new EntityColumnContainer<string>();
   public readonly valueHasChanged = new EventEmitter<ValueHasChangedEventArg>();
@@ -90,6 +93,18 @@ export class EditImageComponent implements CdrEditor, OnDestroy {
       if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
         this.control.setValidators(Validators.required);
       }
+
+      if (cdref.minlengthSubject) {
+        this.subscriptions.push(
+          cdref.minlengthSubject.subscribe(() => {
+            if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
+              this.control.setValidators(Validators.required);
+            } else{
+              this.control.setValidators(null);
+            }
+          })
+        );
+      }
       this.subscriptions.push(this.columnContainer.subscribe(() => {
         if (this.isWriting) { return; }
         if (this.control.value !== this.columnContainer.value) {
@@ -114,6 +129,7 @@ export class EditImageComponent implements CdrEditor, OnDestroy {
    * removes the current image
    */
   public async remove(): Promise<void> {
+    this.fileInput.nativeElement.value = '';
     this.fileFormatError = false;
 
     this.logger.debug(this, 'Removing current image...');

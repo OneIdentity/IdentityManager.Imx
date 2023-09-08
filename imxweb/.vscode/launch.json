@@ -5,21 +5,20 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "ARC CertAccess",
+      "type": "firefox",
       "request": "launch",
-      "type": "pwa-chrome",
+      "reAttach": true,
+      "name": "QER App Portal (Firefox)",
       "url": "http://localhost:4200/",
-      "webRoot": "${workspaceFolder}",
-      "sourceMapPathOverrides": {
-        "webpack:///./*": "${webRoot}/*",
-        "webpack:///src/*": "${webRoot}/*",
-        "webpack:///*": "*",
-        "webpack:///./~/*": "${webRoot}/node_modules/*",
-        "webpack:///ng://qbm/lib/*": "${workspaceFolder}/projects/att/src/lib/*",
-        "webpack:///ng://qer/lib/*": "${workspaceFolder}/projects/o3t/src/lib/*",
-        "webpack:///ng://tsb/lib/*": "${workspaceFolder}/projects/rps/src/lib/*",
-        "webpack:///ng://att/lib/*": "${workspaceFolder}/projects/tsb/src/lib/*"
-      }
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "type": "firefox",
+      "request": "launch",
+      "reAttach": true,
+      "name": "QER App Portal (Firefox - SSL)",
+      "url": "https://localhost:4200/",
+      "webRoot": "${workspaceFolder}"
     },
     {
       "name": "QER Ops Web (Chrome)",
@@ -33,6 +32,13 @@
       "request": "launch",
       "type": "pwa-chrome",
       "url": "http://localhost:4200/",
+      "webRoot": "${workspaceFolder}",
+    },
+    {
+      "name": "QER App Portal (Chrome - SSL)",
+      "request": "launch",
+      "type": "pwa-chrome",
+      "url": "https://localhost:4200/",
       "webRoot": "${workspaceFolder}",
     },
     {
@@ -85,6 +91,7 @@
         "webpack:///ng://qbm/lib/*": "${workspaceFolder}/projects/qbm/src/lib/*",
         "webpack:///ng://qer/lib/*": "${workspaceFolder}/projects/qer/src/lib/*"
       }
-    }
+    },
+
   ]
 }

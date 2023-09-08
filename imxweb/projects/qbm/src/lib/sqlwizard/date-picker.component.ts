@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -55,7 +55,7 @@ export class DatePickerComponent implements OnInit {
   }
 
   @Input() public expr: SqlNodeView;
-  @Output() changes = new EventEmitter<any>();
+  @Output() public change = new EventEmitter<any>();
 
   public diffValue: {
     Difference?: number,
@@ -78,7 +78,7 @@ export class DatePickerComponent implements OnInit {
   }
 
   public emitChanges(): void {
-    this.changes.emit();
+    this.change.emit();
   }
 
   public onAbsoluteChange(date: MatDatepickerInputEvent<Date>): void {

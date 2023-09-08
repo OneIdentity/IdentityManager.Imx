@@ -1,0 +1,68 @@
+<mat-card class="stat-card" [ngClass]="{ 'stat-card--disabled': isDisabled }" (click)="openStatistic()">
+  <span [matTooltip]="stat.GetEntity().GetColumn('Description').GetValue()" matTooltipPosition="above">
+    {{ stat.GetEntity().GetDisplay() }}
+  </span>
+  <div #visual class="visual">
+    <ng-container *ngIf="isLoading; else determineStat">
+      <ng-container *ngTemplateOutlet="loading"></ng-container>
+    </ng-container>
+  </div>
+
+  <div class="favorites-icon" [ngStyle]="{'visibility': changingFavorite || isFavorite ? 'visible' : ''}">
+    <button
+      mat-button
+      [disabled]="changingFavorite"
+      (click)="handleFavorite(); $event.stopPropagation()"
+      [attr.data-imx-identifier]="isFavorite ? 'remove-from-favorites' : 'add-to-favorites'"
+      [matTooltip]="(isFavorite ? '#LDS#Remove from favorites' : '#LDS#Add to favorites') | translate"
+    >
+      <mat-spinner class="icon-loading" *ngIf="changingFavorite" [diameter]="24" [attr.aria-label]="'#LDS#The favorites are being changed.' | translate"></mat-spinner>
+      <eui-icon class="colored-favorite-icon" *ngIf="isFavorite && !changingFavorite" icon="star"></eui-icon>
+      <eui-icon *ngIf="!isFavorite && !changingFavorite" icon="openstar"></eui-icon>
+    </button>
+  </div>
+  <!-- If isOrg we show, or if the user is admin we show they can interact with it -->
+  <!-- TODO 393878: add the tooltip back when we are ready [matTooltip]="(isOrg ? 'Remove from organization statistics' : 'Add to organization statistics') | translate"
+ -->
+  <div *ngIf="isOrg || isUserAdmin" class="org-icon" [ngStyle]="{'visibility': changingOrg || isOrg ? 'visible' : ''}">
+    <button
+      mat-button
+      [disabled]=" !isUserAdmin || changingOrg"
+      (click)="handleOrg(); $event.stopPropagation()"
+      [attr.data-imx-identifier]="isOrg ? 'remove-from-org' : 'add-to-org'"
+    >
+    <mat-spinner class="icon-loading" *ngIf="changingOrg" [diameter]="24" [attr.aria-label]="'#LDS#Loading...' | translate"></mat-spinner>
+      <eui-icon *ngIf="!changingOrg"
+        [ngClass]="{ 'colored-org-icon': isOrg }"
+        icon="network"
+        [matTooltip]="'#LDS#This is a shared statistic set by your admin' | translate"
+      ></eui-icon>
+    </button>
+  </div>
+</mat-card>
+
+<ng-template #determineStat>
+  <!-- Check if has data, if not show missing data card -->
+  <ng-container *ngIf="!hasData; else showStat">
+    <div class="card-no-data center-content">
+      <eui-icon icon="content-alert"></eui-icon>
+      <p>{{ '#LDS#Missing data' | translate }}</p>
+    </div>
+  </ng-container>
+</ng-template>
+
+<ng-template #showStat>
+  <div class="center-content" *ngIf="isHeatmap(stat)">
+    <imx-heatmap-tile [summaryStat]="summaryStat"></imx-heatmap-tile>
+  </div>
+  <div class="center-content" *ngIf="isChart(stat)">
+    <imx-chart-tile [summaryStat]="summaryStat" (chartDetails)="getDetails($event)" (chart)="cacheChart($event)"></imx-chart-tile>
+  </div>
+</ng-template>
+
+<ng-template #loading>
+  <div class="center-content">
+    <mat-spinner [diameter]="100" [attr.aria-label]="'#LDS#Loading...' | translate"></mat-spinner>
+  </div>
+</ng-template>
+

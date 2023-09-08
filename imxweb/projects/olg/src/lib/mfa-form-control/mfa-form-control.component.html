@@ -1,0 +1,57 @@
+<div *ngIf="authFactorInfo.length > 0">
+  <mat-card class="auth-factor" *ngFor="let info of authFactorInfo; index as i">
+    <mat-card-header>
+      <mat-card-title>{{ info.factor.Display }}</mat-card-title>
+      <mat-card-subtitle>{{ info.factor.Name }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <ng-container *ngIf="info.showCdr">
+        <p class="auth-text" *ngIf="isOTP(info.factor.Name)">{{ '#LDS#To authenticate, use the one-time password.' | translate }}</p>
+        <p class="auth-text" *ngIf="isProtect(info.factor.Name)">
+          {{ '#LDS#To authenticate, use either the push notification or the one-time password of your OneLogin Protector app.' | translate }}
+        </p>
+        <p class="auth-text" *ngIf="isAuthenticator(info.factor.Name)">{{ '#LDS#To authenticate, use the one-time password of your authentication app.' | translate }}</p>
+        <imx-cdr-editor [cdr]="info.authCdr"></imx-cdr-editor>
+      </ng-container>
+      <ng-container *ngIf="info.authMessage !== ''">
+        <p class="auth-text failed">{{ info.authMessage | translate }}</p>
+      </ng-container>
+    </mat-card-content>
+    <mat-card-actions>
+      <button
+        mat-stroked-button
+        [attr.data-imx-identifier]="'activate-factor-' + info.factor.Display"
+        (click)="activateFactor(info.factor.Name, info.factor.Id, i)"
+        [disabled]="isAuthenticated || info.factor.Id === activatedFactor?.device_id"
+      >
+        {{ '#LDS#Use authentication method' | translate }}
+      </button>
+      <mat-spinner diameter="30" *ngIf="info.activating"></mat-spinner>
+
+      <span class="imx-spacer"></span>
+      <mat-spinner diameter="30" *ngIf="info.showCdr && info.loading"></mat-spinner>
+      <button
+        class="auth-button"
+        *ngIf="isOTP(info.factor.Name)"
+        mat-raised-button
+        [attr.data-imx-identifier]="'otp-factor-action-' + info.factor.Display"
+        color="primary"
+        [disabled]="isAuthenticated || !isCDRValid(info.authCdr) || info.isLoading"
+        (click)="verifyWithOTP(i)"
+      >
+        {{ '#LDS#Authenticate' | translate }}
+      </button>
+      <button
+        class="auth-button"
+        *ngIf="isProtect(info.factor.Name) || isAuthenticator(info.factor.Name)"
+        mat-raised-button
+        [attr.data-imx-identifier]="'otp-factor-action-' + info.factor.Display"
+        color="primary"
+        [disabled]="isAuthenticated || !isCDRValid(info.authCdr) || info.isLoading"
+        (click)="verifyWithOTPAndDevice(i)"
+      >
+        {{ '#LDS#Authenticate' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

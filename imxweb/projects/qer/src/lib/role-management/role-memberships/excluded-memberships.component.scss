@@ -1,11 +1,15 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 :host {
-  background-color: $asher-gray;
   height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  eui-icon {
+    font-size: 14px;
+    margin-right: 4px;
+  }
 }
 
 .not-matched-badge {
@@ -17,3 +21,13 @@
   margin-bottom: 20px;
 }
 
+.mat-card {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  imx-data-table {
+    height: 100%;
+  }
+}

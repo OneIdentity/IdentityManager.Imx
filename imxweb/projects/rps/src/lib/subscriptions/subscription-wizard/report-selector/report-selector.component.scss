@@ -7,7 +7,6 @@
 }
 
 .imx-viewport {
-  height: 200px;
   overflow-x: hidden;
 }
 
@@ -35,7 +34,6 @@
     overflow: hidden;
 
     .imx-candidate-display {
-      color: $black-3;
       font-size: 14px;
       line-height: 17px;
       text-overflow: ellipsis;

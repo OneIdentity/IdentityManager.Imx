@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -22,10 +22,6 @@
  * AS A RESULT OF USING, MODIFYING OR DISTRIBUTING
  * THIS SOFTWARE OR ITS DERIVATIVES.
  *
- */
-
-/*
- * Public API Surface of att
  */
 
 export { PolicyModule } from './lib/policies/policy.module';
@@ -51,3 +47,7 @@ export { AttestationFeatureGuardService } from './lib/attestation-feature-guard.
 export { IdentityAttestationService } from './lib/identity-attestation.service';
 export { NewUserModule } from './lib/new-user/new-user.module';
 export { ClaimDeviceModule } from './lib/claim-device/claim-device.module';
+export {PolicyGroupModule} from './lib/policy-group/policy-group.module';
+export {PolicyGroupListComponent} from './lib/policy-group/policy-group-list/policy-group-list.component';
+export {EditPolicyGroupSidesheetComponent} from './lib/policy-group/edit-policy-group-sidesheet/edit-policy-group-sidesheet.component';
+export {OpenSidesheetComponent} from './lib/new-user/open-sidesheet.component';

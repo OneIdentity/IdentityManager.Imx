@@ -1,48 +1,60 @@
-<mat-tree [dataSource]="treeDataSource" [treeControl]="treeControl" data-imx-identifier="checkable-tree-mat-tree">
+<mat-tree [dataSource]="treeDataSource" [treeControl]="treeControl" data-imx-identifier="checkable-tree-mat-tree" #tree>
   <!-- A leaf node -->
-  <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding
-  [ngClass]="{ 'imx-background-highlight': withSelectedNodeHighlight && isSameNode(selectedNode, node) , 'imx-tree-node': true }"
-    [attr.data-imx-identifier]="node.identifier && node.identifier.length > 0 ? 'checkable-tree-node-' + node.identifier : null">
+  <mat-tree-node
+    *matTreeNodeDef="let node"
+    matTreeNodePadding
+    [ngClass]="{ 'imx-background-highlight': withSelectedNodeHighlight && isSameNode(selectedNode, node), 'imx-tree-node': true, 'imx-node-selectable': isNodeSelectable }"
+    [attr.data-imx-identifier]="node.identifier && node.identifier.length > 0 ? 'checkable-tree-node-' + node.identifier : null"
+  >
     <!-- use a disabled button to provide padding for tree leaf -->
     <button mat-icon-button disabled></button>
     <ng-content *ngTemplateOutlet="commonElements; context: { $implicit: node }"></ng-content>
   </mat-tree-node>
 
   <!-- A tree node with children -->
-  <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding
-  [ngClass]="{ 'imx-background-highlight': withSelectedNodeHighlight && isSameNode(selectedNode, node) , 'imx-tree-node': true}"
-    [attr.data-imx-identifier]="node.identifier && node.identifier.length > 0 ? 'checkable-tree-node-' + node.identifier : null">
-    <button mat-icon-button [attr.aria-label]="'toggle ' + node.name" matTreeNodeToggle
-      [attr.data-imx-identifier]="node.identifier && node.identifier.length > 0 ? 'checkable-tree-node-toggle-' + node.identifier : null">
-      <eui-icon icon="{{treeControl.isExpanded(node) ? 'scrolldown' : 'cforward'}}" size="14px"></eui-icon>
+  <mat-tree-node
+    *matTreeNodeDef="let node; when: hasChild"
+    matTreeNodePadding
+    [ngClass]="{ 'imx-background-highlight': withSelectedNodeHighlight && isSameNode(selectedNode, node), 'imx-tree-node': true, 'imx-node-selectable': isNodeSelectable }"
+    [attr.data-imx-identifier]="node.identifier && node.identifier.length > 0 ? 'checkable-tree-node-' + node.identifier : null"
+  >
+    <button
+      mat-button
+      mat-icon-button
+      [attr.aria-label]="'toggle ' + node.name"
+      matTreeNodeToggle
+      [attr.data-imx-identifier]="node.identifier && node.identifier.length > 0 ? 'checkable-tree-node-toggle-' + node.identifier : null"
+    >
+      <eui-icon icon="{{ treeControl.isExpanded(node) ? 'scrolldown' : 'cforward' }}" size="14px"></eui-icon>
     </button>
     <ng-content *ngTemplateOutlet="commonElements; context: { $implicit: node }"></ng-content>
   </mat-tree-node>
 </mat-tree>
-
 <!-- template for elements used by both node types -->
 <ng-template #commonElements let-node>
-  <mat-checkbox [checked]="checklistSelection.isSelected(node)" *ngIf="withMultiSelect && !node.isLoadMoreNode"
-    (change)="itemSelectionToggle(node,$event)">
-  </mat-checkbox>
-    <div *ngIf="!node.isLoadMoreNode" class="imx-tree-node-panel"
-      [attr.data-imx-identifier]="node.identifier && node.identifier.length > 0 ? 'checkable-tree-node-select-' + node?.identifier : null"
-      (click)="selectNode(node)">
-      <div class="imx-tree-text">
-        <p>
-          {{ node.display }}
-        </p>
-        <mat-progress-bar *ngIf="node.isLoading" mode="indeterminate"
-          data-imx-identifier="checkable-tree-mat-progress-bar-with-action">
-        </mat-progress-bar>
-      </div>
-      <ng-container [ngIf]="templateRef" *ngTemplateOutlet="templateRef; context: { $implicit: node.item }">
-      </ng-container>
+  <mat-checkbox [checked]="checklistSelection.isSelected(node)" *ngIf="withMultiSelect && !node.isLoadMoreNode" (change)="itemSelectionToggle(node, $event)"> </mat-checkbox>
+  <div
+    *ngIf="!node.isLoadMoreNode"
+    class="imx-tree-node-panel"
+    [attr.data-imx-identifier]="node.identifier && node.identifier.length > 0 ? 'checkable-tree-node-select-' + node?.identifier : null"
+    (click)="selectNode(node)"
+  >
+    <div class="imx-tree-text">
+      <p>
+        {{ node.display }}
+      </p>
+      <mat-progress-bar *ngIf="node.isLoading" mode="indeterminate" data-imx-identifier="checkable-tree-mat-progress-bar-with-action"> </mat-progress-bar>
     </div>
-  <button mat-button color="primary" class="imx-tree-more-button" *ngIf="node.isLoadMoreNode"
+    <ng-container [ngIf]="templateRef" *ngTemplateOutlet="templateRef; context: { $implicit: node.item }"> </ng-container>
+  </div>
+  <button
+    mat-button
+    color="primary"
+    class="imx-tree-more-button"
+    *ngIf="node.isLoadMoreNode"
     [attr.data-imx-identifier]="node.identifier && node.identifier.length > 0 ? 'checkable-tree-node-load-more-' + node?.identifier : null"
-    (click)="loadMore(node)">
-    {{'#LDS#Show more' | translate}}
+    (click)="loadMore(node)"
+  >
+    {{ '#LDS#Show more' | translate }}
   </button>
-
 </ng-template>

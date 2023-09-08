@@ -1,0 +1,29 @@
+<h1 class="mat-headline">
+  <span>{{ '#LDS#Heading Archived Requests' | translate }}</span>
+  <imx-help-contextual></imx-help-contextual>
+</h1>
+
+<mat-card class="imx-content-card">
+  <imx-cdr-editor
+    data-imx-identifier="imx-delegation-archived-requests-cdr-recipient"
+    [cdr]="cdrPersonRecipient"
+    (controlCreated)="addControl(recipientFormGroup, cdrPersonRecipient.column.ColumnName, $event)"
+    (valueChange)="getSelectedRecipientValue($event)"
+  >
+  </imx-cdr-editor>
+
+  <imx-request-table *ngIf="selectedRecipient; else noRequesterSelected" [isReadOnly]="false" [isArchivedRequests]="true" [uidRecipient]="selectedRecipient"> </imx-request-table>
+</mat-card>
+
+<ng-template #noRequesterSelected>
+  <div class="imx-data-table-no-results">
+    <eui-icon icon="table"></eui-icon>
+    <p translate>#LDS#Select select a recipient or requester whose requests you want to display.</p>
+  </div>
+</ng-template>
+
+<ng-template #infoContent>
+  <p>
+    {{ infoText | translate}}
+  </p>
+</ng-template>

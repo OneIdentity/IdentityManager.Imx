@@ -1,0 +1,136 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+:host {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  imx-usermessage {
+    margin-bottom: 16px;
+  }
+
+  .imx-flex-card,
+  .imx-flex-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .imx-export-type{
+    display: flex;
+    flex-direction: row;
+
+    imx-cdr-editor {
+      flex: 1 1 auto;
+    }
+  }
+
+  .mat-card {
+    margin: 3px;
+  }
+
+  .imx-flex-card {
+    margin-top: 20px;
+  }
+
+  .mat-radio-group {
+    margin-bottom: 10px;
+
+    > .mat-radio-button {
+      margin-right: 10px;
+    }
+  }
+
+  .imx-report-form {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    imx-report-selector {
+      flex: 0 0 auto;
+    }
+
+    .imx-cdr-container {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+    }
+  }
+
+  .justify-start {
+    margin-right: auto;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .imx-report-alert {
+    margin-top: 20px;
+  }
+
+  .imx-no-results {
+    text-align: center;
+    display: flex;
+    margin: 20px 0;
+    flex-direction: column;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+
+    .eui-icon {
+      font-size: 100px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 18px;
+    }
+  }
+}
+
+// Theming
+
+:host {
+  .imx-no-results {
+    .eui-icon {
+      color: $color-gray-10;
+    }
+
+    p {
+      color: $color-gray-40;
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-no-results {
+      .eui-icon {
+        color: $color-gray-20;
+      }
+
+      p {
+        color: $color-gray-10;
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-no-results {
+      .eui-icon {
+        color: $color-gray-10;
+      }
+
+      p {
+        color: $color-gray-0;
+      }
+    }
+  }
+}

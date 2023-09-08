@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { Injectable } from '@angular/core';
 
 import { UserModelService } from 'qer';
-import { isExceptionApprover } from './permissions-helper';
+import { isQERPolicyAdmin } from './permissions-helper';
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +36,7 @@ export class PermissionsService {
   constructor(private readonly userService: UserModelService) { }
 
 
-  public async isExceptionApprover(): Promise<boolean> {
-    return isExceptionApprover((await this.userService.getGroups()).map(group => group.Name));
+  public async isQERPolicyAdmin(): Promise<boolean> {
+    return isQERPolicyAdmin((await this.userService.getFeatures()).Features);
   }
 }

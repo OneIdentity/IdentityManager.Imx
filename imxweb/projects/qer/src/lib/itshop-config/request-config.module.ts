@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,10 +36,14 @@ import {
   DataSourceToolbarModule,
   DataTableModule,
   FkAdvancedPickerModule,
+  HELP_CONTEXTUAL,
+  HelpContextualModule,
+  InfoModalDialogModule,
   LdsReplaceModule,
   MenuItem,
   MenuService,
-  RouteGuardService
+  RouteGuardService,
+  SelectedElementsModule
 } from 'qbm';
 
 import { RequestsComponent } from './requests/requests.component';
@@ -50,18 +54,24 @@ import { RequestConfigMembersComponent } from './request-config-members/request-
 import { RequestShelfEntitlementsComponent } from './request-shelf-entitlements/request-shelf-entitlements.component';
 import { RequestsEntitySelectorComponent } from './requests-selector/requests-entity-selector.component';
 import { DynamicExclusionDialogModule } from '../dynamic-exclusion-dialog/dynamic-exclusion-dialog.module';
-import { MemberSelectorComponent } from './request-config-members/member-selector.component';
-import { ShopAdminGuardService } from '../guards/shop-admin-guard.service';
-import { isShopAdmin } from '../admin/qer-permissions-helper';
+import { MemberSelectorComponent } from './request-config-members/member-selector/member-selector.component';
+import { isShopAdmin, isShopStatistics } from '../admin/qer-permissions-helper';
 import { CREATE_SHELF_TOKEN } from './request-shelves/request-shelf-token';
+import { ObjectHyperviewModule } from '../object-hyperview/object-hyperview.module';
+import { ShopGuardService } from '../guards/shop-guard.service';
+import { JustificationModule } from '../justification/justification.module';
+import { ReasonSidesheetComponent } from './request-config-members/reason-sidesheet/reason-sidesheet.component';
 
 
 const routes: Routes = [
   {
     path: 'configuration/requests',
     component: RequestsComponent,
-    canActivate: [RouteGuardService, ShopAdminGuardService],
-    resolve: [RouteGuardService]
+    canActivate: [RouteGuardService, ShopGuardService],
+    resolve: [RouteGuardService],
+    data:{
+      contextId: HELP_CONTEXTUAL.ConfigurationRequests
+    }
   },
 ];
 
@@ -74,7 +84,8 @@ const routes: Routes = [
     RequestShelvesComponent,
     RequestConfigMembersComponent,
     RequestShelfEntitlementsComponent,
-    RequestsEntitySelectorComponent
+    RequestsEntitySelectorComponent,
+    ReasonSidesheetComponent
   ],
   imports: [
     CommonModule,
@@ -89,7 +100,12 @@ const routes: Routes = [
     DataTableModule,
     LdsReplaceModule,
     FkAdvancedPickerModule,
+    SelectedElementsModule,
+    ObjectHyperviewModule,
+    InfoModalDialogModule,
+    JustificationModule,
     RouterModule.forChild(routes),
+    HelpContextualModule,
   ],
   providers: [{provide: CREATE_SHELF_TOKEN, useValue: RequestShelfSidesheetComponent}],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -99,23 +115,23 @@ export class RequestConfigModule {
   constructor(
     private readonly menuService: MenuService,
     logger: ClassloggerService) {
-    logger.info(this, '▶️ RequestConfigModule loaded');
+    logger.info(this, '▶︝ RequestConfigModule loaded');
     this.setupMenu();
   }
 
   private setupMenu(): void {
     this.menuService.addMenuFactories(
-      (preProps: string[], groups: string[]) => {
+      (preProps: string[], features: string[]) => {
 
         const items: MenuItem[] = [];
 
-        if (isShopAdmin(groups)) {
+        if (isShopAdmin(features) || isShopStatistics(features)) {
           items.push(
             {
               id: 'QER_Setup_ITShop',
               route: 'configuration/requests',
               title: '#LDS#Menu Entry Shops',
-              sorting: '50-20',
+              sorting: '60-20',
             },
           );
         }
@@ -126,7 +142,7 @@ export class RequestConfigModule {
         return {
           id: 'ROOT_Setup',
           title: '#LDS#Setup',
-          sorting: '50',
+          sorting: '60',
           items
         };
       },

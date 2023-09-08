@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -53,12 +53,12 @@ export class CartItemCloneService {
   ) { }
 
   public async cloneItemForPersons(item: CartItemCloneParameters): Promise<void> {
-    const sideSheetRef = this.sidesheet.open(
-      OrderForAdditionalUsersComponent,
+    const sideSheetRef = this.sidesheet.open(OrderForAdditionalUsersComponent,
       {
         title: await this.translate.get('#LDS#Heading Request for Multiple Identities').toPromise(),
+        subTitle: item.accProduct.DisplayValue,
         width: '750px',
-        headerColour: 'iris-blue',
+        testId: 'request-for-multiple-identities-sidesheet',
         data: {
           fkData: {
             displayValue: '',

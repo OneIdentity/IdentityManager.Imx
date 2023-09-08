@@ -1,0 +1,73 @@
+<div class="imx-bundle-header" *ngIf="selectedProductBundle">
+  <div class="imx-bundle-header-section">
+    <h3>{{ selectedProductBundle?.GetEntity()?.GetColumn('Ident_ShoppingCartPattern')?.GetValue() }}</h3>
+    <imx-info-button
+      [title]="selectedProductBundle?.GetEntity()?.GetColumn('Ident_ShoppingCartPattern')?.GetValue()"
+      [templateRef]="infoDialogContent"
+      *ngIf="selectedProductBundle?.Description?.Column.GetDisplayValue().length > 0"
+    >
+    </imx-info-button>
+  </div>
+  <div class="imx-bundle-header-section">
+    <button mat-stroked-button (click)="onSelectBundle()">
+      <eui-icon icon="boxcheck" class="text-blue-60" size="s"></eui-icon>&nbsp;
+      {{ '#LDS#Select product bundle' | translate }}
+    </button>
+    <button mat-stroked-button (click)="onUnselectBundle()">
+      <eui-icon icon="boxx" class="text-blue-60" size="s" ></eui-icon>&nbsp;
+      {{ '#LDS#Deselect product bundle' | translate }}
+    </button>
+  </div>
+</div>
+
+<imx-data-table
+  #dataTable
+  *ngIf="dst; else nonSelected"
+  [dst]="dst"
+  class="imx-patterns-table"
+  [detailViewVisible]="false"
+  mode="manual"
+  [selectable]="true"
+  [showSelectedItemsMenu]="false"
+  (selectionChanged)="onSelectionChanged($event)"
+  (highlightedEntityChanged)="onRowSelected($event)"
+  data-imx-identifier="product-bundle-items-datatable"
+>
+  <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" columnLabel="{{ '#LDS#Product' | translate }}">
+    <ng-template let-prod>
+      <div class="imx-request-col-image">
+        <img *ngIf="productDetailsService.getProductImage(prod); else noImage" [src]="productDetailsService.getProductImage(prod)" />
+        <ng-template #noImage>
+          <eui-icon icon="application" class="larger-icon colored-icon"></eui-icon>
+        </ng-template>
+        &nbsp;&nbsp;
+        <span class="imx-request-col-display">{{ prod.GetEntity()?.GetDisplay() }} </span>
+      </div>
+    </ng-template>
+  </imx-data-table-column>
+  <imx-data-table-column [entityColumn]="entitySchema?.Columns.TableName" columnLabel="{{ '#LDS#Type' | translate }}">
+    data-imx-identifier="product-bundle-items-table-column-tableName">
+  </imx-data-table-column>
+  <imx-data-table-column [entityColumn]="entitySchema?.Columns.Description" data-imx-identifier="product-bundle-items-table-column-description"> </imx-data-table-column>
+</imx-data-table>
+<imx-data-source-paginator data-imx-identifier="product-bundle-items-paginator" [dst]="dst"> </imx-data-source-paginator>
+
+<!-- Template for non existing entitlements -->
+<ng-template #nonSelected>
+  <div class="imx-no-data">
+    <div class="imx-no-data-top">
+      <eui-icon icon="box" size="100px"></eui-icon>
+      <div class="imx-no-data-text">
+        <h2>{{ '#LDS#Heading No Product Bundle Selected' | translate }}</h2>
+        <span>{{ '#LDS#To see and select the products contained in a product bundle, click the corresponding product bundle in the list.' | translate }}</span>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Template for the info dialog -->
+<ng-template #infoDialogContent>
+  <p>
+    {{ selectedProductBundle?.Description?.Column.GetDisplayValue() }}
+  </p>
+</ng-template>

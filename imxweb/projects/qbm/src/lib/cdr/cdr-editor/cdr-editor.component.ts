@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,6 +30,7 @@ import { AbstractControl } from '@angular/forms';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
 import { CdrRegistryService } from '../cdr-registry.service';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
+import { CdrEditor } from '../cdr-editor.interface';
 
 /**
  * This component provides an {@link CdrEditor|editor} for a {@link ColumnDependentReference|column dependent reference}.
@@ -42,6 +43,8 @@ import { ClassloggerService } from '../../classlogger/classlogger.service';
   styleUrls: ['./cdr-editor.component.scss'],
 })
 export class CdrEditorComponent implements OnChanges {
+
+  public editor: CdrEditor;
   /**
    * The column dependent reference for which the editor should be provided.
    */
@@ -82,9 +85,23 @@ export class CdrEditorComponent implements OnChanges {
         }
         this.controlCreated.emit(ref.instance.control);
         this.elementRef.nativeElement.setAttribute('data-imx-identifier', `cdr-editor-${this.cdr.column.ColumnName}`);
+        this.editor = ref.instance;
       } catch (e) {
         this.logger.error(this, 'Failed to create editor for column dependent reference.', e);
       }
     }
+  }
+
+  public get description() {
+    // Preferably use CDR-level hint; if none is defined: use the metadata description field.
+    return this.cdr?.hint || this.cdr?.column.GetMetadata().GetDescription();
+  }
+
+  public get infotitle() {
+    return this.cdr.column.GetMetadata().GetDisplay();
+  }
+
+  public update(){
+    this.editor?.updateRequested?.next();
   }
 }

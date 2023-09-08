@@ -1,0 +1,26 @@
+<div eui-sidesheet-content>
+  <mat-card>
+    <form [formGroup]="formGroup">
+      <div *ngIf="objectProperties?.length > 0" class="imx-property-container">
+        <imx-cdr-editor
+          *ngFor="let cdr of objectProperties"
+          [cdr]="cdr"
+          (controlCreated)="addControl(cdr.column.ColumnName, $event)"
+          [attr.data-imx-identifier]="'policy-group-form-cdr-' + cdr.column.ColumName"
+        >
+        </imx-cdr-editor>
+      </div>
+    </form>
+  </mat-card>
+</div>
+<div eui-sidesheet-actions class="imx-action">
+  <span class="justify-start">
+    <button mat-stroked-button color="warn" (click)="delete()" data-imx-identifier="edit-policy-group-sidesheet-button-delete">
+      <eui-icon icon="delete"></eui-icon>
+      {{ '#LDS#Delete policy collection' | translate }}
+    </button>
+  </span>
+  <button mat-flat-button color="primary" data-imx-identifier="policy-group-sidesheet-button-save" (click)="saveChanges()" [disabled]="formGroup.invalid">
+    {{ (!policygroup.isNew ? '#LDS#Save' : '#LDS#Create') | translate }}
+  </button>
+</div>

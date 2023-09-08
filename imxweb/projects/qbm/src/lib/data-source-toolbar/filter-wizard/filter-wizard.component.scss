@@ -1,0 +1,42 @@
+:host {
+  .imx-sidesheet-content {
+    overflow: hidden;
+
+    .imx-content-container {
+      display: flex;
+      flex-direction: column;
+      row-gap: 10px;
+      overflow: hidden;
+      height: 100%;
+    }
+  }
+
+  .imx-sidesheet-actions {
+    column-gap: 10px;
+  }
+
+  .imx-sidesheet-actions-spacer {
+    flex: 1 1 auto;
+  }
+
+  .imx-button-clear-filters {
+    display: flex;
+    align-items: center;
+  }
+
+  .mat-tab-group {
+    height: 100%;
+  }
+
+  ::ng-deep .mat-tab-body-wrapper {
+    padding: 0 10px;
+    height: 100%;
+  }
+}
+
+imx-sqlwizard {
+  overflow: hidden;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}

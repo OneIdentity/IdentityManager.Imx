@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,9 +27,11 @@
 import { Component, OnInit } from '@angular/core';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { OpsupportDbObjectService, imx_SessionService } from 'qbm';
+import { OpsupportDbObjectService } from 'qbm';
 import { ObjectOverviewContainer } from './objectOverviewContainer';
 import { PasscodeService } from './passcode.service';
+import { OpSupportUserService } from '../ops/user.service';
+import { QerPermissionsService } from '../admin/qer-permissions.service';
 
 @Component({
   templateUrl: './objectOverviewPerson.component.html',
@@ -46,14 +48,15 @@ export class ObjectOverviewPersonComponent implements OnInit {
   public isPasswordResetAllowed: boolean;
 
   constructor(
-    private readonly session: imx_SessionService,
     private readonly passcodeService: PasscodeService,
     private readonly busyService: EuiLoadingService,
-    private readonly dbObjectService: OpsupportDbObjectService
+    private readonly userService: OpSupportUserService,
+    private readonly dbObjectService: OpsupportDbObjectService,
+    private readonly qerPermissionsService: QerPermissionsService
   ) { }
 
   async ngOnInit(): Promise<void> {
-    this.isPasswordResetAllowed = (await this.session.Client.opsupport_usergroups_get()).some(role => role.Name === 'QER_4_PasswordHelpdesk');
+    this.isPasswordResetAllowed = await this.qerPermissionsService.isPasswordHelpdesk();
   }
 
   get uidPerson(): string {

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,6 +31,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TranslateModule, TranslateLoader, MissingTranslationHandler, TranslateService } from '@ngx-translate/core';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 
 import {
@@ -44,9 +45,13 @@ import {
   MastHeadModule,
   UserMessageModule,
   AuthenticationModule,
-  RouteGuardService} from 'qbm';
+  RouteGuardService,
+  CustomThemeModule,
+  QbmModule,
+  SqlWizardApiService,
+  SqlWizardModule,
+} from 'qbm';
 import { OutstandingModule } from 'dpr';
-import { ObjectSheetModule, QerModule } from 'qer';
 import { AppRoutingModule } from './app-routing.module';
 import { SyncModule } from './sync/sync.module';
 import { ObjectOverviewModule } from './object-overview/object-overview.module';
@@ -61,32 +66,36 @@ import { AppComponent } from './app.component';
 import { AppService } from './app.service';
 import { environment } from '../environments/environment';
 import appConfigJson from '../appconfig.json';
+import { DataChangesModule } from './data-changes/data-changes.module';
+import { DbQueueModule } from './db-queue/db-queue.module';
+import { OpsSqlWizardApiService } from './base/ops-sql-wizard-api.service';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-  ],
+  declarations: [AppComponent],
   imports: [
-    QerModule,
-    ObjectSheetModule,
+    QbmModule,
     AppRoutingModule,
     AuthenticationModule,
     BrowserAnimationsModule,
     BrowserModule,
+    EuiCoreModule,
+    EuiMaterialModule,
     HttpClientModule,
     LoggerModule.forRoot({ level: NgxLoggerLevel.DEBUG, serverLogLevel: NgxLoggerLevel.OFF }),
     MastHeadModule,
     MenuModule,
+    DbQueueModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useClass: ImxTranslateLoader
+        useClass: ImxTranslateLoader,
       },
       missingTranslationHandler: {
         provide: MissingTranslationHandler,
-        useClass: ImxMissingTranslationHandler
-      }
+        useClass: ImxMissingTranslationHandler,
+      },
     }),
+    CustomThemeModule,
     UserMessageModule,
     SyncModule,
     ObjectOverviewModule,
@@ -98,6 +107,8 @@ import appConfigJson from '../appconfig.json';
     SystemStatusModule,
     ProcessesModule,
     OutstandingModule,
+    DataChangesModule,
+    SqlWizardModule
   ],
   providers: [
     { provide: 'environment', useValue: environment },
@@ -106,23 +117,24 @@ import appConfigJson from '../appconfig.json';
       provide: APP_INITIALIZER,
       useFactory: AppService.init,
       deps: [AppService],
-      multi: true
+      multi: true,
     },
     {
       provide: ErrorHandler,
-      useClass: GlobalErrorHandler
+      useClass: GlobalErrorHandler,
     },
     {
       provide: MatPaginatorIntl,
       useFactory: Paginator.Create,
-      deps: [
-        TranslateService,
-        LdsReplacePipe
-      ]
+      deps: [TranslateService, LdsReplacePipe],
     },
     RouteGuardService,
     OpsupportDbObjectService,
+    {
+      provide: SqlWizardApiService,
+      useClass: OpsSqlWizardApiService,
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

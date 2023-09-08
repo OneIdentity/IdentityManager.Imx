@@ -1,4 +1,4 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 .imx-hyperview-shape-header {
   display: flex;
@@ -27,22 +27,27 @@
   overflow-y: auto;
 }
 
-.imx-hyperview-header {
+.imx-hyperview-caption {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  color: $asher-gray;
   font-weight: bold;
   font-size: 14px;
   text-align: left;
 }
 
-.imx-hyperview-caption {
+.imx-hyperview-header {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  color: $asher-gray;
   font-style: italic;
   font-size: 12px;
   font-weight: 400;
+}
+
+// theming
+
+.imx-hyperview-caption,
+.imx-hyperview-header {
+  color: $color-gray-2;
 }

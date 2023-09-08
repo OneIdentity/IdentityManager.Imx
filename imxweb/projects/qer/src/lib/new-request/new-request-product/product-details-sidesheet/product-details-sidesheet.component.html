@@ -1,0 +1,79 @@
+<div eui-sidesheet-content>
+  <eui-alert *ngIf="data.orderStatus" class="imx-helper-alert" type="info" condensed="true" colored="true" [dismissable]="true">
+    {{ data.orderStatus.statusDisplay }}
+  </eui-alert>
+  <mat-card>
+    <mat-tab-group (selectedTabChange)="onTabChange($event)">
+      <mat-tab label="{{ '#LDS#Heading Details' | translate }}">
+        <div class="details-container">
+          <div class="details-text">
+            <div class="details-item">
+              <div class="details-label">
+                {{'#LDS#Service category' | translate}}:
+              </div>
+              <div class="details-value link">
+                <ng-template *ngTemplateOutlet="formatValue; context: {$implicit: getValue('ServiceCategoryFullPath')}"></ng-template>
+              </div>
+            </div>
+            <div class="details-item">
+              <div class="details-label">
+                {{'#LDS#Entitlement type' | translate}}:
+              </div>
+              <div class="details-value bold">
+                <ng-template *ngTemplateOutlet="formatValue; context: {$implicit: getDisplay('TableName')}"></ng-template>
+              </div>
+            </div>
+            <div class="details-item">
+              <div class="details-label">
+                {{'#LDS#Product code' | translate}}:
+              </div>
+              <div class="details-value bold">
+                <ng-template *ngTemplateOutlet="formatValue; context: {$implicit: getValue('ArticleCode')}"></ng-template>
+              </div>
+            </div>
+            <!-- This one doesn't exist yet -->
+            <!-- <div class="details-item">
+              <div class="details-label">
+                {{'ADD TEXT HERE' | translate}}
+              </div>
+              <div class="details-value link">
+                <ng-template *ngTemplateOutlet="formatValue; context: {$implicit: getValue('Web')}"></ng-template>
+              </div>
+            </div> -->
+            <div class="details-item">
+              <div class="details-label">
+                {{'#LDS#Tags' | translate}}:
+              </div>
+              <div class="details-value bold">
+                <ng-template *ngTemplateOutlet="formatValue; context: {$implicit: getValue('Tags')}"></ng-template>
+              </div>
+            </div>
+            <div class="details-item">
+              <div class="details-label">
+                {{'#LDS#Description' | translate}}:
+              </div>
+              <div class="details-value">
+                <ng-template *ngTemplateOutlet="formatValue; context: {$implicit: getValue('Description')}"></ng-template>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="data.imageUrl" class="details-image">
+            <img [src]="data.imageUrl">
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab *ngIf="hasEntitlements" label="{{ '#LDS#Heading Entitlements' | translate }}">
+        <div class="tab-container">
+          <imx-product-entitlements [uidAccProduct]="data.item.GetEntity().GetKeys()[0]"></imx-product-entitlements>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card>
+  <span class="entitlement-info" *ngIf="onEntitlements">
+    {{ '#LDS#Here you can get an overview of the entitlements associated with the product. If you request the product, the recipient will get the listed entitlements.' | translate }}
+  </span>
+</div>
+
+<ng-template #formatValue let-value>
+  {{value.length > 0 ? value : ('#LDS#Not set' | translate)}}
+</ng-template>

@@ -1,0 +1,9 @@
+<div eui-sidesheet-content>
+    <mat-card>
+      <mat-nav-list>
+        <mat-list-item *ngFor="let app of applications" (click)="displayApp(app)">
+          <div mat-line> {{app.Display}} </div>
+        </mat-list-item>
+      </mat-nav-list> 
+    </mat-card>
+</div>

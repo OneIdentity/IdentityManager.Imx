@@ -5,13 +5,14 @@
       >&nbsp;-
       {{ (referenceUser ? '#LDS#Heading By Reference User' : '#LDS#Heading By Peer Group') | translate }}
     </span>
+    <imx-help-contextual></imx-help-contextual>
     <button [matMenuTriggerFor]="ToolbarButton1" mat-button class="imx-actions-button" data-imx-identifier="productselection-button-actions">
       <eui-icon icon="ellipsisvertical"></eui-icon>
     </button>
     <mat-menu #ToolbarButton1="matMenu">
       <button *ngIf="referenceUser || uidPersonPeerGroup" mat-menu-item (click)="cancelPeerOrReference()">
-        <ng-container *ngIf="referenceUser">{{ '#LDS#Heading Clear Reference User' | translate }}</ng-container>
-        <ng-container *ngIf="uidPersonPeerGroup">{{ '#LDS#Heading Clear Peer Group' | translate }}</ng-container>
+        <ng-container *ngIf="referenceUser">{{ '#LDS#Cancel request by reference user' | translate }}</ng-container>
+        <ng-container *ngIf="uidPersonPeerGroup">{{ '#LDS#Cancel request by peer group' | translate }}</ng-container>
       </button>
       <button mat-menu-item (click)="goToHistory()">
         {{ '#LDS#Heading Your Request History' | translate }}
@@ -21,7 +22,7 @@
           <button mat-menu-item (click)="showRequestsForRecipient()">
               {{'#LDS#Check requests for this recipient' | translate}}</button>
           <button mat-menu-item (click)="selectRequestTemplate()" *ngIf="canSelectFromTemplate">
-              {{'#LDS#Select a request template' | translate}}</button>
+              {{'#LDS#Select a product bundle' | translate}}</button>
           -->
       <button mat-menu-item (click)="selectReferenceUser()" *ngIf="canSelectByRefUser">
         {{ '#LDS#Select a reference user' | translate }}
@@ -111,7 +112,7 @@
         <ng-container *ngTemplateOutlet="serviceItemList"></ng-container>
       </div>
     </mat-tab>
-    <mat-tab [label]="'#LDS#Heading Request Templates' | translate">
+    <mat-tab [label]="'#LDS#Heading Product Bundles' | translate">
       <ng-template matTabContent>
         <div class="imx-tab-body-content">
           <imx-pattern-item-list
@@ -173,10 +174,6 @@
 <ng-container>
   <div data-imx-identifier="productselection-div-buttonbar" class="imx-button-bar">
     <ng-container *ngIf="displayProducts; else selectedRolesDisplay">
-      <p class="imx-selected-products">
-        <span data-imx-identifier="productselection-selection-count">{{ '#LDS#Selected products' | translate }}</span>
-        <eui-badge class="imx-badge" color="orange">{{ selectedItems?.length + selectedTemplates?.length }}</eui-badge>
-      </p>
       <button mat-stroked-button (click)="onSelectall()" data-imx-identifier="productselection-select-all">{{ '#LDS#Select all on page' | translate }}</button>
       <button
         mat-stroked-button
@@ -188,15 +185,14 @@
       </button>
     </ng-container>
     <ng-template #selectedRolesDisplay>
-      <p class="imx-selected-products">
-        <span data-imx-identifier="productselection-roles-selection-count">{{ '#LDS#Selected organizational structures' | translate }} </span>
-        <eui-badge class="imx-badge" color="orange">{{ selectedRoles?.length }}</eui-badge>
-      </p>
       <button mat-stroked-button (click)="selectAllRolesOnPage()" data-imx-identifier="productselection-roles-select-all">{{ '#LDS#Select all on page' | translate }}</button>
       <button mat-stroked-button (click)="deselectAllRoles()" data-imx-identifier="productselection-roles-deselect-all" [disabled]="!selectedRoles?.length">
         {{ '#LDS#Deselect all' | translate }}
       </button>
     </ng-template>
+
+    <imx-selected-elements [selectedElements]="showTemplates ? selectedTemplates : selectedItems"></imx-selected-elements>
+
     <div class="imx-menu-spacer"></div>
 
     <button
@@ -232,7 +228,7 @@
 </ng-template>
 
 <ng-template #CallAction12>
-  <h1 mat-dialog-title>{{ '#LDS#Choose a template' | translate }}</h1>
+  <h1 mat-dialog-title>{{ '#LDS#Select product bundle' | translate }}</h1>
   <mat-dialog-content>
     <!-- TODO later
         <imx-itshop-patternselection></imx-itshop-patternselection>

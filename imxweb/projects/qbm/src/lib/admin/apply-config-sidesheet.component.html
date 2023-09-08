@@ -13,10 +13,10 @@
     </ul>
 
     <mat-radio-group [(ngModel)]="isGlobal">
-      <mat-radio-button [value]="false">
-        {{'#LDS#Apply locally' | translate}}
+      <mat-radio-button [value]="false" [disabled]="!supportsLocalCustomizations">
+        {{ '#LDS#Apply locally' | translate}}
       </mat-radio-button>
-      <p class="description">{{LdsApplyLocally | translate}}</p>
+      <p class="description">{{ (supportsLocalCustomizations ? LdsApplyLocally : LdsApplyLocallyNotPossible) | translate}}</p>
       <mat-radio-button [value]="true">
         {{'#LDS#Apply globally' | translate}}
       </mat-radio-button>

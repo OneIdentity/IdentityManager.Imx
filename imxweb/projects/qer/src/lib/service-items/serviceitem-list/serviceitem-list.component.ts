@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,6 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import {
   Component,
   Input,
@@ -38,10 +37,11 @@ import {
   OnInit,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { EuiLoadingService } from '@elemental-ui/core';
 
 import {
   buildAdditionalElementsString,
+  BusyService,
+  ClientPropertyForTableColumns,
   DataSourceToolbarComponent,
   DataSourceToolbarSettings,
   DataTileBadge,
@@ -80,7 +80,8 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
   @Input() public referenceUserUid: string;
   @Input() public uidPersonPeerGroup: string;
   @Input() public dataSourceView = { selected: 'cardlist' };
-  @Input() public itemActions: DataTileMenuItem[];
+  @Input() public itemActions: DataTileMenuItem[];  
+  @Input() public patternItemsMode: boolean = false;
 
   @Output() public selectionChanged = new EventEmitter<PortalShopServiceitems[]>();
   @Output() public handleAction = new EventEmitter<{ item: PortalShopServiceitems, name: string }>();
@@ -90,18 +91,20 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
   public dstSettings: DataSourceToolbarSettings;
   public readonly entitySchema: EntitySchema;
   public DisplayColumns = DisplayColumns;
-  public displayedColumns: IClientProperty[];
+  public displayedColumns: ClientPropertyForTableColumns[];
+
   public includeChildCategories: boolean;
   public noDataText = '#LDS#No data';
   public readonly status = {
     getBadges: (prod: PortalShopServiceitems): DataTileBadge[] => this.getBadges(prod),
     enabled: (prod: PortalShopServiceitems): boolean => {
-      return prod.IsRequestable.value;
+      return this.patternItemsMode || prod.IsRequestable.value;
     },
     getImagePath: async (prod: PortalShopServiceitems): Promise<string> => this.image.getPath(prod),
   };
   public peerGroupSize: number;
-  public isLoading = false;
+  
+  public busyService = new BusyService();
 
   public get options(): string[] {
     return this.uidPersonPeerGroup ?? '' !== '' ? ['search', 'filter', 'settings'] : ['search', 'filter', 'settings', 'selectedViewGroup'];
@@ -115,7 +118,6 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
   private dataModel: DataModel;
 
   constructor(
-    private readonly busyService: EuiLoadingService,
     private readonly serviceItemsProvider: ServiceItemsService,
     private readonly dialog: MatDialog,
     private readonly image: ImageService,
@@ -129,18 +131,18 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
       {
         ColumnName: 'actions',
         Type: ValType.String,
+        afterAdditionals: true,
+        untranslatedDisplay: '#LDS#Actions'
       },
     ];
   }
 
   public async ngOnInit(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyService.show()));
-
+    const isBusy = this.busyService.beginBusy();
     try {
       this.dataModel = await this.serviceItemsProvider.getDataModel();
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      isBusy.endBusy();
     }
   }
 
@@ -191,12 +193,7 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
       this.navigationState = newState;
     }
 
-    let overlayRef: OverlayRef;
-    setTimeout(() => {
-      overlayRef = this.busyService.show();
-      this.isLoading = true;
-    });
-
+    const isBusy = this.busyService.beginBusy();
     try {
       const data = await this.serviceItemsProvider.get({
         ...this.navigationState,
@@ -213,8 +210,7 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
           displayedColumns: this.displayedColumns,
           entitySchema: this.entitySchema,
           navigationState: this.navigationState,
-          dataModel: this.dataModel,
-          identifierForSessionStore: 'service-item-list',
+          dataModel: this.dataModel
         };
 
         this.peerGroupSize = data.extendedData?.PeerGroupSize;
@@ -236,10 +232,7 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
         this.dstSettings = undefined;
       }
     } finally {
-      setTimeout(() => {
-        this.busyService.hide(overlayRef);
-        this.isLoading = false;
-      });
+      isBusy.endBusy();
     }
   }
 
@@ -290,6 +283,9 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
   }
 
   private getBadges(prod: PortalShopServiceitems): DataTileBadge[] {
+    if (this.patternItemsMode) {
+      return [];
+    }
     const result: DataTileBadge[] = [];
     if (prod.IsRequestable.value === false) {
       result.push({

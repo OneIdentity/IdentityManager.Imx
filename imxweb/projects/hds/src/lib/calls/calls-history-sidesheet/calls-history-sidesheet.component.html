@@ -1,0 +1,12 @@
+<div class="calls-history-sidesheet">
+  <div class="calls-history-sidesheet__tab-content">
+    <div class="calls-history-sidesheet__tab-content-body">
+      <mat-card>
+        <form [formGroup]="detailsFormGroup">
+          <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"
+            (controlCreated)="detailsFormGroup.addControl(cdr.column.ColumnName, $event)"></imx-cdr-editor>
+        </form>
+      </mat-card>
+    </div>
+  </div>
+</div>

@@ -1,11 +1,11 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
 
 :host {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: $asher-gray;
+  background-color: $color-gray-2;
 
   imx-data-table {
     flex-grow: 2;
@@ -15,6 +15,7 @@
 .eui-sidesheet-content {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
 }
 
 h2 {
@@ -31,7 +32,7 @@ h2 {
   flex-direction: column;
   margin: 0px;
   overflow-y: auto;
-  max-height: calc(100% - 140px);
+  flex: 1 1 auto;
 }
 :host ::ng-deep imx-data-table .mat-row .mat-cell {
   padding: 0 10px;
@@ -49,7 +50,7 @@ h2 {
   margin-bottom: 0;
   padding: 16px 32px;
   border-top: 1px solid rgba(0, 0, 0, 0.12);
-  background-color: $white;
+  background-color: $color-gray-0;
 
   button {
     margin-left: 10px;
@@ -97,7 +98,7 @@ imx-data-table {
     }
     div[subtitle] {
       font-size: smaller;
-      color: $black-9;
+      color: $color-gray-40;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -109,8 +110,10 @@ imx-data-table {
   font-size: large;
 }
 
-.mat-stroked-button {
-  align-self: flex-start;
+.eui-sidesheet-actions {
+  .mat-stroked-button {
+    align-self: flex-start;
+  }
 }
 
 .mat-toolbar {
@@ -128,7 +131,7 @@ imx-data-table {
 }
 
 .mat-toolbar {
-  color: $black;
+  color: $color-gray-100;
 }
 
 .imx-toolbar-spacer {
@@ -148,5 +151,72 @@ imx-data-table {
   .imx-helper-title {
     font-size: larger;
     font-weight: 600;
+  }
+}
+
+.imx-sample-data-info {
+  text-align: center;
+  margin: 20px 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .eui-icon {
+    font-size: 100px;
+    color: $color-gray-10;
+  }
+
+  p {
+    margin: 0;
+    font-size: 18px;
+    color: $color-gray-80;
+  }
+
+  button {
+    align-self: center;
+    margin-top: 16px;
+  }
+
+  .imx-larger-text {
+    font-size: 26px;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    background-color: $color-gray-80;
+
+    .imx-dialog-actions {
+      background-color: $color-gray-70;
+    }
+
+    .mat-toolbar {
+      color: $color-gray-10;
+    }
+
+    .imx-sample-data-info {
+      .eui-icon {
+        color: $color-gray-20;
+      }
+
+      p {
+        color: $color-gray-10;
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    background-color: $color-gray-100;
+
+    .imx-dialog-actions {
+      background-color: $color-gray-90;
+    }
+
+    .mat-toolbar {
+      color: $color-gray-0;
+    }
   }
 }

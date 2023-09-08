@@ -1,0 +1,4 @@
+<span *ngIf="!!title">{{title | translate}}</span>
+<button mat-icon-button color="primary" (click)="onShowHelp()" [attr.aria-label]="'#LDS#Show more information' | translate">
+  <eui-icon icon="info" [size]="size"></eui-icon>
+</button>

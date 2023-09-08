@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,12 +25,11 @@
  */
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { TypedEntity } from 'imx-qbm-dbts';
-import { isIE } from '../../base/user-agent-helper';
 import { LdsReplacePipe } from '../../lds-replace/lds-replace.pipe';
 import { TypedEntitySelectionData } from './typed-entity-selection-data.interface';
 import { TypedEntitySelectorComponent } from './typed-entity-selector/typed-entity-selector.component';
@@ -43,10 +42,10 @@ import { TypedEntitySelectorComponent } from './typed-entity-selector/typed-enti
 export class TypedEntitySelectComponent implements OnInit {
   @Input() public data: TypedEntitySelectionData;
 
-  @Output() public readonly controlCreated = new EventEmitter<FormControl>();
+  @Output() public readonly controlCreated = new EventEmitter<UntypedFormControl>();
   @Output() public readonly selectionChanged = new EventEmitter<TypedEntity[]>();
 
-  public readonly control = new FormControl();
+  public readonly control = new UntypedFormControl();
 
   public loading = false;
 
@@ -80,9 +79,9 @@ export class TypedEntitySelectComponent implements OnInit {
       TypedEntitySelectorComponent,
       {
         title: await this.translate.get(this.data.title || this.data.valueWrapper.display).toPromise(),
-        headerColour: 'iris-blue',
         padding: '0',
-        width: isIE() ? '60%' : 'max(600px, 60%)',
+        width: 'max(600px, 60%)',
+        testId: `typed-entity-selector-${this.data.valueWrapper.name}`,
         data: {
           getTyped: this.data.dynamicFkRelation ? undefined : this.data.getTyped,
           isMultiValue: true,

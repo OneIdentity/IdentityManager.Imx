@@ -1,5 +1,6 @@
 @use '@angular/material' as mat;
 @import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host{
   display:flex;
@@ -102,3 +103,34 @@
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
+.eui-dark-theme {
+  :host {
+    .example-list {
+      background: $color-gray-70;
+    }
+
+    .example-box {
+      border: solid 1px $color-gray-60;
+      color: $color-gray-10;
+      background:  $color-gray-70;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .example-list {
+      background: $color-gray-100;
+    }
+
+    .example-box {
+      border: solid 1px $color-gray-0;
+      color: $color-gray-10;
+      background:  $color-gray-100;
+    }
+
+    .imx-drag-handle {
+      filter: invert(100%) sepia(5%) saturate(5619%) hue-rotate(177deg) brightness(108%) contrast(104%);
+    }
+  }
+}

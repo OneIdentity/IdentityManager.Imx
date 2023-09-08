@@ -7,15 +7,34 @@
       <img class="custom-logo" [src]="logoUrl">
     </div>
     <h1 data-imx-identifier="product-name-title">{{ product.name }}
-      <br>{{ title }}
+      <br>
+      <ng-container *ngIf="!appConfigService.Config.DoNotShowAppNameWithProduct">
+        {{ title }}
+      </ng-container>
     </h1>
     <imx-usermessage class="usermessage" panelClass="imx-small-message"></imx-usermessage>
-    <div *ngIf="sessionState?.isOAuth;else loginMask" class="imx-loginButtonpanel">
+    <div *ngIf="sessionState?.isOAuth; else loginMask" class="imx-loginButtonpanel">
       <button data-imx-identifier="logout-oauth-button" mat-button type="button" class="imx-button"
         (click)="logoutOAuth()">{{'#LDS#OAuth logout' | translate }}</button>
     </div>
 
     <ng-template imxExtd></ng-template>
+
+    <!-- We want this to appear after the extension above, but only if we are not OAuth -->
+    <div class="imx-loginButtonpanel" *ngIf="!sessionState?.isOAuth">
+      <button *ngIf="!selectedConfigProvider?.customAuthFlow"
+        color="primary"
+        data-imx-identifier="login-button-submit" mat-raised-button type="button" class="imx-button"
+        (click)="login()">
+        {{'#LDS#Log in' | translate }}
+      </button>
+      <button *ngIf="newUserConfigProvider"
+        color="primary"
+        data-imx-identifier="signup-button-submit" mat-raised-button type="button" class="imx-button"
+        (click)="createNewAccount()">
+        {{'#LDS#Create new account' | translate }}
+      </button>
+    </div>
 
     <ng-template #loginMask>
       <div class="imx-loginMask">
@@ -37,10 +56,6 @@
             <input attr.data-imx-identifier="login-input-{{ authProp.name.toLowerCase() }}" [type]="authProp.inputType"
               [placeholder]="authProp.display" [(ngModel)]="loginData[authProp.name]" (keyup.enter)="login()"
               class="imx-login-input" />
-          </div>
-          <div class="imx-loginButtonpanel" *ngIf="!selectedConfigProvider?.customAuthFlow">
-            <button data-imx-identifier="login-button-submit" mat-button type="button" class="imx-button"
-              (click)="login()">{{'#LDS#Log in' | translate }}</button>
           </div>
         </div>
         <div *ngIf="sessionState?.IsAwaitingSecondaryAuth">

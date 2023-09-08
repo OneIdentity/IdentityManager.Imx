@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,6 +26,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
+import { TranslateService } from '@ngx-translate/core';
 import { PortalTargetsystemTeams } from 'imx-api-o3t';
 import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
 import { ClassloggerService, DataSourceToolbarFilter, DataSourceToolbarSettings, SettingsService } from 'qbm';
@@ -52,6 +53,7 @@ export class TeamsComponent implements OnInit {
     private readonly logger: ClassloggerService,
     settingsService: SettingsService,
     private readonly teamsService: TeamsService,
+    private readonly translate: TranslateService
   ) {
     this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchemaTeams = this.teamsService.teamsSchema;
@@ -85,8 +87,7 @@ export class TeamsComponent implements OnInit {
     this.logger.debug(this, `Selected team changed`);
     this.logger.trace(this, `New team selected`, team);
 
-    const title = team.GetEntity().GetDisplay();
-    this.openDetailsSidesheet(title, team);
+    this.openDetailsSidesheet(team);
   }
 
   private async navigate(): Promise<void> {
@@ -107,13 +108,14 @@ export class TeamsComponent implements OnInit {
     }
   }
 
-  private async openDetailsSidesheet(title: string, data: PortalTargetsystemTeams): Promise<void> {
+  private async openDetailsSidesheet( data: PortalTargetsystemTeams): Promise<void> {
     const sidesheetRef = this.sideSheet.open(TeamDetailsComponent, {
-      title,
-      headerColour: 'green',
+      title: await this.translate.get('#LDS#Heading View Microsoft Teams Team Details').toPromise(),
+      subTitle: data.GetEntity().GetDisplay(),
       padding: '0px',
       width: `max(650px, ${this.sidesheetWidth})`,
       icon: 'usergroup',
+      testId: 'teams-view-team-details',
       data
     });
     sidesheetRef.afterClosed().subscribe(() => this.navigate());

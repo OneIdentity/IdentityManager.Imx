@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,7 +30,7 @@ import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, ValType } from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings, DynamicTabDataProviderDirective, MetadataService, SettingsService } from 'qbm';
+import { BusyService, DataSourceToolbarSettings, DynamicTabDataProviderDirective, MetadataService, SettingsService } from 'qbm';
 import { RoleService } from '../../../role-management/role.service';
 import {
   SourceDetectiveSidesheetComponent,
@@ -55,8 +55,10 @@ export class IdentityRoleMembershipsComponent implements OnInit {
   private navigationState: CollectionLoadParameters;
   private displayedColumnsWithDisplay: IClientProperty[];
 
+  public busyService = new BusyService();
+
   constructor(
-    private readonly busyService: EuiLoadingService,
+    private readonly busyServiceElemental: EuiLoadingService,
     private readonly metadataService: MetadataService,
     private readonly roleMembershipsService: IdentityRoleMembershipsService,
     private readonly membershipService: RoleService,
@@ -78,26 +80,29 @@ export class IdentityRoleMembershipsComponent implements OnInit {
     ];
 
     this.displayedColumnsWithDisplay = [...[this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]], ...this.displayedColumns];
-    if (this.withActions) {
-      this.displayedColumnsWithDisplay.push({ ColumnName: 'actions', Type: ValType.String });
-    }
   }
 
   public async ngOnInit(): Promise<void> {
-    const overlay = this.busyService.show();
+    const isBusy = this.busyService.beginBusy();
     try {
       await this.metadataService.update([this.referrer.tablename]);
     } finally {
-      this.busyService.hide(overlay);
+      isBusy.endBusy();
     }
     this.caption = this.metadataService.tables[this.referrer.tablename].Display;
     return this.getData();
   }
 
   public async onShowDetails(entity: TypedEntity): Promise<void> {
+    if (!this.withActions) {
+      return;
+    }
     const uidPerson = this.referrer.objectuid;
 
-    const uidRole = this.membershipService.targetMap.get(this.referrer.tablename).membership.GetUidRole(entity.GetEntity());
+    const uidRole = this.membershipService.targetMap.get(this.referrer.tablename)?.membership.GetUidRole(entity.GetEntity());
+    if (uidRole == null) {
+      return;
+    }
     const data: SourceDetectiveSidesheetData = {
       UID_Person: uidPerson,
       Type: SourceDetectiveType.MembershipOfRole,
@@ -106,10 +111,9 @@ export class IdentityRoleMembershipsComponent implements OnInit {
     };
     this.sidesheet.open(SourceDetectiveSidesheetComponent, {
       title: await this.translate.get('#LDS#Heading View Assignment Analysis').toPromise(),
-      headerColour: 'orange',
+      subTitle: entity.GetEntity().GetDisplay(),
       padding: '0px',
-      width: '800px',
-      bodyColour: 'asher-gray',
+      width: 'max(768px, 80%)',
       disableClose: false,
       testId: 'identity-role-memberships-risk-sidesheet',
       data,
@@ -130,8 +134,7 @@ export class IdentityRoleMembershipsComponent implements OnInit {
   }
 
   private async getData(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyService.show()));
+    const isBusy = this.busyService.beginBusy();
     try {
       const dataSource = await this.roleMembershipsService.get(this.referrer.tablename, this.referrer.objectuid, this.navigationState);
 
@@ -142,7 +145,7 @@ export class IdentityRoleMembershipsComponent implements OnInit {
         navigationState: this.navigationState,
       };
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      isBusy.endBusy();
     }
   }
 }

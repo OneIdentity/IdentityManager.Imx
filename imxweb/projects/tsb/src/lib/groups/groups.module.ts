@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,7 +31,19 @@ import { RouterModule } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { DataSourceToolbarModule, DataTableModule, CdrModule, LdsReplaceModule, DataTreeModule, ExtModule, DynamicTabsModule } from 'qbm';
+import {
+  DataSourceToolbarModule,
+  DataTableModule,
+  CdrModule,
+  LdsReplaceModule,
+  DataTreeModule,
+  ExtModule,
+  DynamicTabsModule,
+  ObjectHistoryModule,
+  BusyIndicatorModule,
+  SelectedElementsModule,
+  HelpContextualModule
+ } from 'qbm';
 
 import { GroupSidesheetComponent } from './group-sidesheet/group-sidesheet.component';
 import { GroupMembersComponent } from './group-sidesheet/group-members/group-members.component';
@@ -40,8 +52,8 @@ import { ChildSystemEntitlementsComponent } from './group-sidesheet/child-system
 import { NoDataModule } from '../no-data/no-data.module';
 import { DataFiltersModule } from '../data-filters/data-filters.module';
 import { ProductOwnerSidesheetComponent } from './product-owner-sidesheet/product-owner-sidesheet.component';
-import { OwnerControlModule, ServiceItemsEditFormModule } from 'qer';
-import { IdentityRoleMembershipsModule } from 'qer';
+import { IdentityRoleMembershipsModule, ObjectHyperviewModule, OwnerControlModule, ServiceItemsEditFormModule } from 'qer';
+import { GroupMembershipsExtComponent } from './group-memberships-ext/group-memberships-ext.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +61,8 @@ import { IdentityRoleMembershipsModule } from 'qer';
     GroupSidesheetComponent,
     GroupMembersComponent,
     ChildSystemEntitlementsComponent,
-    ProductOwnerSidesheetComponent
+    ProductOwnerSidesheetComponent,
+    GroupMembershipsExtComponent,
   ],
   imports: [
     CommonModule,
@@ -60,7 +73,9 @@ import { IdentityRoleMembershipsModule } from 'qer';
     ExtModule,
     CdrModule,
     RouterModule,
+    ObjectHyperviewModule,
     OwnerControlModule,
+    BusyIndicatorModule,
     ServiceItemsEditFormModule,
     TranslateModule,
     DataSourceToolbarModule,
@@ -70,11 +85,11 @@ import { IdentityRoleMembershipsModule } from 'qer';
     NoDataModule,
     DataTreeModule,
     DynamicTabsModule,
-    IdentityRoleMembershipsModule
+    ObjectHistoryModule,
+    IdentityRoleMembershipsModule,
+    SelectedElementsModule,
+    HelpContextualModule
   ],
-  exports: [
-    DataExplorerGroupsComponent,
-    ChildSystemEntitlementsComponent
-  ]
+  exports: [DataExplorerGroupsComponent, ChildSystemEntitlementsComponent],
 })
-export class GroupsModule { }
+export class GroupsModule {}

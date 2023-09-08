@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,35 +24,23 @@
  *
  */
 
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
-import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatTableModule } from '@angular/material/table';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { discardPeriodicTasks, fakeAsync, tick } from '@angular/core/testing';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { configureTestSuite } from 'ng-bullet';
-import { LoggerTestingModule } from 'ngx-logger/testing';
-import { Subject } from 'rxjs';
-import { ScrollingModule } from '@angular/cdk/scrolling';
-import { Component, Input, Pipe, PipeTransform } from '@angular/core';
-import { EuiCoreModule, EuiSidesheetService } from '@elemental-ui/core';
+import { EuiSidesheetService } from '@elemental-ui/core';
 
 import { EditFkComponent } from './edit-fk.component';
 import { IForeignKeyInfo, IValueMetadata, IEntityColumn, ValueStruct, EntityCollectionData } from 'imx-qbm-dbts';
 import { EntityColumnStub } from '../../testing/entity-column-stub.spec';
 import { clearStylesFromDOM } from '../../testing/clear-styles.spec';
 import { MetadataService } from '../../base/metadata.service';
-
-@Component({
-  selector: 'imx-view-property',
-  template: '<p>MockViewProperty</p>',
-})
-class MockViewProperty {
-  @Input() columnContainer: any;
-  @Input() defaultValue: any;
-}
+import { MockBuilder, MockedComponentFixture, MockRender } from 'ng-mocks';
+import { CdrModule } from '../cdr.module';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { QbmDefaultMocks } from '../../../default-mocks.spec';
+import { LdsReplacePipe } from '../../lds-replace/lds-replace.pipe';
+import { ViewPropertyComponent } from '../view-property/view-property.component';
+import { ChangeDetectorRef } from '@angular/core';
 
 function createColumnStub(value: ValueStruct<string>, canEdit = true, candidateCollections?: EntityCollectionData[], minLength = 0): IEntityColumn {
   const getFki = c => ({ Get: _ => Promise.resolve(c) } as IForeignKeyInfo);
@@ -74,66 +62,36 @@ function createColumnStub(value: ValueStruct<string>, canEdit = true, candidateC
   );
 }
 
-@Pipe({ name: 'ldsReplace' })
-class MockLdsReplacePipe implements PipeTransform {
-  transform() { }
-}
 
 describe('EditFkComponent', () => {
   let component: EditFkComponent;
-  let fixture: ComponentFixture<EditFkComponent>;
-
-  const afterClosedSubject = new Subject<any>();
-
-  const matDialogStub = {
-    open: jasmine.createSpy('open').and.returnValue({ afterClosed: () => afterClosedSubject })
-  };
+  let fixture: MockedComponentFixture<EditFkComponent>;
 
   const metadataServiceStub = {
-    update: jasmine.createSpy('update')
+    update: jasmine.createSpy('update'),
+    tables:[]
+  } as any;
+
+  const detectorstub = {
+    detectChanges: jasmine.createSpy('detectChanges'),
   };
 
-  configureTestSuite(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        FormsModule,
-        MatAutocompleteModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatTableModule,
-        MatPaginatorModule,
-        ScrollingModule,
-        NoopAnimationsModule,
-        LoggerTestingModule,
-        ReactiveFormsModule,
-        EuiCoreModule
-      ],
-      declarations: [
-        EditFkComponent,
-        MockLdsReplacePipe,
-        MockViewProperty
-      ],
-      providers: [
-        {
-          provide: EuiSidesheetService,
-          useValue: matDialogStub
-        },
-        {
-          provide: MetadataService,
-          useValue: metadataServiceStub
-        }
-      ]
-    });
+  beforeEach(() => {
+    return MockBuilder([EditFkComponent, TranslateModule.forRoot(), FormsModule, ReactiveFormsModule])
+      .mock(CdrModule)
+      .keep(LdsReplacePipe)
+      .mock(ViewPropertyComponent)
+      .mock(EuiSidesheetService)
+      .mock(MetadataService,metadataServiceStub)
+      .mock(ChangeDetectorRef,detectorstub)
+      .keep(TranslateService)
   });
 
-  beforeEach(waitForAsync(() => {
-    matDialogStub.open.calls.reset();
-    metadataServiceStub.update.calls.reset();
-  }));
-
   beforeEach(() => {
-    fixture = TestBed.createComponent(EditFkComponent);
-    component = fixture.componentInstance;
+    fixture = MockRender(EditFkComponent);
+    component = fixture.point.componentInstance;
+    QbmDefaultMocks.sidesheetServiceStub.open.calls.reset();
+    metadataServiceStub.update.calls.reset();
   });
 
   afterAll(() => {
@@ -205,17 +163,21 @@ describe('EditFkComponent', () => {
       isReadOnly: () => false
     });
 
+    tick(fakeDelay);
+
     component.editAssignment();
 
     tick(fakeDelay);
 
-    afterClosedSubject.subscribe(_ =>
-      expect(matDialogStub.open).toHaveBeenCalled()
+    QbmDefaultMocks.afterClosedSubject.subscribe(_ =>
+      expect(QbmDefaultMocks.sidesheetServiceStub.open).toHaveBeenCalled()
     );
 
-    afterClosedSubject.next({ table: {}, candidates: testcase.valueStructs });
+    QbmDefaultMocks.afterClosedSubject.next({ table: {}, candidates: testcase.valueStructs });
 
     tick(fakeDelay);
+
+    discardPeriodicTasks();
 
     if (testcase.canEdit) {
       if (testcase.valueStructs && testcase.valueStructs.length > 0) {

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,12 +25,12 @@
  */
 
 import { Component, Input, ErrorHandler, OnChanges, SimpleChanges, OnInit, Output, EventEmitter } from '@angular/core';
-import { FormGroup, AbstractControl } from '@angular/forms';
+import { UntypedFormGroup, AbstractControl } from '@angular/forms';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiLoadingService } from '@elemental-ui/core';
 
 import { PortalEntitlement, PortalEntitlementServiceitem } from 'imx-api-aob';
-import { ClassloggerService } from 'qbm';
+import { CdrFactoryService, ClassloggerService, ColumnDependentReference } from 'qbm';
 import { TypedEntity } from 'imx-qbm-dbts';
 import { ServiceItemTagsService } from 'qer';
 
@@ -43,11 +43,14 @@ import { ServiceItemTagsService } from 'qer';
   styleUrls: ['./entitlement-edit.component.scss']
 })
 export class EntitlementEditComponent implements OnChanges, OnInit {
-  public readonly form = new FormGroup({});
+  public readonly form = new UntypedFormGroup({});
 
   public productTagsInitial: string[] = [];
   public productTagsSelected: string[];
   public loadingTags: boolean;
+  
+  public cdrList: ColumnDependentReference[] = [];
+  public cdrListServiceItem: ColumnDependentReference[] = [];
 
   @Input() public entitlement: PortalEntitlement;
   @Input() public serviceItem: PortalEntitlementServiceitem;
@@ -59,11 +62,32 @@ export class EntitlementEditComponent implements OnChanges, OnInit {
     private readonly tagProvider: ServiceItemTagsService,
     private readonly logger: ClassloggerService,
     private readonly errorHandler: ErrorHandler,
+    private readonly cdrFactoryService: CdrFactoryService,
     private readonly busyService: EuiLoadingService
   ) { }
 
   public ngOnInit(): void {
     this.controlCreated.emit(this.form);
+
+    const entitlementColumns = [
+      'Ident_AOBEntitlement', 
+      'Description', 
+      'ObjectKeyAdditionalApprover'
+    ];    
+    this.cdrList = this.cdrFactoryService.buildCdrFromColumnList(this.entitlement.GetEntity(), entitlementColumns);
+        
+    if (this.serviceItem) {
+      const serviceIemColumns = [
+        'UID_OrgRuler', 
+        'UID_PWODecisionMethod', 
+        'UID_QERTermsOfUse', 
+        'UID_AccProductParamCategory', 
+        'UID_AccProductGroup',
+        'ProductURL', 
+        'IsApproveRequiresMfa'
+      ];
+      this.cdrListServiceItem = this.cdrFactoryService.buildCdrFromColumnList(this.serviceItem.GetEntity(), serviceIemColumns);
+    }
   }
 
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {

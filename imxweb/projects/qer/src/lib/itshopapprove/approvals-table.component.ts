@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,14 +24,13 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Params } from '@angular/router';
-import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
+import { EuiSidesheetService } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PwoExtendedData, RecommendationEnum } from 'imx-api-qer';
+import { PwoExtendedData, RecommendationEnum, ViewConfigData } from 'imx-api-qer';
 import { ValType, ExtendedTypedEntityCollection, TypedEntity, EntitySchema, DataModel, IClientProperty } from 'imx-qbm-dbts';
 import {
   DataSourceToolbarSettings,
@@ -42,6 +41,9 @@ import {
   IExtension,
   ExtService,
   buildAdditionalElementsString,
+  DataSourceToolbarViewConfig,
+  ClientPropertyForTableColumns,
+  BusyService,
 } from 'qbm';
 import { ApprovalsSidesheetComponent } from './approvals-sidesheet/approvals-sidesheet.component';
 import { Approval } from './approval';
@@ -52,7 +54,10 @@ import { ApprovalsLoadParameters } from './approvals-load-parameters';
 import { ApprovalsDecision } from './approvals-decision.enum';
 import { UserModelService } from '../user/user-model.service';
 import { RecommendationSidesheetComponent } from './recommendation-sidesheet/recommendation-sidesheet.component';
+import { QerPermissionsService } from '../admin/qer-permissions.service';
 
+import { ViewConfigService } from '../view-config/view-config.service';
+import { isCancelPwO } from '../admin/qer-permissions-helper';
 @Component({
   templateUrl: './approvals-table.component.html',
   selector: 'imx-approvals-table',
@@ -61,6 +66,11 @@ import { RecommendationSidesheetComponent } from './recommendation-sidesheet/rec
 export class ApprovalsTableComponent implements OnInit, OnDestroy {
   public recApprove = RecommendationEnum.Approve;
   public recDeny = RecommendationEnum.Deny;
+
+  private isChiefApprover = false;
+
+  public get tableReady() { return this.countTableLoading == 0; }
+  private countTableLoading = 0;
 
   @Input() public params: Params = {};
   public isUserEscalationApprover = false;
@@ -83,6 +93,16 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
   public get canRerouteDecision(): boolean {
     return this.selectedItems.every((item) => item.canRerouteDecision(this.currentUserId));
   }
+
+  public get canResetReservation(): boolean{
+    return this.selectedItems.every((item)=> item.canResetReservation(this.isChiefApprover));
+  }
+
+  public get canRecallInquiry(): boolean{
+    return this.selectedItems.every((item)=>  item.canRecallInquiry);
+  }
+
+
   public get canPerformActions(): boolean {
     return (
       this.selectedItems.length > 0 &&
@@ -91,7 +111,8 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
         this.canDelegateDecision ||
         this.canDenyApproval ||
         this.canRerouteDecision ||
-        this.canEscalateDecision)
+        this.canEscalateDecision ||
+        this.canRecallInquiry || this.canResetReservation)
     );
   }
 
@@ -101,6 +122,9 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
   public canBeDelegated = false;
   public selectedItems: Approval[] = [];
   public approvalsCollection: ExtendedTypedEntityCollection<Approval, PwoExtendedData>;
+  public hasData = false;
+
+  public busyService = new BusyService();
 
   @ViewChild(DataTableComponent) private readonly table: DataTableComponent<TypedEntity>;
 
@@ -110,31 +134,60 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
   private readonly subscriptions: Subscription[] = [];
   private readonly UID_ComplianceRuleId = 'cpl.UID_ComplianceRule';
   private dataModel: DataModel;
+  private viewConfig: DataSourceToolbarViewConfig;
+  private viewConfigPath = 'itshop/approve/requests';
+
+  private displayedColumns: ClientPropertyForTableColumns[];
 
   constructor(
     public readonly actionService: WorkflowActionService,
     private readonly approvalsService: ApprovalsService,
+    private viewConfigService: ViewConfigService,
     private readonly sideSheet: EuiSidesheetService,
     private readonly logger: ClassloggerService,
-    private readonly busyService: EuiLoadingService,
     private readonly projectConfig: ProjectConfigurationService,
     private readonly translator: TranslateService,
     settingsService: SettingsService,
     private readonly userModelService: UserModelService,
     authentication: AuthenticationService,
-    private readonly ext: ExtService
+    private readonly ext: ExtService,
+    private readonly permissions : QerPermissionsService,
   ) {
     this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchema = approvalsService.PortalItshopApproveRequestsSchema;
+    this.displayedColumns = [
+      this.entitySchema?.Columns?.DisplayOrg,
+      this.entitySchema?.Columns?.UiOrderState,
+      this.entitySchema?.Columns?.OrderDate,
+      this.entitySchema?.Columns?.PWOPriority,
+      {
+        ColumnName: 'decision',
+        Type: ValType.String,
+        afterAdditionals: true,
+        untranslatedDisplay: '#LDS#Approval decision'
+      },
+      {
+        ColumnName: 'recommendations',
+        Type: ValType.String,
+        untranslatedDisplay: '#LDS#Recommendation'
+      },
+    ];
     this.subscriptions.push(
       this.actionService.applied.subscribe(async () => {
         this.getData();
         this.table.clearSelection();
       })
     );
-    this.subscriptions.push(authentication.onSessionResponse.subscribe((state) => (this.currentUserId = state.UserUid)));
-    this.userModelService.getGroups().then((groups) => {
-      this.isUserEscalationApprover = groups.find((g) => g.Name === 'vi_4_ITSHOPADMIN_CANCEL') != null;
+    this.subscriptions.push(
+      authentication.onSessionResponse.subscribe((state) => {
+        this.currentUserId = state.UserUid;
+        if (state.IsLoggedIn) {
+          this.viewEscalation = false;
+        }
+      })
+    );
+    this.userModelService.getFeatures().then((featureInfo) => {
+      this.isUserEscalationApprover = isCancelPwO(featureInfo.Features || []);
     });
 
     this.extensions = this.ext.Registry[this.UID_ComplianceRuleId];
@@ -148,22 +201,36 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
 
   public async ngOnInit(): Promise<void> {
     this.parseParams();
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyService.show()));
+    const isBusy = this.busyService.beginBusy();
 
     try {
       this.dataModel = await this.approvalsService.getApprovalDataModel();
+      this.isChiefApprover = await this.permissions.isCancelPwO();
+      this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModel, this.viewConfigPath);
+
+      await this.getData();
+      this.handleDecision();
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      isBusy.endBusy();
     }
-    await this.getData();
-    this.handleDecision();
   }
 
   public ngOnDestroy(): void {
     // Set service value back to false since the toggle value is stored there
     this.approvalsService.isChiefApproval = false;
     this.subscriptions.forEach((s) => s.unsubscribe());
+  }
+
+  public async updateConfig(config: ViewConfigData): Promise<void> {
+    await this.viewConfigService.putViewConfig(config);
+    this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
+    this.dstSettings.viewConfig = this.viewConfig;
+  }
+
+  public async deleteConfigById(id: string): Promise<void> {
+    await this.viewConfigService.deleteViewConfig(id);
+    this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
+    this.dstSettings.viewConfig = this.viewConfig;
   }
 
   public get viewEscalation(): boolean {
@@ -194,18 +261,18 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
       this.navigationState = parameters;
     }
 
-    let busyIndicator: OverlayRef;
-    setTimeout(() => (busyIndicator = this.busyService.show()));
+    const isBusy = this.busyService.beginBusy();
 
     try {
       this.approvalsCollection = await this.approvalsService.get(this.navigationState);
+      this.hasData = this.approvalsCollection.totalCount > 0 || (this.navigationState.search ?? '') !== '';
       this.updateTable();
 
       if (this.extensions && this.extensions[0]) {
         this.extensions[0].inputData = this.dstSettings;
       }
     } finally {
-      setTimeout(() => this.busyService.hide(busyIndicator));
+      isBusy.endBusy();
     }
   }
 
@@ -219,15 +286,14 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     const doUpdate = await this.sideSheet
       .open(ApprovalsSidesheetComponent, {
         title: await this.translator.get('#LDS#Heading View Request Details').toPromise(),
-        headerColour: 'blue',
-        bodyColour: 'asher-gray',
-        panelClass: 'imx-sidesheet',
+        subTitle: pwo.GetEntity().GetDisplay(),
         padding: '0',
         width: 'max(700px, 60%)',
         testId: 'approvals-sidesheet',
         data: {
           pwo,
           itShopConfig: (await this.projectConfig.getConfig()).ITShopConfig,
+          fromInquiry: false,
         },
       })
       .afterClosed()
@@ -238,7 +304,7 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     }
   }
 
-    /**
+  /**
    * Occurs when user clicks the edit button for a request
    *
    * @param pwo Selected PortalItshopApproveRequests.
@@ -248,8 +314,7 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
     const decision: 'approve' | 'deny' | null = await this.sideSheet
       .open(RecommendationSidesheetComponent, {
         title: await this.translator.get('#LDS#Heading View Recommendation Details').toPromise(),
-        headerColour: 'blue',
-        bodyColour: 'asher-gray',
+        subTitle: pwo.GetEntity().GetDisplay(),
         panelClass: 'imx-sidesheet',
         padding: '0',
         width: 'max(700px, 60%)',
@@ -285,32 +350,18 @@ export class ApprovalsTableComponent implements OnInit, OnDestroy {
 
   private updateTable(): void {
     if (this.approvalsCollection) {
+      const exportMethod = this.approvalsService.exportApprovalRequests(this.navigationState);
+      exportMethod.initialColumns = this.displayedColumns.map(col => col.ColumnName);
       this.dstSettings = {
         dataSource: this.approvalsCollection,
         extendedData: this.approvalsCollection.extendedData.Data,
         entitySchema: this.entitySchema,
         navigationState: this.navigationState,
-        displayedColumns: [
-          this.entitySchema.Columns.DisplayOrg,
-          this.entitySchema.Columns.UiOrderState,
-          this.entitySchema.Columns.OrderDate,
-          this.entitySchema.Columns.PWOPriority,
-          {
-            ColumnName: 'decision',
-            Type: ValType.String,
-            afterAdditionals: true,
-          },
-          {
-            ColumnName: 'edit',
-            Type: ValType.String,
-          },
-          {
-            ColumnName: 'recommendations',
-            Type: ValType.String
-          }
-        ],
+        displayedColumns: this.displayedColumns,
         dataModel: this.dataModel,
-        identifierForSessionStore: 'approvals-table',
+        viewConfig: this.viewConfig,
+        filters: this.dataModel.Filters,
+        exportMethod
       };
     } else {
       this.dstSettings = undefined;

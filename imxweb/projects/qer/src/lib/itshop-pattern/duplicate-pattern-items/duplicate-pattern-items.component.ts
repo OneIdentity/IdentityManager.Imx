@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -43,8 +43,8 @@ export class DuplicatePatternItemsComponent {
     return this.displayedColumns.map(c => c.name);
   }
 
-  public description1 = '#LDS#Each product can be added to the request template only once.';
-  public description2 = '#LDS#The following products are already included and cannot be added again.';
+  public description1 = '#LDS#Each product can be added to the product bundle only once.';
+  public description2 = '#LDS#The following products have already been added to the product bundle and cannot be added again.';
 
   public readonly displayedColumns = [
     { name: 'Display', title: '#LDS#Product' }

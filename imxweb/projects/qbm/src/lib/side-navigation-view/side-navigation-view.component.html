@@ -1,0 +1,47 @@
+<div class="snavigation">
+  <mat-sidenav-container>
+    <mat-sidenav mode="side" opened [ngClass]="{ 'snavigation-side--expanded': mobileSideNavExpanded }">
+      <div class="snavigation-side">
+        <div class="snavigation-side-toggle">
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="toggleMobileExpand()"
+            data-imx-identifier="side-navigation-button-mobile-menu-expand"
+            [attr.aria-label]="'#LDS#Show navigation' | translate"
+          >
+            <mat-icon>menu</mat-icon>
+          </button>
+        </div>
+
+        <div class="snavigation-side-content">
+          <div class="snavigation-side-heading">
+            <span translate>{{ componentTitle }}</span>
+            <ng-container *ngIf="!!contextId">
+              <imx-help-contextual [contextId]="contextId" [size]="'m'"></imx-help-contextual>
+            </ng-container>
+          </div>
+          <ng-container *ngFor="let item of navigationItems">
+            <div
+              [matTooltip]="item.translationKey | translate"
+              [matTooltipPosition]="'after'"
+              [matTooltipShowDelay]="500"
+              [attr.data-imx-identifier]="'side-navigation-button-' + item.name"
+              [attr.aria-label]="'#LDS#Open page: {0}' | translate | ldsReplace : (item.translationKey | translate)"
+              class="snavigation-item"
+              (click)="selectPage(item.name)"
+              [ngClass]="{ 'snavigation-item--selected': selectedPage === item.name }"
+              tabindex="0"
+            >
+              <span translate>{{ item.translationKey }}</span>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </mat-sidenav>
+    <mat-sidenav-content [ngStyle]="{ 'margin-left': contentMargin }" [ngClass]="{ 'snavigation--backdrop-showing': showBackdrop }">
+      <div class="snavigation-backdrop" *ngIf="showBackdrop" (click)="toggleMobileExpand()"></div>
+      <ng-template #sideNavContent></ng-template>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

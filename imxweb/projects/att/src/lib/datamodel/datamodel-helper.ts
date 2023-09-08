@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,54 +24,61 @@
  *
  */
 
-import { CollectionLoadParameters, DataModel, DataModelFilterOption, DataModelGroupInfo, DataModelProperty, GroupInfo } from 'imx-qbm-dbts';
+import {
+  CollectionLoadParameters,
+  DataModel,
+  DataModelFilterOption,
+  DataModelGroupInfo,
+  DataModelProperty,
+  GroupInfoData,
+} from 'imx-qbm-dbts';
 import { DataSourceToolbarGroupData } from 'qbm';
 
 export function createGroupData(
   dataModel: DataModel,
-  getGroupInfo: (parameters: { by?: string, def?: string } & CollectionLoadParameters) => Promise<GroupInfo[]>,
+  getGroupInfo: (parameters: { by?: string; def?: string } & CollectionLoadParameters) => Promise<GroupInfoData>,
   disableGroupingFor: string[]
-
 ): DataSourceToolbarGroupData {
   const groups = [];
   const groupingCategories = [];
 
   if (dataModel.Properties) {
-    for (const property of dataModel.Properties.filter
-      (p => p.IsGroupable && disableGroupingFor.every(elem => elem !== p.Property?.ColumnName))) {
+    for (const property of dataModel.Properties.filter(
+      (p) => p.IsGroupable && disableGroupingFor.every((elem) => elem !== p.Property?.ColumnName)
+    )) {
       groups.push({
         property,
-        getData: async parameters => (await getGroupInfo({ ...{ by: property.Property.ColumnName }, ...parameters }))
-          .filter(item => item.Count > 0)
+        getData: async (parameters) => await getGroupInfo({ ...{ by: property.Property.ColumnName }, ...parameters }),
       });
     }
   }
 
-  const getGroupInfoGroups = (options: DataModelFilterOption[]) => options.map(property => ({
-    property: property as (DataModelProperty & DataModelGroupInfo),
-    getData: async parameters => (await getGroupInfo({ ...{ def: property.Value }, ...parameters }))
-      .filter(item => item.Count > 0)
-      .map(item => {
-        item.Display.forEach(display =>
-          item.Filters.forEach(filter => {
-            if (filter.Value1 != null) {
-              display.Display = display.Display.replace(`%${filter.ColumnName}%`, filter.Value1);
-            }
-          })
-        );
-        return item;
-      })
-  }));
+  const getGroupInfoGroups = (options: DataModelFilterOption[]) =>
+    options.map((property) => ({
+      property: property as DataModelProperty & DataModelGroupInfo,
+      getData: async (parameters) => {
+        const original = await getGroupInfo({ ...{ def: property.Value }, ...parameters });
+        const groupDisplay = original.Groups.map((item) => {
+          item.Display.forEach((display) =>
+            item.Filters.forEach((filter) => {
+              if (filter.Value1 != null) {
+                display.Display = display.Display.replace(`%${filter.ColumnName}%`, filter.Value1);
+              }
+            })
+          );
+          return item;
+        });
+        return { Groups: groupDisplay, TotalCount: original.TotalCount };
+      },
+    }));
 
   if (dataModel.GroupInfo?.length === 1) {
-    getGroupInfoGroups(dataModel.GroupInfo[0].Options).forEach(
-      group => groups.push(group)
-    );
+    getGroupInfoGroups(dataModel.GroupInfo[0].Options).forEach((group) => groups.push(group));
   } else {
-    dataModel.GroupInfo?.forEach(dataModelGroupInfo =>
+    dataModel.GroupInfo?.forEach((dataModelGroupInfo) =>
       groupingCategories.push({
         property: dataModelGroupInfo,
-        groups: getGroupInfoGroups(dataModelGroupInfo.Options)
+        groups: getGroupInfoGroups(dataModelGroupInfo.Options),
       })
     );
   }

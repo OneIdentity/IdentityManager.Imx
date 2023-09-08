@@ -1,6 +1,7 @@
-<div class="dialog-table-wrapper">
+<mat-card mat-dialog-content>
   <imx-loss-preview-table [lossPreview]="lossPreview" [showTitle]="true"></imx-loss-preview-table>
-</div>
+</mat-card>
+
 <div mat-dialog-actions align="end">
   <button mat-stroked-button mat-dialog-close data-imx-identifier="loss-preview-dialog-button-cancel">
     {{ '#LDS#Cancel' | translate }}

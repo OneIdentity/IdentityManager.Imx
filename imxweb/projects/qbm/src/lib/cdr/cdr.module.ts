@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -75,6 +75,10 @@ import { DateRangeComponent } from './date-range/date-range.component';
 import { ImageModule } from '../image/image.module';
 import { EntityColumnEditorComponent } from './entity-column-editor/entity-column-editor.component';
 import { EditUrlComponent } from './edit-url/edit-url.component';
+import { CdrSidesheetComponent } from './cdr-sidesheet/cdr-sidesheet.component';
+import { MatCardModule } from '@angular/material/card';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { InfoModalDialogModule } from '../info-modal-dialog/info-modal-dialog.module';
 
 @NgModule({
   declarations: [
@@ -97,17 +101,20 @@ import { EditUrlComponent } from './edit-url/edit-url.component';
     ViewPropertyComponent,
     DateRangeComponent,
     EntityColumnEditorComponent,
-    EditUrlComponent
+    EditUrlComponent,
+    CdrSidesheetComponent
   ],
   imports: [
     CommonModule,
     EuiCoreModule,
     FormsModule,
+    InfoModalDialogModule,
     LdsReplaceModule,
     MatAutocompleteModule,
     MatButtonModule,
     MatInputModule,
     MatSelectModule,
+    MatCardModule,
     MatCheckboxModule,
     MatDatepickerModule,
     MatDialogModule,
@@ -115,6 +122,7 @@ import { EditUrlComponent } from './edit-url/edit-url.component';
     MatSliderModule,
     MatSlideToggleModule,
     MatTableModule,
+    MatTooltipModule,
     MatPaginatorModule,
     MatRadioModule,
     MatProgressSpinnerModule,
@@ -142,7 +150,8 @@ import { EditUrlComponent } from './edit-url/edit-url.component';
     EditMultiValueComponent,
     EditMultiLimitedValueComponent,
     PropertyViewerComponent,
-    EntityColumnEditorComponent
+    EntityColumnEditorComponent,
+    CdrSidesheetComponent
   ],
 })
 export class CdrModule {}

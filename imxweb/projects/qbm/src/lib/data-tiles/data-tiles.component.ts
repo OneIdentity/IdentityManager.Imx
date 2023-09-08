@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Input, EventEmitter, Output, TemplateRef, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, EventEmitter, Output, TemplateRef, OnDestroy, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { SelectionChange } from '@angular/cdk/collections';
 import { Subscription } from 'rxjs';
 
@@ -40,7 +40,7 @@ import { DataTileBadge } from '../data-source-toolbar/data-tile-badge.interface'
 @Component({
   selector: 'imx-data-tiles',
   templateUrl: './data-tiles.component.html',
-  styleUrls: ['./data-tiles.component.scss']
+  styleUrls: ['./data-tiles.component.scss'],
 })
 export class DataTilesComponent implements OnChanges, OnDestroy {
   /**
@@ -92,6 +92,8 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
    */
   @Input() public image: IClientProperty;
 
+  @Input() public selectedEntity: TypedEntity;
+
   /**
    * If the image property of a tile is set, but does not contain a valid image, the fallbackIcon will be used.
    */
@@ -105,8 +107,7 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
   /**
    * If present this text would be shown, if no items are found.  .
    */
-  @Input() public noItemsMatchText = '#LDS#No matching data';
-
+  @Input() public noItemsMatchText = '#LDS#There is no data matching your search.';
 
   /**
    * This icon will be displayed when there is no data on the datasource (and a search is not applied)
@@ -120,7 +121,6 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
    * Defaults to the 'search' icon when not supplied
    */
   @Input() public noMatchingDataIcon = 'search';
-
 
   /**
    * The width of a tile.
@@ -145,10 +145,19 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
    */
   @Output() public selectionChanged = new EventEmitter<TypedEntity[]>();
 
+  //When tile is unselected and if the below event exists on the consumer this event will be emitted.
+  @Output() public selected = new EventEmitter();
+
   /**
    * Event, that will fire when the user clicks on the badge.
    */
   @Output() public badgeClicked = new EventEmitter<DataTileBadge>();
+
+  /**
+   * @ignore
+   * internal handler for loading
+   */
+  public isLoading = true;
 
   /**
    * Keeps track of the selected item in single select mode
@@ -161,6 +170,8 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
    */
   private subscriptions: Subscription[] = [];
 
+  constructor(private readonly changeDetector: ChangeDetectorRef){}
+
   /**
    * @ignore Used internally.
    *
@@ -168,11 +179,20 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
    */
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes['dst'] && changes['dst'].currentValue) {
-      this.subscriptions.push(this.dst.selectionChanged.subscribe((event: SelectionChange<TypedEntity>) =>
-        this.selectionChanged.emit(event.source.selected)
-      ));
+      this.subscriptions.push(
+        this.dst.selectionChanged.subscribe((event: SelectionChange<TypedEntity>) => this.selectionChanged.emit(event.source.selected))
+      );
 
       this.additionalSubtitleObjects = this.dst?.additionalListElements;
+
+      if (this.dst.busyService) {
+        this.subscriptions.push(this.dst.busyService.busyStateChanged.subscribe((value:boolean)=>{
+          this.isLoading = value;
+          this.changeDetector.detectChanges()
+        }));
+      }
+      this.isLoading = this.dst?.busyService?.isBusy ?? false;
+
     }
   }
 
@@ -181,7 +201,7 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
    * Unsubscribes all listeners.
    */
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   public isSelected(item: TypedEntity): boolean {
@@ -189,8 +209,11 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
       return this.dst.isChecked(item);
     }
 
-    return this.selectedItem &&
-      this.selectedItem.GetEntity().GetKeys().join() === item.GetEntity().GetKeys().join();
+    if (this.selectedEntity) {
+      this.selectedItem = this.selectedEntity;
+    }
+
+    return this.selectedItem && this.selectedItem.GetEntity().GetKeys().join() === item.GetEntity().GetKeys().join();
   }
 
   /**
@@ -203,6 +226,10 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
       this.selectedItem = item;
       this.selectionChanged.emit([item]);
     }
+  }
+
+  public onTileSelected(selected) {
+    this.selected.emit(selected);
   }
 
   public onActionSelected(action: DataTileMenuItem): void {

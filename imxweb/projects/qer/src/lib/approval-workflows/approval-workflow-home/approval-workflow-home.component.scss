@@ -1,0 +1,98 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import '../approval-workflow-styles.scss';
+@import '../../../../../../shared/scss/common-table.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+
+  .awm-header {
+    display: flex;
+
+    h1 {
+      margin: 6px 0 40px;
+    }
+
+    .awm-right-header {
+      margin: 0 0 0 auto;
+    }
+  }
+
+  .imx-table-container {
+   @include imx-flex-fill-control-hidden-overflow();
+    @include EUI-Elevation-1;
+  }
+
+  .button-row {
+    @include imx-button-bar();
+  }
+}
+
+// Theming
+:host {
+  @include awmColors();
+  .awm-left-header {
+    button {
+      color: $color-blue-60;
+
+      &:hover {
+        color: $color-orange-60;
+      }
+    }
+  }
+
+  .button-row {
+    .filled-button:hover:not(:disabled) {
+      background-color: $color-orange-60;
+      @include Ease-Transition;
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    @include awmColors(eui-dark-theme);
+    .awm-left-header {
+      button {
+        color: $color-blue-40;
+
+        &:hover {
+          color: $color-orange-40;
+          @include Ease-Transition;
+        }
+      }
+    }
+
+    .button-row {
+      .filled-button:hover:not(:disabled) {
+        background-color: $color-orange-40;
+        @include Ease-Transition;
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    @include awmColors(eui-contrast-theme);
+    .awm-left-header {
+      button {
+        color: $color-blue-40;
+
+        &:hover {
+          color: $color-orange-40;
+          @include Ease-Transition;
+        }
+      }
+    }
+
+    .button-row {
+      .filled-button:hover:not(:disabled) {
+        background-color: $color-orange-40;
+        @include Ease-Transition;
+      }
+    }
+  }
+}

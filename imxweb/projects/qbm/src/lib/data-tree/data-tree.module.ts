@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -45,6 +45,7 @@ import { DataTreeComponent } from './data-tree.component';
 import { TreeSelectionListComponent } from './tree-selection-list/tree-selection-list.component';
 import { CheckableTreeComponent } from './checkable-tree/checkable-tree.component';
 import { DataTreeSearchResultsComponent } from './data-tree-search-results/data-tree-search-results.component';
+import { BusyIndicatorModule } from '../busy-indicator/busy-indicator.module';
 
 
 @NgModule({
@@ -69,7 +70,8 @@ import { DataTreeSearchResultsComponent } from './data-tree-search-results/data-
     ScrollingModule,
     TranslateModule,
     MatPaginatorModule,
-    MatCardModule
+    MatCardModule,
+    BusyIndicatorModule
   ],
   exports: [
     DataTreeComponent

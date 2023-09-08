@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,25 +27,31 @@
 import { Injectable } from '@angular/core';
 
 import { imx_SessionService } from '../session/imx-session.service';
-import { SystemInfo } from 'imx-api-qbm';
+import { ImxConfig, SystemInfo } from 'imx-api-qbm';
+import { CachedPromise } from 'imx-qbm-dbts';
+import { CacheService } from '../cache/cache.service';
 
 /** Service that provides system info.
- *  The service sends only one request per session,
- *  the retrieved data is cached.
+ *  The service sends only one request per session, the retrieved data is cached.
  */
 @Injectable({
   providedIn: 'root'
 })
 export class SystemInfoService {
-  private systemInfo: SystemInfo;
+  private systemInfo: CachedPromise<SystemInfo>;
+  private _imxConfig: CachedPromise<ImxConfig>;
 
-  constructor(private readonly session: imx_SessionService) { }
+  constructor(private readonly session: imx_SessionService, cacheService: CacheService) {
+    this.systemInfo = cacheService.buildCache(() => this.session.Client.imx_system_get());
+    this._imxConfig = cacheService.buildCache(() => this.session.Client.imx_config_get());
+  }
 
   public async get(): Promise<SystemInfo> {
-    if (this.systemInfo == null) {
-      this.systemInfo = await this.session.Client.imx_system_get();
-    }
+    return this.systemInfo.get();
+  }
 
-    return this.systemInfo;
+  /** Returns the cached ImxConfig object. */
+  public getImxConfig(): Promise<ImxConfig> {
+    return this._imxConfig.get();
   }
 }

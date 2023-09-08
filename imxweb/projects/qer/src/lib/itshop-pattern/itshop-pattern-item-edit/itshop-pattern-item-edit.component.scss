@@ -1,0 +1,49 @@
+@import "@elemental-ui/core/src/styles/_palette.scss";
+
+@mixin imx-flex-column-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.eui-sidesheet-content {
+  @include imx-flex-column-container();
+
+  .mat-card {
+    margin-bottom: 20px;
+  }
+}
+
+.imx-helper-alert {
+  width: 100%;
+
+  ::ng-deep .eui-alert {
+    margin-bottom: 20px;
+  }
+}
+
+.imx-loading-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.imx-param-no-results {
+  text-align: center;
+  margin: 20px 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .eui-icon {
+    font-size: 100px;
+    color: rgba($black-c, 0.55);
+  }
+
+  p {
+    margin: 0;
+    font-size: 18px;
+    color: $black-9;
+  }
+}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,7 +34,6 @@ import {
   PortalCartitem,
   RequestableProductForPerson,
   CartItemDataRead,
-  PortalCartitemInteractive,
 } from 'imx-api-qer';
 import { BulkItemStatus, ClassloggerService } from 'qbm';
 import { QerApiService } from '../qer-api-client.service';
@@ -42,6 +41,7 @@ import { ItemEditService } from '../product-selection/service-item-edit/item-edi
 import { ParameterDataService } from '../parameter-data/parameter-data.service';
 import { ExtendedEntityWrapper } from '../parameter-data/extended-entity-wrapper.interface';
 import { CartItemInteractiveService } from './cart-item-edit/cart-item-interactive.service';
+import { RequestableProduct } from './requestable-product.interface';
 
 @Injectable()
 export class CartItemsService {
@@ -69,28 +69,27 @@ export class CartItemsService {
     ]);
   }
 
-  public async addItemsFromRoles(objectKeyMemberships: string[], recipients: string[]): Promise<any> {
-    return Promise.all(
-      objectKeyMemberships.map(async (key) =>
-        Promise.all(
-          recipients.map(async (recipient) => {
-            const cartItem = this.qerClient.typedClient.PortalCartitem.createEntity();
-            cartItem.RoleMembership.value = key;
-            cartItem.UID_PersonOrdered.value = recipient;
-            await this.qerClient.typedClient.PortalCartitem.Post(cartItem);
-          })
-        )
-      )
-    );
+  public async addItemsFromRoles(objectKeyMemberships: string[], recipients: string[]): Promise<void> {
+    for (const key of objectKeyMemberships) {
+      for (const recipient of recipients) {
+        const cartItem = this.qerClient.typedClient.PortalCartitem.createEntity();
+        cartItem.RoleMembership.value = key;
+        cartItem.UID_PersonOrdered.value = recipient;
+        await this.qerClient.typedClient.PortalCartitem.Post(cartItem);
+      }
+    }
   }
 
   public async createAndPost(
-    requestableServiceItemForPerson: RequestableProductForPerson,
+    requestableServiceItemForPerson: RequestableProduct,
     parentCartUid: string
   ): Promise<ExtendedTypedEntityCollection<PortalCartitem, CartItemDataRead>> {
     const cartItem = this.qerClient.typedClient.PortalCartitem.createEntity();
     cartItem.UID_PersonOrdered.value = requestableServiceItemForPerson.UidPerson;
     cartItem.UID_ITShopOrg.value = requestableServiceItemForPerson.UidITShopOrg;
+    if (requestableServiceItemForPerson?.UidPatternItem?.length > 0) {
+      cartItem.UID_PatternItem.value = requestableServiceItemForPerson.UidPatternItem
+    }
     if (parentCartUid) {
       cartItem.UID_ShoppingCartItemParent.value = parentCartUid;
     }
@@ -98,79 +97,54 @@ export class CartItemsService {
     return this.qerClient.typedClient.PortalCartitem.Post(cartItem);
   }
 
-  public async addItems(requestableServiceItemsForPersons: RequestableProductForPerson[]): Promise<number> {
+  public async addItems(requestableServiceItemsForPersons: RequestableProduct[]): Promise<number> {
     const addedItems: PortalCartitem[] = [];
     const cartitemReferences: string[] = [];
     const cartItemsWithoutParams: PortalCartitem[] = [];
 
-    const sortedRequestables: RequestableProductForPerson[] = [];
-    const sortedUids: string[] = [];
-    // We need to order the items such that we can order them sequentially
-    let result = 0;
-    requestableServiceItemsForPersons.forEach(item => {
-      const uidProdAndPerson = item.UidAccProduct + item.UidPerson;
-      if (item?.UidAccProductParent) {
-        const uidParentAndPerson = item.UidAccProductParent + item.UidPerson;
-        // If this item has a parent, look if its in the list already
-        const insertPosition = sortedUids.findIndex(uid => uid === uidParentAndPerson) + 1;
-        if (insertPosition === 0) {
-          // Push item to the end of the array
-          sortedUids.push(uidProdAndPerson);
-          sortedRequestables.push(item);
-        } else {
-          // Push item behind parent
-          sortedUids.splice(insertPosition, 0, uidProdAndPerson);
-          sortedRequestables.splice(insertPosition, 0, item);
-        }
-      } else {
-        // This item does not have a parent, so push it to the front
-        sortedUids.unshift(uidProdAndPerson);
-        sortedRequestables.unshift(item);
-      }
-    });
-
-    for await (const requestable of sortedRequestables) {
+    for await (const requestable of requestableServiceItemsForPersons) {
       let parentCartUid: string;
       if (requestable?.UidAccProductParent) {
-        // We check through already ordered items to link this item to a parent
-        const uidParentAndPerson = requestable.UidAccProductParent + requestable.UidPerson;
-        const index = sortedUids.findIndex((uid) => uid === uidParentAndPerson);
-        if (index === -1) {
-          // The parent is a mandatory item and we don't have this locally. We need to view the current state of the shopping cart for this.
-          parentCartUid =  await this.getFromExistingCartItems(addedItems[0].UID_ShoppingCartOrder.value, uidParentAndPerson);
-        } else {
-          // Use the local parent uid
-          parentCartUid = this.getKey(addedItems[index]);
-        }
+        // Get parent cart ID from known cart items
+        parentCartUid = await this.getFromExistingCartItems(addedItems[0].UID_ShoppingCartOrder.value, requestable);
       }
       const cartItemCollection = await this.createAndPost(requestable, parentCartUid);
 
       addedItems.push(cartItemCollection.Data[0]);
       // TODO: this call does not work yet. await cartItem.GetEntity().Commit(true);
-      if (
-        this.parameterDataService.hasParameters({
-          Parameters: cartItemCollection.extendedData?.Parameters,
-          index: 0,
-        })
-      ) {
-        cartitemReferences.push(this.getKey(cartItemCollection.Data[0]));
-      } else {
-        cartItemsWithoutParams.push(cartItemCollection.Data[0]);
-      }
+      this.parameterDataService.hasParameters({
+        Parameters: cartItemCollection.extendedData?.Parameters,
+        index: 0,
+      })
+        ? cartitemReferences.push(this.getKey(cartItemCollection.Data[0]))
+        : cartItemsWithoutParams.push(cartItemCollection.Data[0]);
     }
 
-    if (cartitemReferences.length > 0) {
-      result = await this.editItems(cartitemReferences, cartItemsWithoutParams);
-      return result;
-    } else {
-      return requestableServiceItemsForPersons.length;
-    }
+    return cartitemReferences.length > 0
+      ? await this.editItems(cartitemReferences, cartItemsWithoutParams)
+      : requestableServiceItemsForPersons.length;
   }
 
-  public async getFromExistingCartItems(cartUid: string, uidParentAndPerson: string): Promise<string> {
+  public async getFromExistingCartItems(cartUid: string, requestable: RequestableProductForPerson): Promise<string> {
+    // Get all cart items to see what is there, unfortunately we have to check each time due to mandatory items appearing
     const allItems = (await this.getItemsForCart(cartUid)).Data;
-    const parentItem = allItems.find(item => item.UID_AccProduct.value + item.UID_PersonOrdered.value === uidParentAndPerson);
-    return this.getKey(parentItem);
+
+    // Find all already ordered items with this UID + Person, get their parent cart uid
+    const dupItemsParents = allItems
+      .filter((item) => item.UID_AccProduct.value + item.UID_PersonOrdered.value === requestable.UidAccProduct + requestable.UidPerson)
+      .map((item) => item.UID_ShoppingCartItemParent.value);
+
+    // Find all items with the correct ParentUID + Person
+    const parentItems = allItems.filter(
+      (item) => item.UID_AccProduct.value + item.UID_PersonOrdered.value === requestable.UidAccProductParent + requestable.UidPerson
+    );
+    // Here we try assuming the mandatory item is there
+    let parentItem = parentItems.find((item) => !dupItemsParents.includes(this.getKey(item)));
+    if (parentItem) {
+      return this.getKey(parentItem);
+    }
+    // Mandatory item isn't there, no well-defined fall back. Report error move on
+    this.errorHandler.handleError('There is a missing mandatory item, cannot link optional item to parent. Ordering with no parent.');
   }
 
   public async removeItems(cartItems: PortalCartitem[], filter?: (cartItem: PortalCartitem) => boolean): Promise<void> {
@@ -211,8 +185,14 @@ export class CartItemsService {
     return this.cartItemInteractive.commitExtendedEntity(cartItemExtended);
   }
 
-  public async getInteractiveCartitem(entityReference: string): Promise<ExtendedEntityWrapper<PortalCartitemInteractive>> {
-    return this.cartItemInteractive.getExtendedEntity(entityReference);
+  public async saveItems(cartItems: ExtendedEntityWrapper<TypedEntity>[]): Promise<void> {
+    for await (const cartItem of cartItems) {
+      await this.cartItemInteractive.commitExtendedEntity(cartItem);
+    }
+  }
+
+  public async getInteractiveCartitem(entityReference?: string, callbackOnChange?: () => void): Promise<ExtendedEntityWrapper<PortalCartitem>> {
+    return this.cartItemInteractive.getExtendedEntity(entityReference, callbackOnChange);
   }
 
   public getAssignmentText(cartItem: PortalCartitem): string {
@@ -245,37 +225,43 @@ export class CartItemsService {
   }
 
   private async editItems(entityReferences: string[], cartItemsWithoutParams: PortalCartitem[]): Promise<number> {
-    setTimeout(() => this.busyIndicator.hide());
-
     let result = entityReferences.length + cartItemsWithoutParams.length;
-
     const cartItems = await Promise.all(entityReferences.map((entityReference) => this.getInteractiveCartitem(entityReference)));
 
+    setTimeout(() => this.busyIndicator.hide());
+
     const results = await this.itemEditService.openEditor(cartItems);
-    for (const item of results.bulkItems) {
-      try {
-        const found = cartItems.find((x) => x.typedEntity.GetEntity().GetKeys()[0] === item.entity.GetEntity().GetKeys()[0]);
-        if (item.status === BulkItemStatus.saved) {
-          await this.save(found);
-          this.logger.debug(this, `${found.typedEntity.GetEntity().GetDisplay} saved`);
-        } else {
-          await this.removeItems([found.typedEntity]);
-          result = result - 1;
-          this.logger.debug(this, `${found.typedEntity.GetEntity().GetDisplay} removed`);
+
+    try {
+      setTimeout(() => this.busyIndicator.show());
+      for (const item of results.bulkItems) {
+        try {
+          const found = cartItems.find((x) => x.typedEntity.GetEntity().GetKeys()[0] === item.entity.GetEntity().GetKeys()[0]);
+          if (item.status === BulkItemStatus.saved) {
+            await this.save(found);
+            this.logger.debug(this, `${found.typedEntity.GetEntity().GetDisplay} saved`);
+          } else {
+            await this.removeItems([found.typedEntity]);
+            result = result - 1;
+            this.logger.debug(this, `${found.typedEntity.GetEntity().GetDisplay} removed`);
+          }
+        } catch (e) {
+          this.logger.error(this, e.message);
         }
-      } catch (e) {
-        this.logger.error(this, e.message);
       }
+
+      if (!results.submit) {
+        this.logger.debug(
+          this,
+          `The user aborts this "add to cart"-action. So we have to delete all cartitems without params from shopping cart too.`
+        );
+        await this.removeItems(cartItemsWithoutParams);
+        result = result - cartItemsWithoutParams.length;
+      }
+    } finally {
+      setTimeout(() => this.busyIndicator.hide());
     }
 
-    if (!results.submit) {
-      this.logger.debug(
-        this,
-        `The user aborts this "add to cart"-action. So we have to delete all cartitems without params from shopping cart too.`
-      );
-      await this.removeItems(cartItemsWithoutParams);
-      result = result - cartItemsWithoutParams.length;
-    }
 
     return result;
   }

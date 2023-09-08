@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
@@ -39,7 +39,6 @@ import {
   ConfirmationService,
   DataTableComponent,
   ErrorService,
-  TabControlHelper,
 } from 'qbm';
 import { ItshopPatternService } from '../itshop-pattern.service';
 import { ItShopPatternChangedType } from '../itshop-pattern-changed.enum';
@@ -54,13 +53,11 @@ import { ItShopPatternChangedType } from '../itshop-pattern-changed.enum';
 })
 export class ItshopPatternCreateSidesheetComponent implements OnInit, OnDestroy {
 
-  public get formArray(): FormArray {
-    return this.detailsFormGroup.get('formArray') as FormArray;
+  public get formArray(): UntypedFormArray {
+    return this.detailsFormGroup.get('formArray') as UntypedFormArray;
   }
   public cdrList: ColumnDependentReference[] = [];
-  public readonly detailsFormGroup: FormGroup;
-
-  public detailsInfoText: string;
+  public readonly detailsFormGroup: UntypedFormGroup;
 
   @ViewChild(DataTableComponent) public table: DataTableComponent<TypedEntity>;
 
@@ -68,7 +65,7 @@ export class ItshopPatternCreateSidesheetComponent implements OnInit, OnDestroy 
   private disposable: () => void;
 
   constructor(
-    formBuilder: FormBuilder,
+    formBuilder: UntypedFormBuilder,
     @Inject(EUI_SIDESHEET_DATA) public data: {
       pattern: PortalItshopPatternPrivate
     },
@@ -78,12 +75,12 @@ export class ItshopPatternCreateSidesheetComponent implements OnInit, OnDestroy 
     errorService: ErrorService,
     confirmation: ConfirmationService
   ) {
-    this.detailsFormGroup = new FormGroup({ formArray: formBuilder.array([]) });
+    this.detailsFormGroup = new UntypedFormGroup({ formArray: formBuilder.array([]) });
 
     this.closeSubscription = this.sideSheetRef.closeClicked().subscribe(async () => {
       if (await confirmation.confirm({
         Title: '#LDS#Heading Cancel Creating',
-        Message: '#LDS#Are you sure you want to cancel creating the request template?'
+        Message: '#LDS#Are you sure you want to cancel creating the product bundle?'
       })) {
         this.sideSheetRef.close();
       }
@@ -93,14 +90,6 @@ export class ItshopPatternCreateSidesheetComponent implements OnInit, OnDestroy 
   }
 
   public async ngOnInit(): Promise<void> {
-
-    /**
-     * Resolve an issue where the mat-tab navigation arrows could appear on first load
-     */
-    setTimeout(() => {
-      TabControlHelper.triggerResizeEvent();
-    });
-
     await this.setupDetailsTab();
   }
 
@@ -126,8 +115,6 @@ export class ItshopPatternCreateSidesheetComponent implements OnInit, OnDestroy 
   }
 
   private async setupDetailsTab(): Promise<void> {
-
-    this.detailsInfoText = '#LDS#Here you can specify the details of the new request template.';
 
     this.cdrList = [
       new BaseCdr(this.data.pattern.Ident_ShoppingCartPattern.Column),

@@ -1,0 +1,21 @@
+
+:host {
+  .wrapper {
+    height: 100%;
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  .mat-accordion > :not(:last-child) {
+    margin-bottom: 10px;
+  }
+
+  .center {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+}

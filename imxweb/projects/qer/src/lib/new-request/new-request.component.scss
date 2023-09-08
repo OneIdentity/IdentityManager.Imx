@@ -1,0 +1,26 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+
+// Theming
+:host {
+  background-color: $color-gray-5;
+}
+
+.eui-dark-theme {
+  :host {
+    background-color: $color-gray-80;
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    background-color: $color-gray-100;
+  }
+}

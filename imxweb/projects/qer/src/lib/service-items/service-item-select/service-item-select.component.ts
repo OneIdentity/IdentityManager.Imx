@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,12 +25,12 @@
  */
 
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { TypedEntity } from 'imx-qbm-dbts';
-import { isIE, LdsReplacePipe } from 'qbm';
+import { LdsReplacePipe } from 'qbm';
 import { ServiceItemsSelectorComponent } from '../service-items-selector/service-items-selector.component';
 import { TypedEntitySelectionData } from './typed-entity-selection-data.interface';
 
@@ -42,11 +42,11 @@ import { TypedEntitySelectionData } from './typed-entity-selection-data.interfac
 export class ServiceItemSelectComponent implements OnChanges {
   @Input() data: TypedEntitySelectionData;
 
-  @Output() public readonly controlCreated = new EventEmitter<FormControl>();
+  @Output() public readonly controlCreated = new EventEmitter<UntypedFormControl>();
 
   public readonly imxIdentifier = 'imx-service-item-select';
 
-  public readonly control = new FormControl();
+  public readonly control = new UntypedFormControl();
 
   public readonly columnContainer = {
     display: '',
@@ -74,10 +74,10 @@ export class ServiceItemSelectComponent implements OnChanges {
     const selection = await this.sidesheet.open(
       ServiceItemsSelectorComponent,
       {
-        title: await this.translate.get(this.data.title || this.data.display).toPromise(),
-        headerColour: 'iris-blue',
+        title: await this.translate.get(this.data.title).toPromise(),
+        subTitle: this.data.parent.GetEntity().GetDisplay(),
         padding: '0',
-        width: isIE() ? '60%' : 'max(600px, 60%)',
+        width: 'max(600px, 60%)',
         data: {
           getTyped: this.data.getTyped,
           isMultiValue: true,

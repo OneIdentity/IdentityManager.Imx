@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,21 +31,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 
 import { ApplicationHyperviewComponent } from './application-hyperview.component';
-import { HyperViewModule} from 'qbm';
+import { HyperViewModule, BusyIndicatorModule } from 'qbm';
 import { ApplicationHyperviewService} from './application-hyperview.service';
 import { EuiCoreModule } from '@elemental-ui/core';
 
 @NgModule({
   declarations: [ApplicationHyperviewComponent],
-  imports: [
-    CommonModule,
-    HyperViewModule,
-    TranslateModule,
-    MatDialogModule,
-    MatButtonModule,
-    EuiCoreModule
-  ],
+  imports: [CommonModule, HyperViewModule, TranslateModule, MatDialogModule, MatButtonModule, EuiCoreModule, BusyIndicatorModule],
   providers: [ApplicationHyperviewService],
-  exports: [ApplicationHyperviewComponent]
+  exports: [ApplicationHyperviewComponent],
 })
-export class ApplicationHyperviewModule { }
+export class ApplicationHyperviewModule {}

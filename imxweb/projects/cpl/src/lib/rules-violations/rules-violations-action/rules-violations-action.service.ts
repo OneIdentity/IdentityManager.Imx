@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,7 +31,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 
 import { NonComplianceDecisionInput } from 'imx-api-cpl';
-import { IReadValue, ValType } from 'imx-qbm-dbts';
+import { ValType } from 'imx-qbm-dbts';
 import { SnackBarService, EntityService, ColumnDependentReference, BaseCdr } from 'qbm';
 import { JustificationService, JustificationType } from 'qer';
 import { ApiService } from '../../api.service';
@@ -77,11 +77,10 @@ export class RulesViolationsActionService {
     return this.makeDecisions(rulesViolations, false);
   }
 
-  public async resolve(ruleViolation: { UID_Person: IReadValue<string>, UID_NonCompliance: IReadValue<string>}): Promise<void> {
+  public async resolve(ruleViolation: RulesViolationsApproval): Promise<void> {
     const sidesheetRef = this.sidesheet.open(ResolveComponent, {
       title: await this.translate.get('#LDS#Heading Resolve Rule Violation').toPromise(),
-      headerColour: 'iris-blue',
-      bodyColour: 'asher-gray',
+      subTitle: ruleViolation.GetEntity().GetDisplay(),
       padding: '0px',
       width: 'max(600px, 60%)',
       testId: 'rulesviolations-resolve-sidesheet',
@@ -129,7 +128,6 @@ export class RulesViolationsActionService {
 
     return this.editAction({
       title: sidesheetTitle,
-      headerColour: approve ? 'aspen-green' : 'corbin-orange',
       data: { rulesViolationsApprovals, actionParameters, approve, },
       message: approve
         ? '#LDS#Exceptions have been successfully granted for {0} rule violations.'
@@ -147,17 +145,18 @@ export class RulesViolationsActionService {
   /**
    * Opens the RulesViolationsActionComponent there the user can set the reason and/or standard reason
    * and the ExceptionValidUntil in the approve contest.
-   * @param config the configuration for the sidesheet (title, headerColour) and the corresponding rules violations data
+   * @param config the configuration for the sidesheet (title) and the corresponding rules violations data
    */
   private async editAction(config: any): Promise<void> {
     const result = await this.sidesheet.open(RulesViolationsActionComponent, {
       title: await this.translate.get(config.title).toPromise(),
-      headerColour: config.headerColour ?? 'iris-blue',
-      bodyColour: 'asher-gray',
+      subTitle: config.data.rulesViolationsApprovals.length == 1  
+        ? config.data.rulesViolationsApprovals[0].GetEntity().GetDisplay() 
+        : '',
       panelClass: 'imx-sidesheet',
       padding: '0',
       width: '600px',
-      testId: 'rulesvioalations-action-sidesheet',
+      testId: `rulesvioalations-action-sidesheet-${config.data.approve ? 'approve' : 'deny'}`,
       data: config.data
     }).afterClosed().toPromise();
 

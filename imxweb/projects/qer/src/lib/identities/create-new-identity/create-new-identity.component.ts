@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,13 +25,13 @@
  */
 
 import { Component, Inject, OnDestroy } from '@angular/core';
-import { FormArray, FormGroup } from '@angular/forms';
+import { FormArray, UntypedFormGroup } from '@angular/forms';
 import { EuiLoadingService, EuiSidesheetRef, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
-import { PortalPersonReportsInteractive, QerProjectConfig } from 'imx-api-qer';
-import { BaseCdr, ColumnDependentReference, ConfirmationService, SnackBarService } from 'qbm';
+import { PortalPersonReports, QerProjectConfig } from 'imx-api-qer';
+import { BaseCdr, ColumnDependentReference, ConfirmationService, SnackBarService, CdrFactoryService } from 'qbm';
 import { IdentitiesService } from '../identities.service';
 import { DuplicateCheckParameter } from './duplicate-check-parameter.interface';
 import { DuplicatesSidesheetComponent } from './duplicates-sidesheet/duplicates-sidesheet.component';
@@ -44,7 +44,7 @@ import { CollectionLoadParameters } from 'imx-qbm-dbts';
 })
 export class CreateNewIdentityComponent implements OnDestroy {
 
-  public identityForm = new FormGroup({});
+  public identityForm = new UntypedFormGroup({});
   public cdrListPersonal: ColumnDependentReference[] = [];
   public cdrListOrganizational: ColumnDependentReference[] = [];
   public cdrListLocality: ColumnDependentReference[] = [];
@@ -57,7 +57,7 @@ export class CreateNewIdentityComponent implements OnDestroy {
 
   constructor(
     @Inject(EUI_SIDESHEET_DATA) public data: {
-      selectedIdentity: PortalPersonReportsInteractive,
+      selectedIdentity: PortalPersonReports,
       projectConfig: QerProjectConfig,
     },
     private readonly busyService: EuiLoadingService,
@@ -66,6 +66,7 @@ export class CreateNewIdentityComponent implements OnDestroy {
     private readonly sidesheetService: EuiSidesheetService,
     private readonly translate: TranslateService,
     private readonly confirm: ConfirmationService,
+    private readonly cdrFactoryService: CdrFactoryService,
     private readonly identityService: IdentitiesService) {
     this.setup();
   }
@@ -99,7 +100,7 @@ export class CreateNewIdentityComponent implements OnDestroy {
       try {
         await this.data.selectedIdentity.GetEntity().Commit(false);
         this.snackbar.open({ key: '#LDS#The identity has been successfully created.' });
-        this.sidesheetRef.close();
+        this.sidesheetRef.close(true);
       } finally {
         this.busyService.hide(overlayRef);
       }
@@ -126,12 +127,10 @@ export class CreateNewIdentityComponent implements OnDestroy {
 
     await this.sidesheetService.open(DuplicatesSidesheetComponent, {
       title: await this.translate.get('#LDS#Heading View Identities With Same Properties').toPromise(),
-      headerColour: 'iris-blue',
-      bodyColour: 'asher-gray',
       padding: '0px',
       width: 'max(600px, 60%)',
       icon: 'contactinfo',
-      testId: 'duplicate-sidesheet',
+      testId: 'duplicate-identities-sidesheet',
       data: {
         projectConfig: this.data.projectConfig,
         get: async (param: CollectionLoadParameters) => this.identityService.getDuplicates(param),
@@ -192,28 +191,28 @@ export class CreateNewIdentityComponent implements OnDestroy {
 
   private setup(): void {
 
-    this.subscriptions.push(this.sidesheetRef.closeClicked().subscribe(async (result) => {
+    this.subscriptions.push(this.sidesheetRef.closeClicked().subscribe(async () => {
       if (this.identityForm.dirty) {
         const close = await this.confirm.confirmLeaveWithUnsavedChanges();
         if (close) {
-          this.sidesheetRef.close();
+          this.sidesheetRef.close(false);
         }
       } else {
-        this.sidesheetRef.close(result);
+        this.sidesheetRef.close(false);
       }
     }));
 
     const identifierColumns = ['FirstName', 'LastName', 'CentralAccount', 'DefaultEmailAddress'];
-    this.cdrListIdentifier = identifierColumns.map(col => new BaseCdr(this.data.selectedIdentity.GetEntity().GetColumn(col)));
+    this.cdrListIdentifier = this.cdrFactoryService.buildCdrFromColumnList(this.data.selectedIdentity.GetEntity(),identifierColumns);
 
     const personalColumns = this.data.projectConfig.PersonConfig.VI_Employee_MasterData_Attributes
       .filter(personal => !identifierColumns.includes(personal));
-    this.cdrListPersonal = personalColumns.map(col => new BaseCdr(this.data.selectedIdentity.GetEntity().GetColumn(col)));
+    this.cdrListPersonal = this.cdrFactoryService.buildCdrFromColumnList(this.data.selectedIdentity.GetEntity(),personalColumns);
 
     const organizationalColumns = this.data.projectConfig.PersonConfig.VI_Employee_MasterData_OrganizationalAttributes;
-    this.cdrListOrganizational = organizationalColumns.map(col => new BaseCdr(this.data.selectedIdentity.GetEntity().GetColumn(col)));
+    this.cdrListOrganizational = this.cdrFactoryService.buildCdrFromColumnList(this.data.selectedIdentity.GetEntity(),organizationalColumns);
 
     const localityColumns = this.data.projectConfig.PersonConfig.VI_Employee_MasterData_LocalityAttributes;
-    this.cdrListLocality = localityColumns.map(col => new BaseCdr(this.data.selectedIdentity.GetEntity().GetColumn(col)));
+    this.cdrListLocality = this.cdrFactoryService.buildCdrFromColumnList(this.data.selectedIdentity.GetEntity(),localityColumns);
   }
 }

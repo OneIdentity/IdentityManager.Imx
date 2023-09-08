@@ -8,7 +8,7 @@
     <div class="imx-spacer"></div>
     <button *ngIf="columnContainer?.canEdit" mat-button color="primary" type="button" (click)="editAssignment()"
       [attr.data-imx-identifier]="imxIdentifier">
-      {{ control?.value?.length ? ('#LDS#Change' | translate) : ('#LDS#Assign' | translate) }}
+      {{ control?.value?.length ? ('#LDS#Change' | translate) : ('#LDS#Select' | translate) }}
     </button>
   </div>
   <mat-error *ngIf="control.errors?.['required']">

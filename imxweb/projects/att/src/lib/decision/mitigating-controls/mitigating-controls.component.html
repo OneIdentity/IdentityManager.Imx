@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>{{ '#LDS#Heading Edit Mitigating Controls' | translate}}</h2>
+<h2 mat-dialog-title>{{ '#LDS#Heading Assign Mitigating Controls' | translate}}</h2>
 <mat-dialog-content>
   <form [formGroup]="formGroup">
     <imx-cdr-editor data-imx-identifier="mitigation-controls-column-cdr" [cdr]="mitigatingControlCdr" (controlCreated)="formGroup.addControl('mcontrol', $event)">

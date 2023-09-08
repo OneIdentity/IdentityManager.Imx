@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -42,7 +42,9 @@ import {
   ClassloggerService,
   MenuService,
   MenuItem,
-  ParameterizedTextModule
+  ParameterizedTextModule,
+  HELP_CONTEXTUAL,
+  HelpContextualModule
 } from 'qbm';
 import { ShoppingCartComponent } from './shopping-cart.component';
 import { ShoppingCartForLaterComponent } from './shopping-cart-for-later/shopping-cart-for-later.component';
@@ -66,17 +68,26 @@ const routes: Routes = [
   {
     path: 'shoppingcart',
     component: ShoppingCartComponent,
-    canActivate: [RouteGuardService, RequestsFeatureGuardService]
+    canActivate: [RouteGuardService, RequestsFeatureGuardService],
+    data:{
+      contextId: HELP_CONTEXTUAL.ShoppingCart
+    }
   },
   {
     path: 'shoppingcart/later',
     component: ShoppingCartForLaterComponent,
-    canActivate: [RouteGuardService, RequestsFeatureGuardService]
+    canActivate: [RouteGuardService, RequestsFeatureGuardService],
+    data:{
+      contextId: HELP_CONTEXTUAL.ShoppingCartForLater
+    }
   },
   {
     path: 'shoppingcart/empty',
     component: ShoppingCartEmptyComponent,
-    canActivate: [RouteGuardService, RequestsFeatureGuardService]
+    canActivate: [RouteGuardService, RequestsFeatureGuardService],
+    data:{
+      contextId: HELP_CONTEXTUAL.ShoppingCartEmpty
+    }
   },
 ];
 
@@ -111,7 +122,8 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     TranslateModule,
     ShoppingCartValidationDetailModule,
-    UserModule
+    UserModule,
+    HelpContextualModule,
   ],
   providers: [
     CartItemLogicService,
@@ -129,7 +141,7 @@ export class ShoppingCartModule {
 
   private setupMenu(): void {
     this.menuService.addMenuFactories(
-      (preProps: string[], groups: string[]) => {
+      (preProps: string[], features: string[]) => {
 
         const items: MenuItem[] = [];
 

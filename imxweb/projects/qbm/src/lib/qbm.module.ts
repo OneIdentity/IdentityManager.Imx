@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,15 +24,15 @@
  *
  */
 
-import 'element-resize-detector';
-import { NGXLogger } from 'ngx-logger';
-import { NgModule, ComponentFactoryResolver } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ComponentFactoryResolver, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -45,67 +45,80 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { CommonModule } from '@angular/common';
+import 'element-resize-detector';
+import { NGXLogger } from 'ngx-logger';
 
+import { HttpClientModule } from '@angular/common/http';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { RouterModule, Routes } from '@angular/router';
+import { EuiCoreModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
+import { AboutComponent } from './about/About.component';
 import { AboutService } from './about/About.service';
-import { IconStackComponent } from './icon-stack/icon-stack.component';
-import { LoginComponent } from './login/login.component';
+import { ApiClientAngularService } from './api-client/api-client-angular.service';
+import { AppConfigService } from './appConfig/appConfig.service';
+import { AuthenticationGuardService } from './authentication/authentication-guard.service';
+import { AutoCompleteComponent } from './auto-complete/auto-complete.component';
+import { AutoCompleteModule } from './auto-complete/auto-complete.module';
 import { GlobalErrorHandler } from './base/global-error-handler';
 import { MetadataService } from './base/metadata.service';
-import { RegistryService } from './base/registry.service';
 import { OpsupportDbObjectService } from './base/opsupport-db-object.service';
-import { imx_SessionService } from './session/imx-session.service';
-import { ImxTranslateLoader } from './translation/imx-translate-loader';
-import { ImxTranslationProviderService } from './translation/imx-translation-provider.service';
-import { imx_QBM_SearchService } from './search/search.service';
-import { SnackBarService } from './snackbar/snack-bar.service';
-import { TwoFactorAuthenticationComponent } from './two-factor-authentication/two-factor-authentication.component';
-import { AboutComponent } from './about/About.component';
-import { ExtService } from './ext/ext.service';
+import { RegistryService } from './base/registry.service';
+import { UserActionService } from './base/user-action.service';
+import { CdrEditorComponent } from './cdr/cdr-editor/cdr-editor.component';
+import { CdrRegistryService } from './cdr/cdr-registry.service';
+import { CdrModule } from './cdr/cdr.module';
+import { DefaultCdrEditorProvider } from './cdr/default-cdr-editor-provider';
+import { FkCdrEditorProvider } from './cdr/fk-cdr-editor-provider';
+import { ClassloggerModule } from './classlogger/classlogger.module';
+import { ClassloggerService } from './classlogger/classlogger.service';
+import { DataExportModule } from './data-export/data-export.module';
+import { DataSourceToolbarModule } from './data-source-toolbar/data-source-toolbar.module';
+import { DataTableModule } from './data-table/data-table.module';
+import { DisableControlModule } from './disable-control/disable-control.module';
 import { ExtComponent } from './ext/ext.component';
 import { ExtDirective } from './ext/ext.directive';
 import { ExtModule } from './ext/ext.module';
-import { TestHelperModule } from './testing/TestHelperModule.spec';
+import { ExtService } from './ext/ext.service';
 import { FilterTileComponent } from './filter-tile/filter-tile.component';
-import { DeviceStateService } from './services/device-state.service';
-import { MasterDetailComponent } from './master-detail/master-detail.component';
-import { ImxProgressbarComponent } from './progressbar/progressbar.component';
-import { SearchBarComponent } from './searchbar/searchbar.component';
-import { TranslateModule } from '@ngx-translate/core';
-import { ImxTreeTableComponent } from './treeTable/treeTable.component';
-import { ImxMatColumnComponent } from './treeTable/MatColumn';
-import { MessageDialogComponent } from './message-dialog/message-dialog.component';
-import { EuiCoreModule } from '@elemental-ui/core';
-import { TwoFactorAuthenticationService } from './two-factor-authentication/two-factor-authentication.service';
-import { CdrEditorComponent } from './cdr/cdr-editor/cdr-editor.component';
-import { CdrModule } from './cdr/cdr.module';
 import { HyperViewModule } from './hyperview/hyperview.module';
-import { ApiClientAngularService } from './api-client/api-client-angular.service';
-import { AppConfigService } from './appConfig/appConfig.service';
-import { UserActionService } from './base/user-action.service';
-import { TableImageService } from './table-image/table-image.service';
-import { FkCdrEditorProvider } from './cdr/fk-cdr-editor-provider';
-import { DefaultCdrEditorProvider } from './cdr/default-cdr-editor-provider';
-import { CdrRegistryService } from './cdr/cdr-registry.service';
-import { DataTableModule } from './data-table/data-table.module';
-import { AutoCompleteModule } from './auto-complete/auto-complete.module';
-import { AutoCompleteComponent } from './auto-complete/auto-complete.component';
-import { DataSourceToolbarModule } from './data-source-toolbar/data-source-toolbar.module';
-import { MenuModule } from './menu/menu.module';
-import { MastHeadModule } from './mast-head/mast-head.module';
-import { UserMessageModule } from './user-message/user-message.module';
-import { ClassloggerModule } from './classlogger/classlogger.module';
-import { SelectModule } from './select/select.module';
-import { DisableControlModule } from './disable-control/disable-control.module';
-import { LdsReplaceModule } from './lds-replace/lds-replace.module';
-import { TileModule } from './tile/tile.module';
-import { RouterModule, Routes } from '@angular/router';
-import { RouteGuardService } from './route-guard/route-guard.service';
-import { ClassloggerService } from './classlogger/classlogger.service';
-import { AuthenticationGuardService } from './authentication/authentication-guard.service';
+import { IconStackComponent } from './icon-stack/icon-stack.component';
+import { InfoModalDialogModule } from './info-modal-dialog/info-modal-dialog.module';
 import { JobQueueOverviewModule } from './jobqueue-overview/jobqueue-overview.module';
+import { LdsReplaceModule } from './lds-replace/lds-replace.module';
+import { LoginComponent } from './login/login.component';
+import { MastHeadModule } from './mast-head/mast-head.module';
+import { MasterDetailComponent } from './master-detail/master-detail.component';
+import { MenuModule } from './menu/menu.module';
+import { MessageDialogComponent } from './message-dialog/message-dialog.component';
 import { PluginLoaderService } from './plugins/plugin-loader.service';
-import { HttpClientModule } from '@angular/common/http';
+import { ImxProgressbarComponent } from './progressbar/progressbar.component';
+import { RouteGuardService } from './route-guard/route-guard.service';
+import { imx_QBM_SearchService } from './search/search.service';
+import { SearchBarComponent } from './searchbar/searchbar.component';
+import { SelectModule } from './select/select.module';
+import { DeviceStateService } from './services/device-state.service';
+import { imx_SessionService } from './session/imx-session.service';
+import { SideNavigationViewModule } from './side-navigation-view/side-navigation-view.module';
+import { SidenavTreeModule } from './sidenav-tree/sidenav-tree.module';
+import { SnackBarService } from './snackbar/snack-bar.service';
+import { TableImageService } from './table-image/table-image.service';
+import { TestHelperModule } from './testing/TestHelperModule.spec';
+import { TileModule } from './tile/tile.module';
+import { TranslationEditorComponent } from './translation-editor/translation-editor.component';
+import { ImxTranslateLoader } from './translation/imx-translate-loader';
+import { ImxTranslationProviderService } from './translation/imx-translation-provider.service';
+import { ImxMatColumnComponent } from './treeTable/MatColumn';
+import { ImxTreeTableComponent } from './treeTable/treeTable.component';
+import { TwoFactorAuthenticationComponent } from './two-factor-authentication/two-factor-authentication.component';
+import { TwoFactorAuthenticationService } from './two-factor-authentication/two-factor-authentication.service';
+import { UserMessageModule } from './user-message/user-message.module';
+import { HelpContextualModule } from './help-contextual/help-contextual.module';
+import { TempBillboardModule } from './temp-billboard/temp-billboard.module';
+import { TempBillboardComponent } from './temp-billboard/temp-billboard.component';
+import { TempBillboardService } from './temp-billboard/temp-billboard.service';
+import { ConnectionComponent } from './connection/connection.component';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 
 export function initApp(registry: CdrRegistryService, resolver: ComponentFactoryResolver, logger: NGXLogger): () => Promise<any> {
   logger.debug('init qbm');
@@ -138,8 +151,10 @@ const routes: Routes = [
     SearchBarComponent,
     ImxTreeTableComponent,
     ImxMatColumnComponent,
-    MessageDialogComponent
-    ],
+    MessageDialogComponent,
+    TranslationEditorComponent,
+    ConnectionComponent,
+  ],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
@@ -152,11 +167,11 @@ const routes: Routes = [
     MatCardModule,
     MatCheckboxModule,
     MatDialogModule,
+    MatExpansionModule,
     MatFormFieldModule,
     MatIconModule,
     MatListModule,
     MatMenuModule,
-    MatDialogModule,
     MatPaginatorModule,
     MatSelectModule,
     MatInputModule,
@@ -182,8 +197,16 @@ const routes: Routes = [
     UserMessageModule,
     LdsReplaceModule,
     TileModule,
-    JobQueueOverviewModule
-    ],
+    JobQueueOverviewModule,
+    SidenavTreeModule,
+    DataExportModule,
+    InfoModalDialogModule,
+    MatSnackBarModule,
+    SideNavigationViewModule,
+    HelpContextualModule,
+    TempBillboardModule,
+    ClipboardModule
+  ],
   providers: [
     GlobalErrorHandler,
     AppConfigService,
@@ -203,11 +226,12 @@ const routes: Routes = [
     TwoFactorAuthenticationService,
     ApiClientAngularService,
     TableImageService,
-    PluginLoaderService
+    PluginLoaderService,
   ],
   exports: [
     TwoFactorAuthenticationComponent,
     AboutComponent,
+    ConnectionComponent,
     IconStackComponent,
     LoginComponent,
     ExtComponent,
@@ -220,16 +244,14 @@ const routes: Routes = [
     ImxMatColumnComponent,
     CdrEditorComponent,
     MessageDialogComponent,
-    AutoCompleteComponent
+    AutoCompleteComponent,
+    TempBillboardComponent,
   ],
 })
 export class QbmModule {
-  constructor(
-    registry: CdrRegistryService,
-    resolver: ComponentFactoryResolver,
-    logger: ClassloggerService) {
-      logger.info(this, '▶️ QbmModule loaded');
-      registry.register(new DefaultCdrEditorProvider(resolver));
-      registry.register(new FkCdrEditorProvider(resolver));
+  constructor(registry: CdrRegistryService, resolver: ComponentFactoryResolver, logger: ClassloggerService) {
+    logger.info(this, '▶️ QbmModule loaded');
+    registry.register(new DefaultCdrEditorProvider(resolver));
+    registry.register(new FkCdrEditorProvider(resolver));
   }
- }
+}

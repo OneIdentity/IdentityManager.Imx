@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { EntityCollectionData, EntitySchema, TypedEntityCollectionData, FilterData, CollectionLoadParameters, DataModel } from 'imx-qbm-dbts';
+import { EntityCollectionData, EntitySchema, TypedEntityCollectionData, FilterData, CollectionLoadParameters, DataModel, TypedEntity } from 'imx-qbm-dbts';
 import { DataSourceToolbarFilter, imx_SessionService } from 'qbm';
 import { OpsupportQueueJobs, ReactivateJobMode } from 'imx-api-qbm';
 
@@ -62,5 +62,10 @@ export class QueueJobsService {
 
   public Retry(mode: ReactivateJobMode, jobs: string[]): Promise<EntityCollectionData> {
     return this.session.Client.opsupport_queue_reactivatejob_post({ Mode: mode, UidJobs: jobs });
+  }
+
+  
+  public getTreeData(startUid: string): Promise<TypedEntityCollectionData<TypedEntity>>{
+    return this.session.TypedClient.OpsupportQueueTree.Get({ uidtree: startUid });
   }
 }

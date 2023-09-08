@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { Component, ErrorHandler, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { MatRadioChange } from '@angular/material/radio';
 import { EuiLoadingService } from '@elemental-ui/core';
@@ -49,8 +49,8 @@ export class ClaimDeviceComponent implements OnDestroy, OnInit {
   public ownerAssigned = false;
   public canClaimDevice = false;
 
-  public readonly deviceForm = new FormGroup({});
-  public readonly ownerForm = new FormGroup({});
+  public readonly deviceForm = new UntypedFormGroup({});
+  public readonly ownerForm = new UntypedFormGroup({});
 
   private deviceKey: string;
   private readonly user: { uid?: string; name?: string; } = {};

@@ -1,158 +1,178 @@
-<div class="imx-application-details-content" *ngIf='application'>
-  <mat-card class="imx-application-properties">
-    <mat-card-title>
-      {{ '#LDS#General' | translate }}
-    </mat-card-title>
-    <mat-divider [inset]="true"></mat-divider>
-    <mat-card-content>
-      <imx-column-info [placeholder]="'#LDS#Is being computed' | translate" [property]='application.UID_AccProductGroup'
-        icon="serviceaccount"></imx-column-info>
-      <imx-column-info [property]='application.UID_AERoleOwner' icon="user"></imx-column-info>
-      <imx-application-property [display]="shopsDisplay" icon="library">
-        <div class="imx-application-property-multi">
-          <span *ngIf="!assignedShops.length">{{ '-' + ('#LDS#None assigned' | translate) + '-' }}</span>
-          <span *ngIf="assignedShops.length">{{ assignedShops[0].GetEntity().GetDisplay() }}</span>
-          <button mat-button color="primary" (click)="showMore(assignedShops, shopsDisplay, 'library')"
-            data-imx-identifier="imx-application-details-button-show-more-shops" *ngIf="assignedShops.length > 1">
-            {{'#LDS#and {0} more...' | translate |ldsReplace:assignedShops.length-1}}
-          </button>
-        </div>
-      </imx-application-property>
-    </mat-card-content>
-  </mat-card>
-  <mat-card class="imx-application-state">
-    <mat-card class="imx-application-publish">
+<div class="imx-application-details-content">
+  <imx-busy-indicator *ngIf="isLoading"></imx-busy-indicator>
+  <div class="imx-application-details-grid" [ngClass]="{ hidden: isLoading }">
+    <mat-card class="imx-application-properties mat-elevation-z0">
       <mat-card-title>
-        {{ '#LDS#Publication status' | translate }}
-
+        {{ '#LDS#General' | translate }}
       </mat-card-title>
       <mat-divider [inset]="true"></mat-divider>
       <mat-card-content>
-        <span *ngIf="notPublished()" class="imx-application-unpublished-state">{{ '#LDS#Not published' | translate
-          }}</span>
-        <span *ngIf="willPublish()" class="imx-application-willbepublished-state">
-          <eui-icon icon="restore" size="14px"></eui-icon>
-          {{ '#LDS#Will be published' | translate }}
-        </span>
-        <span *ngIf="published()" class="imx-application-published-state">
-          <mat-icon icon="check">check_circle</mat-icon>
-          {{ '#LDS#Published' | translate }}
-        </span>
-        <div *ngIf="willPublish()" class="imx-application-publish-date">
-          <span>{{ application.ActivationDate.Column.GetDisplayValue() }}</span>
-        </div>
+        <imx-column-info [placeholder]="'#LDS#Is being computed' | translate" [property]="application.UID_AccProductGroup" icon="serviceaccount"></imx-column-info>
+        <imx-column-info [property]="application.UID_AERoleOwner" icon="user"></imx-column-info>
+        <imx-application-property [display]="shopsDisplay" icon="library">
+          <div class="imx-application-property-multi">
+            <span *ngIf="!assignedShops.length">{{ '-' + ('#LDS#None assigned' | translate) + '-' }}</span>
+            <span *ngIf="assignedShops.length">{{ assignedShops[0].GetEntity().GetDisplay() }}</span>
+            <button
+              mat-button
+              color="primary"
+              (click)="showMore(assignedShops, shopsDisplay, 'library')"
+              data-imx-identifier="imx-application-details-button-show-more-shops"
+              *ngIf="assignedShops.length > 1"
+            >
+              {{ '#LDS#and {0} more...' | translate | ldsReplace : assignedShops.length - 1 }}
+            </button>
+          </div>
+        </imx-application-property>
       </mat-card-content>
     </mat-card>
-    <mat-card class="imx-application-progress">
+    <mat-card class="imx-application-state mat-elevation-z0">
+      <mat-card class="imx-application-publish mat-elevation-z0">
+        <mat-card-title>
+          {{ '#LDS#Publication status' | translate }}
+        </mat-card-title>
+        <mat-divider [inset]="true"></mat-divider>
+        <mat-card-content>
+          <span *ngIf="notPublished()" class="imx-application-unpublished-state">{{ '#LDS#Not published' | translate }}</span>
+          <span *ngIf="willPublish()" class="imx-application-willbepublished-state">
+            <eui-icon icon="restore" size="14px"></eui-icon>
+            {{ '#LDS#Will be published' | translate }}
+          </span>
+          <span *ngIf="published()" class="imx-application-published-state">
+            <mat-icon icon="check">check_circle</mat-icon>
+            {{ '#LDS#Published' | translate }}
+          </span>
+          <div *ngIf="willPublish()" class="imx-application-publish-date">
+            <span>{{ application.ActivationDate.value | shortDate }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="imx-application-progress mat-elevation-z0">
+        <mat-card-title>
+          {{ '#LDS#Progress' | translate }}
+        </mat-card-title>
+        <mat-divider [inset]="true"></mat-divider>
+        <mat-card-content>
+          <div class="imx-application-progress-step" [class.checked]="application">
+            <mat-icon icon="check">check_circle</mat-icon>
+            <span class="cdk-visually-hidden">{{ (application ? '#LDS#ScreenReader_Checked' : '#LDS#ScreenReader_Unchecked') | translate }}</span>
+            <span>{{ '#LDS#Application created' | translate }}</span>
+          </div>
+          <div class="imx-application-progress-step" [class.checked]="hasOwner">
+            <mat-icon icon="check">check_circle</mat-icon>
+            <span class="cdk-visually-hidden">{{ (hasOwner ? '#LDS#ScreenReader_Checked' : '#LDS#ScreenReader_Unchecked') | translate }}</span>
+            <span>{{ '#LDS#Manager assigned' | translate }}</span>
+          </div>
+          <div class="imx-application-progress-step" [class.checked]="assignedShops?.length > 0">
+            <mat-icon icon="check">check_circle</mat-icon>
+            <span class="cdk-visually-hidden">{{ (assignedShops?.length > 0 ? '#LDS#ScreenReader_Checked' : '#LDS#ScreenReader_Unchecked') | translate }}</span>
+            <span>{{ '#LDS#Shop assigned' | translate }}</span>
+          </div>
+          <div class="imx-application-progress-step" [class.checked]="hasAssignedEntitlements">
+            <mat-icon icon="check">check_circle</mat-icon>
+            <span class="cdk-visually-hidden">{{ (hasAssignedEntitlements ? '#LDS#ScreenReader_Checked' : '#LDS#ScreenReader_Unchecked') | translate }}</span>
+            <span>{{ '#LDS#Application entitlements assigned' | translate }}</span>
+          </div>
+          <div class="imx-application-progress-step" [class.checked]="hasPublishedEntitlements">
+            <mat-icon icon="check">check_circle</mat-icon>
+            <span class="cdk-visually-hidden">{{ (hasPublishedEntitlements ? '#LDS#ScreenReader_Checked' : '#LDS#ScreenReader_Unchecked') | translate }}</span>
+            <span>{{ '#LDS#Application entitlements published' | translate }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-card>
+    <mat-card class="imx-application-additionalDetails mat-elevation-z0">
       <mat-card-title>
-        {{ '#LDS#Progress' | translate }}
+        {{ '#LDS#Additional details' | translate }}
       </mat-card-title>
       <mat-divider [inset]="true"></mat-divider>
       <mat-card-content>
-        <div class="imx-application-progress-step" [class.checked]=application>
-          <mat-icon icon="check">check_circle</mat-icon>
-          <span class="cdk-visually-hidden">{{ (application ? '#LDS#ScreenReader_Checked' :
-            '#LDS#ScreenReader_Unchecked') | translate }}</span>
-          <span>{{ '#LDS#Application created' | translate }}</span>
-        </div>
-        <div class="imx-application-progress-step" [class.checked]=hasOwner>
-          <mat-icon icon="check">check_circle</mat-icon>
-          <span class="cdk-visually-hidden">{{ (hasOwner ? '#LDS#ScreenReader_Checked' : '#LDS#ScreenReader_Unchecked')
-            | translate }}</span>
-          <span>{{ '#LDS#Manager assigned' | translate }}</span>
-        </div>
-        <div class="imx-application-progress-step" [class.checked]="assignedShops?.length > 0">
-          <mat-icon icon="check">check_circle</mat-icon>
-          <span class="cdk-visually-hidden">{{ (assignedShops?.length > 0 ? '#LDS#ScreenReader_Checked' :
-            '#LDS#ScreenReader_Unchecked') | translate }}</span>
-          <span>{{ '#LDS#Shop assigned' | translate }}</span>
-        </div>
-        <div class="imx-application-progress-step" [class.checked]=hasAssignedEntitlements>
-          <mat-icon icon="check">check_circle</mat-icon>
-          <span class="cdk-visually-hidden">{{ (hasAssignedEntitlements ? '#LDS#ScreenReader_Checked' :
-            '#LDS#ScreenReader_Unchecked') | translate }}</span>
-          <span>{{ '#LDS#Application entitlements assigned' | translate }}</span>
-        </div>
-        <div class="imx-application-progress-step" [class.checked]=hasPublishedEntitlements>
-          <mat-icon icon="check">check_circle</mat-icon>
-          <span class="cdk-visually-hidden">{{ (hasPublishedEntitlements ? '#LDS#ScreenReader_Checked' :
-            '#LDS#ScreenReader_Unchecked') | translate }}</span>
-          <span>{{ '#LDS#Application entitlements published' | translate }}</span>
-        </div>
+        <imx-column-info [property]="application.UID_PersonHead"></imx-column-info>
+        <imx-column-info [property]="application.UID_AERoleApprover"></imx-column-info>
+        <imx-application-property [display]="accountsDisplay">
+          <div class="imx-application-property-multi">
+            <span *ngIf="accountsInformation.count === 0">{{ '-' + ('#LDS#None selected' | translate) + '-' }}</span>
+            <span *ngIf="accountsInformation.count > 0">{{ accountsInformation.first.GetEntity().GetDisplay() }}</span>
+            <button
+              mat-button
+              color="primary"
+              (click)="showMoreAccounts()"
+              *ngIf="accountsInformation.count > 1"
+              data-imx-identifier="imx-application-details-button-load-more-accounts"
+            >
+              {{ '#LDS#and {0} more...' | translate | ldsReplace : accountsInformation.count - 1 }}
+            </button>
+          </div>
+        </imx-application-property>
+        <imx-column-info [property]="application.ApplicationEnvironment"></imx-column-info>
+        <imx-column-info [property]="application.ApplicationWebURL"></imx-column-info>
+        <imx-column-info [property]="application.AuthenticationRoot"></imx-column-info>
+        <imx-column-info [property]="application.IsAuthenticationIntegrated"></imx-column-info>
+        <imx-column-info [property]="application.IsFederationEnabled"></imx-column-info>
+        <imx-column-info [property]="application.IsMultiFactorEnabled"></imx-column-info>
+        <imx-column-info [property]="application.IsSSOEnabled"></imx-column-info>
+        <imx-column-info [property]="application.SSORedirectionUrl"></imx-column-info>
+        <imx-column-info [property]="application.PurchasedLicenses"></imx-column-info>
+        <imx-column-info [property]="application.RiskIndex"></imx-column-info>
+        <imx-column-info [property]="application.UID_FunctionalArea"></imx-column-info>
       </mat-card-content>
     </mat-card>
-  </mat-card>
-  <mat-card class="imx-application-additionalDetails">
-    <mat-card-title>
-      {{ '#LDS#Additional details' | translate }}
-    </mat-card-title>
-    <mat-divider [inset]="true"></mat-divider>
-    <mat-card-content>
-      <imx-column-info [property]='application.UID_PersonHead'></imx-column-info>
-      <imx-column-info [property]='application.UID_AERoleApprover'></imx-column-info>
-      <imx-application-property [display]="accountsDisplay">
-        <div class="imx-application-property-multi">
-          <span *ngIf="accountsInformation.count === 0">{{ '-' + ('#LDS#None selected' | translate) + '-' }}</span>
-          <span *ngIf="accountsInformation.count > 0">{{ accountsInformation.first.GetEntity().GetDisplay() }}</span>
-          <button mat-button color="primary" (click)="showMoreAccounts()" *ngIf="accountsInformation.count > 1"
-            data-imx-identifier="imx-application-details-button-load-more-accounts">
-            {{'#LDS#and {0} more...' | translate |ldsReplace:accountsInformation.count - 1}}
-          </button>
-        </div>
-      </imx-application-property>
-      <imx-column-info [property]='application.ApplicationEnvironment'></imx-column-info>
-      <imx-column-info [property]='application.ApplicationWebURL'></imx-column-info>
-      <imx-column-info [property]='application.AuthenticationRoot'></imx-column-info>
-      <imx-column-info [property]='application.IsAuthenticationIntegrated'></imx-column-info>
-      <imx-column-info [property]='application.IsFederationEnabled'></imx-column-info>
-      <imx-column-info [property]='application.IsMultiFactorEnabled'></imx-column-info>
-      <imx-column-info [property]='application.IsSSOEnabled'></imx-column-info>
-      <imx-column-info [property]='application.SSORedirectionUrl'></imx-column-info>
-      <imx-column-info [property]='application.PurchasedLicenses'></imx-column-info>
-      <imx-column-info [property]='application.RiskIndex'></imx-column-info>
-      <imx-column-info [property]='application.UID_FunctionalArea'></imx-column-info>
-    </mat-card-content>
-  </mat-card>
-
+  </div>
 </div>
-<mat-card class="imx-button-area mat-elevation-z0">
-  <button mat-raised-button color="warn" data-imx-identifier="imx-application-details-button-delete-application"
-    [disabled]="!canBeDeleted" [attr.aria-label]="'#LDS#Delete application' | translate" (click)="deleteApplication()">
-    {{'#LDS#Delete' | translate}}
-  </button>
+<mat-card class="imx-button-area mat-elevation-z0" *ngIf="application && !isLoading ">
   <button class="imx-additional-actions" mat-stroked-button data-imx-identifier="imx-application-details-button-menu" [matMenuTriggerFor]="menu">
     <eui-icon icon="ellipsisvertical" (click)="menuClicked($event)"></eui-icon>
+    {{ '#LDS#Actions' | translate }}
   </button>
   <mat-menu #menu="matMenu">
-    <button mat-menu-item (click)="publishApplication($event)"
-      data-imx-identifier="imx-application-details-button-publish-application" [disabled]="!isPublishable">{{
-      '#LDS#Publish' | translate}}
+    <button mat-menu-item (click)="publishApplication($event)" data-imx-identifier="imx-application-details-button-publish-application" [disabled]="!isPublishable">
+      {{ '#LDS#Publish' | translate }}
     </button>
-    <button mat-menu-item (click)="unpublishApplication($event)"
-      data-imx-identifier="imx-application-details-button-unpublish-application" [disabled]="!isUnpublishable">{{
-      '#LDS#Unpublish' | translate}}
+    <button mat-menu-item (click)="unpublishApplication($event)" data-imx-identifier="imx-application-details-button-unpublish-application" [disabled]="!isUnpublishable">
+      {{ '#LDS#Unpublish' | translate }}
+    </button>
+    <button data-imx-identifier="imx-application-details-edit-servicecategories" mat-menu-item (click)="editServiceCategories()">
+      {{ '#LDS#Edit service categories' | translate }}
     </button>
   </mat-menu>
-  <button color="primary" mat-raised-button data-imx-identifier="imx-application-details-button-edit-application"
-    [attr.aria-label]="'#LDS#Edit Application' | translate" (click)="editApplication()">
-    {{'#LDS#Edit' | translate}}
+  <button
+    mat-stroked-button
+    color="warn"
+    data-imx-identifier="imx-application-details-button-delete-application"
+    [disabled]="!canBeDeleted"
+    [attr.aria-label]="'#LDS#Delete application' | translate"
+    (click)="deleteApplication()"
+  >
+    <eui-icon icon="delete"></eui-icon>
+    {{ '#LDS#Delete' | translate }}
+  </button>
+  <button
+    color="primary"
+    mat-raised-button
+    data-imx-identifier="imx-application-details-button-edit-application"
+    [attr.aria-label]="'#LDS#Edit Application' | translate"
+    (click)="editApplication()"
+  >
+    <eui-icon icon="edit"></eui-icon>
+    {{ '#LDS#Edit' | translate }}
   </button>
 </mat-card>
+
+
+
 <ng-template #multiValueControl let-data>
-  <div mat-dialog-title>{{data.caption}}</div>
+  <div mat-dialog-title>{{ data.caption }}</div>
   <mat-dialog-content>
     <ul>
-      <li *ngFor="let content of data.parts" class="imx-multivalue-item"
-        [attr.data-imx-identifier]="'imx-application-details-' + data.caption + '-' + content">
+      <li *ngFor="let content of data.parts" class="imx-multivalue-item" [attr.data-imx-identifier]="'imx-application-details-' + data.caption + '-' + content">
         <mat-card>
           <eui-icon *ngIf="data.icon" mat-card-avatar size="16px" [icon]="data.icon"></eui-icon>
-          <mat-card-title class="imx-card-title">{{content}}</mat-card-title>
+          <mat-card-title class="imx-card-title">{{ content }}</mat-card-title>
         </mat-card>
       </li>
     </ul>
   </mat-dialog-content>
   <mat-dialog-actions align="end">
-    <button data-imx-identifier="imx-application-details-button-close-list" mat-raised-button color="primary"
-      mat-dialog-close>{{ '#LDS#Close' | translate }}</button>
+    <button data-imx-identifier="imx-application-details-button-close-list" mat-raised-button color="primary" mat-dialog-close>{{ '#LDS#Close' | translate }}</button>
   </mat-dialog-actions>
 </ng-template>

@@ -1,0 +1,33 @@
+<div class="mat-tab-content">
+  <eui-alert class="imx-helper-alert" type="info" [condensed]="true" [colored]="true">
+    {{ '#LDS#Here you can get an overview of the violations of the compliance rule.' | translate }}
+  </eui-alert>
+  <mat-card>
+    <imx-data-source-toolbar
+      #dst
+      [options]="['search', 'filter', 'groups']"
+      [settings]="dstSettings"
+      (search)="getData({ search: $event })"
+      (navigationStateChanged)="getData($event)"
+      [hiddenFilters]="['uid_compliancerule']"
+      data-imx-identifier="violations-per-rule-dst"
+    >
+    </imx-data-source-toolbar>
+    <div class="imx-table-container">
+      <imx-data-table
+        #dataTable
+        [dst]="dst"
+        [detailViewVisible]="false"
+        mode="manual"
+        [groupData]="groupedData"
+        (highlightedEntityChanged)="showRulesViolationsDetail($event)"
+        (groupDataChanged)="onGroupingChange($event)"
+        data-imx-identifier="violations-per-rule-datatable"
+      >
+        <imx-data-table-column data-imx-identifier="violations-per-rule-table-column-UidPerson" [entityColumn]="entitySchema?.Columns.UID_Person"> </imx-data-table-column>
+        <imx-data-table-column data-imx-identifier="violations-per-rule-table-column-state" [entityColumn]="entitySchema?.Columns.State"></imx-data-table-column>
+      </imx-data-table>
+      <imx-data-source-paginator data-imx-identifier="violations-per-rule-paginator" [dst]="dst"> </imx-data-source-paginator>
+    </div>
+  </mat-card>
+</div>

@@ -1,10 +1,15 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
-
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import '../../../../../shared/scss/common-table.scss';
 :host {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   height: 100%;
+
+  .imx-mail-description {
+    font-size: smaller;
+    font-style: italic;
+  }
 }
 
 .mat-tab-group {
@@ -15,28 +20,38 @@
     flex: 1 1 auto;
   }
 
-  .mat-card {
+  ::ng-deep .mat-tab-body-content {
+    height: 100%;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    height: inherit;
-    overflow: hidden;
+  }
+
+  .mat-card {
+   @include imx-flex-fill-control-hidden-overflow();
 
     .mat-card-content {
       overflow-y: auto;
       overflow-x: hidden;
     }
-
+    .mat-card-content.profile-hyperview {
+      overflow-y: hidden;
+      padding: 0 1em;
+    }
+    
     .mat-card-actions {
       display: flex;
       justify-content: flex-end;
     }
   }
+
+  .no-grow {
+    flex-grow: 0;
+  }
 }
 
-.imx-mail-description {
-  font-size: smaller;
-  font-style: italic;
-  color: $black_9;
+.mat-radio-button {
+  margin-right: 2em;
 }
 
 .imx-mail-info {
@@ -50,4 +65,30 @@
 
 imx-ext {
   height: 100%;
+}
+
+.imx-button-bar {
+  @include imx-button-bar();
+}
+
+:host {
+  .imx-mail-description {
+    color: $color-gray-40;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-mail-description {
+      color: $color-gray-10;
+    }
+  }
+}
+
+.eui-contrast-theme {
+   :host {
+    .imx-mail-description {
+      color: $color-gray-0;
+    }
+  }
 }

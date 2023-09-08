@@ -1,0 +1,58 @@
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+
+.eui-sidesheet-content{
+  display: flex;
+  flex-direction: column;
+  imx-sap-compliance-violation-views-by-role, imx-sap-compliance-violation-views-by-ability{
+    display: block;
+    overflow: hidden;
+    height: 100%;
+  }
+  .mat-progress-spinner {
+    margin: auto;
+  }
+  .mat-chip{
+    cursor: pointer;
+  }
+  .imx-sap-compliance-selection{
+    display: flex;
+    align-items: baseline;
+    font-size: 14px;
+    gap: 20px;
+    span{
+      padding-bottom: 20px;
+    }
+  }
+  ::ng-deep .no-results{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .eui-icon{
+      font-size: 100px;
+      color: $color-gray-10;
+    }
+    p {
+      margin: 0;
+      font-size: 18px;
+      color: $color-gray-80;
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .eui-sidesheet-content{
+      ::ng-deep .no-results {
+        eui-icon {
+          color: $color-gray-20;
+        }
+
+        p {
+          color: $color-gray-10;
+        }
+      }
+    }
+  }
+}

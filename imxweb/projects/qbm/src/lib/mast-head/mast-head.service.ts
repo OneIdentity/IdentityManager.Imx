@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,6 +30,7 @@ import { MastHeadMenu } from './mast-head-menu.interface';
 import { MastHeadMenuItem } from './mast-head-menu-item.interface';
 import { AppConfigService } from '../appConfig/appConfig.service';
 import { TranslateService } from '@ngx-translate/core';
+import { SessionInfoData } from 'imx-api-qbm';
 
 @Injectable({
   providedIn: 'root'
@@ -57,6 +58,10 @@ export class MastHeadService {
     const docRelativeUrl = this.getLocaleDocumentationPath();
     const fulldocUrl = `${this.appConfig.BaseUrl}/${docRelativeUrl}`;
     return fulldocUrl;
+  }
+
+  public async getConnectionData(appId: string): Promise<SessionInfoData> {
+    return await this.appConfig.client.imx_sessions_info_get(appId);
   }
 
   private getLocaleDocumentationPath(): string {

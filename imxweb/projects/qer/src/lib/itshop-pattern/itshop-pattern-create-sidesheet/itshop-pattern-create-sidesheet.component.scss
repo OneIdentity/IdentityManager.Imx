@@ -1,5 +1,5 @@
 @import "@elemental-ui/core/src/styles/_palette.scss";
-
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 .eui-sidesheet-content {
   display: flex;
   flex-direction: column;
@@ -41,6 +41,26 @@
 
     ::ng-deep .imx-message-content {
       font-size: 14px;
+    }
+  }
+}
+
+.eui-dark-theme{
+  :host{
+    background-color: $color-gray-80;
+    color: $color-gray-2;
+    .eui-sidesheet-actions{
+      background-color: $color-gray-70;
+    }
+  }
+}
+
+.eui-contrast-theme{
+  :host{
+    background-color: $color-gray-100;
+    color: $color-gray-2;
+    .eui-sidesheet-actions{
+      background-color: $color-gray-90;
     }
   }
 }

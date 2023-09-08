@@ -1,16 +1,21 @@
 <div class="page">
   <ng-container *ngIf="isLoggedIn">
-    <imx-mast-head>
+    <imx-mast-head [menuItems]="menuItems" [hidden]="isPageHeadless">
       <span imx-profile-menu-items>
         <button mat-menu-item data-imx-identifier="user-menu-profile" (click)="goToProfile()">
-          <span translate>#LDS#Profile</span>
+          <span translate>#LDS#Menu Entry Profile</span>
         </button>
         <button mat-menu-item data-imx-identifier="user-menu-addressbook" (click)="goToAddressbook()">
           <span translate>#LDS#Menu Entry Address book</span>
         </button>
+        <button mat-menu-item data-imx-identifier="user-menu-settings" (click)="openSettingsDialog()">
+          <span translate>#LDS#Menu Entry User interface settings</span>
+        </button>
+        <button mat-menu-item data-imx-identifier="user-menu-my-processes" (click)="goToMyProcesses()">
+          <span translate>#LDS#Menu Entry My processes</span>
+        </button>
       </span>
     </imx-mast-head>
-    <imx-menu [hidden]="hideMenu" [menuItems]="menuItems"></imx-menu>
   </ng-container>
   <div class="pageContent" [ngClass]="{ 'pageContent--full-page': isContentFullScreen }">
     <imx-usermessage *ngIf="isLoggedIn" [hidden]="hideUserMessage"></imx-usermessage>

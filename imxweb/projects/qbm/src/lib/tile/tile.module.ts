@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,7 +29,7 @@ import { CommonModule } from '@angular/common';
 import { TileComponent } from './tile.component';
 import { ChartTileComponent } from '../chart-tile/chart-tile.component';
 import { MatCardModule } from '@angular/material/card';
-import { EuiCoreModule } from '@elemental-ui/core';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -44,7 +44,8 @@ import { TranslateModule } from '@ngx-translate/core';
     MatCardModule,
     MatButtonModule,
     EuiCoreModule,
-    TranslateModule
+    TranslateModule,
+    EuiMaterialModule
   ],
   exports: [
     ChartTileComponent,

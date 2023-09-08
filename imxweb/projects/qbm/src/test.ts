@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,6 +32,7 @@ import 'zone.js/dist/zone-testing';
 import { getTestBed } from '@angular/core/testing';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 import { TestHelperModule } from './lib/testing/TestHelperModule.spec';
+import { QbmDefaultMocks} from './default-mocks.spec';
 
 declare const require: any;
 
@@ -45,3 +46,5 @@ getTestBed().initTestEnvironment([BrowserDynamicTestingModule, TestHelperModule]
 const context = require.context('./', true, /\.spec\.ts$/);
 // And load the modules.
 context.keys().map(context);
+
+QbmDefaultMocks.registerDefaultMocks();

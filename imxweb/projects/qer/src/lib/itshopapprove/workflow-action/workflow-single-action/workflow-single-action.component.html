@@ -1,27 +1,51 @@
 <mat-card>
-  <mat-card-title>{{ request.GetEntity()?.GetDisplay() }}</mat-card-title>
-  <mat-card-subtitle>{{ request.OrderState.Column.GetDisplayValue() }}</mat-card-subtitle>
   <mat-card-content>
-    <imx-cdr-editor *ngFor="let cdr of columns; let i = index" [cdr]="cdr"
+    <imx-cdr-editor
+      *ngFor="let cdr of columns; let i = index"
+      [cdr]="cdr"
       (controlCreated)="onFormControlCreated(cdr.column.ColumnName + '_' + i, $event)"
-      [attr.data-imx-identifier]="'column_' + cdr.column.ColumnName + '_' + i">
+      [attr.data-imx-identifier]="'column_' + cdr.column.ColumnName + '_' + i"
+    >
     </imx-cdr-editor>
-    <imx-decision-reason [reasonStandard]="data.actionParameters.justification"
-      [maxReasonType]="data.actionParameters.maxReasonType" [reasonFreetext]="data.actionParameters.reason"
+    <imx-decision-reason
+      [reasonStandard]="data.actionParameters.justification"
+      [maxReasonType]="data.actionParameters.maxReasonType"
+      [reasonFreetext]="data.actionParameters.reason"
       (controlCreated)="onFormControlCreated('reason', $event)"
-      data-imx-identifier="workflow-single-action-property-reason">
+      data-imx-identifier="workflow-single-action-property-reason"
+    >
     </imx-decision-reason>
 
-    <imx-cdr-editor *ngFor="let cdr of requestParameterColumns; let i = index" [cdr]="cdr"
+    <imx-cdr-editor [cdr]="currentStepCdr" data-imx-identifier="workflow-single-action-current-step"></imx-cdr-editor>
+
+    <ng-container *ngIf="data.additionalInfo != null">
+      <imx-cdr-editor
+        *ngFor="let cdr of data.additionalInfo; let i = index"
+        [cdr]="cdr"
+        (controlCreated)="onFormControlCreated('additional_' + cdr.column.ColumnName + '_' + i, $event)"
+        [attr.data-imx-identifier]="'additional_column_' + cdr.column.ColumnName + '_' + i"
+      >
+      </imx-cdr-editor>
+    </ng-container>
+    
+    <imx-cdr-editor
+      *ngFor="let cdr of requestParameterColumns; let i = index"
+      [cdr]="cdr"
       (controlCreated)="onFormControlCreated(cdr.column.ColumnName + '_' + i, $event)"
-      [attr.data-imx-identifier]="'workflow-single-action-property-column_' + cdr.column.ColumnName + '_' + i">
+      [attr.data-imx-identifier]="'workflow-single-action-property-column_' + cdr.column.ColumnName + '_' + i"
+    >
     </imx-cdr-editor>
 
-    <imx-entity-select *ngIf="data.workflow" class="imx-custom-property" [title]="data.workflow.title"
+    <imx-entity-select
+      *ngIf="data.workflow"
+      class="imx-custom-property"
+      [title]="data.workflow.title"
       [entities]="data.workflow.data[data.requests[0].key]"
       (controlCreated)="onFormControlCreated('customSelect', $event)"
-      (selectionChange)="onChangeDirectDecisionTarget($event)" [placeholder]="data.workflow.placeholder"
-      data-imx-identifier="workflow-single-action-property-bulk-item-custom-select-option">
+      (selectionChange)="onChangeDirectDecisionTarget($event)"
+      [placeholder]="data.workflow.placeholder"
+      data-imx-identifier="workflow-single-action-property-bulk-item-custom-select-option"
+    >
     </imx-entity-select>
   </mat-card-content>
 </mat-card>

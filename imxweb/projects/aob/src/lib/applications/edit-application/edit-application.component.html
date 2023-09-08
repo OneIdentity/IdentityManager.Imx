@@ -53,7 +53,10 @@
   </mat-card>
 </div>
 
-<div eui-sidesheet-actions color="white">
+<div eui-sidesheet-actions>
+  <button data-imx-identifier="editApp-translate" mat-raised-button type="button" class="justify-start" (click)="editTranslation()">
+    {{ '#LDS#Edit translations' | translate }}
+  </button>
   <button data-imx-identifier="editApp-cancel" mat-stroked-button type="button" (click)="cancelProcess()">
     {{ '#LDS#Cancel' | translate }}
   </button>

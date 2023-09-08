@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,15 +29,16 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCardModule } from '@angular/material/card';
 import { RouterModule } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { DataSourceToolbarModule, DataTableModule, CdrModule, EntityModule, BulkPropertyEditorModule, DateModule } from 'qbm';
+import { DataSourceToolbarModule, DataTableModule, CdrModule, EntityModule, BulkPropertyEditorModule, DateModule, SelectedElementsModule, HelpContextualModule } from 'qbm';
 import { AttestationDecisionComponent } from './attestation-decision.component';
 import { AttestationCaseComponent } from './attestation-case.component';
 import { AttestationActionComponent } from '../attestation-action/attestation-action.component';
-import { JustificationModule } from 'qer';
+import { JustificationModule, ObjectHyperviewModule, TermsOfUseModule } from 'qer';
 import { DecisionHistoryItemComponent } from './decision-history-item/decision-history-item.component';
 import { ApproversComponent } from './approvers/approvers.component';
 import { EntityPropertyEditorComponent } from '../entity-property-editor/entity-property-editor.component';
@@ -47,7 +48,11 @@ import { AttestationSnapshotModule } from '../attestation-snapshot/attestation-s
 import { LossPreviewDialogComponent } from './loss-preview-dialog/loss-preview-dialog.component';
 import { LossPreviewTableComponent } from './loss-preview-table/loss-preview-table.component';
 import { DecisionComplianceViolationComponent } from './decision-compliance-violation/decision-compliance-violation.component';
+import { DecisionPolicyViolationComponent } from './decision-policy-violation/decision-policy-violation.component';
 import { MitigatingControlsComponent } from './mitigating-controls/mitigating-controls.component';
+import { AttestationInquiriesComponent } from './attestation-inquiries/attestation-inquiries.component';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
 @NgModule({
   declarations: [
     AttestationCaseComponent,
@@ -59,7 +64,9 @@ import { MitigatingControlsComponent } from './mitigating-controls/mitigating-co
     LossPreviewDialogComponent,
     LossPreviewTableComponent,
     DecisionComplianceViolationComponent,
-    MitigatingControlsComponent
+    DecisionPolicyViolationComponent,
+    MitigatingControlsComponent,
+    AttestationInquiriesComponent
   ],
   imports: [
     AttestationSnapshotModule,
@@ -75,12 +82,21 @@ import { MitigatingControlsComponent } from './mitigating-controls/mitigating-co
     FormsModule,
     RouterModule,
     MatButtonModule,
+    MatDividerModule,
+    MatCardModule,
+    MatExpansionModule,
     MatTooltipModule,
     ReactiveFormsModule,
     BulkPropertyEditorModule,
     AttestationDisplayModule,
     MatExpansionModule,
-    DateModule
+    DateModule,
+    TermsOfUseModule,
+    AttestationSnapshotModule,
+    SelectedElementsModule,
+    MatIconModule,
+    HelpContextualModule,
+    ObjectHyperviewModule
   ],
   exports: [
     DecisionHistoryItemComponent,

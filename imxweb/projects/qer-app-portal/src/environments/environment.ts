@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,6 +34,7 @@ export const environment = {
   appName: 'qer-app-portal',
   appVersion: '1.0.0'
 };
+
 
 /*
  * For easier debugging in development mode, you can import the following file

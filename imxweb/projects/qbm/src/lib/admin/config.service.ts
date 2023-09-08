@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,6 +32,7 @@ import { ConfirmationService } from '../confirmation/confirmation.service';
 import { imx_SessionService } from '../session/imx-session.service';
 import { SnackBarService } from '../snackbar/snack-bar.service';
 import { ConfigSection, KeyData } from './config-section';
+import { Subject } from 'rxjs';
 
 @Injectable()
 export class ConfigService {
@@ -48,9 +49,18 @@ export class ConfigService {
   /** view model for the sections */
   public sectionsFiltered: ConfigSection[] = [];
 
+  /** paths that can be deleted */
+  public deletableKeys: KeyData[] = [];
+
+  canAddAnyConfigKey = false;
+
+  public supportsLocalCustomization: boolean;
+
+  public submitChanges: Subject<void> = new Subject();
+
   public readonly filter: {
     customized?: boolean,
-    keywords?: string
+    keywords?: string[]
   } = {};
 
   private pendingChanges: {
@@ -86,6 +96,12 @@ export class ConfigService {
 
   public async addKey(path: string): Promise<void> {
     await this.session.Client.admin_apiconfigsingle_post(this.appId, path);
+  }
+
+  public async deleteKey(path: string): Promise<void> {
+    const payload = {};
+    payload[path] = null;
+    await this.session.Client.admin_apiconfig_post(this.appId, payload);
   }
 
   public getLocalCustomizations(): string[][] {
@@ -133,6 +149,7 @@ export class ConfigService {
     // reload all to get the effective value. there is no good way to get just
     // the new effective value of the changed key.
     this.load();
+    this.submitChanges.next();
   }
 
   public async revertAll(isGlobal: boolean): Promise<void> {
@@ -164,6 +181,7 @@ export class ConfigService {
     }
     this.pendingChanges = {};
     this.load();
+    this.submitChanges.next();
     const key = isGlobal
       ? '#LDS#Your changes have been successfully saved. The changes apply to all API Server instances connected to the software update process. It may take some time for the changes to take effect.'
       : '#LDS#Your changes have been successfully saved. The changes only apply to this API Server and will be lost when you restart the server.';
@@ -177,13 +195,20 @@ export class ConfigService {
     this.sections = [];
     this.sectionsFiltered = [];
 
-    const configNodes = await this.session.Client.admin_apiconfig_get(this.appId);
+    const data = await this.session.Client.admin_apiconfig_get(this.appId);
+    this.supportsLocalCustomization = data.SupportsLocalCustomization;
+    const deletablePaths = data.Added;
+    const configNodes = data.Data;
 
+    var canAdd = false;
     const result: ConfigSection[] = [];
+    const supportingDelete: KeyData[] = [];
     for (const topLevelNode of configNodes) {
       const keyData: KeyData[] = [];
       const settingsSupportingAdd: KeyData[] = [];
-      this.flatten(keyData, topLevelNode, '', [], settingsSupportingAdd);
+      this.flatten(keyData, topLevelNode, '', [], settingsSupportingAdd, deletablePaths, supportingDelete);
+      if (settingsSupportingAdd.length > 0)
+        canAdd = true;
 
       let name = topLevelNode.Name;
       if (!name) {
@@ -194,14 +219,17 @@ export class ConfigService {
 
     this.sections = result;
     this.search();
+    this.canAddAnyConfigKey = canAdd;
+    this.deletableKeys = supportingDelete;
   }
 
   public async search(): Promise<void> {
     const keywords = this.filter.keywords;
     let result = this.sections;
     if (keywords || this.filter.customized) {
+      const lcKeywords = keywords != null ? keywords.map(k => k.toLowerCase()) : null;
       result = result
-        .map(d => this.matchesSection(d, keywords, this.filter.customized))
+        .map(d => this.matchesSection(d, lcKeywords, this.filter.customized))
         .filter(d => d.Keys.length > 0);
     }
 
@@ -214,7 +242,7 @@ export class ConfigService {
     }
   }
 
-  private flatten(keyData: KeyData[], node: ConfigNodeData, path: string, displayPath: string[], settingsSupportingAdd: KeyData[]): void {
+  private flatten(keyData: KeyData[], node: ConfigNodeData, path: string, displayPath: string[], settingsSupportingAdd: KeyData[], deletablePaths: string[], supportingDelete: KeyData[]): void {
 
     const thisPath = path + node.Key;
     for (const n of node.Settings) {
@@ -233,35 +261,43 @@ export class ConfigService {
 
     }
 
+    function buildNode() : KeyData {
+      return {
+          Name: node.Name,
+          Key: node.Key,
+          Description: node.Description,
+          Type: ConfigSettingType.None,
+          DisplayPath: [...displayPath],
+          Path: thisPath,
+          searchTerms: []
+      };
+    }
+
     if (node.CanAddSetting) {
-      settingsSupportingAdd.push({
-        Name: node.Name,
-        Key: node.Key,
-        Description: node.Description,
-        Type: ConfigSettingType.None,
-        DisplayPath: [...displayPath],
-        Path: thisPath,
-        searchTerms: []
-      });
+      settingsSupportingAdd.push(buildNode());
+    }
+
+    if (deletablePaths.includes(thisPath)) {
+      supportingDelete.push(buildNode());
     }
 
     for (const n of node.Children) {
-      this.flatten(keyData, n, thisPath + '/', [...displayPath, n.Name], settingsSupportingAdd);
+      this.flatten(keyData, n, thisPath + '/', [...displayPath, n.Name], settingsSupportingAdd, deletablePaths, supportingDelete);
     }
   }
 
-  private matchesSection(section: ConfigSection, keywords: string, onlyCustomized: boolean): ConfigSection {
+  private matchesSection(section: ConfigSection, keywords: string[], onlyCustomized: boolean): ConfigSection {
     const matching = section.Keys.filter(d => this.matches(d, keywords, onlyCustomized));
 
     return new ConfigSection(section.Title, section.Description, matching, section.SettingsSupportingAdd);
   }
 
-  private matches(d: KeyData, keywords: string, onlyCustomized: boolean): boolean {
+  private matches(d: KeyData, keywords: string[], onlyCustomized: boolean): boolean {
     if (onlyCustomized && !d.HasCustomGlobalValue && !d.HasCustomLocalValue) {
       return false;
     }
 
-    if (!keywords || d.searchTerms.filter(n => n?.includes(keywords)).length > 0) {
+    if (!keywords || d.searchTerms.some(searchTerm => keywords.every(keyword => searchTerm?.includes(keyword)))) {
       return true;
     }
 

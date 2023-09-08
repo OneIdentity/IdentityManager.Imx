@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,31 +28,36 @@ import { Injectable } from '@angular/core';
 
 import { PwoData } from 'imx-api-qer';
 import { IEntity, IEntityColumn, ParameterData, WriteExtTypedEntity } from 'imx-qbm-dbts';
+import { AuthenticationService } from 'qbm';
 import { Approval } from '../itshopapprove/approval';
 import { ExtendedCollectionData } from '../parameter-data/extended-collection-data.interface';
 import { ParameterDataService } from '../parameter-data/parameter-data.service';
 import { ItshopService } from './itshop.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ItshopRequestService {
+  private currentUser: string;
   constructor(
     private readonly parameterDataService: ParameterDataService,
-    private readonly itshopService: ItshopService
-  ) { }
+    private readonly itshopService: ItshopService,
+    authentication: AuthenticationService
+  ) {
+    authentication.onSessionResponse.subscribe((session) => (this.currentUser = session.UserUid));
+  }
 
   public createParameterColumns(entity: IEntity, parameters: ParameterData[]): IEntityColumn[] {
     return this.parameterDataService.createParameterColumns(
       entity,
       parameters,
-      loadParameters => this.itshopService.getRequestParameterCandidates(loadParameters),
-      treeParameters => this.itshopService.getRequestParameterFilterTree(treeParameters)
+      (loadParameters) => this.itshopService.getRequestParameterCandidates(loadParameters),
+      (treeParameters) => this.itshopService.getRequestParameterFilterTree(treeParameters)
     );
   }
 
   public isChiefApproval: boolean = false;
-  
+
   public createRequestApprovalItem(
     typedEntity: WriteExtTypedEntity<any>,
     extendedCollectionData: ExtendedCollectionData<PwoData>
@@ -62,12 +67,13 @@ export class ItshopRequestService {
     const extendedDataWrapper = this.parameterDataService.createExtendedDataWrapper(
       entity,
       extendedCollectionData,
-      loadParameters => this.itshopService.getRequestParameterCandidates(loadParameters),
-      treeParameters => this.itshopService.getRequestParameterFilterTree(treeParameters)
+      (loadParameters) => this.itshopService.getRequestParameterCandidates(loadParameters),
+      (treeParameters) => this.itshopService.getRequestParameterFilterTree(treeParameters)
     );
 
     return new Approval({
       entity,
+      uidCurrentUser: this.currentUser,
       isChiefApproval: this.itshopService.isChiefApproval,
       pwoData: extendedDataWrapper.data,
       parameterColumns: extendedDataWrapper.parameterWrapper.columns,
@@ -80,7 +86,7 @@ export class ItshopRequestService {
           typedEntity.extendedData = undefined;
           throw error;
         }
-      }
+      },
     });
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,8 +30,10 @@ import { SqlWizardApiService } from "qbm";
 import { QerApiService } from "../qer-api-client.service";
 
 @Injectable()
-export class DynamicRoleSqlWizardService implements SqlWizardApiService {
-  constructor(private readonly api: QerApiService) { }
+export class DynamicRoleSqlWizardService extends SqlWizardApiService {
+  constructor(private readonly api: QerApiService) {
+    super();
+  }
 
   public async getFilterProperties(table: string): Promise<FilterProperty[]> {
     return (await this.api.client.portal_dynamicgroup_sqlwizard_tables_columns_get(table)).Properties;

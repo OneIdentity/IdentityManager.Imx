@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,7 +30,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
-import { ClassloggerService, RouteGuardService } from 'qbm';
+import { ClassloggerService, DocChapterService, DocDocument, HELP_CONTEXTUAL, RouteGuardService } from 'qbm';
 import { TilesModule } from 'qer';
 import { AobService } from './aob.service';
 import { ApplicationsComponent } from './applications/applications.component';
@@ -42,6 +42,7 @@ import { StartPageModule } from './start-page/start-page.module';
 import { AobApplicationsGuardService } from './guards/aob-applications-guard.service';
 import { GlobalKpiComponent } from './global-kpi/global-kpi.component';
 import { AobKpiGuardService } from './guards/aob-kpi-guard.service';
+import { LockInfoAlertComponent } from './extensions/service-items-edit/lock-info-alert/lock-info-alert.component';
 
 const routes: Routes = [
   {
@@ -61,6 +62,9 @@ const routes: Routes = [
         component: ApplicationNavigationComponent,
         canActivate: [RouteGuardService],
         resolve: [RouteGuardService],
+        data:{
+          contextId: HELP_CONTEXTUAL.Applications
+        }
       },
       {
         path: 'detail',
@@ -86,11 +90,34 @@ const routes: Routes = [
     TranslateModule,
     RouterModule.forChild(routes),
   ],
+  declarations: [
+    LockInfoAlertComponent
+  ],
 })
 export class AobConfigModule {
-  constructor(private readonly initializer: AobService, private readonly logger: ClassloggerService) {
+  constructor(private readonly initializer: AobService,
+    private readonly docSvc: DocChapterService,
+    private readonly logger: ClassloggerService) {
     this.logger.info(this, '🔥 AOB loaded');
     this.initializer.onInit(routes);
+    this.configureDocPaths();
     this.logger.info(this, '▶️ AOB initialized');
+  }
+
+  private configureDocPaths() {
+    // Web Portal for Application Governance User Guide
+    var appgovDoc: DocDocument = {
+      paths: {
+        "en-US": "imx/doc/OneIM_AOB_UserGuide_en-us.html5/OneIM_AOB_UserGuide.html",
+        "de-DE": "imx/doc/OneIM_AOB_UserGuide_de-de.html5/OneIM_AOB_UserGuide.html",
+        "de-CH": "imx/doc/OneIM_AOB_UserGuide_de-de.html5/OneIM_AOB_UserGuide.html",
+        "de-AT": "imx/doc/OneIM_AOB_UserGuide_de-de.html5/OneIM_AOB_UserGuide.html"
+      }
+    };
+
+    this.docSvc.chapters["applications"] = {
+      chapterUid: "35FE656D-A608-4B16-A55F-B758D5B72F75",
+      document: appgovDoc
+    };
   }
 }

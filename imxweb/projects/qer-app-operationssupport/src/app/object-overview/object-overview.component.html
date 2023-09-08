@@ -1,28 +1,19 @@
-<div *ngIf="objectKey" class="imx-flex imx-flex-child">
-  <div class="heading-wrapper">
-    <h1 class="mat-headline">
-      {{'#LDS#Object overview' | translate}}
-    </h1>
-    <mat-card>
-      <mat-card-title>
-        <span class="imx-object-overview-tab-header">{{ '#LDS#Information' | translate }}</span>
-      </mat-card-title>
-      <mat-card-content>
-        <span class="imx-caption">{{ '#LDS#Object' | translate }}</span>
-        <span>{{display || '-'}}</span>
-        <span class="imx-caption">{{ '#LDS#Type' | translate }}</span>
-        <span>{{tableDisplay}}</span>
-      </mat-card-content>
-    </mat-card>
+<mat-spinner *ngIf="busy"></mat-spinner>
+<div *ngIf="!busy && objectKey" class="imx-flex imx-flex-child">
+  <h1 class="mat-headline">
+    {{display}}
+  </h1>
+  <div class="sub-headline">
+    {{tableDisplay}}
   </div>
-  <mat-tab-group (selectedTabChange)="onTabChange($event)" animationDuration="0ms" class="imx-flex imx-flex-child">
+  <mat-tab-group #tabGroup [(selectedIndex)]="tabIndex"
+    class="imx-flex imx-flex-child">
     <mat-tab label="{{ '#LDS#Queues' | translate }}">
       <ng-template matTabContent class="imx-tab-content">
         <div class="imx-job-queue-div">
           <div class="imx-content-header">
-            <h1 class="mat-headline">
-              <span class="imx-object-overview-tab-header">{{ '#LDS#JobQueue' | translate }}</span>
-            </h1>
+            <h2 class="mat-headline">{{ '#LDS#JobQueue' | translate }}
+            </h2>
           </div>
           <div *ngIf="!queuesUnsupported">
             <div class="imx-table-container">
@@ -66,9 +57,7 @@
         </div>
         <div>
           <div class="imx-content-header">
-            <h1 class="mat-headline">
-              <span class="imx-object-overview-tab-header">{{ '#LDS#DBQueue' | translate }}</span>
-            </h1>
+            <h2 class="mat-headline">{{ '#LDS#DBQueue' | translate }}</h2>
           </div>
           <div *ngIf="!queuesUnsupported">
             <div class="imx-table-container">
@@ -115,10 +104,9 @@
     <mat-tab *ngIf="showPassCodeTab" label="{{ '#LDS#Passwords' | translate }}">
       <imx-ext id="QBM_ops_ObjectOverview_Actions" [referrer]="this"></imx-ext>
     </mat-tab>
-    <mat-tab label="{{ '#LDS#Hyperview' | translate }}">
-      <ng-template matTabContent class="imx-tab-content">
-        <imx-hyperview [shapes]="hyperviewShapes" style="min-height:30px;">
-        </imx-hyperview>
+    <mat-tab label="{{'#LDS#Hyperview' | translate}}">
+      <ng-template matTabContent>
+        <imx-object-hyperview (selected)="onShapeClick($event)" [objectType]="tablename" [objectUid]="objectUID" [condensed]="true"></imx-object-hyperview>
       </ng-template>
     </mat-tab>
   </mat-tab-group>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,6 +35,8 @@ import {
   CdrModule,
   ClassloggerService,
   DataTreeWrapperModule,
+  HELP_CONTEXTUAL,
+  HelpContextualModule,
   MenuItem,
   MenuService,
   RouteGuardService
@@ -43,15 +45,18 @@ import {
 import { ServiceCategoriesComponent } from './service-categories.component';
 import { ServiceCategoryComponent } from './service-category.component';
 import { ServiceItemsModule } from '../service-items/service-items.module';
-import { ShopAdminGuardService } from '../guards/shop-admin-guard.service';
-import { isShopAdmin } from '../admin/qer-permissions-helper';
+import { isShopAdmin, isShopStatistics } from '../admin/qer-permissions-helper';
+import { ShopGuardService } from '../guards/shop-guard.service';
 
 const routes: Routes = [
   {
     path: 'configuration/servicecategories',
     component: ServiceCategoriesComponent,
-    canActivate: [RouteGuardService, ShopAdminGuardService],
-    resolve: [RouteGuardService]
+    canActivate: [RouteGuardService, ShopGuardService],
+    resolve: [RouteGuardService],
+    data:{
+      contextId: HELP_CONTEXTUAL.ServiceCategories
+    }
   }
 ];
 
@@ -69,7 +74,8 @@ const routes: Routes = [
     ReactiveFormsModule,
     RouterModule.forChild(routes),
     TranslateModule,
-    ServiceItemsModule
+    ServiceItemsModule,
+    HelpContextualModule,
   ]
 })
 export class ServiceCategoriesModule {
@@ -77,23 +83,23 @@ export class ServiceCategoriesModule {
   constructor(
     private readonly menuService: MenuService,
     logger: ClassloggerService) {
-    logger.info(this, '▶️ ServiceCategoriesModule loaded');
+    logger.info(this, '▶︝ ServiceCategoriesModule loaded');
     this.setupMenu();
   }
 
   private setupMenu(): void {
     this.menuService.addMenuFactories(
-      (preProps: string[], groups: string[]) => {
+      (preProps: string[], features: string[]) => {
 
         const items: MenuItem[] = [];
 
-        if (isShopAdmin(groups)) {
+        if (isShopAdmin(features) || isShopStatistics(features)) {
           items.push(
             {
               id: 'QER_Setup_Servicecategories',
               route: 'configuration/servicecategories',
               title: '#LDS#Menu Entry Service categories',
-              sorting: '50-30'
+              sorting: '60-30'
             }
           );
         }
@@ -104,7 +110,7 @@ export class ServiceCategoriesModule {
         return {
           id: 'ROOT_Setup',
           title: '#LDS#Setup',
-          sorting: '50',
+          sorting: '60',
           items
         };
       },

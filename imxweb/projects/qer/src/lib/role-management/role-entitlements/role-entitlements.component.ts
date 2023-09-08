@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,26 +24,26 @@
  *
  */
 
-import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { OwnershipInformation, PortalRolesEntitlements } from 'imx-api-qer';
-import { CollectionLoadParameters, DbObjectKey, DisplayColumns, EntitySchema, IClientProperty, IEntity, TypedEntity, XOrigin } from 'imx-qbm-dbts';
+import { PortalRolesEntitlements, RoleAssignmentData } from 'imx-api-qer';
+import { CollectionLoadParameters, DbObjectKey, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, XOrigin } from 'imx-qbm-dbts';
 
-import { ConfirmationService, DataSourceToolbarSettings, DataTableComponent, imx_SessionService, MetadataService } from 'qbm';
-import { QerApiService } from '../../qer-api-client.service';
+import { BusyService, ConfirmationService, DataSourceToolbarSettings, DataTableComponent, MetadataService, SnackBarService } from 'qbm';
+import { RoleRecommendationsComponent } from './role-recommendations/role-recommendations.component';
+import { DataManagementService } from '../data-management.service';
 import { RoleService } from '../role.service';
-import { EntitlementSelectorComponent, SelectedEntitlement } from './entitlement-selector.component';
-
+import { EntitlementSelectorComponent } from './entitlement-selector.component';
+import { RoleRecommendationResultItem } from './role-recommendations/role-recommendation-result-item';
+import { RoleEntitlementActionService } from './role-entitlement-action.service';
 @Component({
   selector: 'imx-role-entitlements',
   templateUrl: './role-entitlements.component.html',
-  styleUrls: ['./role-entitlements.component.scss', '../sidesheet.scss']
+  styleUrls: ['./role-entitlements.component.scss', '../sidesheet.scss'],
 })
 export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
-
   get isMobile(): boolean {
     return document.body.offsetWidth <= 768;
   }
@@ -53,41 +53,49 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
   public DisplayColumns = DisplayColumns;
   public displayColumns: IClientProperty[];
   public entitlementTypes: Map<string, string>;
+  public canEdit: boolean;
 
-  @Input() public entity: IEntity;
-  @Input() public ownershipInfo: OwnershipInformation;
   @ViewChild('dataTable') public dataTable: DataTableComponent<TypedEntity>;
 
   public readonly itemStatus = {
     enabled: (item: PortalRolesEntitlements): boolean => {
-      return (item.GetEntity().GetColumn('XOrigin').GetValue() & XOrigin.Direct) > 0
-        || item.GetEntity().GetColumn('IsRequestCancellable').GetValue();
-    }
+      return (
+        (item.GetEntity().GetColumn('XOrigin').GetValue() & XOrigin.Direct) > 0 ||
+        item.GetEntity().GetColumn('IsRequestCancellable').GetValue()
+      );
+    },
   };
-  private selectedEntities: TypedEntity[] = [];
+  public selectedEntities: TypedEntity[] = [];
+
+  public busyService = new BusyService();
 
   constructor(
-    private readonly busyService: EuiLoadingService,
-    private readonly qerApiService: QerApiService,
-    private readonly entitlementService: RoleService,
+    private readonly busyServiceElemental: EuiLoadingService,
+    private readonly roleService: RoleService,
+    private dataManagementService: DataManagementService,
     private readonly confirmationService: ConfirmationService,
-    private readonly snackbar: MatSnackBar,
+    private readonly snackbar: SnackBarService,
     private readonly sidesheet: EuiSidesheetService,
     private readonly metadata: MetadataService,
     private readonly translate: TranslateService,
-    private readonly session: imx_SessionService,
-  ) { }
+    private roleActionService: RoleEntitlementActionService
+  ) {
+    this.canEdit = roleService.canEdit;
+  }
 
-  public ngOnInit(): void {
+  public async ngOnInit(): Promise<void> {
     this.entitySchema = PortalRolesEntitlements.GetEntitySchema();
   }
 
-  public async ngAfterViewInit(): Promise<void> {
+  public get hasRecommendations(): boolean {
+    return this.roleService.getRoleTypeInfo().canUseRecommendations;
+  }
 
+  public async ngAfterViewInit(): Promise<void> {
     this.displayColumns = [
       this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
       this.entitySchema.Columns.XOrigin,
-      this.entitySchema.Columns.XDateInserted
+      this.entitySchema.Columns.XDateInserted,
     ];
     await this.navigate();
   }
@@ -97,7 +105,6 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
     return validUntil.toLocaleDateString();
   }
 
-  // TODO: Does the table support search?
   public async onSearch(keywords: string): Promise<void> {
     this.navigationState.StartIndex = 0;
     this.navigationState.search = keywords;
@@ -109,27 +116,38 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
   }
 
   public async onSelectEntitlements(): Promise<void> {
-    const entlTypes = await this.entitlementService.getEntitlementTypes(this.ownershipInfo.TableName, this.entity);
-    const dialogRef = this.sidesheet.open(EntitlementSelectorComponent,
-      {
+    this.busyServiceElemental.show();
+    const entity = this.dataManagementService.entityInteractive.GetEntity();
+    let entitlementTypes: RoleAssignmentData[];
+    try {
+      entitlementTypes = await this.roleService.getEntitlementTypes(entity);
+    } finally {
+      this.busyServiceElemental.hide();
+    }
+    const selectedValues = await this.sidesheet
+      .open(EntitlementSelectorComponent, {
         title: await this.translate.get('#LDS#Heading Request Entitlements').toPromise(),
-        headerColour: 'iris-blue',
-        bodyColour: 'asher-gray',
+        subTitle: entity.GetDisplay(),
         padding: '0px',
         width: 'max(600px, 60%)',
         testId: 'role-entitlements-new-sidesheet',
         data: {
-          entitlementTypes: entlTypes,
-          roleEntity: this.entity
-        }
+          entitlementTypes: entitlementTypes,
+          roleEntity: entity,
+        },
+      })
+      .afterClosed()
+      .toPromise();
+    if (selectedValues) {
+      const overlay = this.busyServiceElemental.show();
+      try {
+        await this.roleActionService.processEntitlementSelections(selectedValues);
+      } finally {
+        this.busyServiceElemental.hide(overlay);
       }
-    );
-    dialogRef.afterClosed().subscribe((selectedValues: SelectedEntitlement[]) => {
-      if (selectedValues) {
-        this.processEntitlementSelections(selectedValues);
-      }
-    });
 
+      this.snackbar.open({ key: '#LDS#The entitlement assignments have been successfully added to your shopping cart.' }, '#LDS#Close');
+    }
   }
 
   public async onNavigationStateChanged(newState?: CollectionLoadParameters): Promise<void> {
@@ -140,7 +158,7 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
   }
 
   public async getTypeDescription(item: any): Promise<string> {
-    const colName = this.entitlementService.getEntitlementFkName(this.ownershipInfo.TableName);
+    const colName = this.roleService.getEntitlementFkName();
     const objKey = DbObjectKey.FromXml(item.GetEntity().GetColumn(colName).GetValue());
     const metadata = await this.metadata.GetTableMetadata(objKey.TableName);
     return metadata.DisplaySingular;
@@ -151,32 +169,26 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
       return false;
     }
 
-    return this.selectedEntities.findIndex(item => ! this.canDelete(item)) < 0;
+    return this.selectedEntities.findIndex((item) => !this.canDelete(item)) < 0;
   }
 
   public async onDeleteEntitlements(): Promise<void> {
-    if (await this.confirmationService.confirm({
-      Title: '#LDS#Heading Remove Entitlements',
-      Message: '#LDS#Are you sure you want to remove the selected entitlements?'
-    })) {
-      this.busyService.show();
+    if (
+      await this.confirmationService.confirm({
+        Title: '#LDS#Heading Remove Entitlements',
+        Message: '#LDS#Are you sure you want to remove the selected entitlements?',
+      })
+    ) {
+      this.busyServiceElemental.show();
       try {
-        for (const entlasgn of this.selectedEntities) {
-          if (this.isDirectAssignment(entlasgn)) {
-            await this.entitlementService.removeEntitlements(this.ownershipInfo.TableName, this.entity.GetKeys()[0], entlasgn.GetEntity());
-          }
-
-          if (this.isRequestCancellable(entlasgn)) {
-            await this.entitlementService.unsubscribe(entlasgn);
-          }
-
-        }
-
+        await this.roleActionService.deleteEntitlements(this.selectedEntities);
       } finally {
-        this.busyService.hide();
+        this.busyServiceElemental.hide();
         this.dataTable.clearSelection();
-        this.openSnackbar('#LDS#The entitlements have been successfully removed. It may take some time for the changes to take effect.',
-          '#LDS#Close');
+        this.snackbar.open(
+          { key: '#LDS#The entitlements have been successfully removed. It may take some time for the changes to take effect.' },
+          '#LDS#Close'
+        );
         await this.navigate();
       }
     }
@@ -190,42 +202,75 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
     return !item.GetEntity().GetColumn('XIsInEffect').GetValue();
   }
 
-  private async processEntitlementSelections(values: SelectedEntitlement[]): Promise<void> {
-    const overlay = this.busyService.show();
-    try {
-      for (const asgn of values) {
-        const newCartItem = this.qerApiService.typedClient.PortalCartitem.createEntity();
+  public async onShowRecommendations(): Promise<any> {
+    const entity = this.dataManagementService.entityInteractive.GetEntity();
+    const result: RoleRecommendationResultItem[] = await this.sidesheet
+      .open(RoleRecommendationsComponent, {
+        title: await this.translate.get('#LDS#Heading View Recommended Entitlements').toPromise(),
+        subTitle: entity.GetDisplay(),
+        padding: '0px',
+        width: 'max(650px, 65%)',
+        testId: 'role-recommendation-sidesheet',
+        data: {
+          tablename: this.roleService.ownershipInfo.TableName,
+          uidRole: this.dataManagementService.entityInteractive.GetEntity().GetKeys()[0],
+          canEdit: this.canEdit,
+        },
+      })
+      .afterClosed()
+      .toPromise();
 
-        // i.e. "<Key><T>Org</T><P>4ee782c2-a518-42d3-8d38-73b0d287b7e6</P></Key>"
-        newCartItem.RoleMembership.value = this.entity.GetColumn('XObjectKey').GetValue();
-
-        // i.e. "OrgHasADSGroup|<Key><T>ADSGroup</T><P>468fa7aa-26d8-4c81-8944-a00146014ece</P></Key>"
-        newCartItem.EntitlementData.value = asgn.assignmentType.AssignTable + '|' + asgn.entity.GetColumn('XObjectKey').GetValue();
-
-        newCartItem.UID_PersonOrdered.value = this.session.SessionState.UserUid;
-        await newCartItem.GetEntity().Commit(false);
+    if (result != null) {
+      let countAdd = 0;
+      let countRemove = 0;
+      const overlay = this.busyServiceElemental.show();
+      try {
+        countAdd = await this.roleActionService.addRecommendation(
+          entity,
+          result.filter((elem) => elem.Type.value === 0)
+        );
+        countRemove = await this.roleActionService.deleteRecommendations(
+          entity,
+          result.filter((elem) => elem.Type.value === 1)
+        );
+      } finally {
+        this.busyServiceElemental.hide(overlay);
       }
 
-    } finally {
-      this.busyService.hide(overlay);
+      let text: string;
+      switch (true) {
+        case countAdd === 0 && countRemove > 0:
+          text = '#LDS#The entitlements have been successfully removed. It may take some time for the changes to take effect.';
+          break;
+        case countAdd > 0 && countRemove === 0:
+          text = '#LDS#The entitlement assignments have been successfully added to your shopping cart.';
+          break;
+        case countAdd > 0 && countRemove > 0:
+          text =
+            '#LDS#Entitlements have been successfully removed and entitlement assignments have been added to your shopping cart. It may take some time for the changes to take effect.';
+      }
+
+      if (text) {
+        this.snackbar.open({ key: text }, '#LDS#Close');
+      }
+
+      if (countRemove > 0) {
+        await this.navigate();
+      }
     }
-
-    this.openSnackbar('#LDS#The entitlement assignments have been successfully added to your shopping cart.', '#LDS#Close');
-  }
-
-  private openSnackbar(message: string, action: string): void {
-    this.translate.get([message, action]).subscribe((translations: any[]) => {
-      this.snackbar.open(translations[message], translations[action], { duration: 10000 });
-    });
   }
 
   private async navigate(): Promise<void> {
-    this.busyService.show();
+    const isBusy = this.busyService.beginBusy();
     try {
-      const ds = await this.entitlementService.getEntitlements(this.ownershipInfo.TableName, this.entity.GetKeys()[0], this.navigationState);
+      const entity = this.dataManagementService.entityInteractive.GetEntity();
+      const ds = await this.roleService.getEntitlements({
+        id: entity.GetKeys().join(','),
+        navigationState: this.navigationState,
+      });
       this.entitlementTypes = new Map();
 
-      ds.Data.forEach(async item => {
+      ds.Data.forEach(async (item) => {
         this.entitlementTypes.set(item.GetEntity().GetKeys().toString(), await this.getTypeDescription(item));
       });
 
@@ -235,9 +280,8 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
         navigationState: this.navigationState,
         displayedColumns: this.displayColumns,
       };
-
     } finally {
-      this.busyService.hide();
+      isBusy.endBusy();
     }
   }
 
@@ -248,17 +292,16 @@ export class RoleEntitlementsComponent implements OnInit, AfterViewInit {
   private isDirectAssignment(entity: TypedEntity): boolean {
     const xorigin = entity.GetEntity().GetColumn('XOrigin').GetValue() as XOrigin;
     // tslint:disable-next-line:no-bitwise
-    return xorigin && (XOrigin.Direct === (XOrigin.Direct & xorigin));
+    return xorigin && XOrigin.Direct === (XOrigin.Direct & xorigin);
   }
 
   private isDynamicAssignment(entity: TypedEntity): boolean {
     const xorigin = entity.GetEntity().GetColumn('XOrigin').GetValue() as XOrigin;
     // tslint:disable-next-line:no-bitwise
-    return xorigin && (XOrigin.Dynamic === (XOrigin.Dynamic & xorigin));
+    return xorigin && XOrigin.Dynamic === (XOrigin.Dynamic & xorigin);
   }
 
   private isRequestCancellable(entity: TypedEntity): boolean {
     return true === entity.GetEntity().GetColumn('IsRequestCancellable')?.GetValue();
   }
-
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,21 +25,16 @@
  */
 
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
-import { Component, Input } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatRadioChange, MatRadioModule } from '@angular/material/radio';
-import { MatStepperModule } from '@angular/material/stepper';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, Input } from '@angular/core';
+import { MatRadioChange } from '@angular/material/radio';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { configureTestSuite } from 'ng-bullet';
-import { Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
-import { AuthenticationService, clearStylesFromDOM, LdsReplaceModule } from 'qbm';
+import { AuthenticationService, clearStylesFromDOM, ISessionState, LdsReplaceModule } from 'qbm';
 import { PersonService } from 'qer';
 import { ClaimDeviceComponent } from './claim-device.component';
 import { ClaimDeviceService } from './claim-device.service';
+import { MockBuilder, MockedComponentFixture, MockRender } from 'ng-mocks';
 
 @Component({
   selector: 'imx-cdr-editor',
@@ -51,7 +46,7 @@ class MockCdrEditor {
 
 describe('ClaimDeviceComponent', () => {
   let component: ClaimDeviceComponent;
-  let fixture: ComponentFixture<ClaimDeviceComponent>;
+  let fixture: MockedComponentFixture<ClaimDeviceComponent>;
 
   const claimGroupServiceStub = new class {
     numberOfSuggestedOwners = 0;
@@ -87,53 +82,36 @@ describe('ClaimDeviceComponent', () => {
     })
   };
 
-  configureTestSuite(() => {
-    TestBed.configureTestingModule({
-      declarations: [
-        ClaimDeviceComponent,
-        MockCdrEditor
-      ],
-      imports: [
-        FormsModule,
-        MatFormFieldModule,
-        MatRadioModule,
-        MatStepperModule,
-        NoopAnimationsModule,
-        ReactiveFormsModule,
-        LdsReplaceModule
-      ],
-      providers: [
-        {
-          provide: ClaimDeviceService,
-          useValue: claimGroupServiceStub
-        },
-        {
-          provide: PersonService,
-          useValue: personServiceStub
-        },
-        {
-          provide: EuiLoadingService,
-          useValue: {
-            show: () => { },
-            hide: __ => { }
-          }
-        },
-        {
-          provide: AuthenticationService,
-          useValue: {
-            onSessionResponse: new Subject()
-          }
-        }
-      ]
+  const authStub = {
+    onSessionResponse: new BehaviorSubject<ISessionState>({
+      UserUid: "",
+      Username: ""
+    })
+  }
+
+  beforeEach(() => {
+    return MockBuilder(ClaimDeviceComponent)
+      .mock(ClaimDeviceService, claimGroupServiceStub)
+      .mock(PersonService, personServiceStub)
+      .mock(EuiLoadingService)
+      .mock(AuthenticationService, authStub)
+      .beforeCompileComponents(testBed => {
+        testBed.configureTestingModule({
+          declarations: [
+            ClaimDeviceComponent,
+            MockCdrEditor
+          ],
+          schemas: [CUSTOM_ELEMENTS_SCHEMA]
+      });
     });
-  });
+  })
 
   beforeEach(() => {
     claimGroupServiceStub.reset();
     personServiceStub.createColumnCandidatesPerson.calls.reset();
 
-    fixture = TestBed.createComponent(ClaimDeviceComponent);
-    component = fixture.componentInstance;
+    fixture = MockRender(ClaimDeviceComponent);
+    component = fixture.point.componentInstance;
     fixture.detectChanges();
   });
 

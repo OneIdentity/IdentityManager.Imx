@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,13 +24,24 @@
  *
  */
 
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 
-import { ColumnDependentReference } from 'qbm';
+import { ColumnDependentReference, ExtService, IExtension } from 'qbm';
 import { RulesViolationsApproval } from '../rules-violations-approval';
 import { RulesViolationsActionService } from '../rules-violations-action/rules-violations-action.service';
+import { MatTabGroup } from '@angular/material/tabs';
+import { Subscription } from 'rxjs';
 
+
+export class baseComplienceClass {
+  public data: {
+    selectedRulesViolation: RulesViolationsApproval;
+  };
+}
+export interface DynamicTabItem extends IExtension {
+  instance: Type<baseComplienceClass>
+}
 /**
  * A sidesheet component to show some information about the selected rules violation.
  */
@@ -39,36 +50,65 @@ import { RulesViolationsActionService } from '../rules-violations-action/rules-v
   templateUrl: './rules-violations-details.component.html',
   styleUrls: ['./rules-violations-details.component.scss']
 })
-export class RulesViolationsDetailsComponent {
+export class RulesViolationsDetailsComponent implements OnInit, OnDestroy {
+  @ViewChild(MatTabGroup) public matTabGroup: MatTabGroup;
 
   public cdrList: ColumnDependentReference[] = [];
+  public uidPerson: string;
+  public uidNonCompliance: string;
+  public uidCompliance: string;
+  private subscriptions$: Subscription[] = []
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public data: RulesViolationsApproval,
+    @Inject(EUI_SIDESHEET_DATA) public data: {
+      selectedRulesViolation: RulesViolationsApproval,
+      isMControlPerViolation: boolean,
+      complianceRuleUid: string
+    },
+    public sidesheetRef: EuiSidesheetRef,
     private readonly actionService: RulesViolationsActionService,
-    private readonly sideSheetRef: EuiSidesheetRef
+    private readonly extService: ExtService,
   ) {
-    this.cdrList = this.data.propertyInfo;
+    this.uidPerson = data.selectedRulesViolation.GetEntity().GetColumn('UID_Person').GetValue();
+    this.uidNonCompliance = data.selectedRulesViolation.GetEntity().GetColumn('UID_NonCompliance').GetValue();
+    this.cdrList = data.selectedRulesViolation.propertyInfo;
+  }
+
+  public ngOnInit(): void {
+    this.subscriptions$.push(
+      this.sidesheetRef.componentInstance.onOpen().subscribe(() => {
+        // Recalculates header
+        this.matTabGroup.updatePagination();
+      })
+    )
   }
 
   /**
    * Opens the Approve-Sidesheet for the current selected rules violations and closes the sidesheet afterwards.
    */
   public async approve(): Promise<void> {
-    await this.actionService.approve([this.data]);
-    return this.sideSheetRef.close(true);
+    await this.actionService.approve([this.data.selectedRulesViolation]);
+    return this.sidesheetRef.close(true);
   }
 
   /**
    * Opens the Deny-Sidesheet for the current selected rules violations and closes the sidesheet afterwards.
    */
   public async deny(): Promise<void> {
-    await this.actionService.deny([this.data]);
-    return this.sideSheetRef.close(true);
+    await this.actionService.deny([this.data.selectedRulesViolation]);
+    return this.sidesheetRef.close(true);
   }
 
   public async resolve(): Promise<void> {
-    await this.actionService.resolve(this.data);
-    return this.sideSheetRef.close(true);
+    await this.actionService.resolve(this.data.selectedRulesViolation);
+    return this.sidesheetRef.close(true);
+  }
+
+  public get showDynamicTab(): boolean{
+    return this.extService.Registry['RuleViolationsTab'] && this.extService.Registry['RuleViolationsTab'].length > 0;
+  }
+
+  public ngOnDestroy(): void {
+    this.subscriptions$.map((sub) => sub.unsubscribe());
   }
 }
