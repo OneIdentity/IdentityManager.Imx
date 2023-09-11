@@ -1,7 +1,7 @@
 <div class="imx-request-detail">
-  <imx-requestinfo [isReadOnly]="data.isReadOnly" [request]="data.personWantsOrg" [userId]="data.userUid"></imx-requestinfo>
+  <imx-requestinfo [isReadOnly]="data.isReadOnly || data.personWantsOrg.isPrivateRequest" [isApproval]="false" [request]="data.personWantsOrg" [userId]="data.userUid"></imx-requestinfo>
 
-  <div *ngIf="allowedActionCount > 0" class="imx-button-bar">
+  <mat-card eui-sidesheet-actions *ngIf="!data.isReadOnly && !data.personWantsOrg.isPrivateRequest && allowedActionCount > 0">
     <!-- TODO later
     <button mat-stroked-button *ngIf="data.personWantsOrg.ResendRequestAllowed.value"
       data-imx-identifier="request-detail-submit-again" (click)="submitAgain()">
@@ -36,7 +36,7 @@
 
     <button mat-stroked-button
       *ngIf="data.personWantsOrg.canWithdrawAdditionalApprover && data.itShopConfig.VI_ITShop_OrderHistory_CancelOrder"
-      data-imx-identifier="request-detail-withdraw-additional-approver" (click)="actionService.revokeDelegation([data.personWantsOrg], '#LDS#Heading Withdraw Additional Approver',
+      data-imx-identifier="request-detail-withdraw-additional-approver" (click)="actionService.revokeAdditionalApprover([data.personWantsOrg], '#LDS#Heading Withdraw Additional Approver',
     '#LDS#The additional approvers for {0} requests have been successfully withdrawn.',
     '#LDS#Withdraw additional approvers for the following requests.')">
       {{'#LDS#Withdraw additional approver' | translate}}
@@ -65,5 +65,12 @@
     {{'#LDS#Escalate approval' | translate}}
     </button>
 
-  </div>
+     <button mat-stroked-button *ngIf="data.personWantsOrg.canCopyItems" data-imx-identifier="request-detail-copy-request"
+      title="{{ '#LDS#Submit again' | translate }}"
+      (click)="actionService.copyItems([data.personWantsOrg])">
+    {{'#LDS#Submit again' | translate}}
+    </button>
+
+
+  </mat-card>
 </div>

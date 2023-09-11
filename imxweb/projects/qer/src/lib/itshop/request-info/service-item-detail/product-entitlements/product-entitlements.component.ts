@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,7 +29,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { PortalShopServiceitemsEntitlements } from 'imx-api-qer';
 import { CollectionLoadParameters, DbObjectKey, DisplayColumns, EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings, MetadataService } from 'qbm';
+import { ClientPropertyForTableColumns, DataSourceToolbarSettings, MetadataService } from 'qbm';
 import { ProductDetailsService } from '../product-details.service';
 
 @Component({
@@ -43,12 +43,12 @@ export class ProductEntitlementsComponent implements OnInit {
   public entitySchema: EntitySchema;
   public DisplayColumns = DisplayColumns;
   public showHelperAlert = true;
-  public helperText = '#LDS#Here you can get an overview of the entitlements that are associated with the role. By requesting the role, the user will get the listed entitlements.';
+  public helperText = '#LDS#Here you can get an overview of the entitlements associated with the product. If you approve the request, the recipient will get the following entitlements.';
 
   @Input() public uidAccProduct: string;
   public entitlementTypes: Map<string, string>;
 
-  private displayColumns: IClientProperty[];
+  private displayColumns: ClientPropertyForTableColumns[];
 
   constructor(
     private readonly busy: EuiLoadingService,
@@ -59,7 +59,8 @@ export class ProductEntitlementsComponent implements OnInit {
     this.displayColumns = this.displayColumns = [
       {
         Type: ValType.String,
-        ColumnName: 'entitlementDisplay'
+        ColumnName: 'entitlementDisplay',
+        untranslatedDisplay: '#LDS#Actions'
       },
       this.entitySchema.Columns.TargetEntitlement
     ];

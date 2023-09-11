@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,121 +38,157 @@ import { ServiceAvailabilityComponent } from './service-report/service-availabil
 import { ServicesInactiveComponent } from './service-report/services-inactive.component';
 import { FrozenJobsComponent } from './processes/frozen-jobs/frozen-jobs.component';
 import { JobChainsComponent } from './processes/job-chains/job-chains.component';
+import { JobHistoryComponent } from './processes/job-history/job-history.component';
 import { JobPerformanceComponent } from './processes/job-performance/job-performance.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SyncInformationComponent } from './sync/sync-information/sync-information.component';
 import { SyncJournalComponent } from './sync/sync-journal/sync-journal.component';
 import { OutstandingComponent } from 'dpr';
 import { SystemStatusRouteGuardService } from './guards/system-status-route-guard.service';
+import { OutstandingManagerGuardService } from './guards/outstanding-manager-guard.service';
+import { ObjectsByIdComponent } from './processes/objects-by-id/objects-by-id.component';
+import { DataChangesComponent } from './data-changes/data-changes.component';
+import { DbQueueComponent } from './db-queue/db-queue.component';
 
 const routes: Routes = [
   {
     path: 'start',
     component: DashboardComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
   {
     path: 'FrozenJobs',
     component: FrozenJobsComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
   {
     path: 'JobChainInformation',
     component: JobChainsComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
   {
     path: 'object/:table/:uid',
     component: ObjectOverviewComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
+  },
+  {
+    path: 'object/:table/:uid/:tab',
+    component: ObjectOverviewComponent,
+    canActivate: [RouteGuardService],
+    resolve: [RouteGuardService],
   },
   {
     path: 'jobserver/:queueName',
     component: FrozenJobsComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
+
   {
     path: 'outstanding',
     component: OutstandingComponent,
-    canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    canActivate: [RouteGuardService, OutstandingManagerGuardService],
+    resolve: [RouteGuardService],
   },
   {
     path: 'Jobs',
     component: JobsComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
   {
     path: 'journal',
     component: JournalComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
   {
     path: 'unresolvedRefs',
     component: UnresolvedRefsComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
   {
     path: 'JobPerformance',
     component: JobPerformanceComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
+  },
+  {
+    path: 'JobHistory',
+    component: JobHistoryComponent,
+    canActivate: [RouteGuardService],
+    resolve: [RouteGuardService],
   },
   {
     path: 'SystemStatus',
     component: SystemStatusComponent,
     canActivate: [RouteGuardService, SystemStatusRouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
   {
     path: 'WebApplications',
     component: WebApplicationsComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
   {
     path: 'ServiceAvailability',
     component: ServiceAvailabilityComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
   {
     path: 'ServicesInactive',
     component: ServicesInactiveComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
   {
     path: 'SyncInformation',
     component: SyncInformationComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
   {
     path: 'SyncJournal',
     component: SyncJournalComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
   {
     path: 'SyncJournal/:uidSyncShell',
     component: SyncJournalComponent,
     canActivate: [RouteGuardService],
+    resolve: [RouteGuardService],
+  },
+  {
+    path: 'ObjectByProccessId',
+    component: ObjectsByIdComponent,
+    canActivate: [RouteGuardService],
+    resolve: [RouteGuardService],
+  },
+  {
+    path: 'DataChanges',
+    component: DataChangesComponent,
+    canActivate: [RouteGuardService],
     resolve: [RouteGuardService]
+  },
+  {
+    path: 'DbQueue',
+    component: DbQueueComponent,
+    canActivate: [RouteGuardService],
+    resolve: [RouteGuardService],
   },
   { path: '**', redirectTo: 'start' }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy' })],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AppRoutingModule {}

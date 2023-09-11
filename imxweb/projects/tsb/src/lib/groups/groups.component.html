@@ -1,91 +1,107 @@
-<mat-card class="data-explorer data-explorer--groups">
-
-  <div *ngIf="!dataExplorerFilters.showTsSyncStatus" class="data-explorer-card-header">
+<mat-card *ngIf="!usedInSidesheet" class="data-explorer data-explorer--groups">
+  <div class="data-explorer-card-header">
     <div class="data-explorer-card-header-bg">
-      <eui-icon icon="usergroup" size="28px"></eui-icon>
       <span translate>#LDS#Heading System Entitlements</span>
+      <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
     </div>
   </div>
+  <ng-container *ngTemplateOutlet="table"> </ng-container>
+</mat-card>
+<div *ngIf="!usedInSidesheet" class="data-explorer-bottom-button-row">
+  <ng-container *ngTemplateOutlet="actions"> </ng-container>
+</div>
 
-  <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['search', 'filter', 'filterTree', 'settings']"
-    [hiddenFilters]="['namespace']" [searchBoxText]="'#LDS#Search' | translate" [itemStatus]="itemStatus"
-    (navigationStateChanged)="onNavigationStateChanged($event)" (search)="onSearch($event)"
+<mat-card *ngIf="usedInSidesheet" class="imx-tab-card">
+  <ng-container *ngTemplateOutlet="table"> </ng-container>
+</mat-card>
+<div *ngIf="usedInSidesheet && (unsAccountIdFilter ? false : true)" eui-sidesheet-actions>
+  <ng-container *ngTemplateOutlet="actions"> </ng-container>
+</div>
+
+<ng-template #table>
+  <imx-data-source-toolbar
+    #dst
+    [settings]="dstSettings"
+    [options]="['search', 'sort', 'filter', 'filterTree', 'settings']"
+    [hiddenFilters]="['namespace']"
+    [busyService]="busyService"
+    [searchBoxText]="'#LDS#Search' | translate"
+    [itemStatus]="itemStatus"
+    (navigationStateChanged)="onNavigationStateChanged($event)"
+    (search)="onSearch($event)"
     (filterTreeSelectionChanged)="filterByTree($event)"
-    (customSelectedFilterRemoved)="dataExplorerFilters.onCustomFilterClearedExternally($event)">
-    <div imx-data-source-toolbar-custom-filter class="target-system-filter" (click)="$event.stopPropagation()">
-      <imx-target-system-filter #dataExplorerFilters [targetSystemData]="targetSystemData"
-        (selectedFiltersChanged)="onNavigationStateChanged()" [dst]="dst" [treeDbWrapper]="treeDbWrapper">
-      </imx-target-system-filter>
-    </div>
-
+    (updateConfig)="updateConfig($event)" (deleteConfigById)="deleteConfigById($event)"
+  >
   </imx-data-source-toolbar>
 
-  <div *ngIf="dataExplorerFilters.showTsSyncStatus">
-    <imx-data-explorer-no-data [mode]="dataExplorerFilters.tsIssueMode"></imx-data-explorer-no-data>
-  </div>
-
-  <div>
-    <eui-alert class="sync-status-alert" type="info" condensed="true" [colored]="true"
-      *ngIf="dataExplorerFilters.showTsSyncAlert && isAdmin">
-      <span translate>#LDS#There is currently no data synchronization configured for the selected domain.</span>
-    </eui-alert>
-  </div>
-
-  <div *ngIf="!dataExplorerFilters.showTsSyncStatus" class="imx-data-explorer-content">
+  <div class="imx-data-explorer-content">
     <div class="data-explorer-table">
-      <imx-data-table #dataTable [dst]="dst" (highlightedEntityChanged)="onGroupChanged($event)"
-        detailViewVisible="false" [selectable]="unsAccountIdFilter ? false : true"
-        (selectionChanged)="onGroupSelected($event)" mode="manual" data-imx-identifier="groups-tabledata-table">
+      <imx-data-table
+        #dataTable
+        [dst]="dst"
+        [showSelectionInfo]="false"
+        [showSelectedItemsMenu]="false"
+        (highlightedEntityChanged)="onGroupChanged($event)"
+        detailViewVisible="false"
+        [selectable]="unsAccountIdFilter ? false : true"
+        (selectionChanged)="onGroupSelected($event)"
+        mode="manual"
+        data-imx-identifier="groups-tabledata-table"
+      >
         <imx-data-table-column [entityColumn]="entitySchemaUnsGroup?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
           <ng-template let-item>
             <div data-imx-identifier="groups-tabledata-display">{{ item.GetEntity().GetDisplay() }}</div>
-            <div subtitle data-imx-identifier="groups-tabledata-description">{{
-              item.Description.Column.GetDisplayValue() }}</div>
+            <div subtitle data-imx-identifier="groups-tabledata-description">{{ item.Description.Column.GetDisplayValue() }}</div>
           </ng-template>
         </imx-data-table-column>
-        <imx-data-table-column align="center" [entityColumn]="entitySchemaUnsGroup?.Columns.Requestable">
-        </imx-data-table-column>
-        <imx-data-table-generic-column *ngIf="entitySchemaUnsGroup?.Columns.XMarkedForDeletion" alignHeader="center"
-          alignContent="center" [columnName]="entitySchemaUnsGroup?.Columns.XMarkedForDeletion.ColumnName">
+        <imx-data-table-column align="center" [entityColumn]="entitySchemaUnsGroup?.Columns.Requestable"> </imx-data-table-column>
+        <imx-data-table-generic-column
+          *ngIf="entitySchemaUnsGroup?.Columns.XMarkedForDeletion"
+          alignHeader="center"
+          alignContent="center"
+          [columnName]="entitySchemaUnsGroup?.Columns.XMarkedForDeletion.ColumnName"
+        >
           <ng-template let-item>
             <div *ngIf="item.XMarkedForDeletion.value !== 0">
               <eui-badge color="gray">{{ item.XMarkedForDeletion.Column.GetDisplayValue() }}</eui-badge>
             </div>
           </ng-template>
         </imx-data-table-generic-column>
-        <imx-data-table-generic-column *ngIf="unsAccountIdFilter" alignHeader="center" alignContent="center"
-          columnName="action">
+        <imx-data-table-generic-column *ngIf="unsAccountIdFilter" alignHeader="center" alignContent="center" columnName="action">
           <ng-template let-item>
-            <button mat-button color="primary"
+            <button
+              mat-button
+              color="primary"
               [attr.data-imx-identifier]="'groups-table-button-view-assignment-analysis' + item.GetEntity().GetKeys().join('_')"
-              [disabled]="!uidPerson" (click)="viewSource($event, item)">
-              {{'#LDS#View assignment analysis' |translate}}
+              [disabled]="!uidPerson"
+              (click)="viewSource($event, item)"
+            >
+              {{ '#LDS#View assignment analysis' | translate }}
             </button>
           </ng-template>
         </imx-data-table-generic-column>
       </imx-data-table>
       <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
     </div>
-
-    <div class="data-explorer__action-buttons-wrapper" *ngIf="selectedGroupsForUpdate?.length > 0">
-      <mat-card class="data-explorer__action-buttons">
-        <div class="imx-left-button">
-          <mat-slide-toggle #toggle [formControl]="requestableBulkUpdateCtrl">
-            <span
-              [translate]="toggle.checked ? '#LDS#Make selected items requestable' : '#LDS#Make selected items not requestable'"></span>
-          </mat-slide-toggle>
-          <button mat-raised-button color="primary" (click)="bulkUpdateSelected()">
-            <span translate>#LDS#Button Update</span>
-          </button>
-        </div>
-        <div class="imx-spacer"></div>
-        <button *ngIf="isAdmin" mat-stroked-button (click)="bulkUpdateOwner()" class="imx-right-button">
-          <span translate>#LDS#Assign product owner</span>
-        </button>
-
-      </mat-card>
-    </div>
-
   </div>
+</ng-template>
 
-</mat-card>
+<ng-template #actions>
+  <imx-selected-elements [selectedElements]="selectedGroupsForUpdate" [isLoading]="busyService.isBusy"></imx-selected-elements>
+  <div class="imx-spacer"></div>
+  <button mat-stroked-button data-imx-identifier="groups-button-actions" title="{{ '#LDS#Actions' | translate }}" [matMenuTriggerFor]="actionsMenu">
+    <eui-icon icon="ellipsisvertical"></eui-icon>
+    {{'#LDS#Actions' | translate}}
+  </button>
+  <mat-menu yPosition="above" xPosition="before" data-imx-identifier="attestations-actions-menu" #actionsMenu="matMenu">
+    <button mat-menu-item color="primary" [disabled]="itemsAreRequestable" (click)="bulkUpdateSelected(true)">
+      <span translate>#LDS#Make requestable</span>
+    </button>
+    <button mat-menu-item color="primary" [disabled]="itemsAreNotRequestable" (click)="bulkUpdateSelected(false)">
+      <span translate>#LDS#Make not requestable</span>
+    </button>
+    <button *ngIf="isAdmin" [disabled]="selectedGroupsForUpdate.length === 0" mat-menu-item (click)="bulkUpdateOwner()" class="imx-right-button">
+      <span translate>#LDS#Assign product owner</span>
+    </button>
+  </mat-menu>
+</ng-template>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,9 @@
  *
  */
 
-import { Component, ErrorHandler, Inject, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { Component, ErrorHandler, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { UntypedFormGroup } from '@angular/forms';
+import { MatTab } from '@angular/material/tabs';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 import { OverlayRef } from '@angular/cdk/overlay';
@@ -39,37 +40,66 @@ import {
   ISessionState,
   SnackBarService,
   TabItem,
-  ExtService
+  ExtService,
+  HelpContextualValues,
+  HELP_CONTEXTUAL
 } from 'qbm';
 import { IEntity } from 'imx-qbm-dbts';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
 import { MailInfoType, MailSubscriptionService } from './mailsubscription.service';
 import { PersonService } from '../person/person.service';
-
+import { SecurityKeysService } from './security-keys/security-keys.service';
+import { TranslateService } from '@ngx-translate/core';
+import { QerApiService } from '../qer-api-client.service';
+import { ProfileSettings } from 'imx-api-qer';
+import { QerPermissionsService } from '../admin/qer-permissions.service';
 
 @Component({
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit, OnDestroy {
-  public get userUid(): string { return (this.selectedIdentity?.GetKeys() ?? []).join(''); }
-  public dynamicTabs: TabItem[] = [];
 
+  @ViewChild('passwordQuestionTab') public set passwordTab (tab: MatTab) {
+    if(tab && !this.passwordQuestionTab) { // initially setter gets called with undefined
+      this.passwordQuestionTab = tab;
+      if (this.hasPasswordQuestionsParam) {
+        this.activatePassordQuestionTab();
+      }
+    }
+  }
+
+  /** The UID of the selected identity. */
+  public get userUid(): string { return (this.selectedIdentity?.GetKeys() ?? []).join(''); }
+
+  /** The UID of the authenticated identity.  */
+  private authenticatedUid: string;
+
+  public dynamicTabs: TabItem[] = [];
+  public tabIndex = 0;
   public identities: IEntity[];
   public selectedIdentity: IEntity;
   public mailInfo: MailInfoType[] = [];
   public mailToBeUnsubscribed: MailInfoType;
   public hasMailSubscriptions: boolean;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   public cdrList: ColumnDependentReference[] = [];
+  public canManageSecurityKeys: boolean = false;
   public canManagePasswordQuestions: boolean;
+  public isShowEntitlementsHyperview = false;
+  public canShowEntitlementsHyperview = false;
   public readonly confirmChange = {
     check: () => this.form.pristine || this.confirmation.confirmLeaveWithUnsavedChanges()
   };
+  public LdsMultipleIdentities: string = '#LDS#Here you can manage personal data, organizational information, and location information of the selected identity.';
+  public LdsSingleIdentities: string = '#LDS#Here you can manage your personal data, organizational information, and location information and change the language of the user interface.';
 
+  private useProfileCulture: boolean;
   private columns: string[];
-
+  private hints: { [id: string]: string } = {};
+  private passwordQuestionTab: MatTab;
   private readonly subscriptions: Subscription[] = [];
+  private hasPasswordQuestionsParam = false;
 
   constructor(
     private readonly person: PersonService,
@@ -83,24 +113,44 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private readonly activatedRoute: ActivatedRoute,
     private readonly router: Router,
     private readonly tabService: ExtService,
-    private readonly confirmation: ConfirmationService
+    private readonly securityKeysService: SecurityKeysService,
+    private readonly translateService: TranslateService,
+    private readonly confirmation: ConfirmationService,
+    private readonly permissions: QerPermissionsService,
+    private readonly qerClient: QerApiService,
   ) {
     this.subscriptions.push(this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
       if (sessionState.IsLoggedIn) {
         this.load(sessionState.UserUid);
+        this.authenticatedUid = sessionState.UserUid;
       }
     }));
-
   }
 
   public async ngOnInit(): Promise<void> {
     this.dynamicTabs = this.tabService.Registry.profile as TabItem[];
 
+    this.activatedRoute.params.subscribe(res => {
+      this.checkPasswordQuestionsParam(res.id);
+    });
+
     let overlayRef: OverlayRef;
     setTimeout(() => overlayRef = this.busy.show());
     try {
+      // Security keys can only be managed for the identity that is also authenticated.
+      this.canManageSecurityKeys = this.authenticatedUid && (await this.securityKeysService.canManageSecurityKeys());
+
       const projectConfig = await this.projectConfig.getConfig();
       this.canManagePasswordQuestions = projectConfig.PasswordConfig.VI_MyData_MyPassword_Visibility;
+      this.useProfileCulture = projectConfig.PersonConfig.UseProfileCulture;
+
+      this.canShowEntitlementsHyperview = await this.permissions.isPersonAdmin() || await this.permissions.isPersonManager();
+
+      this.hints["UID_DialogCulture"] = await this.translateService.get(this.useProfileCulture
+        ? '#LDS#Select the language in which you want to display web applications and receive emails.'
+        : '#LDS#Select the language in which you want to receive emails.').toPromise();
+      this.hints["UID_DialogCultureFormat"] = await this.translateService.get('#LDS#Select the language you want to use for date and number formats.')
+        .toPromise();
     } finally {
       setTimeout(() => this.busy.hide(overlayRef));
     }
@@ -116,7 +166,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
     try {
       await this.selectedIdentity.Commit(true);
 
-      if (this.form.get('UID_DialogCulture')?.dirty || this.form.get('UID_DialogCultureFormat')?.dirty) {
+      if (this.useProfileCulture && (this.form.get('UID_DialogCulture')?.dirty || this.form.get('UID_DialogCultureFormat')?.dirty)) {
+        let profileSettings: ProfileSettings;
+        profileSettings = await this.qerClient.client.portal_profile_get();
+
+        profileSettings.UseProfileLanguage = (this.form.get('UID_DialogCulture')?.value || this.form.get('UID_DialogCultureFormat')?.value) !== undefined;
+        await this.qerClient.client.portal_profile_post(profileSettings);
+
         this.document.defaultView.location.reload();
         return;
       }
@@ -166,8 +222,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
     return this.load(userUid);
   }
 
+  public get selectedContextId(): HelpContextualValues{
+    return this.identities?.length> 1 ? HELP_CONTEXTUAL.ProfileMultipleIdentities : HELP_CONTEXTUAL.Profile;
+  }
+
   private async load(userUid: string): Promise<void> {
-    this.form = new FormGroup({});
+    this.form = new UntypedFormGroup({});
 
     let overlayRef: OverlayRef;
     setTimeout(() => overlayRef = this.busy.show());
@@ -187,10 +247,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         return {
           column,
           isReadOnly: () => !column.GetMetadata().CanEdit(),
-          hint: {
-            UID_DialogCulture: '#LDS#Select the language in which you want to display the Web Portal.',
-            UID_DialogCultureFormat: '#LDS#Select the language you want to use for date and number formats.'
-          }[columnName]
+          hint: this.hints[columnName]
         };
       });
 
@@ -203,6 +260,16 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
   }
 
-  public LdsMultipleIdentities = '#LDS#Here you can manage personal data, organizational information, and location information of the selected identity.';
-  public LdsSingleIdentities = '#LDS#Here you can manage your personal data, organizational information, and location information and change the language of the user interface.';
+  private async activatePassordQuestionTab(): Promise<void> {
+    setTimeout(() => this.tabIndex = this.passwordQuestionTab.position);
+  }
+
+  /**
+   * Checks the route param if it's the password-questions param.
+   * @param param route param to check
+   * @returns true, if it's the password-questions param
+   */
+  private checkPasswordQuestionsParam(param: string): void {
+    this.hasPasswordQuestionsParam = param === 'profile-password-questions';
+  }
 }

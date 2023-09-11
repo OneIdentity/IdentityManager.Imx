@@ -71,3 +71,48 @@ imx-data-explorer-accounts {
 .governance-sidesheet__tab-content {
     height: calc(100% - 120px);
 }
+
+.eui-dark-theme {
+    .loading-progress{
+        background-color: $color-gray-70;
+    }
+    .mat-tab-group .mat-tab-header{
+        background-color:$color-gray-80;
+    }
+     .eui-sidesheet
+    {
+        background-color:$color-gray-80;
+        .mat-toolbar{
+            background-color: $color-blue-80;
+        }
+        .background--asher-gray{
+            background-color: $color-gray-80;
+        }
+    }
+    .eui-sidesheet-actions.mat-card.eui-sidesheet-actions--white{
+        background-color: $color-gray-70;
+    }
+}
+
+.eui-contrast-theme {
+  .loading-progress{
+      background-color: $color-gray-90;
+  }
+  .mat-tab-group .mat-tab-header{
+      background-color:$color-gray-100;
+  }
+   .eui-sidesheet
+  {
+      background-color:$color-gray-100;
+      .mat-toolbar{
+          background-color: $color-blue-90;
+      }
+      .background--asher-gray{
+          background-color: $color-gray-90;
+      }
+  }
+  .eui-sidesheet-actions.mat-card.eui-sidesheet-actions--white{
+      background-color: $color-gray-90;
+  }
+}
+

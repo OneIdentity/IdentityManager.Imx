@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -37,6 +37,7 @@ export class BadgeTileComponent extends TileComponent {
   @Input() public value: string;
   @Input() public identifier: string;
   @Input() public tooltip: string;
+  @Input() public loadingState: boolean = false;
 
   @Output() public actionClick: EventEmitter<any> = new EventEmitter();
 

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,8 +25,8 @@
  */
 
 import { Component, EventEmitter, OnDestroy } from '@angular/core';
-import { FormArray, FormControl } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { UntypedFormArray, UntypedFormControl } from '@angular/forms';
+import { Subject, Subscription } from 'rxjs';
 
 import { LimitedValueData } from 'imx-qbm-dbts';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
@@ -41,12 +41,13 @@ import { MultiValueService } from '../../multi-value/multi-value.service';
 @Component({
   selector: 'imx-edit-multi-limited-value',
   templateUrl: './edit-multi-limited-value.component.html',
-  styleUrls: ['./edit-multi-limited-value.component.scss']
+  styleUrls: ['./edit-multi-limited-value.component.scss'],
 })
 export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
+  public readonly updateRequested = new Subject<void>();
 
   // TODO: Check Upgrade
-  public control = new FormArray([]);
+  public control = new UntypedFormArray([]);
 
   public readonly columnContainer = new EntityColumnContainer<string>();
 
@@ -55,13 +56,10 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
   private readonly subscriptions: Subscription[] = [];
   private isWriting = false;
 
-  constructor(
-    private readonly logger: ClassloggerService,
-    private readonly multiValueProvider: MultiValueService
-  ) { }
+  constructor(private readonly logger: ClassloggerService, private readonly multiValueProvider: MultiValueService) {}
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   /**
@@ -72,16 +70,34 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
     if (cdref && cdref.column) {
       this.columnContainer.init(cdref);
       this.initValues();
-      this.subscriptions.push(this.control.valueChanges.subscribe(async values =>
-        this.writeValue(values)
-      ));
-      this.subscriptions.push(this.columnContainer.subscribe(() => {
-        if (this.isWriting) { return; }
-        if (this.control.value !== this.columnContainer.value) {
-          this.initValues();
-        }
-        this.valueHasChanged.emit({value: this.columnContainer.value});
-      }));
+      this.subscriptions.push(this.control.valueChanges.subscribe(async (values) => this.writeValue(values)));
+      this.subscriptions.push(
+        this.columnContainer.subscribe(() => {
+          if (this.isWriting) {
+            return;
+          }
+          if (this.control.value !== this.columnContainer.value) {
+            this.initValues();
+          }
+
+          if (cdref.minlengthSubject) {
+            this.subscriptions.push(
+              cdref.minlengthSubject.subscribe(() => {
+                this.initValues();
+              })
+            );
+          }
+
+          this.subscriptions.push(
+            this.updateRequested.subscribe(() =>
+              setTimeout(() => {
+                this.initValues();
+              })
+            )
+          );
+          this.valueHasChanged.emit({ value: this.columnContainer.value });
+        })
+      );
       this.logger.trace(this, 'Control initialized');
     } else {
       this.logger.error(this, 'The Column Dependent Reference is undefined');
@@ -90,13 +106,13 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
 
   public initValues(): void {
     const selectedValues = this.multiValueProvider.getValues(this.columnContainer.value);
-    this.control = new FormArray([]);
-    this.columnContainer.limitedValuesContainer.values.forEach(limitedValueData =>
-      this.control.push(new FormControl(this.isSelected(limitedValueData, selectedValues)))
+    this.control = new UntypedFormArray([]);
+    this.columnContainer.limitedValuesContainer.values.forEach((limitedValueData) =>
+      this.control.push(new UntypedFormControl(this.isSelected(limitedValueData, selectedValues)))
     );
     if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
-      this.control.setValidators((control: FormArray) =>
-        control.controls.find(checkBox => checkBox.value) ? null : { required: true }
+      this.control.setValidators((control: UntypedFormArray) =>
+        control.controls.find((checkBox) => checkBox.value) ? null : { required: true }
       );
     }
   }
@@ -118,7 +134,7 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
       return;
     }
 
-    this.valueHasChanged.emit({value, forceEmit: true});
+    this.valueHasChanged.emit({ value, forceEmit: true });
 
     try {
       this.logger.debug(this, 'writeValue - updateCdrValue...');
@@ -131,10 +147,9 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
       if (this.control.value !== this.columnContainer.value) {
         const selectedValues = this.multiValueProvider.getValues(this.columnContainer.value);
         this.control.controls.forEach((checkBox, index) =>
-          checkBox.setValue(
-            this.isSelected(this.columnContainer.limitedValuesContainer.values[index], selectedValues),
-            { emitEvent: false }
-          )
+          checkBox.setValue(this.isSelected(this.columnContainer.limitedValuesContainer.values[index], selectedValues), {
+            emitEvent: false,
+          })
         );
       }
     }
@@ -147,7 +162,9 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
   private getSelectedNames(values: boolean[]): string[] {
     const selectedValues: string[] = [];
     values.forEach((value, index) => {
-      if (value) { selectedValues.push(this.columnContainer.limitedValuesContainer.values[index].Value); }
+      if (value) {
+        selectedValues.push(this.columnContainer.limitedValuesContainer.values[index].Value);
+      }
     });
     return selectedValues;
   }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,14 +26,13 @@
 
 import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit, Inject, ViewChild } from '@angular/core';
-import { FormGroup, FormBuilder, FormArray } from '@angular/forms';
-import { EuiDownloadOptions, EuiLoadingService, EuiSidesheetRef, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { UntypedFormGroup, UntypedFormBuilder, UntypedFormArray } from '@angular/forms';
+import { EuiDownloadOptions, EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 
 import {
   ColumnDependentReference,
   BaseCdr, ClassloggerService,
   SystemInfoService,
-  TabControlHelper,
   SnackBarService,
   ElementalUiConfigService,
   ConfirmationService,
@@ -67,8 +66,8 @@ export class GroupSidesheetComponent implements OnInit {
     return this.sidesheetData.isAdmin;
   }
 
-  public readonly serviceItemFormGroup: FormGroup;
-  public readonly detailsFormGroup: FormGroup;
+  public readonly serviceItemFormGroup: UntypedFormGroup;
+  public readonly detailsFormGroup: UntypedFormGroup;
   public cdrList: ColumnDependentReference[] = [];
   public isRequestable: boolean;
   public parameters: { objecttable: string; objectuid: string; };
@@ -85,13 +84,12 @@ export class GroupSidesheetComponent implements OnInit {
   public dynamicTabs: TabItem[] = [];
 
   constructor(
-    formBuilder: FormBuilder,
+    formBuilder: UntypedFormBuilder,
     public groups: GroupsService,
     @Inject(EUI_SIDESHEET_DATA) private readonly sidesheetData: GroupSidesheetData,
     private readonly logger: ClassloggerService,
     private readonly busyService: EuiLoadingService,
     private readonly snackbar: SnackBarService,
-    private readonly sidesheet: EuiSidesheetService,
     private readonly elementalUiConfigService: ElementalUiConfigService,
     private readonly systemInfoService: SystemInfoService,
     private readonly reports: GroupsReportsService,
@@ -112,8 +110,8 @@ export class GroupSidesheetComponent implements OnInit {
       }
     });
 
-    this.detailsFormGroup = new FormGroup({ formArray: formBuilder.array([]) });
-    this.serviceItemFormGroup = new FormGroup({ formArray: formBuilder.array([]) });
+    this.detailsFormGroup = new UntypedFormGroup({ formArray: formBuilder.array([]) });
+    this.serviceItemFormGroup = new UntypedFormGroup({ formArray: formBuilder.array([]) });
 
     this.isRequestable = sidesheetData.groupServiceItem != null && !sidesheetData.groupServiceItem.IsInActive.value;
 
@@ -154,16 +152,16 @@ export class GroupSidesheetComponent implements OnInit {
     return isAad;
   }
 
-  get formArray(): FormArray {
-    return this.detailsFormGroup.get('formArray') as FormArray;
+  get formArray(): UntypedFormArray {
+    return this.detailsFormGroup.get('formArray') as UntypedFormArray;
   }
 
-  get siFormArray(): FormArray {
-    return this.serviceItemFormGroup.get('formArray') as FormArray;
+  get siFormArray(): UntypedFormArray {
+    return this.serviceItemFormGroup.get('formArray') as UntypedFormArray;
   }
 
   public cancel(): void {
-    this.sidesheet.close();
+    this.sidesheetRef.close();
   }
 
   public async createServiceItem(): Promise<void> {
@@ -218,13 +216,6 @@ export class GroupSidesheetComponent implements OnInit {
   }
 
   private async setup(): Promise<void> {
-    /**
-     * Resolve an issue where the mat-tab navigation arrows could appear on first load
-     */
-    setTimeout(() => {
-      TabControlHelper.triggerResizeEvent();
-    });
-
     let overlayRef: OverlayRef;
     setTimeout(() => overlayRef = this.busyService.show());
     try {
@@ -248,7 +239,7 @@ export class GroupSidesheetComponent implements OnInit {
 
 
   private async saveChanges(
-    formGroup: FormGroup,
+    formGroup: UntypedFormGroup,
     objectToSave: TypedEntity,
     confirmationText: string,
     reloadServiceItem: boolean = false

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,6 +25,7 @@
  */
 
 import {
+  ApiRequestOptions,
   CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, ExtendedTypedEntityCollection, IClientProperty, TypedEntity
 } from 'imx-qbm-dbts';
 import { DataModelWrapper } from './data-model/data-model-wrapper.interface';
@@ -45,7 +46,7 @@ export class DataSourceWrapper<TEntity extends TypedEntity = TypedEntity, TExten
   private readonly groupData: DataSourceToolbarGroupData;
 
   constructor(
-    private readonly getData: (parameters: CollectionLoadParameters) => Promise<ExtendedTypedEntityCollection<TEntity, TExtendedData>>,
+    private readonly getData: (parameters: CollectionLoadParameters, requestOpts?: ApiRequestOptions) => Promise<ExtendedTypedEntityCollection<TEntity, TExtendedData>>,
     private readonly displayedColumns: ClientPropertyForTableColumns[],
     private readonly entitySchema: EntitySchema,
     dataModelWrapper?: DataModelWrapper,
@@ -60,13 +61,13 @@ export class DataSourceWrapper<TEntity extends TypedEntity = TypedEntity, TExten
     }
   }
 
-  public async getDstSettings(parameters?: CollectionLoadParameters): Promise<DataSourceToolbarSettings> {
+  public async getDstSettings(parameters?: CollectionLoadParameters, requestOpts?: ApiRequestOptions ): Promise<DataSourceToolbarSettings> {
     this.parameters = {
       ...this.parameters,
       ...parameters
     };
 
-    const dataSource = await this.getData(this.parameters);
+    const dataSource = await this.getData(this.parameters, requestOpts);
 
     this.extendedData = dataSource?.extendedData;
 
@@ -78,18 +79,17 @@ export class DataSourceWrapper<TEntity extends TypedEntity = TypedEntity, TExten
         navigationState: this.parameters,
         filters: this.filterOptions,
         groupData: this.groupData,
-        dataModel: this.dataModel,
-        identifierForSessionStore: this.identifier
+        dataModel: this.dataModel
       };
     }
 
     return undefined;
   }
 
-  public async getGroupDstSettings(parameters: CollectionLoadParameters): Promise<DataSourceToolbarSettings> {
+  public async getGroupDstSettings(parameters: CollectionLoadParameters, requestOpts?: ApiRequestOptions): Promise<DataSourceToolbarSettings> {
     return {
       displayedColumns: this.displayedColumns,
-      dataSource: await this.getData(parameters),
+      dataSource: await this.getData(parameters, requestOpts),
       entitySchema: this.entitySchema,
       navigationState: parameters
     };
@@ -101,10 +101,6 @@ export class DataSourceWrapper<TEntity extends TypedEntity = TypedEntity, TExten
       parameters => dataModelWrapper.getGroupInfo({
         ...parameters,
         ...this.getGroupingFilterOptionParameters(dataModelWrapper.groupingFilterOptions),
-        ...{
-          StartIndex: 0,
-          PageSize: this.parameters?.PageSize
-        },
       }),
       dataModelWrapper.groupingExcludedColumns
     );

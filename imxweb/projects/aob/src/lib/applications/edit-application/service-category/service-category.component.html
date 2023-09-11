@@ -1,0 +1,36 @@
+<div eui-sidesheet-content>
+  <mat-card>
+    <imx-data-tree-wrapper
+      #dataTreeWrapper
+      [database]="treeDatabase"
+      [withSelectedNodeHighlight]="false"
+      (nodeSelected)="onServiceCategorySelected($event)"
+      data-imx-identifier="service-category-data-tree-categorytree"
+    >
+      <ng-template let-entity>
+        <div>
+          <button *ngIf="isDeletable(entity)"
+            [attr.aria-label]="'#LDS#Delete service category' | translate"
+            [attr.data-imx-identifier]="'service-category-delete-' + entity.GetKeys()?.join(',')"
+            [matTooltip]="'#LDS#Delete service category' | translate"
+            mat-button color="warn"
+            class="mat-icon-button"
+            (click)="onDelete($event,entity)"
+          >
+            <eui-icon icon="delete"></eui-icon>
+          </button>
+           <button
+            [attr.aria-label]="'#LDS#Add child service category' | translate"
+            [attr.data-imx-identifier]="'service-category-add-child-for-' + entity.GetKeys()?.join(',')"
+            [matTooltip]="'#LDS#Add child service category' | translate"
+            mat-button color="primary"
+            class="mat-icon-button"
+            (click)="addChildCategory($event,entity)"
+          >
+            <eui-icon icon="add"></eui-icon>
+          </button>
+        </div>
+      </ng-template>
+    </imx-data-tree-wrapper>
+  </mat-card>
+</div>

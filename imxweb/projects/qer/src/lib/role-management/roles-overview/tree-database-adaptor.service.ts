@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,11 +24,9 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
-import { EuiLoadingService } from '@elemental-ui/core';
 import { OwnershipInformation } from 'imx-api-qer';
 import { CollectionLoadParameters, EntityData, EntitySchema, HierarchyData, IEntity, TypedEntityBuilder, ValType } from 'imx-qbm-dbts';
-import { SettingsService, TreeDatabase, TreeNodeResultParameter } from 'qbm';
+import { BusyService, SettingsService, TreeDatabase, TreeNodeResultParameter } from 'qbm';
 import { RoleService } from '../role.service';
 
 export class TreeDatabaseAdaptorService extends TreeDatabase {
@@ -38,9 +36,10 @@ export class TreeDatabaseAdaptorService extends TreeDatabase {
   constructor(
     private readonly roleService: RoleService,
     private readonly settingsService: SettingsService,
-    private readonly busyService: EuiLoadingService,
     private readonly ownershipInfo: OwnershipInformation,
-    type: any) {
+    public busyService: BusyService,
+    type: any
+  ) {
     super();
     this.canSearch = true;
     this.builder = new TypedEntityBuilder(type);
@@ -48,68 +47,69 @@ export class TreeDatabaseAdaptorService extends TreeDatabase {
 
   public async getData(
     showLoading: boolean,
-    parameter: CollectionLoadParameters = { ParentKey: '' /* first level */ })
-    : Promise<TreeNodeResultParameter> {
+    parameter: CollectionLoadParameters = { ParentKey: '' /* first level */ }
+  ): Promise<TreeNodeResultParameter> {
     if (this.ownershipInfo == null) {
       return { entities: [], canLoadMore: false, totalCount: 0 };
     }
 
-    let overlay: OverlayRef;
-
-    if (showLoading) {
-      setTimeout(() => { overlay = this.busyService.show(); });
-    }
+    const isBusy = showLoading ? this.busyService.beginBusy() : undefined;
 
     try {
       const navigationState = {
         ...parameter,
         ...{
           PageSize: this.settingsService.DefaultPageSize,
-          StartIndex: parameter.StartIndex ? parameter.StartIndex : 0
-        }
+          StartIndex: parameter.StartIndex ? parameter.StartIndex : 0,
+        },
       };
 
       const data = await this.roleService.getEntitiesForTree(this.ownershipInfo.TableName, navigationState);
 
       if (data) {
-        const nodeEntities = await Promise.all(data.Entities.map(async (elem): Promise<IEntity> => {
-          return (await this.buildEntityWithHasChildren(elem, data.Hierarchy)).GetEntity();
-        }));
-        this.dataChanged.emit(nodeEntities);
+        const nodeEntities = await Promise.all(
+          data.Entities.map(async (elem): Promise<IEntity> => {
+            return (await this.buildEntityWithHasChildren(elem, data.Hierarchy))?.GetEntity();
+          })
+        );
+        this.dataChanged.emit(nodeEntities.filter(elem=>elem != null));
         return {
-          entities: nodeEntities,
+          entities: nodeEntities.filter(elem=>elem != null),
           canLoadMore: navigationState.StartIndex + navigationState.PageSize < data.TotalCount,
-          totalCount: data.TotalCount
+          totalCount: data.TotalCount,
         };
       }
       return { entities: [], canLoadMore: false, totalCount: 0 };
     } finally {
-
-      if (showLoading) {
-        setTimeout(() => { this.busyService.hide(overlay); });
-      }
+      isBusy?.endBusy();
     }
   }
 
-  public async prepare(
-    entitySchema: EntitySchema): Promise<void> {
+  public async prepare(entitySchema: EntitySchema, withReload: boolean): Promise<void> {
     this.entitySchema = entitySchema;
-    this.reloadData();
+    if(withReload)
+    {this.reloadData();}
   }
 
   /** adds a hasChildren column to the entity */
   private async buildEntityWithHasChildren(entityData: EntityData, data: HierarchyData): Promise<any> {
-
+    if(!this.entitySchema){
+      return undefined;
+    }
     const entity = this.builder.buildReadWriteEntity({ entitySchema: this.entitySchema, entityData });
-    entity.GetEntity().AddColumns([{
-      Type: ValType.Bool,
-      IsMultiValued: true,
-      ColumnName: 'HasChildren',
-      MinLen: 0,
-      Display: ''
-    }]);
-    await entity.GetEntity().GetColumn('HasChildren')
-      .PutValue(data ? data.EntitiesWithHierarchy.some(elem => entityData.Keys.some(key => key === elem)) : false);
+    entity.GetEntity().AddColumns([
+      {
+        Type: ValType.Bool,
+        IsMultiValued: true,
+        ColumnName: 'HasChildren',
+        MinLen: 0,
+        Display: '',
+      },
+    ]);
+    await entity
+      .GetEntity()
+      .GetColumn('HasChildren')
+      .PutValue(data ? data.EntitiesWithHierarchy.some((elem) => entityData.Keys.some((key) => key === elem)) : false);
 
     return entity;
   }

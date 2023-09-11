@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,30 +28,24 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AuthenticationGuardService, LoginComponent, RouteGuardService } from 'qbm';
 import { StartComponent } from './start/start.component';
-import { SwaggerComponent } from './swagger/swagger.component';
 import { AdminRoutes } from 'qbm';
 
 const routes: Routes = [
   ...AdminRoutes,
   {
     path: '',
-    component: StartComponent
+    component: StartComponent,
   },
   {
     path: 'login',
     component: LoginComponent,
     canActivate: [AuthenticationGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
-  {
-    path: 'swagger-ui',
-    component: SwaggerComponent
-  },
-  { path: '**', redirectTo: '' }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy' })],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AppRoutingModule {}

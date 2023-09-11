@@ -1,4 +1,5 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 .imx-user {
   display: flex;
@@ -74,6 +75,34 @@
   .imx-user-properties {
     >span {
       font-size: 14px;
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-user-icon {
+      color: $color-gray-80;
+      background-color: $color-gray-60;
+    }
+    .imx-user-properties {
+      >span:last-child {
+        color: $color-gray-60;
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-user-icon {
+      color: $color-gray-100;
+      background-color: $color-gray-80;
+    }
+    .imx-user-properties {
+      >span:last-child {
+        color: $color-gray-80;
+      }
     }
   }
 }

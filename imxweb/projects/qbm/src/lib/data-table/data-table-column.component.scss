@@ -1,7 +1,7 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
+@import "@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
 
-td.mat-cell,
-th.mat-header-cell {
+.imx-table-column {
   padding-right: 15px;
 }
 
@@ -21,5 +21,23 @@ td.mat-cell ::ng-deep div[subtitle] {
 @media screen and (max-width: 768px) {
   td.mat-cell ::ng-deep div[subtitle] {
     max-width: 250px;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .mat-header-cell {
+      color: $color-gray-10;
+      border-bottom-color: $color-gray-60;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .mat-header-cell {
+      color: $color-gray-0;
+      border-bottom-color: $color-gray-60;
+    }
   }
 }

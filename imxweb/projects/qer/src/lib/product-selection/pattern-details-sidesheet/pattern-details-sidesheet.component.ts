@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,7 +28,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { PortalShopServiceitems, QerProjectConfig } from 'imx-api-qer';
 import { DisplayColumns, MultiValue } from 'imx-qbm-dbts';
-import { ColumnDependentReference, TabControlHelper, BaseReadonlyCdr } from 'qbm';
+import { ColumnDependentReference, BaseReadonlyCdr } from 'qbm';
 
 @Component({
   selector: 'imx-pattern-details-sidesheet',
@@ -47,9 +47,6 @@ export class PatternDetailsSidesheetComponent implements OnInit {
       projectConfig: QerProjectConfig
     }
   ) {
-    setTimeout(() => {
-      TabControlHelper.triggerResizeEvent();
-    });
     this.roleAssignments = data.items.map(item => ['ESet', 'QERAssign'].includes(item.TableName.value));
     this.atLeastOneRoleAssignment = this.roleAssignments.some(item => item);
    }

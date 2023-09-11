@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,6 +35,7 @@ import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
 import {
+  BusyIndicatorModule,
   CdrModule,
   ClassloggerService,
   DataSourceToolbarModule,
@@ -42,17 +43,19 @@ import {
   DataTreeModule,
   DynamicTabsModule,
   ExtModule,
+  HELP_CONTEXTUAL,
+  HelpContextualModule,
   LdsReplaceModule,
   MenuItem,
   MenuService,
   ObjectHistoryModule,
-  RouteGuardService
+  RouteGuardService,
 } from 'qbm';
 import { DataExplorerIdentitiesComponent } from './identities.component';
 import { IdentitiesService } from './identities.service';
 import { IdentitySidesheetComponent } from './identity-sidesheet/identity-sidesheet.component';
 import { IdentitiesReportsService } from './identities-reports.service';
-import { isPersonAdmin } from '../admin/qer-permissions-helper';
+import { isAuditor, isPersonAdmin, isPersonManager } from '../admin/qer-permissions-helper';
 import { RiskModule } from '../risk/risk.module';
 import { DataExplorerRegistryService } from '../data-explorer-view/data-explorer-registry.service';
 import { AssignmentsComponent } from './identity-sidesheet/assignments/assignments.component';
@@ -60,16 +63,20 @@ import { IdentityRoleMembershipsModule } from './identity-sidesheet/identity-rol
 import { OrgChartModule } from '../org-chart/org-chart.module';
 import { CreateNewIdentityComponent } from './create-new-identity/create-new-identity.component';
 import { DuplicatesSidesheetComponent } from './create-new-identity/duplicates-sidesheet/duplicates-sidesheet.component';
+import { RequestHistoryModule } from '../request-history/request-history.module';
+import { ObjectHyperviewModule } from '../object-hyperview/object-hyperview.module';
+import { MyResponsibilitiesRegistryService } from '../my-responsibilities-view/my-responsibilities-registry.service';
+import { MatMenuModule } from '@angular/material/menu';
+import { ProjectConfig } from 'imx-api-qbm';
 
 const routes: Routes = [
   {
     path: 'resp/identities',
     component: DataExplorerIdentitiesComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
-  }
+    resolve: [RouteGuardService],
+  },
 ];
-
 
 @NgModule({
   declarations: [
@@ -77,7 +84,7 @@ const routes: Routes = [
     IdentitySidesheetComponent,
     AssignmentsComponent,
     CreateNewIdentityComponent,
-    DuplicatesSidesheetComponent
+    DuplicatesSidesheetComponent,
   ],
   imports: [
     CommonModule,
@@ -95,41 +102,41 @@ const routes: Routes = [
     LdsReplaceModule,
     DataTreeModule,
     ObjectHistoryModule,
+    ObjectHyperviewModule,
+    RequestHistoryModule,
     ExtModule,
     RiskModule,
     DynamicTabsModule,
     OrgChartModule,
+    BusyIndicatorModule,
     IdentityRoleMembershipsModule,
     RouterModule.forChild(routes),
+    MatMenuModule,
+    HelpContextualModule
   ],
-  providers: [
-    IdentitiesService,
-    IdentitiesReportsService
-  ],
+  providers: [IdentitiesService, IdentitiesReportsService],
   exports: [DataExplorerIdentitiesComponent],
-  entryComponents: [
-    CreateNewIdentityComponent,
-    DuplicatesSidesheetComponent
-  ]
+  entryComponents: [CreateNewIdentityComponent, DuplicatesSidesheetComponent],
 })
 export class IdentitiesModule {
   constructor(
     private readonly dataExplorerRegistryService: DataExplorerRegistryService,
     private readonly menuService: MenuService,
+    private readonly myResponsibilitiesRegistryService: MyResponsibilitiesRegistryService,
     logger: ClassloggerService
   ) {
     logger.info(this, '▶️ IdentitiesModule loaded');
     this.init();
+    this.setupMyResponsibilitiesView();
     this.setupMenu();
   }
 
   private setupMenu(): void {
     this.menuService.addMenuFactories(
-      (preProps: string[], groups: string[]) => {
+      (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
 
         const items: MenuItem[] = [];
-
-        if (preProps.includes('ITSHOP') && isPersonAdmin(groups)) {
+        if (preProps.includes('ITSHOP') && (isPersonAdmin(features) || isPersonManager(features) || isAuditor(groups))) {
           items.push(
             {
               id: 'QER_DataExplorer',
@@ -155,8 +162,8 @@ export class IdentitiesModule {
 
   private init(): void {
 
-    this.dataExplorerRegistryService.registerFactory((preProps: string[], groups: string[]) => {
-      if (!isPersonAdmin(groups)) {
+    this.dataExplorerRegistryService.registerFactory((preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
+      if (!isPersonAdmin(features) && !isPersonManager(features) && !isAuditor(groups)) {
         return;
       }
       return {
@@ -164,7 +171,23 @@ export class IdentitiesModule {
         sortOrder: 1,
         name: 'identities',
         caption: '#LDS#Identities',
-        icon: 'contactinfo'
+        icon: 'contactinfo',
+        contextId: HELP_CONTEXTUAL.DataExplorerIdentities
+      };
+    });
+  }
+
+  private setupMyResponsibilitiesView(): void {
+    this.myResponsibilitiesRegistryService.registerFactory((preProps: string[], groups: string[]) => {
+      if (!isPersonManager(groups)) {
+        return;
+      }
+      return {
+        instance: DataExplorerIdentitiesComponent,
+        sortOrder: 1,
+        name: 'identities',
+        caption: '#LDS#Identities',
+        contextId: HELP_CONTEXTUAL.MyResponsibilitiesIdentities
       };
     });
   }

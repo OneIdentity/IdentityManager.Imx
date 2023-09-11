@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,10 +27,11 @@
 import { Injectable } from '@angular/core';
 import {
   ParameterData,
-  WriteExtTypedEntity,
+  ReadWriteExtTypedEntity,
   EntityCollectionData, EntityWriteDataColumn, FkProviderItem, IClientProperty, IEntity, IEntityColumn, FilterTreeData,
+  IFkCandidateProvider,
 } from 'imx-qbm-dbts';
-import { ClassloggerService, EntityService } from 'qbm';
+import { ClassloggerService, EntityService, ImxTranslationProviderService } from 'qbm';
 import { ExtendedCollectionData, ExtendedDataWrapper } from './extended-collection-data.interface';
 import { ParameterCategoryColumn } from './parameter-category-column.interface';
 import { ParameterCategory } from './parameter-category.interface';
@@ -48,8 +49,9 @@ type CategoryParameterWrite = { [id: string]: EntityWriteDataColumn[][] };
   providedIn: 'root'
 })
 export class ParameterDataService {
-  constructor(private readonly entityService: EntityService,
-    private readonly logger: ClassloggerService
+  constructor(public readonly entityService: EntityService,
+    private readonly translator: ImxTranslationProviderService,
+    public readonly logger: ClassloggerService
   ) { }
 
   public hasParameters(parmeterDataWrapper: ParameterDataWrapper): boolean {
@@ -139,11 +141,11 @@ export class ParameterDataService {
   /** Builds a set of entity columns for a simple array of parameters. */
   public createInteractiveParameterColumns(
     parameters: ParameterData[],
-    getFkProviderItems: (parameter: ParameterData) => FkProviderItem[],
-    typedEntity: WriteExtTypedEntity<ParameterData[][]>
+    getFkProvider: (parameter: ParameterData) => IFkCandidateProvider,
+    typedEntity: ReadWriteExtTypedEntity<ParameterData[][], EntityWriteDataColumn[][]>
   ): IEntityColumn[] {
     const columns: IEntityColumn[] = [];
-    const container = new ParameterContainer(this.entityService, getFkProviderItems, this.logger, typedEntity);
+    const container = new ParameterContainer(this.translator, getFkProvider, this.logger, typedEntity);
 
     typedEntity.onChangeExtendedDataRead(() => {
       // new parameters from server --> sync local entity
@@ -170,16 +172,16 @@ export class ParameterDataService {
   /** Builds a set of entity columns for parameters, when parameters are organized in categories. */
   public createInteractiveParameterCategoryColumns(
     parameterCategories: ParameterCategory[],
-    getFkProviderItems: (parameter: ParameterData) => FkProviderItem[],
-    typedEntity: WriteExtTypedEntity<CategoryParameterWrite>,
+    getFkProvider: (parameter: ParameterData) => IFkCandidateProvider,
+    typedEntity: ReadWriteExtTypedEntity<{ Parameters?: { [key: string]: ParameterData[][]; } }, CategoryParameterWrite>,
     callbackOnChange?: () => void
   ): ParameterCategoryColumn[] {
     const columns = [];
-    const container = new ParameterContainer(this.entityService, getFkProviderItems, this.logger, typedEntity);
+    const container = new ParameterContainer(this.translator, getFkProvider, this.logger, typedEntity);
 
     typedEntity.onChangeExtendedDataRead(() => {
       // new parameters from server --> sync local entity
-      const newParameters: { [key: string]: ParameterData[][]; } = typedEntity.extendedDataRead.Parameters;
+      const newParameters = typedEntity.extendedDataRead.Parameters;
       const newCategories = this.createParameterCategories({ Parameters: newParameters, index: 0 });
       newCategories.forEach(category =>
         category.parameters.forEach(parameter => {

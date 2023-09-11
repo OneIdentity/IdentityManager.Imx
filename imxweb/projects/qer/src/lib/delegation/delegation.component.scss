@@ -1,142 +1,269 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+@mixin stepper-margin {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
 
 :host {
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-}
 
-.imx-step-button,
-.imx-step-button-save {
-  margin-top: 10px;
-  > *:not(:last-child) {
-    margin-right: 10px;
+  .imx-stepper-content {
+    @include stepper-margin();
   }
-}
 
-.imx-step-button-save {
-  align-self: flex-end;
-}
+  .imx-step-button,
+  .imx-step-button-save {
+    display: flex;
+    > *:not(:last-child) {
+      margin-right: 10px;
+    }
+  }
 
-.imx-delegatable-elements {
-  overflow: hidden;
-  margin-bottom: 10px;
-  max-height: 600px;
-}
+  //For hiding components during loading
+  .hidden {
+    display: none;
+  }
 
-.imx-delegatable-elements mat-list-option .subtext {
-  font-size: 11px;
-  font-style: italic;
-  color: $black_9;
-  margin-bottom: 10px;
-}
+  imx-busy-indicator {
+    align-self: center;
+    margin-top: 20px;
+  }
 
-.imx-delegatable-elements mat-list-option {
-  font-size: smaller;
-}
+  .imx-roles-form {
+    display: flex;
+    flex-direction: column;
+    height: 390px;
+    border-radius: 5px;
+    padding: 5px;
+    @include stepper-margin();
+  }
 
-.imx-delegation-stepper {
-  flex: 1 1 auto;
-  max-width: 100%;
-  background-color: $white;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-}
+  .imx-step-button-save {
+    align-self: flex-end;
+    margin-top: 16px;
+  }
 
-.imx-delegation-list {
-  height: 350px;
-  display: flex;
-  flex-direction: column;
-  margin: 20px 0;
+  .imx-type-selector {
+    @include stepper-margin();
+    > .mat-radio-button {
+      margin-left: 25px;
+    }
+  }
 
-  > :nth-child(2) {
+  .imx-delegatable-elements {
+    overflow: hidden;
+    margin-bottom: 10px;
+    max-height: 600px;
+    display: flex;
     flex: 1 1 auto;
+  }
+
+  .imx-delegatable-elements mat-list-option .subtext {
+    font-size: 11px;
+    font-style: italic;
+    margin-bottom: 10px;
+  }
+
+  .imx-delegatable-elements mat-list-option {
+    font-size: smaller;
+  }
+
+  .imx-delegation-stepper {
+    flex: 1 1 auto;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: 3px;
+    overflow: hidden;
+
+    > :first-child {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      overflow: auto;
+    }
+  }
+
+  .imx-delegation-list {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+
+    > :nth-child(2) {
+      flex: 1 1 auto;
+      overflow: auto;
+    }
+
+    .imx-paginator-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      > :last-child {
+        flex: 1 1 auto;
+      }
+
+      ::ng-deep .mat-paginator {
+        box-shadow: none;
+      }
+    }
+
+    .multi-select-formcontrol-eui-search {
+      width: 100%;
+      display: flex;
+
+      .eui-search {
+        width: 100%;
+      }
+
+      ::ng-deep .eui-search.mat-form-field.mat-form-field-appearance-outline {
+        min-width: 280px;
+        flex: 1;
+        margin-bottom: 10px;
+      }
+    }
+
+    .imx-selected-entitlements {
+      margin: 0;
+      line-height: 36px;
+      font-size: 13.3px;
+      flex: auto;
+
+      ::ng-deep .imx-badge.eui-badge .eui-badge-content {
+        font-size: 13.3px;
+        line-height: 14px;
+      }
+    }
+
+    .imx-badge {
+      background-color: inherit;
+    }
+  }
+
+  .mat-vertical-content-container {
+    flex: 1 1 auto;
+  }
+
+  .imx-small-error {
+    font-size: small;
+    margin: -25px 0 20px 10px;
+  }
+
+  .imx-delegation-success {
+    margin: 20px;
+    flex: 1 1 auto;
+    width: max-content;
+  }
+
+  .imx-alert-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .imx-global-elements {
+    padding-left: 1em;
+    overflow-y: auto;
+  }
+
+  .nr-roles {
+    font-style: italic;
+  }
+
+  .imx-delegation-type {
+    @include stepper-margin();
+    > * :not(last-child) {
+      margin-right: 15px;
+    }
+  }
+
+  .imx-class-title {
+    font-weight: 600;
+    margin: 30px 0 0 0;
+  }
+
+  .imx-no-delegatable-items {
+    display: flex;
+    margin: 20px 0;
+    flex: 1 1 auto;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+
+    .eui-icon {
+      font-size: 100px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 18px;
+    }
+  }
+
+  .imx-additional-informations {
+    @include stepper-margin();
     overflow: auto;
   }
+}
 
-  .imx-paginator-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    > :last-child {
-      flex: 1 1 auto;
+// Theming
+.eui-light-theme {
+  :host {
+    .imx-no-delegatable-items {
+      .eui-icon {
+        color: $color-gray-10;
+      }
+
+      p {
+        color: $color-gray-50;
+      }
     }
 
-    ::ng-deep .mat-paginator {
-      box-shadow: none;
-    }
-  }
-
-  .multi-select-formcontrol-eui-search {
-    width: 100%;
-    display: flex;
-
-    .eui-search {
-      width: 100%;
+    .imx-roles-form {
+      border: $color-gray-10 1px solid;
     }
 
-    ::ng-deep .eui-search.mat-form-field.mat-form-field-appearance-outline {
-      min-width: 280px;
-      flex: 1;
-      margin-bottom: 10px;
+    .imx-delegatable-elements mat-list-option .subtext {
+      color: $color-gray-40;
     }
   }
+}
 
-  .imx-selected-entitlements {
-    margin: 0;
-    line-height: 36px;
-    font-size: 13.3px;
-    flex: auto;
-
-    ::ng-deep .imx-badge.eui-badge .eui-badge-content {
-      font-size: 13.3px;
-      line-height: 14px;
+.eui-dark-theme {
+  :host {
+    .imx-delegatable-elements mat-list-option .subtext {
+      color: $color-gray-20;
     }
-  }
 
-  .imx-badge {
-    background-color: inherit;
+    .imx-no-delegatable-items {
+      .eui-icon {
+        color: $color-gray-20;
+      }
+
+      p {
+        color: $color-gray-10;
+      }
+    }
   }
 }
 
-.mat-vertical-content-container {
-  flex: 1 1 auto;
-}
+.eui-contrast-theme {
+  :host {
+    .imx-delegatable-elements mat-list-option .subtext {
+      color: $color-gray-0;
+    }
 
-.imx-small-error {
-  font-size: small;
-  margin: -25px 0 20px 10px;
-}
+    .imx-no-delegatable-items {
+      .eui-icon {
+        color: $color-gray-10;
+      }
 
-.imx-delegation-success {
-  margin: 20px;
-  flex: 1 1 auto;
-  width: max-content;
-}
-
-.imx-alert-content {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.imx-global-elements {
-  padding-left: 1em;
-}
-
-.nr-roles {
-  font-style: italic;
-}
-
-.imx-delegation-type {
-  > * :not(last-child) {
-    margin-right: 15px;
+      p {
+        color: $color-gray-0;
+      }
+    }
   }
-}
-
-.imx-class-title {
-  font-weight: 600;
-  margin: 30px 0 0 0;
 }

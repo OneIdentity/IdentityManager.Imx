@@ -1,0 +1,107 @@
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import "../../stat-mixins.scss";
+
+:host {
+  display: flex;
+  justify-content: center;
+  line-height: 16px;
+
+  .item-count {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 14px;
+    line-height: 18px;
+
+    .item-bold {
+      font-weight: 600;
+    }
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 25px) 50px;
+    grid-template-rows: repeat(3, 25px);
+    gap: 5px;
+
+    .grid-base {
+      width: 25px;
+      height: 25px;
+    }
+
+    .grid-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: left;
+      height: 100%;
+      font-weight: 600;
+    }
+  }
+
+}
+
+
+// Theming
+:host {
+  @include Stat-Colors;
+
+  .grid-base {
+    background-color: $color-gray-10;
+  }
+
+  .grid-error {
+  background-color: var(--stat-error);
+  }
+
+  .grid-warn {
+  background-color: var(--stat-warn);
+  }
+
+  .grid-ok {
+  background-color: var(--stat-ok);
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    @include Stat-Colors(eui-dark-theme);
+
+    .grid-base {
+      background-color: $color-gray-50;
+    }
+
+    .grid-error {
+      background-color: var(--stat-error);
+      }
+
+      .grid-warn {
+      background-color: var(--stat-warn);
+      }
+
+      .grid-ok {
+      background-color: var(--stat-ok);
+      }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    @include Stat-Colors(eui-dark-theme);
+
+    .grid-base {
+      background-color: $color-gray-50;
+    }
+
+    .grid-error {
+      background-color: var(--stat-error);
+      }
+
+      .grid-warn {
+      background-color: var(--stat-warn);
+      }
+
+      .grid-ok {
+      background-color: var(--stat-ok);
+      }
+  }
+}

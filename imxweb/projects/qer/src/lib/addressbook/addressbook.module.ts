@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,7 +34,7 @@ import { EuiCoreModule } from '@elemental-ui/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { DataSourceToolbarModule, DataTableModule, CdrModule, RouteGuardService } from 'qbm';
+import { DataSourceToolbarModule, DataTableModule, CdrModule, RouteGuardService, HELP_CONTEXTUAL, HelpContextualModule } from 'qbm';
 
 import { AddressbookComponent } from './addressbook.component';
 import { AddressbookDetailComponent } from './addressbook-detail/addressbook-detail.component';
@@ -46,6 +46,9 @@ const routes: Routes = [
     component: AddressbookComponent,
     canActivate: [RouteGuardService],
     resolve: [RouteGuardService],
+    data:{
+      contextId: HELP_CONTEXTUAL.Addressbook
+    }
   },
 ];
 
@@ -65,6 +68,7 @@ const routes: Routes = [
     MatExpansionModule,
     OrgChartModule,
     ReactiveFormsModule,
+    HelpContextualModule,
   ],
   exports: [AddressbookComponent],
 })

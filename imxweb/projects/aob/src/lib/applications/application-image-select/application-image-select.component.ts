@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,8 +25,8 @@
  */
 
 import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { UntypedFormControl } from '@angular/forms';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
 import { IEntityColumn } from 'imx-qbm-dbts';
 import { Base64ImageService, EntityColumnContainer } from 'qbm';
@@ -38,13 +38,13 @@ import { ImageSelectorDialogComponent } from './image-selector-dialog/image-sele
   styleUrls: ['./application-image-select.component.scss']
 })
 export class ApplicationImageSelectComponent implements OnChanges, AfterViewInit {
-  public readonly control = new FormControl();
+  public readonly control = new UntypedFormControl();
 
   public readonly columnContainer = new EntityColumnContainer<string>();
 
   @Input() public column: IEntityColumn;
 
-  @Output() public controlCreated = new EventEmitter<FormControl>();
+  @Output() public controlCreated = new EventEmitter<UntypedFormControl>();
 
   private readonly icons = {
     // tslint:disable-next-line:max-line-length
@@ -85,7 +85,8 @@ export class ApplicationImageSelectComponent implements OnChanges, AfterViewInit
   }
 
   public async openEditDialog(): Promise<void> {
-    const imageSelectorDialogParams = {
+    const imageSelectorDialogParams: MatDialogConfig = {
+      autoFocus: false,
       data: {
         title: '#LDS#Edit Application Icon',
         icons: this.icons,

@@ -1,31 +1,52 @@
-:host
-{
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+
+:host {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   height: 100%;
+  ::ng-deep {
+    .mat-form-field-prefix {
+      .mat-spinner,
+      .mat-spinner svg {
+        max-height: 16px;
+        max-width: 16px;
+      }
+      .mat-spinner {
+        margin-right: 10px;
+      }
+    }
+  }
 }
+.filters {
+  display: flex;
+  flex-flow: wrap;
+  align-items: center;
+  gap: 1em;
+  margin-bottom: 16px;
+  .namespace-selector {
+    min-width: 400px;
+  }
 
-.namespace-selector
-{
-  min-width: 400px;
-  margin-right: 1em;
-}
-
-.table-selector
-{
-  min-width: 400px;
+  .table-selector {
+    min-width: 400px;
+  }
 }
 
 .scroll-container {
   flex: 1 1 auto;
   overflow: auto;
+  display: flex;
+  mat-spinner {
+    margin: auto;
+  }
 }
 
 .helper-alert {
   margin-bottom: 1em;
   display: flex;
   flex-direction: column;
+
   span {
     display: block;
   }
@@ -39,16 +60,22 @@
   > *:not(:first-child) {
     margin-left: 5px;
   }
+
+  .imx-menu-spacer{
+    flex: 1 1 auto;
+  }
+
+  imx-selected-elements {
+    margin-left: 10px;
+  }
 }
 
-.object-type
-{
+.object-type {
   font-style: italic;
   font-size: smaller;
 }
 
-.bulkmodecheckbox
-{
+.bulkmodecheckbox {
   margin-right: 1em;
   line-height: 36px;
 }
@@ -56,4 +83,40 @@
 .imx-justify-start {
   align-self: flex-start;
   flex: 1 1 auto;
+}
+
+mat-spinner {
+  margin: auto;
+}
+
+.first-cell {
+  display: flex;
+  flex-direction: row;
+}
+
+.first-col {
+  flex-grow: 1;
+}
+
+.loadingtable {
+  visibility: hidden;
+}
+
+.selected-objects {
+  font-size: 14px;
+  color: $color-gray-80;
+
+  span {
+    color: $color-gray-30;
+    font-weight: bold;
+    margin-left: 3px;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .selected-objects span {
+      color: $color-gray-30;
+    }
+  }
 }

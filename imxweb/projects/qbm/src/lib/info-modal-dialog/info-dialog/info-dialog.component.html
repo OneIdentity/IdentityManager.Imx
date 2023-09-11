@@ -1,0 +1,8 @@
+<h3 mat-dialog-title *ngIf="data.title">{{data.title}}</h3>
+<mat-dialog-content>
+  <ng-content *ngTemplateOutlet="data.content"></ng-content>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-raised-button matDialogClose color="primary" data-imx-identifier="info-dialog-close">{{'#LDS#Close' | translate}}</button>
+</mat-dialog-actions>

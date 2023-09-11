@@ -1,0 +1,97 @@
+@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+.calls-sidesheet {
+  overflow: hidden;
+  height:100%;
+
+  &__tab-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  &__tab-content-body {
+
+    .helper-alert {
+      display: flex;
+      margin-bottom: 20px;
+    }
+  }
+
+  ::ng-deep .mat-tab-group {
+    height: 100%;
+    .mat-tab-header {
+      padding: 0 20px;
+    }
+
+    .mat-tab-body-wrapper {
+      height: 100%;
+    }
+  }
+}
+
+imx-help-contextual{
+  justify-content: end;
+}
+.eui-sidesheet-content.eui-sidesheet-content--no-padding-top{
+  padding-top: 0;
+}
+
+@media screen and (max-width: 480px) {
+  .calls-sidesheet {
+    &__tab-content {
+      display: block;
+    }
+
+    &__action-buttons {
+      flex-direction: column-reverse;
+
+      button {
+        width: 100%;
+        margin-bottom: 10px;
+        margin-right: 0;
+      }
+
+      .justify-start {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .calls-sidesheet {
+      background-color: $color-gray-80;
+
+      ::ng-deep .mat-tab-group {
+        .mat-tab-header {
+          background-color: $color-gray-80;
+        }
+      }
+
+      &__action-buttons {
+        background-color: $color-gray-70;
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .calls-sidesheet {
+      background-color: $color-gray-100;
+
+      ::ng-deep .mat-tab-group {
+        .mat-tab-header {
+          background-color: $color-gray-100;
+        }
+      }
+
+      &__action-buttons {
+        background-color: $color-gray-90;
+      }
+    }
+  }
+}

@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
 
 :host {
   display: flex;
@@ -12,7 +12,7 @@
     display: block;
     &.column-display {
       font-size: 12px;
-      color: $black-9;
+      color: $color-gray-40;
       padding-bottom: 5px;
     }
   }
@@ -63,7 +63,7 @@ li.imx-event {
 
 li.imx-event::before {
   margin-left: -50px;
-  background-color: $white;
+  background-color: $color-gray-0;
   height: 24px;
   width: 28px;
   content: "";
@@ -72,65 +72,95 @@ li.imx-event::before {
 }
 
 li.imx-event.imx-positive {
-  background: linear-gradient($aspen-green, $aspen-green) no-repeat scroll 9px 0 transparent;
+  background: linear-gradient($color-green-60, $color-green-60) no-repeat scroll 9px 0 transparent;
   background-size: 2px 1000px;
 }
 
 li.imx-event.imx-positive::before {
   font-family: Cadence-Icon;
   font-size: 24px;
-  color: $aspen-green;
+  color: $color-green-60;
   content: "\e049";
 }
 
 li.imx-event.imx-negative {
-  background: linear-gradient($phoenix-red, $phoenix-red) no-repeat scroll 9px 0 transparent;
+  background: linear-gradient($color-red-60, $color-red-60) no-repeat scroll 9px 0 transparent;
   background-size: 2px 1000px;
 }
 
 li.imx-event.imx-negative::before {
   font-family: Cadence-Icon;
   font-size: 24px;
-  color: $phoenix-red;
+  color: $color-red-60;
   content: "\e05c";
 }
 
 li.imx-event.imx-question {
-  background: linear-gradient($iris-blue, $iris-blue) no-repeat scroll 9px 0 transparent;
+  background: linear-gradient($color-blue-60, $color-blue-60) no-repeat scroll 9px 0 transparent;
   background-size: 2px 1000px;
 }
 
 li.imx-event.imx-question::before {
   font-family: Cadence-Icon;
   font-size: 24px;
-  color: $iris-blue;
+  color: $color-blue-60;
   content: "\e009";
 }
 
 li.imx-event.imx-info {
-  background: linear-gradient($iris-blue, $iris-blue) no-repeat scroll 9px 0 transparent;
+  background: linear-gradient($color-blue-60, $color-blue-60) no-repeat scroll 9px 0 transparent;
   background-size: 2px 1000px;
 }
 
 li.imx-event.imx-info::before {
   font-family: Cadence-Icon;
   font-size: 24px;
-  color: $iris-blue;
+  color: $color-blue-60;
   content: "\e010";
 }
 
 li.imx-event.imx-pending {
-  background: linear-gradient($black-b, $black-b) no-repeat scroll 9px 0 transparent;
+  background: linear-gradient($color-gray-30, $color-gray-30) no-repeat scroll 9px 0 transparent;
   background-size: 2px 1000px;
 }
 
 li.imx-event.imx-pending::before {
   font-family: Cadence-Icon;
   font-size: 24px;
-  color: $black-b;
+  color: $color-gray-30;
   content: "\e009";
 }
 
 .chief-approval-badge {
   margin-bottom: .5em;
+}
+
+.eui-dark-theme {
+  :host {
+    li.imx-event::before{
+      background-color: $color-gray-70;
+    }
+
+    li{
+      .mat-card
+      {
+        background-color: $color-gray-60;
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    li.imx-event::before{
+      background-color: $color-gray-90;
+    }
+
+    li{
+      .mat-card
+      {
+        background-color: $color-gray-80;
+      }
+    }
+  }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,9 +31,8 @@ import { MatListModule } from '@angular/material/list';
 import { Routes, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CdrModule, RouteGuardService, TileModule } from 'qbm';
+import { CdrModule, HELP_CONTEXTUAL, RouteGuardService, TileModule } from 'qbm';
 import { BusinessownerOverviewTileModule, BusinessownerAddonTileModule } from 'qer';
-import { UnsGroupObjectSheetComponent } from './objectsheet-unsgroup/unsgroup.component';
 import { ClaimGroupComponent } from './claim-group/claim-group.component';
 import { InitService } from './init.service';
 import { AccountsModule } from './accounts/accounts.module';
@@ -46,7 +45,10 @@ const routes: Routes = [
   {
     path: 'claimgroup',
     component: ClaimGroupComponent,
-    canActivate: [RouteGuardService]
+    canActivate: [RouteGuardService],
+    data:{
+      contextId: HELP_CONTEXTUAL.ClaimGroup
+    }
   },
   {
     path: 'resp/UNSGroup',
@@ -58,7 +60,6 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
-    UnsGroupObjectSheetComponent,
   ],
   imports: [
     AccountsModule,

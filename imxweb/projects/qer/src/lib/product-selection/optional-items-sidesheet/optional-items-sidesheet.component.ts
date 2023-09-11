@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,7 +30,7 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
-import { PortalShopServiceitems, QerProjectConfig, RequestableProductForPerson } from 'imx-api-qer';
+import { PortalShopServiceitems, QerProjectConfig } from 'imx-api-qer';
 import { MultiValue } from 'imx-qbm-dbts';
 import { ConfirmationService } from 'qbm';
 import { Subscription } from 'rxjs';
@@ -43,6 +43,7 @@ import { ServiceItemHierarchyExtended, ServiceItemOrder, ServiceItemTreeWrapper 
   styleUrls: ['./optional-items-sidesheet.component.scss'],
 })
 export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
+  public nRecipientsText: string = '';
   public baseItems: PortalShopServiceitems[];
   public optionalItems: PortalShopServiceitems[];
   public treeControl = new NestedTreeControl<ServiceItemHierarchyExtended>((leaf) => {
@@ -50,7 +51,7 @@ export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
   });
   public dataSource = new MatTreeNestedDataSource<ServiceItemHierarchyExtended>();
   public selected = 0;
-  public totalLeaves: number;
+  public totalLeaves = 0;
 
   private initialState: { isChecked: boolean; isIndeterminate: boolean; parentChecked: boolean }[] = [];
   private optionalItemMap: {
@@ -63,6 +64,7 @@ export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
     private serviceItemsProvider: ServiceItemsService,
     private readonly sideSheetRef: EuiSidesheetRef,
     private confirmationService: ConfirmationService,
+    private translate: TranslateService,
     @Inject(EUI_SIDESHEET_DATA)
     public data: {
       serviceItemTree: ServiceItemTreeWrapper;
@@ -71,7 +73,6 @@ export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
   ) {
     this.dataSource.data = this.data.serviceItemTree.trees;
     this.treeControl.dataNodes = this.dataSource.data;
-    this.totalLeaves = this.data.serviceItemTree.totalOptional;
 
     this.subscriptions.push(
       this.sideSheetRef.closeClicked().subscribe(async () => {
@@ -90,9 +91,14 @@ export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
   public hasChild = (_: number, tree: ServiceItemHierarchyExtended) =>
     (!!tree.Mandatory && tree.Mandatory.length > 0) || (!!tree.Optional && tree.Optional.length > 0);
 
-  public async ngOnInit(): Promise<void> {
+  public ngOnInit(): void {
+    this.nRecipientsText = this.translate.instant('{0} recipients selected');
     this.treeControl.dataNodes.forEach((tree) => {
-      this.treeControl.getDescendants(tree).map(async (child) => {
+      this.treeControl.getDescendants(tree).forEach((child) => {
+        if (!child.isMandatory) {
+          // If this is an optional node, add it to the total
+          this.totalLeaves += 1;
+        }
         this.initialState.push({
           isChecked: child.isChecked,
           isIndeterminate: child.isIndeterminate,
@@ -109,6 +115,10 @@ export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
+  public getRecipientText(node: ServiceItemHierarchyExtended): string {
+    return this.nRecipientsText.slice().replace('{0}', node.Recipients.length.toString());
+  }
+
   public getKey(item: PortalShopServiceitems): string {
     return item.GetEntity().GetKeys()[0];
   }
@@ -122,11 +132,9 @@ export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
       this.busyService.hide();
     }
     const outgoingServiceOrder: ServiceItemOrder = {
-      optionalItems: [],
       requestables: [],
     };
 
-    const uidsAdded: string[] = [];
     this.treeControl.dataNodes.forEach((tree) => {
       // Loop over each service item tree
       tree.UidRecipients.forEach((uidRecipient, index) => {
@@ -139,13 +147,10 @@ export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
           // Grab all descendants of the parent service item and create an order
           if (!child.isMandatory && child.isChecked && !child.isIndeterminate) {
             const uid = child.UidAccProduct;
-            const serviceItem = await this.optionalItemMap[uid];
-            const requestable = this.serviceItemsProvider.getServiceItemsForPersons([serviceItem], [recipient])[0];
-            requestable.UidAccProductParent = child.parent;
-            outgoingServiceOrder.requestables.push(requestable);
-            if (!uidsAdded.includes(uid)) {
-              outgoingServiceOrder.optionalItems.push(serviceItem);
-            }
+            const childItem = await this.optionalItemMap[uid];
+            const childRequestable = this.serviceItemsProvider.getServiceItemsForPersons([childItem], [recipient])[0];
+            childRequestable.UidAccProductParent = child.parentUid;
+            outgoingServiceOrder.requestables.push(childRequestable);
           }
         });
       });
@@ -154,35 +159,44 @@ export class OptionalItemsSidesheetComponent implements OnInit, OnDestroy {
   }
 
   public onSelectAll(): void {
+    // Expand and set the state to selected
     this.treeControl.expandAll();
     this.treeControl.dataNodes.forEach((tree) => {
       this.treeControl.getDescendants(tree).forEach((child) => {
         child.isIndeterminate = false;
         child.parentChecked = true;
-        if (!child.isMandatory) {
-          child.isChecked = true;
-        }
+        child.isChecked = true;
       });
     });
     this.selected = this.totalLeaves;
   }
 
   public walkChildren(parent: ServiceItemHierarchyExtended, children: ServiceItemHierarchyExtended[]): void {
+    // Walk all children based on parent state, then recursively apply to nested children.
     children.forEach((child) => {
       child.isIndeterminate = !parent.isChecked || parent.isIndeterminate;
       child.parentChecked = parent.isChecked;
-      this.walkChildren(child, [...child.Mandatory, ...child.Optional]);
+      // Change selection count for checked and optional items based on indetermacy, we can stop walking if an optional is not checked
+      if (child.isChecked) {
+        if (!child.isMandatory) {
+          child.isIndeterminate ? (this.selected -= 1) : (this.selected += 1);
+        }
+        this.walkChildren(child, [...child.Mandatory, ...child.Optional]);
+      }
     });
   }
 
   public onChange(value: MatCheckboxChange, leaf: ServiceItemHierarchyExtended): void {
+    // Change state of this leaf
     value.checked ? (this.selected += 1) : (this.selected -= 1);
     leaf.isChecked = value.checked;
     leaf.isIndeterminate = false;
+    // Modify all children to reflect parent state
     this.walkChildren(leaf, [...leaf.Mandatory, ...leaf.Optional]);
   }
 
   public onDeselectAll(): void {
+    // Collapse and reset all states to initial
     this.treeControl.collapseAll();
     let index = 0;
     this.treeControl.dataNodes.forEach((tree) => {

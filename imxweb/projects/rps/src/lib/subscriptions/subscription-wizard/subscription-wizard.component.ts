@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { OverlayRef } from '@angular/cdk/overlay';
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { Component, OnDestroy, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
@@ -43,12 +43,12 @@ import { ReportSubscriptionService } from '../report-subscription/report-subscri
 })
 export class SubscriptionWizardComponent implements OnDestroy {
 
-  public readonly reportFormGroup = new FormGroup({
-    reportTable: new FormControl(undefined, Validators.required)
+  public readonly reportFormGroup = new UntypedFormGroup({
+    reportTable: new UntypedFormControl(undefined, Validators.required)
   });
-  public readonly reportParameterFormGroup = new FormGroup({});
-  public readonly additionalSubscribersFormGroup = new FormGroup({
-    additionalSubscribers: new FormControl(undefined)
+  public readonly reportParameterFormGroup = new UntypedFormGroup({});
+  public readonly additionalSubscribersFormGroup = new UntypedFormGroup({
+    additionalSubscribers: new UntypedFormControl(undefined)
   });
   public isLoadingOverview = false;
   public newSubscription: ReportSubscription;
@@ -112,6 +112,7 @@ export class SubscriptionWizardComponent implements OnDestroy {
     setTimeout(() => overlayRef = this.busyService.show());
     try {
       await this.newSubscription.submit();
+      this.newSubscription.unsubscribeEvents();
       this.sidesheetRef.close(true);
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));

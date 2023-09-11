@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormArray, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 import { IClientProperty } from 'imx-qbm-dbts';
 import { ColumnDependentReference } from 'qbm';
@@ -40,13 +40,13 @@ export class SubscriptionPropertiesComponent implements OnInit, OnChanges {
 
   public cdrList: ColumnDependentReference[] = [];
   public parameterCdrList: ColumnDependentReference[] = [];
-  public readonly subscriptionPropertiesFormArray = new FormArray([]);
-  public readonly subscriptionParameterFormArray = new FormArray([]);
+  public readonly subscriptionPropertiesFormArray = new UntypedFormArray([]);
+  public readonly subscriptionParameterFormArray = new UntypedFormArray([]);
 
   public withSeparateParameterList: boolean;
 
   @Input() public subscription: ReportSubscription;
-  @Input() public formGroup: FormGroup;
+  @Input() public formGroup: UntypedFormGroup;
   @Input() public withTitles = true;
   @Input() public displayedColumns: IClientProperty[] = [];
 
@@ -75,7 +75,7 @@ export class SubscriptionPropertiesComponent implements OnInit, OnChanges {
     }
   }
 
-  public addFormControl(array: FormArray, control: FormControl): void {
+  public addFormControl(array: UntypedFormArray, control: UntypedFormControl): void {
     setTimeout(() => {
       array.push(control);
     });

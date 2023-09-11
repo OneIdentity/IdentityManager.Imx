@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,7 +29,7 @@ import {
   Component,
   OnInit, Input, ContentChild, TemplateRef, ElementRef, ViewChild, Output, EventEmitter, OnDestroy
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatSelect } from '@angular/material/select';
 import { EuiLoadingService } from '@elemental-ui/core';
@@ -58,7 +58,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     Math.random().toString(36).substring(2, 15);
   public noEntriesVisible = false;
   public tableList: TypedEntity[] = [];
-  public tables = new FormControl();
+  public tables = new UntypedFormControl();
   public selectedTables: string[];
   public searchResults: any[] = [];
 

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,8 +27,10 @@
 import { TypedEntity, TypedEntityCollectionData, CollectionLoadParameters, EntitySchema, DataModel } from 'imx-qbm-dbts';
 import { ClientPropertyForTableColumns } from './client-property-for-table-columns';
 import { FilterTreeParameter } from './data-model/filter-tree-parameter';
+import { DataSourceToolbarExportMethod } from './data-source-toolbar-export-method.interface';
 import { DataSourceToolbarFilter } from './data-source-toolbar-filters.interface';
 import { DataSourceToolbarGroupData } from './data-source-toolbar-groups.interface';
+import { DataSourceToolbarViewConfig } from './data-source-toolbar-view-config.interface';
 
 /**
  * Settings of a datasource toolbar.
@@ -63,7 +65,7 @@ export interface DataSourceToolbarSettings {
   filters?: DataSourceToolbarFilter[];
 
   /**
-   * The datamodel properties that support groouping along with their GroupInfo[] data
+   * The datamodel properties that support grouping along with their GroupInfoData data
    * If undefined, no group by options will be visible
    */
   groupData?: DataSourceToolbarGroupData;
@@ -83,7 +85,22 @@ export interface DataSourceToolbarSettings {
   dataModel?: DataModel;
 
   /**
-   * an optional identifier, that can be used to store settings
+   * The methods and views associated with handling view configs
    */
-  identifierForSessionStore?: string;
+  viewConfig?: DataSourceToolbarViewConfig;
+
+  /**
+   * The function to call for exporting data. PageSize undefined -> export current data view, else will export *all* data within the current filters.
+   * Example:
+   *  getMethod: (withProperties: string, PageSize?: number) => {
+        let method: MethodDescriptor<EntityCollectionData>;
+        if (PageSize) {
+          method = factory.portal_admin_person_get({...navigationState, withProperties, PageSize, StartIndex: 0})
+        } else {
+          method = factory.portal_admin_person_get({...navigationState, withProperties})
+        }
+        return new MethodDefinition(method);
+      }
+   */
+  exportMethod?: DataSourceToolbarExportMethod
 }

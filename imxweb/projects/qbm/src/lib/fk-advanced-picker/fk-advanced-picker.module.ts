@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -41,13 +41,10 @@ import { FkAdvancedPickerComponent } from './fk-advanced-picker.component';
 import { FkSelectorComponent } from './fk-selector.component';
 import { ConfirmationModule } from '../confirmation/confirmation.module';
 import { FkCandidatesComponent } from './fk-candidates/fk-candidates.component';
+import { SelectedElementsModule } from '../selected-elements/selected-elements.module';
 
 @NgModule({
-  declarations: [
-    FkAdvancedPickerComponent,
-    FkSelectorComponent,
-    FkCandidatesComponent
-  ],
+  declarations: [FkAdvancedPickerComponent, FkSelectorComponent, FkCandidatesComponent],
   imports: [
     CommonModule,
     MatSelectModule,
@@ -60,12 +57,9 @@ import { FkCandidatesComponent } from './fk-candidates/fk-candidates.component';
     TranslateModule,
     DataTableModule,
     EuiCoreModule,
-    ConfirmationModule
+    ConfirmationModule,
+    SelectedElementsModule,
   ],
-  exports: [
-    FkAdvancedPickerComponent,
-    FkSelectorComponent,
-    FkCandidatesComponent
-  ]
+  exports: [FkAdvancedPickerComponent, FkSelectorComponent, FkCandidatesComponent],
 })
-export class FkAdvancedPickerModule { }
+export class FkAdvancedPickerModule {}

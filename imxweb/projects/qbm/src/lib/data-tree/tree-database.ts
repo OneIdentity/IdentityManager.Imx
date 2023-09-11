@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,6 +30,7 @@ import { EventEmitter } from '@angular/core';
 import { CollectionLoadParameters, IEntity } from 'imx-qbm-dbts';
 import { TreeNode } from './tree-node';
 import { TreeNodeResultParameter } from './tree-node-result-parameter.interface';
+import { BusyService } from '../base/busy.service';
 
 /**
  * Data-provider for the data-tree.
@@ -37,6 +38,7 @@ import { TreeNodeResultParameter } from './tree-node-result-parameter.interface'
  */
 export abstract class TreeDatabase {
   public readonly initialized = new Subject();
+  public busyService: BusyService;
   public dataReloaded$ = new BehaviorSubject(undefined);
 
   /** set this parameter to true, if your implementation supports searching */
@@ -65,9 +67,15 @@ export abstract class TreeDatabase {
   /** Initial data from database */
   public async initialize(navigationState: CollectionLoadParameters = {}): Promise<TreeNode[]> {
     // load the root entities
-    const entities = await this.getData(true, { ...navigationState, ...{ ParentKey: '' } });
+    const isBusy = this.busyService?.beginBusy();
+    let entities: TreeNodeResultParameter;
+    try {
+      entities = await this.getData(true, { ...navigationState, ...{ ParentKey: '' } });
+    } finally {
+      isBusy?.endBusy();
+    }
 
-    if (entities.totalCount === 0 || entities.entities.length === 0) {
+    if (entities == null || entities.totalCount === 0 || entities.entities.length === 0) {
       return [];
     }
 
@@ -84,29 +92,30 @@ export abstract class TreeDatabase {
   }
 
   public updateNodeItem(item: IEntity): void {
-    const root = this.rootNodes?.filter(node => node.item != null)
-    .find(node => this.getId(node.item) === this.getId(item));
+    const root = this.rootNodes?.filter((node) => node.item != null).find((node) => this.getId(node.item) === this.getId(item));
     if (root) {
       root.item = item;
     }
   }
 
   /** return children for a given tree node including the information, if more elements are available on the server */
-  public async getChildren(node: TreeNode, startIndex: number)
-    : Promise<{ nodes: TreeNode[], canLoadMore: boolean }> {
-
-    const entities = await this.getData(false, { ParentKey: node.name, StartIndex: startIndex });
-
+  public async getChildren(node: TreeNode, startIndex: number): Promise<{ nodes: TreeNode[]; canLoadMore: boolean }> {
+    const isBusy = this.busyService?.beginBusy();
+    let entities: TreeNodeResultParameter;
+    try {
+      entities = await this.getData(false, { ParentKey: node.name, StartIndex: startIndex });
+    } finally {
+      isBusy?.endBusy();
+    }
     const nodes = this.createSortedNodes(entities.entities, node.level + 1);
     return {
-      nodes: entities.entities.map(entity => nodes.find(x => this.getId(x.item) === this.getId(entity))),
-      canLoadMore: entities.canLoadMore
+      nodes: entities.entities.map((entity) => nodes.find((x) => this.getId(x.item) === this.getId(entity))),
+      canLoadMore: entities.canLoadMore,
     };
   }
 
   /** abstract function, which have to be implemented  */
-  public async getData(showLoading: boolean, parameter: CollectionLoadParameters = {})
-    : Promise<TreeNodeResultParameter> {
+  public async getData(showLoading: boolean, parameter: CollectionLoadParameters = {}): Promise<TreeNodeResultParameter> {
     return undefined;
   }
 
@@ -121,14 +130,25 @@ export abstract class TreeDatabase {
   /** Sort the datamap for all nodes alphabetically and return the nodes for the data-tree */
   public createSortedNodes(entities: IEntity[], levelNumber: number): TreeNode[] {
     const sortedEntityMap = entities.sort((a, b) => a.GetDisplay().localeCompare(b.GetDisplay()));
-    return sortedEntityMap.map(item => new TreeNode(item,
+    return sortedEntityMap.map((item) => this.createNode(item, levelNumber));
+  }
+
+  public createNode(item: IEntity, levelNumber: number): TreeNode {
+    return new TreeNode(
+      item,
       this.identifierColumnName ? item.GetColumn(this.identifierColumnName).GetValue() : '',
-      this.getId(item), levelNumber, item.GetColumn(this.hasChildrenColumnName).GetValue()));
+      this.getId(item),
+      levelNumber,
+      item.GetColumn(this.hasChildrenColumnName).GetValue()
+    );
   }
 
   /** gets an unique id by combining all id parts */
   public getId(entity: IEntity): string {
-    return entity?.GetKeys() ? entity.GetKeys().join(',') : '';
+    return TreeDatabase.getId(entity);
   }
 
+  public static getId(entity: IEntity): string {
+    return entity?.GetKeys() ? entity.GetKeys().join(',') : '';
+  }
 }

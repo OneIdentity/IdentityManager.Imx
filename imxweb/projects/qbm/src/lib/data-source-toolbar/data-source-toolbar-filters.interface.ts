@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,13 +36,22 @@ export interface DataSourceToolbarFilter extends DataModelFilter {
    * The initial value to be selected
    */
   InitialValue?: string;
+
+  /**
+   * The column to filter over, if local filtering
+   */
+  Column?: string;
+}
+
+interface DataModelFilterOptionExtended extends DataModelFilterOption {
+  IsRegex?: boolean;
 }
 
 export interface DataSourceToolbarSelectedFilter {
   /**
    * The option that was selected
    */
-  selectedOption: DataModelFilterOption;
+  selectedOption: DataModelFilterOptionExtended;
   /**
    * The filter the value was selected for
    */

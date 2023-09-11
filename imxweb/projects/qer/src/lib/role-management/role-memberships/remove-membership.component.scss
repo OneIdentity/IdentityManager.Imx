@@ -1,5 +1,5 @@
 @import "@elemental-ui/core/src/styles/_palette.scss";
-
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 :host {
   display: flex;
   flex-direction: column;
@@ -36,8 +36,6 @@
     }
 
   }
-
-
 }
 
 .beneath-checkbox {
@@ -53,3 +51,35 @@ mat-card {
   width: 100%;
 }
 
+.hideBox{
+  ::ng-deep .mat-checkbox-inner-container {
+    display: none;
+  }
+}
+
+.eui-dark-theme{
+  :host{
+    background-color: $color-gray-70;
+    .eui-sidesheet-actions{
+      background-color: $color-gray-70;
+    }
+  }
+}
+
+div {
+  button {
+    eui-icon {
+      font-size: 14px;
+      margin-right: 4px;
+    }
+  }
+}
+
+.eui-contrast-theme{
+  :host{
+    background-color: $color-gray-90;
+    .eui-sidesheet-actions{
+      background-color: $color-gray-90;
+    }
+  }
+}

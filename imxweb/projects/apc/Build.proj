@@ -1,0 +1,20 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="BuildAngularProject" ToolsVersion="15.0">
+	<PropertyGroup>
+		<ComponentDir>imxweb\projects\apc</ComponentDir>
+	    <VI_NET_DE>no</VI_NET_DE>
+		<PackageName>apc</PackageName>
+	</PropertyGroup>
+
+	<!--import global variables for this build-->
+	<Import Project="$(VI_PROJECTDIR)\Build\Includes\Build_Html_Package.targets"/>
+
+    <PropertyGroup>
+        <InjectPackage>/inject $(Workspace)\imx-modules\imx-api-apc.tgz</InjectPackage>
+    </PropertyGroup>
+
+	<ItemGroup>
+		<!-- only run if any of these files have changed -->
+		<InputFiles Include="$(Workspace)\imx-modules\imx-api-apc.tgz" />
+	</ItemGroup>
+
+</Project>

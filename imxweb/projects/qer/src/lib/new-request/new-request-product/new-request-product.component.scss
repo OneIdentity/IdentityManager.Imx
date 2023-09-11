@@ -1,0 +1,84 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import '../new-request-global.scss';
+
+@include Layout-Styles;
+@include Table-Styles;
+
+:host {
+  .imx-tree-root {
+    display: flex;
+    align-items: center;
+  }
+
+  .imx-no-accessible-servicecategories {
+    display: flex;
+    margin: 20px 0;
+    flex: 1 1 auto;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    
+    .eui-icon {
+      font-size: 100px;
+    }
+  
+    p {
+      margin: 0;
+      font-size: 18px;
+    }
+  }
+}
+
+// Theming
+:host {
+  .imx-tree-root--selected > .colored-icon {
+    color: $color-orange-60;
+  }
+  
+  .imx-no-accessible-servicecategories {
+    .eui-icon {
+      color: $color-gray-10;
+    }
+  
+    p {
+      color: $color-gray-50;
+    }
+  }
+}
+
+
+.eui-dark-theme {
+  :host {
+    .imx-tree-root--selected > .colored-icon {
+      color: $color-orange-40;
+    }
+    
+    .imx-no-accessible-servicecategories {
+      .eui-icon {
+        color: $color-gray-20;
+      }
+
+      p {
+        color: $color-gray-10;
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-tree-root--selected > .colored-icon {
+      color: $color-orange-40;
+    }
+
+    .imx-no-accessible-servicecategories {
+      .eui-icon {
+        color: $color-gray-10;
+      }
+
+      p {
+        color: $color-gray-0;
+      }
+    }
+  }
+}

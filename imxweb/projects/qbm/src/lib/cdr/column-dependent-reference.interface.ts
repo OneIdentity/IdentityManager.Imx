@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,8 @@
  */
 
 
-import { IEntityColumn } from 'imx-qbm-dbts';
+import { IEntityColumn, ValueConstraint } from 'imx-qbm-dbts';
+import { Subject } from 'rxjs';
 
 /**
  * Defines a column dependent reference.
@@ -46,6 +47,13 @@ export interface ColumnDependentReference {
      */
     minLength?: number;
 
+    minlengthSubject?: Subject<number>
+
+    /**
+     * Custom valueConstraint - if it is set it will be used instead of column.GetMetadata().valueConstraint
+     */
+    valueConstraint?: ValueConstraint;
+
     /**
      * Optional hint
      */
@@ -56,9 +64,4 @@ export interface ColumnDependentReference {
      * or also allow editing (false).
      */
     isReadOnly(): boolean;
-
-    /**
-     * Optional title
-     */
-    title?: string;
 }

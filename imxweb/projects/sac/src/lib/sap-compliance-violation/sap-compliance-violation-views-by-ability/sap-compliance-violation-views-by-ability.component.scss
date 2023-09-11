@@ -1,0 +1,13 @@
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+
+.sap-analysis{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+  gap: 16px;
+  &__table{
+    overflow: hidden auto;
+    flex-grow: 1;
+  }
+}

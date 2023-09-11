@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,13 +25,14 @@
  */
 
 import { Component, Inject, OnDestroy } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
 import { PortalApplicationNew } from 'imx-api-aob';
 import { IEntityColumn, IWriteValue, ValueStruct } from 'imx-qbm-dbts';
 import { BaseCdr, ColumnDependentReference, ConfirmationService } from 'qbm';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'imx-application-create',
@@ -39,7 +40,7 @@ import { BaseCdr, ColumnDependentReference, ConfirmationService } from 'qbm';
   styleUrls: ['./application-create.component.scss']
 })
 export class ApplicationCreateComponent implements OnDestroy {
-  public readonly form = new FormGroup({});
+  public readonly form = new UntypedFormGroup({});
 
   public name: ColumnDependentReference;
   public readonly description: ColumnDependentReference;
@@ -54,6 +55,7 @@ export class ApplicationCreateComponent implements OnDestroy {
   constructor(
     @Inject(EUI_SIDESHEET_DATA) data: { application: PortalApplicationNew; },
     private readonly sidesheetRef: EuiSidesheetRef,
+    private readonly translateService: TranslateService,
     confirmation: ConfirmationService
   ) {
     this.imageColumn = data.application.JPegPhoto.Column;
@@ -66,12 +68,15 @@ export class ApplicationCreateComponent implements OnDestroy {
     this.serviceCategory = new class {
       public get hint(): string {
         return this.property.value?.length > 0 ? '' :
-          '#LDS#If you do not select a service category, a service category with the same name as the application is created and assigned.';
+        this.translateService.instant('#LDS#If you do not select a service category, a service category with the same name as the application is created and assigned.');
       }
       public readonly column = this.property.Column;
-      constructor(private readonly property: IWriteValue<string>) {}
+      constructor(
+        private readonly property: IWriteValue<string>,
+        private readonly translateService: TranslateService,
+      ) {}
       public readonly isReadOnly = () => !this.property.GetMetadata().CanEdit();
-    }(data.application.UID_AccProductGroup);
+    }(data.application.UID_AccProductGroup, this.translateService);
 
     this.manager = new BaseCdr(data.application.UID_PersonHead.Column);
 

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,8 +25,9 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { BaseCdr, BaseReadonlyCdr, BulkItem, BulkItemStatus } from 'qbm';
+import { DecisionStepSevice } from '../../decision-step.service';
 import { WorkflowActionEdit } from '../workflow-action-edit.interface';
 
 /**
@@ -38,10 +39,9 @@ import { WorkflowActionEdit } from '../workflow-action-edit.interface';
 @Component({
   selector: 'imx-workflow-multi-action',
   templateUrl: './workflow-multi-action.component.html',
-  styleUrls: ['./workflow-multi-action.component.scss']
+  styleUrls: ['./workflow-multi-action.component.scss'],
 })
 export class WorkflowMultiActionComponent implements OnInit {
-
   /**
    * @ignore since this is only an internal component.
    *
@@ -54,7 +54,7 @@ export class WorkflowMultiActionComponent implements OnInit {
    *
    * The form group to which the necessary form fields will be added.
    */
-  @Input() public formGroup: FormGroup;
+  @Input() public formGroup: UntypedFormGroup;
 
   /**
    * @ignore since this is only public because of databinding to the template
@@ -66,18 +66,20 @@ export class WorkflowMultiActionComponent implements OnInit {
    */
   public requests: BulkItem[];
 
+  constructor(private readonly stepService: DecisionStepSevice) {}
+
   /**
    * @ignore since this is only an internal component
    *
    * Sets up during OnInit lifecycle hook the bulk items and their {@link columns} to be displayed/edited for the requests.
    */
   public ngOnInit(): void {
-    this.requests = this.data.requests.map(item => {
+    this.requests = this.data.requests.map((item) => {
       const bulkItem: BulkItem = {
         entity: item,
         additionalInfo: item.OrderState.Column.GetDisplayValue(),
         properties: [],
-        status: BulkItemStatus.valid
+        status: BulkItemStatus.valid,
       };
 
       if (this.data.showValidDate) {
@@ -89,21 +91,25 @@ export class WorkflowMultiActionComponent implements OnInit {
         }
       }
 
-      item.parameterColumns.forEach(column =>
+      bulkItem.properties.unshift(this.stepService.getCurrentStepCdr(item, item.pwoData,'#LDS#Current approval step'));
+
+      item.parameterColumns.forEach((column) =>
         bulkItem.properties.push(this.data.approve ? new BaseCdr(column) : new BaseReadonlyCdr(column))
       );
 
       if (this.data.workflow) {
-        bulkItem.customSelectProperties = [{
-          title: this.data.workflow.title,
-          placeholder: this.data.workflow.placeholder,
-          entities: this.data.workflow.data[item.key],
-          selectionChange: entity => {
-            if (item.updateDirectDecisionTarget) {
-              item.updateDirectDecisionTarget(entity);
-            }
-          }
-        }];
+        bulkItem.customSelectProperties = [
+          {
+            title: this.data.workflow.title,
+            placeholder: this.data.workflow.placeholder,
+            entities: this.data.workflow.data[item.key],
+            selectionChange: (entity) => {
+              if (item.updateDirectDecisionTarget) {
+                item.updateDirectDecisionTarget(entity);
+              }
+            },
+          },
+        ];
       }
 
       return bulkItem;
@@ -121,5 +127,4 @@ export class WorkflowMultiActionComponent implements OnInit {
   public validateItem(bulkItem: BulkItem): void {
     bulkItem.status = bulkItem.valid ? BulkItemStatus.valid : BulkItemStatus.unknown;
   }
-
 }

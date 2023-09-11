@@ -1,0 +1,11 @@
+:host {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  .mat-card{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+}

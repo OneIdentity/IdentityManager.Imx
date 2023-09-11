@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { Component, Inject, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { AbstractControl, AsyncValidatorFn, FormControl, FormGroup, ValidatorFn } from '@angular/forms';
+import { AbstractControl, AsyncValidatorFn, UntypedFormControl, UntypedFormGroup, ValidatorFn } from '@angular/forms';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { Subscription } from 'rxjs';
 
@@ -53,13 +53,13 @@ export class CheckPasswordsComponent implements OnDestroy {
   public passwordHide = true;
   public passwordRepeatHide = true;
 
-  public passwordForm = new FormGroup({
-    password: new FormControl('',
+  public passwordForm = new UntypedFormGroup({
+    password: new UntypedFormControl('',
       {
         asyncValidators: CheckPasswordsComponent.validateOnServer(this.passwordSvc, this.passwordHelper),
         updateOn: 'blur'
       }),
-    passwordRepeat: new FormControl('',
+    passwordRepeat: new UntypedFormControl('',
       {
         updateOn: 'blur'
       }),
@@ -124,7 +124,7 @@ export class CheckPasswordsComponent implements OnDestroy {
   }
 
   private static validateOnServer(svc: PasswordService, helper: PasswordHelper): AsyncValidatorFn {
-    return async (control: FormControl): Promise<{ [key: string]: PolicyValidationResult[] } | null> => {
+    return async (control: UntypedFormControl): Promise<{ [key: string]: PolicyValidationResult[] } | null> => {
       const value = control.value;
 
       if (value == null) {
@@ -150,7 +150,7 @@ export class CheckPasswordsComponent implements OnDestroy {
   }
 
   private static sameValue(): ValidatorFn {
-    return (control: FormGroup): { [key: string]: boolean } | null => {
+    return (control: UntypedFormGroup): { [key: string]: boolean } | null => {
 
       const passwordValue = control.get('password').value;
       const passwordRepeatValue = control.get('passwordRepeat').value;

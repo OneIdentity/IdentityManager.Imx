@@ -1,4 +1,5 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   overflow-y: auto;
@@ -52,4 +53,22 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+.eui-dark-theme {
+  :host {
+    background-color: $color-gray-80;
+    .imx-button-bar {
+      background-color: $color-gray-70;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    background-color: $color-gray-100;
+    .imx-button-bar {
+      background-color: $color-gray-90;
+    }
+  }
 }

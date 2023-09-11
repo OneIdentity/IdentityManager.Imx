@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -110,30 +110,30 @@ export class SystemStatusComponent implements OnInit, OnDestroy {
   }
 
   public async toggleDbQueue(): Promise<void> {
-    if (this.status.IsDbSchedulerDisabled) {
+    if (!this.status.IsDbSchedulerDisabled) {
       this.changeIsDbServiceDisabled();
       return;
     }
 
     if (await this.confirmationService.confirm({
-      Title: '#LDS#Stop DBQueue',
-      Message: '#LDS#Are you sure you want to stop the DBQueue?',
-      identifier: 'system-status-confirm-stop-dbqueue'
+      Title: '#LDS#Heading Start DBQueue',
+      Message: '#LDS#Are you sure you want to start the DBQueue?',
+      identifier: 'system-status-confirm-start-dbqueue'
     })) {
       this.changeIsDbServiceDisabled();
     }
   }
 
   public async toggleJobQueue(): Promise<void> {
-    if (this.status.IsJobServiceDisabled) {
+    if (!this.status.IsJobServiceDisabled) {
       this.changeIsJobServiceDisabled();
       return;
     }
 
     if (await this.confirmationService.confirm({
-      Title: '#LDS#Stop job queue',
-      Message: '#LDS#Are you sure you want to stop the job queue?',
-      identifier: 'system-status-confirm-stop-jobqueue'
+      Title: '#LDS#Heading Start Job Queue',
+      Message: '#LDS#Are you sure you want to start the Job queue?',
+      identifier: 'system-status-confirm-start-jobqueue'
     })) {
       this.changeIsJobServiceDisabled();
     }

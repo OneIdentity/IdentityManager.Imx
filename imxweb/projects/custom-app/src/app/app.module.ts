@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -46,7 +46,8 @@ import {
   LdsReplacePipe,
   QbmModule,
   AuthenticationModule,
-  MenuModule
+  MenuModule,
+  CustomThemeModule
 } from 'qbm';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -78,6 +79,7 @@ import { StartComponent } from './start.component';
     MastHeadModule,
     MenuModule,
     QbmModule,
+    CustomThemeModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

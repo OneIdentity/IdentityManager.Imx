@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,8 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { EuiLoadingService } from '@elemental-ui/core';
 
 import { UserConfig, ProjectConfig, QerProjectConfig } from 'imx-api-qer';
 import { UserModelService } from '../../user/user-model.service';
@@ -35,6 +33,7 @@ import { PendingItemsType } from '../../user/pending-items-type.interface';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
 import { imx_SessionService, SystemInfoService } from 'qbm';
 import { SystemInfo } from 'imx-api-qbm';
+import { DashboardService } from './dashboard.service';
 
 @Component({
   templateUrl: './start.component.html',
@@ -51,34 +50,37 @@ export class StartComponent implements OnInit {
 
   constructor(
     public readonly router: Router,
-    private readonly busyService: EuiLoadingService,
+    private readonly dashboardService: DashboardService,
     private readonly userModelSvc: UserModelService,
     private readonly systemInfoService: SystemInfoService,
     private readonly sessionService: imx_SessionService,
+    private readonly detectRef: ChangeDetectorRef,
     private readonly projectConfigurationService: ProjectConfigurationService
   ) {}
 
   public async ngOnInit(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyService.show()));
+    this.dashboardService.busyStateChanged.subscribe(busy => {
+      this.viewReady = !busy;
+      this.detectRef.detectChanges();
+    });
+    const busy = this.dashboardService.beginBusy();
     try {
       this.userConfig = await this.userModelSvc.getUserConfig();
       this.pendingItems = await this.userModelSvc.getPendingItems();
       this.projectConfig = await this.projectConfigurationService.getConfig();
       this.systemInfo = await this.systemInfoService.get();
       this.userUid = (await this.sessionService.getSessionState()).UserUid;
-      this.viewReady = true;
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      busy.endBusy();
     }
   }
 
   public ShowPasswordTile(): boolean {
-    return this.userConfig.ShowPasswordTile;
+    return this.userConfig?.ShowPasswordTile;
   }
 
   public ShowPasswordMgmtTile(): boolean {
-    return this.projectConfig.PasswordConfig.VI_MyData_MyPassword_Visibility && !!this.projectConfig.PasswordConfig.PasswordMgmtUrl;
+    return this.projectConfig?.PasswordConfig.VI_MyData_MyPassword_Visibility && !!this.projectConfig?.PasswordConfig.PasswordMgmtUrl;
   }
 
   public GoToMyPassword(): void {
@@ -86,7 +88,7 @@ export class StartComponent implements OnInit {
   }
 
   public GoToPasswordMgmtWeb(): void {
-    this.router.navigate(['/externalRedirect', { externalUrl: this.projectConfig.PasswordConfig.PasswordMgmtUrl }]);
+    this.router.navigate(['/externalRedirect', { externalUrl: this.projectConfig?.PasswordConfig.PasswordMgmtUrl }]);
   }
 
   public GoToShoppingCart(): void {
@@ -94,7 +96,7 @@ export class StartComponent implements OnInit {
   }
 
   public GoToProductSelection(): void {
-    this.router.navigate(['productselection']);
+    this.router.navigate(['newrequest']);
   }
 
   public GoToItshopApprovals(): void {
@@ -102,7 +104,7 @@ export class StartComponent implements OnInit {
   }
 
   public GoToItShopApprovalInquiries(): void {
-    this.router.navigate(['itshop', 'answerquestions']);
+    this.router.navigate(['itshop', 'approvals'], {queryParams: {inquiries:true}});
   }
 
   public GoToMyProcesses(): void {
@@ -110,7 +112,7 @@ export class StartComponent implements OnInit {
   }
 
   public ShowQpmIntegration(): boolean {
-    return !!this.projectConfig.PasswordConfig.QpmBaseUrl;
+    return !!this.projectConfig?.PasswordConfig.QpmBaseUrl;
   }
 
   public GoToQpm(): void {
@@ -130,7 +132,7 @@ export class StartComponent implements OnInit {
   }
 
   public GetCountProductsinShoppingCart(): number {
-    return this.pendingItems.CountProductsInShoppingCart;
+    return this.pendingItems?.CountProductsInShoppingCart;
   }
 
   public GetCountInRequestHistory(): number {
@@ -138,11 +140,11 @@ export class StartComponent implements OnInit {
   }
 
   public GetCountPendingRequests(): number {
-    return this.pendingItems.OpenPWO;
+    return this.pendingItems?.OpenPWO;
   }
 
   public GetCountRequestInquiries(): number {
-    return this.pendingItems.OpenInquiries;
+    return this.pendingItems?.OpenInquiries;
   }
 
   public GetCountNewProcesses(): number {

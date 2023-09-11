@@ -1,0 +1,22 @@
+<eui-alert class="imx-helper-alert" type="info" condensed="true" colored="true" *ngIf="isMControlPerViolation">
+  <eui-alert-header>{{ '#LDS#Heading Mitigating Controls Can Be Assigned Individually' | translate }}</eui-alert-header>
+  <eui-alert-content>{{
+    '#LDS#Here you can get an overview of the mitigating controls that can be assigned to a violation of this company policy.' | translate
+  }}</eui-alert-content>
+</eui-alert>
+<eui-alert class="imx-helper-alert" type="info" condensed="true" colored="true" *ngIf="!isMControlPerViolation">
+  <eui-alert-header>{{'#LDS#Heading Mitigating Controls Applied Globally' | translate}}</eui-alert-header>
+  <eui-alert-content>{{ '#LDS#Here you can get an overview of the mitigating controls that are automatically applied to every violation of this company policy.' | translate }}</eui-alert-content>
+</eui-alert>
+
+<mat-card class="imx-mitigating-controls-card">
+  <div class="imx-data-no-results" *ngIf="!mControls || mControls.length == 0">
+    <eui-icon icon="table"></eui-icon>
+    <ng-container>
+      <p [translate]="'#LDS#There are currently no mitigating controls assigned to this company policy.'"></p>
+    </ng-container>
+  </div>
+  <div *ngFor="let mControl of mControls">
+    <imx-cdr-editor [cdr]="mControl"></imx-cdr-editor>
+  </div>
+</mat-card>

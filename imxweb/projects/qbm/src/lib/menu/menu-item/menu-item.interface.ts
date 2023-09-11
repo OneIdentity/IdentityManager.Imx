@@ -12,7 +12,7 @@ import { NavigationCommandsMenuItem } from './navigation-commands-menu-item.inte
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -55,4 +55,4 @@ export interface MenuItem {
 
 }
 
-export type MenuFactory = (preProps: string[], groups: string[], projectConfig: ProjectConfig) => MenuItem;
+export type MenuFactory = (preProps: string[], features: string[], projectConfig: ProjectConfig, groups?: string[]) => MenuItem;

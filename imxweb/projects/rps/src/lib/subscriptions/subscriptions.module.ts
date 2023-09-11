@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -40,7 +40,8 @@ import {
   LdsReplaceModule,
   MultiSelectFormcontrolModule,
   UserMessageModule,
-  RouteGuardService
+  RouteGuardService,
+  BusyIndicatorModule
 } from 'qbm';
 import { ReportSelectorComponent } from './subscription-wizard/report-selector/report-selector.component';
 import { ReportSubscriptionService } from './report-subscription/report-subscription.service';
@@ -51,8 +52,10 @@ import { SubscriptionsComponent } from './subscriptions.component';
 import { SubscriptionsService } from './subscriptions.service';
 import { SubscriptionWizardComponent } from './subscription-wizard/subscription-wizard.component';
 import { ReportViewConfigComponent } from './report-view-config/report-view-config.component';
+import { ListReportViewerModule } from '../list-report-viewer/list-report-viewer.module';
 import { HttpClientModule } from '@angular/common/http';
 import { OverlayModule } from '@angular/cdk/overlay';
+import { ListReportViewerSidesheetComponent } from './list-report-viewer-sidesheet/list-report-viewer-sidesheet.component';
 
 
 const routes: Routes = [
@@ -72,7 +75,8 @@ const routes: Routes = [
     SubscriptionPropertiesComponent,
     SubscriptionOverviewComponent,
     SubscriptionWizardComponent,
-    SubscriptionsComponent
+    SubscriptionsComponent,
+    ListReportViewerSidesheetComponent,
   ],
   imports: [
     CdrModule,
@@ -91,11 +95,10 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     ScrollingModule,
     TranslateModule,
-    UserMessageModule
+    UserMessageModule,
+    BusyIndicatorModule,
+    ListReportViewerModule,
   ],
-  providers: [
-    ReportSubscriptionService,
-    SubscriptionsService
-  ]
+  providers: [ReportSubscriptionService, SubscriptionsService],
 })
-export class SubscriptionsModule { }
+export class SubscriptionsModule {}

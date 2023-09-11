@@ -1,0 +1,47 @@
+
+.eui-sidesheet-content {
+  padding: 0;
+
+  .imx-tab-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .imx-tab-content-body {
+      flex: 1;
+      padding: 20px;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  ::ng-deep .mat-tab-group {
+    height: 100%;
+    flex-grow: 1;
+    overflow: auto;
+
+    .mat-tab-header {
+      padding: 0 32px;
+    }
+
+    .mat-tab-body-wrapper {
+      height: 100%;
+    }
+
+    .mat-tab-body-content {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
+
+.eui-sidesheet-actions {
+  button {
+    margin-right: 10px;
+  }
+
+  > *:not(:first-child) {
+    margin-left: 10px;
+  }
+}

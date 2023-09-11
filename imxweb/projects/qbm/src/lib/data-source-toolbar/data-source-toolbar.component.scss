@@ -1,4 +1,5 @@
 @import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 .imx-data-source-toolbar-container {
   .imx-data-source-toolbar {
@@ -36,6 +37,16 @@
     }
   }
 
+  .imx-chip-container {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .imx-chip-container-grouped {
+    min-height: 15px;
+  }
+
   .imx-data-source-selected-filters {
     display: block;
     margin: 10px 5px;
@@ -49,23 +60,55 @@
 
       .eui-icon {
         &.remove {
-          color: $black-6;
-          opacity: 0.3;
           font-size: 18px;
           margin-right: -10px;
         }
       }
 
       span.tag-name {
-        color: $black-3;
         font-size: 13px;
         white-space: nowrap;
+      }
+
+      &.isRegex {
+        background-color: $color-blue-60;
+
+        .eui-icon {
+          &.remove {
+            color: $color-gray-0;
+          }
+        }
+        span.tag-name {
+          color: $color-gray-0;
+        }
       }
     }
   }
 }
 
 .mat-menu-panel {
+
+  &.imx-sort-menu {
+    max-width: 40vw;
+
+    .imx-sort-options {
+      max-height: 30vh;
+      overflow: auto;
+    }
+
+    .imx-sort-controls {
+      display: flex;
+      flex-direction: column;
+      margin-top: 10px;
+      padding: 0 5px;
+      gap: 5px;
+    }
+    .imx-sort-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+  }
 
 
   &.imx-filters-menu {
@@ -142,6 +185,17 @@
   }
 }
 
+.dst-saved-config-menu {
+  .dst-saved-config-menu-item {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .dst-saved-config-menu-item-action-buttons {
+    margin-left: 15px;
+  }
+}
+
 .cdk-overlay-pane .mat-select-panel .mat-option {
   line-height: normal;
   height: 100%;
@@ -158,6 +212,157 @@
 
 .imx-warning-icon {
   color: $corbin-orange;
+}
+
+// Theming
+imx-data-source-toolbar {
+  .themed-style .imx-data-source-toolbar-middle {
+    background-color: $color-gray-0;
+    border-radius: 5px;
+  }
+
+  .mat-form-field-outline-thick {
+    opacity: 0.2;
+  }
+
+  .eui-search-icon {
+    color: $color-blue-60;
+  }
+
+  .imx-data-source-filter-select {
+    background-color: $color-gray-10;
+  }
+
+  .imx-warning-icon {
+    color: $color-orange-60;
+  }
+
+  .imx-data-source-selected-filters {
+    .mat-chip {
+      .eui-icon.remove {
+        color: $color-gray-60;
+      }
+
+      span.tag-name {
+        color: $color-gray-80;
+      }
+    }
+  }
+}
+
+.mat-menu-content {
+  .link-button {
+    color: $color-blue-60;
+  }
+
+  .dst-saved-config-delete-button {
+    color: $color-red-60;
+  }
+}
+
+.eui-dark-theme {
+  imx-data-source-toolbar {
+    .themed-style .imx-data-source-toolbar-middle {
+      background-color: $color-gray-70;
+      border-radius: 5px;
+    }
+
+    .mat-form-field-outline-thick {
+      opacity: 0.2;
+    }
+
+    .eui-search-icon {
+      color: $color-blue-40;
+    }
+
+    .imx-data-source-filter-select {
+      background-color: $color-gray-10;
+    }
+
+    .imx-warning-icon {
+      color: $color-orange-40;
+    }
+
+    .imx-data-source-selected-filters {
+      .mat-chip {
+        .eui-icon.remove {
+          opacity: unset;
+          color: $color-gray-0;
+        }
+        span.tag-name {
+          color: $color-gray-0;
+        }
+        &.isRegex {
+          background-color: $color-blue-40;
+
+          .eui-icon {
+            &.remove {
+              color: $color-gray-10;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .mat-menu-content {
+    .link-button {
+      color: $color-blue-40;
+    }
+
+    .dst-saved-config-delete-button {
+      color: $color-red-40;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  imx-data-source-toolbar {
+    .themed-style .imx-data-source-toolbar-middle {
+      background-color: $color-gray-100;
+      border-radius: 4px;
+    }
+
+    .mat-form-field-outline-thick {
+      opacity: 0.2;
+    }
+
+    .eui-search-icon {
+      color: $color-blue-40;
+    }
+
+    .imx-data-source-filter-select {
+      background-color: $color-gray-10;
+    }
+
+    .imx-warning-icon {
+      color: $color-orange-40;
+    }
+
+    .mat-menu-content {
+      .link-button {
+        color: $color-blue-40;
+      }
+
+      .dst-saved-config-delete-button {
+        color: $color-red-40;
+      }
+    }
+
+    .imx-data-source-selected-filters {
+      .mat-chip {
+        border: 1px solid $color-gray-0;
+
+        .eui-icon.remove {
+          opacity: unset;
+          color: $color-gray-0;
+        }
+        span.tag-name {
+          color: $color-gray-0;
+        }
+      }
+    }
+  }
 }
 
 

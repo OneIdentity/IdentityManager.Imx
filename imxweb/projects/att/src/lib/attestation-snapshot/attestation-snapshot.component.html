@@ -1,19 +1,29 @@
 <ng-container *ngIf="snapshot">
-
-  <eui-alert class="helper-alert" type="info" condensed="true" [colored]="true">
-    <span> {{ LdsHelperText | translate | ldsReplace: attestationDate}} </span>
-  </eui-alert>
-
-  <mat-card *ngFor="let obj of snapshot.Objects">
-    <div mat-card-title> {{ obj.Data.Display }}</div>
-    <div mat-card-subtitle> {{ obj.TableDisplay }}</div>
-    <ul>
-      <li *ngFor="let col of obj.Data.Columns | keyvalue">
-        <div class="property" readonly>
-          <span class="column-display">{{col.value.Caption}}</span>
-          <span class="column-value">{{col.value.DisplayValue}}</span>
-        </div>
-      </li>
-    </ul>
-  </mat-card>
+  <mat-accordion class="imx-snapshots" multi="false">
+    <mat-expansion-panel class="mat-expansion-panel-spacing" *ngFor="let obj of snapshot.Objects" [attr.data-imx-identifier]="'attestation_snapshot_' + obj.Data.Display">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <span><strong>{{ obj.Data.Display }}</strong> - {{'#LDS#Object type' | translate}}: {{ obj.TableDisplay }}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div>
+        <ng-container *ngTemplateOutlet="singleSnapshot; context: { $implicit: obj }"></ng-container>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
 </ng-container>
+
+<ng-template #singleSnapshot let-obj>
+  <ng-container>
+    <div class="imx-snapshot-content">
+      <ul>
+        <li *ngFor="let col of obj.Data.Columns | keyvalue">
+          <div class="property" readonly>
+            <span class="column-display">{{ col.value.Caption }}</span>
+            <span class="column-value">{{ col.value.DisplayValue }}</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </ng-container>
+</ng-template>

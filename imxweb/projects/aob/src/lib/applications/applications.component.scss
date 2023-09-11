@@ -1,4 +1,6 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
 
 :host {
   display: flex;
@@ -21,4 +23,26 @@
 .mat-raised-button {
   justify-self: center;
   margin-top: 30px;
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-application-content {
+      background-color: $color-gray-80;
+    }
+      ::ng-deep .imx-application-content .mat-tab-body{
+      background-color: $color-gray-80;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-application-content {
+      background-color: $color-gray-90;
+    }
+      ::ng-deep .imx-application-content .mat-tab-body{
+      background-color: $color-gray-90;
+    }
+  }
 }

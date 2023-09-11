@@ -1,0 +1,80 @@
+@import "@elemental-ui/core/src/styles/_palette.scss";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1 1 auto;
+}
+
+imx-data-table {
+  flex-grow: 1;
+}
+
+.imx-subtext {
+  font-size: smaller;
+  color: $black-b;
+}
+
+.imx-data-tree-container {
+  overflow: hidden;
+  background-color: $white;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.data-explorer-card-header {
+  background-color: $white;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  z-index: 100;
+  border: 1px solid rgba($iris-blue, 0.6);
+  margin-bottom: 20px;
+
+  .data-explorer-card-header-bg {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    background-color: $iris-pastel;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    height: 45px;
+
+    .eui-icon {
+      color: rgba($aspen-green, 0.6);
+      margin-right: 10px;
+    }
+
+    & > span {
+      font-size: 20px;
+    }
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-data-tree-container , .data-explorer-card-header-bg{
+      background: $color-gray-70 ;
+    }
+     .data-explorer-card-header .data-explorer-card-header-bg{
+      background: $color-blue-80;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-data-tree-container , .data-explorer-card-header-bg{
+      background: $color-gray-70;
+    }
+     .data-explorer-card-header .data-explorer-card-header-bg{
+      background: $color-blue-80;
+    }
+  }
+}

@@ -1,0 +1,18 @@
+<div eui-sidesheet-content>
+
+  <mat-card>
+    <mat-form-field class="key-selector" appearance="outline">
+      <mat-label>{{'#LDS#Configuration key to be deleted' | translate}}</mat-label>
+      <mat-select [(ngModel)]="selectedKey">
+        <mat-option *ngFor="let k of keyData" [value]="k">
+          <config-key-path [path]="k.DisplayPath"></config-key-path>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>    
+  </mat-card>
+</div>
+
+<div eui-sidesheet-actions color="white">
+  <button data-imx-identifier="admin-delete-config-submit-button" [disabled]="!selectedKey" mat-raised-button
+    color="warn" (click)="submit()">{{'#LDS#Delete configuration key' | translate}}</button>
+</div>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,9 +25,9 @@
  */
 
 import { Injectable } from '@angular/core';
-import { PortalCartitemInteractive } from 'imx-api-qer';
+import { CartItemDataRead, PortalCartitem } from 'imx-api-qer';
 
-import { TypedEntity } from 'imx-qbm-dbts';
+import { ExtendedTypedEntityCollection, TypedEntity } from 'imx-qbm-dbts';
 import { ExtendedEntityWrapper } from '../../parameter-data/extended-entity-wrapper.interface';
 import { QerApiService } from '../../qer-api-client.service';
 import { CartItemFkService } from './cart-item-fk.service';
@@ -43,8 +43,13 @@ export class CartItemInteractiveService {
     private readonly requestParametersService: RequestParametersService,
   ) { }
 
-  public async getExtendedEntity(entityReference: string): Promise<ExtendedEntityWrapper<PortalCartitemInteractive>> {
-    const collection = await this.qerClient.typedClient.PortalCartitemInteractive.Get_byid(entityReference);
+  public async getExtendedEntity(entityReference?: string, callbackOnChange?: () => void): Promise<ExtendedEntityWrapper<PortalCartitem>> {
+    let collection: ExtendedTypedEntityCollection<PortalCartitem, CartItemDataRead>;
+    if(!!entityReference){
+      collection = await this.qerClient.typedClient.PortalCartitemInteractive.Get_byid(entityReference);
+    }else{
+      collection = await this.qerClient.typedClient.PortalCartitemInteractive.Get();
+    }
 
     const index = 0;
 
@@ -58,7 +63,8 @@ export class CartItemInteractiveService {
           index
         },
         parameter => this.fkService.getFkProviderItemsInteractive(typedEntity, parameter),
-        typedEntity
+        typedEntity,
+        callbackOnChange
       )
     };
   }

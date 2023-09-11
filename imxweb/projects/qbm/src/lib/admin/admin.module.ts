@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,8 +25,10 @@
  */
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -41,57 +43,71 @@ import { MatTreeModule } from '@angular/material/tree';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { DataSourceToolbarModule } from '../data-source-toolbar/data-source-toolbar.module';
+import { DateModule } from '../date/date.module';
 import { LdsReplaceModule } from '../lds-replace/lds-replace.module';
-import { ConfigService } from './config.service';
-import { ConfigComponent } from './config.component';
-import { DashboardComponent } from './dashboard.component';
-import { ListSettingComponent } from './list-setting.component';
-import { StatusComponent } from './status.component';
-import { FormsModule } from '@angular/forms';
-import { SelectValueComponent } from './select-value.component';
+import { AddConfigSidesheetComponent } from './add-config-sidesheet.component';
 import { ApplyConfigSidesheetComponent } from './apply-config-sidesheet.component';
 import { ConfigKeyPathComponent } from './config-key-path.component';
-import { PackagesComponent } from './packages.component';
-import { AddConfigSidesheetComponent } from './add-config-sidesheet.component';
+import { ConfigComponent } from './config.component';
+import { ConfigService } from './config.service';
 import { ConvertConfigSidesheetComponent } from './convert-config-sidesheet.component';
+import { DashboardComponent } from './dashboard.component';
+import { DeleteConfigSidesheetComponent } from './delete-config-sidesheet.component';
+import { ListSettingComponent } from './list-setting.component';
+import { LogDetailsSidesheetComponent } from './log-details-sidesheet.component';
+import { LogsComponent } from './logs.component';
+import { PackagesComponent } from './packages.component';
+import { SelectValueComponent } from './select-value.component';
+import { StatusComponent } from './status.component';
+import { StatusService } from './status.service';
+import { SwaggerComponent } from './swagger/swagger.component';
+import { CacheComponent } from './cache.component';
+import { PluginsComponent } from './plugins.component';
+import { InfoModalDialogModule } from './../info-modal-dialog/info-modal-dialog.module';
 
 @NgModule({
-    imports: [
-        CommonModule,
-        DataSourceToolbarModule,
-        DragDropModule,
-        EuiCoreModule,
-        EuiMaterialModule,
-        FormsModule,
-        LdsReplaceModule,
-        MatButtonModule,
-        MatBadgeModule,
-        MatCheckboxModule,
-        MatDialogModule,
-        MatExpansionModule,
-        MatIconModule,
-        MatTooltipModule,
-        MatSelectModule,
-        MatSidenavModule,
-        MatProgressSpinnerModule,
-        MatTreeModule,
-        TranslateModule
-    ],
-    providers: [
-        ConfigService
-    ],
-    declarations: [
-        AddConfigSidesheetComponent,
-        ApplyConfigSidesheetComponent,
-        ConvertConfigSidesheetComponent,
-        ConfigComponent,
-        ConfigKeyPathComponent,
-        ListSettingComponent,
-        DashboardComponent,
-        PackagesComponent,
-        SelectValueComponent,
-        StatusComponent
-    ]
+  imports: [
+    CommonModule,
+    DataSourceToolbarModule,
+    DragDropModule,
+    EuiCoreModule,
+    EuiMaterialModule,
+    FormsModule,
+    LdsReplaceModule,
+    MatButtonModule,
+    MatBadgeModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatExpansionModule,
+    MatIconModule,
+    MatTooltipModule,
+    MatSelectModule,
+    MatSidenavModule,
+    MatProgressSpinnerModule,
+    MatTreeModule,
+    TranslateModule,
+    DateModule,
+    ScrollingModule,
+    InfoModalDialogModule
+  ],
+  providers: [ConfigService, StatusService],
+  declarations: [
+    AddConfigSidesheetComponent,
+    ApplyConfigSidesheetComponent,
+    CacheComponent,
+    ConvertConfigSidesheetComponent,
+    ConfigComponent,
+    ConfigKeyPathComponent,
+    DeleteConfigSidesheetComponent,
+    ListSettingComponent,
+    DashboardComponent,
+    PackagesComponent,
+    PluginsComponent,
+    SelectValueComponent,
+    StatusComponent,
+    LogsComponent,
+    LogDetailsSidesheetComponent,
+    SwaggerComponent,
+  ],
 })
-export class AdminModule {
-}
+export class AdminModule { }

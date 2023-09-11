@@ -1,0 +1,10 @@
+:host {
+  .mat-dialog-title {
+    margin: 0;
+    font-weight: bold;
+  }
+
+  .mat-dialog-actions {
+    justify-content: flex-end;
+  }
+}

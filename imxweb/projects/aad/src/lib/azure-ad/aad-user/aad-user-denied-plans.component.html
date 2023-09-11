@@ -24,8 +24,9 @@
 <mat-card class="governance-sidesheet-action-buttons-container imx-card">
   <div class="governance-sidesheet-action-buttons">
 
-    <button class="justify-start" mat-button color="warn" [disabled]="selectedUserDeniedPlans.length === 0"
+    <button class="justify-start" mat-stroked-button color="warn" [disabled]="selectedUserDeniedPlans.length === 0"
       data-imx-identifier="delete-aad-user-disabled-plans" (click)="removeUserDeniedPlans()">
+      <eui-icon icon="delete"></eui-icon>
       <span translate>#LDS#Remove</span>
     </button>
 

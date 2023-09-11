@@ -1,78 +1,105 @@
 <div class="imx-policyviolation-page">
-  <h1 class="mat-headline">{{ '#LDS#Heading Policy Violations' | translate }}</h1>
-  <div class="imx-table-container" *ngIf="dstSettings">
-    <imx-data-source-toolbar #dst [options]="['search', 'filter','groupBy']" [settings]="dstSettings"
-      [itemStatus]="itemStatus" data-imx-identifier="policy-violations-table-dst"
-      (navigationStateChanged)="getData($event)" (search)="search($event)">
-    </imx-data-source-toolbar>
-    <div class="imx-policyviolation-table">
-      <imx-data-table [dst]="dst" [detailViewVisible]="false" mode="manual" [selectable]="true"
-        [showSelectedItemsMenu]="false" (selectionChanged)="onSelectionChanged($event)"
-        data-imx-identifier="policy-violations-table" [groupData]="groupedData"
-        (groupDataChanged)="onGroupingChange($event)">
-        <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.UID_QERPolicy"
-          data-imx-identifier="policy-violations-table-column-UID_QERPolicy">
-          <ng-template let-item>
-            <div class="imx-main-column">
-              <div>{{ item.UID_QERPolicy.Column.GetDisplayValue()}}</div>
-              <div subtitle>{{ item.Description.Column.GetDisplayValue() }}</div>
-            </div>
-          </ng-template>
-        </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.ObjectKey"
-          [columnLabel]="'#LDS#Violating object' | translate"
-          data-imx-identifier="policy-violations-table-column-ObjectKey">
-        </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.State"
-          data-imx-identifier="policy-violations-table-column-State">
-        </imx-data-table-column>
+  <h1 class="mat-headline"  *ngIf="!selectedCompanyPolicy">
+    <span>{{ '#LDS#Heading Policy Violations' | translate }}</span>
+    <imx-help-contextual></imx-help-contextual>
+  </h1>
+  <mat-card>
+    <div class="imx-table-container">
+      <imx-data-source-toolbar
+        #dst
+        [options]="selectedCompanyPolicy ? ['sort', 'filter', 'settings'] : ['search', 'sort', 'filter', 'groupBy', 'settings']"
+        [settings]="dstSettings"
+        [busyService]="busyService"
+        data-imx-identifier="policy-violations-table-dst"
+        (navigationStateChanged)="getData($event)"
+        (search)="search($event)"
+        (updateConfig)="updateConfig($event)"
+        (deleteConfigById)="deleteConfigById($event)"
+      >
+      </imx-data-source-toolbar>
+      <div class="imx-policyviolation-table">
+        <imx-data-table
+          [dst]="dst"
+          [detailViewVisible]="false"
+          mode="manual"
+          [selectable]="!selectedCompanyPolicy"
+          [showSelectedItemsMenu]="false"
+          (selectionChanged)="onSelectionChanged($event)"
+          data-imx-identifier="policy-violations-table"
+          [groupData]="groupedData"
+          (groupDataChanged)="onGroupingChange($event)"
+          (highlightedEntityChanged)="viewDetails($event)"
+        >
+          <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_QERPolicy" data-imx-identifier="policy-violations-table-column-UID_QERPolicy">
+            <ng-template let-item>
+              <div class="imx-main-column" data-imx-identifier="rules-violations-table-row-button-view-details">
+                <div>{{ item.UID_QERPolicy.Column.GetDisplayValue() }}</div>
+                <div subtitle>{{ item.Description.Column.GetDisplayValue() }}</div>
+              </div>
+            </ng-template>
+          </imx-data-table-column>
+          <imx-data-table-column
+            [entityColumn]="entitySchema.Columns.ObjectKey"
+            [columnLabel]="'#LDS#Violating object' | translate"
+            data-imx-identifier="policy-violations-table-column-ObjectKey"
+          >
+          </imx-data-table-column>
+          <imx-data-table-column [entityColumn]="entitySchema.Columns.State" data-imx-identifier="policy-violations-table-column-State"> </imx-data-table-column>
 
-        <imx-data-table-generic-column columnName="actions" data-imx-identifier="policy-violations-table-column-edit">
-          <ng-template let-item>
-            <div class="imx-decision">
-              <button mat-stroked-button (click)="policyViolationsService.approve([item])"
-                [disabled]="item.State?.value?.toLocaleLowerCase() !== 'pending'"
-                data-imx-identifier="policy-violations-table-approve-button">
-                {{ '#LDS#Grant exception' | translate }}
-              </button>
-              <button mat-stroked-button (click)="policyViolationsService.deny([item])"
-                [disabled]="item.State?.value?.toLocaleLowerCase() !== 'pending'"
-                data-imx-identifier="policy-violations-table-deny-button">
-                {{ '#LDS#Deny exception' | translate }}
-              </button>
-              <button mat-button color="primary" (click)="viewDetails(item)"
-                data-imx-identifier="rules-violations-table-row-button-view-details">
-                {{'#LDS#Details' | translate}}
-              </button>
-            </div>
-          </ng-template>
-        </imx-data-table-generic-column>
-
-      </imx-data-table>
+          <imx-data-table-generic-column columnName="actions" data-imx-identifier="policy-violations-table-column-edit" *ngIf="!selectedCompanyPolicy">
+            <ng-template let-item>
+              <div class="imx-decision">
+                <button
+                  mat-stroked-button
+                  color="warn"
+                  (click)="policyViolationsService.deny([item]); $event.stopPropagation()"
+                  data-imx-identifier="policy-violations-table-deny-button"
+                >
+                  <eui-icon icon="ignore"></eui-icon>
+                  {{ '#LDS#Deny exception' | translate }}
+                </button>
+                <button
+                  mat-stroked-button
+                  color="primary"
+                  (click)="policyViolationsService.approve([item]); $event.stopPropagation()"
+                  data-imx-identifier="policy-violations-table-approve-button"
+                >
+                  <eui-icon icon="check"></eui-icon>
+                  {{ '#LDS#Grant exception' | translate }}
+                </button>
+              </div>
+            </ng-template>
+          </imx-data-table-generic-column>
+        </imx-data-table>
+      </div>
+      <imx-data-source-paginator [dst]="dst" data-imx-identifier="policy-violations-table-paginator"> </imx-data-source-paginator>
     </div>
-    <imx-data-source-paginator [dst]="dst" *ngIf="!dstSettings?.groupData?.currentGrouping"
-      data-imx-identifier="policy-violations-table-paginator"> </imx-data-source-paginator>
-  </div>
-  <div class="imx-button-bar" *ngIf="dstSettings">
-    <p class="imx-selected-items">
-      <span>
-        {{ '#LDS#Selected policy violations' | translate }}
-      </span>
-      <eui-badge data-imx-identifier="policy-violations-selection-badge" class="imx-badge" color="orange">
-        {{selectedViolations?.length > 0 ? selectedViolations.length : 0}}
-      </eui-badge>
-    </p>
+  </mat-card>
+  <div class="imx-button-bar" *ngIf="!selectedCompanyPolicy">
+    <imx-selected-elements [selectedElements]="selectedViolations"></imx-selected-elements>
     <div class="imx-menu-spacer"></div>
-    <button mat-stroked-button data-imx-identifier="policy-violations-table-button-approve"
-      title="{{ '#LDS#Grants an exception for the selected policy violations' | translate }}"
-      (click)="policyViolationsService.approve(selectedViolations)" [disabled]="!selectedViolations.length">
-      {{ '#LDS#Grant exception' | translate }}
-    </button>
-    <button mat-stroked-button data-imx-identifier="policy-violations-table-button-deny"
+
+    <button
+      mat-raised-button
+      color="warn"
+      data-imx-identifier="policy-violations-table-button-deny"
       title="{{ '#LDS#Denies an exception for the selected policy violations' | translate }}"
-      (click)="policyViolationsService.deny(selectedViolations)" [disabled]="!selectedViolations.length">
+      (click)="policyViolationsService.deny(selectedViolations)"
+      [disabled]="!selectedViolations.length"
+    >
+      <eui-icon icon="ignore"></eui-icon>
       {{ '#LDS#Deny exception' | translate }}
     </button>
-
+    <button
+      mat-raised-button
+      color="primary"
+      data-imx-identifier="policy-violations-table-button-approve"
+      title="{{ '#LDS#Grants an exception for the selected policy violations' | translate }}"
+      (click)="policyViolationsService.approve(selectedViolations)"
+      [disabled]="!selectedViolations.length"
+    >
+      <eui-icon icon="check"></eui-icon>
+      {{ '#LDS#Grant exception' | translate }}
+    </button>
   </div>
 </div>

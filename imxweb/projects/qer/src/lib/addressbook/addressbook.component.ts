@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,8 +29,8 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiLoadingService, EuiSidesheetConfig, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { DataSourceToolbarSettings, ClassloggerService, SettingsService, DataSourceWrapper, DataTableGroupedData } from 'qbm';
-import { CollectionLoadParameters, DataModel } from 'imx-qbm-dbts';
+import { DataSourceToolbarSettings, ClassloggerService, SettingsService, DataSourceWrapper, DataTableGroupedData, BusyService } from 'qbm';
+import { CollectionLoadParameters } from 'imx-qbm-dbts';
 import { PersonConfig, PortalPersonAll } from 'imx-api-qer';
 
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
@@ -43,7 +43,7 @@ import { AddressbookService } from './addressbook.service';
 @Component({
   selector: 'imx-addressbook',
   templateUrl: './addressbook.component.html',
-  styleUrls: ['./addressbook.component.scss']
+  styleUrls: ['./addressbook.component.scss'],
 })
 export class AddressbookComponent implements OnInit {
   /**
@@ -52,34 +52,35 @@ export class AddressbookComponent implements OnInit {
   public dstSettings: DataSourceToolbarSettings;
 
   public groupData: { [key: string]: DataTableGroupedData } = {};
+  public busyService = new BusyService();
 
   private personConfig: PersonConfig;
   private dstWrapper: DataSourceWrapper<PortalPersonAll>;
 
   constructor(
-    private readonly busyService: EuiLoadingService,
+    private readonly euiBusyService: EuiLoadingService,
     private readonly logger: ClassloggerService,
     private readonly configService: ProjectConfigurationService,
     private readonly settingsService: SettingsService,
     private readonly addressbookService: AddressbookService,
     private readonly sidesheet: EuiSidesheetService,
     private readonly translateService: TranslateService
-  ) { }
+  ) {}
 
   public async ngOnInit(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    const isBusy = this.busyService.beginBusy();
 
     try {
       this.personConfig = (await this.configService.getConfig()).PersonConfig;
 
       this.dstWrapper = await this.addressbookService.createDataSourceWrapper(
-        this.personConfig.VI_MyData_WhitePages_ResultAttributes, 'address-book'
+        this.personConfig.VI_MyData_WhitePages_ResultAttributes,
+        'address-book'
       );
 
       this.dstSettings = await this.dstWrapper.getDstSettings({ PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 });
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      isBusy.endBusy();
     }
   }
 
@@ -88,26 +89,24 @@ export class AddressbookComponent implements OnInit {
    *
    */
   public async onNavigationStateChanged(newState: CollectionLoadParameters): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    const isBusy = this.busyService.beginBusy();
 
     try {
       this.dstSettings = await this.dstWrapper.getDstSettings(newState);
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      isBusy.endBusy();
     }
   }
 
   public async onGroupingChange(groupKey: string): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    const isBusy = this.busyService.beginBusy();
 
     try {
       const groupData = this.groupData[groupKey];
       groupData.settings = await this.dstWrapper.getGroupDstSettings(groupData.navigationState);
       groupData.data = groupData.settings.dataSource;
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      isBusy.endBusy();
     }
   }
 
@@ -121,36 +120,33 @@ export class AddressbookComponent implements OnInit {
     this.logger.trace(this, 'New selected person', personAll);
 
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.euiBusyService.show()));
 
     let config: EuiSidesheetConfig;
 
     try {
       config = {
         title: await this.translateService.get('#LDS#Heading View Identity Details').toPromise(),
-        headerColour: 'iris-blue',
+        subTitle: personAll.GetEntity().GetDisplay(),
         padding: '0',
         width: 'max(600px, 60%)',
-        data: await this.addressbookService.getDetail(
-          personAll,
-          this.personConfig.VI_MyData_WhitePages_DetailAttributes
-        )
+        testId: 'addressbook-view-identity-details',
+        data: await this.addressbookService.getDetail(personAll, this.personConfig.VI_MyData_WhitePages_DetailAttributes),
       };
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      setTimeout(() => this.euiBusyService.hide(overlayRef));
     }
 
     this.sidesheet.open(AddressbookDetailComponent, config);
   }
 
   public async onSearch(search: string): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    const isBusy = this.busyService.beginBusy();
 
     try {
       this.dstSettings = await this.dstWrapper.getDstSettings({ StartIndex: 0, search });
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      isBusy.endBusy();
     }
   }
 }

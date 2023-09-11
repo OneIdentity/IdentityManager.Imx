@@ -1,4 +1,5 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   display: flex;
@@ -31,5 +32,23 @@
     font-weight: 600;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-user-icon {
+      color: $color-gray-20;
+      background-color: $color-gray-80;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-user-icon {
+      color: $color-gray-10;
+      background-color: $color-gray-100;
+    }
   }
 }

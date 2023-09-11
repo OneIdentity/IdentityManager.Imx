@@ -1,3 +1,6 @@
+@import '@elemental-ui/core/src/styles/_palette.scss';
+
+
 .column-selector {
   flex-grow: 1;
   padding-top: 0.25em;
@@ -13,7 +16,6 @@
 }
 
 li {
-  padding: 0;
   margin: 0;
 }
 
@@ -22,11 +24,14 @@ li {
   flex-grow: 1;
   flex-shrink: 1;
   align-items: center;
+
+  .mat-slide-toggle {
+    margin-top: 10px;
+  }
 }
 
 .expression {
   display: flex;
-  padding: 0 1em;
 }
 
 .logical-operator {
@@ -46,14 +51,9 @@ li {
   flex-wrap: wrap;
 }
 
-.add-expression-row {
-  margin: 0.5em 0;
-  display: flex;
-}
-
 .remove-btn {
-  margin-left: 1em;
-  margin-top: 0.25em;
+  display: flex;
+  align-items: center;
 }
 
 .date-diff-value {
@@ -62,6 +62,60 @@ li {
 
 .relative-date {
   display: flex;
+}
+
+.expression-container {
+  transition: all .6s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: 1px $color-gray-20 solid;
+  border-radius: 5px;
+  display: flex;
+
+  .expression-container-header {
+    transition: all .6s cubic-bezier(0.25, 0.8, 0.25, 1);
+    width: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 16px;
+    border-radius: 2px 0 0 2px;
+  }
+}
+
+.expression-list {
+  overflow: auto;
+}
+
+.logical-op-container {
+  display: flex;
+  align-items: baseline;
+  column-gap: 10px;
+}
+
+.selected-logical-op {
+  display: flex;
+  flex-direction: row;
+  margin: 10px 0 10px 0;
+}
+
+.selected-logical-op:before,
+.selected-logical-op:after {
+  content: '';
+  flex: 1 1;
+  border-bottom: 1px solid $color-gray-10;
+  margin: auto;
+}
+
+.selected-logical-op::before {
+  margin-right: 10px;
+}
+
+.selected-logical-op:after {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.imx-spacer {
+  flex: 1 1 auto;
 }
 
 mat-radio-button {
@@ -90,4 +144,70 @@ imx-sqlwizard-singlevalue {
 
 .auto-flex {
   flex: auto;
+}
+
+// Theme
+.eui-light-theme {
+  :host {
+    .expression-container-header {
+      background-color: $color-gray-10;
+      color: $color-blue-60;
+    }
+
+    .expression-container:hover .expression-container-header {
+      background-color: $color-blue-60;
+      color: $color-gray-0;
+    }
+
+    .expression-container:hover {
+      border-color: $color-blue-60;
+    }
+
+    .selected-logical-op {
+      color: $color-blue-60;
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .expression-container-header {
+      background-color: $color-gray-50;
+      color: $color-blue-40;
+    }
+
+    .expression-container:hover .expression-container-header {
+      background-color: $color-blue-40;
+      color: $color-gray-0;
+    }
+
+    .expression-container:hover {
+      border-color: $color-blue-40;
+    }
+
+    .selected-logical-op {
+      color: $color-blue-40;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .expression-container-header {
+      background-color: $color-gray-0;
+      color: $color-blue-60;
+    }
+    .expression-container:hover .expression-container-header {
+      background-color: $color-blue-60;
+      color: $color-gray-0;
+    }
+
+    .expression-container:hover {
+      border-color: $color-blue-60;
+    }
+
+    .selected-logical-op {
+      color: $color-blue-60;
+    }
+  }
 }

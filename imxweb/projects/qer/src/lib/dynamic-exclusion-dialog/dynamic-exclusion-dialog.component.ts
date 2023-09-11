@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
@@ -35,9 +35,9 @@ import { MatDialogRef } from '@angular/material/dialog';
 })
 export class DynamicExclusionDialogComponent implements OnInit {
 
-  public dynamicExclusionForm: FormGroup;
+  public dynamicExclusionForm: UntypedFormGroup;
 
-  constructor(private formBuilder: FormBuilder, public dialogRef: MatDialogRef<DynamicExclusionDialogComponent>) {}
+  constructor(private formBuilder: UntypedFormBuilder, public dialogRef: MatDialogRef<DynamicExclusionDialogComponent>) {}
 
   public ngOnInit(): void {
     this.dynamicExclusionForm = this.formBuilder.group({

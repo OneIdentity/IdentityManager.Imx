@@ -34,7 +34,10 @@
 }
 
 .imx-remove-button {
-  color: $phoenix-red;
+  eui-icon {
+    font-size: 14px;
+    margin-right: 4px;
+  }
 }
 
 @media only screen and (max-width: 1024px) {

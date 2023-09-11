@@ -1,7 +1,7 @@
 <ng-container *ngIf="atLeastOneRoleAssignment; else otherServiceItems">
 <div class="governance-sidesheet">
   <mat-tab-group>
-    <mat-tab data-imx-identifier="pattern-details-tab-main" [label]="'#LDS#Heading Details' | translate" >
+    <mat-tab data-imx-identifier="pattern-details-tab-main" [label]="'#LDS#Heading Information' | translate" >
       <ng-template matTabContent>
         <div class="governance-sidesheet__tab-content">
           <div class="governance-sidesheet__tab-content-body">
@@ -53,7 +53,7 @@
 <ng-template #otherServiceItems>
   <div eui-sidesheet-content>
     <eui-alert *ngIf="data.items.length === 0" [condensed]="true">
-      <span>{{'#LDS#The products from the selected request template cannot be added to your shopping cart. You currently cannot request the products contained in the request template.' | translate}}</span>
+      <span>{{'#LDS#The products from the selected product bundle cannot be added to your shopping cart. You currently cannot request the products contained in the product bundle.' | translate}}</span>
     </eui-alert>
     <mat-accordion multi="true" class="imx-accordion" data-imx-identifier="pattern-details-accordion">
       <mat-expansion-panel *ngFor="let cdrList of cdrLists; index as i">

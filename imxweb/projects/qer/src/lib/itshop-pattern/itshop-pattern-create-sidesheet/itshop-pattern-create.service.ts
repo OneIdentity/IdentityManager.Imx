@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,14 +30,15 @@ import { MatDialog } from '@angular/material/dialog';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PortalItshopPatternItem, PortalItshopPatternPrivate, RequestableProductForPerson } from 'imx-api-qer';
+import { PortalItshopPatternItem, PortalItshopPatternPrivate } from 'imx-api-qer';
 
-import { ClassloggerService, SnackBarService, UserMessageService } from 'qbm';
+import { ClassloggerService, HELP_CONTEXTUAL, HelpContextualComponent, HelpContextualService, SnackBarService, UserMessageService } from 'qbm';
 import { QerApiService } from '../../qer-api-client.service';
 import { DuplicatePatternItem } from '../duplicate-pattern-items/duplicate-pattern-item';
 import { DuplicatePatternItemsComponent } from '../duplicate-pattern-items/duplicate-pattern-items.component';
 import { ItShopPatternChangedType } from '../itshop-pattern-changed.enum';
 import { ItshopPatternCreateSidesheetComponent } from './itshop-pattern-create-sidesheet.component';
+import { PatternItemCandidate } from '../pattern-item-candidate.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -56,7 +57,9 @@ export class ItshopPatternCreateService {
     private readonly sidesheet: EuiSidesheetService,
     private readonly translate: TranslateService,
     private readonly errorHandler: ErrorHandler,
-    private readonly snackBar: SnackBarService) { }
+    private readonly snackBar: SnackBarService,
+    private readonly helpContextualService: HelpContextualService
+  ) { }
 
   public async saveNewPatternAndItems(pattern: PortalItshopPatternPrivate, patternItems: PortalItshopPatternItem[]): Promise<void> {
 
@@ -74,7 +77,7 @@ export class ItshopPatternCreateService {
     }
 
     this.snackBar.open({
-      key: '#LDS#The request template has been successfully created.',
+      key: '#LDS#The product bundle has been successfully created.',
       parameters: [pattern.GetEntity().GetDisplay()]
     }, '#LDS#Close');
 
@@ -113,8 +116,7 @@ export class ItshopPatternCreateService {
   }
 
   public async assignItemsToPattern(
-    serviceItemUids: string[],
-    serviceItemsForPersons: RequestableProductForPerson[],
+    items: PatternItemCandidate[],
     uidPattern: string = ''): Promise<number> {
 
     if (uidPattern.length === 0) {
@@ -127,29 +129,26 @@ export class ItshopPatternCreateService {
     }
 
     const duplicateItems: DuplicatePatternItem[] = [];
+    let newAssignedObjects = 0;
 
-    const newAssignedObjects = (await this.handlePromiseLoader(
-      Promise.all(
-        serviceItemUids.map(async (uid) => {
-          let patternItem: PortalItshopPatternItem;
-          try {
-            patternItem = this.qerClient.typedClient.PortalItshopPatternItem.createEntity();
-            patternItem.UID_ShoppingCartPattern.value = uidPattern;
-            patternItem.UID_AccProduct.value = uid;
-            await patternItem.GetEntity().Commit(true);
-          } catch (exception) {
-            // 810303 == the combination of the fields Role/organization, Service item, Request template must be unique.
-            if (exception?.dataItems.length && exception.dataItems[0].Number === 810303) {
-              const serviceItem = serviceItemsForPersons.find(item => item.UidAccProduct === uid);
-              duplicateItems.push(new DuplicatePatternItem(serviceItem, exception.dataItems[0]));
-            } else {
-              this.errorHandler.handleError(exception);
-            }
-          }
-        })
-      )
-    )).length;
-
+    for (const item of items) {
+      let patternItem: PortalItshopPatternItem;
+      try {
+        patternItem = this.qerClient.typedClient.PortalItshopPatternItem.createEntity();
+        patternItem.UID_ShoppingCartPattern.value = uidPattern;
+        patternItem.UID_AccProduct.value = item.uidAccProduct;
+        await this.qerClient.typedClient.PortalItshopPatternItem.Post(patternItem);
+        newAssignedObjects++;
+      } catch (exception) {
+        // 810303 == the combination of the fields Role/organization, Service item, Product bundle must be unique.
+        if (exception?.dataItems.length && exception.dataItems[0].Number === 810303 ) {
+          duplicateItems.push(new DuplicatePatternItem(item.display));
+        }
+        else {
+          this.errorHandler.handleError(exception);
+        }
+      }
+    }
 
     if (duplicateItems.length > 0) {
       const dialogRef = this.dialogService.open(DuplicatePatternItemsComponent, {
@@ -168,10 +167,9 @@ export class ItshopPatternCreateService {
     this.logger.trace(this, 'new itshop pattern created', newPattern);
 
     if (newPattern) {
+      this.helpContextualService.setHelpContextId(HELP_CONTEXTUAL.RequestTemplatesCreate);
       const result = await this.sidesheet.open(ItshopPatternCreateSidesheetComponent, {
-        title: await this.translate.get('#LDS#Heading Create Request Template').toPromise(),
-        headerColour: 'iris-blue',
-        bodyColour: 'asher-gray',
+        title: await this.translate.get('#LDS#Heading Create Product Bundle').toPromise(),
         panelClass: 'imx-sidesheet',
         disableClose: true,
         padding: '0',
@@ -179,13 +177,14 @@ export class ItshopPatternCreateService {
         testId: 'pattern-create-sidesheet',
         data: {
           pattern: newPattern
-        }
+        },
+        headerComponent: HelpContextualComponent
       }).afterClosed().toPromise();
 
       if (result === ItShopPatternChangedType.Saved) {
 
         if (showSnackbar) {
-          const snackBarMessage = '#LDS#The request template has been successfully created.';
+          const snackBarMessage = '#LDS#The product bundle has been successfully created.';
           this.snackBar.open({ key: snackBarMessage });
         }
         return newPattern;

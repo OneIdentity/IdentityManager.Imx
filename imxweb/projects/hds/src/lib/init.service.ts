@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,8 @@
 import { Injectable } from '@angular/core';
 import { Router, Route } from '@angular/router';
 
-import { MenuService } from 'qbm';
+import { ExtService } from 'qbm';
+import { CallsComponent } from './calls/calls.component';
 
 
 @Injectable({ providedIn: 'root' })
@@ -35,13 +36,16 @@ export class InitService {
 
   constructor(
     private readonly router: Router,
-    private readonly menuService: MenuService,
+    private readonly extService: ExtService,
   ) { }
 
   public onInit(routes: Route[]): void {
     this.addRoutes(routes);
-
-    this.setupMenu();
+    this.extService.register('mastHead', { instance: CallsComponent, inputData: {
+      id: 'helpdeskTickets',
+      label: '#LDS#Menu Entry Help desk tickets',
+      url: 'help-desk-support/tickets'
+    }});
 
     /*
     this.dataExplorerRegistryService.registerFactory(
@@ -62,32 +66,6 @@ export class InitService {
       }
     );
     */
-  }
-
-  private setupMenu(): void {
-    /*
-    this.menuService.addMenuFactories(
-      (preProps: string[], groups: string[]) => {
-        if (!this.isRoleAdmin(groups)) {
-          return null;
-        }
-        const menu = {
-          id: 'ROOT_Data',
-          title: '#LDS#Data administration',
-          sorting: '40',
-          items: [
-            {
-              id: 'QER_DataExplorer',
-              navigationCommands: { commands: ['admin', 'dataexplorer'] },
-              title: '#LDS#Menu Entry Data Explorer',
-              sorting: '40-10',
-            },
-          ]
-        };
-
-        return menu;
-      });
-      */
   }
 
   private addRoutes(routes: Route[]): void {

@@ -1,3 +1,12 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import '../../../../../shared/scss/common-table.scss';
+
+:host {
+  .imx-main-column {
+    flex-direction: column;
+  }
+}
+
 @mixin imx-flex-column-container {
   display: flex;
   flex-direction: column;
@@ -40,11 +49,19 @@
   background-color: inherit;
   @include imx-flex-column-container();
   overflow: hidden;
+  display: flex;
+  height: 100%;
+
+  .mat-card {
+    @include imx-flex-fill-control-hidden-overflow();
+    margin-right: 3px;
+  }
 
   div.imx-table-container {
     @include imx-flex-column-container();
     overflow: hidden;
     height: inherit;
+    flex: 1 1 auto;
 
     .imx-policyviolation-table {
       flex-grow: 1;
@@ -56,42 +73,16 @@
       }
 
       .imx-decision {
-        min-width: 210px;
-        > * {
-          margin-bottom: 3px;
-          margin-top: 3px;
-          margin-left: 10px;
+        @include imx-button-column-right();
+        > button:not(:last-of-type) {
+          margin-right: 5px;
         }
       }
     }
   }
 
   .imx-button-bar {
-    @include imx-flex-row-container();
-    margin-top: 20px;
-    flex: 0 0 auto;
-
-    .imx-badge {
-      background-color: inherit;
-
-      ::ng-deep .eui-badge-content {
-        font-size: 14px;
-        line-height: 14px;
-      }
-    }
-
-    .imx-selected-items {
-      margin: 0;
-      line-height: 36px;
-    }
-
-    button {
-      margin-left: 10px;
-    }
-
-    .imx-menu-spacer {
-      flex-grow: 1;
-    }
+    @include imx-button-bar;
   }
 }
 
@@ -108,9 +99,15 @@
   }
 }
 
-
 @media only screen and (max-width: 1024px) {
   ::ng-deep .mat-column-decision {
     display: none;
+  }
+}
+.eui-dark-theme {
+  :host {
+    .imx-button-bar {
+      color: $color-gray-30;
+    }
   }
 }

@@ -1,0 +1,32 @@
+<div eui-sidesheet-content>
+  <eui-alert class="helper-alert" type="info" condensed="false" [colored]="true" [dismissable]="true">
+    <span>{{ recommendationText | translate }}</span>
+    <span class="imx-alertsub">{{ recommendationSubtext | translate}}</span>
+  </eui-alert>
+
+  <imx-data-source-toolbar #dst data-imx-identifier="role-recommendation-result-data-source-toolbar"  [busyService]="busyService" [settings]="dstSettings" [options]=""> </imx-data-source-toolbar>
+  <div class="imx-data-table-container">
+    <imx-data-table
+      [selectable]="data.canEdit"
+      [showSelectionInfo]="false"
+      [showSelectedItemsMenu]="false"
+      (selectionChanged)="onSelectionChanged($event)"
+      data-imx-identifier="role-recommendation-result-data-table"
+      [dst]="dst"
+      detailViewVisible="false"
+      mode="manual"    >
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns.Display" [columnLabel]="'#LDS#Entitlement' | translate">
+        <ng-template let-item>
+          <div>{{ item.Display.value }}</div>
+          <div class="subtext">{{ item.ObjectTypeDisplay.value }}</div>
+        </ng-template>
+      </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns.Reason" [columnLabel]="data?.actionColumnTitle || '#LDS#Recommended action' | translate"> </imx-data-table-column>
+    </imx-data-table>
+  </div>
+</div>
+<div eui-sidesheet-actions *ngIf="data.canEdit">
+  <imx-selected-elements [selectedElements]="selectedEntities" [caption]="data?.selectionTitle || '#LDS#Selected recommendations' | translate" [dialogHeader]="data?.selectionTitle || '#LDS#Heading Selected Recommendations' | translate"></imx-selected-elements>
+  <div class="imx-menu-spacer"></div>
+  <button [disabled]="selectedEntities.length === 0" data-imx-identifier="roles-recommendations-apply-button" mat-stroked-button (click)="applyActions()">{{ data?.submitButtonTitle || '#LDS#Perform recommended actions' | translate }}</button>
+</div>

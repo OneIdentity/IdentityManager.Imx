@@ -1,15 +1,15 @@
 <div eui-sidesheet-content>
 
   <eui-alert *ngIf="isRecApprove" class="helper-alert" type="success" condensed="true" [colored]="true">
-    {{'#LDS#Based on an analysis with currently available data, it is recommended you approve this request.'| translate}}
+    {{'#LDS#Based on an analysis of currently available data, it is recommended that you approve this request.'| translate}}
   </eui-alert>
 
   <eui-alert *ngIf="isRecReject" class="helper-alert" type="error" condensed="true" [colored]="true">
-    {{'#LDS#Based on an analysis with currently available data, it is recommended you deny this request.'| translate}}
+    {{'#LDS#Based on an analysis of currently available data, it is recommended that you deny this request.'| translate}}
   </eui-alert>
 
-  <eui-alert *ngIf="isRecApprove" class="helper-alert" type="info" condensed="true" [colored]="true">
-    {{'#LDS#A recent analysis with currently available data could not conclude with a recommendation for this request.'| translate}}
+  <eui-alert *ngIf="isNoRec" class="helper-alert" type="info" condensed="true" [colored]="true">
+    {{'#LDS#Based on an analysis of currently available data, no definitive recommendation can be made for this request.'| translate}}
   </eui-alert>
 
   <div class="recommendation-items" *ngIf="recommendationItems">

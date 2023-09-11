@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,7 +29,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { IClientProperty } from 'imx-qbm-dbts';
 
-import { ClassloggerService, ConfirmationService, UserMessageService } from 'qbm';
+import { ClassloggerService, ConfirmationService, HelpContextualService, UserMessageService } from 'qbm';
 import { Subject } from 'rxjs';
 
 import { PickCategoryComponent } from './pick-category.component';
@@ -51,11 +51,15 @@ describe('PickCategoryComponent', () => {
   }
 
   const deletePickCategoriesSpy = jasmine.createSpy('deletePickCategories').and.returnValue(Promise.resolve({}));
+  const mockHelpContextualService = {
+    setHelpContextId: jasmine.createSpy('setHelpContextId')
+      .and.callFake(() => Promise.resolve())
+  }
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ 
-        PickCategoryComponent 
+      declarations: [
+        PickCategoryComponent
       ],
       schemas: [
         CUSTOM_ELEMENTS_SCHEMA
@@ -66,7 +70,7 @@ describe('PickCategoryComponent', () => {
           useValue: {
             pickcategorySchema: { Columns: { __Display: { ColumnName: '__Display' } as IClientProperty } },
             getPickCategories: jasmine.createSpy('getPickCategories').and.returnValue({}),
-            deletePickCategories: deletePickCategoriesSpy,           
+            deletePickCategories: deletePickCategoriesSpy,
             createPickCategory: jasmine.createSpy('createPickCategory').and.returnValue({}),
             handleOpenLoader: jasmine.createSpy('handleOpenLoader').and.callThrough(),
             handleCloseLoader: jasmine.createSpy('handleCloseLoader').and.callThrough(),
@@ -92,6 +96,10 @@ describe('PickCategoryComponent', () => {
             debug: jasmine.createSpy('debug').and.callThrough(),
             trace: jasmine.createSpy('trace').and.callThrough()
           }
+        },
+        {
+          provide: HelpContextualService,
+          useValue: mockHelpContextualService
         }
       ]
     })
@@ -122,7 +130,7 @@ describe('PickCategoryComponent', () => {
           expect(deletePickCategoriesSpy).toHaveBeenCalled();
         } else {
           expect(deletePickCategoriesSpy).not.toHaveBeenCalled();
-        }  
+        }
       });
     }
   });

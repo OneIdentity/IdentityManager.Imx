@@ -1,0 +1,1 @@
+Run "npm run build" to compile the SASS file to a CSS file.

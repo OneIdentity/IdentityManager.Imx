@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,63 +24,114 @@
  *
  */
 
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, QueryList, SimpleChanges, ViewChildren } from '@angular/core';
 import { SqlViewSettings } from './SqlNodeView';
 import { LogOp as _logOp, SqlExpression } from 'imx-qbm-dbts';
 import { SqlWizardApiService } from './sqlwizard-api.service';
+import { MatButtonToggleChange } from '@angular/material/button-toggle';
 
 @Component({
-    templateUrl: './sqlwizard.component.html',
-    styleUrls: ['./sqlwizard.scss'],
-    selector: 'imx-sqlwizard'
+  templateUrl: './sqlwizard.component.html',
+  styleUrls: ['./sqlwizard.scss'],
+  selector: 'imx-sqlwizard',
 })
-export class SqlWizardComponent implements OnInit, OnChanges {
+export class SqlWizardComponent implements OnInit, OnChanges, AfterViewInit {
+  public readonly andConditionLabel = '#LDS#ALL';
+  public readonly orConditionLabel = '#LDS#ANY';
 
-    public LogOp = _logOp;
-
-    public viewSettings: SqlViewSettings;
-
-    @Input() public tableName: string;
-    @Input() public expression: SqlExpression;
-    /** Alternate API service to use. */
-    @Input() public apiService: SqlWizardApiService;
-
-    @Output() public change = new EventEmitter<any>();
-
-    constructor(private readonly apiSvc: SqlWizardApiService) {
+  public LogOp = _logOp;
+  public viewSettings: SqlViewSettings;
+  public get isImplemented(): boolean {
+    var svc = this.apiService;
+    if (!svc) {
+      svc = this.apiSvc;
     }
 
-    public async ngOnInit(): Promise<void> {
-        await this.reinit();
-    }
+    return svc.implemented;
+  }
 
-    public async addExpression(): Promise<void> {
-      await this.viewSettings.root.addChildNode();
-      this.emitChanges();
-    }
+  @Input() public tableName: string;
+  @Input() public expression: SqlExpression;
+  /** Alternate API service to use. */
+  @Input() public apiService: SqlWizardApiService;
 
-    public ngOnChanges(changes: SimpleChanges): void {
-        if ((changes['expression'] && changes['expression'].currentValue !== this.expression) ||
-            (changes['tableName'] && changes['tableName'].currentValue !== this.viewSettings?.root.tableName)) {
-              this.reinit();
+  @Output() public change = new EventEmitter<any>();
+
+  @ViewChildren('expressionItem') public expressionList: QueryList<ElementRef<HTMLLIElement>>;
+
+  private newExpressionAdded = false;
+
+  constructor(private readonly apiSvc: SqlWizardApiService) {}
+
+  public async ngOnInit(): Promise<void> {
+    await this.reinit();
+    await this.addEmptyExpression();
+  }
+
+  public ngAfterViewInit(): void {
+    setTimeout( () => {
+      this.expressionList.changes.subscribe(() => {
+        if (this.newExpressionAdded) {
+          this.expressionList?.last?.nativeElement.scrollIntoView(true);
         }
-    }
 
-    public emitChanges(): void {
-      this.change.emit();
-    }
+        this.newExpressionAdded = false;
+      })
+    });
+  }
 
-    private async reinit(): Promise<void> {
-        if (this.tableName && this.expression) {
-
-            var svc = this.apiService;
-            if (!svc) {
-                svc = this.apiSvc;
-            }
-            const viewSettings = new SqlViewSettings(svc, this.tableName, this.expression);
-            // first prepare, then assign to local property
-            await viewSettings.root.prepare();
-            this.viewSettings = viewSettings;
-        }
+  public async ngOnChanges(changes: SimpleChanges): Promise<void> {
+    if (
+      (changes['expression'] && changes['expression'].currentValue !== this.expression) ||
+      (changes['tableName'] && changes['tableName'].currentValue !== this.viewSettings?.root.tableName)
+    ) {
+      this.reinit();
     }
+  }
+
+  public async addExpression(): Promise<void> {
+    await this.viewSettings.root.addChildNode();
+    this.newExpressionAdded = true;
+    this.emitChanges();
+  }
+
+  public async removeAllExpressions(): Promise<void> {
+    this.viewSettings.root.Data.Expressions?.splice(0);
+    this.viewSettings.root.childViews?.splice(0);
+    await this.addEmptyExpression();
+    this.emitChanges();
+  }
+
+  public async emitChanges(): Promise<void> {
+    this.change.emit();
+    await this.addEmptyExpression();
+  }
+
+  public onOperatorChanged(event: MatButtonToggleChange): void {
+    (event.value as string).toLowerCase() === 'and' ? (this.expression.LogOperator = this.LogOp.AND) : (this.expression.LogOperator = this.LogOp.OR);
+    this.change.emit();
+  }
+
+  public logOpText(): string {
+    return this.expression.LogOperator === this.LogOp.AND ? this.andConditionLabel : this.orConditionLabel;
+  }
+
+  private async reinit(): Promise<void> {
+    if (this.tableName && this.expression) {
+      var svc = this.apiService;
+      if (!svc) {
+        svc = this.apiSvc;
+      }
+      const viewSettings = new SqlViewSettings(svc, this.tableName, this.expression);
+      // first prepare, then assign to local property
+      await viewSettings.root.prepare();
+      this.viewSettings = viewSettings;
+    }
+  }
+
+  private async addEmptyExpression(): Promise<void> {
+    if (this.viewSettings?.root?.Data?.Expressions?.length === 0) {
+      await this.addExpression();
+    }
+  }
 }

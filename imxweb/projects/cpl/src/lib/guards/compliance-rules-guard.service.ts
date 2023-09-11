@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,6 +28,7 @@ import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 
 import { AppConfigService } from 'qbm';
+import { QerPermissionsService } from 'qer';
 import { CplPermissionsService } from '../rules/admin/cpl-permissions.service';
 
 @Injectable({
@@ -36,17 +37,17 @@ import { CplPermissionsService } from '../rules/admin/cpl-permissions.service';
 export class ComplianceRulesGuardService implements CanActivate {
   constructor(
     private readonly permissionService: CplPermissionsService,
+    private readonly permissionsQer: QerPermissionsService,
     private readonly appConfig: AppConfigService,
     private readonly router: Router
   ) { }
 
   public async canActivate(): Promise<boolean> {
-    const userIsCiso = await this.permissionService.isCiso();
-    const userIsRuleOwner = await this.permissionService.isRuleOwner();
-    if (!userIsCiso && !userIsRuleOwner) {
+    const userRuleStatistics = await this.permissionService.isRuleStatistics();
+    if (!userRuleStatistics) {
       this.router.navigate([this.appConfig.Config.routeConfig.start], { queryParams: {} });
       return false;
     }
-    return userIsCiso || userIsRuleOwner;
+    return true;
   }
 }

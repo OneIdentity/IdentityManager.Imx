@@ -1,0 +1,209 @@
+@import '@elemental-ui/core/src/styles/_palette.scss';
+
+@mixin orange-border($theme: eui-light-theme) {
+  border-radius: 4px;
+  border-width: 1px;
+  border-style: solid;
+  outline-width: 1px;
+  outline-style: solid;
+
+  @if $theme == eui-light-theme {
+    outline-color: $color-orange-40;
+    border-color: $color-orange-40;
+  } @else if $theme == eui-dark-theme {
+    outline-color: $color-orange-60;
+    border-color: $color-orange-60;
+  }  
+}
+
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-grow: 1;
+
+  ::ng-deep .mat-header-row {
+    display: none;
+  }
+
+  // TODO: move into DataTableComponent
+  imx-data-table ::ng-deep .mat-table.imx-data-table-highlightedActive {
+
+    td.mat-cell {
+      // to hide the lines between the tablerows
+      border-color: transparent;
+    } 
+  }
+
+  .imx-table-container {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    margin: 0 24px;
+    padding: 0;
+    flex-grow: 1;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 4px;
+
+    imx-data-table {
+      overflow-y: initial;
+    }
+  }
+
+  .imx-product-bundle-list-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    .imx-product-bundle-list-header-text {
+      margin: auto;
+      margin-left: 24px;
+      font-size: 16px;
+      line-height: 20px;
+      font-weight: 600;
+    }
+
+    > :last-child {
+      margin-right: 16px;
+    }
+
+    .toolbar--hidden {
+      width: 0;
+    }
+
+    .expand-control-button {
+      ::ng-deep .mat-button-wrapper {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .rotate-90 {
+        margin: auto;
+        rotate: -90deg;
+        translate: 0 100%;
+        width: 1px; // prevent content from overflowing
+        -webkit-backface-visibility: hidden; // Handle the anti-aliasing from chrome on rotations
+      }
+    }
+  }
+
+  imx-data-source-paginator {
+    max-height: 57px;
+  }
+
+}
+
+// Theming
+:host {
+  // TODO: move into DataTableComponent
+  imx-data-table ::ng-deep .mat-table.imx-data-table-highlightedActive {
+    tr.mat-row {
+      background-color: $color-blue-10;
+    }
+
+    .mat-row:hover {
+      background-color: $color-blue-20;
+    }
+
+    tr.mat-row.imx-data-table-row-highlighted {
+      background-color: $color-gray-0;
+      @include orange-border;
+    }
+
+    tr.mat-row.imx-data-table-row-selected {
+      background-color: $color-orange-10;      
+      @include orange-border;
+    }
+
+    tr.mat-row.imx-data-table-row-selected.mat-row:hover {
+      background-color: $color-orange-20;
+    }    
+  }
+
+  .imx-private-bundle {
+    color: $color-red-60;
+  } 
+
+  .imx-table-container {
+    border-color: $color-blue-20;
+  }
+
+  imx-data-table {
+    background-color: $color-blue-10;
+  }
+
+  .imx-product-bundle-list-header {
+    .imx-product-bundle-list-header-text {
+      color: $color-blue-60;
+    }
+  }
+
+}
+
+.eui-dark-theme {
+  :host { 
+
+    imx-data-table ::ng-deep .mat-table.imx-data-table-highlightedActive {
+      tr.mat-row {
+        background-color: $color-blue-90;
+      }
+  
+      .mat-row:hover {
+        background-color: $color-blue-80;
+      }
+  
+      tr.mat-row.imx-data-table-row-highlighted {
+        background-color: $color-gray-100;
+        @include orange-border(eui-dark-theme);
+      }
+  
+      tr.mat-row.imx-data-table-row-selected {
+        background-color: $color-orange-90;
+        @include orange-border(eui-dark-theme);
+      }
+  
+      tr.mat-row.imx-data-table-row-selected.mat-row:hover {
+        background-color: $color-orange-80;
+      }    
+    }
+  
+    .imx-private-bundle {
+      color: $color-red-40;
+    }
+    
+    .imx-table-container {
+      border-color: $color-blue-80;
+    }
+    
+    imx-data-table {
+      background-color: $color-blue-90;
+    }
+
+    .imx-product-bundle-list-header {
+      .imx-product-bundle-list-header-text {
+        color: $color-blue-40;
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host { 
+
+    imx-data-table {
+      background-color: transparent;
+
+      ::ng-deep .mat-table.imx-data-table-highlightedActive {
+        border: 0;
+        
+        tr.mat-row {
+          background-color: transparent;
+        }
+      }    
+    }
+  }
+}

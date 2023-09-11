@@ -1,4 +1,5 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   display: flex;
@@ -139,5 +140,23 @@ div[imxActionsLabel] {
     font-size: 14px;
     font-style: italic;
     color: $black-4;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .mat-card-avatar {
+      background-color: $color-gray-60;
+      color: $color-gray-80;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .mat-card-avatar {
+      background-color: $color-gray-80;
+      color: $color-gray-100;
+    }
   }
 }

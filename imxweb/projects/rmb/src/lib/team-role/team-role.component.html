@@ -1,0 +1,23 @@
+<imx-icon-tile
+  data-imx-identifier="start-tile-team-role"
+  [caption]="'#LDS#Heading Team Role' | translate"
+  [subtitle]="
+    existTeamRole ? ('#LDS#Manage your team role, its memberships and entitlements.' | translate) : ('#LDS#Manage the entitlements required for your team using a team role.' | translate)
+  "
+  [identifier]="'team-role'"
+  [loadingState]="loadingState"
+  *ngIf="showTeamRole"
+>
+  <ng-template #ActionTemplate>
+    <ng-container *ngIf="existTeamRole; else noTeamRole">
+      <button mat-button color="primary" (click)="onManageTeamRole()">
+        {{ '#LDS#Edit team role' | translate }}
+      </button>
+    </ng-container>
+    <ng-template #noTeamRole>
+      <button mat-button color="primary" (click)="onCreateTeamRole()">
+        {{ '#LDS#Create team role' | translate }}
+      </button>
+    </ng-template>
+  </ng-template>
+</imx-icon-tile>

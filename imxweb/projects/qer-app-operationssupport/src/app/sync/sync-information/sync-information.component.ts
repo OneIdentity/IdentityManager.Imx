@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -63,7 +63,8 @@ export class SyncInformationComponent implements OnInit {
       {
         ColumnName: 'actions',
         Type: ValType.String,
-        afterAdditionals: true
+        afterAdditionals: true,
+        untranslatedDisplay: '#LDS#Actions'
       }
     ];
   }

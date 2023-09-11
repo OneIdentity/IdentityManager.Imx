@@ -1,0 +1,43 @@
+<mat-card class="imx-data-tree-container">
+  <div class="data-explorer-card-header" >
+    <div class="data-explorer-card-header-bg">
+      <span>{{ tablenameDisplay }}</span>
+      <ng-container *ngIf="contextId">
+        <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
+      </ng-container>
+    </div>
+  </div>
+  <ng-container *ngTemplateOutlet="content"></ng-container>
+</mat-card>
+
+<ng-template #content>
+  <imx-data-source-toolbar
+    #dst
+    [busyService]="busyService"
+    data-imx-identifier="resources-data-source-toolbar"
+    [settings]="dstSettings"
+    [options]="['sort', 'search', 'filter', 'settings']"
+    [searchBoxText]="'#LDS#Search' | translate"
+    (navigationStateChanged)="onNavigationStateChanged($event)"
+    (search)="onSearch($event)"
+    (updateConfig)="updateConfig($event)"
+    (deleteConfigById)="deleteConfigById($event)"
+  >
+  </imx-data-source-toolbar>
+  <imx-data-table #dataTable data-imx-identifier="resources-data-table" [dst]="dst"
+    detailViewVisible="false" mode="manual" (highlightedEntityChanged)="showDetails($event)">
+    <imx-data-table-column *ngIf="entitySchema"
+      [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+      <ng-template let-item>
+        <div>
+          {{ item?.GetEntity()?.GetDisplay() }}
+        </div>
+      </ng-template>
+    </imx-data-table-column>
+
+    <imx-data-table-column *ngIf="entitySchema && entitySchema.Columns.Requestable"
+      [entityColumn]="entitySchema.Columns.Requestable"> </imx-data-table-column>
+  </imx-data-table>
+  <imx-data-source-paginator data-imx-identifier="resources-paginator"
+    [dst]="dst"></imx-data-source-paginator>
+</ng-template>

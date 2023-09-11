@@ -1,17 +1,44 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
-.imx-subtext {
-  color: $black-6;
-  font-size: smaller;
-}
-
-
-
-.imx-table-container {
+:host {
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  height: inherit;
-  max-width: 100%;
+  flex: 1 1 auto;
+
+  .imx-subtext {
+    font-size: smaller;
+  }
+
+  .imx-table-container {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: inherit;
+    max-width: 100%;
+    flex: 1 1 auto;
+  }
 }
 
+// Theming section
+:host {
+  .imx-subtext {
+    color: $color-gray-60;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-subtext {
+      color: $color-gray-20;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-subtext {
+      color: $color-gray-40;
+    }
+  }
+}

@@ -1,0 +1,12 @@
+<ng-container *ngIf="orchestration.referenceUser && orchestration.selectedTab?.link === 'productsByReferenceUser'">
+  <mat-card class="imx-card" euiClickable="primary" routerLink="/newrequest/selectReferenceUser" [matTooltip]="'#LDS#Click to change the reference user' | translate">
+    <span class="imx-label">{{ '#LDS#Reference user' | translate}}:</span>
+    <span class="imx-description">({{ '#LDS#Click to change' | translate}})</span>
+    <div class="imx-content">
+      <span>
+        {{ orchestration.referenceUser.DisplayValue }}
+      </span>
+    </div>
+  </mat-card>
+  <eui-icon icon="collapseright" class="imx-icon-separator"></eui-icon>
+</ng-container>

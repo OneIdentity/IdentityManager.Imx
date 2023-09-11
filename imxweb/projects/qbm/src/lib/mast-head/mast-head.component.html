@@ -2,27 +2,26 @@
   <mat-toolbar color="primary" data-imx-identifier="masthead-toolbar">
     <mat-toolbar-row>
       <!-- custom logo-->
-      <img class="custom-logo" *ngIf="logoUrl" [src]="logoUrl" data-imx-identifier="masthead-custom-logo" (click)="goHome()">
+      <img class="custom-logo" *ngIf="logoUrl" [src]="logoUrl" data-imx-identifier="masthead-custom-logo"
+        tabindex="0" (keydown.enter)="goHome()" (click)="goHome()">
 
-      <h1 class="imx-masthead-app-name" data-imx-identifier="masthead-button-goHome" (click)="goHome()">
-        {{ appConfig?.Config?.Title }}
+      <h1 class="imx-masthead-app-name" data-imx-identifier="masthead-button-goHome"
+        tabindex="0" (keydown.enter)="goHome()" (click)="goHome()">
+        {{ productName }} {{ appConfig?.Config?.Title }}
       </h1>
       <span class="imx-masthead-space"></span>
       <span class="imx-masthead--controls">
-        <!-- TODO #289551 hide User-Menü in MastHead on smaller screens
-          <ng-template *ngIf="isAuthenticated && !isMobile" [ngTemplateOutlet]="mastHeadMenu"></ng-template> -->
-        <ng-template *ngIf="isAuthenticated" [ngTemplateOutlet]="mastHeadMenu"></ng-template>
+        <ng-template *ngIf="isAuthenticated && !isMobile" [ngTemplateOutlet]="mastHeadMenu"></ng-template>
       </span>
     </mat-toolbar-row>
   </mat-toolbar>
 </eui-masthead>
 
-<!-- TODO #289551 show User-Menü in TopNavigation-SideNav on smaller screens
-  <eui-top-navigation [items]="navigationItems">
+<eui-top-navigation *ngIf="isAuthenticated && menuItems?.length > 0" [items]="menuItems">
   <div eui-top-navigation-mobile-footer *ngIf="isMobile">
     <ng-template *ngIf="isAuthenticated" [ngTemplateOutlet]="mastHeadMenu"></ng-template>
   </div>
-</eui-top-navigation> -->
+</eui-top-navigation>
 
 <ng-template #mastHeadMenu>
   <button mat-button class="imx-masthead-user-button" #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="imxUserMenu"
@@ -33,7 +32,7 @@
   <mat-menu #imxUserMenu="matMenu">
     <ng-content select="[imx-profile-menu-items]"></ng-content>
     <button mat-menu-item data-imx-identifier="user-menu-signout" (click)="logout()">
-      <span translate>#LDS#Log off</span>
+      <span translate>#LDS#Log out</span>
     </button>
   </mat-menu>
   <button mat-button class="imx-masthead--icon-button" [matMenuTriggerFor]="helpMenu"
@@ -42,12 +41,23 @@
     <span translate>#LDS#Menu Entry Help</span>
   </button>
   <mat-menu #helpMenu="matMenu">
+    <button mat-menu-item data-imx-identifier="help-menu-connection" (click)="openConnection()">
+      <span translate>#LDS#Menu Entry Connection</span>
+    </button>
     <button mat-menu-item data-imx-identifier="help-menu-documentation" *ngIf="hasDocumentationConfig"
       (click)="navigateToDocumentation()">
       <span translate>#LDS#Menu Entry Documentation</span>
     </button>
+    <ng-container *ngFor="let extension of extensions; let index">
+      <button *ngIf="extension.inputData; else instanceView" mat-menu-item (click)="showExtension(extension)">
+        <span translate>{{ extension.inputData.label }}</span>
+      </button>
+      <ng-template #instanceView>
+        <ng-container *ngComponentOutlet="extension.instance"></ng-container>
+      </ng-template>
+    </ng-container>
     <button mat-menu-item data-imx-identifier="help-menu-about" (click)="openAboutDialog()">
-      <span translate>#LDS#About</span>
+      <span translate>#LDS#Menu Entry Info</span>
     </button>
   </mat-menu>
 </ng-template>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -96,7 +96,7 @@ export class ObjectHistoryGridviewComponent implements OnInit, OnChanges {
     await this.addColumnDef({
       id: 'ChangeTime',
       title: '#LDS#Modified on',
-      getValue: (row: ObjectHistoryEvent) => new Date(row.ChangeTime).toLocaleString()
+      getValue: (row: ObjectHistoryEvent) => new Date(row.ChangeTime).toLocaleString(this.translationProvider.currentLang)
     });
     await this.addColumnDef({
       id: 'ChangeType',

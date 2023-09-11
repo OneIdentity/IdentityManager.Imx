@@ -13,7 +13,7 @@
             </div>
           </ng-template>
         </imx-data-table-column>
-        <imx-data-table-column *ngFor="let displayColumn of displayedColumns" [entityColumn]="displayColumn">
+        <imx-data-table-column *ngFor="let displayColumn of displayedColumns | excludedColumns:['__Display', 'actions']" [entityColumn]="displayColumn">
         </imx-data-table-column>
 
         <imx-data-table-generic-column columnName="actions">

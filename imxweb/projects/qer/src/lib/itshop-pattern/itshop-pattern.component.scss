@@ -1,3 +1,4 @@
+@import '../../../../../shared/scss/common-table.scss';
 @mixin imx-flex-column-container {
   display: flex;
   flex-direction: column;
@@ -20,34 +21,27 @@
     display: flex;
     margin-bottom: 15px;
   }
-
-  .alert-wrapper {
-    margin: 0 0 0 auto;
-    align-self: flex-end;
-    width: 50%;
-  }
 }
 
 :host {
   @include imx-flex-column-container();
   overflow: hidden;
-  height: inherit;
+  height: 100%;
   max-width: 100%;
 }
 
 .imx-pattern-page {
   background-color: inherit;
-  @include imx-flex-column-container();
-  overflow: hidden;
+ @include imx-flex-fill-control-hidden-overflow();
+
+  .mat-card {
+   @include imx-flex-fill-control-hidden-overflow();
+  }
 
   div.imx-table-container {
     @include imx-flex-column-container();
     overflow: hidden;
     height: inherit;
-
-    imx-data-source-toolbar {
-      margin-bottom: 20px;
-    }
 
     .imx-patterns-table {
       flex-grow: 1;
@@ -56,31 +50,7 @@
   }
 
   .imx-button-bar {
-    @include imx-flex-row-container();
-    margin-top: 20px;
-    flex: 0 0 auto;
-
-    .imx-badge {
-      background-color: inherit;
-
-      ::ng-deep .eui-badge-content {
-        font-size: 14px;
-        line-height: 14px;
-      }
-    }
-
-    .imx-selected-items {
-      margin: 0;
-      line-height: 36px;
-    }
-
-    button {
-      margin-left: 10px;
-    }
-
-    .imx-menu-spacer {
-      flex-grow: 1;
-    }
+    @include imx-button-bar();
   }
 }
 

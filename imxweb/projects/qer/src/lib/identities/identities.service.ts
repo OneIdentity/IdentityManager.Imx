@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,20 +27,22 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
-import { ClassloggerService } from 'qbm';
+import { ClassloggerService, DataSourceToolbarExportMethod } from 'qbm';
 import {
   CollectionLoadParameters,
   TypedEntityCollectionData,
   FilterType,
   CompareOperator,
   EntityCollectionData,
-  GroupInfo,
+  GroupInfoData,
   DataModel,
   EntitySchema,
   ExtendedTypedEntityCollection,
   FilterData,
+  MethodDefinition,
+  MethodDescriptor,
 } from 'imx-qbm-dbts';
-import { PortalPersonReports, PortalPersonReportsInteractive, PortalPersonAll, PortalAdminPerson, PortalPersonUid } from 'imx-api-qer';
+import { PortalPersonReports, PortalPersonAll, PortalAdminPerson, PortalPersonUid, ViewConfigData, V2ApiClientMethodFactory } from 'imx-api-qer';
 import { QerApiService } from '../qer-api-client.service';
 import { QerPermissionsService } from '../admin/qer-permissions.service';
 import { DuplicateCheckParameter } from './create-new-identity/duplicate-check-parameter.interface';
@@ -49,6 +51,7 @@ import { DuplicateCheckParameter } from './create-new-identity/duplicate-check-p
 export class IdentitiesService {
 
   public authorityDataDeleted: Subject<string> = new Subject();
+
 
   constructor(
     private readonly qerClient: QerApiService,
@@ -70,6 +73,7 @@ export class IdentitiesService {
   public get adminPersonSchema(): EntitySchema {
     return this.qerClient.typedClient.PortalAdminPerson.GetSchema();
   }
+
 
   public getAttestationHelperAlertDescription(count: { total: number; forUser: number; }): { description: string; value?: any; }[] {
     // #LDS#There are currently no pending attestation cases.
@@ -112,24 +116,51 @@ export class IdentitiesService {
     return (await this.qerClient.typedClient.PortalPersonUid.Get(uid, navigationState)).Data[0];
   }
 
+  public exportAdminPerson(navigationState?: CollectionLoadParameters): DataSourceToolbarExportMethod {
+    const factory = new V2ApiClientMethodFactory();
+    return {
+      getMethod: (withProperties: string, PageSize?: number) => {
+        let method: MethodDescriptor<EntityCollectionData>;
+        if (PageSize) {
+          method = factory.portal_admin_person_get({...navigationState, withProperties, PageSize, StartIndex: 0})
+        } else {
+          method = factory.portal_admin_person_get({...navigationState, withProperties})
+        }
+        return new MethodDefinition(method);
+      }
+    }
+  }
+
+  public exportPerson(navigationState?: CollectionLoadParameters): DataSourceToolbarExportMethod {
+    const factory = new V2ApiClientMethodFactory();
+    return {
+      getMethod: (withProperties: string, PageSize?: number) => {
+        let method: MethodDescriptor<EntityCollectionData>;
+        if (PageSize) {
+          method = factory.portal_person_reports_get({...navigationState, withProperties, PageSize, StartIndex: 0 });
+        } else {
+          method = factory.portal_person_reports_get({...navigationState, withProperties});
+        }
+        return new MethodDefinition(method);
+      }
+    }
+  }
+
   /**
-   * Gets a direct reports (subordinated identities) of a person.
+   * Gets the reports (directly/indirectly subordinated identities) of a person.
    *
    * @param navigationState Page size, start index, search and filtering options etc,.
    *
    * @returns Wrapped list of Persons.
    */
-  public async getDirectReportsOfManager(navigationState: CollectionLoadParameters):
+  public async getReportsOfManager(navigationState: CollectionLoadParameters):
     Promise<TypedEntityCollectionData<PortalPersonReports>> {
-    this.logger.debug(this, `Retrieving direct reports of the manager`);
+    this.logger.debug(this, `Retrieving reports of the manager`);
     this.logger.trace('Navigation state', navigationState);
-    return this.qerClient.typedClient.PortalPersonReports.Get({
-      OnlyDirect: true, // direct reports only,
-      ...navigationState
-    });
+    return this.qerClient.typedClient.PortalPersonReports.Get(navigationState);
   }
 
-  public async getGroupedAllPerson(columns: string, navigationState: CollectionLoadParameters): Promise<GroupInfo[]> {
+  public async getGroupedAllPerson(columns: string, navigationState: CollectionLoadParameters): Promise<GroupInfoData> {
     this.logger.debug(this, `Retrieving person list`);
     this.logger.trace('Navigation state', navigationState);
 
@@ -173,7 +204,7 @@ export class IdentitiesService {
     return (await this.qerClient.typedClient.PortalAdminPerson.Get(getPersonNavigationState)).Data[0];
   }
 
-  public async getPersonInteractive(uid: string): Promise<TypedEntityCollectionData<PortalPersonReportsInteractive>> {
+  public async getPersonInteractive(uid: string): Promise<TypedEntityCollectionData<PortalPersonReports>> {
     return this.qerClient.typedClient.PortalPersonReportsInteractive.Get_byid(uid);
   }
 
@@ -193,7 +224,7 @@ export class IdentitiesService {
     return this.qerClient.client.portal_admin_person_delete(id);
   }
 
-  public async createEmptyEntity(): Promise<PortalPersonReportsInteractive> {
+  public async createEmptyEntity(): Promise<PortalPersonReports> {
     return (await this.qerClient.typedClient.PortalPersonReportsInteractive.Get()).Data[0];
   }
 

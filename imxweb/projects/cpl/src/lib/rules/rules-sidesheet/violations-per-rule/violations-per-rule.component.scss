@@ -1,0 +1,34 @@
+:host {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.mat-tab-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .mat-card {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    overflow: hidden;
+    margin: 2px;
+  }
+}
+
+
+.imx-helper-alert {
+  margin: 0px 0 20px auto;
+  width: 100%;
+}
+
+.imx-table-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow: hidden;
+}

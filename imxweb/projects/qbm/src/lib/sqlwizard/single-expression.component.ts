@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,7 +30,7 @@ import { LogOp as _logOp } from 'imx-qbm-dbts';
 
 @Component({
     selector: 'imx-sqlwizard-singleexpression',
-    styleUrls: ['./sqlwizard.scss'],
+    styleUrls: ['single-expression.component.scss', './sqlwizard.scss'],
     templateUrl: './single-expression.component.html'
 })
 export class SingleExpressionComponent {

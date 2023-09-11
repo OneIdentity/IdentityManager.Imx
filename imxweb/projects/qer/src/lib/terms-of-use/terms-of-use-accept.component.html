@@ -1,51 +1,61 @@
 <div eui-sidesheet-content>
   <div class="heading-wrapper">
-    <eui-alert class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true">
-      {{( this.data.acceptCartItems ? ldsAcceptCartItemsInfoText : ldsAcceptApprovalItemsInfoText) | translate}}
+    <eui-alert class="helper-alert" type="warning" condensed="true" [dismissable]="true">
+      {{ (this.data.acceptCartItems ? ldsAcceptCartItemsInfoText : ldsAcceptApprovalItemsInfoText) | translate }}
     </eui-alert>
   </div>
 
   <mat-card>
-    <ng-container
-      *ngIf="withoutAuthenticaton; then acceptTermsWithoutAuthentication else acceptTermsWithAuthentication">
+    <ng-container *ngIf="withoutAuthenticaton">
+      <form [formGroup]="termsOfUseFormGroup" data-imx-identifier="terms-of-use-accept-without-auth-form">
+        <imx-terms-of-use-list [items]="items" [itemsHeading]="ldsItemsHeading" [formGroup]="termsOfUseFormGroup"></imx-terms-of-use-list>
+      </form>
+    </ng-container>
+    <ng-container>
+      <mat-stepper [ngClass]="{ hidden: withoutAuthenticaton }" orientation="vertical" linear #stepper>
+        <mat-step [stepControl]="authenticationFormGroup" label="{{ '#LDS#Authenticate' | translate }}">
+          <form [formGroup]="authenticationFormGroup" class="auth-form">
+            <imx-busy-indicator *ngIf="isLoading"></imx-busy-indicator>
+            <eui-alert type="error" [condensed]="true" *ngIf="!hasAuthenticators && !isLoading">
+              {{ '#LDS#There are no authentication methods defined for you. Contact your administrator.' | translate }}
+            </eui-alert>
+            <div *ngIf="isAuthenticated" class="imx-success-message">
+              {{ '#LDS#You have successfully been authenticated.' | translate }}
+            </div>
+            <div formArrayName="authenticator" [ngClass]="{ hidden: isLoading || isAuthenticated }">
+              <ng-container #authFormControls></ng-container>
+            </div>
+          </form>
+          <button
+            mat-stroked-button
+            color="primary"
+            matStepperNext
+            data-imx-identifier="terms-of-use-accept-button-accept-with-authentication"
+            [disabled]="authenticationFormGroup?.invalid"
+          >
+            {{ '#LDS#Next' | translate }}
+          </button>
+        </mat-step>
+        <mat-step [stepControl]="termsOfUseFormGroup" label="{{ '#LDS#Accept terms of use' | translate }}">
+          <form [formGroup]="termsOfUseFormGroup" data-imx-identifier="terms-of-use-accept-with-auth-form">
+            <imx-terms-of-use-list [items]="items" [itemsHeading]="ldsItemsHeading" [formGroup]="termsOfUseFormGroup"> </imx-terms-of-use-list>
+          </form>
+        </mat-step>
+      </mat-stepper>
     </ng-container>
   </mat-card>
 </div>
 <div eui-sidesheet-actions color="white">
   <button mat-stroked-button data-imx-identifier="terms-of-use-accept-button-decline" (click)="cancel()">
-    {{'#LDS#Cancel' | translate}}
+    {{ '#LDS#Cancel' | translate }}
   </button>
-  <button mat-raised-button color="primary"
+  <button
+    mat-stroked-button
+    color="primary"
     data-imx-identifier="terms-of-use-accept-button-accept-without-authentication"
-    [disabled]="termsOfUseFormGroup.controls['acceptTermsOfUseFormCtrl']?.errors?.required" *ngIf="withoutAuthenticaton"
-    (click)="acceptWithoutAuthentication()">
-    {{'#LDS#Accept' | translate}}
+    [disabled]="termsOfUseFormGroup.controls['acceptTermsOfUseFormCtrl']?.errors?.required"
+    (click)="accept()"
+  >
+    {{ '#LDS#Accept' | translate }}
   </button>
 </div>
-
-<ng-template #acceptTermsWithoutAuthentication>
-  <form [formGroup]="termsOfUseFormGroup">
-    <imx-terms-of-use-list [items]="items" [itemsHeading]="ldsItemsHeading" [formGroup]="termsOfUseFormGroup"></imx-terms-of-use-list>
-  </form>
-</ng-template>
-
-<!-- TODO in the second part -->
-<ng-template #acceptTermsWithAuthentication>
-  <mat-horizontal-stepper linear #stepper>
-    <mat-step [stepControl]="termsOfUseFormGroup" label="{{'#LDS#Accept the terms of use' | translate}}">
-      <form [formGroup]="termsOfUseFormGroup">
-        <imx-terms-of-use-list [items]="items" [itemsHeading]="ldsItemsHeading" [formGroup]="termsOfUseFormGroup">
-        </imx-terms-of-use-list>
-        <div class="imx-terms-of-use-accept-button-container">
-          <button mat-raised-button color="primary" matStepperNext
-            data-imx-identifier="terms-of-use-accept-button-accept-with-authentication"
-            [disabled]="termsOfUseFormGroup.controls['acceptTermsOfUseFormCtrl']?.errors?.required">
-            {{'#LDS#Accept' | translate}}
-          </button>
-        </div>
-      </form>
-    </mat-step>
-    <mat-step [stepControl]="authenticationFormGroup" label="{{'#LDS#Authenticate' | translate}}">
-    </mat-step>
-  </mat-horizontal-stepper>
-</ng-template>

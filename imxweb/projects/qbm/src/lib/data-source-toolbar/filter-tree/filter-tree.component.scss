@@ -1,11 +1,13 @@
 @import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
 :host {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
   overflow: hidden;
   height: 100%;
-  
+
   ::ng-deep .mat-list-base {
     .mat-list-item.imx-list-item {
       height: auto;
@@ -48,4 +50,22 @@
 .imx-selected-item-element {
   margin: 5px 0;
 }
+.mat-dialog-actions{
+  padding-bottom: 16px;
+}
 
+.eui-dark-theme {
+  :host {
+    .imx-badge {
+      background-color: $color-gray-80;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-badge {
+      background-color: $color-gray-100;
+    }
+  }
+}

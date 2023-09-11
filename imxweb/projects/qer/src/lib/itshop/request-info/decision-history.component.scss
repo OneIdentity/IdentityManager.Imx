@@ -1,5 +1,5 @@
 @import "@elemental-ui/core/src/styles/_palette.scss";
-
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 :host {
   display: flex;
   flex-direction: column;
@@ -142,4 +142,32 @@ li.imx-event {
 
 .imx-approver {
   display: block;
+}
+
+div[step]{
+  margin-bottom: 10px;
+  span[caption]{
+    font-weight: 600;
+    font-size: 16px;
+ }
+}
+
+div[approver] {
+  margin-left: 10px;
+}
+
+.eui-dark-theme {
+  :host {
+    li.imx-event.imx-info::before , li.imx-event.imx-pending::before, li.imx-event.imx-question::before, li.imx-event.imx-positive::before , li.imx-event.imx-negative::before, li.imx-event.imx-info::before{
+      background-color: $color-gray-70;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    li.imx-event.imx-info::before , li.imx-event.imx-pending::before, li.imx-event.imx-question::before, li.imx-event.imx-positive::before , li.imx-event.imx-negative::before, li.imx-event.imx-info::before{
+      background-color: $color-gray-90;
+    }
+  }
 }

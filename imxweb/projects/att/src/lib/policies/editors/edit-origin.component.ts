@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormArray, FormControl } from '@angular/forms';
+import { UntypedFormArray, UntypedFormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { ParmOpt } from 'imx-api-att';
@@ -41,7 +41,7 @@ import { FilterElementModel } from './filter-element-model';
 export class EditOriginComponent implements OnInit, OnDestroy {
 
   public candidates: ParmOpt[];
-  public readonly control = new FormArray([]);
+  public readonly control = new UntypedFormArray([]);
 
   @Input() public filterElementModel: FilterElementModel;
   @Input() public identifier: string;
@@ -64,7 +64,7 @@ export class EditOriginComponent implements OnInit, OnDestroy {
     this.selectedParameter = this.splitStringAndRemoveQuotes(this.filterElementModel?.parameterValue, ',');
 
     this.candidates.forEach(elem => {
-      this.control.push(new FormControl(this.isSelected(elem)));
+      this.control.push(new UntypedFormControl(this.isSelected(elem)));
       this.logger.trace(this, 'control added for candidate', elem);
     });
 

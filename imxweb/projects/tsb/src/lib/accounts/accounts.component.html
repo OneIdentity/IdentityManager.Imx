@@ -2,20 +2,22 @@
 
   <div  *ngIf="!dataExplorerFilters.showTsSyncStatus" class="data-explorer-card-header">
     <div class="data-explorer-card-header-bg">
-      <eui-icon icon="contactinfo" size="28px"></eui-icon>
       <span translate>#LDS#Heading User Accounts</span>
+      <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
     </div>
   </div>
 
   <imx-data-source-toolbar #dst
     [settings]="dstSettings"
-    [options]="['search', 'filter', 'filterTree', 'settings']"
+    [options]="['search', 'sort', 'filter', 'filterTree', 'settings']"
     [hiddenFilters]="['namespace']"
+    [busyService]="busyService"
     [searchBoxText]="'#LDS#Search' | translate"
     (navigationStateChanged)="onNavigationStateChanged($event)"
     (filterTreeSelectionChanged)="filterByTree($event)"
     (search)="onSearch($event)"
-    (customSelectedFilterRemoved)="dataExplorerFilters.onCustomFilterClearedExternally($event)">
+    (customSelectedFilterRemoved)="dataExplorerFilters.onCustomFilterClearedExternally($event)"
+    (updateConfig)="updateConfig($event)" (deleteConfigById)="deleteConfigById($event)">
     <div imx-data-source-toolbar-custom-filter (click)="$event.stopPropagation()">
       <imx-target-system-filter #dataExplorerFilters
       [targetSystemData]="targetSystemData"
@@ -35,7 +37,8 @@
 
   <div *ngIf="!dataExplorerFilters.showTsSyncStatus" class="imx-data-explorer-content">
     <div class="data-explorer-table">
-      <imx-data-table [dst]="dst" (highlightedEntityChanged)="onAccountChanged($event)" detailViewVisible="false" mode="manual">
+      <imx-data-table [dst]="dst" (highlightedEntityChanged)="onAccountChanged($event)" detailViewVisible="false"
+        mode="manual">
         <imx-data-table-column width="500px" [entityColumn]="entitySchemaUnsAccount?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
           <ng-template let-item>
             <div [style.max-width]="'500px'" class="imx-ellipse-column">{{item.GetEntity().GetDisplay()}}</div>
@@ -70,5 +73,8 @@
 
 </mat-card>
 <div class="data-explorer-bottom-button-row">
-  <button mat-raised-button color="primary" data-imx-identifier="accounts-button-show-report-for-targetsystem" (click)="openReportOptionsSidesheet()">{{'#LDS#Show report for target system' | translate}}</button>
+  <button mat-stroked-button data-imx-identifier="accounts-button-show-report-for-targetsystem" (click)="openReportOptionsSidesheet()">
+    <eui-icon icon="reports"></eui-icon>
+    {{'#LDS#Download target system report' | translate}}
+  </button>
 </div>

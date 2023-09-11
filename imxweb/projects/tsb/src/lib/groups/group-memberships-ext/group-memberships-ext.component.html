@@ -1,0 +1,28 @@
+<eui-alert class="helper-alert" condensed="true" [colored]="true" type="info" [dismissable]="false">
+  {{ '#LDS#Here you can get an overview of the memberships of the identity. Additionally, you can view the assignment analysis for each membership.' | translate }}
+</eui-alert>
+<mat-card class="imx-memberships">
+  <imx-data-source-toolbar
+    #dst
+    [settings]="dstSettings"
+    [busyService]="busyService"
+    [options]="['search']"
+    (navigationStateChanged)="onNavigationStateChanged($event)"
+    (search)="onSearch($event)"
+  ></imx-data-source-toolbar>
+
+  <div class="imx-membership-table">
+    <imx-data-table [dst]="dst" detailViewVisible="false" data-imx-identifier="group-memberships-ext-table" (highlightedEntityChanged)="onShowDetails($event)" mode="manual">
+      <imx-data-table-column [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+        <ng-template let-item>
+          <div data-imx-identifier="group-memberships-ext-tabledata-display">{{ item.GetEntity().GetDisplay() }}</div>
+          <div *ngIf="item.GetEntity().GetDisplay() !== item.GetEntity().GetDisplayLong()" subtitle>
+            {{ item.GetEntity().GetDisplayLong() }}
+          </div>
+        </ng-template>
+      </imx-data-table-column>
+      <imx-data-table-column *ngFor="let displayColumn of displayColumns" [entityColumn]="displayColumn"> </imx-data-table-column>
+    </imx-data-table>
+    <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+  </div>
+</mat-card>

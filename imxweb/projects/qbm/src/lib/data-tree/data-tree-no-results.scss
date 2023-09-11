@@ -2,8 +2,13 @@
 
 .imx-data-tree-no-results {
   text-align: center;
+  display: flex;
   margin: 20px 0;
-
+  flex: 1 1 auto;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  
   .eui-icon {
     font-size: 100px;
     color: rgba($black-c, 0.55);

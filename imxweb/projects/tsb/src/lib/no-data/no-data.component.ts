@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,6 @@
  */
 
 import { Component, Input } from '@angular/core';
-import { AppConfigService } from 'qbm';
 
 @Component({
   selector: 'imx-data-explorer-no-data',
@@ -34,12 +33,4 @@ import { AppConfigService } from 'qbm';
 })
 export class DataExplorerNoDataComponent {
   @Input() public mode: string;
-
-  public webApp: string;
-
-  constructor(
-    appConfigService: AppConfigService
-  ) {
-    this.webApp = appConfigService.Config.Title;
-  }
 }

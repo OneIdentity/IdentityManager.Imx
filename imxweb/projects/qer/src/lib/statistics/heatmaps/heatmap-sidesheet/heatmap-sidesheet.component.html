@@ -1,0 +1,143 @@
+<div eui-sidesheet-content class="content-container">
+  <mat-card class="toolbar-container">
+    <imx-data-source-toolbar #dst
+    [alwaysVisible]="true"
+    [settings]="dstSettings"
+    [options]="['search', 'filter']"
+    [searchBoxText]="'#LDS#Search' | translate"
+    [isDataSourceLocal]="true"
+    [localSearchColumns]="['Name']"
+    useThemedStyle="true"
+    (settingsChanged)="onSettingsChanged($event)"
+    data-imx-identifier="heatmap-sidesheet-toolbar"
+    >
+    <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
+    </imx-data-source-toolbar>
+  </mat-card>
+
+  <mat-card class="card-container">
+    <div class="chart" *ngIf="hasData && hasFilterData">
+      <imx-heatmap-chart *ngIf="showHeatmap" [blocks]="uniformBlocks" [isCurrent]="!isHistoryView"></imx-heatmap-chart>
+      <imx-treemap-chart *ngIf="!showHeatmap" [blocks]="dynamicBlocks" [isCurrent]="!isHistoryView"></imx-treemap-chart>
+      <div *ngIf="dstSettings.data "></div>
+    </div>
+
+    <div class="imx-no-data" *ngIf="!isHistoryView && !hasFilterData">
+      <eui-icon icon="content-alert"></eui-icon>
+      <p>{{ '#LDS#There is no data matching your search.' | translate }}</p>
+    </div>
+
+    <div class="imx-no-data" *ngIf="isHistoryView && !hasData">
+      <eui-icon icon="content-alert"></eui-icon>
+      <p>{{ '#LDS#No data has changed during this period.' | translate }}</p>
+    </div>
+
+    <div class="imx-no-data" *ngIf="isHistoryView && hasData && !hasFilterData">
+      <eui-icon icon="content-alert"></eui-icon>
+      <p>{{ '#LDS#There is no data matching your search.' | translate }}</p>
+    </div>
+
+    <div class="under-chart">
+      <imx-data-source-paginator
+       data-imx-identifier="heatmap-sidesheet-paginator"
+       [showFirstLastButtons]="true"
+       [pageSizeOptions]="pageSizeOptions"
+       [dst]="dst"
+       ></imx-data-source-paginator>
+    </div>
+
+  </mat-card>
+
+  <div class="under-card" [ngStyle]="{'justify-content': data.isUserAdmin ? 'space-between' : 'flex-end'}">
+    <div *ngIf="data.isUserAdmin" class="toggle-button-wrapper">
+      <button mat-raised-button class="align-left" (click)="toggleOrg()" [class.hide-button]="!data.isOrg">
+        <div class="toggle-button-content">
+          <div>
+            <!-- TODO: Add translations -->
+            ???Remove from shared statistics???
+          </div>
+          <eui-icon class="colored-org-icon" icon="network"></eui-icon>
+        </div>
+      </button>
+      <button mat-raised-button class="align-left" (click)="toggleOrg()" [class.hide-button]="data.isOrg">
+        <div class="toggle-button-content">
+          <div class="colored-org-text">
+            <!-- TODO: Add translations -->
+            ???Add to shared statistics???
+          </div>
+          <eui-icon icon="network"></eui-icon>
+        </div>
+      </button>
+    </div>
+
+    <imx-discrete-legend *ngIf="!isHistoryView && hasData && hasFilterData">
+    </imx-discrete-legend>
+
+    <div class="legend-gradient" *ngIf="isHistoryView && (hasLB || hasUB) && hasData && hasFilterData">
+      <!-- Set lower bound, if its not 0 -->
+      <div class="lower-bound" *ngIf="hasLB">
+        <div class="value">
+          {{formatLB}}
+        </div>
+        <div class="value-subtitle" subtitle>
+          {{'#LDS#Largest decrease' | translate}}
+        </div>
+      </div>
+      <div class="lower-bound" *ngIf="!hasLB">
+        {{'#LDS#No change' | translate}}
+      </div>
+      <!-- Set gradient type based on the bounds -->
+      <div class="gradient-base" [ngClass]="hasLB && hasUB ? 'gradient-full' : (hasLB ? 'gradient-no-upper' : 'gradient-no-lower')"></div>
+      <!-- Set upper bound, if its not 0 -->
+      <div class="upper-bound" *ngIf="hasUB">
+        <div class="value">
+          {{formatUB}}
+        </div>
+        <div class="value-subtitle" subtitle>
+          {{'#LDS#Largest increase' | translate}}
+        </div>
+      </div>
+      <div class="upper-bound" *ngIf="!hasUB">
+        {{'#LDS#No change' | translate}}
+      </div>
+    </div>
+
+    <div class="toggle-button-wrapper">
+      <button mat-raised-button class="align-right" (click)="toggleFavorites()" [class.hide-button]="!data.isFavorite">
+        <div class="toggle-button-content">
+          <div>
+            {{'#LDS#Remove from favorites' | translate}}
+          </div>
+          <eui-icon class="colored-favorite-icon" icon="star"></eui-icon>
+        </div>
+      </button>
+      <button mat-raised-button class="align-right" (click)="toggleFavorites()" [class.hide-button]="data.isFavorite">
+        <div class="toggle-button-content">
+          <div class="colored-favorite-text">
+            {{'#LDS#Add to favorites' | translate}}
+          </div>
+          <eui-icon icon="openstar"></eui-icon>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<ng-template #customToolbarTemplate>
+  <div class="imx-toolbar-template">
+    <eui-select
+    data-imx-identifier="heatmap-sidesheet-date-selector"
+    hideClearButton="true"
+    smallInput="true"
+    [label]="'#LDS#Show differences since' | translate"
+    [inputControl]="dateControl"
+    [options]="dateOptions"
+    [attr.aria-label]="'#LDS#Show differences since' | translate"
+    (selectionChange)="getDeltas($event)"
+    >
+    </eui-select>
+    <mat-slide-toggle data-imx-identifier="heatmap-sidesheet-plot-toggle" color="primary" checked="false" (change)="changePlotType()">
+        {{'#LDS#Dynamic size' | translate}}
+    </mat-slide-toggle>
+  </div>
+</ng-template>

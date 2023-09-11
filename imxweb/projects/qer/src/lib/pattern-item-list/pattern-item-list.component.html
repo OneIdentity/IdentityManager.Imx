@@ -6,9 +6,9 @@
   (viewSelectionChanged)="onViewSelectionChanged($event)"
   [options]="['search', 'filter', 'selectedViewGroup']"
   (navigationStateChanged)="getData($event)"
-  data-imx-identifier="pattern-item-dst"  
+  data-imx-identifier="pattern-item-dst"
   [alwaysVisible]="true"
-  [initalView]="dataSourceView.selected"
+  [initalView]="dataSourceView?.selected"
   [itemStatus]="status"
 >
 <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
@@ -17,7 +17,7 @@
 <div class="imx-table-container" *ngIf="!isLoading">
   <imx-data-tiles
     #dataTiles
-    *ngIf="dataSourceView.selected === 'cardlist'"
+    *ngIf="dataSourceView?.selected === 'cardlist'"
     height="150px"
     [dst]="dst"
     (selectionChanged)="onSelectionChanged($event)"
@@ -31,7 +31,7 @@
   >
   </imx-data-tiles>
   <imx-data-table
-    *ngIf="dataSourceView.selected === 'table'"
+    *ngIf="dataSourceView?.selected === 'table'"
     [dst]="dst"
     [detailViewVisible]="false"
     [selectable]="true"
@@ -43,7 +43,7 @@
   >
     <imx-data-table-column
       [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-      columnLabel="{{ '#LDS#Request template' | translate }}"
+      columnLabel="{{ '#LDS#Product bundle' | translate }}"
       data-imx-identifier="pattern-item-list-datatable-table"
     >
       <ng-template let-prod>
@@ -63,7 +63,7 @@
 
     <imx-data-table-generic-column columnName="actions" [columnLabel]="''">
       <ng-template let-prod>
-        <button mat-button color="primary" *ngFor="let action of itemActions" (click)="emitAction(action, prod)"
+        <button mat-stroked-button class="imx-margin-right" *ngFor="let action of itemActions" (click)="emitAction(action, prod)"
           [attr.data-imx-identifier]="'pattern-item-list-datatable-row-button-' + action.name">
           {{ action.description | translate }}
         </button>
@@ -71,7 +71,7 @@
           {{ '#LDS#Details' | translate }}
         </button>
         <button mat-button color="primary" (click)="addItemToCart.emit(prod)" data-imx-identifier="pattern-item-list-datatable-row-button-add-to-cart">
-          {{ '#LDS#Add request template products to cart' | translate }}
+          {{ '#LDS#Add product bundle products to cart' | translate }}
         </button> -->
       </ng-template>
     </imx-data-table-generic-column>

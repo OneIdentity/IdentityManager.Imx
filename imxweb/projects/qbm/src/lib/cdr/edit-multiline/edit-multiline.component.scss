@@ -3,6 +3,7 @@ textarea.mat-input-element.cdk-textarea-autosize {
  }
 
 :host {
+  flex-grow: 1;
   display: flex;
   align-items: center;
 

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -37,7 +37,7 @@ import { ServiceCategoriesService } from './service-categories.service';
 export class ServiceCategoryTreeDatabase extends TreeDatabase {
 
   constructor(
-    private readonly busyService: EuiLoadingService,
+    private readonly loadingServiceElemental: EuiLoadingService,
     private readonly settings: SettingsService,
     private readonly serviceCategoriesProvider: ServiceCategoriesService
   ) {
@@ -51,7 +51,7 @@ export class ServiceCategoryTreeDatabase extends TreeDatabase {
     let entities: TreeNodeResultParameter;
     let overlayRef: OverlayRef;
     if (showLoading) {
-      setTimeout(() => overlayRef = this.busyService.show());
+      setTimeout(() => overlayRef = this.loadingServiceElemental.show());
     }
     try {
       const opts = {
@@ -69,7 +69,7 @@ export class ServiceCategoryTreeDatabase extends TreeDatabase {
       };
     } finally {
       if (showLoading) {
-        setTimeout(() => this.busyService.hide(overlayRef));
+        setTimeout(() => this.loadingServiceElemental.hide(overlayRef));
       }
     }
     return entities;

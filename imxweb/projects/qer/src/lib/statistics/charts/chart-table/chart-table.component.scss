@@ -1,0 +1,48 @@
+@import "../../stat-mixins.scss";
+
+:host {
+  .above {
+    display: flex;
+    justify-content: flex-end;
+
+    imx-data-source-toolbar {
+      width: 50%;
+    }
+  }
+
+  .imx-table-container {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin-top: 20px;
+    @include EUI-Elevation-1;
+
+    imx-data-table {
+      overflow: auto;
+    }
+  }
+}
+
+
+// Theming
+:host {
+  .imx-table-container {
+    border: 1px solid $color-gray-10;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-table-container {
+      border: 1px solid $color-gray-50;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-table-container {
+      border: 1px solid $color-gray-70;
+    }
+  }
+}

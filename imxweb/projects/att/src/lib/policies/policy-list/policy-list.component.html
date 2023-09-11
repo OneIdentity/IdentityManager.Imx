@@ -1,68 +1,92 @@
-<h1 class="mat-headline">{{'#LDS#Heading Attestation Policies' | translate}}</h1>
-
-<div class="imx-table-container">
-    <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['search', 'filter', 'groupBy', 'settings']"
-        (search)="onSearch($event)" (navigationStateChanged)="onNavigationStateChanged($event)">
+<h1 class="mat-headline">
+  <span>{{ '#LDS#Heading Attestation Policies' | translate }}</span>
+  <imx-help-contextual></imx-help-contextual>
+</h1>
+<mat-card class="imx-content-card">
+  <div class="imx-table-container">
+    <imx-data-source-toolbar
+      #dst
+      [settings]="dstSettings"
+      [busyService]="busyService"
+      [options]="['search', 'sort', 'filter', 'groupBy', 'settings']"
+      (search)="onSearch($event)"
+      (navigationStateChanged)="onNavigationStateChanged($event)"
+      (updateConfig)="updateConfig($event)"
+      (deleteConfigById)="deleteConfigById($event)"
+    >
     </imx-data-source-toolbar>
 
-    <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual" [groupData]="groupedData"
-        (groupDataChanged)="onGroupingChange($event)">
-        <imx-data-table-column [entityColumn]="entitySchemaPolicy?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-            columnLabel="{{'#LDS#Attestation policy' | translate}}">
-            <ng-template let-data>
-                <div>{{ data.GetEntity().GetDisplay() }}</div>
-                <div subtitle>
-                    <div>{{ data.UID_AttestationObject.Column.GetDisplayValue() }}</div>
-                    <div *ngIf="isComplienceFrameworkEnabled">{{ data.Areas.Column.GetDisplayValue() }}</div>
-                </div>
-            </ng-template>
-        </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchemaPolicy?.Columns.NextRun">
-        </imx-data-table-column>
-        <imx-data-table-generic-column columnName="actions" [columnLabel]="">
-            <ng-template let-prod>
-                <div class="imx-button-column">
-                    <button mat-stroked-button color="primary" (click)="editPolicy(prod)"
-                        data-imx-identifier="policy-list-show-edit">
-                        {{'#LDS#Edit' | translate}}
-                    </button>
-                    <button mat-button (click)="showDetails(prod)"
-                        data-imx-identifier="policy-list-show-details">
-                        {{'#LDS#Details' | translate}}
-                    </button>
-                    <button mat-button data-imx-identifier="policy-list-actions"
-                        title="{{ '#LDS#Actions' | translate }}" [matMenuTriggerFor]="actionsMenu"
-                        (menuOpened)="menuOpened(prod)">
-                        <eui-icon icon='ellipsisvertical'></eui-icon>
-                    </button>
-                </div>
+    <imx-data-table
+      [dst]="dst"
+      detailViewVisible="false"
+      mode="manual"
+      [groupData]="groupedData"
+      (groupDataChanged)="onGroupingChange($event)"
+      (highlightedEntityChanged)="editPolicy($event)"
+    >
+      <imx-data-table-column [entityColumn]="entitySchemaPolicy?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" columnLabel="{{ '#LDS#Attestation policy' | translate }}">
+        <ng-template let-data>
+          <div data-imx-identifier="policy-list-show-edit">{{ data.GetEntity().GetDisplay() }}</div>
+          <div subtitle-long>
+            <div *ngIf="isComplienceFrameworkEnabled && data.Areas.value !== ''">{{ data.Areas.Column.GetDisplayValue() }}</div>
+          </div>
+        </ng-template>
+      </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchemaPolicy?.Columns.NextRun"> </imx-data-table-column>
+      <imx-data-table-generic-column columnName="actions" [columnLabel]="">
+        <ng-template let-prod>
+          <div class="imx-button-column">
+            <button
+              mat-stroked-button
+              data-imx-identifier="policy-list-actions"
+              title="{{ '#LDS#Actions' | translate }}"
+              [matMenuTriggerFor]="actionsMenu"
+              (click)="$event.stopPropagation()"
+              (menuOpened)="menuOpened(prod)"
+            >
+              <eui-icon icon="ellipsisvertical"></eui-icon>
+              {{ '#LDS#Actions' | translate }}
+            </button>
+          </div>
 
-                <mat-menu data-imx-identifier="policy-list-actions-menu" #actionsMenu="matMenu">
-                    <button mat-menu-item (click)="copy(prod)" data-imx-identifier="policy-list-copy-policy">
-                        {{'#LDS#Copy' | translate}}
-                    </button>
-                    <button mat-menu-item (click)="delete(prod)" [disabled]="!prod.IsOob.value || prod.hasAttestations"
-                        data-imx-identifier="policy-list-delete-policy">
-                        {{'#LDS#Delete' | translate}}
-                    </button>
-                    <button mat-menu-item class="imx-separate-menu-item" [disabled]="prod.IsInActive.value || prod.IsProcessing.value"
-                        (click)="run(prod)" data-imx-identifier="policy-list-run-policy">
-                        {{'#LDS#Start attestation' | translate}}
-                    </button>
-                    <button data-imx-identifier="policy-list-download-report" mat-menu-item
-                        [euiDownload]="getReportOptions(prod)">
-                        {{ '#LDS#Download report' | translate }}
-                    </button>
-                </mat-menu>
+          <mat-menu data-imx-identifier="policy-list-actions-menu" #actionsMenu="matMenu">
+            <button mat-menu-item (click)="copy(prod)" data-imx-identifier="policy-list-copy-policy">
+              {{ '#LDS#Copy' | translate }}
+            </button>
+            <div class="imx-menu-with-spinner">
+              <button mat-menu-item (click)="delete(prod)" [disabled]="!prod.IsOob.value || prod.hasAttestations" data-imx-identifier="policy-list-delete-policy">
+                {{ '#LDS#Delete' | translate }}
+              </button>
+              <mat-spinner diameter="24" *ngIf="menuLoading"></mat-spinner>
+            </div>
 
-            </ng-template>
-        </imx-data-table-generic-column>
+            <button
+              mat-menu-item
+              class="imx-separate-menu-item"
+              [disabled]="prod.IsInActive.value || prod.IsProcessing.value"
+              (click)="run(prod)"
+              data-imx-identifier="policy-list-run-policy"
+            >
+              {{ '#LDS#Start attestation' | translate }}
+            </button>
+            <button mat-menu-item (click)="showDetails(prod)" data-imx-identifier="policy-list-show-runs">
+              {{ '#LDS#View attestation runs' | translate }}
+            </button>
+            <button class="imx-separate-menu-item" data-imx-identifier="policy-list-download-report" mat-menu-item [euiDownload]="getReportOptions(prod)">
+              {{ '#LDS#Download report' | translate }}
+            </button>
+          </mat-menu>
+        </ng-template>
+      </imx-data-table-generic-column>
     </imx-data-table>
     <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
-</div>
+  </div>
+</mat-card>
 <div class="button-row">
-    <span class="imx-toolbar-spacer"></span>
+  <span class="imx-menu-spacer"></span>
 
-    <button mat-raised-button color="primary" data-imx-identifier="policy-list-create-new-policy"
-        (click)="newPolicy()">{{'#LDS#Create attestation policy' | translate}}</button>
+  <button mat-raised-button color="primary" data-imx-identifier="policy-list-create-new-policy" (click)="newPolicy()">
+    <eui-icon icon="add"></eui-icon>
+    {{ '#LDS#Create attestation policy' | translate }}
+  </button>
 </div>

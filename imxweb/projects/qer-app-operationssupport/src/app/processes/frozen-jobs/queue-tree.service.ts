@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,25 +25,24 @@
  */
 
 import { Injectable } from '@angular/core';
-import { EuiLoadingService } from '@elemental-ui/core';
-import { OverlayRef } from '@angular/cdk/overlay';
 
-import { ImxDataSource, imx_SessionService } from 'qbm';
-import { EntityCollectionData, EntityData, EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
-import { OpsupportQueueTree, ReactivateJobMode } from 'imx-api-qbm';
+import { CdrFactoryService, ImxDataSource, imx_SessionService } from 'qbm';
+import { EntityCollectionData, EntityData, EntitySchema, ExtendedTypedEntityCollection, IEntityColumn, TypedEntity, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { HistoryOperationsData, OpsupportQueueJobaffects, ReactivateJobMode } from 'imx-api-qbm';
 import { QueueJobsService } from '../jobs/queue-jobs.service';
 
 @Injectable()
-export class QueueTreeService extends ImxDataSource<OpsupportQueueTree> {
+export class QueueTreeService extends ImxDataSource<TypedEntity> {
 
   public startUid: string;
 
-  public items: OpsupportQueueTree[];
+  public items: TypedEntity[];
+  public load: (startId: string) => Promise<TypedEntityCollectionData<TypedEntity>>
 
   constructor(
     private session: imx_SessionService,
     private jobService: QueueJobsService,
-    private busyService: EuiLoadingService) {
+  ) {
     super();
   }
 
@@ -52,22 +51,16 @@ export class QueueTreeService extends ImxDataSource<OpsupportQueueTree> {
   }
 
   public itemsProvider = async () => {
-    let result: ExtendedTypedEntityCollection<OpsupportQueueTree, unknown>;
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    let result: ExtendedTypedEntityCollection<TypedEntity, unknown>;
 
-    try {
-      result = await this.session.TypedClient.OpsupportQueueTree.Get({ uidtree: this.startUid });
-    } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
-    }
+    result = await this.load(this.startUid);//await this.session.TypedClient.OpsupportQueueTree.Get({ uidtree: this.startUid });
     return this.data = this.items = result?.Data;
   }
 
-  public childItemsProvider = (item: OpsupportQueueTree) => {
+  public childItemsProvider = (item: TypedEntity) => {
 
-    const child1 = this.items ? this.items.find(el => el.UID_Job.value === item.UID_JobError.value) : null;
-    const child2 = this.items ? this.items.find(el => el.UID_Job.value === item.UID_JobSuccess.value) : null;
+    const child1 = this.items ? this.items.find(el => this.getColumn(el, 'UID_Job').GetValue() === this.getColumn(item, 'UID_JobError').GetValue()) : null;
+    const child2 = this.items ? this.items.find(el => this.getColumn(el, 'UID_Job').GetValue() === this.getColumn(item, 'UID_JobSuccess').GetValue()) : null;
 
     const res = [];
     if (child1) { res.push(child1); }
@@ -76,18 +69,26 @@ export class QueueTreeService extends ImxDataSource<OpsupportQueueTree> {
     return Promise.resolve(res);
   }
 
-  public hasChildrenProvider = (data: OpsupportQueueTree) => {
-    return (data.UID_JobError.value != null && data.UID_JobError.value !== '')
-      || (data.UID_JobSuccess.value != null && data.UID_JobSuccess.value !== '');
+  public hasChildrenProvider = (data: TypedEntity) => {
+    return (this.getColumn(data, 'UID_JobError').GetValue() != null && this.getColumn(data, 'UID_JobError').GetValue() !== '')
+      || (this.getColumn(data, 'UID_JobSuccess').GetValue() != null && this.getColumn(data, 'UID_JobSuccess').GetValue() !== '');
+  }
+
+  public async GetAffectedObjects(uidJob: string): Promise<OpsupportQueueJobaffects[]> {
+    return (await this.session.TypedClient.OpsupportQueueJobaffects.Get(uidJob)).Data;
+  }
+
+  public GetChangeOperations(processId: string): Promise<HistoryOperationsData> {
+    return this.session.Client.opsupport_changeoperations_process_get(processId);
   }
 
   public GetTotalSteps(): number {
     let count = 1;
     this.items.forEach(el => {
-      if (el.UID_JobError.value !== '') {
+      if (this.getColumn(el, 'UID_JobError').GetValue() !== '') {
         count++;
       }
-      if (el.UID_JobSuccess.value !== '') {
+      if (this.getColumn(el, 'UID_JobSuccess').GetValue() !== '') {
         count++;
       }
     });
@@ -95,8 +96,8 @@ export class QueueTreeService extends ImxDataSource<OpsupportQueueTree> {
   }
 
   public GetCompleteSteps(): number {
-    const root = this.items.find(el => el.IsRootJob.value);
-    return this.GetCompleteSubSteps(root.UID_Job.value);
+    const root = this.items.find(el => this.getColumn(el, 'IsRootJob').GetValue());
+    return this.GetCompleteSubSteps(this.getColumn(root, 'UID_Job').GetValue());
   }
 
   public RemoveEmpty(ent: EntityData[]): EntityData[] {
@@ -117,7 +118,7 @@ export class QueueTreeService extends ImxDataSource<OpsupportQueueTree> {
   public async Reactivate(mode: ReactivateJobMode): Promise<EntityCollectionData> {
     const frozen = this.getFrozenItem();
     if (frozen) {
-      return this.jobService.Retry(mode, [frozen.UID_Job.value]);
+      return this.jobService.Retry(mode, [this.getColumn(frozen, 'UID_Job').GetValue()]);
     }
     return Promise.resolve(null);
   }
@@ -125,15 +126,19 @@ export class QueueTreeService extends ImxDataSource<OpsupportQueueTree> {
   private GetCompleteSubSteps(uidJob: string): number {
 
     if (uidJob === '') { return 0; }
-    const current = this.items.find(el => el.UID_Job.value === uidJob);
+    const current = this.items.find(el => this.getColumn(el, 'UID_Job').GetValue() === uidJob);
 
-    const count = current && current.Ready2EXE.value === 'FINISHED' ? 1 : 0;
+    const count = current && (this.getColumn(current, 'Ready2EXE')?.GetValue() ?? 'FINISHED') === 'FINISHED' ? 1 : 0;
 
-    return count + this.GetCompleteSubSteps(current.UID_JobSuccess.value) + this.GetCompleteSubSteps(current.UID_JobError.value);
+    return count + this.GetCompleteSubSteps(this.getColumn(current, 'UID_JobSuccess').GetValue()) + this.GetCompleteSubSteps(this.getColumn(current, 'UID_JobError').GetValue());
   }
 
-  public getFrozenItem(): OpsupportQueueTree {
-    return this.items.find(el => el.Ready2EXE.value.toUpperCase() === 'FROZEN' ||
-      el.Ready2EXE.value.toUpperCase() === 'OVERLIMIT');
+  public getFrozenItem(): TypedEntity {
+    return this.items.find(el => this.getColumn(el, 'Ready2EXE')?.GetValue()?.toUpperCase() === 'FROZEN' ||
+      this.getColumn(el, 'Ready2EXE')?.GetValue()?.toUpperCase() === 'OVERLIMIT');
+  }
+
+  private getColumn(entity: TypedEntity, name: string): IEntityColumn {
+    return CdrFactoryService.tryGetColumn(entity.GetEntity(), name);
   }
 }

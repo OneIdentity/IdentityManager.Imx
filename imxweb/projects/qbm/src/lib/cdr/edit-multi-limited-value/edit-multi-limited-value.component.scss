@@ -1,12 +1,16 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
 
+:host {
+  flex-grow: 1;
+}
+
 .mat-form-field {
   width: 100%;
 }
 
 .imx-error-margin {
-   margin-top: -15px;
-   margin-left: 10px;
+  margin-top: -15px;
+  margin-left: 10px;
 }
 
 .imx-multi-value-container {

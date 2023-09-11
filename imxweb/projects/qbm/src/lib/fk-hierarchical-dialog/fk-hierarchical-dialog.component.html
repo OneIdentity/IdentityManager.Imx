@@ -1,7 +1,7 @@
-<div class="imx-sidesheet-content">
+<div eui-sidesheet-content>
   <mat-card class="imx-dialog-content">
-    <mat-form-field *ngIf="data.fkRelations.length > 3" appearance="outline">
-      <mat-label>{{'#LDS#Selected table' | translate}}</mat-label>
+    <mat-form-field *ngIf="data.fkRelations?.length > 3" appearance="outline">
+      <mat-label>{{'#LDS#Object type' | translate}}</mat-label>
       <mat-select [(ngModel)]="hierarchyService.fkTable" disableOptionCentering panelClass="imx-under"
         (selectionChange)="tableChanged()" data-imx-identifier="cdr-fkadvancedpicker-select-tables">
         <mat-option *ngFor="let item of data.fkRelations" [value]="item">
@@ -11,7 +11,7 @@
     </mat-form-field>
 
     <!-- if more than 1 candidate table -> show radio buttons -->
-    <mat-radio-group class="imx-fk-table-radio" *ngIf="data.fkRelations.length <= 3 && data.fkRelations.length > 1"
+    <mat-radio-group class="imx-fk-table-radio" *ngIf="data.fkRelations?.length <= 3 && data.fkRelations?.length > 1"
       [(ngModel)]="hierarchyService.fkTable" (change)="tableChanged()"
       data-imx-identifier="cdr-fkadvancedpicker-radiogroup-tables">
       <mat-radio-button *ngFor="let item of data.fkRelations" [value]="item"
@@ -20,20 +20,23 @@
       </mat-radio-button>
     </mat-radio-group>
 
-    <imx-data-tree-wrapper #fkTree [withMultiSelect]="data.isMultiValue" [selectedEntities]="selectedEntities"
+    <imx-data-tree-wrapper #fkTree [withMultiSelect]="data.isMultiValue" [selectedEntities]="selectedEntities" [hideSelection]="true"
     [database]="hierarchyService" [filters]="filters" [filterTree]="filterTree" (checkedNodesChanged)="selectedNodesChanged()"
      [entitySchema]="entitySchema" (nodeSelected)="onNodeSelected($event)">
     </imx-data-tree-wrapper>
   </mat-card>
 </div>
 
-<div *ngIf="data.isMultiValue" class="imx-dialog-actions">
-  <button class="justify-start" mat-stroked-button color="primary" type="button"
-    [disabled]="selectedEntities.length === 0" (click)="clearSelection()"
+<div eui-sidesheet-actions *ngIf="data.isMultiValue">
+  <div>
+   <imx-selected-elements [selectedElements]="selectedEntityCandidates" [tables]="tableNames"></imx-selected-elements>
+  </div>
+  <button class="justify-start" mat-stroked-button type="button"
+    [disabled]="selectedEntityCandidates?.length === 0" (click)="clearSelection()"
     data-imx-identifier="cdr-fk-hierarchical-dialog-button-clear-selection">
     {{ '#LDS#Clear selection' | translate }}
   </button>
-  <button [disabled]="data?.isRequired && selectedEntities.length < 1" mat-raised-button color="primary"
+  <button [disabled]="data?.isRequired && selectedEntityCandidates?.length < 1" mat-flat-button color="primary"
     (click)="applySelection()" data-imx-identifier="cdr-fk-hierarchical-dialog-button-apply-selection">
     {{ '#LDS#Apply' | translate }}
   </button>

@@ -1,6 +1,6 @@
-<mat-tab-group (selectedTabChange)="updateButtonInformation($event)">
+<mat-tab-group #tabs (selectedTabChange)="updateButtonInformation($event)">
   <mat-tab [label]="'#LDS#Information' | translate">
-    <div class="imx-mat-tab-container">
+    <div eui-sidesheet-content>
       <mat-card class="imx-attestation-case-information">
         <eui-alert *ngIf="showRecommendation" class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true">
           <span *ngIf="case.PeerGroupFactor.value >= approvalThreshold" translate
@@ -22,10 +22,13 @@
           <imx-cdr-editor *ngFor="let cdr of propertyInfo" [cdr]="cdr"></imx-cdr-editor>
         </div>
       </mat-card>
+      <ng-container *ngIf="reportType != 'PDF' && case != null">
+        <imx-attestation-snapshot [uidCase]="case.key" [date]="case.GetEntity().GetColumn('XDateInserted').GetDisplayValue()"></imx-attestation-snapshot>
+      </ng-container>
     </div>
   </mat-tab>
   <mat-tab [label]="'#LDS#Workflow' | translate">
-    <div class="imx-mat-tab-container">
+    <div eui-sidesheet-content>
       <mat-card class="imx-attestation-case-workflow">
         <ul class="imx-eventbar">
           <imx-decision-history-item *ngFor="let workflowHistoryEntity of workflowHistoryData" [workflowHistoryEntity]="workflowHistoryEntity"> </imx-decision-history-item>
@@ -35,15 +38,16 @@
     </div>
   </mat-tab>
 
-  <mat-tab *ngIf="showLosses" [label]="'#LDS#Heading Entitlement Loss' | translate">
-    <div class="imx-mat-tab-container">
-      <div class="imx-attestation-case-loss-preview">
-        <imx-loss-preview-table [lossPreview]="lossPreview"></imx-loss-preview-table>
+  <mat-tab *ngIf="data.autoRemovalScope" [label]="'#LDS#Heading Entitlement Loss' | translate">
+    <ng-template matTabContent>
+      <div class="imx-mat-tab-container-full">
+        <div class="imx-attestation-case-loss-preview">
+          <imx-loss-preview-table [lossPreview]="data.lossPreview"></imx-loss-preview-table>
+        </div>
       </div>
-    </div>
+    </ng-template>
   </mat-tab>
-  <mat-tab *ngIf="case.data?.CanSeeComplianceViolations && case.data?.ComplianceViolations.length > 0" 
-    [label]="complianceTabTitle">
+  <mat-tab *ngIf="case.data?.CanSeeComplianceViolations && case.data?.ComplianceViolations.length > 0" [label]="complianceTabTitle">
     <div class="imx-mat-tab-container">
       <div class="imx-attestation-case-compliance-violation">
         <imx-decision-compliance-violation [mitigatingControlsPerViolation]="mitigatingControlsPerViolation" [complianceViolations]="case.data.ComplianceViolations">
@@ -51,63 +55,150 @@
       </div>
     </div>
   </mat-tab>
+
+  <mat-tab *ngIf="case.data?.CanSeePolicyViolations && case.data?.PolicyViolations.length > 0" [label]="policyTabTitle">
+    <div class="imx-mat-tab-container">
+      <div class="imx-attestation-case-compliance-violation">
+        <imx-decision-policy-violation [mitigatingControlsPerViolation]="mitigatingControlsPerViolation" [policyViolations]="case.data.PolicyViolations">
+        </imx-decision-policy-violation>
+      </div>
+    </div>
+  </mat-tab>
+  <mat-tab label="{{'#LDS#Heading Hyperview' | translate}}" *ngIf="this.relatedOptions?.length > 1">
+    <ng-template matTabContent>
+      <div eui-sidesheet-content class="imx-attestation-case-hyperview">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ '#LDS#Related objects' | translate }}</mat-label>
+          <mat-select required (selectionChange)="onHyperviewOptionSelected()" [(value)]="selectedOption">
+            <mat-option *ngFor="let relatedOption of relatedOptions" [value]="relatedOption">
+              {{ relatedOption.Display }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <imx-object-hyperview *ngIf="!!selectedOption"
+          [objectType]="selectedHyperviewType"
+          [objectUid]="selectedHyperviewUID">
+        </imx-object-hyperview>
+      </div>
+    </ng-template>
+  </mat-tab>
 </mat-tab-group>
-<div class="imx-button-bar">
-  <button *ngIf="reportType === 'PDF'" mat-stroked-button [euiDownload]="reportDownload">
-    {{ '#LDS#Download report' | translate }}
-  </button>
-  <button *ngIf="canEditMitigationControl"
-   mat-stroked-button data-imx-identifier="attestation-case-button-edit-mitigation-controls" (click)="editMitigatingControls()">
-    {{ '#LDS#Edit mitigating controls' | translate }}
-  </button>
-  <button *ngIf="reportType != 'PDF'" mat-stroked-button data-imx-identifier="attestation-case-button-snapshot" (click)="viewSnapshot()">
-    {{ '#LDS#Show details' | translate }}
-  </button>
-  <button mat-stroked-button data-imx-identifier="attestation-case-button-approve" (click)="attestationAction.checkForViolations([case])">
-    {{ '#LDS#Approve' | translate }}
-  </button>
-  <button mat-stroked-button data-imx-identifier="attestation-case-button-deny" (click)="attestationAction.deny([case])">
-    {{ '#LDS#Deny' | translate }}
-  </button>
+<div eui-sidesheet-actions>
+  <ng-container *ngIf="!data.isInquiry">
+    <button class="imx-justify-right" *ngIf="case?.UID_Person?.value && case?.ObjectKeyBase?.value" mat-stroked-button data-imx-identifier="attestation-case-button-assignment-analysis" (click)="viewSource()">
+      {{ '#LDS#View assignment analysis' | translate }}
+    </button>
+
+    <button mat-stroked-button data-imx-identifier="attestation-case--button-actions" title="{{ '#LDS#Actions' | translate }}" [matMenuTriggerFor]="actionsMenu">
+      <eui-icon icon="ellipsisvertical"></eui-icon>
+      <span translate>#LDS#Actions</span>
+    </button>
+
+    <mat-menu yPosition="above" xPosition="before" data-imx-identifier="requests-history-actions-menu" #actionsMenu="matMenu">
+      <button *ngIf="reportType === 'PDF'" mat-menu-item [euiDownload]="reportDownload" data-imx-identifier="attestation-case-button-download-report">
+        {{ '#LDS#Download report' | translate }}
+      </button>
+      <button *ngIf="case?.UID_QERTermsOfUse?.value" mat-menu-item (click)="showTermsOfUse()" data-imx-identifier="attestation-case-button-terms-of-use">
+        {{ '#LDS#View terms of use' | translate }}
+      </button>
+      <button *ngIf="canEditMitigationControl" mat-menu-item data-imx-identifier="attestation-case-button-edit-mitigation-controls" (click)="editMitigatingControls()">
+        {{ '#LDS#Assign mitigating controls' | translate }}
+      </button>
+      <button *ngIf="canAnalyzeRisk" (click)="analyzeRisk()" mat-menu-item data-imx-identifier="attestation-case-button-analyze-risk">
+        {{ '#LDS#Analyze risk' | translate }}
+      </button>
+      <button
+        mat-menu-item
+        *ngIf="case.canRerouteDecision(userUid)"
+        (click)="attestationAction.directDecision([case], userUid)"
+        data-imx-identifier="attestation-case-direct-decision-button"
+      >
+        {{ '#LDS#Reroute approval' | translate }}
+      </button>
+      <button
+        mat-menu-item
+        *ngIf="case.canAddApprover(userUid)"
+        (click)="attestationAction.addAdditionalAttestor([case])"
+        data-imx-identifier="attestation-case-add-additional-attestor-button"
+      >
+        {{ '#LDS#Add attestor' | translate }}
+      </button>
+      <button
+        mat-menu-item
+        *ngIf="case.canDelegateDecision(userUid)"
+        (click)="attestationAction.delegateDecision([case])"
+        data-imx-identifier="attestation-case-delegate-decision-button"
+      >
+        {{ '#LDS#Delegate approval' | translate }}
+      </button>
+      <button
+        mat-menu-item
+        *ngIf="case.canWithdrawAddApprover(userUid)"
+        (click)="attestationAction.revokeAdditional([case])"
+        data-imx-identifier="attestation-case-revoke-delegation-button"
+      >
+        {{ '#LDS#Withdraw additional attestor' | translate }}
+      </button>
+      <button mat-menu-item *ngIf="case.canDenyApproval(userUid)" (click)="attestationAction.denyDecisions([case])" data-imx-identifier="attestation-case-deny-decision-button">
+        {{ '#LDS#Reject approval' | translate }}
+      </button>
+      <button
+        mat-menu-item
+        *ngIf="case.canEscalateDecision(userUid)"
+        data-imx-identifier="attestation-case-escalate-decision-button"
+        (click)="attestationAction.escalateDecisions([case])"
+      >
+        {{ '#LDS#Escalate approval' | translate }}
+      </button>
+      <button
+        mat-menu-item
+        *ngIf="case.canAskAQuestion"
+        data-imx-identifier="attestation-case-ask-question-button"
+        title="{{ '#LDS#Sends an inquiry about this attestation case to an identity' | translate }}"
+        (click)="attestationAction.sendInquiry([case], userUid)"
+      >
+        {{ '#LDS#Send inquiry' | translate }}
+      </button>
+      <button
+        mat-menu-item
+        *ngIf="case.IsReserved.value && case.hasAskedLastQuestion(userUid)"
+        data-imx-identifier="attestation-case-button-recall-last-question"
+        title="{{ '#LDS#Withdraws the inquiry about this attestation case' | translate }}"
+        (click)="attestationAction.recallInquiry([case])"
+      >
+        {{ '#LDS#Withdraw inquiry' | translate }}
+      </button>
+
+      <button
+        mat-menu-item
+        *ngIf="case.IsReserved.value && (case.hasAskedLastQuestion(userUid) || isUserEscalationApprover)"
+        data-imx-identifier="attestation-case-button-reset-reservation"
+        title="{{ '#LDS#Cancels the reservation for this attestation case' | translate }}"
+        (click)="attestationAction.resetReservation([case])"
+      >
+        {{ '#LDS#Cancel reservation' | translate }}
+      </button>
+
+    </mat-menu>
+    <button mat-flat-button color="warn" data-imx-identifier="attestation-case-button-deny" (click)="attestationAction.deny([case])">
+      <mat-icon>not_interested</mat-icon>
+      <span translate>#LDS#Deny</span>
+    </button>
+    <button mat-flat-button color="primary" data-imx-identifier="attestation-case-button-approve" (click)="attestationAction.checkForViolations([case])">
+      <eui-icon icon="check"></eui-icon>
+      <span translate>#LDS#Approve</span>
+    </button>
+  </ng-container>
+
   <button
-    mat-stroked-button
-    *ngIf="case.canRerouteDecision(userUid)"
-    (click)="attestationAction.directDecision([case], userUid)"
-    data-imx-identifier="attestation-case-direct-decision-button"
+    mat-flat-button
+    *ngIf="data.isInquiry"
+    color="primary"
+    data-imx-identifier="attestation-case-button-answer-question-approval"
+    title="{{ '#LDS#Sends a reply to the inquiry' | translate }}"
+    (click)="attestationAction.answerQuestion(case)"
   >
-    {{ '#LDS#Reroute approval' | translate }}
-  </button>
-  <button
-    mat-stroked-button
-    *ngIf="case.canAddApprover(userUid)"
-    (click)="attestationAction.addAdditionalAttestor([case])"
-    data-imx-identifier="attestation-case-add-additional-attestor-button"
-  >
-    {{ '#LDS#Add attestor' | translate }}
-  </button>
-  <button
-    mat-stroked-button
-    *ngIf="case.canDelegateDecision(userUid)"
-    (click)="attestationAction.delegateDecision([case])"
-    data-imx-identifier="attestation-case-delegate-decision-button"
-  >
-    {{ '#LDS#Delegate approval' | translate }}
-  </button>
-  <button
-    mat-stroked-button
-    *ngIf="case.canWithdrawAddApprover(userUid)"
-    (click)="attestationAction.revokeDelegation([case])"
-    data-imx-identifier="attestation-case-revoke-delegation-button"
-  >
-    {{ '#LDS#Withdraw additional attestor' | translate }}
-  </button>
-  <button mat-stroked-button *ngIf="case.canDenyApproval(userUid)" (click)="attestationAction.denyDecisions([case])" data-imx-identifier="attestation-case-deny-decision-button">
-    {{ '#LDS#Reject approval' | translate }}
-  </button>
-  <button mat-stroked-button *ngIf="case.canEscalateDecision(userUid)"
-    data-imx-identifier="attestation-case-escalate-decision-button"
-    (click)="attestationAction.escalateDecisions([case])">
-    {{ '#LDS#Escalate approval' | translate }}
+    {{ '#LDS#Reply to inquiry' | translate }}
   </button>
 </div>
 

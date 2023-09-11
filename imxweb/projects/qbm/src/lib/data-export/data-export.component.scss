@@ -1,0 +1,173 @@
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+
+:host {
+  .tool-bar {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+
+    > * {
+      display: inherit;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .mat-radio-group {
+      display: inherit;
+      gap: 25px;
+    }
+    .eui-select{
+      width: 110px;
+    }
+
+    ::ng-deep .mat-radio-label {
+      padding: 0;
+
+      .mat-radio-label-content {
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
+
+  .eui-sidesheet-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-container {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 100%;
+  }
+
+  .export-column--placeholder {
+    min-height: 117px;
+    border-radius: 4px;
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+
+  .export-column--handle {
+    cursor: move;
+  }
+
+  .export-column {
+    min-height: 117px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+  }
+
+
+  .export-column--field {
+    width: 100%;
+    margin: 0 10px;
+  }
+}
+
+// CDK drag styling
+.cdk-drag-preview {
+  min-height: 117px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  justify-content: space-between;
+  box-sizing: border-box;
+
+  .export-column--field {
+    width: 100%;
+    margin: 0 10px;
+  }
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+.explort-column-container-container.cdk-drop-list-dragging .export-column:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+
+// Theming
+.eui-light-theme {
+  :host {
+    .primary-text {
+      color: $color-blue-60;
+    }
+
+    .export-column:not(:last-child) {
+      border-bottom: solid 1px $color-gray-20;
+    }
+
+    .export-column--placeholder {
+      background-color: $color-gray-30;
+      border: dotted 2px $color-gray-40;
+    }
+  }
+
+  &.cdk-drag-preview {
+    background-color: $color-gray-0;
+    border: 1px solid $color-gray-10;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .primary-text {
+      color: $color-blue-40;
+    }
+
+    .export-column:not(:last-child) {
+      border-bottom: solid 1px $color-gray-40;
+    }
+
+    .cdk-drag-preview {
+      background-color: $color-gray-70;
+      border-bottom: solid 1px $color-gray-20;
+    }
+
+    .export-column--placeholder {
+      background-color: $color-gray-50;
+      border: dotted 2px $color-gray-20;
+    }
+  }
+
+  &.cdk-drag-preview {
+    background-color: $color-gray-70;
+    border: 1px solid $color-gray-60;
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .primary-text {
+      color: $color-blue-40;
+    }
+
+    .export-column:not(:last-child) {
+      border-bottom: solid 1px $color-gray-40;
+    }
+
+    .cdk-drag-preview {
+      background-color: $color-gray-70;
+      border-bottom: solid 1px $color-gray-0;
+    }
+
+    .export-column--placeholder {
+      background-color: $color-gray-50;
+      border: dotted 2px $color-gray-0;
+    }
+  }
+
+  &.cdk-drag-preview {
+    background-color: $color-gray-70;
+    border: 1px solid $color-gray-60;
+  }
+}

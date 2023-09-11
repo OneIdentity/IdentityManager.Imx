@@ -1,9 +1,7 @@
 <div eui-sidesheet-content>
   <eui-alert class="imx-helper-alert" *ngIf="showHelperAlert" type="info" condensed="true" [colored]="true"
     [dismissable]="true" (dismissed)="onHelperDismissed()">
-    <span translate>#LDS#One or more selected products are included in several shelves. For each product, select from
-      which shelf you want to request the product. You can select a default shelf that will be used for all recipients
-      or select a shelf individually for each recipient.</span>
+    <span translate>#LDS#One or more selected products are included in several shelves. For each product, select from which shelf you want to request the product. You can select a default shelf that will be used for all recipients or select a shelf individually for each recipient.</span>
   </eui-alert>
   <form [formGroup]="formGroup">
 

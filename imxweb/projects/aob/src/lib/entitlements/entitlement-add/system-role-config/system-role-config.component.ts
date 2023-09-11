@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,7 +29,7 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { Subscription } from 'rxjs';
 import { AfterViewInit, ChangeDetectorRef, Component, Inject, OnDestroy, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatSelectionListChange } from '@angular/material/list';
 import { MatRadioChange } from '@angular/material/radio';
 import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
@@ -44,7 +44,7 @@ import { SystemRoleConfigService } from './system-role-config.service';
 })
 export class SystemRoleConfigComponent implements AfterViewInit, OnDestroy {
 
-  public readonly form: FormGroup;
+  public readonly form: UntypedFormGroup;
   public type: 'new' | 'existing' = 'new';
   public selectedRole: string;
 
@@ -65,7 +65,7 @@ export class SystemRoleConfigComponent implements AfterViewInit, OnDestroy {
     private readonly settingsService: SettingsService,
     private readonly changeDetectorRef: ChangeDetectorRef,
   ) {
-    this.form = new FormGroup({ name: new FormControl(undefined, Validators.required) });
+    this.form = new UntypedFormGroup({ name: new UntypedFormControl(undefined, Validators.required) });
   }
 
   public async ngAfterViewInit(): Promise<void> {

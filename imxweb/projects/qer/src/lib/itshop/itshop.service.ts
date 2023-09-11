@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -37,6 +37,7 @@ import {
   PortalShopServiceitems,
 } from 'imx-api-qer';
 import {
+  ApiRequestOptions,
   CollectionLoadParameters,
   CompareOperator,
   EntityCollectionData,
@@ -49,6 +50,7 @@ import {
 } from 'imx-qbm-dbts';
 import { ParameterDataLoadParameters } from '../parameter-data/parameter-data-load-parameters.interface';
 import { QerApiService } from '../qer-api-client.service';
+import { ServiceItemParameters } from '../new-request/new-request-product/service-item-parameters';
 
 @Injectable({
   providedIn: 'root',
@@ -100,9 +102,10 @@ export class ItshopService {
   }
 
   public async getPeerGroupMemberships(
-    parameters: ({ UID_PersonReference: string } | { UID_PersonPeerGroup: string }) & { UID_Person?: string } & CollectionLoadParameters
+    parameters: (CollectionLoadParameters | ServiceItemParameters),
+    requestOpts?: ApiRequestOptions
   ): Promise<ExtendedTypedEntityCollection<PortalItshopPeergroupMemberships, ServiceItemsExtendedData>> {
-    return this.qerClient.typedClient.PortalItshopPeergroupMemberships.Get(parameters);
+    return this.qerClient.typedClient.PortalItshopPeergroupMemberships.Get(parameters, requestOpts);
   }
 
   public createTypedHistory(pwoData: PwoData): PortalItshopApproveHistory[] {

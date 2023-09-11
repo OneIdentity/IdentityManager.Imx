@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,11 +38,15 @@ import { MatSelectModule } from '@angular/material/select';
 import { FkHierarchicalDialogComponent } from './fk-hierarchical-dialog.component';
 import { ConfirmationModule } from '../confirmation/confirmation.module';
 import { DataTreeWrapperModule } from '../data-tree-wrapper/data-tree-wrapper.module';
+    
+import {SelectedElementsModule} from '../selected-elements/selected-elements.module';
+import { EuiCoreModule } from '@elemental-ui/core';
 
 @NgModule({
 
   declarations: [FkHierarchicalDialogComponent],
   imports: [
+    EuiCoreModule,
     CommonModule,
     FormsModule,
     TranslateModule,
@@ -53,7 +57,8 @@ import { DataTreeWrapperModule } from '../data-tree-wrapper/data-tree-wrapper.mo
     MatRadioModule,
     MatSelectModule,
     DataTreeWrapperModule,
-    ConfirmationModule
+    ConfirmationModule,
+    SelectedElementsModule
   ],
   exports: [FkHierarchicalDialogComponent]
 

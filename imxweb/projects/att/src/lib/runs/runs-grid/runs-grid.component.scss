@@ -1,9 +1,11 @@
+@import '../../../../../../shared/scss/common-table.scss';
+
 :host {
   flex: 1 1 auto;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  
+
   ::ng-deep .mat-column-RunCategory,
   ::ng-deep .mat-column-ClosedCases,
   ::ng-deep .mat-column-PendingCases,
@@ -17,16 +19,20 @@
   }
 }
 
+.imx-table-card {
+    @include imx-flex-fill-control-hidden-overflow();
+
+}
+
 .imx-table-container {
   flex-grow: 1;
   overflow: auto;
 }
 
-
 .button-row {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  margin: 16px 0 0 40px;
+  @include imx-button-bar();
 }
 
+div[subtitle] {
+  font-size: smaller;
+}

@@ -3,19 +3,16 @@
   flex-direction: column;
   flex: 1 1 auto;
   overflow: hidden;
-}
-.button-bar {
-  display: flex;
-  justify-content: flex-end;
 
-  button:not(:last-child) {
-    margin-right: 1em;
+  .imx-tab-content-body {
+    padding: 0;
+    gap: 20px;
   }
 }
 
 .helper-alert {
   display: flex;
-  margin-bottom: 20px;
+  margin: 20px 20px 0 20px;
 }
 
 .margin {
@@ -29,19 +26,26 @@ imx-sqlwizard {
   overflow: auto;
 }
 
-.imx-mat-card-container {
+.imx-main-content{
   flex: 1 1 auto;
-  overflow: hidden;
+  overflow:auto;
   display: flex;
   flex-direction: column;
 
-  :first-child {
+  .mat-card {
+    height: 100%;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    margin: 0 20px 20px 20px;
+  }
 
-    :first-child {
-      overflow: auto;
+  div {
+    button {
+      eui-icon {
+        font-size: 14px;
+        margin-right: 4px;
+      }
     }
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,15 +27,24 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { of } from 'rxjs';
 import { PortalPickcategoryItems } from 'imx-api-qer';
 
+import { ConfirmationService } from 'qbm';
 import { PickCategoryService } from '../pick-category.service';
 import { PickCategoryCreateComponent } from './pick-category-create.component';
 
 describe('PickCategoryCreateComponent', () => {
   let component: PickCategoryCreateComponent;
   let fixture: ComponentFixture<PickCategoryCreateComponent>;
+
+  
+  let confirm = true;
+  const mockConfirmationService = {
+    confirm: jasmine.createSpy('confirm')
+      .and.callFake(() => Promise.resolve(confirm))
+  }
 
   const sidesheetData = {
     pickCategory: {
@@ -66,8 +75,15 @@ describe('PickCategoryCreateComponent', () => {
           useValue: sidesheetData,
         },
         {
-          provide: EuiSidesheetService,
-          useValue: {}
+          provide: EuiSidesheetRef,
+          useValue: {
+            close: jasmine.createSpy('close'),            
+            closeClicked: jasmine.createSpy('closeClicked').and.returnValue(of(undefined)),
+          }
+        },
+        {
+          provide: ConfirmationService,
+          useValue: mockConfirmationService
         },
         {
           provide: PickCategoryService,

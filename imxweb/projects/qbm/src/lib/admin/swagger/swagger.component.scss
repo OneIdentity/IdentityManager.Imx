@@ -1,0 +1,37 @@
+@import '@elemental-ui/core/src/styles/_palette.scss';
+
+:host {
+  overflow: auto;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  h2 {
+    font-size: 36px;
+    margin: 0;
+    padding: 20px;
+  }
+
+  small {
+    font-size: 10px;
+    position: relative;
+    top: -5px;
+    display: inline-block;
+    margin: 0px;
+    padding: 2px 4px;
+    vertical-align: super;
+    border-radius: 57px;
+    color: $white;
+    background: $black-6;
+  }
+
+  #swagger-ui{
+    overflow-y: inherit
+  }
+
+  /* Fixes to hide clutter */
+  ::ng-deep .information-container,
+  ::ng-deep .scheme-container {
+    display: none;
+  }
+}

@@ -1,0 +1,28 @@
+@import '../../../../../../shared/scss/common-table.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.imx-table-container {
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.imx-mat-card-container {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.imx-button-column {
+  @include imx-button-column-right();
+}
+
+.mat-stroked-button {
+  @include imx-icon-for-image-button();
+}

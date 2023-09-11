@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { ClassloggerService } from 'qbm';
+import { ClassloggerService, DataSourceToolbarExportMethod } from 'qbm';
 import {
   CollectionLoadParameters,
   TypedEntityCollectionData,
@@ -34,7 +34,10 @@ import {
   DataModelFilter,
   EntitySchema,
   FilterTreeData,
-  DataModel
+  DataModel,
+  EntityCollectionData,
+  MethodDescriptor,
+  MethodDefinition
 } from 'imx-qbm-dbts';
 import {
   PortalTargetsystemUnsGroup,
@@ -43,7 +46,8 @@ import {
   EntityWriteDataBulk,
   PortalTargetsystemUnsDirectmembers,
   PortalTargetsystemUnsNestedmembers,
-  PortalRespUnsgroup
+  PortalRespUnsgroup,
+  V2ApiClientMethodFactory
 } from 'imx-api-tsb';
 import { GroupsFilterTreeParameters, GetGroupsOptionalParameters } from './groups.models';
 import { TsbApiService } from '../tsb-api-client.service';
@@ -84,8 +88,38 @@ export class GroupsService {
     return this.tsbClient.typedClient.PortalTargetsystemUnsGroup.Get(navigationState);
   }
 
+  public exportGroups(navigationState: GetGroupsOptionalParameters): DataSourceToolbarExportMethod {
+    const factory = new V2ApiClientMethodFactory();
+    return {
+      getMethod: (withProperties: string, PageSize?: number) => {
+        let method: MethodDescriptor<EntityCollectionData>;
+        if (PageSize) {
+          method = factory.portal_targetsystem_uns_group_get({...navigationState, withProperties, PageSize, StartIndex: 0})
+        } else {
+          method = factory.portal_targetsystem_uns_group_get({...navigationState, withProperties})
+        }
+        return new MethodDefinition(method);
+      }
+    }
+  }
+
   public async getGroupsResp(navigationState: GetGroupsOptionalParameters): Promise<TypedEntityCollectionData<PortalRespUnsgroup>> {
     return this.tsbClient.typedClient.PortalRespUnsgroup.Get(navigationState);
+  }
+
+  public exportGroupsResp(navigationState: GetGroupsOptionalParameters): DataSourceToolbarExportMethod {
+    const factory = new V2ApiClientMethodFactory();
+    return {
+      getMethod: (withProperties: string, PageSize?: number) => {
+        let method: MethodDescriptor<EntityCollectionData>;
+        if (PageSize) {
+          method = factory.portal_resp_unsgroup_get({...navigationState, withProperties, PageSize, StartIndex: 0})
+        } else {
+          method = factory.portal_resp_unsgroup_get({...navigationState, withProperties})
+        }
+        return new MethodDefinition(method);
+      }
+    }
   }
 
   public async getGroupDetails(dbObjectKey: DbObjectKeyBase): Promise<GroupTypedEntity> {

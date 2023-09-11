@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { InjectionToken, NgModule } from '@angular/core';
 import { Routes, RouterModule, ActivatedRouteSnapshot } from '@angular/router';
 import { AuthenticationGuardService, LoginComponent, RouteGuardService } from 'qbm';
-import { PasswordDashboardComponent, PasswordResetComponent } from 'qer';
+import { PasswordDashboardComponent, PasswordResetComponent, PasswordQuestionsComponent } from 'qer';
 
 const externalUrlProvider = new InjectionToken('externalUrlRedirectResolver');
 
@@ -47,6 +47,12 @@ const routes: Routes = [
   {
     path: 'resetpassword',
     component: PasswordResetComponent,
+    canActivate: [RouteGuardService],
+    resolve: [RouteGuardService]
+  },
+  {
+    path: 'password-questions',
+    component: PasswordQuestionsComponent,
     canActivate: [RouteGuardService],
     resolve: [RouteGuardService]
   },

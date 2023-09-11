@@ -1,0 +1,17 @@
+@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '../new-request-global.scss';
+
+@include Layout-Styles;
+
+:host {
+  height: 100%;
+  display: flex;
+  column-gap: 24px;
+  overflow: hidden;
+
+  .imx-bundle-container {
+    min-width: 600px;
+    max-width: 600px;
+    padding: 0;
+  }
+}

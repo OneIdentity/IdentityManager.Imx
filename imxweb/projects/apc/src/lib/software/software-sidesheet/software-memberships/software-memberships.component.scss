@@ -1,0 +1,72 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow: hidden;
+  
+  eui-icon {
+    font-size: 14px;
+    margin-right: 4px;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.mat-card {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin: 20px;
+}
+
+.imx-table-content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+imx-busy-indicator {
+  flex: 1 1 auto;
+  justify-content: center;
+  align-items: center;
+}
+
+.helper-alert {
+  margin: 12px;
+}
+
+.helper-alert-container {
+  margin: 0px 20px;
+}
+
+imx-selected-elements {
+  margin-left: 10px;
+}
+
+.imx-menu-spacer{
+  flex: 1 1 auto;
+}
+
+.eui-sidesheet-actions {
+  button:not(:last-of-type) {
+    margin-right: 12px;
+  }
+}
+
+.imx-badge-container {
+  > div {
+    display: table-cell;
+
+    > .eui-badge {
+      margin: 0 5px;
+
+      ::ng-deep .eui-badge-content {
+        white-space: nowrap;
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 .imx-background-highlight {
-  background-color: $asher-gray;
+  background-color: $color-gray-2;
 }
 
 .imx-tree-node-panel {
@@ -11,9 +11,8 @@
   flex: 1 1 auto;
   text-align: left;
   min-width: 0;
-
   > ::ng-deep .mat-button-wrapper {
-    color: $black;
+    color: $color-gray-100;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -26,22 +25,53 @@
   display: flex;
   align-items: center;
   min-width: 0;
-
+  gap: 16px;
   p {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  mat-progress-bar {
+    flex-grow: 1;
+    width: auto;
+  }
 }
 
 .imx-tree-node:hover {
-  background-color: $asher-gray;
+  background-color: $color-gray-2;
 }
-
 
 .imx-tree-more-button {
   width: auto;
   padding: 0 5px;
   flex: 0 0 auto;
   text-align: left;
+}
+.imx-node-selectable {
+  .imx-tree-node-panel {
+    cursor: pointer;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-background-highlight {
+      background-color: $color-gray-70;
+    }
+    .imx-tree-node:hover {
+      background-color: $color-gray-60;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-background-highlight {
+      background-color: $color-gray-10;
+    }
+    .imx-tree-node:hover {
+      background-color: $color-gray-0;
+      color: $color-gray-100
+    }
+  }
 }

@@ -1,0 +1,14 @@
+<div eui-sidesheet-content>
+  <form [formGroup]="serverDetailsFormGroup" class="imx-job-servers-details-edit-form">
+    <div class="imx-master-data-grid">
+      <mat-card class="imx-master-data-cdrs">
+        <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"
+          (controlCreated)="serverDetailsFormGroup.addControl(cdr.column.ColumnName, $event)"></imx-cdr-editor>
+      </mat-card>
+    </div>
+  </form>
+</div>
+<div eui-sidesheet-actions color="white">
+  <button mat-raised-button color="primary" [disabled]="!serverDetailsFormGroup.dirty || serverDetailsFormGroup.invalid"
+    data-imx-identifier="edit-job-server-button-save" (click)="submit()">{{'#LDS#Save'| translate}}</button>
+</div>

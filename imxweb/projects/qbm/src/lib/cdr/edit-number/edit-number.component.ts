@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { AfterViewInit, Component } from '@angular/core';
-import { AbstractControl, FormControl, ValidatorFn } from '@angular/forms';
+import { AbstractControl, UntypedFormControl, ValidatorFn } from '@angular/forms';
 
 import { ValType } from 'imx-qbm-dbts';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
@@ -42,7 +42,7 @@ import { NumberValidatorService } from './number-validator.service';
   styleUrls: ['./edit-number.component.scss']
 })
 export class EditNumberComponent extends EditorBase<number> implements AfterViewInit {
-  public readonly control = new FormControl(undefined, { updateOn: 'blur' });
+  public readonly control = new UntypedFormControl(undefined, { updateOn: 'blur' });
 
   constructor(
     logger: ClassloggerService,

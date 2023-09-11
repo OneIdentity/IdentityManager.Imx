@@ -1,59 +1,49 @@
 <div class="imx-pickcategory-page">
   <div class="heading-wrapper">
     <h1 class="mat-headline">
-      {{ '#LDS#Heading Sample Data' | translate }}
+      <span>{{ '#LDS#Heading Sample Data' | translate }}</span>
+      <imx-help-contextual></imx-help-contextual>
     </h1>
-    <div class="alert-wrapper">
-      <eui-alert class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true">
-        <span>
-          {{'#LDS#You can perform attestations only for a subset of identities, for example, if attesting all identities would take too long. Samples contain identities that you can use to perform such a sample attestation. Here you can manage samples. Additionally, you can edit existing samples and assign additional identities.' | translate }}
-        </span>
-      </eui-alert>
+  </div>
+  <mat-card>
+    <div class="imx-table-container" *ngIf="dstWrapper && dstSettings">
+      <imx-data-source-toolbar
+        #dst
+        [options]="['search']"
+        [settings]="dstSettings"
+        (search)="getData({ search: $event })"
+        (navigationStateChanged)="getData($event)"
+        data-imx-identifier="pick-category-dst"
+      >
+      </imx-data-source-toolbar>
+      <imx-data-table
+        #dataTable
+        [dst]="dst"
+        class="imx-pickcategory-table"
+        [detailViewVisible]="false"
+        mode="manual"
+        (highlightedEntityChanged)="viewDetails($event)"
+        [selectable]="true"
+        [showSelectedItemsMenu]="false"
+        (selectionChanged)="onSelectionChanged($event)"
+        data-imx-identifier="pick-category-datatable"
+      >
+        <imx-data-table-column data-imx-identifier="pick-category-table-column-display" [entityColumn]="dstWrapper.propertyDisplay"> </imx-data-table-column>
+        <imx-data-table-column data-imx-identifier="pick-category-table-column-isManual" [entityColumn]="dstSettings.entitySchema?.Columns.IsManual"> </imx-data-table-column>
+      </imx-data-table>
+      <imx-data-source-paginator data-imx-identifier="pick-category-paginator" [dst]="dst"> </imx-data-source-paginator>
     </div>
-  </div>
-  <div class="imx-table-container" *ngIf="dstWrapper && dstSettings">
-    <imx-data-source-toolbar #dst [options]="['search']"
-      [settings]="dstSettings" (search)="getData({ search: $event })" (navigationStateChanged)="getData($event)"
-      data-imx-identifier="pick-category-dst">
-    </imx-data-source-toolbar>
-    <imx-data-table #dataTable [dst]="dst" class="imx-pickcategory-table" [detailViewVisible]="false" mode="manual"
-      [selectable]="true" [showSelectedItemsMenu]="false" (selectionChanged)="onSelectionChanged($event)"
-      data-imx-identifier="pick-category-datatable">
-      <imx-data-table-column data-imx-identifier="pick-category-table-column-display" [entityColumn]="dstWrapper.propertyDisplay">
-      </imx-data-table-column>
-      <imx-data-table-column data-imx-identifier="pick-category-table-column-isManual"
-        [entityColumn]="dstSettings.entitySchema?.Columns.IsManual">
-      </imx-data-table-column>
-      <imx-data-table-generic-column columnName="viewDetailsButton">
-        <ng-template let-prod>
-          <button mat-button color="primary" (click)="viewDetails(prod)"
-            data-imx-identifier="pick-category-button-view-details">
-            {{'#LDS#Edit' | translate}}
-          </button>
-        </ng-template>
-      </imx-data-table-generic-column>
-    </imx-data-table>
-    <imx-data-source-paginator data-imx-identifier="pick-category-paginator" [dst]="dst">
-    </imx-data-source-paginator>
-  </div>
-
+  </mat-card>
   <div class="imx-button-bar">
-    <p class="imx-selected-items">
-      <span>
-        {{ '#LDS#Selected samples' | translate }}
-      </span>
-      <eui-badge data-imx-identifier="roles-secondary-memberships-selection-badge" class="imx-badge" color="orange">
-        {{selectedPickCategoryItems?.length > 0 ? selectedPickCategoryItems.length : 0}}
-      </eui-badge>
-    </p>
+    <imx-selected-elements [selectedElements]="selectedPickCategoryItems"></imx-selected-elements>
     <div class="imx-menu-spacer"></div>
-    <button mat-stroked-button color="warn" [disabled]="!selectedItemsCanBeDeleted()"
-      data-imx-identifier="pick-category-details-button-delete" (click)="delete()">
-      {{'#LDS#Delete' | translate}}
+    <button mat-stroked-button color="warn" [disabled]="!selectedItemsCanBeDeleted()" data-imx-identifier="pick-category-details-button-delete" (click)="delete()">
+      <eui-icon icon="delete"></eui-icon>
+      {{ '#LDS#Delete' | translate }}
     </button>
-    <button mat-raised-button color="primary" data-imx-identifier="pick-category-button-create-new"
-      (click)="createNewPickCategory()">
-      {{'#LDS#Create sample' | translate}}
+    <button mat-raised-button color="primary" data-imx-identifier="pick-category-button-create-new" (click)="createNewPickCategory()">
+      <eui-icon icon="add"></eui-icon>
+      {{ '#LDS#Create sample' | translate }}
     </button>
   </div>
 </div>

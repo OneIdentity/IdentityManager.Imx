@@ -1,0 +1,154 @@
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+
+:host {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .eui-sidesheet-actions {
+    padding: 16px 20px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .imx-helper-alert {
+    margin-bottom: 15px;
+  }
+
+  .control-container {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+  }
+
+  .mitigating-control {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .imx-delete-button {
+      margin-top: 15px;
+      align-self: flex-start;
+    }
+
+    .mitigating-control-properties {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin-right: 15px;
+    }
+  }
+
+  .imx-no-mitigating-controls {
+    flex: 1 1 auto;
+    margin: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .imx-mitigating-control-content {
+    flex: 1 1 auto;
+    margin: 3px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .content {
+      overflow: auto;
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+    }
+  }
+
+  .imx-data-no-results {
+    text-align: center;
+    margin: 20px 0;
+    justify-self: center;
+
+    .eui-icon {
+      font-size: 100px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    button {
+      margin-top: 10px;
+    }
+  }
+
+  .button-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+}
+
+// Theming
+:host {
+  .imx-data-no-results {
+    .eui-icon {
+      color: $color-gray-10;
+    }
+
+    p {
+      color: $color-gray-50;
+    }
+  }
+
+  .imx-no-mitigating-controls {
+    color: $color-gray-50;
+  }
+
+  .mitigating-control {
+    border-bottom: 1px solid $color-gray-50;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-data-no-results {
+      .eui-icon {
+        color: $color-gray-20;
+      }
+
+      p {
+        color: $color-gray-10;
+      }
+    }
+    .imx-no-mitigating-controls {
+      color: $color-gray-10;
+    }
+
+    .mitigating-control {
+      border-bottom: 1px solid $color-gray-10;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-data-no-results {
+      .eui-icon {
+        color: $color-gray-10;
+      }
+
+      p {
+        color: $color-gray-0;
+      }
+    }
+    .imx-no-mitigating-controls {
+      color: $color-gray-0;
+    }
+
+    .mitigating-control {
+      border-bottom: 1px solid $color-gray-0;
+    }
+  }
+}

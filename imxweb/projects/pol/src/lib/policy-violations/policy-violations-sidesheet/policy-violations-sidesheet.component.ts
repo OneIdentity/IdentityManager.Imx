@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,6 +30,8 @@ import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { ColumnDependentReference } from 'qbm';
 import { PolicyViolation } from '../policy-violation';
 import { PolicyViolationsService } from '../policy-violations.service';
+import { ObjectInfo } from 'imx-api-pol';
+import { DbObjectKey } from 'imx-qbm-dbts';
 
 @Component({
   selector: 'imx-policy-violations-sidesheet',
@@ -39,24 +41,39 @@ import { PolicyViolationsService } from '../policy-violations.service';
 export class PolicyViolationsSidesheetComponent {
 
   public cdrList: ColumnDependentReference[] = [];
+  public selectedHyperviewType: string;
+  public selectedHyperviewUID: string;
+  public selectedOption: ObjectInfo
 
-  public get isPending(): boolean { 
-    return this.data.State.value?.toLocaleLowerCase() === 'pending';
+  public get isPending(): boolean {
+    return this.data.policyViolation.State.value?.toLocaleLowerCase() === 'pending';
+  }
+
+  public get objectType(): string {
+    return this.data.policyViolation.GetEntity().TypeName;
+  }
+
+  public get objectUid(): string {
+    return this.data.policyViolation.GetEntity().GetKeys().join(',');
   }
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public data: PolicyViolation,
+    @Inject(EUI_SIDESHEET_DATA) public data: {
+      policyViolation: PolicyViolation;
+      isMControlPerViolation: boolean;
+      isReadOnly: boolean;
+    },
     private readonly policyViolationService: PolicyViolationsService,
-    private readonly sideSheetRef: EuiSidesheetRef
+    public readonly sideSheetRef: EuiSidesheetRef
   ) {
-    this.cdrList = this.data.properties;
+    this.cdrList = this.data.policyViolation.properties;
   }
 
   /**
    * Opens the Approve-Sidesheet for the current selected rules violations and closes the sidesheet afterwards.
    */
   public async approve(): Promise<void> {
-    await this.policyViolationService.approve([this.data]);
+    await this.policyViolationService.approve([this.data.policyViolation]);
     return this.sideSheetRef.close(true);
   }
 
@@ -64,8 +81,21 @@ export class PolicyViolationsSidesheetComponent {
    * Opens the Deny-Sidesheet for the current selected rules violations and closes the sidesheet afterwards.
    */
   public async deny(): Promise<void> {
-    await this.policyViolationService.deny([this.data]);
+    await this.policyViolationService.deny([this.data.policyViolation]);
     return this.sideSheetRef.close(true);
   }
 
+  public get relatedOptions(): ObjectInfo[]{
+    return this.data.policyViolation.data || [];
+  }
+
+  public setHyperviewObject(selectedRelatedObject: ObjectInfo): void{
+    const dbKey = DbObjectKey.FromXml(selectedRelatedObject.ObjectKey);
+    this.selectedHyperviewType = dbKey.TableName;
+    this.selectedHyperviewUID = dbKey.Keys.join(',');
+  }
+
+  public onHyperviewOptionSelected(): void {
+    this.setHyperviewObject(this.selectedOption)
+  }
 }

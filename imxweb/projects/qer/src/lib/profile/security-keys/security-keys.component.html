@@ -1,0 +1,44 @@
+<mat-card>
+  <div class="imx-table-container">
+    <imx-data-source-toolbar
+      #dst
+      [settings]="dstSettings"
+      [options]="[]">
+    </imx-data-source-toolbar>
+    <imx-data-table
+      class="imx-security-keys-table"
+      mode="manual"
+      detailViewVisible="false"
+      noDataText="{{ '#LDS#You have not set up any security keys.' | translate }}"
+      data-imx-identifier="security-keys-tabledata-table"
+      [dst]="dst"
+      (highlightedEntityChanged)="onSelectedKey($event)"
+      >
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns.DisplayName"></imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns.SignatureCount"></imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns.DateLastUsed"></imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns.DateRegistered"></imx-data-table-column>
+      <imx-data-table-generic-column columnName="buttons" data-imx-identifier="security-keys-table-column-buttons">
+        <ng-template let-key>
+          <div class="imx-buttons">
+            <button mat-flat-button color="warn" (click)="deleteSecurityKey($event, key.EntityKeysData.Keys[0])" data-imx-identifier="attestations-table-deny-button">
+              <span class="mat-button-wrapper">
+                <eui-icon size="s" icon="delete"></eui-icon>
+                <span>{{ '#LDS#Delete' | translate }}</span>
+              </span>
+            </button>
+          </div>
+        </ng-template>
+      </imx-data-table-generic-column>
+    </imx-data-table>
+    <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+  </div>
+</mat-card>
+<div class="action-buttons">
+  <button mat-raised-button color="primary" data-imx-identifier="create-new-security-key" [disabled]="!this.newKeyUrl" (click)="createSecurityKey()">
+    <span class="mat-button-wrapper" [matTooltip]="this.newKeyUrl ? null : ('#LDS#Currently, you cannot create new security keys. No registration URL is configured. Ask your administrator and try again.' | translate)">
+      <eui-icon *ngIf="!this.newKeyUrl" size="s" icon="help"></eui-icon>
+      <span>{{ '#LDS#Create security key' | translate }}</span>
+    </span>
+  </button>
+</div>

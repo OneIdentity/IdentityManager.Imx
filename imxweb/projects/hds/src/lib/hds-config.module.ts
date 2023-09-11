@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,14 +26,26 @@
 
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-
 import { InitService } from './init.service';
+import {HELP_CONTEXTUAL, RouteGuardService} from 'qbm';
+import { CallsComponent } from './calls/calls.component';
+import { CallsModule } from './calls/calls.module';
 
 const routes: Routes = [
+  {
+    path: 'help-desk-support/tickets',
+    component: CallsComponent,
+    canActivate: [RouteGuardService],
+    resolve: [RouteGuardService],
+    data:{
+      contextId: HELP_CONTEXTUAL.HelpDeskSupportTickets
+    }
+  }
 ];
 
 @NgModule({
   imports: [
+    CallsModule,
     RouterModule.forChild(routes)
   ]
 })

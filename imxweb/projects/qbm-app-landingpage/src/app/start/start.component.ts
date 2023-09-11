@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -44,5 +44,9 @@ export class StartComponent implements OnInit {
   public async ngOnInit(): Promise<void> {
     this.apps = await this.appcontainerService.getAppContainers();
     this.loaded = true;
+  }
+
+  public get hasServerAdministrationApp() {
+    return this.appcontainerService.hasServerAdministrationApp;
   }
 }

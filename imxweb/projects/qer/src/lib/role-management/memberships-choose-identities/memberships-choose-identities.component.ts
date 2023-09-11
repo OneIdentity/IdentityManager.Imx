@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,19 +25,23 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
+import { ViewConfigData } from 'imx-api-qer';
 
-import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, IEntity, TypedEntity, XOrigin } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, XOrigin } from 'imx-qbm-dbts';
 import {
   AuthenticationService,
   buildAdditionalElementsString,
   DataSourceToolbarSettings,
+  DataSourceToolbarViewConfig,
   ISessionState,
   SnackBarService
 } from 'qbm';
 import { UserModelService } from '../../user/user-model.service';
+import { ViewConfigService } from '../../view-config/view-config.service';
+import { DataManagementService } from '../data-management.service';
 import { RoleService } from '../role.service';
 import { IdentitiesService } from './identities.service';
 import { NotRequestableMembershipsComponent } from './not-requestable-memberships/not-requestable-memberships.component';
@@ -55,20 +59,18 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
   public displayColumns: IClientProperty[];
   public sessionState: ISessionState;
 
-  private selection: TypedEntity[];
+  public selection: TypedEntity[] = [];
   private dataModel: DataModel;
+  private viewConfig: DataSourceToolbarViewConfig;
+  private viewConfigPath = 'attestation/approve';
   private candidatesEntitySchema: EntitySchema;
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA)
-    public data: {
-      id: string;
-      entity: IEntity;
-      ownershipInfo: string;
-    },
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly identityService: IdentitiesService,
-    private membershipService: RoleService,
+    private viewConfigService: ViewConfigService,
+    private roleService: RoleService,
+    private dataManagementService: DataManagementService,
     private snackbar: SnackBarService,
     private readonly userService: UserModelService,
     private readonly busyService: EuiLoadingService,
@@ -85,8 +87,9 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
     setTimeout(() => (overlayRef = this.busyService.show()));
 
     try {
-      this.dataModel = await this.membershipService.getCandidatesDataModel(this.data.ownershipInfo, this.data.entity.GetKeys()[0]);
-      this.candidatesEntitySchema = this.membershipService.getMembershipEntitySchema(this.data.ownershipInfo, 'candidates');
+      this.dataModel = await this.roleService.getCandidatesDataModel(this.dataManagementService.entityInteractive.GetEntity().GetKeys()[0]);
+      this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModel, this.viewConfigPath);
+      this.candidatesEntitySchema = this.roleService.getMembershipEntitySchema('candidates');
     }
     finally {
       setTimeout(() => this.busyService.hide(overlayRef));
@@ -116,13 +119,13 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
       return;
     }
 
+    const entity = this.dataManagementService.entityInteractive.GetEntity()
     this.busyService.show();
-
     try {
       const notRequestableMemberships = await this.identityService.addMemberships(
-        this.data.ownershipInfo,
+        this.roleService.ownershipInfo.TableName,
         this.selection,
-        this.data.entity.GetColumn('XObjectKey').GetValue()
+        entity.GetColumn('XObjectKey').GetValue()
       );
 
       if (notRequestableMemberships.length > 0) {
@@ -130,7 +133,7 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
           data: {
             notRequestableMemberships,
             entitySchema: this.entitySchema,
-            membershipName: this.data.entity.GetDisplay()
+            membershipName: entity.GetDisplay()
           }
         });
 
@@ -141,13 +144,25 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
         await this.userService.reloadPendingItems();
         this.snackbar.open({
           key: '#LDS#The membership for "{0}" has been successfully added to the shopping cart.',
-          parameters: [this.data.entity.GetDisplay()],
+          parameters: [entity.GetDisplay()],
         });
       }
       this.sidesheetRef.close();
     } finally {
       this.busyService.hide();
     }
+  }
+
+  public async updateConfig(config: ViewConfigData): Promise<void> {
+    await this.viewConfigService.putViewConfig(config);
+    this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
+    this.dstSettings.viewConfig = this.viewConfig;
+  }
+
+  public async deleteConfigById(id: string): Promise<void> {
+    await this.viewConfigService.deleteViewConfig(id);
+    this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
+    this.dstSettings.viewConfig = this.viewConfig;
   }
 
   public getSubtitle(entity: any, properties: IClientProperty[]): string {
@@ -159,12 +174,10 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
 
     try {
       this.dstSettings = {
-        dataSource: await this.membershipService.getCandidates(
-          this.data.ownershipInfo,
-          this.data.entity.GetKeys()[0],
+        dataSource: await this.roleService.getCandidates(
+          this.dataManagementService.entityInteractive.GetEntity().GetKeys().join(','),
           {
             ...this.navigationState,
-
             // exclude candidate identities that already have an assignment request (XOrigin.Ordered)
             xorigin: XOrigin.Ordered
           }
@@ -174,7 +187,7 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
         displayedColumns: this.displayColumns,
         filters: this.dataModel.Filters,
         dataModel: this.dataModel,
-        identifierForSessionStore: 'membership-choose-identities'
+        viewConfig: this.viewConfig
       };
     } finally {
       this.busyService.hide();

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,48 +24,36 @@
  *
  */
 
-import { Component, Input } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
-import { configureTestSuite } from 'ng-bullet';
+import { EuiSidesheetService } from '@elemental-ui/core';
+import { MockBuilder, MockedComponentFixture, MockRender } from 'ng-mocks';
 
 import { clearStylesFromDOM } from 'qbm';
+import { from } from 'rxjs';
+import { UserModelService } from '../user/user-model.service';
 import { ApprovalsComponent } from './approvals.component';
-
-@Component({
-  selector: 'imx-approvals-table',
-  template: '<p>MockApprovalsTable</p>'
-})
-class MockApprovalsTable {
-  @Input() params: any;
-}
+import { ApprovalsModule } from './approvals.module';
 
 describe('Approvals', () => {
   let component: ApprovalsComponent;
-  let fixture: ComponentFixture<ApprovalsComponent>;
+  let fixture: MockedComponentFixture<ApprovalsComponent>;
 
-  configureTestSuite(() => {
-    TestBed.configureTestingModule({
-      declarations: [
-        ApprovalsComponent,
-        MockApprovalsTable
-      ],
-      providers: [
+  beforeEach(() => {
+    return MockBuilder(ApprovalsComponent, ApprovalsModule)
+      .mock(EuiSidesheetService)
+      .mock(UserModelService,{getPendingItems: jasmine.createSpy('getPendingItems').and.returnValue(Promise.resolve({}))},{export:true})
+      .mock(
+        ActivatedRoute,
         {
-          provide: ActivatedRoute,
-          useValue: {
-            queryParams: {
-              subscribe: () => {}
-            }
-          }
-        }
-      ]
-    })
+          queryParams: from([]),
+        },
+        { export: true }
+      );
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ApprovalsComponent);
-    component = fixture.componentInstance;
+    fixture = MockRender(ApprovalsComponent);
+    component = fixture.point.componentInstance;
   });
 
   afterAll(() => {

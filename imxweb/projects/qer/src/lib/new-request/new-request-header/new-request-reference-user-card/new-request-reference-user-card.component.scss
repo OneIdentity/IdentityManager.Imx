@@ -1,0 +1,8 @@
+@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '../../new-request-global.scss';
+@import '../new-request-header.component.scss';
+
+:host {
+  display: flex;
+  align-items: center;
+}

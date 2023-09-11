@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,12 +27,13 @@
 import { Injectable, ErrorHandler } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { CollectionLoadParameters, TypedEntityCollectionData, IWriteValue, FilterType, CompareOperator, EntitySchema, TypedEntity, DataModel, ExtendedTypedEntityCollection, FilterData } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, TypedEntityCollectionData, IWriteValue, FilterType, CompareOperator, EntitySchema, TypedEntity, DataModel, ExtendedTypedEntityCollection, FilterData, FilterTreeData } from 'imx-qbm-dbts';
 import { DataTileBadge, ApiClientService, ClassloggerService } from 'qbm';
 import {
   PortalEntitlement,
   PortalApplication,
   EntitlementSystemRoleInput,
+  portal_entitlementcandidates_UNSGroup_filtertree_get_args,
 } from 'imx-api-aob';
 import { EntitlementFilter } from './entitlement-filter';
 import { AobApiService } from '../aob-api-client.service';
@@ -181,14 +182,15 @@ export class EntitlementsService {
     let publishCount = 0;
 
     for (const entitlement of entitlements) {
+      const interactive = (await this.aobClient.typedClient.PortalEntitlementInteractive.Get_byid(entitlement.GetEntity().GetKeys()[0])).Data[0];
       if (!publishData.publishFuture) {
-        entitlement.IsInActive.value = publishData.publishFuture;
+       await interactive.IsInActive.Column.PutValue(publishData.publishFuture);
       } else {
-        entitlement.ActivationDate.value = publishData.date;
+       await interactive.ActivationDate.Column.PutValue(publishData.date);
       }
 
       this.logger.debug(this, 'Commit change: publish entitlement...');
-      if (await this.tryCommit(entitlement)) {
+      if (await this.tryCommit(interactive)) {
         publishCount++;
       }
     }
@@ -200,11 +202,13 @@ export class EntitlementsService {
     let unpublishCount = 0;
 
     for (const entitlement of entitlements) {
-      entitlement.ActivationDate.value = null;
-      entitlement.IsInActive.value = true;
+      const interactive = (await this.aobClient.typedClient.PortalEntitlementInteractive.Get_byid(entitlement.GetEntity().GetKeys()[0])).Data[0];
+
+      await interactive.IsInActive.Column.PutValue(true);
+      await interactive.ActivationDate.Column.PutValue(null);
 
       this.logger.debug(this, 'Commit change: unpublish entitlement...');
-      if (await this.tryCommit(entitlement)) {
+      if (await this.tryCommit(interactive)) {
         unpublishCount++;
       }
     }
@@ -234,6 +238,10 @@ export class EntitlementsService {
     }
 
     return [];
+  }
+
+  public async getEntitlementsFilterTree(options: portal_entitlementcandidates_UNSGroup_filtertree_get_args): Promise<FilterTreeData>{
+    return this.aobClient.client.portal_entitlementcandidates_UNSGroup_filtertree_get(options);
   }
 
   private async createNew(

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,10 @@
  *
  */
 
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { MatCardModule } from '@angular/material/card';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
@@ -34,17 +36,18 @@ import {
   CdrModule,
   DataSourceToolbarModule,
   DataTableModule,
+  HelpContextualModule,
   MenuItem,
   MenuService,
   OrderedListModule,
+  SelectedElementsModule,
   SqlWizardApiService,
   SqlWizardModule
 } from 'qbm';
 import { EditReportComponent } from './edit-report.component';
 import { EditReportSidesheetComponent } from './edit-report-sidesheet/edit-report-sidesheet.component';
 import { EditReportSqlWizardService } from './editreport-sqlwizard.service';
-import { DragDropModule } from '@angular/cdk/drag-drop';
-import { MatCardModule } from '@angular/material/card';
+import { RpsPermissionsService } from '../admin/rps-permissions.service';
 
 @NgModule({
   declarations: [
@@ -56,7 +59,8 @@ import { MatCardModule } from '@angular/material/card';
       // This does not work for some reason!
       provide: SqlWizardApiService,
       useClass: EditReportSqlWizardService
-    }
+    },
+    RpsPermissionsService
   ],
   imports: [
     CdrModule,
@@ -72,6 +76,8 @@ import { MatCardModule } from '@angular/material/card';
     ReactiveFormsModule,
     TranslateModule,
     SqlWizardModule,
+    SelectedElementsModule,
+    HelpContextualModule,
   ]
 })
 export class EditReportModule {
@@ -84,7 +90,7 @@ export class EditReportModule {
 
   private setupMenu(): void {
     this.menuService.addMenuFactories(
-      (preProps: string[], groups: string[]) => {
+      (preProps: string[], features: string[]) => {
 
         const items: MenuItem[] = [];
 
@@ -96,7 +102,7 @@ export class EditReportModule {
                 commands: ['reports']
               },
               title: '#LDS#Menu Entry Reports',
-              sorting: '50-70',
+              sorting: '60-70',
             },
           );
         }
@@ -107,7 +113,7 @@ export class EditReportModule {
         return {
           id: 'ROOT_Setup',
           title: '#LDS#Setup',
-          sorting: '50',
+          sorting: '60',
           items
         };
       },

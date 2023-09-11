@@ -1,0 +1,54 @@
+<div class="content">
+  <div class="mitigating-control" *ngFor="let mControl of mControls; index as i">
+    <!-- editable control-->
+    <div class="mitigating-control-properties" *ngIf="mControl?.editable">
+      <eui-select
+        *ngIf="mControl.editable"
+        (selectionChange)="onSelectionChange(mControl, $event.value)"
+        [label]="mitigatingCaption"
+        [filterFunction]="filter"
+        [enableFormFieldMargin]="true"
+        [options]="options"
+        [inputControl]="mControl.formControl"
+        (openChange)="onOpenChange($event, mControl)"
+        [hideClearButton]="true"
+        [attr.data-imx-identifier]="'mitigating-control-container-' + i + '-select'"
+      >
+        <mat-error *ngIf="mControl.formControl.errors?.['required']">
+          {{ '#LDS#This field is mandatory.' | translate }}
+        </mat-error>
+        <mat-error *ngIf="mControl.formControl.errors?.['duplicated']">
+          {{ '#LDS#This mitigating control has already been assigned. You can assign a mitigating control only once.' | translate }}
+        </mat-error>
+      </eui-select>
+      <imx-cdr-editor [cdr]="mControl.cdrs[1]"></imx-cdr-editor>
+    </div>
+    <!-- read only control-->
+    <div class="mitigating-control-properties" *ngIf="!mControl.editable">
+      <imx-cdr-editor *ngFor="let cdr of mControl.cdrs" [cdr]="cdr"></imx-cdr-editor>
+    </div>
+
+    <button
+      [matTooltip]="'#LDS#Removes the mitigating control' | translate"
+      [attr.aria-label]="'#LDS#Remove mitigating control' | translate"
+      [attr.data-imx-identifier]="'mitigating-control-container-button-delete- + index'"
+      mat-button
+      *ngIf="!mControl.isDeferredData"
+      class="mat-icon-button imx-delete-button"
+      (click)="onDelete(mControl, i)"
+    >
+      <eui-icon icon="delete"></eui-icon>
+    </button>
+  </div>
+  <button
+    *ngIf="options.length > 0"
+    [matTooltip]="'#LDS#Assigns a mitigating control' | translate"
+    data-imx-identifier="mitigating-control-container-button-add"
+    [attr.aria-label]="'#LDS#Assign mitigating control' | translate"
+    mat-button
+    class="mat-icon-button"
+    (click)="onCreateControl()"
+  >
+    <eui-icon icon="add"></eui-icon>
+  </button>
+</div>

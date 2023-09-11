@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,11 +25,9 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-
-import { ProjectConfig, QerProjectConfig } from 'imx-api-qer';
+import { ProjectConfig } from 'imx-api-qer';
 import { SnackBarService } from 'qbm';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
-
 @Component({
   templateUrl: './notification-tile.component.html',
   selector: 'imx-notification-tile',
@@ -39,7 +37,6 @@ export class NotificationTileComponent implements OnInit {
 
   public projectConfig: ProjectConfig;
   public showAskForNotifications: boolean;
-
   constructor(
     private readonly projectConfigurationService: ProjectConfigurationService,
     private readonly snackbar: SnackBarService,
@@ -68,5 +65,4 @@ export class NotificationTileComponent implements OnInit {
       && Notification.permission !== 'granted'
       && Notification.permission !== 'denied';
   }
-
 }

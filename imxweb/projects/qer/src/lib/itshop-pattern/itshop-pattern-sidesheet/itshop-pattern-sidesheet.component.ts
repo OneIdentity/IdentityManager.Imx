@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,17 +25,19 @@
  */
 
 import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { EuiSidesheetRef, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
-import { PortalItshopPatternItem, PortalItshopPatternPrivate, } from 'imx-api-qer';
+import { PortalItshopPatternItem, PortalItshopPatternPrivate, PortalShopServiceitems, ProjectConfig, QerProjectConfig } from 'imx-api-qer';
 import { CollectionLoadParameters, CompareOperator, DisplayColumns, FilterType, TypedEntity } from 'imx-qbm-dbts';
 
 import {
   BaseCdr,
+  BusyService,
+  BaseReadonlyCdr,
   ClassloggerService,
   ColumnDependentReference,
   ConfirmationService,
@@ -43,11 +45,13 @@ import {
   DataSourceWrapper,
   DataTableComponent,
   SnackBarService,
-  TabControlHelper,
 } from 'qbm';
 import { ItshopPatternService } from '../itshop-pattern.service';
 import { ItShopPatternChangedType } from '../itshop-pattern-changed.enum';
 import { ItshopPatternAddProductsComponent } from '../itshop-pattern-add-products/itshop-pattern-add-products.component';
+import { ItshopPatternItemEditComponent } from '../itshop-pattern-item-edit/itshop-pattern-item-edit.component';
+import { ServiceItemsService } from '../../service-items/service-items.service';
+import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
 
 @Component({
   selector: 'imx-itshop-pattern-sidesheet',
@@ -56,11 +60,13 @@ import { ItshopPatternAddProductsComponent } from '../itshop-pattern-add-product
 })
 export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
 
-  public get formArray(): FormArray {
-    return this.detailsFormGroup.get('formArray') as FormArray;
+  public get formArray(): UntypedFormArray {
+    return this.detailsFormGroup.get('formArray') as UntypedFormArray;
   }
   public cdrList: ColumnDependentReference[] = [];
-  public readonly detailsFormGroup: FormGroup;
+  public readonly detailsFormGroup: UntypedFormGroup;
+  
+  public busyService = new BusyService();
 
   public dstWrapper: DataSourceWrapper<PortalItshopPatternItem>;
   public dstSettings: DataSourceToolbarSettings;
@@ -68,11 +74,11 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
   public adminMode: boolean;
   public selectedTabIndex = 0;
 
-  public detailsInfoText = '#LDS#Here you can see the details of this request template.';
-  public editableDetailsInfoText = '#LDS#Here you can edit the details of this request template.';
+  public detailsInfoText = '#LDS#Here you can see the details of this product bundle.';
+  public editableDetailsInfoText = '#LDS#Here you can edit the details of this product bundle.';
 
-  public productsInfoText = '#LDS#Here you can get an overview of all products assigned to this request template.';
-  public editableProductsInfoText = '#LDS#Here you can get an overview of all products assigned to this request template. You can also add and remove products.';
+  public productsInfoText = '#LDS#Here you can get an overview of all products assigned to this product bundle.';
+  public editableProductsInfoText = '#LDS#Here you can get an overview of all products assigned to this product bundle. Additionally, you can add and remove products.';
 
 
   @ViewChild(DataTableComponent) public table: DataTableComponent<TypedEntity>;
@@ -81,21 +87,24 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
   private shoppingCartPatternUid = '';
 
   constructor(
-    formBuilder: FormBuilder,
+    formBuilder: UntypedFormBuilder,
     @Inject(EUI_SIDESHEET_DATA) public data: {
       pattern: PortalItshopPatternPrivate
       isMyPattern: boolean,
-      adminMode: boolean
+      adminMode: boolean,
+      canEditAndDelete: boolean
     },
     private readonly translate: TranslateService,
     private readonly patternService: ItshopPatternService,
+    private readonly serviceItemsService: ServiceItemsService,
+    private readonly projectConfigurationService: ProjectConfigurationService,
     private readonly sidesheet: EuiSidesheetService,
     private readonly sideSheetRef: EuiSidesheetRef,
     private readonly snackBar: SnackBarService,
     private readonly logger: ClassloggerService,
     private confirmation: ConfirmationService
   ) {
-    this.detailsFormGroup = new FormGroup({ formArray: formBuilder.array([]) });
+    this.detailsFormGroup = new UntypedFormGroup({ formArray: formBuilder.array([]) });
 
     this.closeSubscription = this.sideSheetRef.closeClicked().subscribe(async () => {
       if (!this.detailsFormGroup.dirty
@@ -106,14 +115,6 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
   }
 
   public async ngOnInit(): Promise<void> {
-
-    /**
-     * Resolve an issue where the mat-tab navigation arrows could appear on first load
-     */
-    setTimeout(() => {
-      TabControlHelper.triggerResizeEvent();
-    });
-
     this.shoppingCartPatternUid = this.data.pattern.GetEntity().GetKeys()[0];
 
     await this.setupDetailsTab();
@@ -127,7 +128,7 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
   }
 
   public async getData(parameter?: CollectionLoadParameters): Promise<void> {
-    this.patternService.handleOpenLoader();
+    const isBusy = this.busyService.beginBusy();
     try {
       const filteredState: CollectionLoadParameters = {
         filter: [
@@ -146,7 +147,7 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
       };
       this.dstSettings = await this.dstWrapper.getDstSettings(parameters);
     } finally {
-      this.patternService.handleCloseLoader();
+      isBusy.endBusy();
     }
   }
 
@@ -171,8 +172,8 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
 
   public async delete(): Promise<void> {
     if (await this.confirmation.confirm({
-      Title: '#LDS#Heading Delete Request Template',
-      Message: '#LDS#Are you sure you want to delete the request template?'
+      Title: '#LDS#Heading Delete Product Bundle',
+      Message: '#LDS#Are you sure you want to delete the product bundle?'
     })) {
       if (await this.patternService.delete([this.data.pattern])) {
         this.sideSheetRef.close(ItShopPatternChangedType.Deleted);
@@ -190,20 +191,19 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
   public async addProducts(): Promise<void> {
 
     const result = await this.sidesheet.open(ItshopPatternAddProductsComponent, {
-      title: await this.translate.get('#LDS#Heading Add Products To Request Template').toPromise(),
-      headerColour: 'iris-blue',
-      bodyColour: 'asher-gray',
+      title: await this.translate.get('#LDS#Heading Add Products To Product Bundle').toPromise(),
+      subTitle: this.data.pattern.Ident_ShoppingCartPattern.value,
       panelClass: 'imx-sidesheet',
       padding: '0',
       width: 'max(768px, 70%)',
-      testId: 'pattern-details-sidesheet',
+      testId: 'pattern-add-products-sidesheet',
       data: {
         shoppingCartPatternUid: this.shoppingCartPatternUid
       }
     }).afterClosed().toPromise();
 
     if (result) {
-      const snackBarMessage = '#LDS#The selected products have been successfully added.';
+      const snackBarMessage = '#LDS#The selected products have been successfully added to the product bundle.';
       this.snackBar.open({ key: snackBarMessage });
       await this.getData();
     }
@@ -233,12 +233,54 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
     }
   }
 
+  public async onHighlightedEntityChanged(selectedItem: PortalItshopPatternItem): Promise<void> {
+    await this.editPatternItem(selectedItem);
+  }
+
+  public async editPatternItem(selectedItem: PortalItshopPatternItem): Promise<void> {
+
+    let projectConfig: QerProjectConfig & ProjectConfig;
+    let serviceItem: PortalShopServiceitems;
+
+    this.patternService.handleOpenLoader();
+    try {
+      serviceItem = await this.serviceItemsService.getServiceItem(selectedItem.UID_AccProduct.value, true);
+      projectConfig = await this.projectConfigurationService.getConfig();
+    } finally {
+      this.patternService.handleCloseLoader();
+    }
+
+    this.sidesheet.open(ItshopPatternItemEditComponent,
+      {
+        title: await this.translate.get('#LDS#Heading View Product Details').toPromise(),
+        subTitle: selectedItem.GetEntity().GetDisplay(),
+        padding: '0px',
+        width: '600px',
+        testId: 'itshop-pattern-item-edit-sidesheet',
+        data: {
+          patternItemUid: selectedItem.GetEntity().GetKeys().join(''),
+          serviceItem,
+          projectConfig
+        }
+      }
+    );
+  }
+
   private async setupDetailsTab(): Promise<void> {
-    this.cdrList = [
-      new BaseCdr(this.data.pattern.Ident_ShoppingCartPattern.Column),
-      new BaseCdr(this.data.pattern.Description.Column),
-      new BaseCdr(this.data.pattern.UID_Person.Column)
-    ];
+
+    if (this.data.canEditAndDelete) {
+      this.cdrList = [
+        new BaseCdr(this.data.pattern.Ident_ShoppingCartPattern.Column),
+        new BaseCdr(this.data.pattern.Description.Column),
+        new BaseCdr(this.data.pattern.UID_Person.Column)
+      ];
+    } else {
+      this.cdrList = [
+        new BaseReadonlyCdr(this.data.pattern.Ident_ShoppingCartPattern.Column),
+        new BaseReadonlyCdr(this.data.pattern.Description.Column),
+        new BaseReadonlyCdr(this.data.pattern.UID_Person.Column)
+      ];
+    }
   }
 
   private setupProductsTab(): void {

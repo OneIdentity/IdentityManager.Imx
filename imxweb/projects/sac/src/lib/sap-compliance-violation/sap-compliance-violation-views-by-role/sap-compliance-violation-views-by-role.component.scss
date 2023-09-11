@@ -1,0 +1,108 @@
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+
+.sap-analysis{
+  display: flex;
+  gap: 16px;
+  height: 100%;
+  justify-content: space-between;
+  &__table{
+    overflow: hidden auto;
+    flex-grow: 1;
+  }
+  .mat-card{
+    width: 100%;
+    transition: width 400ms ease;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    &--decreased{
+      padding: 0;
+      width: 48px;
+      .mat-card__header{
+        height: 100%;
+        &__title{
+          display:none;
+        }
+        button{
+          width: 48px;
+          padding: 20px 0;
+          min-width: unset;
+          height: 100%;
+          ::ng-deep .mat-button-wrapper{
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+          }
+          h3{
+            display: block;
+            margin: auto 0;
+            rotate: -90deg;
+          }
+          .eui-icon{
+            rotate: 180deg;
+          }
+        }
+
+      }
+      .sap-analysis__table, eui-search{
+        display: none;
+      }
+    }
+    &__header{
+      display:flex;
+      align-items: center;
+      justify-content: space-between;
+      &__title{
+        &--wide{
+          margin:auto;
+        }
+      }
+      button{
+        padding: 0;
+        min-width: 32px;
+        h3{
+          display: none;
+        }
+        .eui-icon{
+          transition: rotate 400ms ease;
+        }
+      }
+    }
+  }
+  .mat-table{
+    box-shadow: none;
+    .td--no-wrap{
+      white-space: nowrap;
+    }
+    .sap-analysis-table-row-highlighted:hover{
+      background-color: $color-gray-5;
+      cursor: pointer;
+    }
+  }
+}
+:host ::ng-deep .mat-table{
+  tbody{
+    .mat-row{
+      .mat-cell{
+        .imx-table-column-ellipsis{
+          width:120px;
+          display: block;
+          white-space: nowrap;
+          overflow-x:hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }
+}
+.eui-dark-theme{
+  :host{
+    .sap-analysis{
+      .mat-table{
+        .sap-analysis-table-row-highlighted:hover{
+          background-color: $color-gray-60;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,40 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+table {
+  width: 100%;
+  max-height: 100%;
+  box-shadow: none;
+  overflow: auto;
+}
+
+.imx-check-icon {
+  color: $color-green-60;
+}
+
+.imx-error-icon {
+  color: $color-red-60;
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-check-icon {
+      color: $color-green-40;
+    }
+
+    .imx-error-icon {
+      color: $color-red-40;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-check-icon {
+      color: $color-green-10;
+    }
+
+    .imx-error-icon {
+      color: $color-red-10;
+    }
+  }
+}

@@ -1,0 +1,122 @@
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+
+@mixin awmColors($theme: eui-light-theme) {
+  @if $theme == eui-light-theme {
+    --awm-node-level:#{$color-gray-20};
+    --awm-node-step:#{$color-gray-2};
+    --awm-edge-root:#{$color-gray-100};
+    --awm-edge-approval:#{$color-green-60};
+    --awm-edge-reject:#{$color-red-60};
+    --awm-edge-escalation:#{$color-orange-60};
+    --awm-edge-redirect:#{$color-blue-80};
+    --awm-text:#{$color-gray-80};
+    --awm-selected:#{$color-blue-40};
+  } @else if $theme == eui-dark-theme {
+    --awm-node-level:#{$color-gray-50};
+    --awm-node-step:#{$color-gray-70};
+    --awm-edge-root:#{$color-gray-10};
+    --awm-edge-approval:#{$color-green-40};
+    --awm-edge-reject:#{$color-red-40};
+    --awm-edge-escalation:#{$color-orange-40};
+    --awm-edge-redirect:#{$color-blue-40};
+    --awm-text:#{$color-gray-2};
+    --awm-selected:#{$color-blue-60};
+  } @else if $theme == eui-contrast-theme {
+    --awm-node-level:#{$color-gray-70};
+    --awm-node-step:#{$color-gray-90};
+    --awm-edge-root:#{$color-gray-0};
+    --awm-edge-approval:#{$color-green-40};
+    --awm-edge-reject:#{$color-red-40};
+    --awm-edge-escalation:#{$color-orange-40};
+    --awm-edge-redirect:#{$color-blue-40};
+    --awm-text:#{$color-gray-0};
+    --awm-selected:#{$color-blue-60};
+  } @else {
+    @error "#{$theme} is not defined in approval-workflow-styles: awmColors"
+  }
+}
+
+@mixin EUI-Elevation-1 {
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.14), 0px 2px 1px rgba(0, 0, 0, 0.12), 0px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+@mixin EUI-Elevation-3 {
+  box-shadow: 0px 24px 38px rgba(0, 0, 0, 0.14), 0px 9px 46px rgba(0, 0, 0, 0.12), 0px 11px 15px rgba(0, 0, 0, 0.2);
+}
+
+@mixin Ease-Transition($duration: .4s) {
+  transition: all $duration ease;
+}
+
+@mixin Transform-Enlarge($scale: 1.03) {
+  transform: translate3D(0,-1px,0) scale($scale);
+}
+
+@mixin Awm-Form-Sidesheet {
+  :host {
+    .mat-tab-group {
+      overflow-y: auto;
+    }
+
+    .eui-sidesheet-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-wrapper {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+      .mat-card {
+        @include EUI-Elevation-1;
+      }
+    }
+
+    .eui-sidesheet-actions {
+      column-gap: 15px;
+
+      button {
+        @include EUI-Elevation-1;
+      }
+    }
+  }
+
+
+  // Theming
+  :host {
+    .apply-button {
+      @include Ease-Transition;
+    }
+
+    .apply-button:hover:not(:disabled) {
+      background-color: $color-orange-60;
+    }
+
+    ::ng-deep .mat-tab-labels {
+      background-color: $color-gray-0;
+    }
+  }
+
+  .eui-dark-theme {
+    :host {
+      .apply-button:hover:not(:disabled) {
+        background-color: $color-orange-40;
+      }
+
+      ::ng-deep .mat-tab-labels {
+        background-color: $color-gray-70;
+      }
+    }
+  }
+
+  .eui-contrast-theme {
+    :host {
+      .mat-tab-group {
+        ::ng-deep .mat-tab-labels {
+          background-color: $color-gray-100;
+        }
+      }
+    }
+  }
+}

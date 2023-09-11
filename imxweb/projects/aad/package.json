@@ -1,6 +1,6 @@
 {
   "name": "aad",
-  "version": "9.0.0",
+  "version": "9.2.0",
   "private": true,
   "bundledDependencies": [
     "imx-api-aad"

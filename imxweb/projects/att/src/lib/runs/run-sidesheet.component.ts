@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { AfterContentInit, Component, Inject } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { EuiLoadingService, EuiSidesheetRef, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
@@ -34,7 +34,7 @@ import { Subscription } from 'rxjs';
 
 import { CompareOperator, FilterType, TypedEntityCollectionData } from 'imx-qbm-dbts';
 import { PortalAttestationRun, PortalAttestationRunApprovers, RunStatisticsConfig } from 'imx-api-att';
-import { SnackBarService, TabControlHelper } from 'qbm';
+import { SnackBarService } from 'qbm';
 
 import { RunsService } from './runs.service';
 import { percentage } from './helpers';
@@ -48,7 +48,7 @@ import { HelperAlertContent } from 'qer';
   templateUrl: './run-sidesheet.component.html',
   styleUrls: ['./run-sidesheet.component.scss']
 })
-export class RunSidesheetComponent implements AfterContentInit {
+export class RunSidesheetComponent {
   public readonly run: PortalAttestationRun;
   public readonly attestationRunConfig: RunStatisticsConfig;
   public readonly reportDownload: EuiDownloadOptions;
@@ -125,17 +125,13 @@ export class RunSidesheetComponent implements AfterContentInit {
         Type: FilterType.Compare,
         ColumnName: 'UID_AttestationRun',
         Value1: this.run.GetEntity().GetKeys()[0]
+      },{
+        CompareOp: CompareOperator.Equal,
+        Type: FilterType.Compare,
+        ColumnName: 'UID_AttestationPolicy',
+        Value1: this.run.UID_AttestationPolicy.value
       }]
     };
-  }
-
-  /**
-   * Resolve an issue where the mat-tab navigation arrows could appear on first load
-   */
-  public ngAfterContentInit(): void {
-    setTimeout(() => {
-      TabControlHelper.triggerResizeEvent();
-    });
   }
 
   public async extendAttestationRun(): Promise<void> {
@@ -148,7 +144,7 @@ export class RunSidesheetComponent implements AfterContentInit {
       RunExtendComponent,
       {
         title: await this.translate.get('#LDS#Heading Extend Attestation Run').toPromise(),
-        headerColour: 'iris-blue',
+        subTitle: this.run.GetEntity().GetDisplay(),
         padding: '0px',
         width: '600px',
         testId: 'attestationruns-extendrun-sidesheet',

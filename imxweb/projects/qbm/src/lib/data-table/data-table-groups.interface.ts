@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,8 +27,17 @@
 import { CollectionLoadParameters, TypedEntity } from 'imx-qbm-dbts';
 import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
 
-export interface DataTableGroupedData {
+export function getParameterSubsetForGrouping(original: CollectionLoadParameters): CollectionLoadParameters {
+  return {
+    by: original.by,
+    def: original.def,
+    PageSize: original.PageSize,
+    StartIndex: original.StartIndex,
+    filter: original.filter,
+  };
+}
 
+export interface DataTableGroupedData {
   /**
    * The data that has the groupedBy filter applied to it
    */

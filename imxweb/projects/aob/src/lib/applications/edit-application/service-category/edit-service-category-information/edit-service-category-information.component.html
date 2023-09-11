@@ -1,0 +1,18 @@
+<div eui-sidesheet-content>
+  <mat-card>
+    <form [formGroup]="formGroup">
+      <imx-cdr-editor
+        *ngFor="let cdr of cdrList"
+        [cdr]="cdr"
+        [attr.data-imx-identifier]="'edit-service-category-information-' + cdr.column.ColumName"
+        (controlCreated)="formGroup.controls.cdrArray.push($event)"
+      >
+      </imx-cdr-editor>
+    </form>
+  </mat-card>
+</div>
+<div eui-sidesheet-actions>
+  <button [disabled]="!formGroup.dirty || formGroup.invalid" mat-flat-button data-imx-identifier="edit-service-category-information-button-save" color="primary" (click)="save()">
+    <span translate>#LDS#Save</span>
+  </button>
+</div>

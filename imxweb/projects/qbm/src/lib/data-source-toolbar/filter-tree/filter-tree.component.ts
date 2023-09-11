@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,7 +28,7 @@ import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { IEntity } from 'imx-qbm-dbts';
+import { FilterTreeData, IEntity } from 'imx-qbm-dbts';
 import { DataTreeComponent } from '../../data-tree/data-tree.component';
 import { TreeDatabase } from '../../data-tree/tree-database';
 import { FilterTreeParameter } from '../data-model/filter-tree-parameter';

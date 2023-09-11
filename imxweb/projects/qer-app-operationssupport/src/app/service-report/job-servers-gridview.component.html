@@ -1,26 +1,67 @@
 <div class="imx-table-container" *ngIf="dstSettings">
-  <imx-data-source-toolbar [alwaysVisible]="withRefresh" #dst [settings]="dstSettings" (search)="onSearch($event)" [options]="['search', 'filter', 'groupBy']"
-    (navigationStateChanged)="navigationStateChanged($event)">
-    <imx-data-source-toolbar-custom *ngIf="withRefresh" [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
+  <imx-data-source-toolbar
+    [alwaysVisible]="withRefresh"
+    #dst
+    [settings]="dstSettings"
+    (search)="onSearch($event)"
+    [options]="['search', 'filter', 'groupBy']"
+    (navigationStateChanged)="navigationStateChanged($event)"
+  >
+    <imx-data-source-toolbar-custom *ngIf="withRefresh" [customContentTemplate]="customToolbarTemplate"> </imx-data-source-toolbar-custom>
   </imx-data-source-toolbar>
-  <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual">
-    <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.Ident_Server">
-    </imx-data-table-column>
+  <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual" (highlightedEntityChanged)="edit($event)">
+    <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.Ident_Server"> </imx-data-table-column>
     <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.Connection">
       <ng-template let-data>
         {{ data.Connection.Column.GetDisplayValue() + ' ms' }}
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.LastJobFetchTime">
-    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.LastJobFetchTime"> </imx-data-table-column>
     <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.ServerWebUrl">
       <ng-template let-data>
         <a [href]="data.ServerWebUrl.value">{{ data.ServerWebUrl.Column.GetDisplayValue() }}</a>
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.PhysicalServerName">
+    <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.PhysicalServerName"> </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.IPV4"> </imx-data-table-column>
+
+    <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.Warning" columnLabel="">
+      <ng-template let-data>
+        <div class="imx-badge-container">
+          <div>
+            <eui-badge color="orange" *ngIf="getDateDifference(data.LastJobFetchTime.value)">
+              {{ '#LDS#Server not processing processes' | translate }}
+            </eui-badge>
+          </div>
+          <div>
+            <eui-badge color="orange" *ngIf="data.IsJobServiceDisabled.value === true">
+              {{ '#LDS#Service deactivated' | translate }}
+            </eui-badge>
+          </div>
+          <div>
+            <eui-badge color="orange" *ngIf="data.IsNoAutoupdate.value === true">
+              {{ '#LDS#Software update deactivated' | translate }}
+            </eui-badge>
+          </div>
+          <div>
+            <eui-badge color="orange" *ngIf="data.IsInSoftwareUpdate.value === true">
+              {{ '#LDS#Software update running' | translate }}
+            </eui-badge>
+          </div>
+        </div>
+      </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.IPV4">
+    <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.Details" columnLabel="">
+      <ng-template let-data>
+        <div class="imx-button-column">
+          <button mat-button (click)="checkServer(data, $event)" data-imx-identifier="service-availability-table-check-server">
+            <span translate>#LDS#Check service</span>
+          </button>
+          <button mat-button color="primary" (click)="getServerDetails(dstSettings.extendedData, $event)" data-imx-identifier="service-availability-table-column-details-button">
+            {{ '#LDS#Details' | translate }}
+          </button>
+        </div>
+      </ng-template>
     </imx-data-table-column>
   </imx-data-table>
   <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>

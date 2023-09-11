@@ -1,0 +1,9 @@
+@use '../statistics-cards/statistics-cards.component.scss';
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import "../../stat-mixins.scss";
+
+:host {
+  width: 100%;
+}
+
+// Theming

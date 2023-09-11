@@ -1,0 +1,25 @@
+<div class="item-count">
+  <div>
+    {{ '#LDS#Considered items' | translate }}:
+  </div>
+  <div class="item-bold">
+    {{ summaryStat.CountGreen + summaryStat.CountYellow + summaryStat.CountRed }}
+  </div>
+</div>
+<div class="grid">
+  <div class="grid-item" *ngFor="let _ of [].constructor(12); index as i">
+    <div class="grid-base grid-error" *ngIf="i === 2"></div>
+    <div class="grid-text" *ngIf="i === 3">
+      {{ summaryStat.CountRed }}
+    </div>
+    <div class="grid-base grid-warn" *ngIf="i === 6"></div>
+    <div class="grid-text" *ngIf="i === 7">
+      {{ summaryStat.CountYellow }}
+    </div>
+    <div class="grid-base grid-ok" *ngIf="i === 10"></div>
+    <div class="grid-text" *ngIf="i === 11">
+      {{ summaryStat.CountGreen }}
+    </div>
+    <div class="grid-base" *ngIf="[0, 1, 4, 5, 8, 9].includes(i)"></div>
+  </div>
+</div>

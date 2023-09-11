@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { ExtendedTypedEntityCollection, EntitySchema, DataModel } from 'imx-qbm-dbts';
+import { ExtendedTypedEntityCollection, EntitySchema, DataModel, MethodDescriptor, EntityCollectionData, MethodDefinition } from 'imx-qbm-dbts';
 import {
   PortalItshopApproveRequests,
   OtherApproverInput,
@@ -35,17 +35,19 @@ import {
   PwoExtendedData,
   RecallDecisionInput,
   ReasonInput,
-  DenyDecisionInput
+  DenyDecisionInput,
+  PwoQueryInput,
+  V2ApiClientMethodFactory,
 } from 'imx-api-qer';
 import { Approval } from './approval';
 import { QerApiService } from '../qer-api-client.service';
 import { ApprovalsLoadParameters } from './approvals-load-parameters';
 import { ItshopRequestService } from '../itshop/itshop-request.service';
+import { DataSourceToolbarExportMethod } from 'qbm';
 
 @Injectable()
 export class ApprovalsService {
-
-  constructor(private readonly apiService: QerApiService, private readonly itshopRequest: ItshopRequestService) { }
+  constructor(private readonly apiService: QerApiService, private readonly itshopRequest: ItshopRequestService) {}
 
   public get PortalItshopApproveRequestsSchema(): EntitySchema {
     return this.apiService.typedClient.PortalItshopApproveRequests.GetSchema();
@@ -59,23 +61,34 @@ export class ApprovalsService {
     this.itshopRequest.isChiefApproval = val;
   }
 
-  public async get(parameters: ApprovalsLoadParameters):
-    Promise<ExtendedTypedEntityCollection<Approval, PwoExtendedData>> {
+  public async get(parameters: ApprovalsLoadParameters): Promise<ExtendedTypedEntityCollection<Approval, PwoExtendedData>> {
     const collection = await this.apiService.typedClient.PortalItshopApproveRequests.Get({
       Escalation: this.isChiefApproval,
-      ...parameters
+      ...parameters,
     });
     return {
       tableName: collection.tableName,
       totalCount: collection.totalCount,
       Data: collection.Data.map((element, index) =>
-        this.itshopRequest.createRequestApprovalItem(
-          element,
-          { ...collection.extendedData, ...{ index } }
-        )
+        this.itshopRequest.createRequestApprovalItem(element, { ...collection.extendedData, ...{ index } })
       ),
-      extendedData: collection.extendedData
+      extendedData: collection.extendedData,
     };
+  }
+
+  public exportApprovalRequests(parameters: ApprovalsLoadParameters): DataSourceToolbarExportMethod {
+    const factory = new V2ApiClientMethodFactory();
+    return {
+      getMethod: (withProperties: string, PageSize?: number) => {
+        let method: MethodDescriptor<EntityCollectionData>;
+        if (PageSize) {
+          method = factory.portal_itshop_approve_requests_get({...parameters, withProperties, PageSize, StartIndex: 0})
+        } else {
+          method = factory.portal_itshop_approve_requests_get({...parameters, withProperties})
+        }
+        return new MethodDefinition(method);
+      }
+    }
   }
 
   public async getApprovalDataModel(): Promise<DataModel> {
@@ -88,6 +101,21 @@ export class ApprovalsService {
 
   public async revokeDelegation(pwo: PortalItshopApproveRequests, approver: ReasonInput): Promise<any> {
     await this.apiService.client.portal_itshop_revokedelegation_post(this.getUidPwo(pwo), approver);
+  }
+
+  public async withdrawAdditionalApprover(pwo: PortalItshopApproveRequests, approver: ReasonInput): Promise<any> {
+    await this.apiService.client.portal_itshop_revokeadditional_post(this.getUidPwo(pwo), approver);
+  }
+
+  public async askForHelp(pwo: PortalItshopApproveRequests, para: PwoQueryInput): Promise<void> {
+    await this.apiService.client.portal_itshop_query_post(this.getUidPwo(pwo), para);
+  }
+
+  public async recallInquiry(pwo: PortalItshopApproveRequests, reason: ReasonInput): Promise<void> {
+    return this.apiService.client.portal_itshop_recallquery_post(this.getUidPwo(pwo), reason);
+  }
+  public async resetReservation(pwo: PortalItshopApproveRequests, reason: ReasonInput): Promise<void> {
+    return this.apiService.client.portal_itshop_resetreservation_post(this.getUidPwo(pwo), reason);
   }
 
   public async addApprover(pwo: PortalItshopApproveRequests, approver: OtherApproverInput): Promise<any> {
@@ -112,6 +140,10 @@ export class ApprovalsService {
 
   public async makeDecision(pwo: PortalItshopApproveRequests, decision: DecisionInput): Promise<void> {
     await this.apiService.client.portal_itshop_decide_post(this.getUidPwo(pwo), decision);
+  }
+
+  public async answerQuestion(pwo: PortalItshopApproveRequests, answerInput: string): Promise<void> {
+    return this.apiService.client.portal_itshop_answerquery_post(this.getUidPwo(pwo), { Reason: answerInput });
   }
 
   private getUidPwo(pwo: PortalItshopApproveRequests): string {

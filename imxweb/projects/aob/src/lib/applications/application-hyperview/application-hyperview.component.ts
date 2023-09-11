@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,30 +25,31 @@
  */
 
 import { Component, Input, OnChanges } from '@angular/core';
-import { OverlayRef } from '@angular/cdk/overlay';
-import { EuiLoadingService } from '@elemental-ui/core';
 
-import { ClassloggerService } from 'qbm';
+
+import { BusyService, ClassloggerService } from 'qbm';
 import { ShapeData } from 'imx-api-qer';
 import { ApplicationHyperviewService } from './application-hyperview.service';
 
 @Component({
   selector: 'imx-application-hyperview',
   templateUrl: './application-hyperview.component.html',
-  styleUrls: ['./application-hyperview.component.scss']
+  styleUrls: ['./application-hyperview.component.scss'],
 })
 export class ApplicationHyperviewComponent implements OnChanges {
   public shapes: ShapeData[];
 
   @Input() public uidApplication: string;
 
-  constructor(private classlogger: ClassloggerService,
-              private readonly busyService: EuiLoadingService,
-              private hyperviewprovider: ApplicationHyperviewService) { }
+  public busyService = new BusyService();
+  public isLoading = false;
+
+  constructor(private classlogger: ClassloggerService, private hyperviewprovider: ApplicationHyperviewService) {
+    this.busyService.busyStateChanged.subscribe((elem) => (this.isLoading = elem));
+  }
 
   public async ngOnChanges(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    const isBusy = this.busyService.beginBusy();
     try {
       this.shapes = await this.hyperviewprovider.get(this.uidApplication);
       if (this.shapes) {
@@ -58,9 +59,7 @@ export class ApplicationHyperviewComponent implements OnChanges {
         this.classlogger.error(this, 'ShapeData[] is undefined');
       }
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      isBusy.endBusy();
     }
   }
-
-
 }

@@ -1,5 +1,5 @@
 <h1  class="mat-headline">
-  {{'#LDS#Process steps per queue' | translate}}
+  {{'#LDS#Heading Process Steps per Process' | translate}}
 </h1>
 <div class="imx-table-container">
   <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings" [options]="['filter', 'groupBy']">
@@ -11,7 +11,7 @@
         {{ data.JobChainName.Column.GetDisplayValue() }}
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaJobChains?.Columns.Count">
+    <imx-data-table-column [entityColumn]="entitySchemaJobChains?.Columns.Count" [align]="'center'" [columnLabel]="'#LDS#Process steps' | translate">
     <ng-template let-data>
       {{ data.Count.Column.GetDisplayValue() }}
     </ng-template>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -53,7 +53,8 @@ export class DefaultCdrEditorProvider implements CdrEditorProvider {
         const range = meta.IsRange();
         const limitedValues = this.isLimitedValues(meta);
         const schemaKey = meta.GetSchemaKey();
-        const isRiskIndexColumn = ['RiskIndex', 'RiskLevel'].includes(schemaKey.substr(schemaKey.lastIndexOf('.') + 1));
+        const isRiskIndexColumn = ['RiskIndex', 'RiskLevel'].includes(schemaKey.substr(schemaKey.lastIndexOf('.') + 1))
+            || schemaKey == 'QERRiskIndex.Weight';
         const type = meta.GetType();
         const isReadonly = cdref.isReadOnly() || !meta.CanEdit();
 

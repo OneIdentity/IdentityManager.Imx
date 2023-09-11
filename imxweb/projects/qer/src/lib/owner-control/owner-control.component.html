@@ -1,7 +1,5 @@
-<mat-card class="product-owner-datasource-container">
-  <span translate
-    >#LDS#Product owner<eui-icon class="help-icon" icon="help" [matTooltip]="'#LDS#Specify where to select the product owner from.' | translate"></eui-icon
-  ></span>
+<mat-card *ngIf="!isReadOnly; else readOnlyTemplate" class="product-owner-datasource-container">
+  <span translate>#LDS#Product owner<eui-icon class="help-icon" icon="help" [matTooltip]="'#LDS#Specify where to select the product owner from.' | translate"></eui-icon></span>
   <mat-radio-group [formControl]="ownerSelectionCtrl">
     <mat-radio-button [value]="ownerCandidateOptions.roles">
       <span translate>#LDS#Select from roles</span>
@@ -14,11 +12,19 @@
   <imx-cdr-editor
     [ngClass]="{ hidden: ownerSelectionCtrl.value === ownerCandidateOptions.people }"
     [cdr]="productOwnerCdr"
-    (controlCreated)="onFormControlCreated($event, ownerCandidateOptions.roles)">
+    (controlCreated)="onFormControlCreated($event, ownerCandidateOptions.roles)"
+  >
   </imx-cdr-editor>
   <imx-cdr-editor
     [ngClass]="{ hidden: ownerSelectionCtrl.value === ownerCandidateOptions.roles }"
     [cdr]="productOwnerPersonCdr"
-    (controlCreated)="onFormControlCreated($event, ownerCandidateOptions.people, true)">
+    (controlCreated)="onFormControlCreated($event, ownerCandidateOptions.people, true)"
+  >
   </imx-cdr-editor>
 </mat-card>
+
+<ng-template #readOnlyTemplate>
+  <div class="imx-readOnly-owner">
+    <imx-cdr-editor [cdr]="productOwnerCdr" (controlCreated)="onFormControlCreated($event, ownerCandidateOptions.roles)"> </imx-cdr-editor>
+  </div>
+</ng-template>

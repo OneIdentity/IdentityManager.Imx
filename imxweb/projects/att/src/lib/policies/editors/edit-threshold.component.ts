@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
@@ -39,9 +39,9 @@ import { FilterElementModel } from './filter-element-model';
 })
 export class EditThresholdComponent implements OnInit, OnDestroy {
 
-  public readonly riskIndexForm: FormGroup;
-  public readonly lowerControl: FormControl;
-  public readonly upperControl: FormControl;
+  public readonly riskIndexForm: UntypedFormGroup;
+  public readonly lowerControl: UntypedFormControl;
+  public readonly upperControl: UntypedFormControl;
 
   @Input() public filterElementModel: FilterElementModel;
   @Input() public identifier: string;
@@ -52,9 +52,9 @@ export class EditThresholdComponent implements OnInit, OnDestroy {
   private valueChangedSubscription: Subscription;
 
   constructor(private readonly translateService: TranslateService) {
-    this.lowerControl = new FormControl(undefined, { updateOn: 'blur', validators: [Validators.min(0), Validators.max(1)] });
-    this.upperControl = new FormControl(undefined, { updateOn: 'blur', validators: [Validators.min(0), Validators.max(1)] });
-    this.riskIndexForm = new FormGroup({
+    this.lowerControl = new UntypedFormControl(undefined, { updateOn: 'blur', validators: [Validators.min(0), Validators.max(1)] });
+    this.upperControl = new UntypedFormControl(undefined, { updateOn: 'blur', validators: [Validators.min(0), Validators.max(1)] });
+    this.riskIndexForm = new UntypedFormGroup({
       lowerBounds: this.lowerControl,
       upperBounds: this.upperControl
     });
@@ -68,8 +68,8 @@ export class EditThresholdComponent implements OnInit, OnDestroy {
       this.valueChanged.emit({
         ParameterValue: this.lowerControl.value?.toLocaleString('en-us'),
         ParameterValue2: this.upperControl.value?.toLocaleString('en-us'),
-        displays: [(this.lowerControl.value * 100).toLocaleString(this.translateService.getBrowserCultureLang())
-          + ' - ' + (this.upperControl.value * 100).toLocaleString(this.translateService.getBrowserCultureLang())]
+        displays: [(this.lowerControl.value * 100).toLocaleString(this.translateService.currentLang)
+          + ' - ' + (this.upperControl.value * 100).toLocaleString(this.translateService.currentLang)]
       })
     );
   }

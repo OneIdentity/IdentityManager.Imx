@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,5 +34,8 @@ export class SettingsService {
 
   /** Number of elements to load for a data page by default. */
   DefaultPageSize: number = 20;
+
+  /**Large number for getting all elements */
+  PageSizeForAllElements: number = 999999;
 
 }

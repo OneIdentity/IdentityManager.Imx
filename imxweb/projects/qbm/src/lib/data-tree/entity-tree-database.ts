@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,43 +24,30 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
-import { EuiLoadingService } from '@elemental-ui/core';
-
 import { CollectionLoadParameters, IEntity } from 'imx-qbm-dbts';
+import { BusyService } from '../base/busy.service';
 import { TreeDatabase } from './tree-database';
 import { TreeNodeResultParameter } from './tree-node-result-parameter.interface';
 
 export class EntityTreeDatabase extends TreeDatabase {
 
-  private busyIndicator: OverlayRef;
-
   constructor(
     private readonly getEntities: (parameters: CollectionLoadParameters) => Promise<IEntity[]>,
-    private readonly busyService: EuiLoadingService
+    busyService: BusyService
   ) {
     super();
+    this.busyService = busyService
   }
 
   public async getData(showLoading: boolean, parameters: CollectionLoadParameters = {}): Promise<TreeNodeResultParameter> {
     let entities: IEntity[];
-    if (showLoading) {
-      if (!this.busyIndicator) {
-        setTimeout(() => (this.busyIndicator = this.busyService.show()));
-      }
-    }
+
+    let isBusy = showLoading ? this.busyService.beginBusy() : undefined;
 
     try {
       entities = await this.getEntities(parameters);
-    } finally {
-      if (showLoading) {
-        if (this.busyIndicator) {
-          setTimeout(() => {
-            this.busyService.hide(this.busyIndicator);
-            this.busyIndicator = undefined;
-          });
-        }
-      }
+    } finally {      
+      isBusy?.endBusy();
     }
 
     return { entities, canLoadMore: false, totalCount: entities.length };

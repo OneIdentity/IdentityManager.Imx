@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,6 +33,7 @@ import { AdditionalInfosComponent } from './additional-infos/additional-infos.co
 import { DataSourceToolbarSettings } from './data-source-toolbar-settings';
 import { ClientPropertyForTableColumns } from './client-property-for-table-columns';
 import _ from 'lodash';
+import { DSTViewConfig } from './data-source-toolbar-view-config.interface';
 
 export interface ShownClientPropertiesArg {
   properties: IClientProperty[];
@@ -60,7 +61,7 @@ export class ColumnOptions {
   /**
    * currently used view settings
    */
-  public currentViewSettings: DataModelViewConfig;
+  public currentViewSettings: DataModelViewConfig | DSTViewConfig;
 
   /**
    * Event, that emits, when the shownClientProperies Property changes
@@ -79,9 +80,15 @@ export class ColumnOptions {
     return this.currentViewSettings && this.optionalColumns?.length > 0;
   }
 
+  // Additional columns are set to null if we are using a config so that we can still edit the columns
   public get additionalColumns(): IClientProperty[] {
     return this.currentViewSettings?.AdditionalTableColumns?.map(elem =>
-      ColumnOptions.getClientProperty(ColumnOptions.findKey(elem, this.entitySchema), this.dataModel, this.entitySchema)) ?? [];
+      ColumnOptions.getClientProperty(ColumnOptions.findKey(elem, this.entitySchema), this.dataModel, this.entitySchema)) ?? []
+  }
+
+  // We are default if we have not injected a viewconfig
+  public get isDefaultConfig(): boolean {
+    return !this.viewConfig;
   }
 
   // private services
@@ -98,10 +105,12 @@ export class ColumnOptions {
 
   constructor(
     public settings: DataSourceToolbarSettings,
-    injector: Injector
+    injector: Injector,
+    public viewConfig?: DSTViewConfig,
   ) {
-    this.currentViewSettings = this.dataModel.Configurations?.
-      find(elem => elem.Id === this.dataModel.DefaultConfigId);
+    // Use the injected viewConfig if available
+    this.currentViewSettings = viewConfig ?? this.dataModel.Configurations?.
+        find(elem => elem.Id === this.dataModel.DefaultConfigId);
 
     if (this.currentViewSettings) {
       // Clean up settings, if there are null or empty columnsnames attached
@@ -138,7 +147,8 @@ export class ColumnOptions {
    *  Shows a dialog for adding/removing optional columns
    */
   public async updateAdditional(): Promise<void> {
-    const additional = this.additionalColumns;
+    // Don't force additional columns to be unselectable unless it was the default
+    const additional = this.isDefaultConfig ? this.additionalColumns : [];
     const displayedColumns = [
       ...this.displayedColumns,
       ...additional];
@@ -168,15 +178,6 @@ export class ColumnOptions {
       this.logger.trace(this, 'new displayed columns', result.all, 'new optional columns', result.optionals, 'needs reload', needsReload);
 
       this.shownColumnsSelectionChanged.emit({ properties: this.shownClientProperties, needsReload });
-
-      if (this.settings.identifierForSessionStore) {
-        this.store.storeProperties('columns-' + this.settings.identifierForSessionStore,
-          this.shownClientProperties.map(elem => elem.ColumnName));
-        this.store.storeProperties('columns-additional-' + this.settings.identifierForSessionStore,
-          this.currentViewSettings?.AdditionalTableColumns ?? []);
-        this.logger.trace(this, `properties stored under ${'columns-' + this.settings.identifierForSessionStore}:`
-          , this.shownClientProperties.map(elem => elem.ColumnName));
-      }
     }
   }
 
@@ -185,6 +186,10 @@ export class ColumnOptions {
    */
   public resetView(): void {
     if (this.currentViewSettings == null) { return; }
+
+    // We will reset by grabbing the default Id
+    this.currentViewSettings = this.dataModel.Configurations?.
+    find(elem => elem.Id === 'Default');
 
     const addition = this.additionalColumns;
     this.selectedOptionals = [];
@@ -196,13 +201,6 @@ export class ColumnOptions {
 
     this.shownColumnsSelectionChanged.emit({ properties: this.shownClientProperties, needsReload: false });
     this.logger.trace(this, 'shown client properties resetted to', this.shownClientProperties);
-
-    if (this.settings.identifierForSessionStore) {
-      this.store.removeKeys(
-        'columns-additional-' + this.settings.identifierForSessionStore,
-        'columns-' + this.settings.identifierForSessionStore
-      );
-    }
   }
 
   /**
@@ -243,8 +241,6 @@ export class ColumnOptions {
       this.initShownClientProperties();
     }
 
-    this.loadShownClientPropertiesFromStore();
-
     this.initAdditionalListElements();
 
     this.shownColumnsSelectionChanged.emit({ properties: this.shownClientProperties, needsReload: true });
@@ -253,9 +249,12 @@ export class ColumnOptions {
   private initOptionalColumns(): void {
     const optional = this.dataModel.Properties?.filter(elem => elem.IsAdditionalColumn).map(elem => elem.Property);
 
-    this.optionalColumns = optional?.filter((value, index, categoryArray) =>
-      this.isAdditional(value.ColumnName)
-      && categoryArray.indexOf(value) === index);
+    // Check if this isAdditional or if its already in the additionalColumns, both are needed to not lose the option from config selection
+    this.optionalColumns = optional?.filter((value, index, categoryArray) => {
+      const isAdditional = this.isAdditional(value.ColumnName) || (this.additionalColumns.find(ele => ele.ColumnName.toLocaleLowerCase() == value.ColumnName.toLocaleLowerCase()) != null);
+      const indexMatch = categoryArray.indexOf(value) === index;
+      return isAdditional && indexMatch;
+    })
 
 
     this.logger.trace(this, 'optional columns', this.optionalColumns);
@@ -269,33 +268,6 @@ export class ColumnOptions {
     this.shownClientProperties.splice(index === -1 ? this.shownClientProperties.length : index, 0, ...current, ...this.selectedOptionals);
 
     this.logger.trace(this, 'shown client properties initialized with', this.shownClientProperties);
-  }
-
-  private loadShownClientPropertiesFromStore(): void {
-    if (!this.settings.identifierForSessionStore) {
-      return;
-    }
-
-    const columns = this.store.getProperties('columns-' + this.settings.identifierForSessionStore);
-    const addColumns = this.store.getProperties('columns-additional-' + this.settings.identifierForSessionStore);
-    const showsAdditionals =
-      (this.currentViewSettings?.AdditionalTableColumns ?? []).length === addColumns.length &&
-      (this.currentViewSettings?.AdditionalTableColumns ?? []).every(add => addColumns.includes(add));
-
-    if (columns?.length > 0 && showsAdditionals) {
-      this.shownClientProperties = columns.map(column =>
-        ColumnOptions.getClientProperty(column, this.dataModel, this.entitySchema));
-
-      this.selectedOptionals = this.shownClientProperties.filter(elem => this.isAdditional(elem.ColumnName));
-
-      this.shownColumnsSelectionChanged.emit({ properties: this.shownClientProperties, needsReload: true });
-      this.logger.trace(this, 'columns loaded from store', this.shownClientProperties);
-    } else {
-      this.store.removeKeys(
-        'columns-additional-' + this.settings.identifierForSessionStore,
-        'columns-' + this.settings.identifierForSessionStore
-      );
-    }
   }
 
   private initAdditionalListElements(): void {

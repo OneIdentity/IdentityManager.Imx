@@ -1,0 +1,76 @@
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '../../../stat-mixins.scss';
+
+:host {
+  height: 100%;
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .icon, .only-status-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 24px; //half of xl size
+      margin-bottom: 10px;
+
+      .colored-icon {
+        border-radius: 24px; //half of xl size
+        margin: -1px;
+      }
+
+      .trend-icon {
+        margin-right: 6px;
+      }
+    }
+
+
+  }
+}
+
+// Theming
+:host {
+  @include Stat-Colors;
+
+  .icon {
+    background-color: $color-gray-10;
+    .colored-icon {
+      background-color: $color-gray-0;
+    }
+  }
+  @include Point-Stat-Colors;
+}
+
+.eui-dark-theme {
+  :host {
+    @include Stat-Colors(eui-dark-theme);
+    @include Point-Stat-Colors(eui-dark-theme);
+    .icon {
+      background-color: $color-gray-50;
+      .colored-icon {
+        background-color: $color-gray-70;
+      }
+      :nth-child(2) {
+        color: $color-gray-20;
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    @include Stat-Colors(eui-dark-theme);
+    @include Point-Stat-Colors(eui-dark-theme);
+    .icon {
+      background-color: $color-gray-70;
+      .colored-icon {
+        background-color: $color-gray-90;
+      }
+      :nth-child(2) {
+        color: $color-gray-0;
+      }
+    }
+  }
+}

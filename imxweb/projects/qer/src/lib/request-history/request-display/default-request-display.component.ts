@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,8 +27,7 @@
 import { Component, Input } from '@angular/core';
 
 import { PortalItshopRequests } from 'imx-api-qer';
-import { IClientProperty } from 'imx-qbm-dbts';
-import { buildAdditionalElementsString, ParameterizedText } from 'qbm';
+import { ParameterizedText } from 'qbm';
 
 import { RequestDisplayInterface } from './request-display.interface';
 
@@ -65,7 +64,14 @@ export class DefaultRequestDisplayComponent implements RequestDisplayInterface {
       this.parameterizedText = {
         value: this._pwo.Assignment.value,
         marker: { start: '"%', end: '%"' },
-        getParameterValue: columnName => this._pwo.GetEntity().GetColumn(columnName).GetDisplayValue()
+        getParameterValue: columnName => {
+          try {
+            return this._pwo.GetEntity().GetColumn(columnName).GetDisplayValue();
+          } catch {
+            // parameter values may be embedded directly
+            return columnName;
+          }
+        }
       };
     }
     else {

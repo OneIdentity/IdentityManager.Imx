@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,11 +24,14 @@
  *
  */
 
-import { Component, OnInit } from '@angular/core';
-import { EuiDownloadOptions } from '@elemental-ui/core';
+import { Component, Injector, OnInit } from '@angular/core';
+import { EuiDownloadDirective, EuiDownloadOptions } from '@elemental-ui/core';
 
 import { ElementalUiConfigService } from 'qbm';
+import { QerPermissionsService } from 'qer';
 import { AccountsReportsService } from '../accounts/accounts-reports.service';
+import { HttpClient } from '@angular/common/http';
+import { Overlay } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'imx-report-button-ext',
@@ -39,18 +42,32 @@ export class ReportButtonExtComponent implements OnInit {
   public downloadOptions: EuiDownloadOptions;
 
   public referrer: string;
+  public isAvailable: boolean;
 
   constructor(
     private readonly elementalUiConfigService: ElementalUiConfigService,
-    private readonly service: AccountsReportsService
+    private readonly service: AccountsReportsService,
+    private readonly http: HttpClient,
+    private readonly injector: Injector,
+    private readonly overlay: Overlay,
+
   ) { }
 
-  public ngOnInit(): void {
+  public async ngOnInit(): Promise<void> {
     const url = this.service.accountsOwnedByManagedReport(30, this.referrer);
 
     this.downloadOptions = {
       ...this.elementalUiConfigService.Config.downloadOptions,
       url
     };
+  }
+
+  public viewReport():void{
+    const directive = new EuiDownloadDirective(null, this.http, this.overlay, this.injector);
+    directive.downloadOptions = {
+      ...this.downloadOptions,
+      disableElement: false,
+    };
+    directive.onClick();
   }
 }

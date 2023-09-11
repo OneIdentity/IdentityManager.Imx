@@ -1,0 +1,72 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+:host {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-grow: 1;
+}
+
+.search-type {
+    display: flex;
+
+    >label {
+        align-self: center
+    }
+
+    .search-type-radio-group {
+        display: flex;
+        margin: 15px 0;
+        align-items: flex-start;
+    }
+
+    .search-type-radio-button {
+        margin: 5px;
+    }
+}
+
+.search-type-option-controls {
+    display: flex;
+    flex-direction: row;
+
+    .mat-form-field {
+        margin: 5px;
+    }
+
+    button {
+        align-self: center;
+        margin: 10px;
+    }
+}
+
+.search-result-table-container {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    margin-bottom: -20px;
+
+    tr:hover {
+        background: $color-gray-5;
+    }
+}
+
+.eui-dark-theme {
+    :host {
+        .search-result-table-container {
+            tr:hover {
+                background: $color-gray-60;
+            }
+        }
+    }
+}
+
+.eui-contrast-theme {
+  :host {
+      .search-result-table-container {
+          tr:hover {
+              background: $color-gray-80;
+          }
+      }
+  }
+}

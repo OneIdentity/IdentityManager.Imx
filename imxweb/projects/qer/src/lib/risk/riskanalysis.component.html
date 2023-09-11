@@ -1,12 +1,10 @@
-<mat-spinner *ngIf="busy"></mat-spinner>
-
 <ng-container *ngIf="!busy">
-    <eui-alert>{{Description}}</eui-alert>
+    <eui-alert  *ngIf="riskObject.length > 0"  type="info" condensed="true" [colored]="true" [dismissable]="true">{{description}}</eui-alert>
 
-    <mat-card *ngIf="RiskObject.length > 0">
+    <mat-card *ngIf="riskObject.length > 0">
         <p>
             {{'#LDS#Calculated risk index' | translate}}:
-            {{ GetResultRisk().toFixed(4)}}
+            {{ getResultRisk().toFixed(4)}}
         </p>
 
         <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="risk-tree">
@@ -31,12 +29,12 @@
                     </ul>
                 </li>
             </mat-nested-tree-node>
-        </mat-tree>
-
-        <eui-alert *ngIf="0 == RiskObject.length">
-            {{'#LDS#You do not have permission to view the risk index functions.' | translate}}
-        </eui-alert>
+        </mat-tree>        
     </mat-card>
+
+    <eui-alert *ngIf="0 === riskObject.length" type="warning" condensed="true" [colored]="true" [dismissable]="true">
+        {{'#LDS#You do not have permission to view the risk index functions.' | translate}}
+    </eui-alert>
 
     <ng-template #treeNodeTemplate let-node>
         <div class="risk-display">
@@ -44,17 +42,17 @@
                 <div>
                     <span>{{ node.Display }}</span>
                     <span *ngIf="node.TargetDisplay"> ({{ node.TargetDisplay }})</span>
-                    <span *ngIf="IsShowChildSourceDisplay(node)">
+                    <span *ngIf="isShowChildSourceDisplay(node)">
                         <ng-container *ngIf="node.SourceDisplay">{{ node.SourceDisplay }}</ng-container>
                     </span>
                 </div>
-                <div class="smalltext" *ngIf="!IsFromAttribute(node) && node == GetRiskObjectTop()">
-                    ({{LdsMaximumOfAllAssignments | translate}}) </div>
+                <div class="smalltext" *ngIf="!isFromAttribute(node) && node === getRiskObjectTop()">
+                    ({{'#LDS#Maximum of all assignments' | translate}}) </div>
                 <div class="smalltext">
                     {{node.Description}}
                 </div>
             </div>
-            <div class="risk-number" [matTooltip]="GetRiskCalcFormula(node)">{{(node.ResultValue).toFixed(4)}}</div>
+            <div class="risk-number" [matTooltip]="getRiskCalcFormula(node)">{{(node.ResultValue).toFixed(4)}}</div>
         </div>
     </ng-template>
 </ng-container>

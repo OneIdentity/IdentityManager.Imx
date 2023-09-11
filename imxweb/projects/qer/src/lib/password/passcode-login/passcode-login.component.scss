@@ -1,5 +1,4 @@
-@use '@angular/material' as mat;
-@import "variables.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 .imx-loginInput {
   margin: auto 12px;
@@ -7,7 +6,6 @@
   ::ng-deep {
     input {
       box-sizing: content-box;
-      border: 1px solid mat.get-color-from-palette($asher-gray-palette, 900);
       margin-bottom: 9px;
       height: 30px;
       width: calc(40vw - 6px);
@@ -17,26 +15,15 @@
   .alert-container {
     width: calc(40vw - 6px);
     margin-bottom: 1em;
-  }
-
-  eui-alert span {
-    color: $QBM_Primary_Black;
+    color: $color-gray-80;
   }
 }
 
 .buttonbar {
   margin-top: 1.5em;
-  text-align: center;
-
-  .imx-next-button {
-    margin-left: 1em;
-    background-color: $VI_Common_Color_Blue_3;
-  }
-
-  .imx-next-button.mat-button-disabled {
-    background-color: $black-c;
-  }
-
+  display: flex;
+  justify-content: center;
+  gap: 1em;
 }
 
 .captcha-container {
@@ -56,4 +43,12 @@
 .passcode {
   margin-top: 1em;
   margin-bottom: 1em;
+}
+
+.eui-dark-theme, .eui-contrast-theme {
+  :host {
+    .alert-container {
+      color: $color-gray-0;
+    }
+  }
 }

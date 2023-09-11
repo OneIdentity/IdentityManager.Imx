@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,8 +32,12 @@ import { WorkflowDataWrapper } from '../itshop/workflow-data-wrapper';
 import { IEntityColumn } from 'imx-qbm-dbts';
 
 export class ItshopRequest extends PortalItshopRequests implements RequestParameterDataEntity {
-  public get orderState(): string { return this.UiOrderState.value; }
-  public get qerWorkingMethod(): string { return this.UID_QERWorkingMethod.value; }
+  public get orderState(): string {
+    return this.UiOrderState.value;
+  }
+  public get qerWorkingMethod(): string {
+    return this.UID_QERWorkingMethod.value;
+  }
 
   public readonly parameterColumns: IEntityColumn[];
   public readonly propertyInfo: ColumnDependentReference[];
@@ -44,8 +48,11 @@ export class ItshopRequest extends PortalItshopRequests implements RequestParame
   public readonly canWithdrawAdditionalApprover: boolean;
   public readonly canRecallDecision: boolean;
   public complianceRuleViolation = false;
+  public isArchived = false;
   public readonly pwoData: PwoData;
   public readonly canEscalateDecision: boolean;
+  public readonly isPrivateRequest: boolean;                                                                                             
+  public readonly canCopyItems:boolean;
 
   constructor(entity: IEntity, pwoData: PwoData, parameterColumns: IEntityColumn[], userUid: string) {
     super(entity);
@@ -53,7 +60,7 @@ export class ItshopRequest extends PortalItshopRequests implements RequestParame
     const isAffectedEmployee = this.UID_PersonInserted.value === userUid || this.UID_PersonOrdered.value === userUid;
 
     this.canProlongate = this.UiOrderState.value === 'Assigned' && isAffectedEmployee;
-
+    this.canCopyItems = this.UID_PersonInserted.value === userUid && this.CanCopy.value; 
     if (pwoData) {
       this.pwoData = pwoData;
 
@@ -65,10 +72,13 @@ export class ItshopRequest extends PortalItshopRequests implements RequestParame
 
         this.canEscalateDecision = workflowWrapper.canEscalateDecision(this.DecisionLevel.value) && isAffectedEmployee;
 
+        this.isPrivateRequest =
+          this.UID_PersonHead.value !== userUid && this.UID_PersonInserted.value !== userUid && this.UID_PersonOrdered.value !== userUid;
+
         if (this.UID_PersonHead.value === userUid) {
           this.canRecallDecision = this.pwoData.CanRecallDecision;
 
-          const question = this.pwoData.WorkflowData.Entities.find(entityData => entityData.Columns.Decision.Value === 'Q');
+          const question = this.pwoData.WorkflowData.Entities.find((entityData) => entityData.Columns.Decision.Value === 'Q');
 
           this.canRecallLastQuestion = this.IsReserved.value && question != null;
           this.canRevokeHoldStatus = this.IsReserved.value && question == null;
@@ -92,11 +102,19 @@ export class ItshopRequest extends PortalItshopRequests implements RequestParame
       this.UID_PersonWantsOrgParent,
       this.UID_Department,
       this.UID_ProfitCenter,
-      this.OrderReason
-    ].filter(property =>
-      property.value != null && property.value !== '' &&
-      !this.parameterColumns.find(column => column.ColumnName === property.Column.ColumnName)
-    ).map(property => new BaseReadonlyCdr(property.Column));
+      this.OrderReason,
+    ]
+      .filter(
+        (property) =>
+          property.value != null &&
+          property.value !== '' &&
+          !this.parameterColumns.find((column) => column.ColumnName === property.Column.ColumnName)
+      )
+      .map((property) => new BaseReadonlyCdr(property.Column));
+
+    if (this.IsCrossFunctional?.value) {
+      this.propertyInfo.push(new BaseReadonlyCdr(this.IsCrossFunctional.Column));
+    }
 
     const document = new BaseReadonlyCdr(this.DocumentNumber.Column, '#LDS#Request number');
     this.propertyInfo.splice(3, 0, document);

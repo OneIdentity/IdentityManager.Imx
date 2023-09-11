@@ -5,12 +5,6 @@
             "Name": "AttConfigModule"
         }
     ],
-    "arc-app-certaccess": [
-        {
-            "Container": "att",
-            "Name": "AttConfigModule"
-        }
-    ],
     "qer-app-pwdportal": [
         {
             "Container": "att",

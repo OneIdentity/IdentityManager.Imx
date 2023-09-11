@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -41,8 +41,8 @@ export class MappedEntitlementsPreviewComponent implements OnInit {
   public readonly DisplayColumns = DisplayColumns;
   public entitySchema: EntitySchema;
 
-  public alertText = '#LDS#The following system entitlements will be added to this application by the condition. System entitlements that are already assigned to an application will be skipped.';
-  public speedupText = '#LDS#To speed up the process, you can check the "assign system entitlements after saving" option.'
+  public alertText = '#LDS#Here you can get an overview of application entitlements that will be added to this application by the conditions. Application entitlements that are already assigned to an application will be skipped.';
+  public speedupText = '#LDS#In addition, you can specify whether the application entitlements should be assigned immediately after the conditions are saved. However, you can also have the application entitlements added later.'
 
   constructor(
     @Inject(EUI_SIDESHEET_DATA) public data: {

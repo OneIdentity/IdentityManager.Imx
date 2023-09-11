@@ -4,11 +4,5 @@
             "Container": "aad",
             "Name": "AadConfigModule"
         }
-    ],
-    "arc-app-certaccess": [
-      {
-          "Container": "att",
-          "Name": "AttConfigModule"
-      }
-  ]
+    ]
 }

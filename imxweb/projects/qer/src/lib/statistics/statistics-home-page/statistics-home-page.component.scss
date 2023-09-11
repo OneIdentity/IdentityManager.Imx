@@ -1,0 +1,126 @@
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import "../stat-mixins.scss";
+
+:host {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  ::ng-deep mat-tab-group {
+    height: 100%;
+  }
+  ::ng-deep .mat-tab-body {
+    overflow-y: unset;
+  }
+
+  ::ng-deep .mat-tab-body-content {
+    overflow: hidden;
+  }
+
+  ::ng-deep .mat-tab-body-wrapper {
+    flex-grow: 1;
+  }
+
+  .stats-header {
+    display: flex;
+    justify-content: space-between;
+    margin: 30px 24px;
+  }
+
+  .left-header {
+    display: flex;
+    align-items: center;
+    h1 {
+      font-weight: inherit;
+    }
+
+    eui-icon:hover {
+      @include Ease-Transition;
+    }
+  }
+
+  .right-header {
+    width: max(40%, 250px);
+  }
+
+  .stats-content {
+    overflow: auto;
+    padding: 24px;
+    padding-top: 0;
+    flex-grow: 1;
+    @include EUI-Elevation-1;
+  }
+
+  .tab-wrapper {
+    display: flex;
+    height: 100%;
+    padding: 16px 5px 5px;
+  }
+
+  imx-statistics-tree {
+    margin-right: 20px;
+    border-radius: 4px;
+    @include EUI-Elevation-1;
+  }
+
+}
+
+// Theming
+:host {
+  @include Stat-Colors;
+  .left-header {
+    eui-icon {
+      color: $color-blue-60;
+    }
+    eui-icon:hover {
+      color: $color-orange-60;
+    }
+  }
+  .stats-content {
+    background-color: $color-gray-0;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    @include Stat-Colors(eui-dark-theme);
+
+    ::ng-deep .mat-tab-header {
+      background-color: $color-gray-70;
+    }
+
+    .left-header {
+      eui-icon {
+        color: $color-blue-40;
+      }
+      eui-icon:hover {
+        color: $color-orange-40;
+      }
+    }
+    .stats-content {
+      background-color: $color-gray-70;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    @include Stat-Colors(eui-dark-theme);
+
+    ::ng-deep .mat-tab-header {
+      background-color: $color-gray-90;
+    }
+
+    .left-header {
+      eui-icon {
+        color: $color-blue-40;
+      }
+      eui-icon:hover {
+        color: $color-orange-40;
+      }
+    }
+    .stats-content {
+      background-color: $color-gray-90;
+    }
+  }
+}

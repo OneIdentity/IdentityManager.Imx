@@ -1,0 +1,61 @@
+<mat-tab-group dynamicHeight>
+  <mat-tab [label]="'#LDS#Heading Chart Details' | translate">
+    <div eui-sidesheet-content class="tab-wrapper">
+      <mat-card *ngIf="isPoint" class="point-status-container">
+        <div class="status-icon" [ngClass]="pointClass">
+          <eui-icon class="colored-icon" size="xl" [icon]="pointIcon"></eui-icon>
+        </div>
+        <div class="status-wrapper">
+          <div class="status-item" *ngFor="let cdr of cdrList">
+            <imx-cdr-editor [cdr]="cdr"></imx-cdr-editor>
+          </div>
+        </div>
+      </mat-card>
+      <mat-card class="chart-container">
+        <h2 *ngIf="isPoint" class="chart-title">{{ '#LDS#Heading Chart History' | translate }}</h2>
+        <div #chartWrapper *ngIf="showChart" class="chart-wrapper" [ngClass]="{ 'chart-zoomable': isZoomable }">
+          <eui-billboard [options]="data.chartOptions" (chart)="saveChart($event)" [ngStyle]="{ opacity: isLoading ? '0' : '1' }"></eui-billboard>
+        </div>
+        <div *ngIf="!showChart" class="imx-no-data">
+          <div class="imx-no-data-top">
+            <eui-icon icon="content-alert"></eui-icon>
+            <div class="imx-no-data-text">
+              <h2>{{ '#LDS#Heading Data Cannot be Visualized' | translate }}</h2>
+              <span>{{ '#LDS#There is currently no data to show.' | translate }}</span>
+            </div>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </mat-tab>
+  <mat-tab [label]="'#LDS#Heading More Information' | translate">
+    <div eui-sidesheet-content>
+      <imx-chart-table class="tab-wrapper" [tableData]="data.tableData" [hasUniqueObjectDisplay]="data.hasUniqueObjectDisplay"></imx-chart-table>
+    </div>
+  </mat-tab>
+</mat-tab-group>
+<div class="below-tabs" *ngIf="canToggle">
+  <imx-ext id="statisticButton" [referrer]="data?.chartInfo"></imx-ext>
+  <div *ngIf="data?.isUserAdmin" class="toggle-button-wrapper">
+    <button mat-raised-button *ngIf="data.isOrg" (click)="toggleOrg()">
+      <!-- TODO: Add translations -->
+      <span>???Remove from shared statistics???</span>
+      <eui-icon class="colored-org-icon" icon="network"></eui-icon>
+    </button>
+    <button mat-raised-button *ngIf="!data.isOrg" (click)="toggleOrg()">
+      <!-- TODO: Add translations -->
+      <span class="colored-org-text">???Add to shared statistics???</span>
+      <eui-icon icon="network"></eui-icon>
+    </button>
+  </div>
+  <div class="toggle-button-wrapper">
+    <button mat-raised-button *ngIf="data.isFavorite" (click)="toggleFavorites()">
+      <span>{{ '#LDS#Remove from favorites' | translate }}</span>
+      <eui-icon class="colored-favorite-icon" icon="star"></eui-icon>
+    </button>
+    <button mat-raised-button *ngIf="!data.isFavorite" (click)="toggleFavorites()">
+      <span class="colored-favorite-text">{{ '#LDS#Add to favorites' | translate }}</span>
+      <eui-icon icon="openstar"></eui-icon>
+    </button>
+  </div>
+</div>

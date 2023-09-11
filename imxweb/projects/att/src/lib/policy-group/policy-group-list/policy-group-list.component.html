@@ -1,0 +1,48 @@
+<h1 class="mat-headline">
+  <span>{{ '#LDS#Heading Policy Collections' | translate }}</span>
+  <imx-help-contextual></imx-help-contextual>
+</h1>
+
+<mat-card class="imx-content-card">
+  <imx-data-source-toolbar
+    #dst
+    [settings]="dstSettings"
+    [options]="['search', 'filter', 'groupBy', 'settings']"
+    (search)="onSearch($event)"
+    (navigationStateChanged)="onNavigationStateChanged($event)"
+  >
+  </imx-data-source-toolbar>
+  <div class="imx-table-container">
+    <imx-data-table
+      [dst]="dst"
+      detailViewVisible="false"
+      mode="manual"
+      [groupData]="groupedData"
+      (groupDataChanged)="onGroupingChange($event)"
+      (highlightedEntityChanged)="editPolicy($event)"
+    >
+      <imx-data-table-column [entityColumn]="entitySchemaPolicy?.Columns.Ident_AttestationPolicyGroup"></imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchemaPolicy?.Columns.UID_PersonOwner"></imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchemaPolicy?.Columns.UID_QERPickCategory"></imx-data-table-column>
+      <imx-data-table-generic-column columnName="actions" [columnLabel]="">
+        <ng-template let-prod>
+          <div class="imx-button-column">
+            <button mat-stroked-button color="warn" (click)="delete(prod, $event)" data-imx-identifier="policy-group-list-delete-policy">
+              <eui-icon icon="delete"></eui-icon>
+              {{ '#LDS#Delete' | translate }}
+            </button>
+          </div>
+        </ng-template>
+      </imx-data-table-generic-column>
+    </imx-data-table>
+    <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+  </div>
+</mat-card>
+
+<div class="button-row">
+  <span class="imx-toolbar-spacer"></span>
+  <button mat-raised-button color="primary" data-imx-identifier="policy-list-group-create-new-policy-group" (click)="newPolicyGroup()">
+    <eui-icon icon="add"></eui-icon>
+    {{ '#LDS#Create policy collection' | translate }}
+  </button>
+</div>

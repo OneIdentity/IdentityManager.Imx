@@ -9,7 +9,7 @@
 </mat-form-field>
 
 <ng-container *ngIf="expr.Property.SelectionTables">
-  <imx-cdr-editor [cdr]="cdr" class="auto-flex">
+  <imx-cdr-editor [cdr]="cdr" class="auto-flex" (valueChange)="emitChanges()">
   </imx-cdr-editor>
 </ng-container>
 

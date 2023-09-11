@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,11 @@
  *
  */
 
-import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, Inject, OnInit } from '@angular/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
+
 import { EntityCollectionData, FkProviderItem, IEntity, TypedEntity } from 'imx-qbm-dbts';
-import { MetadataService } from 'qbm';
+import { BusyService, MetadataService } from 'qbm';
 import { IRequestableEntitlementType } from '../irequestable-entitlement-type';
 import { RequestableEntitlementTypeService } from '../requestable-entitlement-type.service';
 import { RequestsService } from '../requests.service';
@@ -35,37 +36,43 @@ import { RequestsService } from '../requests.service';
 @Component({
   selector: 'imx-requests-selector',
   templateUrl: './requests-entity-selector.component.html',
-  styleUrls: ['./requests-entity-selector.component.scss']
+  styleUrls: ['../request-config-sidesheet-common.scss'],
 })
-export class RequestsEntitySelectorComponent {
-
+export class RequestsEntitySelectorComponent implements OnInit {
   public selectedItems: TypedEntity[] = [];
+  public busyService = new BusyService();
 
   private empty: EntityCollectionData = {
     TotalCount: 0,
-    Entities: []
+    Entities: [],
   };
 
   constructor(
-    public readonly dialogRef: MatDialogRef<RequestsEntitySelectorComponent, string[]>,
-    @Inject(MAT_DIALOG_DATA) private sidesheetData: {
+    public readonly dialogRef: EuiSidesheetRef,
+    @Inject(EUI_SIDESHEET_DATA)
+    private sidesheetData: {
       shelfId: string;
     },
     public readonly requestsService: RequestsService,
-    metadata: MetadataService,
-    requestTypeService: RequestableEntitlementTypeService,
+    private metadata: MetadataService,
+    private requestTypeService: RequestableEntitlementTypeService
   ) {
     requestsService.selectedEntitlementType = null;
     this.ReinitData();
+  }
 
-    const rtypes = requestTypeService.GetTypes();
-    rtypes.then(async t => {
-      for (const type of t) {
-        const display = (await metadata.GetTableMetadata(type.getTableName())).Display;
-        this.displays.set(type.getTableName(), display);
-      }
-      this.types = t.sort((a, b) => (this.displays.get(a.getTableName()) > this.displays.get(b.getTableName()) ? 1 : -1));
-    });
+  public async ngOnInit(): Promise<void> {
+    const isBusy = this.busyService.beginBusy();
+    try{
+    const rtypes = await this.requestTypeService.GetTypes();
+    for (const type of rtypes) {
+      const display = (await this.metadata.GetTableMetadata(type.getTableName())).Display;
+      this.displays.set(type.getTableName(), display);
+    }
+    this.types = rtypes.sort((a, b) => (this.displays.get(a.getTableName()) > this.displays.get(b.getTableName()) ? 1 : -1));
+    } finally {
+      isBusy.endBusy();
+    }
   }
 
   public types: IRequestableEntitlementType[];
@@ -86,26 +93,27 @@ export class RequestsEntitySelectorComponent {
   /** Sets the data object to trigger the changes event on the Fk candidate selector*/
   private ReinitData() {
     this.data = {
-      get: parameters => {
+      get: (parameters) => {
         if (!this.fk) {
           return this.empty;
         }
         return this.fk.load(this.fkEntity, { ...parameters, ...{ UID_ITShopOrg: this.sidesheetData.shelfId } });
       },
-      GetFilterTree: parentKey => {
+      GetFilterTree: (parentKey) => {
         if (!this.fk) {
           return { Elements: [] };
         }
         return this.fk.getFilterTree(this.fkEntity, parentKey);
       },
-      isMultiValue: true
+      isMultiValue: true,
     };
   }
 
   public async optionSelected(newType: IRequestableEntitlementType) {
     this.fkEntity = newType.createAssignmentEntity(this.sidesheetData.shelfId).GetEntity();
     const property = newType.getSchema().Columns[newType.getFkColumnName()];
-    this.fk = this.fkEntity.GetFkCandidateProvider()
+    this.fk = this.fkEntity
+      .GetFkCandidateProvider()
       .getProviderItem(property.FkRelation.ParentColumnName, property.FkRelation.ParentTableName);
     this.ReinitData();
     this.selectedItems = [];
@@ -123,5 +131,4 @@ export class RequestsEntitySelectorComponent {
     });
     this.dialogRef.close(selectedValues);
   }
-
 }

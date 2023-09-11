@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,14 +35,4 @@ export class RunsComponent {
   public canSeeAttestationPolicies: boolean;
 
   // HelpChapterID = 2A288F2C-345B-4A0D-BD88-0C488289C495
-
-  /**
-   * Shows a little Helper text, which can be closed
-   */
-  public showHelper = true;
-
-  public onHelperDismissed(): void {
-    this.showHelper = false;
-  }
-
 }

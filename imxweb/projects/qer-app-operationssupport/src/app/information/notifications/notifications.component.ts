@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -46,7 +46,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
   constructor(
     private domSanitizer: DomSanitizer,
-    private notifications: NotificationsService,
+    public notifications: NotificationsService,
     private appConfigService: AppConfigService) { }
 
   public ngOnInit(): void {

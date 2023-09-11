@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -106,11 +106,10 @@ export class DuplicatesSidesheetComponent implements OnInit {
     try {
       config = {
         title: await this.translateService.get('#LDS#Heading View Identity Details').toPromise(),
-        headerColour: 'iris-blue',
-        bodyColour: 'asher-gray',
+        subTitle: personAll.GetEntity().GetDisplay(),
         padding: '0',
         width: 'max(550px, 55%)',
-        testId: 'duplicate-detail-sidesheet',
+        testId: 'duplicate-identity-detail-sidesheet',
         data: await this.addressbookService.getDetail(
           personAll,
           this.data.projectConfig.PersonConfig.VI_MyData_WhitePages_DetailAttributes

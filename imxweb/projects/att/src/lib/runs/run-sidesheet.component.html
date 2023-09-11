@@ -1,5 +1,5 @@
 <mat-tab-group *ngIf="run" (selectedTabChange)="onTabChange($event)">
-  <mat-tab [label]="'#LDS#Heading Details' | translate" data-imx-identifier="run-sidesheet-tab-details">
+  <mat-tab [label]="'#LDS#Heading Information' | translate" data-imx-identifier="run-sidesheet-tab-details">
     <div class="imx-tab-content-body">
       <mat-accordion class="imx-progress-content" multi="false"
         data-imx-identifier="run-sidesheet-tab-details-accordeon">
@@ -26,7 +26,7 @@
           </div>
         </mat-expansion-panel>
 
-        <mat-expansion-panel class="imx-run-info-category"
+        <mat-expansion-panel #detailPanel class="imx-run-info-category"
           data-imx-identifier="run-sidesheet-tab-details-accordeon-attestation-details">
           <mat-expansion-panel-header>
             <mat-panel-title>
@@ -56,7 +56,7 @@
                   }}</span>
               </div>
             </div>
-            <imx-case-chart [run]="run"></imx-case-chart>
+            <imx-case-chart [run]="run" [ngStyle]="{opacity: detailPanel.expanded ? '1' : '0'}"></imx-case-chart>
           </div>
         </mat-expansion-panel>
 
@@ -111,21 +111,18 @@
           </ng-container>
           <ng-container *ngIf="run.Progress.value * 100 <= threshold">
             <p class="imx-category-message">
-              {{ '#LDS#The prediction is available as soon as at least {0}% of the attestation cases of this attestation
-              run have been closed.' | translate
-              |ldsReplace:threshold }}
+              {{ '#LDS#The prediction is available as soon as at least {0}% of the attestation cases of this attestation run have been closed.' | translate |ldsReplace:threshold }}
             </p>
           </ng-container>
           <ng-container *ngIf="data.completed">
             <p class="imx-category-message">
-              {{ '#LDS#The prediction is not available because the attestation run has already been completed.' |
-              translate }}
+              {{ '#LDS#The prediction is not available because the attestation run has already been completed.' | translate }}
             </p>
           </ng-container>
         </mat-expansion-panel>
       </mat-accordion>
 
-      <div *ngIf="data.canSeeAttestationPolicies" class="imx-button-bar">
+      <div *ngIf="data.canSeeAttestationPolicies" eui-sidesheet-actions>
         <button data-imx-identifier="run-button-download-report" mat-stroked-button [euiDownload]="reportDownload">
           {{ '#LDS#Download report' | translate }}
         </button>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { AbstractControl, FormControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 
 import moment from 'moment-timezone';
 import { Moment } from 'moment-timezone';
@@ -133,21 +133,21 @@ export class DateComponent implements OnInit, OnDestroy {
    *
    * internal shadow form control for the text input field
    */
-  public shadowText = new FormControl('', { updateOn: 'blur' });
+  public shadowText = new UntypedFormControl('', { updateOn: 'blur' });
 
   /**
    * @ignore only public because of databinding in template
    *
    * internal shadow form control for the calendar date picker. Only holds the date part (i.e. without time).
    */
-  public shadowDate = new FormControl();
+  public shadowDate = new UntypedFormControl();
 
   /**
    * @ignore only public because of databinding in template
    *
    * internal shadow form control for the time picker. Only holds the time part (i.e. without year/month/day)
    */
-  public shadowTime = new FormControl();
+  public shadowTime = new UntypedFormControl();
 
   /**
    * @ignore
@@ -298,7 +298,7 @@ export class DateComponent implements OnInit, OnDestroy {
     validators.push((control) => this.validateTextInDateRange(control.value as string));
 
     this.shadowText.setValidators(validators);
-    this.control.setValidators((control) => this.validateMomentInDateRange(control.value as Moment));
+    this.control.addValidators((control) => this.validateMomentInDateRange(control.value as Moment));
   }
 
   /**

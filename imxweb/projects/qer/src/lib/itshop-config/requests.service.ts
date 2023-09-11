@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,9 +26,9 @@
 
 import { OverlayRef } from '@angular/cdk/overlay';
 import { Injectable } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
+
 import { PortalRolesExclusions, PortalShopConfigMembers, PortalShopConfigStructure } from 'imx-api-qer';
 import {
   CollectionLoadParameters,
@@ -38,7 +38,7 @@ import {
   FilterType,
   TypedEntityCollectionData,
 } from 'imx-qbm-dbts';
-import { ClassloggerService } from 'qbm';
+import { ClassloggerService, SnackBarService } from 'qbm';
 import { QerApiService } from '../qer-api-client.service';
 import { IRequestableEntitlementType } from './irequestable-entitlement-type';
 
@@ -51,21 +51,19 @@ export interface SelectedShopStructureData {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RequestsService {
-
   public shelvesBlockedDeleteStatus: { [shelfId: string]: boolean } = {};
   private busyIndicator: OverlayRef;
 
   constructor(
     private readonly qerApiClient: QerApiService,
     private readonly logger: ClassloggerService,
-    private readonly snackbar: MatSnackBar,
+    private readonly snackbar: SnackBarService,
     private readonly translate: TranslateService,
-    private readonly busyService: EuiLoadingService,
-  ) { 
-  }
+    private readonly busyService: EuiLoadingService
+  ) {}
 
   public selectedEntitlementType: IRequestableEntitlementType;
 
@@ -81,19 +79,23 @@ export class RequestsService {
     return this.qerApiClient.typedClient.PortalRolesExclusions.GetSchema();
   }
 
-  public async getShopStructures(navigationState: CollectionLoadParameters, parentId: string = ''):
-    Promise<TypedEntityCollectionData<PortalShopConfigStructure>> {
+  public async getShopStructures(
+    navigationState: CollectionLoadParameters,
+    parentId: string = ''
+  ): Promise<TypedEntityCollectionData<PortalShopConfigStructure>> {
     let params: any = navigationState;
     if (!params) {
       params = {};
     }
     if (parentId == '') {
-      params.filter = [{
-        ColumnName: "ITShopInfo",
-        CompareOp: CompareOperator.Equal,
-        Type: FilterType.Compare,
-        Value1: "SH"
-      }];
+      params.filter = [
+        {
+          ColumnName: 'ITShopInfo',
+          CompareOp: CompareOperator.Equal,
+          Type: FilterType.Compare,
+          Value1: 'SH',
+        },
+      ];
     }
     params.ParentKey = parentId;
     this.logger.debug(this, `Retrieving shop config structures`);
@@ -113,23 +115,27 @@ export class RequestsService {
     return this.qerApiClient.client.portal_shop_config_structure_delete(id);
   }
 
-  public getRequestConfigMembers(customerNodeId: string, navigationState: CollectionLoadParameters):
-    Promise<TypedEntityCollectionData<PortalShopConfigMembers>> {
+  public getRequestConfigMembers(
+    customerNodeId: string,
+    navigationState: CollectionLoadParameters
+  ): Promise<TypedEntityCollectionData<PortalShopConfigMembers>> {
     return this.qerApiClient.typedClient.PortalShopConfigMembers.Get(customerNodeId, navigationState);
   }
 
   public generateRequestConfigMemberEntity(customerNodeId: string): PortalShopConfigMembers {
     return this.qerApiClient.typedClient.PortalShopConfigMembers.createEntity({
       Columns: {
-        "UID_ITShopOrg": {
-          Value: customerNodeId
-        }
-      }
+        UID_ITShopOrg: {
+          Value: customerNodeId,
+        },
+      },
     });
   }
 
-  public createRequestConfigMember(customerNodeId: string, newMember: PortalShopConfigMembers):
-    Promise<TypedEntityCollectionData<PortalShopConfigMembers>> {
+  public createRequestConfigMember(
+    customerNodeId: string,
+    newMember: PortalShopConfigMembers
+  ): Promise<TypedEntityCollectionData<PortalShopConfigMembers>> {
     return this.qerApiClient.typedClient.PortalShopConfigMembers.Post(customerNodeId, newMember);
   }
 
@@ -199,9 +205,7 @@ export class RequestsService {
   }
 
   public openSnackbar(message: string, action: string): void {
-    this.translate.get([message, action]).subscribe((translations: any[]) => {
-      this.snackbar.open(translations[message], translations[action], { duration: 10000 });
-    });
+    this.snackbar.open({ key: message }, action);
   }
 
   public handleOpenLoader(): void {
@@ -219,42 +223,39 @@ export class RequestsService {
     }
   }
 
-  public LdsSpecifyMembers = "#LDS#Here you can specify who can request the products assigned to the shop.";
- 
-  public LdsMembersByDynamicRole = "#LDS#Here you can see the members that are originally assigned to the shop by a dynamic role but have been excluded. Additionally, you can add these excluded members back to the shop by removing the exclusion.";
- 
-  public LdsMembersRemoved = '#LDS#The members have been successfully removed from the shop. It may take some time for the changes to take effect.';
- 
-  public LdsMembersAdded = '#LDS#The members have been successfully added to the shop. It may take some time for the changes to take effect.';
- 
+  public LdsSpecifyMembers = '#LDS#Here you can specify who can request the products assigned to the shop.';
+
+  public LdsMembersByDynamicRole =
+    '#LDS#Here you can see the members that are originally assigned to the shop by a dynamic role but have been excluded. Additionally, you can add these excluded members back to the shop by removing the exclusion.';
+
+  public LdsMembersRemoved =
+    '#LDS#The members have been successfully removed from the shop. It may take some time for the changes to take effect.';
+
+  public LdsMembersAdded =
+    '#LDS#The members have been successfully added to the shop. It may take some time for the changes to take effect.';
+
   public LdsMembersUpdated = '#LDS#The shop members have been successfully updated.';
- 
-  public LdsShopDetails = '#LDS#Here you can edit the details of the shop, specify an approval policy, and specify who is authorized to approve attestation cases for the shop. The attestor and approval policy specified here are used for all shelves where this is not specified.';
- 
+
   public LdsDeleteShop = '#LDS#Delete shop';
- 
+
   public LdsShopHasBeenDeleted = '#LDS#The shop has been successfully deleted.';
- 
+
   public LdsShopHasBeenCreated = '#LDS#The shop has been successfully created.';
- 
+
   public LdsShopHasBeenSaved = '#LDS#The shop has been successfully saved.';
- 
-  public LdsShopEntitlements = '#LDS#Here you can specify which products can be requested. Attestors and approval policies specified for individual products are used instead of any that are defined on either the shelf or the shop.';
- 
+
   public LdsNoShops = '#LDS#There are currently no shops.';
- 
-  public LdsNoMatchingShops = '#LDS#There are no matching shops.';
- 
+
+  public LdsNoMatchingShops = '#LDS#There are no shops matching your search.';
+
   public LdsHeadingCreateShop = '#LDS#Heading Create Shop';
 
   public LdsHeadingEditShop = '#LDS#Heading Edit Shop';
- 
-  public LdsHeadingShops = '#LDS#Heading Shops';
- 
-  public LdsShopExplanation = '#LDS#A shop is the top element in the hierarchical structure required for requesting products. Here you can setup and manage shops. For each shop you can specify which products can be requested (through shelves) and who can request them.';
- 
-  public LdsShelfExplanation = '#LDS#Here you can manage shelves assigned to the shop. For each shelf you can edit the details and specify which products can be requested.';
- 
-  public LdsCreateShop = '#LDS#Create shop';
 
+  public LdsHeadingShops = '#LDS#Heading Shops';
+
+  public LdsShopExplanation =
+    '#LDS#A shop is the top element in the hierarchical structure required for requesting products. Here you can setup and manage shops. For each shop you can specify which products can be requested (through shelves) and who can request them.';
+
+  public LdsCreateShop = '#LDS#Create shop';
 }

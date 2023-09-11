@@ -1,3 +1,3 @@
-<div class="imx-hyperview-site">
-  <imx-hyperview [shapes]="shapes" [fontSize]="'small'"></imx-hyperview>
-</div>
+<imx-busy-indicator *ngIf="isLoading"></imx-busy-indicator>
+<imx-hyperview [shapes]="shapes" [fontSize]="'small'" *ngIf="!isLoading"></imx-hyperview>
+

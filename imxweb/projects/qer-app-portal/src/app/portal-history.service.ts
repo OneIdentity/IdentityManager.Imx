@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,6 +28,7 @@ import { Injectable } from '@angular/core';
 import { HistoryData } from 'imx-qbm-dbts';
 import { QerApiService } from 'qer';
 import { ObjectHistoryApiService } from 'qbm';
+import { HistoryComparisonData } from 'imx-api-qer';
 
 @Injectable()
 export class PortalHistoryService implements ObjectHistoryApiService {
@@ -36,5 +37,9 @@ export class PortalHistoryService implements ObjectHistoryApiService {
 
   getHistoryData(table: string, uid: string): Promise<HistoryData[]> {
     return this.apiService.client.portal_history_get(table, uid);
+  }
+
+  getHistoryComparisonData(table: string, uid: string,options?: {CompareDate?: Date;}): Promise<HistoryComparisonData[]> {
+    return this.apiService.client.portal_history_comparison_get(table, uid, options);
   }
 }

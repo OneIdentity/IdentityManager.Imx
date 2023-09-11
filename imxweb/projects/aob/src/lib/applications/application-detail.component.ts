@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,40 +24,59 @@
  *
  */
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { SafeUrl } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
+import { Subject, Subscription } from 'rxjs';
 
 import { Base64ImageService, ClassloggerService } from 'qbm';
 import { UserModelService } from 'qer';
 import { PortalApplication } from 'imx-api-aob';
 import { ApplicationsService } from './applications.service';
 import { ApplicationContent } from './application-content.interface';
+import { AobPermissionsService } from '../permissions/aob-permissions.service';
 
 @Component({
   templateUrl: './application-detail.component.html',
-  styleUrls: ['./application-detail.component.scss']
+  styleUrls: ['./application-detail.component.scss'],
 })
-export class ApplicationDetailComponent implements ApplicationContent, OnInit {
+export class ApplicationDetailComponent implements ApplicationContent, OnInit, OnDestroy {
   @Input() public application: PortalApplication;
+   
+  @Input() public  loadingSubject: Subject<boolean>;
 
   public totalCount: number;
   public keywords: string;
   public isAdmin: boolean;
   public selectedTabIndex = 0;
   public showHelper = true;
+  public isLoading = false;
+
+  private subscription: Subscription;
 
   constructor(
     private base64ImageService: Base64ImageService,
     private readonly logger: ClassloggerService,
     private readonly applicationsProvider: ApplicationsService,
-    public readonly userService: UserModelService
-  ) { }
-
-  public async ngOnInit(): Promise<void> {
-    this.isAdmin = (await this.userService.getGroups()).some(ug => ug.Name === 'AOB_4_AOB_Admin');
+    public readonly userService: UserModelService,
+    public route:ActivatedRoute,
+    private readonly aobPermissionsService: AobPermissionsService
+  ) {
+    this.route.queryParams.subscribe(async (params) => {
+      if (Object.keys(params).length === 0) this.application = null;
+    });
+  }
+  
+  public ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
   }
 
+  public async ngOnInit(): Promise<void> {
+
+    this.subscription = this.loadingSubject.subscribe(elem=> this.isLoading = elem);
+    this.isAdmin = await this.aobPermissionsService.isAobApplicationAdmin();
+  }
 
   public getImageUrl(app: PortalApplication): SafeUrl {
     return this.base64ImageService.getImageUrl(app.JPegPhoto);

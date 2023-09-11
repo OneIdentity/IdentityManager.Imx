@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,28 +25,28 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, OnInit, Input } from '@angular/core';
-import { EuiLoadingService } from '@elemental-ui/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';import { Subscription } from 'rxjs';
 
-import { BaseReadonlyCdr, ClassloggerService, ColumnDependentReference, ExtService, IExtension, TabControlHelper } from 'qbm';
+import { BaseReadonlyCdr, BusyService, ClassloggerService, ColumnDependentReference, ExtService, IExtension } from 'qbm';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
 import { ApproverContainer } from './approver-container';
 import { ItshopService } from '../itshop.service';
 import { RequestParameterDataEntity } from './request-parameter-data-entity.interface';
 import { WorkflowHistoryItemWrapper } from './workflow-history-item-wrapper';
 import { DecisionHistoryService } from '../decision-history.service';
-import { ServiceItemsService } from '../../service-items/service-items.service';
 import { PortalShopServiceitems, QerProjectConfig } from 'imx-api-qer';
+
 
 @Component({
   templateUrl: './request-info.component.html',
   selector: 'imx-requestinfo',
   styleUrls: ['./request-info.component.scss'],
 })
-export class RequestInfoComponent implements OnInit {
+export class RequestInfoComponent implements OnInit, OnDestroy {
   @Input() public isReadOnly: boolean; // TODO later: an einer passenden Stelle verarbeiten
   @Input() public request: RequestParameterDataEntity;
   @Input() public userId: string;
+  @Input() public isApproval: boolean;
 
   public parameters: BaseReadonlyCdr[];
   public propertyInfo: ColumnDependentReference[];
@@ -57,21 +57,30 @@ export class RequestInfoComponent implements OnInit {
   public serviceItem: PortalShopServiceitems;
   public projectConfig: QerProjectConfig;
   public isRoleAssignment: boolean;
+  public isLoading = false;
+
+  private busyService = new BusyService();
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private readonly projectConfigService: ProjectConfigurationService,
     private readonly logger: ClassloggerService,
-    private readonly busyService: EuiLoadingService,
     private readonly itshopService: ItshopService,
     private readonly decisionHistory: DecisionHistoryService,
     private readonly ext: ExtService
   ) {
     this.extensions = this.ext.Registry[this.ruleViolationDetailId];
+
+    this.subscriptions.push(
+      this.busyService.busyStateChanged.subscribe((state: boolean) => {
+        this.isLoading = state;
+      })
+    );
   }
 
   public async ngOnInit(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyService.show()));
+
+    const isBusy = this.busyService.beginBusy();
     try {
       this.projectConfig = await this.projectConfigService.getConfig();
       this.propertyInfo =
@@ -104,15 +113,13 @@ export class RequestInfoComponent implements OnInit {
           true);
       }
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      isBusy.endBusy();
     }
     this.logger.debug(this, 'approverContainer has been initialized');
-    /**
-     * Resolve an issue where the mat-tab navigation arrows could appear on first load
-     */
-    setTimeout(() => {
-      TabControlHelper.triggerResizeEvent();
-    });
+  }
+
+  public ngOnDestroy(): void {
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   private isForView(cdr: ColumnDependentReference): boolean {

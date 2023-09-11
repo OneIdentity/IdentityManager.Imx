@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, Inject, OnDestroy } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
@@ -36,12 +36,12 @@ import { Subscription } from 'rxjs';
 export class SendReminderMailComponent implements OnDestroy {
   public showHelper = true;
 
-  public readonly message: FormControl;
+  public readonly message: UntypedFormControl;
 
   private readonly subscriptions: Subscription[] = [];
 
   constructor(@Inject(EUI_SIDESHEET_DATA) data: { message: string }, public readonly sideSheetRef: EuiSidesheetRef) {
-    this.message = new FormControl(data.message);
+    this.message = new UntypedFormControl(data.message);
     this.subscriptions.push(this.message.valueChanges.subscribe(value => data.message = value));
   }
 

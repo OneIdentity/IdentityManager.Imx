@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,6 +34,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { LdsReplaceModule, QbmModule } from 'qbm';
 import { NotificationsComponent } from './notifications.component';
 import { NotificationsService } from './notifications.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [NotificationsComponent],
@@ -41,6 +42,7 @@ import { NotificationsService } from './notifications.service';
     CommonModule,
     MatCardModule,
     MatButtonModule,
+    MatProgressSpinnerModule,
     QbmModule,
     LdsReplaceModule,
     EuiCoreModule,

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,10 +33,10 @@ import {
   DisplayColumns,
   EntitySchema,
   IClientProperty,
-  IEntityColumn,
   TypedEntity
 } from 'imx-qbm-dbts';
 import { MetadataService } from '../../base/metadata.service';
+import { CdrFactoryService } from '../../cdr/cdr-factory.service';
 import { DataSourceToolbarFilter } from '../../data-source-toolbar/data-source-toolbar-filters.interface';
 import { DataSourceToolbarSettings } from '../../data-source-toolbar/data-source-toolbar-settings';
 import { CandidateEntity } from '../../fk-advanced-picker/candidate-entity';
@@ -103,7 +103,7 @@ export class TypedEntityCandidateSidesheetComponent implements OnInit {
   public navigate(source: TypedEntityTableFilter): void {
     this.navigationState = { ...this.navigationState, ...source };
     const possible = source.table
-      ? this.searchedEntities.filter(elem => this.tryGetColumn(elem, 'XObjectKey')?.GetValue()?.includes(source.table))
+      ? this.searchedEntities.filter(elem => CdrFactoryService.tryGetColumn(elem.GetEntity(), 'XObjectKey')?.GetValue()?.includes(source.table))
       : this.searchedEntities;
 
     const data = possible.slice(this.navigationState.StartIndex, this.navigationState.StartIndex + this.navigationState.PageSize);
@@ -121,7 +121,7 @@ export class TypedEntityCandidateSidesheetComponent implements OnInit {
 
   public getTable(entity: TypedEntity): string {
     if (!this.data.tables || this.data.tables.length <= 1) { return ''; }
-    const column = this.tryGetColumn(entity, 'XObjectKey');
+    const column = CdrFactoryService.tryGetColumn(entity.GetEntity(), 'XObjectKey');
     if (!column) {
       return '';
     }
@@ -129,20 +129,11 @@ export class TypedEntityCandidateSidesheetComponent implements OnInit {
     return this.metaData.tables[tableName]?.DisplaySingular;
   }
 
-
-  private tryGetColumn(entity: TypedEntity, name: string): IEntityColumn {
-    try {
-      return entity.GetEntity().GetColumn(name);
-    } catch {
-      return undefined;
-    }
-  }
-
   private getOptionsForFilter(): DataModelFilterOption[] {
     return this.data.tables
       .map(elem => ({ Value: elem, Display: this.metaData.tables[elem]?.DisplaySingular }))
       .filter(elem =>
-        this.data.entities.some(entity => this.tryGetColumn(entity, 'XObjectKey')?.GetValue().includes(elem.Value)
+        this.data.entities.some(entity => CdrFactoryService.tryGetColumn(entity.GetEntity(), 'XObjectKey')?.GetValue().includes(elem.Value)
         ));
   }
 }

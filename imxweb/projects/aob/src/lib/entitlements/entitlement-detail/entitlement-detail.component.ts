@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, Inject, OnDestroy } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
@@ -39,7 +39,7 @@ import { EntitlementWrapper } from '../entitlement-wrapper.interface';
   styleUrls: ['./entitlement-detail.component.scss']
 })
 export class EntitlementDetailComponent implements OnDestroy {
-  public readonly form = new FormGroup({});
+  public readonly form = new UntypedFormGroup({});
 
   private readonly subscriptions: Subscription[] = [];
 

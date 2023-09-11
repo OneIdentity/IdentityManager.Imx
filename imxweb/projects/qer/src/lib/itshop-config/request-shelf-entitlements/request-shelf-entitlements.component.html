@@ -1,61 +1,68 @@
-<div class="request-config request-config--no-margin">
+<div eui-sidesheet-content class="imx-flex-content eui-sidesheet-content--no-padding-top">
+  <imx-help-contextual [contextId]="productContextIds" [title]="'#LDS#Information about this tab:'"></imx-help-contextual>
+  <mat-card class="imx-full-card">
+    <imx-data-source-toolbar
+      #dst
+      [settings]="dstSettings"
+      [options]="['search', 'filter']"
+      [hiddenFilters]="['namespace']"
+      [busyService]="busyService"
+      [searchBoxText]="'#LDS#Search' | translate"
+      (navigationStateChanged)="onNavigationStateChanged($event)"
+      (search)="onSearch($event)"
+    ></imx-data-source-toolbar>
 
-  <div class="request-config__content">
-    <div class="request-config__content-main">
-
-      <eui-alert *ngIf="showHelperAlert" class="helper-alert" type="info" condensed="true" [colored]="true"
-        [dismissable]="true" (dismissed)="onHelperDismissed()">
-        <span>{{requestsService.LdsShopEntitlements | translate}}</span>
-      </eui-alert>
-
-      <imx-data-source-toolbar #dst [settings]="dstSettings"
-        [options]="['search', 'filter']"
-        [hiddenFilters]="['namespace']"
-        [searchBoxText]="'#LDS#Search' | translate" (navigationStateChanged)="onNavigationStateChanged($event)"
-        (search)="onSearch($event)"></imx-data-source-toolbar>
-
-      <mat-card>
-        <imx-data-table #dataTable [dst]="dst" detailViewVisible="false" [selectable]="true"
-          (selectionChanged)="onEntitlementSelected($event)" noDataText="#LDS#There are currently no products."
-          noMatchingDataText="#LDS#There are no matching products." data-imx-identifier="roles-entitlements-table"
-          mode="manual" [showSelectionInfo]="false">
-          <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns?.DISPLAY_PROPERTYNAME]">
-            <ng-template let-item>
-              <div>{{item.GetEntity().GetDisplay()}}</div>
-              <div class="imx-subtext">{{ entitlementTypes.get(item.GetEntity().GetKeys().toString()) }}</div>
-            </ng-template>
-          </imx-data-table-column>
-          <imx-data-table-column [entityColumn]="entitySchema?.Columns.XOrigin"
-            [columnLabel]="'#LDS#Origin' | translate">
-            <ng-template let-item>
-              <div>{{item.GetEntity().GetColumn('XOrigin').GetDisplayValue()}}</div>
-              <eui-badge *ngIf="item.GetEntity().GetColumn('ValidUntil').GetValue()" color="blue" textColor="white">
-                {{'#LDS#Valid until' | translate}}
-                {{item.GetEntity().GetColumn('ValidUntil').GetValue() | date}}</eui-badge>
-            </ng-template>
-          </imx-data-table-column>
-          <imx-data-table-column [entityColumn]="entitySchema?.Columns.XDateInserted"
-            [columnLabel]="'#LDS#Added on' | translate">
-            <ng-template let-item>
-              <div>{{item.GetEntity().GetColumn('XDateInserted').GetValue() | date}}</div>
-            </ng-template>
-          </imx-data-table-column>
-
-        </imx-data-table>
-        <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
-
-      </mat-card>
-
-    </div>
-  </div>
-
-  <mat-card class="request-config__action-buttons">
-    <button class="justify-start" mat-button color="warn" [disabled]="selectedEntitlements.length === 0"
-      data-imx-identifier="delete-request-config-shelf-entitlements" (click)="removeEntitlements()">
-      <span translate>#LDS#Remove</span>
-    </button>
-
-    <button mat-raised-button color="primary" data-imx-identifier="add-request-shelf-entitlements"
-      (click)="openEntitlementSelector()">{{'#LDS#Add products' | translate}}</button>
+    <imx-data-table
+      #dataTable
+      [dst]="dst"
+      detailViewVisible="false"
+      [selectable]="true"
+      (selectionChanged)="onEntitlementSelected($event)"
+      noDataText="#LDS#There are currently no products."
+      noMatchingDataText="#LDS#There are no products matching your search."
+      data-imx-identifier="roles-entitlements-table"
+      mode="manual"
+      [showSelectionInfo]="false"
+    >
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns?.DISPLAY_PROPERTYNAME]">
+        <ng-template let-item>
+          <div>{{ item.GetEntity().GetDisplay() }}</div>
+          <div class="imx-subtext">{{ entitlementTypes.get(item.GetEntity().GetKeys().toString()) }}</div>
+        </ng-template>
+      </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns.XOrigin" [columnLabel]="'#LDS#Origin' | translate">
+        <ng-template let-item>
+          <div>{{ item.GetEntity().GetColumn('XOrigin').GetDisplayValue() }}</div>
+          <eui-badge *ngIf="item.GetEntity().GetColumn('ValidUntil').GetValue()" color="blue" textColor="white">
+            {{ '#LDS#Valid until' | translate }}
+            {{ item.GetEntity().GetColumn('ValidUntil').GetValue() | date }}</eui-badge
+          >
+        </ng-template>
+      </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns.XDateInserted" [columnLabel]="'#LDS#Added on' | translate">
+        <ng-template let-item>
+          <div>{{ item.GetEntity().GetColumn('XDateInserted').GetValue() | date }}</div>
+        </ng-template>
+      </imx-data-table-column>
+    </imx-data-table>
+    <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
   </mat-card>
+  <imx-selected-elements [selectedElements]="selectedEntitlements"></imx-selected-elements>
+</div>
+
+<div eui-sidesheet-actions class="request-config__action-buttons">
+  <div class="imx-menu-spacer"></div>
+  <button
+    class="justify-start"
+    mat-button
+    color="warn"
+    [disabled]="selectedEntitlements.length === 0"
+    data-imx-identifier="delete-request-config-shelf-entitlements"
+    (click)="removeEntitlements()"
+  >
+    <eui-icon icon="delete"></eui-icon>
+    <span translate>#LDS#Remove</span>
+  </button>
+
+  <button mat-raised-button color="primary" data-imx-identifier="add-request-shelf-entitlements" (click)="openEntitlementSelector()">{{ '#LDS#Add products' | translate }}</button>
 </div>

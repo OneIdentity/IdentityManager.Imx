@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,16 +33,10 @@ import { ApiService } from '../api.service';
   providedIn: 'root'
 })
 export class ItemValidatorService {
-  private rules: ExtendedTypedEntityCollection<PortalRules, unknown>;
-
   constructor(private readonly api: ApiService) { }
 
   public async getRules(): Promise<ExtendedTypedEntityCollection<PortalRules, unknown>> {
-    if (this.rules == null) {
-      this.rules = await this.api.typedClient.PortalRules.Get({PageSize: 1000});
-    }
-
-    return this.rules;
+      return await this.api.typedClient.PortalRules.Get({PageSize: 1000});
   }
 
   public getRulesSchema(): EntitySchema {

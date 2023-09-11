@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,12 +24,9 @@
  *
  */
 
-import { Injectable, ComponentFactoryResolver } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { TypedClient } from 'imx-api-qbm';
-
-import { Globals } from 'imx-qbm-dbts';
 import { AppConfigService, CdrRegistryService, ImxTranslationProviderService, ClassloggerService, imx_SessionService, AuthenticationService } from 'qbm';
 import { environment } from '../environments/environment';
 
@@ -43,20 +40,12 @@ export class AppService {
     private readonly translateService: TranslateService,
     private readonly session: imx_SessionService,
     private readonly translationProvider: ImxTranslationProviderService,
-    private readonly title: Title,
     public readonly registry: CdrRegistryService,
-    public readonly resolver: ComponentFactoryResolver,
     private readonly authentication: AuthenticationService
   ) { }
 
   public async init(): Promise<void> {
     await this.config.init(environment.clientUrl);
-
-    const imxConfig = await this.config.getImxConfig();
-    const name = imxConfig.ProductName  || Globals.QIM_ProductNameFull;
-    const title = `${name} ${this.config.Config.Title}`;
-    this.logger.debug(this, 'Set page title to', title);
-    this.title.setTitle(title);
 
     this.translateService.addLangs(this.config.Config.Translation.Langs);
     const browserCulture = this.translateService.getBrowserCultureLang();

@@ -7,17 +7,17 @@
       <mat-radio-group [(ngModel)]="recipientType" data-imx-identifier="itshop-pattern-add-products-recipient-type"
         (change)="selectedRecipientTypeChanged($event)">
         <mat-radio-button [value]="'self'" data-imx-identifier="itshop-pattern-add-products-recipient-type-self">
-          {{'#LDS#For me' | translate}}
+          {{'#LDS#Show my products' | translate}}
         </mat-radio-button>
         <mat-radio-button [value]="'others'" data-imx-identifier="itshop-pattern-add-products-recipient-type-others">
-          {{'#LDS#For someone else' | translate}}
+          {{'#LDS#Show products of another identity' | translate}}
         </mat-radio-button>
       </mat-radio-group>
       <imx-cdr-editor class="imx-align-self-base" *ngIf="recipientType === 'others'" [cdr]="cartItemRecipients"
         (valueChange)="onRecipientsChanged($event)"></imx-cdr-editor>
     </div>
     <imx-serviceitem-list data-imx-identifier="itshop-pattern-add-products-serviceitem-list" [recipients]="recipients"
-      [itemActions]="serviceItemActions" [selectedServiceCategory]="selectedCategory"
+      [itemActions]="serviceItemActions" [selectedServiceCategory]="selectedCategory" [patternItemsMode]="true"
       (handleAction)="handlePatternItemAction($event)" (selectionChanged)="onSelectionChanged($event)"
       [dataSourceView]="dataSourceView" (openCategoryTree)="openCategoryTree()">
     </imx-serviceitem-list>

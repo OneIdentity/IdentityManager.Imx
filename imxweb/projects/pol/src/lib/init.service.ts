@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,9 +26,10 @@
 
 import { Injectable } from '@angular/core';
 import { Router, Route } from '@angular/router';
+import { NotificationRegistryService } from 'qer';
 
 import { ExtService, MenuItem, MenuService } from 'qbm';
-import { isExceptionApprover } from './admin/permissions-helper';
+import { isQERPolicyAdmin } from './admin/permissions-helper';
 import { DashboardPluginComponent } from './dashboard-plugin/dashboard-plugin.component';
 
 @Injectable({ providedIn: 'root' })
@@ -36,6 +37,7 @@ export class InitService {
   constructor(
     private readonly extService: ExtService,
     private readonly menuService: MenuService,
+    private readonly notificationService: NotificationRegistryService,
     private readonly router: Router
   ) {
     this.setupMenu();
@@ -45,6 +47,13 @@ export class InitService {
     this.addRoutes(routes);
 
     this.extService.register('Dashboard-SmallTiles', { instance: DashboardPluginComponent });
+
+    // Register handler for policy notifications
+    this.notificationService.registerRedirectNotificationHandler({
+      id: 'OpenQERPolicyHasObject',
+      message: '#LDS#There are new policy violations for which you can grant or deny exceptions.',
+      route: 'compliance/policyviolations/approve'
+    });
   }
 
   private addRoutes(routes: Route[]): void {
@@ -56,8 +65,8 @@ export class InitService {
   }
 
   private setupMenu(): void {
-    this.menuService.addMenuFactories((preProps: string[], groups: string[]) => {
-      if (!preProps.includes('COMPLIANCE') || !isExceptionApprover(groups)) {
+    this.menuService.addMenuFactories((preProps: string[], features: string[]) => {
+      if (!preProps.includes('COMPLIANCE') || !isQERPolicyAdmin(features)) {
         return null;
       }
 
@@ -66,6 +75,12 @@ export class InitService {
         title: '#LDS#Compliance',
         sorting: '25',
         items: [
+          {
+            id: 'POL_Policies',
+            route: 'compliance/policies',
+            title: '#LDS#Menu Entry Company policies',
+            sorting: '20-10',
+          },
           {
             id: 'POL_policy-violations',
             route: 'compliance/policyviolations',

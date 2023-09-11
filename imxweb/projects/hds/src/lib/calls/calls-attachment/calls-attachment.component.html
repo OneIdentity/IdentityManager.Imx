@@ -1,0 +1,66 @@
+<div class="calls-attachment">
+  <div class="loading-overlay" *ngIf="loadingOverlay">
+    <mat-spinner></mat-spinner>
+  </div>
+  <eui-alert type="warning" colored="true" *ngIf="showAlert" [dismissable]="true" (dismissed)="onAlertDismissed()">
+    <span>{{ alertText | translate }}</span>
+  </eui-alert>
+  <mat-card>
+    <div class="calls-attachment__new-folder" *ngIf="initialized">
+      <ng-container *ngIf="isNodeTypeFolder(selectedNode); else fileNode">
+        <button mat-button color="primary" (click)="onAddFolder(selectedNode)"><eui-icon icon="folder"></eui-icon>{{'#LDS#Create folder' | translate}}</button>
+        <button mat-button color="primary" (click)="fileInput.click()"><eui-icon icon="add" for="root-file" ></eui-icon>{{'#LDS#Attach file' | translate}}</button>
+        <input type="file" id="root-file" (change)="attachFile($event.target.files)" [disabled]="!isNodeTypeFolder(selectedNode)" #fileInput/>
+      </ng-container>
+      <ng-template #fileNode>
+        <button mat-button color="primary" [disabled]="true"><eui-icon icon="folder" class="eui-icon--disabled"></eui-icon>{{'#LDS#Create folder' | translate}}</button>
+        <button mat-button color="primary" (click)="downloadFile(selectedNode)" *ngIf="selectedNode"><eui-icon icon="download" ></eui-icon>{{'#LDS#Download selected file' | translate}}</button>
+      </ng-template>
+      <ng-container *ngIf="isNodeDeletable(selectedNode); else deleteDisabled">
+        <button mat-button color="warn" (click)="onDeleteItem(selectedNode)"  class="deleteIcon"><eui-icon icon="delete" ></eui-icon>{{'#LDS#Delete selected item' | translate}}</button>
+      </ng-container>
+      <ng-template #deleteDisabled>
+        <button mat-button color="warn" [disabled]="true" class="deleteIcon"><eui-icon icon="delete" class="eui-icon--disabled"></eui-icon>{{'#LDS#Delete selected item' | translate}}</button>
+      </ng-template>
+    </div>
+    <div class="calls-attachment__attachments-tree" [ngClass]="{'calls-attachment__attachments-tree--hidden': showInformation}">
+      <imx-sidenav-tree
+        [dynamicDataSource]="dynamicDataSource"
+        [treeControl]="treeControl"
+        [nodeContent]="nodeContent"
+        [hasChild]="hasChild"
+        [isLoading]="isLoading"
+        [expandWidth]="'100%'"
+        [sideNavExpanded]="true"
+        [manageExpandedExternally]="true"
+        [showSidenavHeader]="false"
+        (selectedNode)="onNodeSelection($event)"
+        [noResultText]="noResultText"
+      ></imx-sidenav-tree>
+      <ng-template #nodeContent let-node let-selected="selected">
+        <div class="imx-tree-root" [ngClass]="{ 'imx-tree-root--selected': selected }" *ngIf="!isNodeTypeFolder(node)">
+          <span>{{ node.name }}</span>
+        </div>
+        <div class="imx-tree-root" [ngClass]="{ 'imx-tree-root--selected': selected }" *ngIf="isNodeTypeFolder(node)">
+          <eui-icon icon="folder"></eui-icon>
+          <span>{{ node.name }}</span>
+        </div>
+      </ng-template>
+    </div>
+    <div class="calls-attachment__information" *ngIf="showInformation">
+      <div class="static-text">
+        <eui-icon icon="upload" size="xl"></eui-icon>
+        <div>
+          <h2 class="strong">{{ '#LDS#Upload file attachments' | translate }}</h2>
+        </div>
+      </div>
+      <div class="file-size" *ngIf="hasMaxAttachmentSize">
+        <ul>
+          <li>{{ '#LDS#Here you can attach files to this ticket.' | translate }}</li>
+          <li>{{ '#LDS#Optionally, you can create folders and add files to these folders.' | translate }}</li>
+          <li>{{ '#LDS#The maximum file size is:' | translate }} {{convertedMaxAttachmentSize}}</li>
+        </ul>
+      </div>
+    </div>
+  </mat-card>
+</div>

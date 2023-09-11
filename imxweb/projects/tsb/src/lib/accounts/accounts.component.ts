@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,35 +24,41 @@
  *
  */
 
-import { Component, Input, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { OverlayRef } from '@angular/cdk/overlay';
-import { EuiSidesheetService, EuiLoadingService } from '@elemental-ui/core';
-import { Subscription } from 'rxjs';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
 import {
-  DataSourceToolbarSettings,
+  BusyService,
   ClassloggerService,
   DataSourceToolbarFilter,
-  SettingsService
+  DataSourceToolbarSettings,
+  SettingsService,
+  SideNavigationComponent,
+  DataSourceToolbarViewConfig,
+  DataSourceToolbarExportMethod,
+  HELP_CONTEXTUAL
 } from 'qbm';
-import { IDataExplorerComponent } from 'qer';
+import { ViewConfigService } from 'qer';
 import { CollectionLoadParameters, IClientProperty, DisplayColumns, DbObjectKey, EntitySchema, DataModel, FilterData } from 'imx-qbm-dbts';
-import { AccountsService } from './accounts.service';
-import { AccountSidesheetComponent } from './account-sidesheet/account-sidesheet.component';
-import { DeHelperService } from '../de-helper.service';
-import { DataExplorerFiltersComponent } from '../data-filters/data-explorer-filters.component';
-import { AccountSidesheetData, GetAccountsOptionalParameters } from './accounts.models';
+import { ViewConfigData } from 'imx-api-qer';
 import { PortalTargetsystemUnsSystem, PortalTargetsystemUnsAccount } from 'imx-api-tsb';
 import { ContainerTreeDatabaseWrapper } from '../container-list/container-tree-database-wrapper';
+import { DataExplorerFiltersComponent } from '../data-filters/data-explorer-filters.component';
+import { DeHelperService } from '../de-helper.service';
+import { AccountSidesheetComponent } from './account-sidesheet/account-sidesheet.component';
+import { AccountSidesheetData, GetAccountsOptionalParameters } from './accounts.models';
+import { AccountsService } from './accounts.service';
 import { TargetSystemReportComponent } from './target-system-report/target-system-report.component';
+
 
 @Component({
   selector: 'imx-data-explorer-accounts',
   templateUrl: './accounts.component.html',
   styleUrls: ['./accounts.component.scss'],
 })
-export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataExplorerComponent {
+export class DataExplorerAccountsComponent implements OnInit, OnDestroy, SideNavigationComponent {
   @Input() public applyIssuesFilter = false;
   @Input() public issuesFilterMode: string;
   @Input() public targetSystemData?: PortalTargetsystemUnsSystem[];
@@ -74,29 +80,33 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
   public readonly entitySchemaUnsAccount: EntitySchema;
   public readonly DisplayColumns = DisplayColumns;
   public data: any;
+  public busyService = new BusyService();
+  public contextId = HELP_CONTEXTUAL.DataExplorerAccounts;
 
   private displayedColumns: IClientProperty[] = [];
   private authorityDataDeleted$: Subscription;
   private tableName: string;
-  private busyIndicator: OverlayRef;
   private dataModel: DataModel;
+  private viewConfigPath = 'targetsystem/uns/account';
+  private viewConfig: DataSourceToolbarViewConfig;
 
   constructor(
     public translateProvider: TranslateService,
     private readonly sideSheet: EuiSidesheetService,
-    private readonly busyService: EuiLoadingService,
     private readonly logger: ClassloggerService,
     private readonly accountsService: AccountsService,
     private readonly dataHelper: DeHelperService,
+    private viewConfigService: ViewConfigService,
     readonly settingsService: SettingsService
   ) {
     this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchemaUnsAccount = accountsService.accountSchema;
     this.authorityDataDeleted$ = this.dataHelper.authorityDataDeleted.subscribe(() => this.navigate());
-    this.treeDbWrapper = new ContainerTreeDatabaseWrapper(busyService, dataHelper);
+    this.treeDbWrapper = new ContainerTreeDatabaseWrapper(this.busyService, dataHelper);
   }
 
   public async ngOnInit(): Promise<void> {
+    /** if you like to add columns, please check {@link AccountsExtComponent | Account Extension Component} as well */
     this.displayedColumns = [
       this.entitySchemaUnsAccount.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
       this.entitySchemaUnsAccount.Columns.UID_Person,
@@ -104,14 +114,15 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
       this.entitySchemaUnsAccount.Columns.AccountDisabled,
       this.entitySchemaUnsAccount.Columns.XMarkedForDeletion,
     ];
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyService.show()));
+
+    const isBusy = this.busyService.beginBusy();
 
     try {
       this.filterOptions = await this.accountsService.getFilterOptions();
       this.dataModel = await this.accountsService.getDataModel();
+      this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModel, this.viewConfigPath);
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+     isBusy.endBusy();
     }
     if (this.applyIssuesFilter && !this.issuesFilterMode) {
       const orphanedFilter = this.filterOptions.find((f) => {
@@ -141,6 +152,18 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
     }
   }
 
+  public async updateConfig(config: ViewConfigData): Promise<void> {
+    await this.viewConfigService.putViewConfig(config);
+    this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
+    this.dstSettings.viewConfig = this.viewConfig;
+  }
+
+  public async deleteConfigById(id: string): Promise<void> {
+    await this.viewConfigService.deleteViewConfig(id);
+    this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
+    this.dstSettings.viewConfig = this.viewConfig;
+  }
+
   /**
    * Occurs when the navigation state has changed - e.g. users clicks on the next page button.
    *
@@ -158,7 +181,7 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
 
     let data: AccountSidesheetData;
 
-    this.handleOpenLoader();
+    const isBusy = this.busyService.beginBusy();
     try {
       const unsDbObjectKey = DbObjectKey.FromXml(unsAccount.XObjectKey.value);
 
@@ -167,13 +190,13 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
         unsDbObjectKey,
         selectedAccount: await this.accountsService.getAccountInteractive(unsDbObjectKey, 'UID_UNSAccount'),
         uidPerson: unsAccount.UID_Person.value,
-        tableName: this.tableName
+        tableName: this.tableName,
       };
     } finally {
-      this.handleCloseLoader();
+      isBusy.endBusy();
     }
 
-    this.viewAccount(data);
+    await this.viewAccount(data);
   }
 
   /**
@@ -195,17 +218,16 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
 
   public async openReportOptionsSidesheet(): Promise<void> {
     this.sideSheet.open(TargetSystemReportComponent, {
-      title: await this.translateProvider.get('#LDS#Choose target system for report').toPromise(),
-      headerColour: 'iris-blue',
-      bodyColour: 'asher-gray',
+      title: await this.translateProvider.get('#LDS#Heading Download Target System Report').toPromise(),
+      icon: 'download',
       padding: '0px',
       width: 'max(400px, 40%)',
-      testId: 'accounts-report-sidesheet'
+      testId: 'accounts-report-sidesheet',
     });
   }
 
   private async navigate(): Promise<void> {
-    this.handleOpenLoader();
+    const isBusy = this.busyService.beginBusy();
     const getParams: GetAccountsOptionalParameters = this.navigationState;
 
     try {
@@ -217,6 +239,8 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
       getParams.container = cUid ? cUid : undefined;
 
       const data = await this.accountsService.getAccounts(getParams);
+      const exportMethod: DataSourceToolbarExportMethod = this.accountsService.exportAccounts(this.navigationState);
+      exportMethod.initialColumns = this.displayedColumns.map(col => col.ColumnName);
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
         dataSource: data,
@@ -229,51 +253,38 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, IDataEx
               parentkey,
               container: getParams.container,
               system: getParams.system,
-              filter: getParams.filter
+              filter: getParams.filter,
             });
           },
-          multiSelect: false
+          multiSelect: false,
         },
         dataModel: this.dataModel,
-        identifierForSessionStore: 'accounts'
+        viewConfig: this.viewConfig,
+        exportMethod,
       };
       this.tableName = data.tableName;
       this.logger.debug(this, `Head at ${data.Data.length + this.navigationState.StartIndex} of ${data.totalCount} item(s)`);
     } finally {
-      this.handleCloseLoader();
+       isBusy.endBusy();
     }
   }
 
-  private viewAccount(data: AccountSidesheetData): void {
+  private async viewAccount(data: AccountSidesheetData): Promise<void> {
     this.logger.debug(this, `Viewing account`);
     this.logger.trace(this, `Account selected`, data.selectedAccount);
     const sidesheetRef = this.sideSheet.open(AccountSidesheetComponent, {
-      title: data.selectedAccount.GetEntity().GetDisplay(),
-      headerColour: 'orange',
+      title: await this.translateProvider.get('#LDS#Heading Edit User Account').toPromise(),
+      subTitle: data.selectedAccount.GetEntity().GetDisplay(),
       padding: '0px',
-      width: '60%',
+      width: 'max(600px, 60%)',
       icon: 'account',
-      data
+      testId: 'edit-user-account-sidesheet',
+      data,
     });
     sidesheetRef.afterClosed().subscribe((dataRefreshRequired) => {
       if (dataRefreshRequired) {
         this.navigate();
       }
     });
-  }
-
-  private handleOpenLoader(): void {
-    if (!this.busyIndicator) {
-      setTimeout(() => (this.busyIndicator = this.busyService.show()));
-    }
-  }
-
-  private handleCloseLoader(): void {
-    if (this.busyIndicator) {
-      setTimeout(() => {
-        this.busyService.hide(this.busyIndicator);
-        this.busyIndicator = undefined;
-      });
-    }
   }
 }

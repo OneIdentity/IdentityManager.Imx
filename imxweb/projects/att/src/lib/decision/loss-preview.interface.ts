@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,8 +25,10 @@
  */
 
 import { EntitlementLossDto } from 'imx-api-att';
+import { AttestationCase } from './attestation-case';
 
 export interface LossPreview {
+  Case?: AttestationCase;
   LossPreviewItems: EntitlementLossDto[];
   LossPreviewHeaders: string[];
   LossPreviewDisplayKeys: EntitlementLossDto;

@@ -1,5 +1,51 @@
-<div eui-sidesheet-content color="white">
-  <form [formGroup]="formGroup" class="imx-request-content">
+<ng-container *ngIf="!data.withGuidance || data.requests.length > 1; else tabView">
+  <div eui-sidesheet-content>
+    <ng-container *ngTemplateOutlet="decisionContent"></ng-container>
+  </div>
+  <div eui-sidesheet-actions>
+    <ng-container *ngTemplateOutlet="decisionButtons"></ng-container>
+  </div>
+</ng-container>
+
+
+<ng-template #tabView>
+  <div class="workflow-action-sidesheet">
+    <mat-tab-group #tabs>
+      <mat-tab data-imx-identifier="workflowAction-tab-main" [label]="'#LDS#Heading Approval Decision' | translate">
+        <ng-template matTabContent>
+          <div class="imx-tab-content">
+            <div class="imx-tab-content-body">
+              <mat-card>
+                <ng-container *ngTemplateOutlet="decisionContent"></ng-container>
+              </mat-card>
+            </div>
+            <div eui-sidesheet-actions>
+              <ng-container *ngTemplateOutlet="decisionButtons"></ng-container>
+            </div>
+          </div>
+        </ng-template>
+      </mat-tab>
+      <mat-tab data-imx-identifier="worklflowAction-tab-decision-aid" [label]="'#LDS#Heading Decision Guidance' | translate">
+        <ng-template matTabContent>
+          <div class="imx-tab-content">
+            <div class="imx-tab-content-body">
+                <imx-approval-history [approval]="data.requests[0]"></imx-approval-history>
+            </div>
+          </div>
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</ng-template>
+
+<ng-template #decisionButtons>
+  <button data-imx-identifier="workflow-action-button-save" mat-raised-button color="primary" (click)="sideSheetRef.close(true)" *ngIf="formGroup" [disabled]="formGroup.invalid">
+    {{ '#LDS#Save' | translate }}
+  </button>
+</ng-template>
+
+<ng-template #decisionContent>
+  <form [formGroup]="formGroup">
     <ng-container *ngIf="data.customValidation">
       <mat-error *ngIf="formGroup?.invalid">
         {{ data.customValidation.message | translate }}
@@ -13,9 +59,4 @@
       <imx-workflow-single-action [formGroup]="formGroup" [data]="data"></imx-workflow-single-action>
     </ng-container>
   </form>
-</div>
-<div eui-sidesheet-actions color="white">
-  <button data-imx-identifier="workflow-action-button-save" mat-raised-button color="primary" (click)="sideSheetRef.close(true)" *ngIf="formGroup" [disabled]="formGroup.invalid">
-    {{ '#LDS#Save' | translate }}
-  </button>
-</div>
+</ng-template>

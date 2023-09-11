@@ -1,0 +1,21 @@
+<div eui-sidesheet-content>
+  <mat-card class="form-wrapper">
+    <form [formGroup]="formGroup">
+        <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"
+          [attr.data-imx-identifier]="'approval-workflow-form-cdr-' + cdr.column.ColumName"
+          (controlCreated)="formArray.push($event)">
+        </imx-cdr-editor>
+    </form>
+  </mat-card>
+</div>
+
+<div eui-sidesheet-actions>
+  <button mat-stroked-button data-imx-identifier="approval-workflow-form-button-back"
+  (click)="formService.cancelChanges(formGroup, sidesheetRef, requestData)">
+    {{'#LDS#Cancel' | translate}}
+  </button>
+  <button mat-raised-button class="apply-button" color="primary" data-imx-identifier="approval-workflow-form-button-apply"
+    (click)="saveChanges()" [disabled]="formGroup.pristine || formGroup.invalid">
+    {{'#LDS#Save'| translate}}
+  </button>
+</div>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,20 +24,14 @@
  *
  */
 
-import { Component, OnInit, ErrorHandler } from '@angular/core';
+import { Component, OnInit, ErrorHandler, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { EuiLoadingService } from '@elemental-ui/core';
-import { OverlayRef } from '@angular/cdk/overlay';
-import { MatTabChangeEvent } from '@angular/material/tabs';
 
 import { DbObjectKey, DisplayColumns, EntitySchema, IClientProperty, ReadOnlyEntity, ValType } from 'imx-qbm-dbts';
-import { ShapeData } from 'imx-api-qbm';
+import { QueueEntriesData, ShapeData } from 'imx-api-qbm';
 import {
   MetadataService,
-  imx_SessionService,
-  MessageParameter,
-  MessageDialogComponent,
   OpsupportDbObjectService,
   ShapeClickArgs,
   ClassloggerService,
@@ -46,18 +40,18 @@ import {
   ClientPropertyForTableColumns
 } from 'qbm';
 import { QueueJobsService } from '../processes/jobs/queue-jobs.service';
-import { MatDialog } from '@angular/material/dialog';
 import { ObjectOverviewContainer, FeatureConfigService  } from 'qer';
-import { HyperviewService } from './hyperview/hyperview.service';
 import { ObjectOverviewService } from './object-overview.service';
 import { PersonDbQueueInfo } from './person-db-queue-info';
 import { PersonJobQueueInfo } from './person-job-queue-info';
+import { ErrorMessageSidesheetComponent } from '../processes/error-message-sidesheet/error-message-sidesheet.component';
+import { EuiSidesheetService } from '@elemental-ui/core';
 
 @Component({
   templateUrl: './object-overview.component.html',
   styleUrls: ['./object-overview.component.scss']
 })
-export class ObjectOverviewComponent implements OnInit, ObjectOverviewContainer {
+export class ObjectOverviewComponent implements OnInit, AfterViewInit, ObjectOverviewContainer {
 
   public hyperviewShapes: ShapeData[] = [];
 
@@ -80,24 +74,22 @@ export class ObjectOverviewComponent implements OnInit, ObjectOverviewContainer 
   public objectKey: DbObjectKey;
   public tableDisplay: string;
   public display: string;
-  private tablename: string;
+  public tablename: string;
+  public objectUID: string;
 
   private readonly tablePerson = 'person';
-  private objectUID: string;
   private uidUser: string;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private errorHandler: ErrorHandler,
-    private dialogService: MatDialog,
+    private sidesheet: EuiSidesheetService,
     private dbObjectService: OpsupportDbObjectService,
     private jobService: QueueJobsService,
     private metadataService: MetadataService,
     private translationProvider: TranslateService,
     private logger: ClassloggerService,
-    private hyperview: HyperviewService,
-    private busyService: EuiLoadingService,
     private overviewService: ObjectOverviewService,
     private featureService: FeatureConfigService,
     authentication: AuthenticationService,
@@ -127,34 +119,46 @@ export class ObjectOverviewComponent implements OnInit, ObjectOverviewContainer 
     authentication.onSessionResponse.subscribe(session => this.uidUser = session.UserUid);
   }
 
+  public busy = true;
+
+  /**
+   * Index of the selected tab.
+   */
+  public tabIndex = 0;
+
   public async ngOnInit(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
-    try {
-      await this.initDataFromPath(this.route);
-      const featureConfig = await this.featureService.getFeatureConfig();
-      this.showPassCodeTab = featureConfig.EnableSetPasswords
-        && this.objectKey.TableName.toLowerCase() === this.tablePerson
-        && this.uidUser !== this.objectUID;
-      await this.loadQueue();
-    } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+
+    this.route.params.subscribe(res => {
+      // reinitialize if params changes 
+      if (this.objectUID !== res.uid) {        
+        this.init();
+        if (this.hasHyperviewParam(res.tab)) {
+          this.tabIndex = 3;
+        }
+      }      
+    })
+
+    this.init();    
+  }
+
+  public async ngAfterViewInit(): Promise<void> {
+    const param = this.route.snapshot.paramMap.get('tab');
+    if (this.hasHyperviewParam(param)) {
+      this.tabIndex = 3;
     }
   }
 
-  public async onTabChange(event: MatTabChangeEvent): Promise<void> {
-    const hyperLabel = await this.translationProvider.get('#LDS#Hyperview').toPromise();
-    if (event.tab.textLabel === hyperLabel) {
-      let overlayRef: OverlayRef;
-      setTimeout(() => overlayRef = this.busyService.show());
-      try {
-        this.hyperviewShapes = await this.hyperview.Get({ table: this.tablename, uid: this.objectUID });
-      } finally {
-        setTimeout(() => this.busyService.hide(overlayRef));
-      }
-    }
-  }
+  /**
+   * Handles the event, when a shape was clicked.
+   * @param args the {@link ShapeClickArgs|arguments of the clicked shape}
+   */
+  public async onShapeClick(args: ShapeClickArgs) : Promise<void> {
+    const objKey = DbObjectKey.FromXml(args.objectKey);
 
+   if (await this.objectIsSupported(objKey)) {
+    this.router.navigate(['object', objKey.TableName, objKey.Keys[0], 'hyperview']);
+   }
+  }
 
 
   // Checks if the item has an ErrorMessage or not
@@ -177,12 +181,18 @@ export class ObjectOverviewComponent implements OnInit, ObjectOverviewContainer 
 
   // Shows the error message for a JobQueueInfo object
   public async showMessage(item: PersonJobQueueInfo): Promise<void> {
-    const messageData: MessageParameter = {
-      ShowOk: true,
-      Title: await this.translationProvider.get('#LDS#Error message').toPromise(),
-      Message: item.ErrorMessages.Column.GetDisplayValue()
-    };
-    this.dialogService.open(MessageDialogComponent, { data: messageData, panelClass: 'imx-messageDialog' });
+
+      await this.sidesheet
+      .open(ErrorMessageSidesheetComponent, {
+        title: await this.translationProvider.get('#LDS#Heading View Error Message').toPromise(),
+        subTitle: item.GetEntity().GetDisplay(),
+        padding: '0',
+        width: 'max(60%,600px)',
+        testId: 'error-message-sidesheet',
+        data: item.ErrorMessages.Column.GetDisplayValue(),
+      })
+      .afterClosed()
+      .toPromise();
   }
 
   public goToStart(): void {
@@ -195,9 +205,7 @@ export class ObjectOverviewComponent implements OnInit, ObjectOverviewContainer 
   }
 
   public async loadQueue(updateType: 'both' | 'jobQueue' | 'dbQueue' = 'both'): Promise<void> {
-    const cached = await this.overviewService.get(this.objectKey);
-    this.queuesUnsupported = cached.Unsupported;
-
+    const cached = await this.objectIsSupported(this.objectKey);
     if (this.queuesUnsupported) {
       return;
     }
@@ -230,6 +238,47 @@ export class ObjectOverviewComponent implements OnInit, ObjectOverviewContainer 
       };
     }
   }
+
+  private async init(): Promise<void> {
+    this.hyperviewShapes = [];
+    this.busy = true;
+    try {
+      await this.initDataFromPath(this.route);
+      const featureConfig = await this.featureService.getFeatureConfig();
+      this.showPassCodeTab = featureConfig.EnableSetPasswords
+        && this.objectKey.TableName.toLowerCase() === this.tablePerson
+        && this.uidUser !== this.objectUID;
+      await this.loadQueue();
+    } finally {
+      this.busy = false;
+    }
+  }
+
+  /**
+   * Check if the given object is supported.
+   * @param objKey {@link DbObjectKey} that needs to check.
+   * @returns 
+   */
+  private async objectIsSupported(objKey: DbObjectKey): Promise<QueueEntriesData> {
+    const cached = await this.overviewService.get(objKey);
+    this.queuesUnsupported = cached.Unsupported;
+
+    if (this.queuesUnsupported) {
+      this.logger.debug(this, `ObjectOverviewService: Object ${objKey.TableName} is not supported.`);
+      return undefined;
+    }
+    return cached;
+  }
+
+  /**
+   * Checks the route param if it's the hyperview-param.
+   * @param param route param to check
+   * @returns true, if it's the hyperview-param
+   */
+  private hasHyperviewParam(param: string): boolean {
+    return param === 'hyperview';
+  }
+
 
   // initializes the variables provided by the route
   private async initDataFromPath(route: ActivatedRoute): Promise<void> {

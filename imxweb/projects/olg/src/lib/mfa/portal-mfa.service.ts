@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,9 +24,10 @@
  *
  */
 
+import { Injectable } from '@angular/core';
+
 import { ActivateFactorData, AuthFactors, VerifyPollingResult } from 'imx-api-olg';
 import { OlgApiService } from '../olg-api-client.service';
-import { Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class PortalMfaService {

@@ -1,7 +1,6 @@
 <div class="imx-content">
-  <p>{{ "#LDS#Select additional employees below. The product {0} will be requested for these employees."
-      | translate | ldsReplace:[data.display] }}</p>
-  <imx-fk-selector #fkSelector [data]="data.fkData" (elementSelected)="closeDialog([$event])"></imx-fk-selector>
+  <p>{{ LdsExplanation | translate | ldsReplace:[data.display] }}</p>
+  <imx-fk-selector #fkSelector [data]="data.fkData" (elementSelected)="close([$event])"></imx-fk-selector>
 </div>
 
 <div class="imx-actions">
@@ -9,5 +8,5 @@
       {{ '#LDS#Clear selection' | translate }}
     </button>
   <button data-imx-identifier="order-additional-button-apply" mat-raised-button color="primary"
-      (click)="closeDialog(fkSelector?.selectedCandidates)">{{'#LDS#Apply' | translate}}</button>
+      (click)="close(fkSelector?.selectedCandidates)">{{'#LDS#Apply' | translate}}</button>
   </div>

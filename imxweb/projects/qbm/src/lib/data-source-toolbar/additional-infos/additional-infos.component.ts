@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -41,8 +41,8 @@ export class AdditionalInfosComponent implements OnInit {
   public possibleProperties: IClientProperty[];
   public optionals: ClientPropertyForTableColumns[];
 
-  public infoText = '#LDS#Please choose the columns you like to add.';
-  public infoTextLong = '#LDS#New columns will be added to your table. You can change the sort order via drag and drop using the hatched handle.';
+  public infoText = '#LDS#Select the columns you want to add.';
+  public infoTextLong = '#LDS#Here you can add additional columns to your table. Additionally, you can change the order using drag and drop. Move the mouse pointer over the shaded area and drag the element to the desired location.';
 
   public get result(): any {
     return { all: this.data.preselectedProperties, optionals: this.optionals };

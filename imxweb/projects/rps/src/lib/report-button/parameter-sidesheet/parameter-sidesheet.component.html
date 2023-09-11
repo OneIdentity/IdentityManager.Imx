@@ -1,0 +1,12 @@
+<div eui-sidesheet-content>
+  <mat-card>
+    <form [formGroup]="reportFormGroup">
+      <imx-cdr-editor *ngFor="let cdr of cdrs" [cdr]="cdr" (controlCreated)="addFormControl(cdr.column.columnName, $event)">
+      </imx-cdr-editor>
+    </form>
+  </mat-card>  
+</div>
+<div eui-sidesheet-actions>
+  <mat-spinner diameter="30" *ngIf="writeOperators>0"></mat-spinner>
+  <button data-imx-identifier="parameter-sidesheet-show-report-button" mat-raised-button color="primary" [disabled]="reportFormGroup.invalid || writeOperators > 0" (click)="viewReport()">{{'#LDS#View report' |translate}}</button>
+</div>

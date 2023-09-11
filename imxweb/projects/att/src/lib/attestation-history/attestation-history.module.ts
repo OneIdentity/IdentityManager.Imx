@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,7 +33,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
 
-import { DataSourceToolbarModule, DataTableModule, CdrModule  } from 'qbm';
+import { DataSourceToolbarModule, DataTableModule, CdrModule, SelectedElementsModule, HelpContextualModule  } from 'qbm';
 import { AttestationHistoryComponent } from './attestation-history.component';
 import { AttestationHistoryService } from './attestation-history.service';
 import { AttestationHistoryDetailsComponent } from './attestation-history-details/attestation-history-details.component';
@@ -41,12 +41,17 @@ import { AttestationDecisionModule } from '../decision/attestation-decision.modu
 import { AttestationHistoryWrapperComponent } from './attestation-history-wrapper.component';
 import { AttestationDisplayModule } from '../attestation-display/attestation-display.module';
 import { AttestationSnapshotModule } from '../attestation-snapshot/attestation-snapshot.module';
+import {AttestationHistoryFilterComponent} from './attestation-history-filter/attestation-history-filter.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MyAttestationCasesComponent } from './my-attestation-cases/my-attestation-cases.component';
 
 @NgModule({
   declarations: [
     AttestationHistoryComponent,
     AttestationHistoryDetailsComponent,
-    AttestationHistoryWrapperComponent
+    AttestationHistoryWrapperComponent,
+    AttestationHistoryFilterComponent,
+    MyAttestationCasesComponent,
   ],
   exports: [AttestationHistoryComponent],
   imports: [
@@ -59,13 +64,15 @@ import { AttestationSnapshotModule } from '../attestation-snapshot/attestation-s
     MatCardModule,
     MatMenuModule,
     MatTabsModule,
+    MatIconModule,
     TranslateModule,
     EuiCoreModule,
     AttestationDecisionModule,
-    AttestationDisplayModule
+    AttestationDisplayModule,
+    AttestationSnapshotModule,
+    SelectedElementsModule,
+    HelpContextualModule,
   ],
-  providers: [
-    AttestationHistoryService
-  ]
+  providers: [AttestationHistoryService],
 })
-export class AttestationHistoryModule { }
+export class AttestationHistoryModule {}

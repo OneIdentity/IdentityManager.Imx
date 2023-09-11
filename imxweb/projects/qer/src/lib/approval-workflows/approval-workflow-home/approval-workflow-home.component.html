@@ -1,0 +1,66 @@
+<h1 class="mat-headline">
+  {{ '#LDS#Heading Approval Workflows' | translate }}
+  <imx-help-contextual></imx-help-contextual>
+</h1>
+
+<mat-card class="imx-table-container">
+  <imx-data-source-toolbar
+    #dst
+    [options]="['search']"
+    [busyService]="busyService"
+    [settings]="dstSettings"
+    useThemedStyle="true"
+    (search)="getData({ search: $event })"
+    (navigationStateChanged)="getData($event)"
+    data-imx-identifier="approval-workflow-dst"
+  >
+  </imx-data-source-toolbar>
+
+  <imx-data-table
+    #dataTable
+    [dst]="dst"
+    class="imx-pickcategory-table"
+    detailViewVisible="false"
+    showSelectedItemsMenu="false"
+    selectable="true"
+    (selectionChanged)="onSelectionChanged($event)"
+    mode="manual"
+    (highlightedEntityChanged)="viewDetails({ workFlow: $event })"
+    data-imx-identifier="approval-workflow-datatable"
+  >
+    <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+      <ng-template let-item>
+        <div data-imx-identifier="approval-workflow-table-column-display">{{ item.GetEntity().GetDisplay() }}</div>
+        <div subtitle data-imx-identifier="approval-workflow-table-description">{{ item.Description.Column.GetDisplayValue() }}</div>
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchema?.Columns?.DaysToAbort">
+      <ng-template let-item>
+        <div *ngIf="item.DaysToAbort.value === 0">
+          {{ '#LDS#Not set' | translate }}
+        </div>
+        <div *ngIf="item.DaysToAbort.value > 0">
+          {{ item.DaysToAbort.Column.GetDisplayValue() }}
+        </div>
+      </ng-template>
+    </imx-data-table-column>
+  </imx-data-table>
+  <imx-data-source-paginator data-imx-identifier="approval-workflow-paginator" [dst]="dst"> </imx-data-source-paginator>
+</mat-card>
+
+<div class="button-row">
+  <imx-selected-elements [selectedElements]="selectedWorkFlows"></imx-selected-elements>
+  <div class="imx-menu-spacer"></div>
+  <button [disabled]="!canDelete" mat-stroked-button color="warn" (click)="deleteMultiple()" data-imx-identifier="approval-workflow-delete-workflows">
+    <eui-icon icon="delete"></eui-icon>
+    <span>
+      {{ '#LDS#Delete ({0})' | translate | ldsReplace : selectedWorkFlows.length }}
+    </span>
+  </button>
+  <button mat-raised-button class="filled-button" color="primary" (click)="createWorkflow()" data-imx-identifier="approval-workflow-create-workflow">
+    <eui-icon icon="add" size="s"></eui-icon>
+    <span>
+      {{ '#LDS#Create approval workflow' | translate }}
+    </span>
+  </button>
+</div>

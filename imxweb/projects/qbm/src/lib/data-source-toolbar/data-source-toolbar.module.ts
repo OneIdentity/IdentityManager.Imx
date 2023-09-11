@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -46,9 +46,24 @@ import { AdditionalInfosComponent } from './additional-infos/additional-infos.co
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatChipsModule } from '@angular/material/chips';
 import { ClassloggerModule } from '../classlogger/classlogger.module';
+import { MatCardModule } from '@angular/material/card';
+import { SaveConfigDialogComponent } from './save-config-dialog/save-config-dialog.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { AppConfigService } from '../appConfig/appConfig.service';
+import { HttpClientModule } from '@angular/common/http';
+import { LoggerConfig, LoggerModule } from 'ngx-logger';
+import { MatDividerModule } from '@angular/material/divider';
 
 @NgModule({
-  declarations: [DataSourceToolbarComponent, DataSourcePaginatorComponent, DataSourceToolbarCustomComponent, FilterTreeComponent, AdditionalInfosComponent],
+  declarations: [
+    DataSourceToolbarComponent,
+    DataSourcePaginatorComponent,
+    DataSourceToolbarCustomComponent,
+    FilterTreeComponent,
+    AdditionalInfosComponent,
+    SaveConfigDialogComponent,
+  ],
   imports: [
     CommonModule,
     EuiCoreModule,
@@ -61,12 +76,19 @@ import { ClassloggerModule } from '../classlogger/classlogger.module';
     MatButtonToggleModule,
     MatChipsModule,
     MatListModule,
+    MatCardModule,
+    MatDividerModule,
     DragDropModule,
     TranslateModule,
     DataTreeModule,
     LdsReplaceModule,
-    ClassloggerModule
+    ClassloggerModule,
+    ReactiveFormsModule,
+    FormsModule,
+    HttpClientModule,
+    LoggerModule,
   ],
-  exports: [DataSourceToolbarComponent, DataSourcePaginatorComponent, DataSourceToolbarCustomComponent],
+  providers: [AppConfigService, LoggerConfig],
+  exports: [DataSourceToolbarComponent, DataSourcePaginatorComponent, DataSourceToolbarCustomComponent, FilterTreeComponent],
 })
-export class DataSourceToolbarModule { }
+export class DataSourceToolbarModule {}

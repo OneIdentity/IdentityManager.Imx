@@ -1,7 +1,10 @@
+<div class="imx-identities-content">
+
 <imx-data-source-toolbar #dst
   data-imx-identifier="identity-dst"
   [options]="['search', 'selectedViewGroup']"
   [settings]="dstSettings"
+  [busyService]="busyService"
   [initalView]="selectedView"
   (search)="onSearch($event)"
   (viewSelectionChanged)="onViewSelectionChanged($event)"
@@ -36,3 +39,4 @@
   [titleObject]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
   [subtitleObject]="entitySchema?.Columns['DefaultEmailAddress']"></imx-data-tiles>
 <imx-data-source-paginator [dst]="dst" data-imx-identifier="identity-paginator"></imx-data-source-paginator>
+</div>

@@ -1,0 +1,20 @@
+h2 {
+  font-size: x-large;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.imx-action {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 32px;
+
+  .justify-start {
+    margin-right: auto;
+
+    eui-icon {
+      font-size: 14px;
+      margin-right: 4px;
+    }
+  }
+}

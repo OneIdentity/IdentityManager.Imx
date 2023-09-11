@@ -1,0 +1,227 @@
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '../../stat-mixins.scss';
+
+:host {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .above-card, .above-card--search {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .ancestor-path {
+    display: flex;
+    align-items: center;
+
+    eui-icon {
+      margin-right: 5px;
+    }
+  }
+
+  .cards-container {
+    overflow: hidden;
+    height: 100%;
+
+    .cards-wrapper {
+      height: inherit;
+      width: inherit;
+    }
+  }
+
+  .grid-container {
+    @include Stat-Grid;
+  }
+
+  .stat-card, .area-card {
+    @include Stat-Card;
+  }
+
+  .stat-card--disabled {
+    background-color: transparent;
+  }
+
+  .area-card-contents {
+    margin: auto;
+
+    eui-icon {
+      line-height: 64px;
+      font-size: 64px;
+      opacity: 0.5;
+    }
+  }
+
+  .imx-no-data-wrapper {
+    height: 100%;
+  }
+
+  .imx-no-data {
+    @include Stats-No-Data;
+
+    button {
+      margin-top: 10px;
+      @include EUI-Elevation-1;
+
+      &:hover {
+        @include Ease-Transition;
+      }
+
+      eui-icon {
+        margin-right: 8px;
+        font-size: 20px;
+        line-height: 20px;
+      }
+    }
+  }
+}
+
+// Theming
+:host {
+  .cards-container {
+    background-color: $color-gray-2;
+    border: 1px solid $color-gray-10;
+  }
+
+  .area-card {
+    background-color: $color-blue-60;
+    border: 1px solid $color-blue-80;
+    color: $color-gray-0;
+
+    &:hover {
+      background-color: $color-orange-60;
+      border: 1px solid $color-orange-80;
+    }
+  }
+
+  .stat-card {
+    @include Stat-Card-Theme;
+    :hover {
+      .favorites-icon, .org-icon {
+        color: $color-orange-60;
+      }
+    }
+  }
+
+  .selectable-ancestor, .above-card--search h3 {
+    color: $color-blue-60
+  }
+
+  .unselectable-ancestor h3, .ancestor-path eui-icon {
+    color: $color-gray-40;
+  }
+
+  .imx-no-data-top {
+    @include Stats-No-Data-Theme;
+  }
+  .imx-no-data button:hover {
+    background-color: $color-orange-60;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .cards-container {
+      background-color: $color-gray-60;
+      border: 1px solid $color-gray-50;
+    }
+
+    .area-card {
+      background-color: $color-blue-40;
+      border: 1px solid $color-blue-20;
+      color: $color-gray-80;
+
+      &:hover {
+        background-color: $color-orange-40;
+        border: 1px solid $color-orange-20;
+      }
+    }
+
+    .stat-card {
+      @include Stat-Card-Theme(dark);
+      :hover {
+        .favorites-icon, .org-icon {
+          color: $color-orange-40;
+        }
+      }
+    }
+
+    .selectable-ancestor, .above-card--search h3 {
+      color: $color-blue-40
+    }
+
+    .unselectable-ancestor h3, .ancestor-path eui-icon {
+      color: $color-gray-20;
+    }
+
+    .imx-no-data-top {
+      @include Stats-No-Data-Theme(dark);
+      margin-bottom: 10px;
+    }
+
+    .imx-no-data button:hover {
+      background-color: $color-orange-40;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .cards-container {
+      background-color: $color-gray-90;
+      border: 1px solid $color-gray-80;
+    }
+
+    .area-card {
+      background-color: $color-blue-40;
+      border: 1px solid $color-blue-20;
+      color: $color-gray-80;
+
+      &:hover {
+        background-color: $color-orange-40;
+        border: 1px solid $color-orange-20;
+      }
+    }
+
+    .stat-card {
+      @include Stat-Card-Theme(contrast);
+      :hover {
+        .favorites-icon, .org-icon {
+          color: $color-orange-40;
+        }
+      }
+    }
+
+    .selectable-ancestor, .above-card--search h3 {
+      color: $color-blue-40
+    }
+
+    .unselectable-ancestor h3, .ancestor-path eui-icon {
+      color: $color-gray-20;
+    }
+
+    .imx-no-data-top {
+      @include Stats-No-Data-Theme(contrast);
+      margin-bottom: 10px;
+    }
+
+    .imx-no-data button:hover {
+      background-color: $color-orange-40;
+    }
+  }
+}
+
+// If desktop mouse, we will hide icons until hover
+@media (pointer: fine) {
+  .favorites-icon, .org-icon {
+    visibility: hidden;
+  }
+
+  .stat-card:hover {
+    .favorites-icon, .org-icon {
+      visibility: visible;
+    }
+  }
+}

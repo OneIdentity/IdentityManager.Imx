@@ -1,5 +1,7 @@
 <div>
-  <h2 class="startSubTitle" translate>{{'#LDS#Notifications' | translate}}</h2>
+  <h2 class="startSubTitle" translate>{{'#LDS#Notifications' | translate}}
+    <mat-spinner class="imx-spinner" diameter="16" *ngIf="notifications.isLoading"></mat-spinner>
+  </h2>
   <div class="no-issue-detected" *ngIf="Notifications.length == 0">
     <imx-icon-stack class="imx-ops-icon" [icon1]="'setdefault'" [icon2]="'clipboard'"
       [text]="'#LDS#No process notifications' | translate">

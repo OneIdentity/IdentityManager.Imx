@@ -1,3 +1,28 @@
+@import '@elemental-ui/core/src/styles/_palette.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+}
+
+.value-list {
+  width: 100%;
+}
+
 .value-box {
   display: flex;
+  align-items: center;
+}
+
+.imx-delete-btn {
+  color: $color-red-60;
+}
+
+.imx-add-button {
+  color: $color-blue-60;
+}
+
+.imx-column-container {
+  display: flex;
+  column-gap: 10px;
 }

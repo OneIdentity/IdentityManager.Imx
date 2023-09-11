@@ -1,0 +1,13 @@
+<h3 mat-dialog-title >{{(this.data?.currentName ? '#LDS#Heading Edit Name of View' : '#LDS#Heading Save Current View') | translate}}</h3>
+
+<mat-dialog-content>
+  <mat-form-field appearance="outline" class="eui-input--small eui-input--no-margin">
+    <mat-label>{{'#LDS#Name of view' | translate}}</mat-label>
+    <input matInput type="text" autocomplete="no" [formControl]="formControl"/>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button data-imx-identifier="save-config-cancel" matDialogClose>{{'#LDS#Cancel' | translate}}</button>
+  <button mat-raised-button [disabled]="!(isValid && isNew)" [mat-dialog-close]="displayName" color="primary" data-imx-identifier="save-config-save-button">{{'#LDS#Save' | translate}}</button>
+</mat-dialog-actions>

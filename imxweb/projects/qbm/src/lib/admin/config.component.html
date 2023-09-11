@@ -3,10 +3,10 @@
 
   <div class="config-summary">
     <mat-form-field class="project-selector">
-      <mat-label>{{'#LDS#Show configuration for the following API project' | translate}}</mat-label>
+      <mat-label>{{ '#LDS#Show configuration for the following API project' | translate }}</mat-label>
       <mat-select (selectionChange)="optionSelected($event.value)" [(ngModel)]="configSvc.appId">
-        <mat-option *ngFor="let pr of apiProjects" [value]="pr">
-          {{pr}}
+        <mat-option *ngFor="let pr of apiProjects" [value]="pr.AppId">
+          {{ pr.DisplayName }}
         </mat-option>
       </mat-select>
     </mat-form-field>
@@ -17,161 +17,173 @@
       </button>
       <mat-menu #revertMenu="matMenu">
         <button mat-menu-item (click)="revertAll(true)">
-          <span>{{'#LDS#Revert all globally customized settings' | translate}}</span>
+          <span>{{ '#LDS#Revert all globally customized settings' | translate }}</span>
         </button>
         <button mat-menu-item (click)="revertAll(false)">
-          <span>{{'#LDS#Revert all locally customized settings' | translate}}</span>
+          <span>{{ '#LDS#Revert all locally customized settings' | translate }}</span>
         </button>
         <button mat-menu-item (click)="openConvertSidesheet()" *ngIf="configSvc.getLocalCustomizations().length > 0">
-          <span>{{'#LDS#Convert locally customized settings to global settings' | translate}}</span>
+          <span>{{ '#LDS#Convert locally customized settings to global settings' | translate }}</span>
+        </button>
+
+        <button mat-menu-item data-imx-identifier="admin-add-config-setting-button" (click)="add()" *ngIf="configSvc.canAddAnyConfigKey">
+          {{ '#LDS#Create configuration key' | translate }}
+        </button>
+
+        <button mat-menu-item data-imx-identifier="admin-delete-config-setting-button" (click)="openDeleteSidesheet()" *ngIf="configSvc.deletableKeys.length > 0">
+          {{ '#LDS#Delete configuration key' | translate }}
         </button>
       </mat-menu>
 
-      <button mat-raised-button color="primary" data-imx-identifier="admin-apply-config-change"
-        [disabled]="configSvc.pendingChangeCount == 0" (click)="openApplySidesheet()">
-        {{'#LDS#Apply' | translate | ldsReplace:[ configSvc.pendingChangeCount]}}
+      <button mat-raised-button color="primary" data-imx-identifier="admin-apply-config-change" [disabled]="configSvc.pendingChangeCount == 0" (click)="openApplySidesheet()">
+        {{ '#LDS#Apply' | translate | ldsReplace : [configSvc.pendingChangeCount] }}
       </button>
     </div>
   </div>
 
-  <div class="scroll-container">
-    <imx-data-source-toolbar #dataSourceToolbar [alwaysVisible]="true" [settings]="dstSettings"
-      (search)="onSearch($event)" (navigationStateChanged)="getData($event)"
-      [options]="['search', 'filter']">
+  <div class="scroll-container" [ngClass]="{ loading: loading }">
+    <imx-data-source-toolbar
+      #dataSourceToolbar
+      [alwaysVisible]="true"
+      [settings]="dstSettings"
+      (search)="onSearch($event)"
+      (navigationStateChanged)="getData($event)"
+      [options]="['search', 'filter']"
+    >
     </imx-data-source-toolbar>
 
-    <mat-spinner *ngIf="loading" [attr.aria-label]="'#LDS#Loading...'|translate"></mat-spinner>
+    <cdk-virtual-scroll-viewport itemSize="2">
+      <div [ngClass]="{ loading: loading }">
+        <mat-spinner *ngIf="loading" [attr.aria-label]="'#LDS#Loading...' | translate"></mat-spinner>
 
-    <ng-container *ngIf="!loading">
+        <ng-container *ngIf="!loading">
+          <div *ngIf="sectionsFiltered.length == 0" class="no-results"><eui-icon [icon]="'search'"></eui-icon>{{ '#LDS#There are no configuration keys matching your search.' | translate }}</div>
 
-      <button mat-raised-button data-imx-identifier="admin-add-config-setting-button" (click)="add()">{{'#LDS#Create configuration key' | translate}}</button>
+          <ng-container *cdkVirtualFor="let section of sectionsFiltered; trackBy: sectionTrackByFn">
+            <h2 class="section-header">{{ section.Title }}</h2>
 
-      <div *ngIf="sectionsFiltered.length == 0" class="no-results">
-        <eui-icon [icon]="'search'"></eui-icon>{{ 'No configuration settings were found.' | translate}}
+            <p class="section-subtitle">{{ section.Description }}</p>
+
+            <mat-accordion>
+              <mat-expansion-panel *ngFor="let conf of section.Keys; trackBy: confTrackByFn">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <config-key-path [path]="conf.DisplayPath"></config-key-path>
+                    <eui-badge *ngIf="conf.HasCustomGlobalValue" style="margin-left: 1em">
+                      {{ '#LDS#Customized' | translate }}
+                    </eui-badge>
+                    <eui-badge *ngIf="conf.HasCustomLocalValue" style="margin-left: 1em">
+                      {{ '#LDS#Customized locally' | translate }}
+                    </eui-badge>
+                  </mat-panel-title>
+                  <mat-panel-description class="right-aligned-description">
+                    <ng-container *ngIf="isBoolean(conf)">
+                      <ng-container *ngIf="conf.Value">{{ '#LDS#Activated' | translate }}</ng-container>
+                      <ng-container *ngIf="!conf.Value">{{ '#LDS#Deactivated' | translate }}</ng-container>
+                    </ng-container>
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <!-- defer content rendering until panel is opened-->
+                <ng-template matExpansionPanelContent>
+                  <ng-container *ngIf="isArray(conf)">
+                    <p class="key-description">{{ conf.Description }}</p>
+                    <imx-list-setting [setting]="conf"></imx-list-setting>
+                  </ng-container>
+                  <ng-container *ngIf="!isArray(conf)">
+                    <ng-container *ngIf="isBoolean(conf)">
+                      <mat-checkbox [(ngModel)]="conf.Value" (change)="onChangeEvent(conf)">{{ conf.DisplayPath[conf.DisplayPath.length - 1] }} </mat-checkbox>
+                      <p class="key-description">{{ conf.Description }}</p>
+                    </ng-container>
+                    <ng-container *ngIf="!isBoolean(conf)">
+                      <p class="key-description">{{ conf.Description }}</p>
+
+                      <imx-config-select [conf]="conf" *ngIf="conf.Type == ConfigSettingType.LimitedValues"> </imx-config-select>
+                      <mat-form-field appearance="outline" class="wide-field" *ngIf="conf.Type != ConfigSettingType.LimitedValues">
+                        <mat-label>{{ '#LDS#Value' | translate }}</mat-label>
+
+                        <ng-container *ngIf="conf.Type == ConfigSettingType.PositiveInt">
+                          <input matInput [(ngModel)]="conf.Value" type="number" min="0" step="1" (change)="onChangeEvent(conf)" />
+                        </ng-container>
+                        <ng-container *ngIf="conf.Type == ConfigSettingType.Int">
+                          <input matInput [(ngModel)]="conf.Value" type="number" step="1" (change)="onChangeEvent(conf)" />
+                        </ng-container>
+
+                        <ng-container *ngIf="conf.Type == ConfigSettingType.Double">
+                          <input matInput [(ngModel)]="conf.Value" type="number" step="0.01" (change)="onChangeEvent(conf)" />
+                        </ng-container>
+                        <ng-container *ngIf="conf.Type == ConfigSettingType.PositiveDouble">
+                          <input matInput [(ngModel)]="conf.Value" type="number" min="0" step="0.01" (change)="onChangeEvent(conf)" />
+                        </ng-container>
+                        <ng-container *ngIf="conf.Type == ConfigSettingType.RiskIndex">
+                          <input matInput [(ngModel)]="conf.Value" type="number" min="0" max="1" step="0.01" (change)="onChangeEvent(conf)" />
+                        </ng-container>
+
+                        <ng-container *ngIf="conf.Type == ConfigSettingType.None || conf.Type == ConfigSettingType.Sql">
+                          <textarea matInput [(ngModel)]="conf.Value" (change)="onChangeEvent(conf)"></textarea>
+                        </ng-container>
+                      </mat-form-field>
+                    </ng-container>
+                  </ng-container>
+
+                  <ng-container *ngIf="conf.HasCustomLocalValue || conf.HasCustomGlobalValue">
+                    <ng-container *ngIf="isArray(conf) && conf.OriginalValue && conf.OriginalValue.length > 0">
+                      <mat-label>{{ '#LDS#Original value' | translate }}</mat-label>
+                      <ul>
+                        <li *ngFor="let originalElem of conf.OriginalValue">
+                          {{ originalElem }}
+                        </li>
+                      </ul>
+                    </ng-container>
+                    <ng-container *ngIf="!isArray(conf)">
+                      <ng-container *ngIf="isBoolean(conf)">
+                        {{ '#LDS#This setting has been customized and no longer uses its original value.' | translate }}
+                      </ng-container>
+                      <ng-container *ngIf="!isBoolean(conf)">
+                        <ng-container
+                          *ngIf="
+                            conf.Type == ConfigSettingType.PositiveInt ||
+                            conf.Type == ConfigSettingType.Int ||
+                            conf.Type == ConfigSettingType.Double ||
+                            conf.Type == ConfigSettingType.PositiveDouble ||
+                            conf.Type == ConfigSettingType.RiskIndex
+                          "
+                        >
+                          <mat-form-field appearance="outline" class="wide-field">
+                            <mat-label>{{ '#LDS#Original value' | translate }}</mat-label>
+                            <input matInput readonly [(ngModel)]="conf.OriginalValue" type="number" />
+                          </mat-form-field>
+                        </ng-container>
+
+                        <ng-container *ngIf="conf.Type == ConfigSettingType.None || conf.Type == ConfigSettingType.Sql">
+                          <mat-form-field appearance="outline" class="wide-field">
+                            <mat-label>{{ '#LDS#Original value' | translate }}</mat-label>
+                            <textarea readonly matInput>{{ conf.OriginalValue }}</textarea>
+                          </mat-form-field>
+                        </ng-container>
+                      </ng-container>
+                    </ng-container>
+
+                    <div class="buttonbar">
+                      <button
+                        mat-raised-button
+                        matTooltip="{{ '#LDS#Resets this setting to its original value.' | translate }}"
+                        color="primary"
+                        data-imx-identifier="admin-revert-setting"
+                        (click)="configSvc.revert(conf)"
+                      >
+                        {{ '#LDS#Reset' | translate }}
+                      </button>
+                    </div>
+                  </ng-container>
+
+                  <p class="key-path">{{ conf.Path }}</p>
+                </ng-template>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </ng-container>
+        </ng-container>
       </div>
-
-      <ng-container *ngFor="let section of sectionsFiltered">
-        <h2 class="section-header">{{ section.Title }}</h2>
-
-        <p class="section-subtitle">{{ section.Description}}</p>
-
-        <mat-accordion>
-          <mat-expansion-panel *ngFor="let conf of section.Keys">
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                <config-key-path [path]="conf.DisplayPath"></config-key-path>
-                <eui-badge *ngIf="conf.HasCustomGlobalValue" style="margin-left: 1em;">
-                  {{ '#LDS#Customized' | translate }}
-                </eui-badge>
-                <eui-badge *ngIf="conf.HasCustomLocalValue" style="margin-left: 1em;">
-                  {{ '#LDS#Customized locally' | translate }}
-                </eui-badge>
-              </mat-panel-title>
-              <mat-panel-description class="right-aligned-description">
-                <ng-container *ngIf="isBoolean(conf)">
-                  <ng-container *ngIf="conf.Value">yes</ng-container>
-                  <ng-container *ngIf="!conf.Value">no</ng-container>
-                </ng-container>
-              </mat-panel-description>
-            </mat-expansion-panel-header>
-
-            <!-- defer content rendering until panel is opened-->
-            <ng-template matExpansionPanelContent>
-
-              <ng-container *ngIf="isArray(conf)">
-                <p class="key-description">{{ conf.Description }}</p>
-                <imx-list-setting [setting]="conf"></imx-list-setting>
-              </ng-container>
-              <ng-container *ngIf="!isArray(conf)">
-                <ng-container *ngIf="isBoolean(conf)">
-                  <mat-checkbox [(ngModel)]="conf.Value" (change)="onChangeEvent(conf)">{{
-                    conf.DisplayPath[conf.DisplayPath.length - 1] }}
-                  </mat-checkbox>
-                  <p class="key-description">{{ conf.Description }}</p>
-                </ng-container>
-                <ng-container *ngIf="!isBoolean(conf)">
-                  <p class="key-description">{{ conf.Description }}</p>
-
-                  <imx-config-select [conf]="conf" *ngIf="conf.Type == ConfigSettingType.LimitedValues">
-                  </imx-config-select>
-                  <mat-form-field appearance="outline" class="wide-field" *ngIf="conf.Type != ConfigSettingType.LimitedValues">
-                    <mat-label>{{'#LDS#Value' | translate}}</mat-label>
-
-                    <ng-container *ngIf="conf.Type == ConfigSettingType.PositiveInt">
-                      <input matInput [(ngModel)]="conf.Value" type="number" min="0" step="1"
-                        (change)="onChangeEvent(conf)">
-                    </ng-container>
-                    <ng-container *ngIf="conf.Type == ConfigSettingType.Int">
-                      <input matInput [(ngModel)]="conf.Value" type="number" step="1" (change)="onChangeEvent(conf)">
-                    </ng-container>
-
-                    <ng-container *ngIf="conf.Type == ConfigSettingType.Double">
-                      <input matInput [(ngModel)]="conf.Value" type="number" step="0.01" (change)="onChangeEvent(conf)">
-                    </ng-container>
-                    <ng-container *ngIf="conf.Type == ConfigSettingType.PositiveDouble">
-                      <input matInput [(ngModel)]="conf.Value" type="number" min="0" step="0.01"
-                        (change)="onChangeEvent(conf)">
-                    </ng-container>
-                    <ng-container *ngIf="conf.Type == ConfigSettingType.RiskIndex">
-                      <input matInput [(ngModel)]="conf.Value" type="number" min="0" max="1" step="0.01"
-                        (change)="onChangeEvent(conf)">
-                    </ng-container>
-
-                    <ng-container *ngIf="conf.Type == ConfigSettingType.None || conf.Type == ConfigSettingType.Sql">
-                      <textarea matInput [(ngModel)]="conf.Value" (change)="onChangeEvent(conf)"></textarea>
-                    </ng-container>
-                  </mat-form-field>
-
-                </ng-container>
-              </ng-container>
-
-              <ng-container *ngIf="conf.HasCustomLocalValue || conf.HasCustomGlobalValue">
-                <ng-container *ngIf="isArray(conf) && conf.OriginalValue && conf.OriginalValue.length > 0">
-                  <mat-label>{{'#LDS#Original value' | translate}}</mat-label>
-                  <ul>
-                    <li *ngFor="let originalElem of conf.OriginalValue">
-                      {{ originalElem }}
-                    </li>
-                  </ul>
-                </ng-container>
-                <ng-container *ngIf="!isArray(conf)">
-                  <ng-container *ngIf="isBoolean(conf)">
-                    {{'#LDS#This setting has been customized and no longer uses its original value.' | translate}}
-                  </ng-container>
-                  <ng-container *ngIf="!isBoolean(conf)">
-
-                    <ng-container *ngIf="conf.Type == ConfigSettingType.PositiveInt
-                     || conf.Type == ConfigSettingType.Int || conf.Type == ConfigSettingType.Double
-                     || conf.Type == ConfigSettingType.PositiveDouble || conf.Type == ConfigSettingType.RiskIndex">
-                      <mat-form-field appearance="outline" class="wide-field">
-                        <mat-label>{{'#LDS#Original value' | translate}}</mat-label>
-                        <input matInput readonly [(ngModel)]="conf.OriginalValue" type="number">
-                      </mat-form-field>
-                    </ng-container>
-
-                    <ng-container *ngIf="conf.Type == ConfigSettingType.None || conf.Type == ConfigSettingType.Sql">
-                      <mat-form-field appearance="outline" class="wide-field">
-                        <mat-label>{{'#LDS#Original value' | translate}}</mat-label>
-                        <textarea readonly matInput>{{conf.OriginalValue}}</textarea>
-                      </mat-form-field>
-                    </ng-container>
-                  </ng-container>
-                </ng-container>
-
-                <div class="buttonbar">
-                  <button mat-raised-button
-                    matTooltip="{{'#LDS#Resets this setting to its original value.' | translate}}" color="primary"
-                    data-imx-identifier="admin-revert-setting" (click)="configSvc.revert(conf)">{{'#LDS#Reset' |
-                    translate }}</button>
-                </div>
-              </ng-container>
-
-              <p class="key-path">{{ conf.Path }}</p>
-
-            </ng-template>
-          </mat-expansion-panel>
-        </mat-accordion>
-      </ng-container>
-    </ng-container>
+    </cdk-virtual-scroll-viewport>
   </div>
 </div>

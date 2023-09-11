@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,11 +30,12 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatStepperModule } from '@angular/material/stepper';
 import { TranslateModule } from '@ngx-translate/core';
 import { EuiCoreModule } from '@elemental-ui/core';
 
-import { DataSourceToolbarModule, DataTableModule, CdrModule  } from 'qbm';
+import { DataSourceToolbarModule, DataTableModule, CdrModule, SelectedElementsModule, HelpContextualModule  } from 'qbm';
 
 import { PickCategoryComponent } from './pick-category.component';
 import { PickCategorySidesheetComponent } from './pick-category-sidesheet/pick-category-sidesheet.component';
@@ -58,9 +59,12 @@ import { PickCategoryCreateComponent } from './pick-category-create/pick-categor
     MatButtonModule,
     MatCardModule,
     MatDialogModule,
+    MatSnackBarModule,
     MatStepperModule,
     ReactiveFormsModule,
-    TranslateModule
+    TranslateModule,
+    SelectedElementsModule,
+    HelpContextualModule,
   ]
 })
 export class PickCategoryModule { }

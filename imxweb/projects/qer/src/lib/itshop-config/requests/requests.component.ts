@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,9 +27,21 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
+
 import { PortalShopConfigStructure } from 'imx-api-qer';
 import { CollectionLoadParameters, IClientProperty, DisplayColumns, EntitySchema } from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings, DataSourceToolbarFilter, ClassloggerService, StorageService, HELPER_ALERT_KEY_PREFIX, SettingsService } from 'qbm';
+import {
+  DataSourceToolbarSettings,
+  DataSourceToolbarFilter,
+  ClassloggerService,
+  StorageService,
+  HELPER_ALERT_KEY_PREFIX,
+  SettingsService,
+  BusyService,
+  HelpContextualComponent,
+  HelpContextualService,
+  HELP_CONTEXTUAL
+} from 'qbm';
 import { RequestConfigSidesheetComponent } from '../request-config-sidesheet/request-config-sidesheet.component';
 import { RequestsService } from '../requests.service';
 
@@ -38,10 +50,9 @@ const helperAlertKey = `${HELPER_ALERT_KEY_PREFIX}_requestShop`;
 @Component({
   selector: 'imx-requests',
   templateUrl: './requests.component.html',
-  styleUrls: ['./requests.component.scss', '../request-config-common.scss'],
+  styleUrls: ['./requests.component.scss'],
 })
 export class RequestsComponent implements OnInit, OnDestroy {
-
   public get showHelperAlert(): boolean {
     return !this.storageService.isHelperAlertDismissed(helperAlertKey);
   }
@@ -52,6 +63,8 @@ export class RequestsComponent implements OnInit, OnDestroy {
   public navigationState: CollectionLoadParameters;
   public filterOptions: DataSourceToolbarFilter[] = [];
 
+  public busyService = new BusyService();
+
   private displayedColumns: IClientProperty[] = [];
 
   constructor(
@@ -61,6 +74,7 @@ export class RequestsComponent implements OnInit, OnDestroy {
     private readonly storageService: StorageService,
     public readonly requestsService: RequestsService,
     private readonly settingsService: SettingsService,
+    private readonly helpContextualService: HelpContextualService
   ) {
     this.navigationState = { PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchemaShopStructure = requestsService.shopStructureSchema;
@@ -69,7 +83,7 @@ export class RequestsComponent implements OnInit, OnDestroy {
   public async ngOnInit(): Promise<void> {
     this.displayedColumns = [
       this.entitySchemaShopStructure.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
-      this.entitySchemaShopStructure.Columns.UID_OrgAttestator
+      this.entitySchemaShopStructure.Columns.UID_OrgAttestator,
     ];
     await this.navigate();
   }
@@ -114,23 +128,33 @@ export class RequestsComponent implements OnInit, OnDestroy {
 
   private async viewRequestShop(requestConfig: PortalShopConfigStructure, isNew: boolean = false): Promise<void> {
     const key = isNew ? this.requestsService.LdsHeadingCreateShop : this.requestsService.LdsHeadingEditShop;
-    const sidesheetRef = this.sidesheet.open(RequestConfigSidesheetComponent, {
-      title: await this.translate.get(key).toPromise(),
-      headerColour: 'blue',
-      padding: '0px',
-      width: '60%',
-      data: {
-        requestConfig,
-        isNew
-      }
-    });
+    if(isNew){
+      this.helpContextualService.setHelpContextId(HELP_CONTEXTUAL.ConfigurationRequestsCreate);
+    }
+    const result = await this.sidesheet
+      .open(RequestConfigSidesheetComponent, {
+        title: await this.translate.get(key).toPromise(),
+        subTitle: isNew ? '' : requestConfig.GetEntity().GetDisplay(),
+        padding: '0px',
+        disableClose: true,
+        width: 'max(60%,600px)',
+        testId: isNew ? 'requests-config-create-shop-sidesheet' : 'requests-config-edit-shop-sidesheet',
+        data: {
+          requestConfig,
+          isNew,
+        },
+        headerComponent: isNew ? HelpContextualComponent : undefined
+      })
+      .afterClosed()
+      .toPromise();
     // After the sidesheet closes, reload the current data to refresh any changes that might have been made
-    sidesheetRef.afterClosed().subscribe(() => this.navigate());
-
+    if (result) {
+      this.navigate();
+    }
   }
 
   private async navigate(): Promise<void> {
-    this.requestsService.handleOpenLoader();
+    const isBusy = this.busyService.beginBusy();
     const getParams: any = this.navigationState;
 
     try {
@@ -144,7 +168,7 @@ export class RequestsComponent implements OnInit, OnDestroy {
       };
       this.logger.debug(this, `Head at ${data.Data.length + this.navigationState.StartIndex} of ${data.totalCount} item(s)`);
     } finally {
-      this.requestsService.handleCloseLoader();
+      isBusy?.endBusy();
     }
   }
 }

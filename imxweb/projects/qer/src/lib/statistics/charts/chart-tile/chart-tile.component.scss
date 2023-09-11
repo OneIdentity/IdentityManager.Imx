@@ -1,0 +1,31 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import '../../stat-mixins.scss';
+
+:host {
+  .card-zero-data {
+    @include Empty-Card;
+  }
+}
+
+// Theming
+:host {
+  .card-zero-data {
+    @include Empty-Card-Theme;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .card-zero-data {
+      @include Empty-Card-Theme(dark);
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .card-zero-data {
+      @include Empty-Card-Theme(contrast);
+    }
+  }
+}

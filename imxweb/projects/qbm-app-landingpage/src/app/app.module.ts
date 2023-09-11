@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -46,26 +46,24 @@ import {
   UserMessageModule,
   AdminModule,
   ExtModule,
-  GlobalErrorHandler
+  GlobalErrorHandler,
+  QbmModule,
 } from 'qbm';
 import { AppService } from './app.service';
 import { StartComponent } from './start/start.component';
-import { SwaggerComponent } from './swagger/swagger.component';
 import { environment } from '../environments/environment';
 import appConfigJson from '../appconfig.json';
+import { CustomThemeModule } from 'projects/qbm/src/lib/custom-theme/custom-theme.module';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    StartComponent,
-    SwaggerComponent
-  ],
+  declarations: [AppComponent, StartComponent],
   imports: [
     AdminModule,
     AppRoutingModule,
     AuthenticationModule,
     BrowserAnimationsModule,
     BrowserModule,
+    CustomThemeModule,
     EuiCoreModule,
     EuiMaterialModule,
     HttpClientModule,
@@ -74,16 +72,17 @@ import appConfigJson from '../appconfig.json';
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useClass: ImxTranslateLoader
+        useClass: ImxTranslateLoader,
       },
       missingTranslationHandler: {
         provide: MissingTranslationHandler,
-        useClass: ImxMissingTranslationHandler
-      }
+        useClass: ImxMissingTranslationHandler,
+      },
     }),
     ExtModule,
     MatCardModule,
     LoggerModule.forRoot({ level: NgxLoggerLevel.DEBUG, serverLogLevel: NgxLoggerLevel.OFF }),
+    QbmModule
   ],
   providers: [
     { provide: 'environment', useValue: environment },
@@ -92,7 +91,7 @@ import appConfigJson from '../appconfig.json';
       provide: APP_INITIALIZER,
       useFactory: AppService.init,
       deps: [AppService],
-      multi: true
+      multi: true,
     },
     {
       provide: ErrorHandler,
@@ -100,8 +99,8 @@ import appConfigJson from '../appconfig.json';
     },
     AppcontainerService,
     AppConfigService,
-    imx_SessionService
+    imx_SessionService,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

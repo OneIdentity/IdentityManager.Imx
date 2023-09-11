@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,11 +33,12 @@ import { TreeNodeResultParameter } from '../../data-tree/tree-node-result-parame
 import { FilterTreeEntityWrapperService } from './filter-tree-entity-wrapper.service';
 
 export class FilterTreeDatabase extends TreeDatabase {
+  
 
   constructor(
     private readonly entityWrapper: FilterTreeEntityWrapperService,
     private readonly getFilterTree: (parentkey: string) => Promise<FilterTreeData>,
-    private readonly busyService: EuiLoadingService
+    private readonly busyLoadingService: EuiLoadingService
   ) {
     super();
   }
@@ -45,14 +46,14 @@ export class FilterTreeDatabase extends TreeDatabase {
   public async getData(showLoading: boolean, parameters: CollectionLoadParameters = {}): Promise<TreeNodeResultParameter> {
     let entities: IEntity[];
     if (showLoading) {
-      setTimeout(() => this.busyService.show());
+      setTimeout(() => this.busyLoadingService.show());
     }
 
     try {
       entities = this.entityWrapper.convertToEntities(await this.getFilterTree(parameters.ParentKey), parameters['parentDisplay']);
     } finally {
       if (showLoading) {
-        setTimeout(() => this.busyService.hide());
+        setTimeout(() => this.busyLoadingService.hide());
       }
     }
 

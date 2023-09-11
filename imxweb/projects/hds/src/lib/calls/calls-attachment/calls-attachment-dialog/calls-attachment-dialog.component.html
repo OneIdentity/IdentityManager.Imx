@@ -1,0 +1,28 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title class="dialog-title">{{ dialogTitle | translate }}</h2>
+  <mat-dialog-content class="dialog-content">
+    <div class="dialog-subheading">{{ dialogSubHeading | translate | ldsReplace: data.itemInfo }}</div>
+    <ng-container [formGroup]="form" *ngIf="isActionAddFolder">
+      <mat-form-field appearance="fill" >
+        <mat-label>{{ "#LDS#Folder name" | translate }}</mat-label>
+        <input matInput formControlName="folderName"/>
+        <mat-error>
+          {{ '#LDS#Enter a name for the folder.' | translate }}
+        </mat-error>
+      </mat-form-field>
+    </ng-container>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-stroked-button (click)="closeDialog()">
+      {{ '#LDS#Cancel' | translate }}
+    </button>
+    <button mat-flat-button color="primary" (click)="closeDialog('confirm', form.controls.folderName.value)" [disabled]="form.invalid" *ngIf="isActionAddFolder">
+      {{ '#LDS#Create' | translate }}
+    </button>
+    <button mat-flat-button color="warn" (click)="closeDialog('confirm')" *ngIf="!isActionAddFolder">
+      <eui-icon icon="close" size="small"></eui-icon>
+      {{ '#LDS#Yes' | translate }}
+    </button>
+  </mat-dialog-actions>
+</div>

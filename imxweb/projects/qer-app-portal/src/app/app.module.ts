@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,55 +32,69 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { MissingTranslationHandler, TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
-import { TranslateModule, TranslateLoader, MissingTranslationHandler, TranslateService } from '@ngx-translate/core';
 
 import {
+  AuthenticationModule,
   CdrRegistryService,
+  CustomThemeModule,
   GlobalErrorHandler,
-  ImxTranslateLoader,
   ImxMissingTranslationHandler,
+  ImxTranslateLoader,
+  LdsReplacePipe,
   MastHeadModule,
   MenuModule,
-  LdsReplacePipe,
+  ObjectHistoryApiService,
+  ObjectHistoryModule,
   Paginator,
   UserMessageModule,
-  QbmModule,
-  AuthenticationModule,
-  ObjectHistoryApiService,
-  ObjectHistoryModule
 } from 'qbm';
 import {
   AddressbookModule,
   ApprovalsModule,
-  IdentitiesModule,
+  ArchivedRequestsModule,
   DelegationModule,
-  ObjectSheetModule,
-  ObjectsheetPersonModule,
+  IdentitiesModule,
+  ItshopPatternModule,
+  NewRequestModule,
+  ObjectHyperviewService,
   ProductSelectionModule,
+  ProfileModule,
   QerModule,
   QpmIntegrationModule,
+  RelatedApplicationsModule,
+  RequestConfigModule,
   RequestHistoryModule,
+  ResourcesModule,
+  RiskConfigModule,
+  RoleManangementModule,
   ServiceCategoriesModule,
   ServiceItemsEditModule,
   ShoppingCartModule,
-  ProfileModule,
-  RequestConfigModule,
-  RoleManangementModule,
-  ItshopPatternModule
+  StatisticsModule,
+  ViewDevicesModule,
+  MyResponsibilitiesViewModule,
+  ApprovalWorkFlowModule,
+  UserProcessModule,
+  TeamResponsibilitiesModule
 } from 'qer';
 
+import { APP_BASE_HREF } from '@angular/common';
+import appConfigJson from '../appconfig.json';
+import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AppService } from './app.service';
-import { environment } from '../environments/environment';
-import appConfigJson from '../appconfig.json';
+import { PortalHyperviewService } from './hyperview/portal-hyperview.service';
 import { PortalHistoryService } from './portal-history.service';
 
+export const HEADLESS_BASEHREF = '/headless';
+export function getBaseHref(): string {
+  return location.href.includes('headless') ? HEADLESS_BASEHREF : '';
+}
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent],
   imports: [
     AppRoutingModule,
     AuthenticationModule,
@@ -90,40 +104,49 @@ import { PortalHistoryService } from './portal-history.service';
     EuiMaterialModule,
     HttpClientModule,
     IdentitiesModule,
+    ResourcesModule,
     LoggerModule.forRoot({ level: NgxLoggerLevel.DEBUG, serverLogLevel: NgxLoggerLevel.OFF }),
     MatDialogModule,
     MatTabsModule,
     MastHeadModule,
     MenuModule,
     AddressbookModule,
-    QbmModule,
     QerModule,
     ProfileModule,
     RoleManangementModule,
+    StatisticsModule,
     QpmIntegrationModule,
+    CustomThemeModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useClass: ImxTranslateLoader
+        useClass: ImxTranslateLoader,
       },
       missingTranslationHandler: {
         provide: MissingTranslationHandler,
-        useClass: ImxMissingTranslationHandler
-      }
+        useClass: ImxMissingTranslationHandler,
+      },
     }),
     UserMessageModule,
     DelegationModule,
     ShoppingCartModule,
     ObjectHistoryModule,
-    ObjectSheetModule,
-    ObjectsheetPersonModule,
     ProductSelectionModule,
     ApprovalsModule,
     ItshopPatternModule,
     RequestConfigModule,
     RequestHistoryModule,
     ServiceCategoriesModule,
-    ServiceItemsEditModule
+    ServiceItemsEditModule,
+    NewRequestModule,
+    RiskConfigModule,
+    ArchivedRequestsModule,
+    RelatedApplicationsModule,
+    ViewDevicesModule,
+    MyResponsibilitiesViewModule,
+    ApprovalWorkFlowModule,
+    UserProcessModule,
+    TeamResponsibilitiesModule
   ],
   providers: [
     { provide: 'environment', useValue: environment },
@@ -132,26 +155,31 @@ import { PortalHistoryService } from './portal-history.service';
       provide: APP_INITIALIZER,
       useFactory: AppService.init,
       deps: [AppService],
-      multi: true
+      multi: true,
     },
     {
       provide: ErrorHandler,
-      useClass: GlobalErrorHandler
+      useClass: GlobalErrorHandler,
     },
     {
       provide: ObjectHistoryApiService,
-      useClass: PortalHistoryService
+      useClass: PortalHistoryService,
+    },
+    {
+      provide: ObjectHyperviewService,
+      useClass: PortalHyperviewService
     },
     {
       provide: MatPaginatorIntl,
       useFactory: Paginator.Create,
-      deps: [
-        TranslateService,
-        LdsReplacePipe
-      ]
+      deps: [TranslateService, LdsReplacePipe],
     },
-    CdrRegistryService
+    {
+      provide: APP_BASE_HREF,
+      useValue: getBaseHref(),
+    },
+    CdrRegistryService,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

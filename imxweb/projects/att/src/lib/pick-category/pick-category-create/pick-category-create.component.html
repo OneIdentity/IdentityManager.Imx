@@ -1,61 +1,71 @@
 <div eui-sidesheet-content>
-  <mat-vertical-stepper [linear]="true" (selectionChange)="stepChange($event)" #stepper>
-    <mat-step [stepControl]="displayNameForm" label="{{'#LDS#Enter a name for the new sample' | translate}}">
-      <form [formGroup]="displayNameForm">
-        <imx-cdr-editor [cdr]="displayNameCdr" data-imx-identifier="pick-category-create-step1-cdr-displayName"
-          (controlCreated)="displayNameForm.addControl(displayNameCdr.column.ColumnName, $event)">
-        </imx-cdr-editor>
-      </form>
-      <div class="imx-stepper-button-container">
-        <button *ngIf="displayNameForm" mat-stroked-button data-imx-identifier="pick-category-create-step1-button-next"
-          [disabled]="displayNameForm.invalid" matStepperNext>
-          {{ '#LDS#Next' | translate }}
-        </button>
-      </div>
-    </mat-step>
-
-    <mat-step label="{{'#LDS#Assign identities' | translate}}">
-      <imx-pick-category-select-identities [embeddedMode]="true"></imx-pick-category-select-identities>
-      <div class="imx-stepper-button-container">
-        <button class="imx-button-previous" mat-stroked-button
-          data-imx-identifier="pick-category-create-step2-button-previous" matStepperPrevious>
-          {{'#LDS#Previous' | translate}}
-        </button>
-        <button mat-stroked-button data-imx-identifier="pick-category-create-step2-button-next" (click)="showSummary()"
-          matStepperNext>
-          {{ (selectIndentities?.selection?.length > 0 ? '#LDS#Next' : '#LDS#Skip') | translate}}
-        </button>
-      </div>
-    </mat-step>
-
-    <mat-step label="{{'#LDS#Summary' | translate}}">
-      <span class="imx-summary-intro">{{'#LDS#The following sample will be created:' | translate }}</span>
-      <imx-cdr-editor [cdr]="displayNameReadonlyCdr"></imx-cdr-editor>
-
-      <ng-container *ngIf="dstWrapper && dstSettings?.dataSource?.Data?.length > 0">
-        <span>{{'#LDS#Assigned identities:' | translate}}</span>
-
-        <div class="imx-table-container">
-          <imx-data-source-toolbar #dst class="imx-dst-selected-identities"
-            data-imx-identifier="pick-category-create--step3-dst-selected-identities" [settings]="dstSettings"
-            [options]="['search', 'filter', 'groupBy']"
-            [searchBoxText]="'#LDS#Search' | translate">
-          </imx-data-source-toolbar>
-
-          <imx-data-table #dataTable data-imx-identifier="pick-category-create--step3-table" [dst]="dst"
-            detailViewVisible="false" mode="manual" [showSelectedItemsMenu]="false">
-            <imx-data-table-column [entityColumn]="dstWrapper.propertyDisplay">
-            </imx-data-table-column>
-          </imx-data-table>
+  <mat-card>
+    <mat-stepper orientation="vertical" [linear]="true" (selectionChange)="stepChange($event)" #stepper>
+      <mat-step [stepControl]="displayNameForm" label="{{ '#LDS#Enter a name for the new sample' | translate }}">
+        <form [formGroup]="displayNameForm">
+          <imx-cdr-editor
+            [cdr]="displayNameCdr"
+            data-imx-identifier="pick-category-create-step1-cdr-displayName"
+            (controlCreated)="displayNameForm.addControl(displayNameCdr.column.ColumnName, $event)"
+          >
+          </imx-cdr-editor>
+        </form>
+        <div class="imx-stepper-button-container">
+          <button
+            *ngIf="displayNameForm"
+            mat-stroked-button
+            color="primary"
+            data-imx-identifier="pick-category-create-step1-button-next"
+            [disabled]="displayNameForm.invalid"
+            matStepperNext
+          >
+            {{ '#LDS#Next' | translate }}
+          </button>
         </div>
-      </ng-container>
+      </mat-step>
 
-      <div class="imx-stepper-button-container">
-        <button mat-raised-button color="primary" data-imx-identifier="pick-category-create--step3-button-create"
-          (click)="closeSidesheet()">
-          {{ '#LDS#Save' | translate }}
-        </button>
-      </div>
-    </mat-step>
-  </mat-vertical-stepper>
+      <mat-step label="{{ '#LDS#Assign identities' | translate }}">
+        <imx-pick-category-select-identities [embeddedMode]="true"></imx-pick-category-select-identities>
+        <div class="imx-stepper-button-container">
+          <button class="imx-button-previous" mat-stroked-button data-imx-identifier="pick-category-create-step2-button-previous" matStepperPrevious>
+            {{ '#LDS#Previous' | translate }}
+          </button>
+          <button mat-stroked-button color="primary" data-imx-identifier="pick-category-create-step2-button-next" (click)="showSummary()" matStepperNext>
+            {{ (selectIndentities?.selection?.length > 0 ? '#LDS#Next' : '#LDS#Skip') | translate }}
+          </button>
+        </div>
+      </mat-step>
+
+      <mat-step label="{{ '#LDS#Summary' | translate }}">
+        <span class="imx-summary-intro">{{ '#LDS#The following sample will be created:' | translate }}</span>
+        <imx-cdr-editor [cdr]="displayNameReadonlyCdr"></imx-cdr-editor>
+
+        <ng-container *ngIf="dstWrapper && dstSettings?.dataSource?.Data?.length > 0">
+          <span>{{ '#LDS#Assigned identities:' | translate }}</span>
+
+          <div class="imx-table-container">
+            <imx-data-source-toolbar
+              #dst
+              class="imx-dst-selected-identities"
+              data-imx-identifier="pick-category-create--step3-dst-selected-identities"
+              [settings]="dstSettings"
+              [options]="['search', 'filter', 'groupBy']"
+              [searchBoxText]="'#LDS#Search' | translate"
+            >
+            </imx-data-source-toolbar>
+
+            <imx-data-table #dataTable data-imx-identifier="pick-category-create--step3-table" [dst]="dst" detailViewVisible="false" mode="manual" [showSelectedItemsMenu]="false">
+              <imx-data-table-column [entityColumn]="dstWrapper.propertyDisplay"> </imx-data-table-column>
+            </imx-data-table>
+          </div>
+        </ng-container>
+
+        <div class="imx-stepper-button-container">
+          <button mat-stroked-button color="primary" data-imx-identifier="pick-category-create--step3-button-create" (click)="closeSidesheet()">
+            {{ '#LDS#Save' | translate }}
+          </button>
+        </div>
+      </mat-step>
+    </mat-stepper>
+  </mat-card>
 </div>

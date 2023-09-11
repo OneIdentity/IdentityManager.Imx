@@ -1,0 +1,54 @@
+<h1 class="mat-headline">
+  <span>{{ '#LDS#Heading Responsibilities of My Reports' | translate }}</span>
+  <imx-help-contextual></imx-help-contextual>
+</h1>
+<mat-card class="imx-team-responsibilities-table-card">
+  <imx-data-source-toolbar
+    #dst
+    [options]="['filter']"
+    [settings]="dstSettings"
+    [busyService]="busyService"
+    (search)="getData({ search: $event })"
+    (navigationStateChanged)="getData($event)"
+    data-imx-identifier="view-team-responsibilities-dst"
+  >
+  </imx-data-source-toolbar>
+  <imx-data-table
+    #dataTable
+    [dst]="dst"
+    class="imx-pickcategory-table"
+    [detailViewVisible]="false"
+    mode="manual"
+    [showSelectedItemsMenu]="false"
+    data-imx-identifier="view-team-responsibilities-datatable"
+    (highlightedEntityChanged)="onOpenDetails($event)"
+  >
+    <imx-data-table-column [entityColumn]="entitySchema?.Columns.DisplayName"></imx-data-table-column>
+    <imx-data-table-generic-column columnName="badges">
+      <ng-template let-responsibility>
+        <div *ngIf="isResponsibilityOrphaned(responsibility)" class="imx-badge-container">
+          <eui-badge>
+            {{ '#LDS#No one responsible' | translate }}
+          </eui-badge>
+        </div>
+      </ng-template>
+    </imx-data-table-generic-column>
+    <imx-data-table-column [entityColumn]="entitySchema?.Columns.UID_Person"></imx-data-table-column>
+    <!-- TODO Work item: #426008 -->
+    <!-- <imx-data-table-generic-column columnName="actions">
+      <ng-template let-responsibility>
+        <button
+          mat-flat-button
+          color="warn"
+          data-imx-identifier="team-responsibility-delete"
+          *ngIf="isResponsibilityDeletable(responsibility)"
+          (click)="onDeleteResponsibility(responsibility)"
+        >
+          <mat-icon>delete</mat-icon>
+          <span translate>#LDS#Delete</span>
+        </button>
+      </ng-template>
+    </imx-data-table-generic-column> -->
+  </imx-data-table>
+  <imx-data-source-paginator data-imx-identifier="view-team-responsibilities-paginator" [dst]="dst"> </imx-data-source-paginator>
+</mat-card>

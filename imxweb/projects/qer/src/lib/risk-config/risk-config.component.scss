@@ -1,0 +1,47 @@
+@import '../../../../../shared/scss/common-table.scss';
+@mixin imx-flex-column-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
+@mixin imx-flex-row-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.heading-wrapper {
+  @include imx-flex-row-container();
+  flex: 0 0 auto;
+}
+
+:host {
+  @include imx-flex-column-container();
+  overflow: hidden;
+  height: 100%;
+  max-width: 100%;
+}
+
+.imx-risk-config-page {
+  background-color: inherit;
+  @include imx-flex-column-container();
+  overflow: hidden;
+
+  .mat-card {
+   @include imx-flex-fill-control-hidden-overflow();
+  }
+
+  div.imx-table-container {
+    @include imx-flex-column-container();
+    overflow: hidden;
+    height: inherit;
+
+    .imx-pickcategory-table {
+      flex-grow: 1;
+      overflow: auto;
+    }
+  }
+  &-actions {
+    @include imx-button-bar();
+  }
+}

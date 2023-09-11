@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,26 +24,30 @@
  *
  */
 
-import { Component, Input } from '@angular/core';
-
-import { RequestHistoryLoadParameters } from './request-history-load-parameters.interface';
+import { Component, OnInit } from '@angular/core';
+import { QerPermissionsService } from  '../admin/qer-permissions.service';
+import { HELP_CONTEXTUAL, HelpContextualValues } from 'qbm';
 
 @Component({
   templateUrl: './request-history.component.html',
   styleUrls: ['./request-history.component.scss']
 })
-export class RequestHistoryComponent {
-  public filter: RequestHistoryLoadParameters = {};
+export class RequestHistoryComponent implements OnInit {
 
-  @Input() public auditMode = false;
+  public auditMode = false;
+  contextId: HelpContextualValues;
 
-  @Input() public form: 'Approver' | 'Request' = 'Request';
+  constructor(
+    private readonly qerPermissionService: QerPermissionsService,
+  ) {}
 
-  public recallDecision(): void {
-    /* TODO
-    this.dialogService.open(RecallDecisionComponent, {
-        data: { // TODO }
-    });
-    */
+  public async ngOnInit(): Promise<void> {
+    this.auditMode = await this.qerPermissionService.isShopStatistics();
+    if(this.auditMode){
+      this.contextId = HELP_CONTEXTUAL.RequestHistoryAuditor;
+    }else{
+      this.contextId = HELP_CONTEXTUAL.RequestHistory;
+    }
+    
   }
 }

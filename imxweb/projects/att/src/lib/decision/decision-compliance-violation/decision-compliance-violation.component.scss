@@ -1,4 +1,4 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
 
 @mixin imx-flex-row-container {
   display: flex;
@@ -21,8 +21,23 @@
   }
 }
 
+.mat-card-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 17px;
+}
+
 .mat-expansion-panel {
   margin-bottom: 20px;
+
+  &-header-title {
+    font-size: 24px;
+    font-weight: 500;
+  }
+
+  ::ng-deep .eui-alert {
+    width: auto;
+  }
 }
 
 .eui-badge {
@@ -30,18 +45,19 @@
 }
 
 .imx-container > * {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 .imx-label {
-  color: $black-9;
+  color: $color-gray-40;
   font-size: 80%;
+  margin-top: 5px;
   margin-bottom: 5px;
 }
-.imx-entitlement-subtitle {
-  color: $black-9;
+.imx-entitlement-subtitle, .imx-source-subtitle {
+  color: $color-gray-40;
 }
 
-.imx-risk-reduction-item {
+.imx-risk-reduction-item, .imx-source-item {
   list-style-type: circle;
   margin-left: 20px;
 }

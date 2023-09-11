@@ -1,5 +1,4 @@
-@import "variables.scss";
-@import "@angular/material/theming";
+@import 'variables.scss';
 
 :host {
   min-width: 800px;
@@ -61,7 +60,7 @@
 }
 
 .project-selector {
-  min-width: 300px;
+  min-width: 450px;
 }
 
 .wide-field {
@@ -70,9 +69,25 @@
 }
 
 .scroll-container {
-  padding-right: 2em; // allow room for scroll bars
+  padding: 0.5em 0.5em 0.5em 0;
   flex: 1 1 auto;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  &.loading {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .loading {
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    align-content: center;
+    flex-flow: wrap;
+  }
 }
 
 .no-results {
@@ -89,4 +104,11 @@
     font-size: 18px;
     color: $black-9;
   }
+}
+.mat-expansion-panel-header,
+.mat-expansion-panel-header.mat-expanded {
+  height: 50px;
+}
+.cdk-virtual-scroll-viewport {
+  flex-grow: 1;
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { IWriteValue } from 'imx-qbm-dbts';
@@ -43,19 +43,19 @@ export interface AadUserCreateDialogData {
 })
 export class AadUserCreateDialogComponent implements OnInit {
 
-  public readonly detailsFormGroup: FormGroup;
+  public readonly detailsFormGroup: UntypedFormGroup;
   public cdrList: ColumnDependentReference[] = [];
 
   constructor(
-    formBuilder: FormBuilder,
+    formBuilder: UntypedFormBuilder,
     public dialogRef: MatDialogRef<AadUserCreateDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: AadUserCreateDialogData
   ) {
-    this.detailsFormGroup = new FormGroup({ formArray: formBuilder.array([]) });
+    this.detailsFormGroup = new UntypedFormGroup({ formArray: formBuilder.array([]) });
   }
 
-  get formArray(): FormArray {
-    return this.detailsFormGroup.get('formArray') as FormArray;
+  get formArray(): UntypedFormArray {
+    return this.detailsFormGroup.get('formArray') as UntypedFormArray;
   }
 
   public ngOnInit(): void {

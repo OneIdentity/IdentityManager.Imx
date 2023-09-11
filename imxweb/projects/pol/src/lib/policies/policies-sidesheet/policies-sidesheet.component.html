@@ -1,0 +1,49 @@
+<mat-tab-group>
+  <mat-tab [label]="'#LDS#Heading Information' | translate">
+    <ng-template matTabContent>
+      <div eui-sidesheet-content>
+        <mat-card>
+          <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"></imx-cdr-editor>
+        </mat-card>
+      </div>
+
+      <div eui-sidesheet-actions>
+        <button mat-stroked-button [euiDownload]="reportDownload" class="justify-start" data-imx-identifier="policies-sidesheet-button-download-report">
+          {{ '#LDS#Download report' | translate }}
+        </button>
+      </div>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab [label]="'#LDS#Heading Policy Violations' | translate">
+    <ng-template matTabContent>
+      <div eui-sidesheet-content>
+        <imx-policy-violations [selectedCompanyPolicy]="data.selectedPolicy" [isMControlPerViolation]="data.isMControlPerViolation"></imx-policy-violations>
+      </div>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab [label]="'#LDS#Heading Mitigating Controls' | translate">
+    <ng-template matTabContent>
+      <div eui-sidesheet-content>
+        <imx-mitigating-controls-policy [objectUid]="objectUid" [isMControlPerViolation]="data.isMControlPerViolation"></imx-mitigating-controls-policy>
+      </div>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab data-imx-identifier="policies-sidesheet-tab-statistics" [label]="'#LDS#Heading Statistics' | translate">
+    <ng-template matTabContent>
+      <div eui-sidesheet-content>
+        <imx-statistics-for-objects [objectType]="objectType" [objectUid]="objectUid"></imx-statistics-for-objects>
+      </div>
+    </ng-template>
+  </mat-tab>
+  <mat-tab label="{{'#LDS#Heading Hyperview' | translate}}">
+    <ng-template matTabContent>
+      <imx-object-hyperview
+        [objectType]="data?.selectedPolicy?.GetEntity()?.TypeName"
+        [objectUid]="data?.selectedPolicy?.GetEntity()?.GetKeys()[0]">
+      </imx-object-hyperview>
+    </ng-template>
+  </mat-tab>
+</mat-tab-group>

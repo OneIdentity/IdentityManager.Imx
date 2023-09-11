@@ -1,52 +1,44 @@
 @use '@angular/material' as mat;
-@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
-:host{
+:host {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+  .mat-card > .mat-card-actions:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .imx-kpi-site {
   padding: 16px 40px;
-  background-color: mat.get-color-from-palette($asher-gray-palette, 100);
   height: auto;
   min-height: 100%;
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
+  overflow: auto;
 }
 
 li {
   list-style-type: none;
   margin: 0 10px 10px 0;
-
-  .mat-card {
-    background-color: $white;
-    width: 340px;
-    height: 68px;
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-
-    :nth-child(1n) {
-      align-self: center;
-    }
-  }
 }
 
 .mat-card {
   padding: 5px 10px;
+  width: 340px;
+  height: 68px;
+  display: flex;
 }
 
 h2 {
   font-size: 20px;
-  color: $black-3;
   margin-bottom: 8px;
 }
 
 p {
   font-size: 14px;
-  color: $black-9;
   margin-top: 0;
 }
 
@@ -77,15 +69,21 @@ h4 {
 }
 
 .imx-kpi-content {
-  grid-column: 2;
-  margin-bottom: 0px;
+  flex: 1 1 auto;
+  align-self: center;
+  margin-bottom: 0;
+  margin-right: 5px;
+}
+
+.imx-spacer {
+  flex: 1 1 auto;
 }
 
 .imx-kpi-tile-actions {
-  margin: 0;
-  margin-top: -5px;
+  display: flex;
+  align-items: center;
+  margin: 0 5px 0 0;
   padding: 0;
-  grid-column: 3;
 }
 
 .imx-pass,
@@ -95,18 +93,12 @@ h4 {
   line-height: 38px;
   font-weight: 900;
   margin: 0 20px 0 0px;
-  color: $aspen-green;
-  grid-column: 1;
+  align-self: center;
 }
 
 .imx-kpi-list {
   display: flex;
   flex-wrap: wrap;
-
-  > li > .mat-card {
-    display: flex;
-    height: 100%;
-  }
 }
 
 .imx-kpi-view {
@@ -124,10 +116,6 @@ h4 {
   margin: 0px 0 10px;
 }
 
-.imx-fail {
-  color: $phoenix-red;
-}
-
 .imx-title-text {
   text-align: center;
   margin: 0 24px 0 60px;
@@ -142,19 +130,117 @@ h4 {
 .imx-aob-kpi-empty {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
-  margin-bottom: 10px;
-  margin-top: 10px;
-  background-color: mat.get-color-from-palette($asher-gray-palette, 100);
-  height: auto;
-  min-height: calc(100% - 20px);
+  flex: 1 1 auto;
 
   h2 {
     font-weight: 600;
-    margin-top: 30px;
+  }
+}
+
+.eui-light-theme {
+  :host {
+    li {
+      .mat-card {
+        background-color: $color-gray-0;
+      }
+    }
+    p {
+      color: $color-gray-90;
+    }
+
+    .imx-pass {
+      color: $color-green-60;
+    }
+    .imx-fail {
+      color: $color-red-60;
+    }
+  }
+}
+
+::ng-deep .eui-light-theme .kpi-overview-modal {
+  .imx-title-text {
+    color: $color-gray-80;
   }
 
-  >.eui-icon {
-    color: $black-b;
+  .imx-pass {
+    color: $color-green-60;
+  }
+
+  .imx-fail {
+    color: $color-red-60;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-kpi-list > li > .mat-card {
+      background-color: $color-gray-60;
+    }
+    .imx-aob-kpi-empty {
+      > .eui-icon {
+        color: $color-gray-5;
+      }
+    }
+
+    .imx-pass {
+      color: $color-green-40;
+    }
+
+    .imx-fail {
+      color: $color-red-40;
+    }
+  }
+}
+
+::ng-deep .eui-dark-theme .kpi-overview-modal {
+  .imx-title-text {
+    color: $color-gray-2;
+  }
+
+  .imx-pass {
+    color: $color-green-40;
+  }
+
+  .imx-fail {
+    color: $color-red-40;
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-kpi-list > li > .mat-card {
+      background-color: $color-gray-80;
+    }
+    .imx-aob-kpi-empty {
+      background-color: $color-gray-90;
+
+      > .eui-icon {
+        color: $color-gray-0;
+      }
+    }
+
+    .imx-pass {
+      color: $color-green-20;
+    }
+
+    .imx-fail {
+      color: $color-red-20;
+    }
+  }
+}
+
+::ng-deep .eui-contrast-theme .kpi-overview-modal {
+  .imx-title-text {
+    color: $color-gray-10;
+  }
+
+  .imx-pass {
+    color: $color-green-60;
+  }
+
+  .imx-fail {
+    color: $color-red-60;
   }
 }

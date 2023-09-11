@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -50,7 +50,7 @@ export class DataTreeSearchResultsComponent implements OnChanges {
    * This text will be displayed when a search or filter is applied but there is no data as a result
    * Defaults to a generic message when not supplied
    */
-  @Input() public noMatchingDataText = '#LDS#No matching data';
+  @Input() public noMatchingDataText = '#LDS#There is no data matching your search.';
 
   /**
    * This icon will be displayed along with the 'noMatchingDataTranslationKey' text when a search or filter
@@ -178,7 +178,7 @@ export class DataTreeSearchResultsComponent implements OnChanges {
   }
 
   private getId(entity: IEntity): string {
-    return this.database ?  this.database.getId(entity) : entity.GetKeys()[0];
+    return TreeDatabase.getId(entity);
    }
 
 }

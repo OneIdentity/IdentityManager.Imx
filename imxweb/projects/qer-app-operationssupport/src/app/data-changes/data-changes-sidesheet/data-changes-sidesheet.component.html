@@ -1,0 +1,38 @@
+<div class="wrapper">
+  <div *ngIf="isOpening; then loading else showContent"></div>
+</div>
+
+<ng-template #loading>
+  <div class="center">
+    <mat-progress-spinner mode="indeterminate" diameter="200"></mat-progress-spinner>
+  </div>
+</ng-template>
+
+<ng-template #showContent>
+  <div *ngIf="isMulti; then accordions else matCard"></div>
+</ng-template>
+
+<ng-template #accordions>
+  <mat-accordion>
+    <mat-expansion-panel *ngFor="let column of data.Columns" [expanded]="false">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{column.ColumnDisplay}}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <ng-container *ngTemplateOutlet="formContent; context: {column: column}"></ng-container>
+    </mat-expansion-panel>
+  </mat-accordion>
+</ng-template>
+
+<ng-template #matCard>
+  <mat-card>
+    <ng-container *ngTemplateOutlet="formContent; context: {column: data.Columns[0]}"></ng-container>
+  </mat-card>
+</ng-template>
+
+<ng-template #formContent let-column="column">
+  <form [attr.data-imx-identifier]="'value-changes-form'" class="full-width">
+    <imx-cdr-editor *ngFor="let cdr of getCdrList(column)" [cdr]="cdr"></imx-cdr-editor>
+  </form>
+</ng-template>

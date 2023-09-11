@@ -1,0 +1,18 @@
+@import '@elemental-ui/core/src/styles/_palette.scss';
+
+:host {
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+
+  .imx-tree-root {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+  }
+
+  .imx-tree-root--selected > .colored-icon {
+    color: $color-orange-60;
+  }
+}
+

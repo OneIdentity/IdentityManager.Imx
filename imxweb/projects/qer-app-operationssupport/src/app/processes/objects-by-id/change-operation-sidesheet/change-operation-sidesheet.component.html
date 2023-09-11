@@ -1,0 +1,49 @@
+<div eui-sidesheet-content class="wrapper">
+  <div *ngIf="isOpening; then loading else showContent"></div>
+</div>
+
+<ng-template #loading>
+  <div class="center">
+    <mat-progress-spinner mode="indeterminate" diameter="200"></mat-progress-spinner>
+  </div>
+</ng-template>
+
+<ng-template #showContent>
+  <div *ngIf="isMulti; then accordions else matCard"></div>
+</ng-template>
+
+<ng-template #accordions>
+  <mat-accordion>
+    <mat-expansion-panel *ngFor="let column of data.Columns" [expanded]="false">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{column.ColumnDisplay}}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <ng-container *ngTemplateOutlet="formContent; context: {column: column}"></ng-container>
+    </mat-expansion-panel>
+  </mat-accordion>
+</ng-template>
+
+<ng-template #matCard>
+  <mat-card>
+    <ng-container *ngTemplateOutlet="formContent; context: {column: data.Columns[0]}"></ng-container>
+  </mat-card>
+</ng-template>
+
+<ng-template #formContent let-column="column">
+  <form [attr.data-imx-identifier]="'value-changes-form'" class="full-width">
+    <mat-form-field class="full-width" appearance="outline" floatLabel="always">
+      <mat-label>{{'#LDS#Column name' | translate}}</mat-label>
+      <input matInput [value]="column.ColumnDisplay" readonly="true" [attr.data-imx-identifier]="'column-name-input'">
+    </mat-form-field>
+    <mat-form-field *ngIf="data.ChangeType !== 2" class="full-width" appearance="outline" floatLabel="always">
+      <mat-label>{{'#LDS#New value' | translate}}</mat-label>
+      <textarea matInput readonly="true" [attr.data-imx-identifier]="'new-value-textarea'">{{column.NewValueDisplay}}</textarea>
+    </mat-form-field>
+    <mat-form-field class="full-width" appearance="outline" floatLabel="always">
+      <mat-label>{{'#LDS#Old value' | translate}}</mat-label>
+      <textarea matInput readonly="true" [attr.data-imx-identifier]="'old-value-textarea'">{{column.OldValueDisplay}}</textarea>
+    </mat-form-field>
+  </form>
+</ng-template>

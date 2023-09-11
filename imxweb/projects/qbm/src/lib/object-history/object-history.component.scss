@@ -1,34 +1,36 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
 
 :host {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   height: 100%;
-}
 
-.imx-viewmode-selector {
-  display: inline;
-  font-size: 14px;
-}
+  ::ng-deep eui-date-picker {
+    .mat-form-field-wrapper {
+      padding: 0;
 
-.imx-viewmode-dropdown {
-  margin: auto 6px;
+      .mat-form-field-subscript-wrapper {
+        margin: 0;
+      }
 
-  .mat-form-field-infix {
-    width: 98px;
-    color: $black;
-    border: 0;
+      .mat-form-field-flex {
+        padding: 0 0 0 0.5rem;
+
+        .mat-form-field-infix {
+          padding: 0.3rem 0 0.4rem 0;
+          width: 140px;
+        }
+      }
+    }
   }
 
-  .mat-form-field-flex {
-    background-color: $white;
-    padding-left: 6px;
+  ::ng-deep eui-time-picker {
+    .eui-time-picker-container {
+      display: flex;
+      align-items: center;
+    }
   }
-}
-
-.imx-loader-hidden {
-  visibility: hidden;
 }
 
 .imx-viewmode-content {
@@ -38,6 +40,68 @@
   flex-direction: column;
 }
 
-.imx-viewmode-content-timeline {
-  overflow: auto;
+.imx-viewmode-content-controls {
+  margin-bottom: 1rem;
+}
+
+.imx-timeline-from, .imx-timeline-to, .imx-viewmode-content-controls {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+
+  ::ng-deep .mat-form-field-type-mat-select > .mat-form-field-wrapper {
+    padding: 0;
+
+    .mat-form-field-infix {
+      border: none;
+    }
+
+    .mat-form-field-subscript-wrapper {
+      margin: 0;
+    }
+  }
+
+  .timeline-to-text {
+    margin-left: 1rem;
+  }
+}
+
+mat-button-toggle-group {
+  margin-left: auto;
+}
+
+.eui-dark-theme {
+  :host {
+    mat-button-toggle-group {
+      .mat-button-toggle-checked {
+        background-color: $color-blue-40;
+      }
+    }
+
+    .imx-viewmode-dropdown {
+      .mat-form-field-infix {
+        color: $color-gray-40;
+      }
+
+      .mat-form-field-flex {
+        background-color: $color-gray-70;
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-viewmode-dropdown {
+      .mat-form-field-infix {
+        color: $color-gray-20;
+      }
+
+      .mat-form-field-flex {
+        background-color: $color-gray-90;
+      }
+    }
+  }
 }

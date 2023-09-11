@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,30 +24,34 @@
  *
  */
 
-import { PortalPoliciesViolationsApprove } from 'imx-api-pol';
+import { ObjectInfo, PortalPoliciesViolationslist } from 'imx-api-pol';
 import { BaseReadonlyCdr, ColumnDependentReference } from 'qbm';
 
-export class PolicyViolation extends PortalPoliciesViolationsApprove {
+export class PolicyViolation extends PortalPoliciesViolationslist {
 
   public properties: ColumnDependentReference[];
   /**
-   * The color and the caption depending on the value of the state of a {@link PortalPoliciesViolationsApprove}.
+   * The color and the caption depending on the value of the state of a {@link PortalPoliciesViolationslist}.
    */
   public get stateBadge(): { color: 'blue' | 'orange' | 'green', caption: string } {
     return {
       color: this.stateBadgeColor,
       caption: this.stateCaption
     };
-  }
+  };
+  public readonly data: ObjectInfo[];
   private stateBadgeColor: 'blue' | 'orange' | 'green';
   private stateCaption: string;
 
+
   constructor(
-    private readonly baseObject: PortalPoliciesViolationsApprove
+    private readonly baseObject: PortalPoliciesViolationslist,
+    extendedData:  ObjectInfo[]
   ) {
     super(baseObject.GetEntity());
     this.initPropertyInfo();
     this.initStateBadge();
+    this.data = extendedData || [];
   }
 
   public get key(): string {
@@ -58,6 +62,7 @@ export class PolicyViolation extends PortalPoliciesViolationsApprove {
     const props: any[] =
       [
         this.UID_QERPolicy,
+        this.Description,
         this.ObjectKey
       ];
 

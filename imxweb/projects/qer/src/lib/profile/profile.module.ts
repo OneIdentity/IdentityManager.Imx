@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,27 +31,31 @@ import { RouterModule, Routes } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { CdrModule, DataSourceToolbarModule, DataTableModule, DynamicTabsModule, ExtModule, LdsReplaceModule, RouteGuardService, TileModule } from 'qbm';
+import { CdrModule, DataSourceToolbarModule, DataTableModule, DynamicTabsModule, ExtModule, InfoModalDialogModule, LdsReplaceModule, SelectedElementsModule, RouteGuardService, TileModule, HELP_CONTEXTUAL, HelpContextualModule } from 'qbm';
 import { BusinessownerAddonTileModule } from '../businessowner-addon-tile/businessowner-addon-tile.module';
 import { MailSubscriptionsComponent } from './mailsubscriptions.component';
 import { MailSubscriptionService } from './mailsubscription.service';
 import { IdentitySelectComponent } from './identity-select/identity-select.component';
 import { PasswordQuestionsComponent } from './password-questions/password-questions.component';
-import { CreatePasswordQuestionComponent } from './password-questions/create-password-question.component';
 import { ProfileComponent } from './profile.component';
+import { PasswordQuestionsSidesheetComponent } from './password-questions/password-questions-sidesheet/password-questions-sidesheet.component';
+import { UserModelService } from '../user/user-model.service';
+import { SecurityKeysComponent } from './security-keys/security-keys.component';
+import { SecurityKeysSidesheetComponent } from './security-keys/security-keys-sidesheet/security-keys-sidesheet.component';
+import { ObjectHyperviewModule } from '../object-hyperview/object-hyperview.module';
 
 const routes: Routes = [
   {
     path: 'profile',
     component: ProfileComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   },
   {
     path: 'profile/:id',
     component: ProfileComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
   }
 ];
 
@@ -65,26 +69,34 @@ const routes: Routes = [
     DataTableModule,
     ExtModule,
     FormsModule,
+    ObjectHyperviewModule,
     RouterModule.forChild(routes),
     ReactiveFormsModule,
     TileModule,
     LdsReplaceModule,
     EuiCoreModule,
     EuiMaterialModule,
-    DynamicTabsModule
+    DynamicTabsModule,
+    InfoModalDialogModule,
+    SelectedElementsModule,
+    HelpContextualModule,
   ],
   providers: [
-    MailSubscriptionService
+    MailSubscriptionService,
+    UserModelService
   ],
   declarations: [
     ProfileComponent,
     MailSubscriptionsComponent,
     IdentitySelectComponent,
+    SecurityKeysComponent,
+    SecurityKeysSidesheetComponent,
     PasswordQuestionsComponent,
-    CreatePasswordQuestionComponent
+    PasswordQuestionsSidesheetComponent,
   ],
   exports: [
-    ProfileComponent
+    ProfileComponent,
+    PasswordQuestionsComponent,
   ]
 })
 export class ProfileModule { }

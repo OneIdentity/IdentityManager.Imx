@@ -1,0 +1,94 @@
+<div eui-sidesheet-content>
+  <div class="above">
+    <imx-data-source-toolbar
+    [alwaysVisible]="true"
+    [settings]="dstSettings"
+    [options]="['search']"
+    [searchBoxText]="'#LDS#Search available statistics' | translate"
+    [isDataSourceLocal]="true"
+    [localSearchColumns]="['Display']"
+    isStandaloneToolbar="true"
+    useThemedStyle="true"
+    (settingsChanged)="onSettingsChanged($event)"
+    data-imx-identifier="statistics-favorites-sidesheet-toolbar"
+    >
+    </imx-data-source-toolbar>
+    <button mat-button class="mat-icon-button" (click)="showInfo()" data-imx-identifier="statistics-favorites-sidesheet-info">
+      <eui-icon icon="info" class="colored-icon"></eui-icon>
+    </button>
+  </div>
+  <div class="two-panel">
+    <mat-card class="left-list">
+      <div class="list-header">
+        <div class="left-header">
+          <span>{{'#LDS#Heading Available Statistics' | translate}}</span>
+          <button mat-button class="mat-icon-button" (click)="toggleSort()" [matTooltip]="'#LDS#Sort alphabetically in ascending or descending order' | translate" matTooltipPosition="above" data-imx-identifier="statistics-favorites-sidesheet-toggle-sort">
+            <eui-icon class="colored-icon" [icon]="isSortDescending ? 'sortdown' : 'sortup'"></eui-icon>
+          </button>
+        </div>
+        <button mat-stroked-button *ngIf="chosenStats" color="warn" (click)="unselectAll()" [matTooltip]="'#LDS#Deselect all statistics' | translate" matTooltipPosition="above" data-imx-identifier="statistics-favorites-sidesheet-uncheck-all">
+          <eui-icon icon="close" size="s"></eui-icon>
+          <span>{{'#LDS#Deselect all' | translate}}</span>
+        </button>
+      </div>
+      <div *ngIf="(hasData && !isSearch) || (isSearch && searchHasData) else noData" class="list-container">
+        <div *ngIf="isSearch && searchHasData" >
+          <mat-checkbox class="list-item" *ngFor="let stat of searchStats; index as i" [checked]="checkboxes[dataService.getId(stat)]" (change)="toggleStat(stat, $event)" [attr.data-imx-identifier]="'statistics-favorites-sidesheet-checkbox-search-' + i">
+            <span class="list-text">
+              {{stat.GetEntity().GetDisplay()}}
+            </span>
+          </mat-checkbox>
+        </div>
+
+        <div *ngIf="(hasData && !isSearch)">
+          <mat-checkbox class="list-item" *ngFor="let stat of dstSettings.dataSource.Data; index as i" [checked]="checkboxes[dataService.getId(stat)]" (change)="toggleStat(stat, $event)" [attr.data-imx-identifier]="'statistics-favorites-sidesheet-checkbox-search-' + i">
+            <span class="list-text">
+              {{stat.GetEntity().GetDisplay()}}
+            </span>
+          </mat-checkbox>
+        </div>
+      </div>
+    </mat-card>
+
+    <mat-card class="right-list">
+      <div class="list-header">
+        <span>{{'#LDS#Heading Order of Statistics' | translate}}</span>
+      </div>
+
+      <div *ngIf="!chosenStats" class="list-empty">
+        <eui-icon [icon]="isMobile ? 'arrowupring' : 'arrowleftring'" size="xl"></eui-icon>
+        <span>{{'#LDS#Before you can change the order of statistics, you must first select some.' | translate}}</span>
+      </div>
+
+      <div class="list-container" cdkScrollable>
+        <div cdkDropList class="order-items-container" (cdkDropListDropped)="drop($event)">
+          <div class="order-item" *ngFor="let stat of orderStats" cdkDrag [cdkDragPreviewClass]="theme">
+            <div class="order-item-placeholder" *cdkDragPlaceholder></div>
+            <span>
+              {{stat.GetEntity().GetDisplay()}}
+            </span>
+            <div class="order-item-handle" cdkDragHandle>
+              <eui-icon icon="draghandles"></eui-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+
+  </div>
+</div>
+<div eui-sidesheet-actions color="white" class="button-bar">
+  <button mat-stroked-button data-imx-identifier="statistics-favorites-sidesheet-cancel" (click)="sidesheetRef.close()">{{'#LDS#Cancel' | translate}}</button>
+  <button mat-raised-button data-imx-identifier="statistics-favorites-sidesheet-apply" color="primary" (click)="closeWithData()" [disabled]="dataHasntChanged">{{'#LDS#Apply' | translate}}</button>
+</div>
+
+
+<ng-template #noData>
+  <div class="list-empty">
+    <eui-icon size="xl" icon="content-alert"></eui-icon>
+    <div [ngSwitch]="true">
+      <span *ngSwitchCase="isSearch">{{ '#LDS#There are no statistics matching your search.' | translate }}</span>
+      <span *ngSwitchDefault>{{ '#LDS#There are no statistics.' | translate }}</span>
+    </div>
+  </div>
+</ng-template>

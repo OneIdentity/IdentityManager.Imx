@@ -1,0 +1,108 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+imx-data-table {
+  flex-grow: 1;
+}
+
+.imx-subtext {
+  font-size: smaller;
+  color: $color-gray-30;
+}
+
+.data-explorer-card-header {
+  background-color: $color-gray-0;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  z-index: 100;
+  border: 1px solid rgba( $color-blue-60, 0.6);
+  margin-bottom: 20px;
+
+  .data-explorer-card-header-bg {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    background-color: $color-blue-20;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    height:45px;
+
+    & > span {
+      font-size: 20px;
+    }
+  }
+}
+
+.imx-page-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.imx-data-tree-container {
+  overflow: hidden;
+  background-color: $color-gray-0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .imx-create-button {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+.imx-table {
+  margin-top: 16px;
+}
+
+.imx-card-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.data-explorer-bottom-button-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  margin-top: 15px;
+  align-self: end;
+
+  > *:not(:last-child) {
+    margin-right: 15px;
+  }
+}
+
+.imx-row-icon {
+  align-self: center;
+  margin-right: 15px;
+  text-align: right;
+  display: block;
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-data-tree-container,
+    .data-explorer-card-header-bg {
+      background: $color-gray-70;
+    }
+    .data-explorer-card-header .data-explorer-card-header-bg {
+      background: $color-blue-80;
+    }
+  }
+}
+
+.hidden {
+  display: none;
+}

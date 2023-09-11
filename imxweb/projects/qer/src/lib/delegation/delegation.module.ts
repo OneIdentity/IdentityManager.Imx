@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -37,17 +37,22 @@ import { TranslateModule } from '@ngx-translate/core';
 import { EuiCoreModule } from '@elemental-ui/core';
 import { MatPaginatorModule } from '@angular/material/paginator';
 
-import { DataTableModule, RouteGuardService, ClassloggerService, CdrModule, LdsReplaceModule, MenuService, MenuItem } from 'qbm';
+import { DataTableModule, RouteGuardService, ClassloggerService, CdrModule, LdsReplaceModule, MenuService, MenuItem, HELP_CONTEXTUAL, HelpContextualModule, BusyIndicatorModule, SelectedElementsModule } from 'qbm';
 import { DelegationComponent } from './delegation.component';
 import { DelegationService } from './delegation.service';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCardModule } from '@angular/material/card';
 
 const routes: Routes = [
   {
     path: 'delegation',
     component: DelegationComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
+    resolve: [RouteGuardService],
+    data:{
+      contextId: HELP_CONTEXTUAL.Delegation
+    }
   }
 ];
 
@@ -65,10 +70,16 @@ const routes: Routes = [
     DataTableModule,
     RouterModule.forChild(routes),
     MatButtonModule,
+    MatProgressSpinnerModule,
     MatListModule,
     MatFormFieldModule,
     MatPaginatorModule,
-    EuiCoreModule
+    MatCardModule,
+    EuiCoreModule,
+    SelectedElementsModule,
+    HelpContextualModule,
+    BusyIndicatorModule,
+    SelectedElementsModule
   ],
   declarations: [
     DelegationComponent
@@ -86,7 +97,7 @@ export class DelegationModule {
 
   private setupMenu(): void {
     this.menuService.addMenuFactories(
-      (preProps: string[], groups: string[]) => {
+      (preProps: string[], features: string[]) => {
 
         const items: MenuItem[] = [];
 

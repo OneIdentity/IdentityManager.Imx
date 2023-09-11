@@ -1,0 +1,59 @@
+<mat-tab-group>
+  <form [formGroup]="formGroup">
+    <mat-tab [label]="'#LDS#Heading Details' | translate">
+      <div eui-sidesheet-content>
+        <eui-alert class="imx-helper-alert" type="info" condensed="true" [colored]="true">
+          <span> {{ requestData.HelpText.General }} </span>
+        </eui-alert>
+        <div class="form-wrapper">
+          <mat-card>
+            <div *ngFor="let cdr of cdrGroups?.General; index as i">
+              <imx-cdr-editor
+                *ngIf="canSee(cdr)"
+                [cdr]="cdr"
+                [attr.data-imx-identifier]="'approval-step-form-cdr-' + cdr.column.ColumName"
+                (controlCreated)="addControl(i, $event)"
+                (valueChange)="checkCDRs()"
+              >
+              </imx-cdr-editor>
+            </div>
+          </mat-card>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab [label]="'#LDS#Heading Mail Templates' | translate">
+      <div eui-sidesheet-content>
+        <eui-alert class="imx-helper-alert" type="info" condensed="true" [colored]="true">
+          <span> {{ requestData.HelpText.Mail }} </span>
+        </eui-alert>
+        <div class="form-wrapper">
+          <mat-card>
+            <imx-cdr-editor
+              *ngFor="let cdr of cdrGroups?.Mail; index as i"
+              [cdr]="cdr"
+              [attr.data-imx-identifier]="'approval-step-form-cdr-' + cdr.column.ColumName"
+              (controlCreated)="addControl(i + cdrGroups?.General.length, $event)"
+            >
+            </imx-cdr-editor>
+          </mat-card>
+        </div>
+      </div>
+    </mat-tab>
+  </form>
+</mat-tab-group>
+
+<div eui-sidesheet-actions>
+  <button mat-stroked-button data-imx-identifier="approval-step-form-button-back" (click)="formService.cancelChangesGrouped(formGroup, sidesheetRef, requestData)">
+    {{ '#LDS#Cancel' | translate }}
+  </button>
+  <button
+    mat-raised-button
+    class="apply-button"
+    color="primary"
+    data-imx-identifier="approval-step-form-button-apply"
+    (click)="formService.saveChanges(formGroup, sidesheetRef)"
+    [disabled]="formGroup.pristine || formGroup.invalid"
+  >
+    {{ '#LDS#Save' | translate }}
+  </button>
+</div>

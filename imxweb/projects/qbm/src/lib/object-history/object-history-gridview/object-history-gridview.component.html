@@ -1,5 +1,5 @@
 <div *ngIf="dataCollection" class="imx-history-table-content">
-  <div class ="imx-history-table-content">
+  <div>
     <mat-table [dataSource]="dataCollection.Data">
       <ng-container *ngFor="let columnDef of columnDefs" [matColumnDef]="columnDef.id">
         <mat-header-cell class="imx_ColumnHeader" *matHeaderCellDef>{{ columnDef.getTitle() }}</mat-header-cell>

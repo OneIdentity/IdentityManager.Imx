@@ -1,4 +1,5 @@
 @import "variables.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 ::ng-deep {
   .imx-AboutPanel {
@@ -62,7 +63,7 @@
   }
 
   ::ng-deep .mat-tab-label {
-    background-color: $white !important;
+    background-color: $white;
   }
 
   .paragraphLargeMargin {
@@ -127,5 +128,21 @@
 
   .imx-about-tabs {
     height: 100%;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    ::ng-deep .mat-tab-label {
+      background-color: $color-gray-80;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    ::ng-deep .mat-tab-label {
+      background-color: $color-gray-100;
+    }
   }
 }

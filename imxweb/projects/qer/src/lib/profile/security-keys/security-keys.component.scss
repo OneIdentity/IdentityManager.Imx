@@ -1,0 +1,14 @@
+.action-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  border-radius: unset;
+  box-shadow: unset;
+  margin-top: 20px;
+}
+
+.mat-button-wrapper {
+  eui-icon {
+    margin-right: 0.5rem;
+  }
+}

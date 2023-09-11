@@ -1,0 +1,11 @@
+<h2 mat-dialog-title>#LDS#Heading Discard Selected Products</h2>
+<mat-dialog-content class="mat-typography">
+<p translate>
+  {{dialogMessage}}
+</p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-stroked-button mat-dialog-close (click)="onDoNotDiscardSelection()"><span translate>#LDS#Keep products and go back</span></button>
+  <button mat-stroked-button [mat-dialog-close]="true" (click)="onAddToCart()"><div class="imx-action-button"><eui-icon icon="cart" size="s"></eui-icon><span translate>#LDS#Add products to cart and proceed</span></div></button>
+  <button mat-flat-button [mat-dialog-close]="true" class="imx-discard-button" (click)="onDiscardSelection()"><div class="imx-action-button"><eui-icon icon="close" size="s"></eui-icon><span translate>#LDS#Discard products and proceed</span></div></button>
+</mat-dialog-actions>

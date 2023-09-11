@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -47,6 +47,14 @@ export class JobServersService {
 
   public async get(parameters?: JobServersParameters): Promise<ExtendedTypedEntityCollection<OpsupportJobservers, unknown>> {
     return this.session.TypedClient.OpsupportJobservers.Get(parameters);
+  }
+
+  public async checkServerConnection(uid){
+    return this.session.Client.opsupport_jobservers_check_post(uid);
+  }
+
+  public async getProjectConfig(){
+    return this.session.Client.opsupport_projectconfig_get();
   }
 
 }

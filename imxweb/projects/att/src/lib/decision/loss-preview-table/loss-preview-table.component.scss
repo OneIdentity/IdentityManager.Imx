@@ -1,24 +1,36 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
-
-@mixin imx-flex-row-container {
-  display: flex;
-  flex-direction: row;
-}
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   overflow-y: auto;
   flex-grow: 1;
   height: 100%;
-  background-color: $white;
+  display: flex;
+  flex-direction: column;
+
+  .imx-spinner-center {
+    display: inherit;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .imx-data-no-results {
+    display: inherit;
+    flex-direction: column;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .heading-wrapper {
-  @include imx-flex-row-container();
+  display: flex;
   flex: 0 0 auto;
+  margin-top: 15px;
+  align-items: center;
 
   .helper-alert {
     display: flex;
-    margin-bottom: 15px;
   }
 
   .alert-wrapper {
@@ -26,14 +38,14 @@
     margin: 0 0 0 auto;
     align-self: flex-end;
   }
+
+  .alert-wrapper--shortened {
+    width: 70%;
+  }
 }
 
 th.mat-header-cell:not(:last-child), td.mat-cell:not(:last-child) {
   padding-right: 10px;
-}
-
-tr.mat-row {
-  cursor: default;
 }
 
 table.mat-table {
@@ -41,15 +53,44 @@ table.mat-table {
   padding: 1px;
 }
 .table-row-tall {
-  padding-top: 5px;
-  padding-bottom: 5px;
+  padding: 5px 0;
 }
 
 .table-subtitle {
-  color: $black-4;
   font-size: 80%;
 }
 
 .imx-attestation-case-loss-preview {
-  padding: 0;
+  margin: 15px 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+// Theming
+:host {
+  .table-subtitle {
+    color: $color-gray-40;
+  }
+
+  .imx-data-no-results {
+    color: $color-gray-20;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .table-subtitle {
+      color: $color-gray-20;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .table-subtitle {
+      color: $color-gray-10;
+    }
+  }
 }

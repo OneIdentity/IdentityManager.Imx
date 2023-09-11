@@ -1,0 +1,31 @@
+@use '../heatmap-sidesheet/heatmap-sidesheet.component.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+:host {
+  margin: auto;
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+  }
+
+  .legend-item:not(:last-child) {
+    margin-right: 20px;
+  }
+
+  .legend-block {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    border-radius: 3px;
+    border: 2px solid rgba($color: $color-gray-0, $alpha: 0);
+    pointer-events: none;
+  }
+}

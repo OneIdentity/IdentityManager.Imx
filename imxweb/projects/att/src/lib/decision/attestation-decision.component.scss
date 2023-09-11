@@ -1,55 +1,113 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import '../../../../../shared/scss/common-table.scss';
 :host {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   height: 100%;
-}
 
-.imx-table-container {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  height: inherit;
-}
+  .imx-cases-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
 
+  .mat-tab-group {
+    height: 100%;
+    overflow: hidden;
+
+    ::ng-deep .mat-tab-body-wrapper {
+      flex: 1 1 auto;
+
+      .mat-tab-body-content {
+        height: 100%;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
+
+  .mat-stroked-button,
+  .mat-raised-button {
+    @include imx-icon-for-image-button();
+  }
+
+  .imx-table-container {
+    @include imx-flex-fill-control-hidden-overflow();
+  }
+
+  > * {
+    margin-right: 16px;
+  }
+
+  .mat-icon {
+    margin-right: 5px;
+    font-size: 24px;
+  }
+}
 .imx-attestationcase-table {
   flex-grow: 1;
   overflow: auto;
 }
 
 .imx-decision {
-  display: flex;
-  flex-direction: row;
-
-  > * {
+  @include imx-button-column-right();
+  > button:not(:last-of-type) {
     margin-right: 5px;
   }
 }
 
-.imx-button-bar {
+.recommendation-wrapper {
   display: flex;
-  flex-direction: row;
-  margin-top: 15px;
-
-  > button {
-    margin-left: 5px;
-  }
-
-  .imx-spacer {
-    flex: 1 1 auto;
-  }
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.imx-badge-container {
-  > div {
-    display: table-cell;
+.imx-button-bar {
+  @include imx-button-bar();
+}
 
-    > .eui-badge {
-      margin: 0 5px;
-
-      ::ng-deep .eui-badge-content {
-        white-space: nowrap;
+.imx-icons-container {
+  padding-right: 15px;
+  .table-icon {
+    display: flex;
+    align-items: center;
+    color: $color-gray-60;
+    font-weight: 600;
+    height: 14px;
+    &--warning {
+      .eui-icon {
+        color: $color-orange-60;
       }
+    }
+    &--new {
+      .mat-icon {
+        color: $color-green-60;
+      }
+    }
+    &--info {
+      .mat-icon {
+        color: $color-gray-60;
+      }
+    }
+    &--alert {
+      .eui-icon,
+      span {
+        color: $color-red-60;
+      }
+    }
+    &:not(:first-of-type) {
+      margin-left: 8px;
+      border-left: 1px solid $color-gray-20;
+      padding-left: 8px;
+    }
+    .mat-icon,
+    .eui-icon {
+      padding-right: 6px;
     }
   }
 }
@@ -61,5 +119,84 @@
 @media only screen and (max-width: 1024px) {
   ::ng-deep .mat-column-decision {
     display: none;
+  }
+}
+
+// Theming
+:host {
+  ::ng-deep .mat-tab-labels {
+    background-color: $color-gray-0;
+  }
+
+  .recommendation-approve-icon {
+    color: $color-green-60;
+  }
+
+  .recommendation-deny-icon {
+    color: $color-red-60;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    ::ng-deep .mat-tab-labels {
+      background-color: $color-gray-80;
+    }
+
+    .recommendation-approve-icon {
+      color: $color-green-40;
+    }
+
+    .recommendation-deny-icon {
+      color: $color-red-40;
+    }
+    .imx-icons-container {
+      .table-icon {
+        color: $color-gray-10;
+        &--warning {
+          .eui-icon {
+            color: $color-orange-40;
+          }
+        }
+        &--new {
+          .mat-icon {
+            color: $color-green-40;
+          }
+        }
+        &--info {
+          .mat-icon {
+            color: $color-gray-10;
+          }
+        }
+        &--alert {
+          .eui-icon,
+          span {
+            color: $color-red-40;
+          }
+        }
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    ::ng-deep .mat-tab-labels {
+      background-color: $color-gray-100;
+    }
+
+    .recommendation-approve-icon {
+      color: $color-green-40;
+    }
+
+    .recommendation-deny-icon {
+      color: $color-red-40;
+    }
+
+    .imx-icons-container {
+      .table-icon {
+        color: inherit;
+      }
+    }
   }
 }

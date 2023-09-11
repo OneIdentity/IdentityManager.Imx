@@ -1,0 +1,21 @@
+<div eui-sidesheet-content>
+  <mat-card *ngIf="terms" label="{{ terms?.GetEntity()?.GetDisplay() }}">
+    <mat-card-title>
+      {{ terms?.GetEntity().GetDisplay() }}
+    </mat-card-title>
+    <mat-card-content class="imx-terms-container">
+      {{ terms?.DisplayContent?.Column?.GetDisplayValue() }}
+    </mat-card-content>
+  </mat-card>
+</div>
+<div eui-sidesheet-actions>
+  <button
+    mat-raised-button
+    color="primary"
+    *ngIf="terms?.HasFile?.value"
+    attr.data-imx-identifier="terms-of-use-viewer-button-download"
+    [euiDownload]="getDownloadOptions(terms?.GetEntity()?.GetKeys()[0], terms?.GetEntity()?.GetDisplay())"
+  >
+    {{ '#LDS#Download terms of use' | translate }}
+  </button>
+</div>

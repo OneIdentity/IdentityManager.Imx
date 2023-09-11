@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { IConnectorProvider, ConnectorProvider } from './connector-provider';
-import { HvElement, HyperViewLayout, toPixelString } from './hyperview-types';
+import { HvElement, HyperViewLayout, LayoutResult, toPixelString } from './hyperview-types';
 
 /**
  * Hyperview layouter that arranges the elements in a horizontal line.
@@ -41,7 +41,7 @@ export class HyperviewLayoutHorizontal implements HyperViewLayout {
   /**
    * layouting the hyperview according to positions of each shape.
    */
-  public layout(): void {
+  public layout(): LayoutResult {
     const es = this.elements;
     if (es.length > 0) {
       const firstElement = es[0].element;
@@ -69,6 +69,8 @@ export class HyperviewLayoutHorizontal implements HyperViewLayout {
         const element = node.element;
         element.style.top = toPixelString(((maxw - element.offsetHeight) / 2));
       });
+
+      return { size: { width: 0, height: maxw } };
     }
   }
 

@@ -1,0 +1,6 @@
+@import '../../../../../shared/scss/common-table.scss';
+
+
+.mat-stroked-button {
+  @include imx-icon-for-image-button();
+}

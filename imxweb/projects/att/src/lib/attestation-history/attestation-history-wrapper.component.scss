@@ -1,3 +1,5 @@
+@import '../../../../../shared/scss/common-table.scss';
+
 :host {
   display: flex;
   flex-direction: column;
@@ -5,12 +7,18 @@
   height: inherit;
 }
 
-.imx-button-bar {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 10px;
+.imx-history-card {
+ @include imx-flex-fill-control-hidden-overflow();
 
-  > button {
-    margin-left: 5px;
+  imx-attestation-history {
+    flex: 1 1 auto;
   }
+}
+
+.mat-stroked-button {
+  @include imx-icon-for-image-button();
+}
+
+.imx-button-bar {
+  @include imx-button-bar();
 }

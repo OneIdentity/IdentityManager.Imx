@@ -1,0 +1,84 @@
+<mat-tab-group>
+  <mat-tab [label]="'#LDS#Heading User Information' | translate">
+    <ng-template matTabContent>
+      <div eui-sidesheet-content>
+        <mat-card>
+          <imx-cdr-editor
+            *ngFor="let cdr of cdrList"
+            [cdr]="cdr"
+            [attr.data-imx-identifier]="'connection-cdr-' + cdr.column.ColumName"
+          ></imx-cdr-editor>
+        </mat-card>
+      </div>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab [label]="'#LDS#Heading Permission Groups' | translate">
+    <ng-template matTabContent>
+      <div eui-sidesheet-content>
+        <eui-search
+          class="permission-search"
+          data-imx-identifier="permission-eui-search"
+          width="100%"
+          [(searchControl)]="search"
+          [placeholder]="'#LDS#Search' | translate">
+        </eui-search>
+        <div class="imx-table-container overflow-auto">
+          <table mat-table [dataSource]="permissionGroups" data-imx-identifier="permission-groups-table">
+            <ng-container matColumnDef="Display">
+              <th mat-header-cell *matHeaderCellDef>{{'#LDS#Display name' | translate}}</th>
+              <td mat-cell *matCellDef="let entity">{{entity.Display}}</td>
+            </ng-container>
+            <ng-container matColumnDef="Description">
+              <th mat-header-cell *matHeaderCellDef>{{'#LDS#Description' | translate}}</th>
+              <td mat-cell *matCellDef="let entity">{{entity.Description}}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+          <div *ngIf="permissionGroups.length === 0" class="no-results">
+            <eui-icon [icon]="'search'" size="xl"></eui-icon>{{ '#LDS#There is no data matching your search.' | translate }}
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab [label]="'#LDS#Heading Program Functions' | translate">
+    <ng-template matTabContent>
+      <div eui-sidesheet-content>
+        <mat-accordion *ngIf="data">
+          <mat-expansion-panel *ngFor="let group of data.FeatureGroups" [expanded]="false">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{group.Display}}
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <ng-container>
+              <div class="imx-table-container">
+                <table mat-table [dataSource]="group.Features" data-imx-identifier="permission-groups-table">
+                  <ng-container matColumnDef="Display">
+                    <th mat-header-cell *matHeaderCellDef>{{'#LDS#Display name' | translate}}</th>
+                    <td mat-cell *matCellDef="let entity">{{entity.Display}}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="Description">
+                    <th mat-header-cell *matHeaderCellDef>{{'#LDS#Description' | translate}}</th>
+                    <td mat-cell *matCellDef="let entity">{{entity.Description}}</td>
+                  </ng-container>
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+              </div>
+            </ng-container>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+    </ng-template>
+  </mat-tab>
+</mat-tab-group>
+
+<div eui-sidesheet-actions>
+  <button mat-raised-button color="primary" data-imx-identifier="conncetion-button-copy-data" (click)="copyConnectionData()">
+    {{ '#LDS#Copy connection information' | translate }}
+  </button>
+</div>

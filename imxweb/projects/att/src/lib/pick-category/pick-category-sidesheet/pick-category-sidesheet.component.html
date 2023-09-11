@@ -1,7 +1,7 @@
 <div eui-sidesheet-content>
-  <mat-card>
-    <imx-cdr-editor [cdr]="displayNameReadonlyCdr"></imx-cdr-editor>
-  </mat-card>
+  <imx-cdr-editor class="imx-select" [cdr]="displayNameCdr"
+    (controlCreated)="form.addControl(displayNameCdr.column.ColumnName, $event)">
+  </imx-cdr-editor>
   <mat-card class="imx-table-container" *ngIf="dstWrapper && dstSettings">
     <span>{{'#LDS#Assigned identities' | translate}}</span>
     <imx-data-source-toolbar #dst [options]="['search']"
@@ -12,22 +12,29 @@
       [showSelectedItemsMenu]="false" (selectionChanged)="onSelectionChanged($event)"
       data-imx-identifier="pick-category-sidesheet-datatable"
       noDataText="{{(data.pickCategory?.IsManual?.value ? '#LDS#There are currently no identities assigned.' : '#LDS#The associated identities are calculated automatically.')}}"
-      noMatchingDataText="#LDS#There are no matching identities.">
+      noMatchingDataText="#LDS#There are no identities matching your search.">
       <imx-data-table-column data-imx-identifier="pick-category-sidesheet-table-column-display"
         [entityColumn]="dstWrapper.propertyDisplay">
       </imx-data-table-column>
     </imx-data-table>
     <imx-data-source-paginator data-imx-identifier="pick-category-sidesheet-paginator" [dst]="dst">
     </imx-data-source-paginator>
+    <div class="buttons" *ngIf="data.pickCategory?.IsManual?.value">
+      <button mat-stroked-button data-imx-identifier="pick-category-sidesheet-details-button-remove-items"
+        class="justify-start" color="warn" [disabled]="!selectedItemsCanBeDeleted()" (click)="removePickedItems()">
+        <eui-icon icon="delete"></eui-icon>
+        {{'#LDS#Remove identities'| translate}}
+      </button>
+      <button mat-raised-button data-imx-identifier="pick-category-sidesheet-details-button-add-items"
+        (click)="assignPickedItems()">
+        {{'#LDS#Assign identities'| translate}}
+      </button>
+    </div>
   </mat-card>
 </div>
-<div eui-sidesheet-actions color="white" *ngIf="data.pickCategory?.IsManual?.value">
-  <button mat-raised-button data-imx-identifier="pick-category-sidesheet-details-button-remove-items"
-    class="justify-start" [disabled]="!selectedItemsCanBeDeleted()" (click)="removePickedItems()">
-    {{'#LDS#Remove identities'| translate}}
-  </button>
-  <button mat-raised-button data-imx-identifier="pick-category-sidesheet-details-button-add-items"
-    (click)="assignPickedItems()">
-    {{'#LDS#Assign identities'| translate}}
-  </button>
+<div eui-sidesheet-actions color="white">
+  <button mat-flat-button color="primary" data-imx-identifier="pick-category-sidesheet-details-button-save"
+       (click)="saveChanges()" [disabled]="form.invalid || form.pristine">
+       {{ '#LDS#Save' | translate}}
+    </button>
 </div>

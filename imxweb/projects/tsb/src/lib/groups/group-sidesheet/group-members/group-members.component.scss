@@ -1,4 +1,4 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   display: flex;
@@ -10,7 +10,7 @@
   margin-bottom: 10px;
 
   .mat-button-toggle-checked {
-    background-color: $corbin-pastel;
+    background-color: $color-orange-20;
   }
 }
 
@@ -18,8 +18,23 @@
   cursor: not-allowed;
 }
 
+
+.helper-alert  {
+  margin: 20px 2px;
+}
+
 @media screen and (max-width: 768px) {
   .mat-button-toggle-group {
     width: 100%;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    ::ng-deep.mat-button-toggle-group {
+      .mat-button-toggle-checked {
+        background-color: $color-gray-60;
+      }
+    }
   }
 }

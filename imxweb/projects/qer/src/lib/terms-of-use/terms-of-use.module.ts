@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,14 +36,15 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { EuiCoreModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { AuthenticationModule } from 'qbm';
+import { AuthenticationModule, BusyIndicatorModule } from 'qbm';
 import { TermsOfUseAcceptComponent } from './terms-of-use-accept.component';
 import { TermsOfUseListComponent } from './terms-of-use-list.component';
-
+import { TermsOfUseViewerComponent } from './terms-of-use-viewer/terms-of-use-viewer.component';
 @NgModule({
   declarations: [
     TermsOfUseAcceptComponent,
-    TermsOfUseListComponent
+    TermsOfUseListComponent,
+    TermsOfUseViewerComponent
   ],
   imports: [
     AuthenticationModule,
@@ -57,7 +58,11 @@ import { TermsOfUseListComponent } from './terms-of-use-list.component';
     MatInputModule,
     MatStepperModule,
     ReactiveFormsModule,
-    TranslateModule
+    TranslateModule,
+    BusyIndicatorModule
+  ],
+  exports: [
+    TermsOfUseViewerComponent
   ]
 })
 export class TermsOfUseModule { }

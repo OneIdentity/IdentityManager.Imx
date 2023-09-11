@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,18 +24,49 @@
  *
  */
 
-export function isPersonAdmin(groups: string[]): boolean {
-  return groups.find(item => item.toUpperCase() === 'VI_4_PERSONADMIN') != null;
-}
+// ERROR: change to features
 
-export function isPersonManager(groups: string[]): boolean {
-  return groups.find(item => item.toUpperCase() === 'VI_4_ALLMANAGER') != null;
+export function isPersonAdmin(features: string[]): boolean {
+  return features.find((item) => item === 'Portal_UI_PersonAdmin') != null;
 }
-
-export function isStructAdmin(groups: string[]): boolean {
-  return groups.find(item => item.toUpperCase() === 'VI_4_STRUCTADMIN_ADMIN') != null;
+export function isPersonManager(features: string[]): boolean {
+  return features.find((item) => item === 'Portal_UI_PersonManager') != null;
 }
-
-export function isShopAdmin(groups: string[]): boolean {
-  return groups.find(item => item.toUpperCase() === 'VI_4_ITSHOPADMIN_ADMIN') != null;
+export function isStructAdmin(features: string[]): boolean {
+  return features.find((item) => item === 'Portal_UI_StructAdmin') != null;
+}
+export function isShopAdmin(features: string[]): boolean {
+  return features.find((item) => item === 'Portal_UI_ShopAdmin') != null;
+}
+export function isRuleAdmin(features: string[]): boolean {
+  return features.find((item) => item === 'Portal_UI_RuleStatistics') != null;
+}
+export function isRoleAdmin(features: string[]): boolean {
+  return features.find((item) => item === 'Portal_UI_RoleAdmin') != null;
+}
+export function hasFeatures(features: string[], guardedFeatures: string[]): boolean {
+  const guardedFeaturesLower = guardedFeatures.map((feature) => feature.toLocaleLowerCase());
+  const featuresLower = features.map((feature) => feature.toLocaleLowerCase());
+  return guardedFeaturesLower.every((feature) => featuresLower.includes(feature));
+}
+export function isRoleStatistics(features: string[]): boolean {
+  return features.find((item) => item === 'Portal_UI_RoleStatistics') != null;
+}
+export function isResourceAdmin(features: string[]): boolean {
+  return features.find((item) => item === 'Portal_UI_ResourceAdmin') != null;
+}
+export function isShopStatistics(features: string[]): boolean {
+  return features.find((item) => item === 'Portal_UI_ShopStatistics') != null;
+}
+export function isStructStatistics(features: string[]): boolean {
+  return features.find((item) => item === 'Portal_UI_StructStatistics') != null;
+}
+export function isCancelPwO(features: string[]): boolean {
+  return features.find((item) => item === 'QER_CancelPwO') != null;
+}
+export function isPasswordHelpdesk(features: string[]): boolean {
+  return features.find((item) => item === 'Portal_UI_PasswordHelpdesk') != null;
+}
+export function isAuditor(groups: string[]): boolean {
+  return groups.find(item => item.toUpperCase() === 'VI_4_AUDITING_AUDITOR') != null;
 }

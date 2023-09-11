@@ -1,30 +1,100 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
-
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
 :host {
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow: hidden;
 
-  .mat-tab-group{
-    height: 100%;
+  .hidden {
+    display: none;
   }
-  ::ng-deep .mat-tab-labels {
-    background-color: $white;
+
+  imx-busy-indicator {
+    flex: 1 1 auto;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .mat-tab-group {
+    height: 100%;
+    overflow: hidden;
+
+    ::ng-deep .mat-tab-body-wrapper {
+      flex: 1 1 auto;
+
+      .mat-tab-body-content {
+        height: 100%;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+    }
   }
 
   ::ng-deep .eui-alert {
     margin-bottom: 20px;
   }
+
+  .imx-additional-info {
+    margin: 0 20px 20px;
+
+    .mat-expansion-panel {
+      overflow: hidden;
+    }
+
+    .mat-expansion-panel.mat-expanded {
+      overflow: auto;
+    }
+  }
+
+  .imx-request-information,
+  .imx-request-entitlements,
+  .imx-request-history,
+  .imx-request-item-detail {
+    margin: 20px;
+    overflow: auto;
+  }
+
+  .imx-request-entitlements {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+  }
+
+  .imx-request-properties {
+    margin: 0 20px 20px 20px;
+    overflow: auto;
+  }
+
+  .imx-request-item-detail mat-card {
+    background-color: transparent;
+  }
+  imx-ext{
+    height: 100%;
+    overflow: auto;
+  }
 }
 
-.imx-request-information, .imx-request-item-detail, .imx-request-history {
-  margin: 20px;
-  overflow: auto;
+:host {
+  ::ng-deep .mat-tab-labels {
+    background-color: $color-gray-0;
+  }
 }
 
-.imx-request-properties {
-  margin: 0 20px 20px 20px;
-  overflow: auto;
+.eui-dark-theme {
+  :host {
+    background-color: $color-gray-80;
+    ::ng-deep .mat-tab-labels {
+      background-color: $color-gray-80;
+    }
+  }
 }
 
+.eui-contrast-theme {
+  :host {
+    background-color: $color-gray-90;
+    ::ng-deep .mat-tab-labels {
+      background-color: $color-gray-90;
+    }
+  }
+}

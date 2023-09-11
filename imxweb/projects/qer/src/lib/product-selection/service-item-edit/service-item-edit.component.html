@@ -7,7 +7,7 @@
   </imx-bulk-editor>
 </div>
 <div eui-sidesheet-actions color="white">
-  <button mat-raised-button color="primary" [disabled]="!hasBulkItemsWithDecision()" (click)="close()"
+  <button mat-raised-button color="primary" [disabled]="!hasBulkItemsWithDecision()" (click)="submit()"
     data-imx-identifier="service-item-edit-button-submit">
     {{'#LDS#Submit' | translate}}
   </button>

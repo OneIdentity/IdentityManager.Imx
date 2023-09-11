@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,19 +24,13 @@
  *
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { configureTestSuite } from 'ng-bullet';
-import { LoggerTestingModule } from 'ngx-logger/testing';
-
 import { ParmOpt } from 'imx-api-att';
-import { clearStylesFromDOM } from 'qbm';
+import { ClassloggerService, clearStylesFromDOM } from 'qbm';
 import { EditOriginComponent } from './edit-origin.component';
 import { FilterElementColumnService } from './filter-element-column.service';
 import { FilterElementModel } from './filter-element-model';
+import { MockBuilder, MockedComponentFixture, MockRender } from 'ng-mocks';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 
 
 function buildFilterModel(config: ParmOpt[], value: string): FilterElementModel {
@@ -51,26 +45,22 @@ function buildFilterModel(config: ParmOpt[], value: string): FilterElementModel 
 
 describe('EditOriginComponent', () => {
     let component: EditOriginComponent;
-    let fixture: ComponentFixture<EditOriginComponent>;
-
-    configureTestSuite(() => {
-        TestBed.configureTestingModule({
-            imports: [
-                MatFormFieldModule,
-                MatInputModule,
-                ReactiveFormsModule,
-                NoopAnimationsModule,
-                LoggerTestingModule
-            ],
-            declarations: [
-                EditOriginComponent
-            ]
-        });
-    });
+    let fixture: MockedComponentFixture<EditOriginComponent>;
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(EditOriginComponent);
-        component = fixture.componentInstance;
+      return MockBuilder(EditOriginComponent)
+        .mock(ClassloggerService)
+        .beforeCompileComponents(testbed => {
+          testbed.configureTestingModule({
+            schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
+          })
+        })
+    })
+
+
+    beforeEach(() => {
+        fixture = MockRender(EditOriginComponent)
+        component = fixture.point.componentInstance;
         fixture.detectChanges();
     });
 

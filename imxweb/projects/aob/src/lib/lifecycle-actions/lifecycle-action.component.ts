@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, ValidatorFn, AbstractControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, ValidatorFn, AbstractControl, UntypedFormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -70,8 +70,8 @@ export class LifecycleActionComponent implements OnDestroy, OnInit {
 
   public publishFuture: boolean;
 
-  public readonly publishDateForm: FormGroup;
-  public readonly datepickerFormControl: FormControl;
+  public readonly publishDateForm: UntypedFormGroup;
+  public readonly datepickerFormControl: UntypedFormControl;
 
   public readonly browserCulture: string;
 
@@ -105,7 +105,7 @@ export class LifecycleActionComponent implements OnDestroy, OnInit {
     private readonly metadataProvider: MetadataService,
     private readonly aobApiService: AobApiService,
     private readonly platform: Platform) {
-    this.browserCulture = this.translateService.getBrowserCultureLang();
+    this.browserCulture = this.translateService.currentLang;
 
     this.initCaptions();
 
@@ -114,11 +114,11 @@ export class LifecycleActionComponent implements OnDestroy, OnInit {
     // set date to tomorrow
     this.minDate = moment(curDate);
 
-    this.datepickerFormControl = new FormControl(this.minDate, this.validateDate(this.minDate, () => this.publishFuture));
+    this.datepickerFormControl = new UntypedFormControl(this.minDate, this.validateDate(this.minDate, () => this.publishFuture));
 
-    this.publishDateForm = new FormGroup({
+    this.publishDateForm = new UntypedFormGroup({
       datepickerFormControl: this.datepickerFormControl,
-      whenToPublish: new FormControl('now'),
+      whenToPublish: new UntypedFormControl('now'),
     });
 
     this.subscriptions.push(this.publishDateForm.get('whenToPublish').valueChanges

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, Inject } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 
 import { RulesViolationsAction } from './rules-violations-action.interface';
@@ -49,7 +49,7 @@ export class RulesViolationsActionComponent {
   /**
    * The form group to which the created form controls will be added.
    */
-  public readonly formGroup = new FormGroup({});
+  public readonly formGroup = new UntypedFormGroup({});
 
   /**
    * Creates a new RulesViolationsActionComponent

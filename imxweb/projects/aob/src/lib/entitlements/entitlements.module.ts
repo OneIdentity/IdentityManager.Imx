@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -54,7 +54,8 @@ import {
   QbmModule,
   LdsReplaceModule,
   CdrModule,
-  SqlWizardModule
+  SqlWizardModule,
+  InfoModalDialogModule
 } from 'qbm';
 import { EntitlementsAddComponent } from './entitlement-add/entitlements-add.component';
 import { EntitlementsComponent } from './entitlements.component';
@@ -109,7 +110,8 @@ import { MappedEntitlementsPreviewComponent } from './entitlement-edit-auto-add/
     LifecycleActionsModule,
     CdrModule,
     ScrollingModule,
-    SqlWizardModule
+    SqlWizardModule,
+    InfoModalDialogModule
   ],
   providers: [
     EntitlementsService

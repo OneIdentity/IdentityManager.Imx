@@ -1,0 +1,36 @@
+<eui-scroll class="scroll-pad" *ngIf="isCurrent" [options]="{ alwaysShowTracks: true }">
+  <div class="tree-grid-wrapper" *ngIf="isCurrent">
+    <div
+      *ngFor="let block of blocks"
+      [ngClass]="['block', block.class]"
+      [style.grid-column-end]="block.cols"
+      [style.grid-row-end]="block.rows"
+      [style.font-size]="block.fontsize"
+      [matTooltip]="block.tooltip"
+      matTooltipClass="custom-tooltip"
+      (click)="heatmapsService.openBlockDetails(block)"
+    >
+      <div class="block-text">
+        {{ block.name }}
+      </div>
+    </div>
+  </div>
+  <div class="tree-grid-wrapper" *ngIf="!isCurrent">
+    <div
+      *ngFor="let block of blocks"
+      [ngClass]="['block', 'block-history']"
+      [style.grid-column-end]="block.cols"
+      [style.grid-row-end]="block.rows"
+      [style.background-color]="block.backgroundColor"
+      [style.color]="block.color"
+      [style.font-size]="block.fontsize"
+      [matTooltip]="block.tooltip"
+      [matTooltipClass]="'custom-tooltip'"
+      (click)="heatmapsService.openBlockDetails(block)"
+    >
+      <div class="block-text">
+        {{ block.name }}
+      </div>
+    </div>
+  </div>
+</eui-scroll>

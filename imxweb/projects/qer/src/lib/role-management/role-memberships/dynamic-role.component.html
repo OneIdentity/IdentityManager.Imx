@@ -3,7 +3,9 @@
   <ng-container *ngIf="!busy && !sqlExpression">
     <eui-alert condensed="true" [colored]="true" type="info">
       <div class="margin">{{ LdsNoDynamicRole | translate }}</div>
-      <button data-imx-identifier="button-dynamic-role-create" mat-raised-button (click)="createDynamic()" color="primary">{{ '#LDS#Create dynamic role' | translate }}</button>
+      <button *ngIf="canEdit" data-imx-identifier="button-dynamic-role-create" mat-raised-button (click)="createDynamic()" color="primary">
+        {{ '#LDS#Create dynamic role' | translate }}
+      </button>
     </eui-alert>
   </ng-container>
   <ng-container *ngIf="sqlExpression">
@@ -19,29 +21,34 @@
       *ngIf="showHelperAlert && !sqlExpression.IsUnsupported"
       [dismissable]="true"
       (dismissed)="showHelperAlert = false"
-      >{{ LdsWizardInfo | translate }}</eui-alert
     >
-    <div class="imx-mat-card-container">
+      {{ LdsWizardInfo | translate }}
+    </eui-alert>
+
+    <div class="imx-main-content">
       <mat-card>
-        <imx-sqlwizard *ngIf="!sqlExpression.IsUnsupported" tableName="Person" [expression]="sqlExpression.Expression" (change)="checkChanges()"> </imx-sqlwizard>
+        <imx-sqlwizard [canEdit]="canEdit" *ngIf="!sqlExpression.IsUnsupported" tableName="Person" [expression]="sqlExpression.Expression" (change)="checkChanges()">
+        </imx-sqlwizard>
 
         <ng-container *ngIf="cdrList.length > 0">
           <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="formArray.push($event)" (valueChange)="checkCDRs()"></imx-cdr-editor>
         </ng-container>
-
-        <div class="button-bar">
-          <button data-imx-identifier="button-dynamic-role-delete" mat-raised-button (click)="deleteDynamic()" color="warn">{{ '#LDS#Delete' | translate }}</button>
-          <button
-            data-imx-identifier="button-dynamic-role-save"
-            mat-raised-button
-            (click)="save()"
-            [disabled]="(exprHasntChanged && cdrsHaventChanged) || formGroup.invalid || isConditionInvalid()"
-            color="primary"
-          >
-            {{ '#LDS#Save' | translate }}
-          </button>
-        </div>
       </mat-card>
+      <div eui-sidesheet-actions *ngIf="canEdit">
+        <button data-imx-identifier="button-dynamic-role-delete" mat-stroked-button (click)="deleteDynamic()" color="warn">
+          <eui-icon icon="delete"></eui-icon>
+          {{ '#LDS#Delete' | translate }}
+        </button>
+        <button
+          data-imx-identifier="button-dynamic-role-save"
+          mat-raised-button
+          (click)="save()"
+          [disabled]="(exprHasntChanged && cdrsHaventChanged) || formGroup.invalid || (!sqlExpression.IsUnsupported && isConditionInvalid())"
+          color="primary"
+        >
+          {{ '#LDS#Save' | translate }}
+        </button>
+      </div>
     </div>
   </ng-container>
 </div>

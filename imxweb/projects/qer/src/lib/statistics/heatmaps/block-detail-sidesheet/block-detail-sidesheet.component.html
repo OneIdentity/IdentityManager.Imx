@@ -1,0 +1,35 @@
+<div eui-sidesheet-content class="container">
+  <mat-card class="block-details">
+    <div class="cdr-list">
+      <imx-cdr-editor *ngFor="let cdr of topCdrList" [cdr]="cdr"></imx-cdr-editor>
+    </div>
+    <div class="cdr-list">
+      <imx-cdr-editor *ngFor="let cdr of bottomCdrList" [cdr]="cdr"></imx-cdr-editor>
+    </div>
+  </mat-card>
+
+  <mat-card class="history-chart-container">
+    <div class="history-chart" *ngIf="hasHistory">
+      <div class="history-title">
+        <mat-card-title>
+          {{'#LDS#Heading History' | translate}}
+        </mat-card-title>
+        <mat-card-subtitle>
+          {{'#LDS#Status of the object over time' | translate}}
+        </mat-card-subtitle>
+      </div>
+      <div #chartWrapper class="chart-wrapper">
+        <eui-billboard [options]="chartOptions" (chart)="saveChart($event)" [ngStyle]="{opacity: isLoading ? '0' : '1'}"></eui-billboard>
+      </div>
+      <div class="legend-wrapper">
+        <imx-discrete-legend></imx-discrete-legend>
+      </div>
+    </div>
+
+
+    <div class="imx-no-history" *ngIf="!hasHistory">
+      <eui-icon icon="content-alert"></eui-icon>
+      <p>{{ '#LDS#There is currently no history available.' | translate }}</p>
+    </div>
+  </mat-card>
+</div>

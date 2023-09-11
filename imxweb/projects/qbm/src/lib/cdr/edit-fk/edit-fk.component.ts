@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,11 +33,11 @@ import {
   ChangeDetectorRef,
   EventEmitter,
   OnInit,
-  ErrorHandler
+  ErrorHandler,
 } from '@angular/core';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { FormControl } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { UntypedFormControl } from '@angular/forms';
+import { Subscription, Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { ListRange } from '@angular/cdk/collections';
@@ -46,7 +46,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { ClassloggerService } from '../../classlogger/classlogger.service';
 import { FkAdvancedPickerComponent } from '../../fk-advanced-picker/fk-advanced-picker.component';
-import { ValueStruct, IForeignKeyInfo, CollectionLoadParameters, DbObjectKey, FilterType, CompareOperator } from 'imx-qbm-dbts';
+import { ValueStruct, IForeignKeyInfo, CollectionLoadParameters, DbObjectKey } from 'imx-qbm-dbts';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
 import { EntityColumnContainer } from '../entity-column-container';
 import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
@@ -64,36 +64,33 @@ import { LdsReplacePipe } from '../../lds-replace/lds-replace.pipe';
   selector: 'imx-edit-fk',
   templateUrl: './edit-fk.component.html',
   styleUrls: ['./edit-fk.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 /**
  * A component for viewing / editing foreign key relations
  */
 export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnInit {
+  public readonly updateRequested = new Subject<void>();
   public get hasCandidatesOrIsLoading(): boolean {
-
-    return true;
-
-    // because of 298890
-    /*
-    return this.candidatesTotalCount > 0
+    return (
+      this.candidatesTotalCount > 0 ||
       // make sure the user can change selectedTable even if there are no available candidates
       // in the first candidate table
-      || this.columnContainer.fkRelations.length > 1
-      || this.parameters?.search?.length > 0
-      || this.parameters?.filter != null
-      || this.loading;
-      */
+      this.columnContainer?.fkRelations?.length > 1 ||
+      this.parameters?.search?.length > 0 ||
+      this.parameters?.filter != null ||
+      this.loading
+    );
   }
 
-  public readonly control = new FormControl(undefined);
+  public readonly control = new UntypedFormControl(undefined);
   public readonly columnContainer = new EntityColumnContainer<string>();
   public readonly pageSize = 20;
   public candidates: Candidate[];
   public loading = false;
   public selectedTable: IForeignKeyInfo;
   public isHierarchical: boolean;
-
+  public candidatesTotalCount: number;
 
   public readonly valueHasChanged = new EventEmitter<ValueHasChangedEventArg>();
 
@@ -119,16 +116,17 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
     public readonly metadataProvider: MetadataService,
     private readonly errorHandler: ErrorHandler
   ) {
-    this.subscribers.push(this.control.valueChanges.pipe(debounceTime(500)).subscribe(async keyword => {
-      if (keyword != null && typeof keyword !== 'string') {
-        this.control.setErrors(null);
-        return;
-      }
+    this.subscribers.push(
+      this.control.valueChanges.pipe(debounceTime(500)).subscribe(async (keyword) => {
+        if (keyword != null && typeof keyword !== 'string') {
+          this.control.setErrors(null);
+          return;
+        }
 
-      return this.search(keyword);
-    }));
+        return this.search(keyword);
+      })
+    );
   }
-
 
   public async ngOnInit(): Promise<void> {
     return this.initCandidates();
@@ -138,26 +136,28 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
   public async ngAfterViewInit(): Promise<void> {
     if (this.columnContainer && this.columnContainer.canEdit && this.viewport) {
       // Give a debounce to the stream so we don't get multiple calls and lose data
-      this.subscribers.push(this.viewport.renderedRangeStream.pipe(debounceTime(100)).subscribe(async (value: ListRange) => {
-        const bottom = this.parameters.StartIndex + this.pageSize;
-        if (value.end >= bottom) {
-          // Save old data, extend start index and delay the detecting of changes until we call within this function
-          const tmpCandidates: Candidate[] = this.candidates.map(candidate => candidate);
-          this.parameters.StartIndex += this.pageSize;
-          await this.updateCandidates(this.parameters, false);
+      this.subscribers.push(
+        this.viewport.renderedRangeStream.pipe(debounceTime(100)).subscribe(async (value: ListRange) => {
+          const bottom = this.parameters.StartIndex + this.pageSize;
+          if (value.end >= bottom) {
+            // Save old data, extend start index and delay the detecting of changes until we call within this function
+            const tmpCandidates: Candidate[] = this.candidates.map((candidate) => candidate);
+            this.parameters.StartIndex += this.pageSize;
+            await this.updateCandidates(this.parameters, false);
 
-          // Append new data to old, keep scroll at the bottom, check the size, and detect changes
-          this.candidates = tmpCandidates.concat(...this.candidates);
-          this.viewport.scrollToIndex(bottom);
-          this.viewport.checkViewportSize();
-          this.changeDetectorRef.detectChanges();
-        }
-      }));
+            // Append new data to old, keep scroll at the bottom, check the size, and detect changes
+            this.candidates = tmpCandidates.concat(...this.candidates);
+            this.viewport.scrollToIndex(bottom);
+            this.viewport.checkViewportSize();
+            this.changeDetectorRef.detectChanges();
+          }
+        })
+      );
     }
   }
 
   public ngOnDestroy(): void {
-    this.subscribers.forEach(s => s.unsubscribe());
+    this.subscribers.forEach((s) => s.unsubscribe());
   }
 
   public async inputFocus(): Promise<void> {
@@ -173,10 +173,11 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
       if ((this.savedCandidates?.length ?? 0) > 0) {
         this.candidates = this.savedCandidates;
       }
-    } else if (this.parameters.search || this.parameters.filter) {
+    } else if (this.parameters.search || this.parameters.filter || this.control.value == null) {
       // If we don't have a chosen value, then we have residual values, reset them and update
       await this.updateCandidates({ search: undefined, filter: undefined }, false);
     }
+
     if (this.viewport) {
       this.viewport.scrollToIndex(0);
       this.viewport.checkViewportSize();
@@ -209,7 +210,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
       this.parameters.StartIndex = 0;
       await this.updateCandidates({ search: undefined, filter: undefined });
     }
-    this.viewport.scrollToIndex(0);
+    this.viewport?.scrollToIndex(0);
 
     /* 298890
     if (this.candidatesTotalCount === 0) {
@@ -219,7 +220,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
   }
 
   public close(event?: any): void {
-    if (this.control.value == null || typeof (this.control.value) === 'string') {
+    if (this.control.value == null || typeof this.control.value === 'string') {
       this.logger.debug(this, 'autoCompleteClose no match - reset to previous value', event);
       this.control.setValue(this.getValueStruct(), { emitEvent: false });
     }
@@ -235,19 +236,17 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
     }
 
     const dialogRef = this.sidesheet.open(this.isHierarchical ? FkHierarchicalDialogComponent : FkAdvancedPickerComponent, {
-      title: this.ldsReplace.transform(await this.translator.get('#LDS#Heading {0}').toPromise(),
-        await this.translator.get(this.columnContainer?.display).toPromise()),
-      headerColour: 'iris-blue',
-      panelClass: 'imx-sidesheet',
+      title: await this.translator.get('#LDS#Heading Edit Property').toPromise(),
+      subTitle: await this.translator.get(this.columnContainer?.display).toPromise(),
       padding: '0',
       disableClose: true,
-      width: '60%',
+      width: 'max(600px,60%)',
       testId: this.isHierarchical ? 'edit-fk-hierarchy-sidesheet' : 'edit-fk-sidesheet',
       data: {
         fkRelations: this.columnContainer.fkRelations,
         selectedTableName: this.selectedTable.TableName,
-        idList: this.columnContainer.value ? [this.columnContainer.value] : []
-      }
+        idList: this.columnContainer.value ? [this.columnContainer.value] : [],
+      },
     });
 
     dialogRef.afterClosed().subscribe(async (selection: ForeignKeySelection) => {
@@ -263,7 +262,6 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
         const value = selection.candidates && selection.candidates.length > 0 ? selection.candidates[0] : { DataValue: undefined };
         this.control.setValue(value, { emitEvent: false });
         await this.writeValue(value);
-
       } else {
         this.logger.debug(this, 'dialog cancel');
       }
@@ -279,27 +277,56 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
       this.columnContainer.init(cdref);
       this.setControlValue();
 
-      // bind to entity change event
-      this.subscribers.push(this.columnContainer.subscribe(async () => {
-        if (this.isWriting) {
-          return;
-        }
-
-        if (this.control.value?.DataValue !== this.columnContainer.value) {
-          this.loading = true;
-          try {
-            this.logger.trace(this, `Control (${this.columnContainer.name}) set to new value:`,
-              this.columnContainer.value, this.control.value);
-            this.candidates = [];
+      if (cdref.minlengthSubject) {
+        this.subscribers.push(
+          cdref.minlengthSubject.subscribe((elem) => {
             this.setControlValue();
-
-          } finally {
-            this.loading = false;
             this.changeDetectorRef.detectChanges();
+          })
+        );
+      }
+
+      // bind to entity change event
+      this.subscribers.push(
+        this.columnContainer.subscribe(async () => {
+          if (this.isWriting) {
+            return;
           }
-        }
-        this.valueHasChanged.emit({ value: this.control.value });
-      }));
+
+          if (this.control.value?.DataValue !== this.columnContainer.value) {
+            this.loading = true;
+            try {
+              this.logger.trace(
+                this,
+                `Control (${this.columnContainer.name}) set to new value:`,
+                this.columnContainer.value,
+                this.control.value
+              );
+              this.candidates = [];
+              this.setControlValue();
+            } finally {
+              this.loading = false;
+              this.changeDetectorRef.detectChanges();
+            }
+          }
+          this.valueHasChanged.emit({ value: this.control.value });
+        })
+      );
+
+      this.subscribers.push(
+        this.updateRequested.subscribe(() => {
+          setTimeout(async () => {
+            this.loading = true;
+            try {
+              this.setControlValue();
+              await this.initCandidates();
+            } finally {
+              this.loading = false;
+            }
+            this.valueHasChanged.emit({ value: this.control.value });
+          });
+        })
+      );
       this.logger.trace(this, 'Control initialized', this.control.value);
     } else {
       this.logger.error(this, 'The Column Dependent Reference is undefined');
@@ -307,21 +334,31 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
   }
 
   private setControlValue(): void {
-    if (this.columnContainer.fkRelations && this.columnContainer.fkRelations.length > 0) {
+    const fkRelations = this.columnContainer.fkRelations;
+    if (fkRelations && fkRelations.length > 0) {
       let table: IForeignKeyInfo;
-      if (this.columnContainer.fkRelations.length > 1 && this.columnContainer.value) {
+      if (fkRelations.length > 1 && this.columnContainer.value) {
         this.logger.trace(this, 'the column already has a value, and it is a dynamic foreign key');
         const dbObjectKey = DbObjectKey.FromXml(this.columnContainer.value);
-        table = this.columnContainer.fkRelations.find(fkr => fkr.TableName === dbObjectKey.TableName);
+        table = fkRelations.find((fkr) => fkr.TableName === dbObjectKey.TableName);
       }
-      this.selectedTable = table || this.columnContainer.fkRelations[0];
+      this.selectedTable = table || fkRelations[0];
 
-      this.metadataProvider.update(this.columnContainer.fkRelations.map(fkr => fkr.TableName));
+      this.metadataProvider.update(fkRelations.map((fkr) => fkr.TableName));
     }
     this.control.setValue(this.getValueStruct(), { emitEvent: false });
+
+    const autoCompleteValidator = (control) =>
+      control.value != null || this.parameters.search == null || this.candidates?.length > 0 ? null : { checkAutocomplete: true };
     if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
-      this.control.setValidators(control => control.value == null || control.value.length === 0 ? { required: true } : null);
+      this.control.setValidators([
+        (control) => (control.value == null || control.value.length === 0 ? { required: true } : null),
+        autoCompleteValidator,
+      ]);
+    } else {
+      this.control.setValidators(autoCompleteValidator);
     }
+    this.changeDetectorRef.detectChanges();
   }
 
   /** loads the candidates and updates the listings */
@@ -331,7 +368,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
         StartIndex: 0,
         PageSize: this.pageSize,
         filter: undefined,
-        search: undefined
+        search: undefined,
       });
 
       this.changeDetectorRef.detectChanges();
@@ -343,7 +380,6 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
    * @param value the new value
    */
   private async writeValue(value: ValueStruct<string>): Promise<void> {
-
     this.logger.debug(this, 'writeValue called with value', value);
 
     if (!this.columnContainer.canEdit || this.equal(this.getValueStruct(), value)) {
@@ -353,21 +389,15 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
     this.isWriting = true;
     this.loading = true;
     try {
-
       this.logger.debug(this, 'writeValue - updateCdrValue...');
       await this.columnContainer.updateValueStruct(value);
 
       const valueAfterWrite = this.getValueStruct();
 
       if (!this.equal(this.control.value, valueAfterWrite)) {
-
         this.control.setValue(valueAfterWrite, { emitEvent: false });
 
-        this.logger.debug(
-          this,
-          'writeValue - value has changed after interaction with the Entity. Value:',
-          this.control.value
-        );
+        this.logger.debug(this, 'writeValue - value has changed after interaction with the Entity. Value:', this.control.value);
       }
 
       this.control.markAsDirty();
@@ -390,14 +420,14 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
         }
         this.parameters = { ...this.parameters, ...newState };
         const candidateCollection = await this.selectedTable.Get(this.parameters);
-        // this.candidatesTotalCount = candidateCollection.TotalCount;
+        this.candidatesTotalCount = candidateCollection.TotalCount;
 
         this.isHierarchical = candidateCollection.Hierarchy != null;
 
         const multipleFkRelations = this.columnContainer.fkRelations && this.columnContainer.fkRelations.length > 1;
         const identityRelatedTable = this.selectedTable.TableName === 'Person';
 
-        this.candidates = candidateCollection.Entities.map(entityData => {
+        this.candidates = candidateCollection.Entities.map((entityData) => {
           let key: string = null;
           let detailValue: string = entityData.LongDisplay;
           const defaultEmailColumn = entityData.Columns['DefaultEmailAddress'];
@@ -428,7 +458,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
           return {
             DataValue: key,
             DisplayValue: entityData.Display,
-            displayLong: detailValue
+            displayLong: detailValue,
           };
         });
       } finally {
@@ -460,13 +490,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
     this.parameters.StartIndex = 0;
 
     await this.updateCandidates({ search: keyword });
-    this.viewport.scrollToIndex(0);
+    this.viewport?.scrollToIndex(0);
     this.changeDetectorRef.detectChanges();
-
-    this.control.setErrors(
-      (keyword == null || this.candidates == null || this.candidates.length > 0) ?
-        null :
-        { checkAutocomplete: true }
-    );
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,20 +38,26 @@ const helperAlertKey = `${HELPER_ALERT_KEY_PREFIX}_attestation`;
 @Component({
   selector: 'imx-attestation',
   templateUrl: './attestation.component.html',
-  styleUrls: ['./attestation.component.scss']
+  styleUrls: ['./attestation.component.scss'],
 })
 export class AttestationComponent implements OnDestroy {
   public get canDecide(): boolean {
-    return this.selectedCases.length > 0 && this.selectedCases.every(item => this.itemStatus.enabled(item));
+    return this.selectedCases.length > 0 && this.selectedCases.every((item) => this.itemStatus.enabled(item));
   }
 
-  public get showHelperAlert(): boolean { return !this.storageService.isHelperAlertDismissed(helperAlertKey); }
+  public get withAssignmentAnalysis(): boolean {
+    return this.parameters?.objecttable === 'Person';
+  }
 
-  @Input() public parameters: { objecttable: string; objectuid: string; filter?: FilterData[]};
+  public get showHelperAlert(): boolean {
+    return !this.storageService.isHelperAlertDismissed(helperAlertKey);
+  }
+
+  @Input() public parameters: { objecttable: string; objectuid: string; filter?: FilterData[] };
   @Input() public pendingAttestations: HelperAlertContent;
 
   public readonly itemStatus = {
-    enabled: attestationCase => attestationCase.isPending && this.attestationAction.canDecide(attestationCase, this.userUid)
+    enabled: (attestationCase) => attestationCase.isPending && this.attestationAction.canDecide(attestationCase, this.userUid),
   };
 
   public selectedCases: AttestationHistoryCase[] = [];
@@ -67,11 +73,11 @@ export class AttestationComponent implements OnDestroy {
     private readonly storageService: StorageService,
     authentication: AuthenticationService
   ) {
-    this.subscriptions.push(authentication.onSessionResponse?.subscribe(sessionState => this.userUid = sessionState?.UserUid));
+    this.subscriptions.push(authentication.onSessionResponse?.subscribe((sessionState) => (this.userUid = sessionState?.UserUid)));
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   public onSelectionChanged(items: AttestationHistoryCase[]): void {

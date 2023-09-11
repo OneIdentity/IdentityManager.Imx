@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
@@ -41,7 +41,7 @@ import { EntityColumnContainer } from '../entity-column-container';
   styleUrls: ['./edit-binary.component.scss']
 })
 export class EditBinaryComponent implements CdrEditor {
-  public readonly control = new FormControl({ value: undefined, disabled: true });
+  public readonly control = new UntypedFormControl({ value: undefined, disabled: true });
   // TODO: TFS 806165 "imx-web: Editor für Binärdaten verbessern" umsetzen
 
   public readonly columnContainer = new EntityColumnContainer<string>();

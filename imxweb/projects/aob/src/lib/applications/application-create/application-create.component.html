@@ -1,4 +1,4 @@
-<div class="imx-content">
+<mat-card eui-sidesheet-content class="imx-content">
   <p translate>#LDS#Add an icon, name and description to the application and assign a manager to it.</p>
 
   <form class="imx-form" id="form" [formGroup]="form">
@@ -22,11 +22,11 @@
       (controlCreated)="form.addControl(owner.column.ColumnName, $event)">
     </imx-cdr-editor>
   </form>
-</div>
+</mat-card>
 
-<div class="imx-button-bar">
+<mat-card eui-sidesheet-actions class="imx-button-bar">
   <button data-imx-identifier="createApp-save" mat-raised-button color="primary" type="button"
     (click)="save()" form="form" [disabled]="!form.dirty || form.invalid">
     <span translate>#LDS#Save</span>
   </button>
-</div>
+</mat-card>

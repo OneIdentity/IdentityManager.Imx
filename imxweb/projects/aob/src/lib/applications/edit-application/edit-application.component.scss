@@ -15,8 +15,12 @@
   margin-left: 24px;
 }
 
-div {
-  button {
-    margin-left: 10px;
+.eui-sidesheet-actions {
+  .justify-start {
+    margin-right: auto;
+  }
+
+  button:not(:last-of-type):not(.justify-start) {
+    margin-right: 10px;
   }
 }

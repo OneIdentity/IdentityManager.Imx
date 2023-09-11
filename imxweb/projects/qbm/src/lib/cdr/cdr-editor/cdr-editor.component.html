@@ -1,1 +1,9 @@
 <ng-template #viewcontainer></ng-template>
+<div class="hint-container">
+  <imx-info-button [templateRef]="infoContent" *ngIf="description" [title]="infotitle"></imx-info-button>
+</div>
+<ng-template #infoContent>
+  <p>
+    {{description}}
+  </p>
+</ng-template>

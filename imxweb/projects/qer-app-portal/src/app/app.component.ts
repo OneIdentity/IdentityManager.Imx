@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -23,28 +23,33 @@
  * THIS SOFTWARE OR ITS DERIVATIVES.
  *
  */
-
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router, NavigationEnd, NavigationStart, NavigationError, RouterEvent, NavigationCancel } from '@angular/router';
+import { Component, Inject, ErrorHandler, OnDestroy, OnInit } from '@angular/core';
+import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterEvent } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { AuthenticationService, ISessionState, MenuItem, SystemInfoService, MenuService, IeWarningService, SplashService } from 'qbm';
-import { PendingItemsType, ProjectConfigurationService, UserModelService } from 'qer';
-import { QerProjectConfig } from 'imx-api-qer';
+import { AuthenticationService, IeWarningService, ImxTranslationProviderService, ISessionState, MenuService, SplashService, SystemInfoService } from 'qbm';
+
+import { ProjectConfigurationService, UserModelService, SettingsComponent, QerApiService } from 'qer';
+
+import { ProfileSettings, QerProjectConfig } from 'imx-api-qer';
 import { ProjectConfig } from 'imx-api-qbm';
+import { MatDialog } from '@angular/material/dialog';
+import { EuiLoadingService, EuiTheme, EuiThemeService, EuiTopNavigationItem } from '@elemental-ui/core';
+import { TranslateService } from '@ngx-translate/core';
+import { APP_BASE_HREF } from '@angular/common';
+import { getBaseHref, HEADLESS_BASEHREF } from './app.module';
 
 @Component({
   selector: 'imx-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  public menuItems: MenuItem[];
+  public menuItems: EuiTopNavigationItem[];
   public isLoggedIn = false;
   public hideMenu = false;
   public hideUserMessage = false;
-  public pendingItems: PendingItemsType;
-  public showPageContent = false;
+  public showPageContent = true;
 
   private readonly subscriptions: Subscription[] = [];
 
@@ -57,13 +62,24 @@ export class AppComponent implements OnInit, OnDestroy {
     systemInfoService: SystemInfoService,
     ieWarningService: IeWarningService,
     projectConfig: ProjectConfigurationService,
+    private dialog: MatDialog,
+    private qerClient: QerApiService,
+    private readonly themeService: EuiThemeService,
+    private readonly errorHandler: ErrorHandler,
+    private readonly euiLoadingService: EuiLoadingService,
+    private readonly translationProvider: ImxTranslationProviderService,
+    private readonly translateService: TranslateService,
+    @Inject(APP_BASE_HREF) private baseHref: string
   ) {
     this.subscriptions.push(
       this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
-
         if (sessionState.hasErrorState) {
           // Needs to close here when there is an error on sessionState
           splash.close();
+        } else {
+          if (sessionState.IsLoggedOut) {
+            this.showPageContent = false;
+          }
         }
 
         this.isLoggedIn = sessionState.IsLoggedIn;
@@ -73,20 +89,32 @@ export class AppComponent implements OnInit, OnDestroy {
           splash.close();
 
           const config: QerProjectConfig & ProjectConfig = await projectConfig.getConfig();
-          this.pendingItems = await userModelService.getPendingItems();
-          const groupInfo = await userModelService.getGroups();
+          const features = (await userModelService.getFeatures()).Features;
           const systemInfo = await systemInfoService.get();
-          this.menuItems = menuService.getMenuItems(systemInfo.PreProps, groupInfo.map(group => group.Name), false, config);
+          const groups = (await userModelService.getGroups()).map((group) => group.Name || '');
+          const isUseProfileLangChecked = (await this.qerClient.v2Client.portal_profile_get()).UseProfileLanguage ?? false;
+          // Set session culture if isUseProfileLangChecked is true, set browser culture otherwise
+          if (isUseProfileLangChecked) {
+            await this.translationProvider.init(sessionState.culture, sessionState.cultureFormat);
+          }else{
+            const browserCulture = this.translateService.getBrowserCultureLang();
+            await this.translationProvider.init(browserCulture);
+          }
+
+          this.menuItems = await menuService.getMenuItems(
+            systemInfo.PreProps,
+            features,
+            true,
+            config,
+            groups
+          );
 
           ieWarningService.showIe11Banner();
+
+          this.applyProfileSettings();
         }
       })
     );
-
-    this.subscriptions.push(userModelService.onPendingItemsChange.subscribe((pendingItems: PendingItemsType) => {
-      this.pendingItems = pendingItems;
-    }));
-
     this.setupRouter();
   }
 
@@ -94,9 +122,19 @@ export class AppComponent implements OnInit, OnDestroy {
    * Returns true for routes that require different page level styling
    */
   public get isContentFullScreen(): boolean {
-    return (
-      this.router.url.includes('dataexplorer')
-    );
+    const route = this.router.url;
+    switch (true) {
+      case route.includes('dataexplorer'):
+      case route.includes('myresponsibilities'):
+      case route.includes('newrequest'):
+        // Check for all children of data explorer and new request
+        return true;
+      case route.endsWith('statistics'):
+        // Only check for ending statistics route
+        return true;
+      default:
+        return false;
+    }
   }
 
   public async ngOnInit(): Promise<void> {
@@ -104,7 +142,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   public async goToProfile(): Promise<void> {
@@ -115,8 +153,20 @@ export class AppComponent implements OnInit, OnDestroy {
     this.router.navigate(['addressbook']);
   }
 
+  public async openSettingsDialog(): Promise<void> {
+    this.dialog.open(SettingsComponent,{minWidth: '600px'});
+  }
+
+  public async goToMyProcesses(): Promise<void> {
+    this.router.navigate(['userprocess']);
+  }
+
+  public get isPageHeadless(): boolean {
+    return getBaseHref() === HEADLESS_BASEHREF;
+  }
+
   private setupRouter(): void {
-    this.router.events.subscribe(((event: RouterEvent) => {
+    this.router.events.subscribe((event: RouterEvent) => {
       if (event instanceof NavigationStart) {
         this.hideUserMessage = true;
         if (this.isLoggedIn && event.url === '/') {
@@ -132,13 +182,31 @@ export class AppComponent implements OnInit, OnDestroy {
       if (event instanceof NavigationEnd) {
         this.hideUserMessage = false;
         this.hideMenu = event.url === '/';
-        // show the pageContent, if the user is logged in or the login page is shown
-        this.showPageContent = this.isLoggedIn || event.urlAfterRedirects === '/';
+        this.showPageContent = true;
       }
 
       if (event instanceof NavigationError) {
         this.hideUserMessage = false;
       }
-    }));
+    });
+  }
+
+  private async applyProfileSettings()
+  {
+    let overlayRef = this.euiLoadingService.show();
+    try {
+      let profileSettings: ProfileSettings = await this.qerClient.client.portal_profile_get();
+      if (profileSettings?.PreferredAppThemes) {
+        let key = Object.keys(EuiTheme).find(x => x.toUpperCase() == profileSettings.PreferredAppThemes?.toUpperCase());
+        if (key)
+          this.themeService.setTheme(EuiTheme[key]);
+      }
+    }
+    catch (error) {
+      this.errorHandler.handleError(error);
+    }
+    finally {
+      this.euiLoadingService.hide(overlayRef);
+    }
   }
 }

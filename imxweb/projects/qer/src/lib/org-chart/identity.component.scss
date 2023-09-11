@@ -1,4 +1,5 @@
 @import "variables.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   display: block;
@@ -58,4 +59,16 @@
   position: absolute;
   left: 60px;
   top: 0.5em;
+}
+
+.eui-dark-theme {
+  :host {
+    background-color: $color-gray-70;
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    background-color: $color-gray-90;
+  }
 }

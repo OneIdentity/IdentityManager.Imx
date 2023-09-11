@@ -1,0 +1,69 @@
+<div class="imx-product-bundle-list-header">
+  <h3 class="imx-product-bundle-list-header-text">
+    {{ '#LDS#Heading Product Bundles' | translate }}
+  </h3>
+  <button
+    [@fadeIcon]="searchState"
+    data-imx-identifier="prodct-bundle-list-button-search"
+    mat-button
+    class="mat-icon-button"
+    color="primary"
+    (click)="enableSearch()"
+    [matTooltip]="'#LDS#Searches for product bundles' | translate"
+    [attr.aria-label]="'#LDS#Search for product bundles' | translate"
+  >
+    <eui-icon icon="search"></eui-icon>
+  </button>
+  <imx-data-source-toolbar
+    #dst
+    [@expandSearch]="{ value: searchState, params: { width: width } }"
+    [alwaysVisible]="true"
+    [settings]="dstSettings"
+    [options]="['search', 'filter']"
+    [searchBoxText]="'#LDS#Search for product bundles' | translate"
+    [useThemedStyle]="true"
+    [busyService]="busyService"
+    (search)="onSearch($event)"
+  ></imx-data-source-toolbar>
+  <imx-info-button [title]="'#LDS#Heading Product Bundles' | translate" [templateRef]="infoDialogContent"> </imx-info-button>
+</div>
+<mat-card class="imx-table-container">
+  <imx-data-table
+    [dst]="dst"
+    [detailViewVisible]="false"
+    [selectable]="false"
+    mode="manual"
+    (highlightedEntityChanged)="onHighlightedEntityChanged($event)"
+    (selectionChanged)="onSelectionChanged($event)"
+    data-imx-identifier="new-request-product-bundle-list-datatable"
+    [showSelectedItemsMenu]="false"
+  >
+    <imx-data-table-column
+      [entityColumn]="entitySchema?.Columns.Ident_ShoppingCartPattern"
+      columnLabel="{{ '#LDS#Product bundle' | translate }}"
+      data-imx-identifier="new-request-product-bundle-list-datacolumn-ident"
+    >
+      <ng-template let-prod>
+        <div>{{ prod?.GetEntity()?.GetColumn('Ident_ShoppingCartPattern')?.GetValue() }}</div>
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-generic-column columnName="type" columnLabel="{{ '#LDS#Type' | translate }}">
+      <ng-template let-prod>
+        <span *ngIf="prod?.IsPublicPattern?.value">
+          {{ '#LDS#Public' | translate }}
+        </span>
+        <span class="imx-private-bundle" *ngIf="!prod?.IsPublicPattern?.value">
+          {{ '#LDS#Private' | translate }}
+        </span>
+      </ng-template>
+    </imx-data-table-generic-column>
+  </imx-data-table>
+</mat-card>
+<imx-data-source-paginator [dst]="dst" [showFirstLastButtons]="true"></imx-data-source-paginator>
+
+<!-- Template for the info dialog -->
+<ng-template #infoDialogContent>
+  <p>
+    {{ ldsInfoDialogText | translate }}
+  </p>
+</ng-template>

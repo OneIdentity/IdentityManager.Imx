@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,9 +25,10 @@
  */
 
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { UntypedFormGroup } from '@angular/forms';
+import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { Subscription } from 'rxjs';
 
 import { PortalPickcategory, PortalPickcategoryItems } from 'imx-api-qer';
 import { DisplayColumns } from 'imx-qbm-dbts';
@@ -35,6 +36,7 @@ import { DisplayColumns } from 'imx-qbm-dbts';
 import {
   BaseCdr,
   ColumnDependentReference,
+  ConfirmationService,
   DataSourceToolbarSettings,
   DataSourceWrapper,
 } from 'qbm';
@@ -46,9 +48,9 @@ import { PickCategoryService } from '../pick-category.service';
   templateUrl: './pick-category-create.component.html',
   styleUrls: ['./pick-category-create.component.scss']
 })
-export class PickCategoryCreateComponent implements OnInit {
+export class PickCategoryCreateComponent implements OnInit, OnDestroy {
 
-  public readonly displayNameForm = new FormGroup({});
+  public readonly displayNameForm = new UntypedFormGroup({});
 
   public readonly dstWrapper: DataSourceWrapper<PortalPickcategoryItems>;
   public dstSettings: DataSourceToolbarSettings;
@@ -57,6 +59,8 @@ export class PickCategoryCreateComponent implements OnInit {
 
   public displayNameCdr: ColumnDependentReference;
   public displayNameReadonlyCdr: ColumnDependentReference;
+  
+  private readonly subscriptions: Subscription[] = [];
 
   @ViewChild(PickCategorySelectIdentitiesComponent) public selectIndentities: PickCategorySelectIdentitiesComponent;
 
@@ -64,8 +68,9 @@ export class PickCategoryCreateComponent implements OnInit {
     @Inject(EUI_SIDESHEET_DATA) public data: {
       pickCategory: PortalPickcategory
     },
-    private readonly sidesheet: EuiSidesheetService,
-    readonly pickCategoryService: PickCategoryService
+    private readonly sidesheetRef: EuiSidesheetRef,
+    readonly pickCategoryService: PickCategoryService,    
+    confirmation: ConfirmationService
   ) {
     const entitySchema = pickCategoryService.pickcategoryItemsSchema;
 
@@ -77,12 +82,24 @@ export class PickCategoryCreateComponent implements OnInit {
       [entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]],
       entitySchema
     );
+
+    this.subscriptions.push(sidesheetRef.closeClicked().subscribe(async () => {
+      if (!this.displayNameForm.pristine && !(await confirmation.confirmLeaveWithUnsavedChanges())) {
+        return;
+      }
+
+      sidesheetRef.close(false);
+    }));
   }
 
   public async ngOnInit(): Promise<void> {
     this.displayNameCdr = new BaseCdr(this.data.pickCategory.DisplayName.Column);
     this.displayNameCdr.minLength = 1;
     this.displayNameReadonlyCdr = new BaseCdr(this.data.pickCategory.GetEntity().GetColumn(DisplayColumns.DISPLAY_PROPERTYNAME));
+  }
+
+  public ngOnDestroy(): void {
+    this.subscriptions.forEach(s => s.unsubscribe());
   }
 
   public async stepChange(change: StepperSelectionEvent): Promise<void> {
@@ -97,7 +114,7 @@ export class PickCategoryCreateComponent implements OnInit {
   }
 
   public closeSidesheet(): void {
-    this.sidesheet.close({
+    this.sidesheetRef.close({
       create: true,
       pickCategory: this.data.pickCategory,
       pickedItems: this.selectIndentities?.selection

@@ -1,0 +1,78 @@
+<div class="helper-alert-container">
+  <eui-alert class="helper-alert" condensed="true" [colored]="true" type="info" [dismissable]="true">
+    {{ membershipHint | translate }}
+  </eui-alert>
+  <eui-alert class="helper-alert" *ngIf="showUnsubscribeWarning" type="warning" [condensed]="true" [colored]="true" [dismissable]="true" (dismissed)="onWarningDismissed()">{{
+    LdsNotUnsubscribableHint | translate
+  }}</eui-alert>
+</div>
+
+<mat-card>
+  <div class="imx-table-content">
+    <!-- todo after DataTableMerge: Busy-Indicator setzen-->
+    <imx-data-source-toolbar
+      #dst
+      data-imx-identifier="software-memberships-data-source-toolbar"
+      [settings]="dstSettings"
+      [options]="['search']"
+      [itemStatus]="status"
+      [busyService]="busyService"
+      [searchBoxText]="'#LDS#Search' | translate"
+      (navigationStateChanged)="getData($event)"
+      (search)="onSearch($event)"
+    >
+    </imx-data-source-toolbar>
+
+    <imx-data-table
+      #membersTable
+      data-imx-identifier="software-membeships-data-table"
+      [dst]="dst"
+      [showSelectedItemsMenu]="false"
+      [selectable]="true"
+      (selectionChanged)="onSelectionChanged($event)"
+      detailViewVisible="false"
+      mode="manual"
+      (highlightedEntityChanged)="showDetails($event)"
+    >
+      <imx-data-table-column [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+        <ng-template let-item>
+          <div>
+            {{ item?.GetEntity()?.GetDisplay() }}
+          </div>
+        </ng-template>
+      </imx-data-table-column>
+      <imx-data-table-generic-column columnName="badges">
+        <ng-template let-item>
+          <div class="imx-badge-container">
+            <div>
+              <eui-badge color="gray" *ngIf="item.XMarkedForDeletion.value">
+                {{ entitySchema.Columns.XMarkedForDeletion.Display }}
+              </eui-badge>
+            </div>
+            <div>
+              <eui-badge color="gray" *ngIf="!item.XIsInEffect.value">
+                {{ '#LDS#Membership is ineffective' | translate }}
+              </eui-badge>
+            </div>
+          </div>
+        </ng-template>
+      </imx-data-table-generic-column>
+      <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_Person"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema.Columns.XOrigin"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema.Columns.XDateInserted"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema.Columns.ValidUntil"> </imx-data-table-column>
+    </imx-data-table>
+    <imx-data-source-paginator data-imx-identifier="software-paginator" [dst]="dst"></imx-data-source-paginator>
+  </div>
+</mat-card>
+<div eui-sidesheet-actions>
+  <imx-selected-elements [selectedElements]="selections"></imx-selected-elements>
+  <div class="imx-menu-spacer"></div>
+  <button mat-stroked-button [disabled]="!canUnsubscribeSelected" data-imx-identifier="software-memberships-cancel-selected" (click)="unsubscribeMembership()">
+    {{ '#LDS#Unsubscribe' | translate }}
+  </button>
+  <button mat-stroked-button color="warn" [disabled]="!canDeleteSelected" data-imx-identifier="software-memberships-delete-selected" (click)="deleteSelected()">
+    <eui-icon icon="delete"></eui-icon>
+    {{ '#LDS#Remove' | translate }}
+  </button>
+</div>

@@ -1,0 +1,41 @@
+@import "@elemental-ui/core/src/styles/_palette.scss";
+
+div[subtitle] {
+  font-size: smaller;
+  color: $black-9;
+}
+
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: inherit;
+
+  .mat-card {
+    flex: 1 1 auto ;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin: 3px;
+  }
+}
+
+.imx-table-container {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1 1 auto;
+}
+
+.imx-display-column {
+  display: flex;
+  flex-direction: row;
+
+  :first-child {
+    flex:  1 1 auto;
+  }
+
+  .imx-badge {
+    align-self: flex-end;
+  }
+}

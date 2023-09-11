@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,7 +36,7 @@ import {
   HostListener
 } from '@angular/core';
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
-import { AbstractControl, FormControl } from '@angular/forms';
+import { AbstractControl, UntypedFormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { ClassloggerService } from '../classlogger/classlogger.service';
@@ -55,7 +55,7 @@ import { DataNavigationParameters } from './data-navigation-parameters.interface
 })
 export class SelectComponent<T> implements AfterViewInit, OnChanges, OnDestroy {
   public readonly separatorKeysCodes: number[] = [ENTER, COMMA];
-  public readonly chipListCtrl = new FormControl('');
+  public readonly chipListCtrl = new UntypedFormControl('');
   public dataSource: SelectDataSource;
   public autocompleteVisible = false;
 
@@ -89,7 +89,7 @@ export class SelectComponent<T> implements AfterViewInit, OnChanges, OnDestroy {
   /** Indicates if data is loading and shows/hides the spinner. */
   @Input() public loading = false;
 
-  /** DEPRECATED: Not in use. Will be removed.
+  /** @deprecated Not in use. Will be removed.
    * The virtual page size.
    * Must be set for calculating the height of the virtual sroll container.
    */
@@ -105,7 +105,7 @@ export class SelectComponent<T> implements AfterViewInit, OnChanges, OnDestroy {
 
   @Input() public labelAutoComplete: string;
 
-  /** DEPRECATED: Use needMoreData instead. Will be removed.
+  /** @deprecated Use needMoreData instead. Will be removed.
    * Fires when the component need new data, e.g. user scrolls to the end of the container.
    */
   @Output() public needData: EventEmitter<number> = new EventEmitter();
@@ -113,7 +113,7 @@ export class SelectComponent<T> implements AfterViewInit, OnChanges, OnDestroy {
   /** Fires when the component need new data, e.g. user scrolls to the end of the container. */
   @Output() public needMoreData: EventEmitter<DataNavigationParameters> = new EventEmitter();
 
-  /** DEPRECATED: Will be removed.
+  /** @deprecated Will be removed.
    * Fires when the user types in the autocomplete input control.
    */
   @Output() public autocompleteValueChanged: EventEmitter<string> = new EventEmitter();

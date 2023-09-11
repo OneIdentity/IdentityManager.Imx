@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -40,7 +40,7 @@ import {
 import { MatAutocompleteTrigger, MatAutocompleteSelectedEvent, MatAutocomplete } from '@angular/material/autocomplete';
 import { MatCheckboxChange, MatCheckbox } from '@angular/material/checkbox';
 import { PageEvent } from '@angular/material/paginator';
-import { FormControl, AbstractControl, ValidatorFn } from '@angular/forms';
+import { UntypedFormControl, AbstractControl, ValidatorFn } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { startWith, map, debounceTime } from 'rxjs/operators';
 
@@ -55,7 +55,7 @@ import { SelectContentProvider } from './select-content-provider.interface';
 })
 export class AutocompleteComponent<T> implements AfterViewInit, OnChanges {
   /** Reference to the autocomplete component. */
-  public readonly autocompleteCtrl = new FormControl('', this.checkAutocompleteValidator());
+  public readonly autocompleteCtrl = new UntypedFormControl('', this.checkAutocompleteValidator());
 
   /** Height of an item in the dropdown panel in px. Needed for virtual scrolling.   */
   public readonly itemSize = 48;

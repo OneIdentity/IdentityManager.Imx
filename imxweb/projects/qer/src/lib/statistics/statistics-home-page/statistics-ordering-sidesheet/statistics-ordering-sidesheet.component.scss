@@ -1,0 +1,333 @@
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import "../../stat-mixins.scss";
+
+:host {
+
+  .eui-sidesheet-content {
+    overflow: hidden;
+  }
+
+  .above {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+
+    imx-data-source-toolbar {
+      width: max(50%, 300px);
+    }
+
+    button .colored-icon:hover {
+      @include Ease-Transition;
+    }
+
+  }
+
+  .two-panel {
+    display: flex;
+    height: 90%;
+  }
+
+  .left-list, .right-list {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    height: fit-content;
+    max-height: 100%;
+    @include EUI-Elevation-1;
+  }
+
+  .left-list {
+    margin-right: 15px;
+  }
+
+  .list-header {
+    display: flex;
+    align-items: center;
+    min-height: 42px;
+    font-size: 20px;
+    justify-content: space-between;
+
+    .left-header {
+      display: flex;
+      span {
+        line-height: 40px;
+      }
+    }
+
+    button {
+      span {
+        margin-left: 8px;
+      }
+
+      :not(.mat-button-disabled) {
+        @include Ease-Transition;
+      }
+    }
+  }
+
+  .list-empty {
+    display: flex;
+    align-items: center;
+    margin: 30px 0 15px 0;
+
+    eui-icon {
+      margin-right: 15px;
+    }
+  }
+
+  .list-container {
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .list-item, .order-item {
+    min-height: 48px;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &:last-child {
+      border: none;
+    }
+  }
+
+  .list-text {
+    white-space: normal;
+  }
+
+  .order-item-placeholder {
+    min-height: 48px;
+    border-radius: 4px;
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }
+
+  .order-item-handle:hover {
+    cursor: move;
+  }
+
+  .button-bar {
+    & > :not(:last-child) {
+      margin-right: 15px;
+    }
+  }
+
+  // Handle line sizing on checkbox
+  ::ng-deep .mat-checkbox-label {
+    line-height: unset;
+  }
+}
+
+// CDK drag styling
+.cdk-drag-preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 4px;
+  @include EUI-Elevation-3;
+  padding: 0 10px;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+.order-items-container.cdk-drop-list-dragging .order-item:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+@media only screen and (max-width: 768px) {
+  :host {
+    .two-panel {
+      flex-direction: column;
+    }
+
+    .left-list, .right-list {
+      max-height: 50%;
+      width: 100%;
+    }
+    .left-list {
+      margin: 0;
+      margin-bottom: 15px;
+    }
+  }
+}
+
+// Theming
+.eui-light-theme {
+  :host {
+    .above {
+      button {
+        .colored-icon {
+          color: $color-blue-60;
+        }
+        .colored-icon:hover {
+          color: $color-orange-60;
+        }
+      }
+
+    }
+
+    .list-header {
+      color: $color-blue-60;
+      border-bottom: 2px solid $color-blue-60;
+
+      button:not(.mat-button-disabled) {
+        eui-icon:hover {
+          color: $color-orange-60;
+        }
+      }
+    }
+
+    .list-empty {
+      eui-icon {
+        color: $color-gray-20;
+      }
+      span {
+        color: $color-gray-60;
+      }
+    }
+
+    .list-item, .order-item {
+      background-color: $color-gray-0;
+      border-bottom: 1px solid $color-gray-10;
+
+      &:hover {
+        background-color: $color-orange-10;
+      }
+    }
+
+    .order-item-placeholder {
+      background-color: $color-gray-30;
+      border: dotted 2px $color-gray-40;
+    }
+
+    .order-item-handle {
+      color: $color-gray-40;
+    }
+  }
+  &.cdk-drag-preview {
+    background-color: $color-gray-0;
+    border: 1px solid $color-gray-10;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .above {
+      button {
+        .colored-icon {
+          color: $color-blue-40;
+        }
+        .colored-icon:hover {
+          color: $color-orange-40;
+        }
+      }
+
+    }
+
+    .list-header {
+      color: $color-blue-40;
+      border-bottom: 2px solid $color-blue-40;
+
+      button:not(.mat-button-disabled) {
+        eui-icon:hover {
+          color: $color-orange-40;
+        }
+      }
+    }
+
+    .list-empty {
+      eui-icon {
+        color: $color-gray-20;
+      }
+      span {
+        color: $color-gray-10;
+      }
+    }
+
+    .list-item, .order-item {
+      background-color: $color-gray-70;
+      border-bottom: 1px solid $color-gray-60;
+
+      &:hover {
+        background-color: $color-orange-90;
+      }
+    }
+
+    .order-item-placeholder {
+      background-color: $color-gray-30;
+      border: dotted 2px $color-gray-20;
+    }
+
+    .order-item-handle {
+      color: $color-gray-40;
+    }
+  }
+
+  &.cdk-drag-preview {
+    background-color: $color-gray-70;
+    border: 1px solid $color-gray-60;
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .above {
+      button {
+        .colored-icon {
+          color: $color-blue-40;
+        }
+        .colored-icon:hover {
+          color: $color-orange-40;
+        }
+      }
+
+    }
+
+    .list-header {
+      color: $color-blue-40;
+      border-bottom: 2px solid $color-blue-40;
+
+      button:not(.mat-button-disabled) {
+        eui-icon:hover {
+          color: $color-orange-40;
+        }
+      }
+    }
+
+    .list-empty {
+      eui-icon {
+        color: $color-gray-10;
+      }
+      span {
+        color: $color-gray-0;
+      }
+    }
+
+    .list-item, .order-item {
+      background-color: $color-gray-90;
+      border-bottom: 1px solid $color-gray-80;
+
+      &:hover {
+        background-color: $color-orange-90;
+      }
+    }
+
+    .order-item-placeholder {
+      background-color: $color-gray-10;
+      border: dotted 2px $color-gray-0;
+    }
+
+    .order-item-handle {
+      color: $color-gray-40;
+    }
+  }
+
+  &.cdk-drag-preview {
+    background-color: $color-gray-90;
+    border: 1px solid $color-gray-80;
+  }
+}

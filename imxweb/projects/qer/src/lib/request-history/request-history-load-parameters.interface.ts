@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,4 +34,9 @@ export interface RequestHistoryLoadParameters extends CollectionLoadParameters {
   ShowMyPending?: string;
   ShowEndingSoon?: string;
   person?: string;
+}
+
+export interface ArchivedRequestHistoryLoadParameters {
+  uidpersonordered?: string;
+  uidpersoninserted?: string;
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,6 @@
  */
 
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { MatTabChangeEvent, MatTabGroup } from '@angular/material/tabs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
@@ -52,7 +51,6 @@ import {
   AuthenticationService,
   LdsReplacePipe,
   DataTileMenuItem,
-  MessageDialogComponent,
   SnackBarService,
 } from 'qbm';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
@@ -63,7 +61,6 @@ import { CartItemsService } from '../shopping-cart/cart-items.service';
 import { QerApiService } from '../qer-api-client.service';
 import { ServiceCategoryListComponent } from './servicecategory-list/servicecategory-list.component';
 import { ServiceitemListComponent } from '../service-items/serviceitem-list/serviceitem-list.component';
-import { ProductSelectionService } from './product-selection.service';
 import { CategoryTreeComponent } from './servicecategory-list/category-tree.component';
 import { RoleMembershipsComponent } from './role-memberships/role-memberships.component';
 import { RecipientsWrapper } from './recipients-wrapper';
@@ -76,7 +73,10 @@ import { OptionalItemsSidesheetComponent } from './optional-items-sidesheet/opti
 import { ServiceItemOrder } from './service-item-order.interface';
 import { DependencyService } from './optional-items-sidesheet/dependency.service';
 
-/** Main entry component for the product selection page. */
+/** 
+ * Main entry component for the product selection page. 
+ * @deprecated Use NewRequestComponent
+ */
 @Component({
   templateUrl: './product-selection.component.html',
   styleUrls: ['./product-selection.component.scss'],
@@ -114,24 +114,24 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
 
   public serviceItemActions: DataTileMenuItem[] = [
     {
+      name: 'addToCart',
+      description: '#LDS#Add to cart',
+    },
+    {
       name: 'details',
       description: '#LDS#Details',
       useOnDisabledTile: true,
-    },
-    {
-      name: 'addToCart',
-      description: '#LDS#Add to cart',
     },
   ];
 
   public patternItemActions: DataTileMenuItem[] = [
     {
-      name: 'details',
-      description: '#LDS#Details',
-    },
-    {
       name: 'addTemplateToCart',
       description: '#LDS#Add to cart',
+    },
+    {
+      name: 'details',
+      description: '#LDS#Details',
     },
   ];
 
@@ -145,7 +145,6 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     private readonly translate: TranslateService,
     private qerClient: QerApiService,
     private router: Router,
-    private dialogService: MatDialog,
     public projectConfigService: ProjectConfigurationService,
     private userModelSvc: UserModelService,
     private activatedRoute: ActivatedRoute,
@@ -157,7 +156,6 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     private readonly cartItemsProvider: CartItemsService,
     private readonly shelfService: ShelfService,
     private readonly sideSheetService: EuiSidesheetService,
-    private readonly productSelectionService: ProductSelectionService,
     private readonly entityService: EntityService,
     private readonly ldsReplace: LdsReplacePipe,
     private readonly snackbar: SnackBarService,
@@ -169,6 +167,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
   }
 
   public async ngOnInit(): Promise<void> {
+
     // define the recipients as a multi-valued property
     const recipientsProperty = new LocalProperty();
     recipientsProperty.IsMultiValued = true;
@@ -199,6 +198,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     }
 
     this.searchString = this.activatedRoute.snapshot.paramMap.get('ProductSearchString');
+
     if (this.searchString) {
       /* user can pass product search string by URL parameter -> load the data with this search string
        */
@@ -228,18 +228,17 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
 
     this.cartItemRecipients = new BaseCdr(this.recipients.Column, '#LDS#Recipients');
 
-    this.cartItemRecipientsReadonly = new BaseReadonlyCdr(this.recipients.Column, '#LDS#Target identities');
+    this.cartItemRecipientsReadonly = new BaseReadonlyCdr(this.recipients.Column, '#LDS#Peer group of');
   }
 
   public ngOnDestroy(): void {
     this.authSubscription.unsubscribe();
   }
 
-  public openCategoryTree(): void {
+  public async openCategoryTree(): Promise<void> {
     const sidesheetRef = this.sideSheetService.open(CategoryTreeComponent, {
-      title: this.productSelectionService.getServiceCategoryDisplaySingular(),
+      title: await this.translate.get('#LDS#Heading Select Service Category').toPromise(),
       width: '600px',
-      headerColour: 'iris-blue',
       testId: 'categorytree-sidesheet',
       data: {
         selectedServiceCategory: this.selectedCategory,
@@ -295,7 +294,6 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
         title: await this.translate.get('#LDS#Heading Select Reference User').toPromise(),
         padding: '0',
         width: '600px',
-        headerColour: 'iris-blue',
         testId: 'referenceUser-sidesheet',
         data: {
           displayValue: '',
@@ -311,7 +309,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
       this.setReferenceUser(selection.candidates[0]);
     }
 
-    await this.updateInfoTooltip();
+    this.updateInfoTooltip();
   }
 
   public setReferenceUser(user: ValueStruct<string>): void {
@@ -329,7 +327,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  public async setPeerGroupPerson(uidPerson: string): Promise<void> {
+  public setPeerGroupPerson(uidPerson: string): void {
     this.showTemplates = false;
     this.uidPersonPeerGroup = uidPerson;
     this.selectedCategory = undefined;
@@ -338,7 +336,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
       this.referenceUser = undefined;
     }
 
-    await this.updateInfoTooltip();
+    this.updateInfoTooltip();
   }
 
   public cancelPeerOrReference(): void {
@@ -389,7 +387,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     patternItem?: PortalItshopPatternRequestable;
   }): Promise<void> {
     if (action.name === 'details' && action.serviceItems) {
-      this.requestTemplateDetails(action.serviceItems);
+      this.requestTemplateDetails(action.serviceItems, action.patternItem);
     }
     if (action.name === 'addTemplateToCart' && action.patternItem) {
       this.addTemplateToCart(action.patternItem);
@@ -400,34 +398,28 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     const outgoingOrder: ServiceItemOrder = {
       serviceItems: this.selectedItems,
     };
-    if (this.projectConfig.ITShopConfig.VI_ITShop_AddOptionalProductsOnInsert) {
-      await this.openOptionalSideSheet(outgoingOrder);
-    } else {
-      await this.orderSelected(outgoingOrder, this.selectedTemplates, this.selectedRoles);
-    }
+    this.projectConfig.ITShopConfig.VI_ITShop_AddOptionalProductsOnInsert
+    ? await this.openOptionalSideSheet(outgoingOrder)
+    : await this.orderSelected(outgoingOrder, this.selectedTemplates, this.selectedRoles);
   }
 
   public async addItemToCart(serviceItem: PortalShopServiceitems): Promise<void> {
     const outgoingOrder: ServiceItemOrder = {
       serviceItems: [serviceItem],
     };
-    if (this.projectConfig.ITShopConfig.VI_ITShop_AddOptionalProductsOnInsert) {
-      await this.openOptionalSideSheet(outgoingOrder);
-    } else {
-      await this.orderSelected(outgoingOrder, this.selectedTemplates, this.selectedRoles);
-    }    
+    this.projectConfig?.ITShopConfig?.VI_ITShop_AddOptionalProductsOnInsert
+    ? await this.openOptionalSideSheet(outgoingOrder)
+    : await this.orderSelected(outgoingOrder, this.selectedTemplates, this.selectedRoles);
   }
 
   public async openOptionalSideSheet(outgoingOrder: ServiceItemOrder): Promise<void> {
     const serviceItemTree = await this.optionalItemsService.checkForOptionalTree(outgoingOrder.serviceItems, this.recipients);
-    if (serviceItemTree?.totalOptional > 0) {
+    if (serviceItemTree?.totalOptional && serviceItemTree?.totalOptional > 0) {
       const selectedOptionalOrder: ServiceItemOrder = await this.sideSheetService
         .open(OptionalItemsSidesheetComponent, {
-          title: await this.translate.get('#LDS#Heading Optional Products').toPromise(),
+          title: this.translate.instant('#LDS#Heading Request Optional Products'),
           padding: '0px',
           width: 'max(700px, 60%)',
-          headerColour: 'iris-blue',
-          bodyColour: 'asher-gray',
           testId: 'optional-items-sidesheet',
           disableClose: true,
           data: {
@@ -437,15 +429,15 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
         })
         .afterClosed()
         .toPromise();
+      // OptionalItemsSidesheet: If the user click on the AddToCart button add the selected items to the cart, otherwise do nothing
       if (selectedOptionalOrder) {
-        outgoingOrder.optionalItems = selectedOptionalOrder.optionalItems;
         outgoingOrder.requestables = selectedOptionalOrder.requestables;
-      } else {
-        // Exited sidesheet
-        return;
+        await this.orderSelected(outgoingOrder, this.selectedTemplates, this.selectedRoles);
       }
+    } else {
+      // if there are no optional items go ahead with the order
+      await this.orderSelected(outgoingOrder, this.selectedTemplates, this.selectedRoles);
     }
-    await this.orderSelected(outgoingOrder, this.selectedTemplates, this.selectedRoles);
   }
 
   public async addTemplateToCart(patternRequestable: PortalItshopPatternRequestable): Promise<void> {
@@ -479,7 +471,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     }
     await this.onRecipientsChanged();
 
-    await this.updateInfoTooltip();
+    this.updateInfoTooltip();
   }
 
   public async onRecipientsChanged(): Promise<void> {
@@ -543,51 +535,50 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     this.infoboxVisible = !this.infoboxVisible;
   }
 
-  public async updateInfoTooltip(): Promise<void> {
+  public updateInfoTooltip(): void {
 
     this.infoboxTooltip = '';
 
     if (this.referenceUser) {
       if (this.displayProducts) {
         this.infoboxTooltip = this.ldsReplace.transform(
-          await this.translate.get('#LDS#The following products are assigned to {0}.').toPromise(),
+          this.translate.instant('#LDS#The following products are assigned to {0}.'),
           this.referenceUser.DisplayValue
         );
       } else {
         this.infoboxTooltip = this.ldsReplace.transform(
-          await this.translate.get('#LDS#{0} is a member of the following organizational structures.').toPromise(),
+          this.translate.instant('#LDS#{0} is a member of the following organizational structures.'),
           this.referenceUser.DisplayValue
         );
       }
     } else {
       if (this.displayProducts) {
         this.infoboxTooltip = this.ldsReplace.transform(
-          await this.translate.get('#LDS#Other identities of the peer group of {0} requested the following products.').toPromise(),
+          this.translate.instant('#LDS#Other identities of the peer group of {0} requested the following products.'),
           this.recipients.Column.GetDisplayValue()
         );
       } else {
         this.infoboxTooltip = this.ldsReplace.transform(
-          await this.translate.get('#LDS#Other identities of the peer group of {0} are members of the following organizational structures.').toPromise(),
+          this.translate.instant('#LDS#Other identities of the peer group of {0} are members of the following organizational structures.'),
           this.recipients.Column.GetDisplayValue()
         );
       }
     }
 
     if (this.displayProducts) {
-      this.infoboxTooltip += await this.translate.get('#LDS#Select the products you also want to request for the selected recipient.').toPromise();
+      this.infoboxTooltip += this.translate.instant('#LDS#Select the products you also want to request for the selected recipient.');
     } else {
-      this.infoboxTooltip += await this.translate.get('#LDS#Select the organizational structures in which the selected recipient should also be a member.').toPromise();
+      this.infoboxTooltip += this.translate.instant('#LDS#Select the organizational structures in which the selected recipient should also be a member.');
     }
   }
 
   private async requestDetails(item: PortalShopServiceitems): Promise<void> {
     await this.sideSheetService
       .open(ProductDetailsSidesheetComponent, {
-        title: await this.translate.get('#LDS#Heading View Product Details').toPromise(),
+        title: this.translate.instant('#LDS#Heading View Product Details'),
+        subTitle: item.GetEntity().GetDisplay(),
         padding: '0px',
         width: 'max(700px, 60%)',
-        headerColour: 'iris-blue',
-        bodyColour: 'asher-gray',
         testId: 'product-details-sidesheet',
         data: {
           item,
@@ -598,14 +589,13 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
       .toPromise();
   }
 
-  private async requestTemplateDetails(items: PortalShopServiceitems[]): Promise<void> {
+  private async requestTemplateDetails(items: PortalShopServiceitems[], patternItem: PortalItshopPatternRequestable): Promise<void> {
     await this.sideSheetService
       .open(PatternDetailsSidesheetComponent, {
-        title: await this.translate.get('#LDS#Heading View Request Template Details').toPromise(),
+        title: this.translate.instant('#LDS#Heading View Product Bundle Details'),
+        subTitle: patternItem.GetEntity().GetDisplay(),
         padding: '0px',
         width: 'max(700px, 60%)',
-        headerColour: 'iris-blue',
-        bodyColour: 'asher-gray',
         testId: 'template-details-sidesheet',
         data: {
           items,
@@ -626,7 +616,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     itemsWithItShop.forEach((itemWithItShop) => {
       // Loop over all items that have an ITShop, get any service items that match its uid and also have no itshop set yet, and set them
       serviceItemsForPersons
-        .filter((item) => !item.UidITShopOrg && item.UidAccProduct === itemWithItShop.UidAccProduct)
+        .filter((item) => !item.UidITShopOrg && item.UidAccProduct === itemWithItShop.UidAccProduct && item.UidPerson === itemWithItShop.UidPerson)
         .forEach((item) => (item.UidITShopOrg = itemWithItShop.UidITShopOrg));
     });
     return;
@@ -637,99 +627,105 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     templateItems: PortalItshopPatternRequestable[],
     roles?: PortalItshopPeergroupMemberships[]
   ): Promise<void> {
-    if (this.recipients) {
-      const recipientsUids = MultiValue.FromString(this.recipients.value).GetValues();
-      const recipientsDisplays = MultiValue.FromString(this.recipients.Column.GetDisplayValue()).GetValues();
+    if (!this.recipients) {
+      // We need recipients to continue
+      this.snackbar.open({
+        key: '#LDS#You have not selected a recipient for this request. Select at least one recipient.'
+      });
+      return;
+    }
+    const recipientsUids = MultiValue.FromString(this.recipients.value).GetValues();
+    const recipientsDisplays = MultiValue.FromString(this.recipients.Column.GetDisplayValue()).GetValues();
 
-      let savedItems = 0;
-      let possibleItems = 0;
+    let savedItems = 0;
+    let possibleItems = 0;
 
-      if (outgoingOrder?.serviceItems && outgoingOrder.serviceItems.length > 0) {
-        setTimeout(() => this.busyIndicator.show());
-        let serviceItemsForPersons: RequestableProductForPerson[];
-        try {
-          serviceItemsForPersons = this.serviceItemsProvider.getServiceItemsForPersons(
-            outgoingOrder.serviceItems,
-            recipientsUids.map((uid, index) => ({
-              DataValue: uid,
-              DisplayValue: recipientsDisplays[index],
-            }))
-          );
-          if (outgoingOrder?.requestables) {
-            serviceItemsForPersons.push(...outgoingOrder.requestables);
-          }
-        } finally {
-          setTimeout(() => this.busyIndicator.hide());
+    if (outgoingOrder?.serviceItems && outgoingOrder.serviceItems.length > 0) {
+      this.busyIndicator.show();
+      let serviceItemsForPersons: RequestableProductForPerson[];
+      try {
+        serviceItemsForPersons = this.serviceItemsProvider.getServiceItemsForPersons(
+          outgoingOrder.serviceItems,
+          recipientsUids.map((uid, index) => ({
+            DataValue: uid,
+            DisplayValue: recipientsDisplays[index],
+          }))
+        );
+        if (outgoingOrder?.requestables) {
+          serviceItemsForPersons.push(...outgoingOrder.requestables);
         }
-        if (serviceItemsForPersons && serviceItemsForPersons.length > 0) {
-          const hasItems = await this.shelfService.setShops(serviceItemsForPersons);
-          if (hasItems) {
-            setTimeout(() => this.busyIndicator.show());
-            try {
-              this.copyShopInfoForDups(serviceItemsForPersons);
-              const items = serviceItemsForPersons.filter((item) => item.UidITShopOrg?.length > 0);
-              possibleItems = items.length;
-              savedItems = await this.cartItemsProvider.addItems(items);
-            } finally {
-              setTimeout(() => this.busyIndicator.hide());
-            }
-          }
-        }
+      } finally {
+        this.busyIndicator.hide();
       }
+      if (serviceItemsForPersons && serviceItemsForPersons.length > 0) {
+        const hasItems = await this.shelfService.setShops(serviceItemsForPersons);
+        if (hasItems) {
+          setTimeout(() => this.busyIndicator.show());
+          try {
 
-      if (templateItems && templateItems.length > 0) {
-        let templateItemsForPersons: RequestableProductForPerson[];
-        try {
-          templateItemsForPersons = await this.patternItemsService.getPatternItemsForPersons(
-            templateItems,
-            recipientsUids.map((uid, index) => ({
-              DataValue: uid,
-              DisplayValue: recipientsDisplays[index],
-            }))
-          );
-        } finally {
-          setTimeout(() => this.busyIndicator.hide());
-        }
-        if (templateItemsForPersons && templateItemsForPersons.length > 0) {
-          const hasItems = await this.shelfService.setShops(templateItemsForPersons);
-          if (hasItems) {
-            setTimeout(() => this.busyIndicator.show());
-            try {
-              const items = templateItemsForPersons.filter((item) => item.UidITShopOrg?.length > 0);
-              possibleItems = items.length;
-              savedItems = await this.cartItemsProvider.addItems(items);
-            } finally {
-              setTimeout(() => this.busyIndicator.hide());
-            }
+            this.copyShopInfoForDups(serviceItemsForPersons);
+            const items = serviceItemsForPersons.filter((item) => item.UidITShopOrg?.length > 0);
+            possibleItems = items.length;
+            savedItems = await this.cartItemsProvider.addItems(items);
+          } finally {
+            setTimeout(() => this.busyIndicator.hide());
           }
         }
       }
+    }
 
-      if (roles && roles.length > 0) {
-        setTimeout(() => this.busyIndicator.show());
-        try {
-          await this.cartItemsProvider.addItemsFromRoles(
-            roles.map((item) => item.XObjectKey.value),
-            this.recipientsWrapper?.uids
-          );
-          possibleItems = roles.length;
-          savedItems = roles.length;
-        } finally {
-          setTimeout(() => this.busyIndicator.hide());
+    if (templateItems && templateItems.length > 0) {
+      let templateItemsForPersons: RequestableProductForPerson[];
+      try {
+        templateItemsForPersons = await this.patternItemsService.getPatternItemsForPersons(
+          templateItems,
+          recipientsUids.map((uid, index) => ({
+            DataValue: uid,
+            DisplayValue: recipientsDisplays[index],
+          }))
+        );
+      } finally {
+        setTimeout(() => this.busyIndicator.hide());
+      }
+      if (templateItemsForPersons && templateItemsForPersons.length > 0) {
+        const hasItems = await this.shelfService.setShops(templateItemsForPersons);
+        if (hasItems) {
+          setTimeout(() => this.busyIndicator.show());
+          try {
+            const items = templateItemsForPersons.filter((item) => item.UidITShopOrg?.length > 0);
+            possibleItems = items.length;
+            savedItems = await this.cartItemsProvider.addItems(items);
+          } finally {
+            setTimeout(() => this.busyIndicator.hide());
+          }
         }
       }
+    }
 
-      if (savedItems !== possibleItems) {
-        this.snackbar.open({
-          key: savedItems === 0 ? '#LDS#No item was added to your shopping cart' : '#LDS#{0} of {1} items could not be added to your shopping cart',
-          parameters: [possibleItems - savedItems, possibleItems],
-        });
+    if (roles && roles.length > 0) {
+      setTimeout(() => this.busyIndicator.show());
+      try {
+        await this.cartItemsProvider.addItemsFromRoles(
+          roles.map((item) => item.XObjectKey.value),
+          this.recipientsWrapper?.uids
+        );
+        possibleItems = roles.length;
+        savedItems = roles.length;
+      } finally {
+        setTimeout(() => this.busyIndicator.hide());
       }
-      if (savedItems > 0) {
-        this.router.navigate(['shoppingcart']);
-      } else {
-        this.onDeselectAll();
-      }
+    }
+
+    if (savedItems !== possibleItems) {
+      this.snackbar.open({
+        key: savedItems === 0 ? '#LDS#No product could be added to your shopping cart.' : '#LDS#{0} of {1} products could not be added to your shopping cart.',
+        parameters: [possibleItems - savedItems, possibleItems],
+      });
+    }
+    if (savedItems > 0) {
+      this.router.navigate(['shoppingcart']);
+    } else {
+      this.onDeselectAll();
     }
   }
 

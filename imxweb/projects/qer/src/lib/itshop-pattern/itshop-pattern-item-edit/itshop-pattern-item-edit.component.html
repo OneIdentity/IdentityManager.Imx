@@ -1,0 +1,46 @@
+<div eui-sidesheet-content>
+  <eui-alert class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" [dismissable]="true">
+    {{ detailsInfoText | translate}}
+  </eui-alert>
+
+  <mat-card>
+    <mat-card-title>
+      {{ '#LDS#Heading Details' | translate }}
+    </mat-card-title>
+    <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"></imx-cdr-editor>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-title>
+      {{ '#LDS#Heading Request Parameters' | translate }}
+    </mat-card-title>
+    <ng-container *ngIf="!loadingParams; else loading">
+      <form *ngIf="hasParams; else noParams" [formGroup]="requestParamForm">
+        <imx-entity-column-editor *ngFor="let column of columns; let i = index" [column]="column"
+          (controlCreated)="requestParamForm.addControl($event.name + '_' + i, $event.control)"
+          [attr.data-imx-identifier]="'citshop-pattern-item-edit-' + column.ColumnName">
+        </imx-entity-column-editor>
+      </form>
+    </ng-container>
+  </mat-card>
+
+</div>
+<div eui-sidesheet-actions color="white" *ngIf="hasParams">
+  <button data-imx-identifier="itshop-pattern-item-edit-ok-dialog" mat-raised-button color="primary" (click)="save()"
+    [disabled]="!requestParamForm.dirty">
+    {{ '#LDS#Save' | translate }}
+  </button>
+</div>
+
+<ng-template #loading>
+  <div class="imx-loading-card">
+    <mat-spinner [diameter]="100" [attr.aria-label]="'#LDS#Loading...' | translate"></mat-spinner>
+  </div>
+</ng-template>
+
+<ng-template #noParams>
+  <div class="imx-param-no-results">
+    <eui-icon icon="listalt"></eui-icon>
+    <p translate>{{ '#LDS#There are currently no request parameters specified for this product.' | translate }}</p>
+  </div>
+</ng-template>

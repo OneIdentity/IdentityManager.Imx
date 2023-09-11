@@ -1,27 +1,34 @@
-<imx-data-tile *ngFor="let item of dst?.settings?.dataSource?.Data"
-  [typedEntity]="item"
-  [isSelected]="isSelected(item)"
-  [isSelectable]="selectable"
-  [status]="dst.itemStatus"
-  [image]="image"
-  [icon]="icon"
-  [fallbackIcon]="fallbackIcon"
-  [contentTemplate]="contentTemplate"
-  (selectionChanged)="onSelectionChanged($event)"
-  (badgeClicked)="onBadgeClicked($event)"
-  [titleObject]="titleObject"
-  [subtitleObject]="subtitleObject"
-  [additionalSubtitleObjects]="additionalSubtitleObjects"
-  [actions]="actions"
-  (actionSelected)="onActionSelected($event)"
-  data-imx-identifier="datatiles-child"
-  [useActionMenu]="useActionMenu"
-  [width]="width"
-  [height]="height">
-</imx-data-tile>
 
-<div class="imx-data-tiles-no-results" *ngIf="dst?.settings?.dataSource == null || dst?.settings?.dataSource.totalCount == 0">
-  <eui-icon [icon]="dst?.searchCurrenltyApplied || dst?.filtersCurrentlyApplied ? noMatchingDataIcon : noDataIcon"></eui-icon>
-  <p [translate]="dst?.searchCurrenltyApplied || dst?.filtersCurrentlyApplied  ? noItemsMatchText : noItemsFoundText"></p>
+<div class="imx-data-container" [ngClass]="{ 'hidden': isLoading }">
+  <imx-data-tile
+    *ngFor="let item of dst?.settings?.dataSource?.Data"
+    [typedEntity]="item"
+    [isSelected]="isSelected(item)"
+    [isSelectable]="selectable"
+    [status]="dst.itemStatus"
+    [image]="image"
+    [icon]="icon"
+    [fallbackIcon]="fallbackIcon"
+    [contentTemplate]="contentTemplate"
+    (selectionChanged)="onSelectionChanged($event)"
+    (badgeClicked)="onBadgeClicked($event)"
+    [titleObject]="titleObject"
+    [subtitleObject]="subtitleObject"
+    [additionalSubtitleObjects]="additionalSubtitleObjects"
+    [actions]="actions"
+    (actionSelected)="onActionSelected($event)"
+    data-imx-identifier="datatiles-child"
+    [useActionMenu]="useActionMenu"
+    [width]="width"
+    [height]="height"
+    (selected)="onTileSelected($event)"
+  >
+  </imx-data-tile>
 </div>
+  <imx-busy-indicator *ngIf="isLoading"></imx-busy-indicator>
+
+  <div  [ngClass]="{ 'hidden': isLoading }" class="imx-data-tiles-no-results" *ngIf="dst?.settings?.dataSource == null || dst?.settings?.dataSource.totalCount == 0">
+    <eui-icon [icon]="dst?.searchCurrenltyApplied || dst?.filtersCurrentlyApplied ? noMatchingDataIcon : noDataIcon"></eui-icon>
+    <p [translate]="dst?.searchCurrenltyApplied || dst?.filtersCurrentlyApplied ? noItemsMatchText : noItemsFoundText"></p>
+  </div>
 

@@ -1,11 +1,13 @@
 <div class="heading-wrapper">
   <h1 class="mat-headline">
-    {{ '#LDS#Heading Service Categories' | translate }}
+    <span>{{ '#LDS#Heading Service Categories' | translate }}</span>
+    <imx-help-contextual></imx-help-contextual>
   </h1>
 
   <eui-alert class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true">
     <span *ngIf="config?.hasAccproductparamcategoryCandidates; else withoutAccproductparamcategoryCandidates" translate>
-      #LDS#The approval policy and request property specified for a service category is inherited by all associated service items and all child service categories where this is not specified.
+      #LDS#The approval policy and request property specified for a service category is inherited by all associated service items and all child service categories where this is not
+      specified.
     </span>
     <span class="imx-image-info" *ngIf="config?.itshopConfig?.InheritCategoryImagesToItems" translate>
       #LDS#The image specified for a service category is inherited by all associated service items where this is not specified.
@@ -16,41 +18,28 @@
   </eui-alert>
 </div>
 
-<mat-card *ngIf="hasData; else nonExisting" class="imx-data-tree">
-  <imx-data-tree-wrapper [selectedEntities]="selectedEntities"
+<mat-card class="imx-data-tree">
+  <imx-data-tree-wrapper
+    [selectedEntities]="selectedEntities"
     [database]="treeDatabase"
     [withSelectedNodeHighlight]="false"
     [emptyNodeCaption]="'#LDS#New service category' | translate"
-    data-imx-identifier="servicecategory-list-data-tree-categorytree">
-    <ng-template let-entity>
-      <button class="imx-edit-category-button" mat-button color="primary" 
-      [attr.data-imx-identifier]="'servicecategory-list-edit-element-button-' + entity.GetKeys().join('-')"
-      (click)="onServiceCategorySelected(entity)">{{'#LDS#Edit' |translate}}</button>
-    </ng-template>
+    (nodeSelected)="onServiceCategorySelected($event)"
+    data-imx-identifier="servicecategory-list-data-tree-categorytree"
+  >
   </imx-data-tree-wrapper>
-  <div class="imx-create-button">
-    <button mat-stroked-button color="primary" (click)="addServiceCategory()"
-      data-imx-identifier="service-categories-button-create-new">
-      <span translate>#LDS#Create service category</span>
-    </button>
-  </div>
 </mat-card>
+
+<div class="imx-button-bar">
+  <button mat-raised-button color="primary" (click)="addServiceCategory()" data-imx-identifier="service-categories-button-create-new">
+    <eui-icon icon="add"></eui-icon>
+    <span translate>#LDS#Create service category</span>
+  </button>
+</div>
 
 <!-- Template for non existing -->
 <ng-template #withoutAccproductparamcategoryCandidates>
   <span translate>
     #LDS#The approval policy specified for a service category is inherited by all associated service items and all child service categories where this is not specified.
   </span>
-</ng-template>
-
-<!-- Template for non existing -->
-<ng-template #nonExisting>
-  <div class="imx-service-category-empty" data-imx-identifier="service-categories-container-no-categories">
-    <eui-icon icon="serviceaccount" size="100px"></eui-icon>
-    <div class="imx-service-category-empty-description">
-      <h2>
-        {{ '#LDS#Not available' | translate }}
-      </h2>
-    </div>
-  </div>
 </ng-template>

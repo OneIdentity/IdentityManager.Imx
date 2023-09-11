@@ -1,3 +1,5 @@
+@import '../../../../../shared/scss/common-table.scss';
+
 @mixin imx-flex-column-container {
   display: flex;
   flex-direction: column;
@@ -20,12 +22,6 @@
     display: flex;
     margin-bottom: 15px;
   }
-
-  .alert-wrapper {
-    margin: 0 0 0 auto;
-    align-self: flex-end;
-    width: 50%;
-  }
 }
 
 :host {
@@ -39,53 +35,37 @@
   background-color: inherit;
   @include imx-flex-column-container();
   overflow: hidden;
+  flex: 1 1 auto;
+
+  .mat-card {
+   @include imx-flex-fill-control-hidden-overflow();
+  }
 
   div.imx-table-container {
     @include imx-flex-column-container();
     overflow: hidden;
-    height: inherit;
+    flex: 1 1 auto;
 
     .imx-rules-violations-table {
       flex-grow: 1;
       overflow: auto;
 
       .imx-decision {
-        min-width: 210px;
-        > * {
-          margin-bottom: 3px;
-          margin-top: 3px;
+        @include imx-button-column-right();
+        > button:not(:last-of-type) {
+          margin-right: 5px;
         }
       }
     }
   }
 
   .imx-button-bar {
-    @include imx-flex-row-container();
-    margin-top: 20px;
-    flex: 0 0 auto;
-
-    .imx-badge {
-      background-color: inherit;
-
-      ::ng-deep .eui-badge-content {
-        font-size: 14px;
-        line-height: 14px;
-      }
-    }
-
-    .imx-selected-items {
-      margin: 0;
-      line-height: 36px;
-    }
-
-    button {
-      margin-left: 10px;
-    }
-
-    .imx-menu-spacer {
-      flex-grow: 1;
-    }
+    @include imx-button-bar;
   }
+}
+
+.imx-margin-right {
+  margin-right: 10px;
 }
 
 @media screen and (max-width: 768px) {
@@ -100,7 +80,6 @@
     }
   }
 }
-
 
 @media only screen and (max-width: 1024px) {
   ::ng-deep .mat-column-decision {

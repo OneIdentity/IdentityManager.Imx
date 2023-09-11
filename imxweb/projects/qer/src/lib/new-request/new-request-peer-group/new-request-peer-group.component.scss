@@ -1,0 +1,22 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import '../new-request-global.scss';
+
+@include Layout-Styles;
+@include Table-Styles;
+
+:host {
+  flex-direction: column;
+
+  .imx-peers-toolbar {
+    display: flex;
+    align-items: center;
+
+    > :first-child {
+      flex-grow: 1;
+    }
+
+    .imx-info-button-caption { 
+      @include imx-text();
+    }
+  }
+}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,11 +24,16 @@
  *
  */
 
-import { PolicyFilterData, PortalAttestationPolicyEditInteractive } from 'imx-api-att';
+import { PolicyFilterData, PortalAttestationPolicyEdit } from 'imx-api-att';
 export interface Policy {
-  policy: PortalAttestationPolicyEditInteractive;
+  policy: PortalAttestationPolicyEdit;
   filterData: PolicyFilterData;
   isNew?: boolean;
   isComplienceFrameworkEnabled: boolean;
+  showSampleDataWarning?: boolean;
+}
 
+export interface PolicyCopyData {
+  data: PortalAttestationPolicyEdit;
+  pickCategorySkipped: boolean;
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,40 +25,59 @@
  */
 
 import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
-
-import { QueueTreeService } from './queue-tree.service';
-import { OpsupportQueueTree, ReactivateJobMode } from 'imx-api-qbm';
-import { ImxTranslationProviderService, SnackBarService, MessageDialogComponent } from 'qbm';
-import { EuiLoadingService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EuiLoadingService, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { OverlayRef } from '@angular/cdk/overlay';
+
+import { IEntityColumn, TypedEntity, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { HistoryOperationsData, OpsupportQueueJobaffects, ReactivateJobMode } from 'imx-api-qbm';
+import { CdrFactoryService, ImxTranslationProviderService, SnackBarService } from 'qbm';
+import { QueueTreeService } from './queue-tree.service';
+import { ErrorMessageSidesheetComponent } from '../error-message-sidesheet/error-message-sidesheet.component';
 
 @Component({
   templateUrl: './single-frozen-job.component.html',
-  styleUrls: ['./single-frozen-job.component.scss']
+  styleUrls: ['./single-frozen-job.component.scss'],
 })
 export class SingleFrozenJobComponent implements OnInit {
-  public get BackTitle(): string { return this.backTitle; }
-  public get Display(): string { return this.jobDisplay; }
+  public get BackTitle(): string {
+    return this.backTitle;
+  }
+  public get Display(): string {
+    return this.jobDisplay;
+  }
 
   private jobDisplay: string;
   private backTitle = '';
 
+  public affectedObjects: OpsupportQueueJobaffects[] = [];
+  public operations: HistoryOperationsData;
+  public genprocid: string;
+  public busy = false;
+  public busyReload = false;
+
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public readonly data: { UID_Tree: string; },
+    @Inject(EUI_SIDESHEET_DATA) public readonly data: {
+      UID_Tree: string,
+      disableRefresh: boolean,
+      load: (startId: string) => Promise<TypedEntityCollectionData<TypedEntity>>
+    },
     public queueService: QueueTreeService,
-    private dialogService: MatDialog,
+    private sidesheet: EuiSidesheetService,
     private translate: TranslateService,
     private busyService: EuiLoadingService,
     private translationProvider: ImxTranslationProviderService,
     private snackbarService: SnackBarService
   ) {
     // TODO (TFS 805984): Use ngx-translate get and ldsReplace direct
-    this.translationProvider.Translate({ key: '#LDS#Frozen process steps' }).subscribe((value: string) =>
-      this.translationProvider.Translate({ key: '#LDS#Go back to {0}', parameters: [`"${value}"`] }).subscribe((composedValue: string) =>
-        this.backTitle = composedValue)
-    );
+    this.translationProvider
+      .Translate({ key: '#LDS#Frozen process steps' })
+      .subscribe((value: string) =>
+        this.translationProvider
+          .Translate({ key: '#LDS#Go back to {0}', parameters: [`"${value}"`] })
+          .subscribe((composedValue: string) => (this.backTitle = composedValue))
+      );
+    this.queueService.load = data.load;
   }
 
   public ReactivateJobMode = ReactivateJobMode;
@@ -66,24 +85,36 @@ export class SingleFrozenJobComponent implements OnInit {
   public mode: ReactivateJobMode = -1;
 
   public async ngOnInit(): Promise<void> {
-    return this.loadView(this.data.UID_Tree);
+    try {
+      this.busy = true;
+      await this.loadView(this.data.UID_Tree);
+    }
+    finally {
+      this.busy = false;
+    }
   }
 
   public async reactivate(): Promise<void> {
-    const key = this.mode == ReactivateJobMode.Reactivate
-      ? '#LDS#Process "{0}" is retrying.'
-      : '#LDS#Your changes are being processed.';
+    const key = this.mode == ReactivateJobMode.Reactivate ? '#LDS#Process "{0}" is retrying.' : '#LDS#Your changes are being processed.';
 
     this.snackbarService.open({ key: key, parameters: [this.Display] });
 
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
       await this.queueService.Reactivate(this.mode);
       await this.loadView();
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
+    }
+  }
+
+  public async reloadView() {
+    try {
+      this.busyReload = true;
       await this.loadView();
+    } finally {
+      this.busyReload = false;
     }
   }
 
@@ -91,34 +122,41 @@ export class SingleFrozenJobComponent implements OnInit {
     if (startUid) {
       this.queueService.startUid = startUid;
     }
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
-    try {
-      const processTree = await this.queueService.LoadItems();
-      const root = processTree.find((el: OpsupportQueueTree) => el.IsRootJob.value);
-      if (root) {
-        this.queueService.SetRoot(root);
-        this.jobDisplay = root.JobChainName.Column.GetDisplayValue();
-        this.queueService.ExpandAll();
-      }
-    } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+
+    const processTree = await this.queueService.LoadItems();
+    const root = processTree.find((el: TypedEntity) => this.getColumn(el, 'IsRootJob').GetValue);
+    if (root) {
+      this.queueService.SetRoot(root);
+      this.jobDisplay = this.getColumn(root, 'JobChainName').GetDisplayValue();
+      this.queueService.ExpandAll();
+
+      // load affected objects
+      this.affectedObjects = await this.queueService.GetAffectedObjects(root.GetEntity().GetColumn("UID_Job").GetValue());
+      this.genprocid = root.GetEntity().GetColumn("GenProcID").GetValue();
+      this.operations = await this.queueService.GetChangeOperations(this.genprocid);
+    }
+    else {
+      this.affectedObjects = [];
+      this.operations = null;
+      this.genprocid = null;
     }
   }
 
-  public timeAccessor(data: OpsupportQueueTree, index: number): string {
-    const date = new Date(data.XDateUpdated.value);
+  public timeAccessor(data: TypedEntity, index: number): string {
+    const date = new Date(this.getColumn(data, 'XDateUpdated')?.GetValue() ?? this.getColumn(data, 'XDateInserted')?.GetValue());
     const opt: any = { month: 'long', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
 
     return index === 0 ? '' : new Intl.DateTimeFormat(this.translate.currentLang, opt).format(date);
   }
 
-  public displayAccessor(data: OpsupportQueueTree, index: number): string {
-    return index === 0 ? this.Display : data.UID_JobOrigin.Column.GetDisplayValue();
+  public displayAccessor(data: TypedEntity, index: number): string {
+    return index === 0
+      ? this.Display
+      : this.getColumn(data, 'JobName')?.GetDisplayValue() ?? this.getColumn(data, 'UID_JobOrigin')?.GetDisplayValue();
   }
 
-  public hasProgress(item: OpsupportQueueTree): boolean {
-    return item.IsRootJob.value;
+  public hasProgress(item: TypedEntity): boolean {
+    return this.getColumn(item, 'IsRootJob').GetValue();
   }
 
   public getTotalSteps(): number {
@@ -129,23 +167,32 @@ export class SingleFrozenJobComponent implements OnInit {
     return this.queueService.GetCompleteSteps();
   }
 
-  public isFrozen(dataItem: OpsupportQueueTree): boolean {
-    return dataItem.Ready2EXE.value.toUpperCase() === 'FROZEN' ||
-      dataItem.Ready2EXE.value.toUpperCase() === 'OVERLIMIT';
+  public isFrozen(dataItem: TypedEntity): boolean {
+    return this.getColumn(dataItem, 'Ready2EXE')?.GetValue().toUpperCase() === 'FROZEN' || this.getColumn(dataItem, 'Ready2EXE')?.GetValue().toUpperCase() === 'OVERLIMIT' || this.getColumn(dataItem, 'WasError')?.GetValue();
   }
 
-  public showMessage(dataItem: OpsupportQueueTree): void {
-    this.dialogService.open(MessageDialogComponent, {
-      data: {
-        ShowOk: true,
-        Title: dataItem.ErrorMessages.GetMetadata().GetDisplay(),
-        Message: dataItem.ErrorMessages.Column.GetDisplayValue()
-      },
-      panelClass: 'imx-messageDialog'
-    });
+  public async showMessage(dataItem: TypedEntity): Promise<void> {
+    await this.sidesheet
+      .open(ErrorMessageSidesheetComponent, {
+        title: await this.translate.get('#LDS#Heading View Error Message').toPromise(),
+        padding: '0',
+        width: 'max(50%,500px)',
+        testId: 'error-message-sidesheet',
+        data: this.getColumn(dataItem, 'ErrorMessages').GetDisplayValue(),
+      })
+      .afterClosed()
+      .toPromise();
   }
 
   public getColumnDisplay(name: string): string {
     return this.queueService.QueueTreeEntitySchema.Columns[name].Display;
+  }
+
+  public getValue(entity: TypedEntity, name: string): any {
+    return this.getColumn(entity, name).GetValue() ?? '';
+  }
+
+  public getColumn(entity: TypedEntity, name: string): IEntityColumn {
+    return CdrFactoryService.tryGetColumn(entity.GetEntity(), name);
   }
 }

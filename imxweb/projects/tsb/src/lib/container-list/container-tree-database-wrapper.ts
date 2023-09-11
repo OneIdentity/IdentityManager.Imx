@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,8 @@
  *
  */
 
-import { EuiLoadingService } from '@elemental-ui/core';
-
 import { CollectionLoadParameters, IEntity } from 'imx-qbm-dbts';
-import { EntityTreeDatabase } from 'qbm';
+import { BusyService, EntityTreeDatabase } from 'qbm';
 import { DeHelperService } from '../de-helper.service';
 
 export class ContainerTreeDatabaseWrapper {
@@ -51,7 +49,7 @@ export class ContainerTreeDatabaseWrapper {
   private system: string;
 
   constructor(
-    private readonly busyService: EuiLoadingService,
+    private readonly busyService: BusyService,
     private readonly dataHelper: DeHelperService
   ) {
     this.entityTreeDatabase = new EntityTreeDatabase(

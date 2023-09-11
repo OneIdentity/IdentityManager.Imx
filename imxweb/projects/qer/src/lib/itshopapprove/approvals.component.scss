@@ -1,20 +1,75 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
 
 :host {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   flex-grow: 1;
+}
 
-  ::ng-deep .mat-tab-labels {
-    background-color: $white;
+.imx-approvals-content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.mat-tab-group {
+  height: 100%;
+  overflow: hidden;
+
+  ::ng-deep .mat-tab-body-wrapper {
+    flex: 1 1 auto;
+
+    .mat-tab-body-content {
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
   }
 }
 
-imx-approvals-table {
-  margin: 10px 0;
+.heading-wrapper {
+  display: flex;
+  align-items: flex-start;
+
+  .helper-alert {
+    display: flex;
+    margin: 0 0 20px auto;
+    align-self: flex-end;
+    flex-basis: 50%;
+    span {
+      display: block;
+    }
+  }
 }
 
-.imx-description {
-  margin: 0;
+:host {
+  .mat-tab-group {
+    ::ng-deep .mat-tab-labels {
+      background-color: $color-gray-0;
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .mat-tab-group {
+      ::ng-deep .mat-tab-labels {
+        background-color: $color-gray-70;
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .mat-tab-group {
+      ::ng-deep .mat-tab-labels {
+        background-color: $color-gray-100;
+      }
+    }
+  }
 }

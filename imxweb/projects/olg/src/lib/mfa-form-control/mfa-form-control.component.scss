@@ -1,0 +1,81 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+:host {
+  overflow: auto;
+
+  ::ng-deep .eui-alert {
+    margin-bottom: 20px;
+  }
+
+  ::ng-deep .mat-card-header-text {
+    margin: 0;
+  }
+
+  ::ng-deep .mat-form-field-wrapper {
+    padding-bottom: 0;
+  }
+
+  .mat-card-actions {
+    display: flex;
+  }
+
+  .imx-spacer {
+    flex: 1 1 auto;
+  }
+
+  .auth-text {
+    font-size: 14px;
+  }
+
+  .auth-factor {
+    margin-bottom: 20px;
+  }
+
+  .auth-button {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .mat-spinner {
+    margin-right: 16px;
+    margin-left: 16px;
+  }
+}
+
+// Theming
+
+.eui-light-theme {
+  :host {
+    .auth-text {
+      color: $color-gray-40;
+    }
+
+    .failed {
+      color: $color-red-60;
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .auth-text {
+      color: $color-gray-20;
+    }
+
+    .failed {
+      color: $color-red-40;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .auth-text {
+      color: $color-gray-20;
+    }
+
+    .failed {
+      color: $color-red-60;
+    }
+  }
+}

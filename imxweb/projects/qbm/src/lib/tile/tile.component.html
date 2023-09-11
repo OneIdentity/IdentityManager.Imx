@@ -35,6 +35,10 @@
     <ng-container *ngTemplateOutlet="customTemplate ? customTemplate : CustomComponent">
     </ng-container>
   </mat-card>
+
+  <div class="loading-overlay" *ngIf="loadingState">
+    <mat-spinner></mat-spinner>
+  </div>
 </section>
 
 <ng-template #CustomComponent>

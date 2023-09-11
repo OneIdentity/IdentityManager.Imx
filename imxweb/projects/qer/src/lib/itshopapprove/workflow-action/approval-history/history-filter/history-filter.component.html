@@ -1,0 +1,12 @@
+<p title>{{ modeFilter?.Description | translate }}</p>
+<ng-container *ngIf="options">
+  <div *ngFor="let option of options">
+    <mat-checkbox [(ngModel)]="option.checked" (change)="updateFilter($event)" [attr.data-imx-identifier]="'history-filter-option-' + option.initialValue">
+      {{ option.display }}
+    </mat-checkbox>
+  </div>
+</ng-container>
+<mat-divider></mat-divider>
+<button mat-menu-item (click)="resetFilter()" data-imx-identifier="history-filter-reset-filter">
+  <span class="link-button">{{ '#LDS#Clear filters' | translate }}</span>
+</button>

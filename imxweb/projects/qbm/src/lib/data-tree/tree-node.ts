@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,19 +26,35 @@
 
 import { IEntity } from 'imx-qbm-dbts';
 
-/** Class representing a single node in the DataTree with expandable and level information */
-export class TreeNode {
+export interface TreeNodeInfo {
+  item?: IEntity;
+  identifier?: string;
+  name?: string;
+  level?: number;
+  expandable?: boolean;
+  isLoading?: boolean;
+  isLoadMoreNode?: boolean;
+  display?: string;
+}
 
+/** Class representing a single node in the DataTree with expandable and level information */
+export class TreeNode implements TreeNodeInfo {
   /** the display of the bounded item of the node */
-  public get display(): string { return this.item != null ? this.item.GetDisplay() : this.name; }
+  public get display(): string {
+    return this.item != null ? this.item.GetDisplay() : this.name;
+  }
 
   constructor(
     public item: IEntity,
     public readonly identifier: string,
     public readonly name?: string,
     public readonly level: number = 1,
-    public readonly expandable: boolean = false,
+    public expandable: boolean = false,
     public isLoading: boolean = false,
     public isLoadMoreNode: boolean = false
-  ) { }
+  ) {}
+
+  public static createNodeFromInfo(info: TreeNodeInfo) {
+    return new TreeNode(info.item, info.identifier,info.name,info.level,info.expandable,info.isLoading,info.isLoadMoreNode);
+  }
 }

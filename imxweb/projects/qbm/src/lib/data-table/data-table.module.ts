@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,7 +33,6 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
@@ -47,10 +46,13 @@ import { DataSourceToolbarModule } from '../data-source-toolbar/data-source-tool
 import { DataTableComponent } from './data-table.component';
 import { DataTableColumnComponent } from './data-table-column.component';
 import { DataTableGenericColumnComponent } from './data-table-generic-column.component';
-import { SelectionListComponent } from './selection-list/selection-list.component';
 import { DateModule } from '../date/date.module';
 import { DataTableCellComponent } from './data-table-cell/data-table-cell.component';
 import { DataTableDisplayCellComponent } from './data-table-display-cell/data-table-display-cell.component';
+import { GroupPaginatorComponent } from './group-paginator/group-paginator.component';
+import { ExcludedColumnsPipe } from './excluded-columns.pipe';
+import { BusyIndicatorModule } from '../busy-indicator/busy-indicator.module';
+import { TableAccessiblilityDirective } from './table-accessibility.directive';
 
 @NgModule({
   declarations: [
@@ -59,7 +61,9 @@ import { DataTableDisplayCellComponent } from './data-table-display-cell/data-ta
     DataTableComponent,
     DataTableColumnComponent,
     DataTableGenericColumnComponent,
-    SelectionListComponent
+    GroupPaginatorComponent,
+    ExcludedColumnsPipe,
+    TableAccessiblilityDirective
   ],
   imports: [
     CommonModule,
@@ -79,13 +83,9 @@ import { DataTableDisplayCellComponent } from './data-table-display-cell/data-ta
     MatCardModule,
     MatToolbarModule,
     MatDialogModule,
-    MatListModule,
+    BusyIndicatorModule,
     TranslateModule
   ],
-  exports: [
-    DataTableComponent,
-    DataTableColumnComponent,
-    DataTableGenericColumnComponent
-  ]
+  exports: [DataTableComponent, DataTableColumnComponent, DataTableGenericColumnComponent, ExcludedColumnsPipe],
 })
-export class DataTableModule { }
+export class DataTableModule {}

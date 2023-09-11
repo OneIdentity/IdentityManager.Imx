@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,17 +33,16 @@ import { Subject } from 'rxjs';
 import { PortalItshopRequests } from 'imx-api-qer';
 import { ValType } from 'imx-qbm-dbts';
 
-import { BaseCdr, ClassloggerService, EntityService, SnackBarService } from 'qbm';
+import { BaseCdr, ClassloggerService, EntityService, LdsReplacePipe, SnackBarService, UserMessageService } from 'qbm';
 import { RequestActionComponent } from './request-action.component';
 import { RequestHistoryService } from '../request-history.service';
 import { JustificationService } from '../../justification/justification.service';
 import { JustificationType } from '../../justification/justification-type.enum';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RequestActionService {
-
   public readonly applied = new Subject();
 
   constructor(
@@ -55,8 +54,10 @@ export class RequestActionService {
     private readonly snackBar: SnackBarService,
     private readonly requestHistoryService: RequestHistoryService,
     private readonly justificationService: JustificationService,
-    private readonly errorHandler: ErrorHandler
-  ) { }
+    private readonly errorHandler: ErrorHandler,
+    private readonly messageService: UserMessageService,
+    private readonly ldsReplace: LdsReplacePipe
+  ) {}
 
   public async prolongate(requests: PortalItshopRequests[]): Promise<void> {
     const reason = this.createCdrReason();
@@ -64,11 +65,7 @@ export class RequestActionService {
     const prolongationProperty = this.requestHistoryService.PortalItshopRequestsSchema.Columns.ValidUntilProlongation;
     prolongationProperty.IsReadOnly = false;
     const prolongation = new BaseCdr(
-      this.entityService.createLocalEntityColumn(
-        prolongationProperty,
-        undefined,
-        { ValueConstraint: { MinValue: new Date() } }
-      ),
+      this.entityService.createLocalEntityColumn(prolongationProperty, undefined, { ValueConstraint: { MinValue: new Date() } }),
       '#LDS#Renewal date'
     );
 
@@ -80,20 +77,20 @@ export class RequestActionService {
         description: '#LDS#Renew the following products.',
         reason,
         prolongation,
-        requests
+        requests,
       },
       apply: async () => {
         for (const request of requests) {
           await this.requestHistoryService.prolongate(request, {
             Reason: reason.column.GetValue(),
-            ProlongationDate: prolongation.column.GetValue()
+            ProlongationDate: prolongation.column.GetValue(),
           });
         }
 
         this.logger.debug(this, 'renewing request');
         this.logger.trace(this, 'renewing request, reason', reason.column.GetValue());
         this.logger.trace(this, 'renewing request, date', prolongation.column.GetValue());
-      }
+      },
     });
   }
 
@@ -103,10 +100,11 @@ export class RequestActionService {
     return this.editAction({
       title: '#LDS#Heading Escalate Approval',
       message: '#LDS#{0} approvals have been successfully escalated.',
+      testId: 'imx-escalate-decision',
       data: {
         description: '#LDS#Escalate the request of the following products.',
         reason,
-        requests
+        requests,
       },
       apply: async () => {
         for (const request of requests) {
@@ -115,7 +113,7 @@ export class RequestActionService {
 
         this.logger.debug(this, 'escalating request');
         this.logger.trace(this, 'escalation request, reason', reason.column.GetValue());
-      }
+      },
     });
   }
 
@@ -125,7 +123,7 @@ export class RequestActionService {
     let justification: BaseCdr;
 
     let busyIndicator: OverlayRef;
-    setTimeout(() => busyIndicator = this.busyService.show());
+    setTimeout(() => (busyIndicator = this.busyService.show()));
 
     try {
       justification = await this.justificationService.createCdr(JustificationType.unsubscribe);
@@ -135,11 +133,9 @@ export class RequestActionService {
 
     const unsubscribeProperty = this.requestHistoryService.PortalItshopRequestsSchema.Columns.ValidUntilUnsubscribe;
     unsubscribeProperty.IsReadOnly = false;
-    const unsubscription = new BaseCdr(this.entityService.createLocalEntityColumn(
-      unsubscribeProperty,
-      undefined,
-      { ValueConstraint: { MinValue: new Date() } }
-    ));
+    const unsubscription = new BaseCdr(
+      this.entityService.createLocalEntityColumn(unsubscribeProperty, undefined, { ValueConstraint: { MinValue: new Date() } })
+    );
 
     return this.editAction({
       title: '#LDS#Heading Unsubscribe Product',
@@ -150,20 +146,20 @@ export class RequestActionService {
         reason,
         justification,
         unsubscription,
-        requests
+        requests,
       },
       apply: async () => {
         await this.requestHistoryService.unsubscribe({
-          UidPwo: requests.map(request => request.GetEntity().GetKeys()[0]),
+          UidPwo: requests.map((request) => request.GetEntity().GetKeys()[0]),
           Reason: reason.column.GetValue(),
           UidJustification: justification?.column?.GetValue(),
-          UnsubscribeFrom: unsubscription.column.GetValue()
+          UnsubscribeFrom: unsubscription.column.GetValue(),
         });
 
         this.logger.debug(this, 'unsubscribing request');
         this.logger.trace(this, 'unsubscribing request, reason', reason.column.GetValue());
         this.logger.trace(this, 'unsubscribing request, date', unsubscription.column.GetValue());
-      }
+      },
     });
   }
 
@@ -177,7 +173,7 @@ export class RequestActionService {
       data: {
         description: '#LDS#Cancel the following requests.',
         reason,
-        requests
+        requests,
       },
       apply: async () => {
         for (const request of requests) {
@@ -186,7 +182,7 @@ export class RequestActionService {
 
         this.logger.debug(this, 'withdraw request');
         this.logger.trace(this, 'withdraw request Reason', reason.column.GetValue());
-      }
+      },
     });
   }
 
@@ -194,13 +190,13 @@ export class RequestActionService {
     const reason = this.createCdrReason();
 
     return this.editAction({
-      title: await this.translate.get('#LDS#Heading Withdraw Question').toPromise(),
-      message: '#LDS#{0} questions have been successfully withdrawn.',
+      title: await this.translate.get('#LDS#Heading Withdraw Inquiry').toPromise(),
+      message: '#LDS#{0} inquiries have been successfully withdrawn.',
       testId: 'imx-recall-last-question-reason',
       data: {
-        description: '#LDS#Withdraw questions for the following requests.',
+        description: '#LDS#Withdraw inquiries for the following requests.',
         reason,
-        requests
+        requests,
       },
       apply: async () => {
         for (const request of requests) {
@@ -209,7 +205,7 @@ export class RequestActionService {
 
         this.logger.debug(this, 'recall last question');
         this.logger.trace(this, 'recall last question Reason', reason.column.GetValue());
-      }
+      },
     });
   }
 
@@ -217,13 +213,13 @@ export class RequestActionService {
     const reason = this.createCdrReason();
 
     return this.editAction({
-      title: await this.translate.get('#LDS#Heading Revoke Hold Status').toPromise(),
-      message: '#LDS#The hold status for {0} requests has been successfully revoked.',
+      title: await this.translate.get('#LDS#Heading Cancel Reservation').toPromise(),
+      message: '#LDS#The reservation for {0} requests has been successfully canceled.',
       testId: 'imx-revoke-hold-status-reason',
       data: {
-        description: '#LDS#Revoke the hold status for the following requests.',
+        description: '#LDS#Cancel the reservation for the following requests.',
         reason,
-        requests
+        requests,
       },
       apply: async () => {
         for (const request of requests) {
@@ -232,7 +228,7 @@ export class RequestActionService {
 
         this.logger.debug(this, 'revoke hold status');
         this.logger.trace(this, 'revoke hold status Reason', reason.column.GetValue());
-      }
+      },
     });
   }
 
@@ -246,7 +242,7 @@ export class RequestActionService {
       data: {
         description: await this.translate.get(description).toPromise(),
         reason,
-        requests
+        requests,
       },
       apply: async () => {
         for (const request of requests) {
@@ -255,7 +251,35 @@ export class RequestActionService {
 
         this.logger.debug(this, 'revoke delegation');
         this.logger.trace(this, 'revoke delegation Reason', reason.column.GetValue());
-      }
+      },
+    });
+  }
+
+  public async revokeAdditionalApprover(
+    requests: PortalItshopRequests[],
+    title: string,
+    message: string,
+    description: string
+  ): Promise<void> {
+    const reason = this.createCdrReason();
+
+    return this.editAction({
+      title: await this.translate.get(title).toPromise(),
+      message: await this.translate.get(message).toPromise(),
+      testId: 'imx-revoke-additional-approver-reason',
+      data: {
+        description: await this.translate.get(description).toPromise(),
+        reason,
+        requests,
+      },
+      apply: async () => {
+        for (const request of requests) {
+          await this.requestHistoryService.revokeAdditionalApprover(request, reason.column.GetValue());
+        }
+
+        this.logger.debug(this, 'revoke delegation');
+        this.logger.trace(this, 'revoke delegation Reason', reason.column.GetValue());
+      },
     });
   }
 
@@ -269,7 +293,7 @@ export class RequestActionService {
       data: {
         description: '#LDS#Undo approval decisions for the following requests.',
         reason,
-        requests
+        requests,
       },
       apply: async () => {
         for (const request of requests) {
@@ -278,23 +302,55 @@ export class RequestActionService {
 
         this.logger.debug(this, 'recall last question');
         this.logger.trace(this, 'recall last question Reason', reason.column.GetValue());
-      }
+      },
     });
   }
 
+  public async copyItems(requests: PortalItshopRequests[]): Promise<void> {
+    let busyIndicator: OverlayRef;
+    setTimeout(() => (busyIndicator = this.busyService.show()));
+    const errorRequests: PortalItshopRequests[] = [];
+    try {
+      for (const request of requests) {
+        try {
+          await this.requestHistoryService.copyRequest(request);
+        } catch {
+          errorRequests.push(request);
+        }
+      }
+    } finally {
+      setTimeout(() => this.busyService.hide(busyIndicator));
+      this.snackBar.open({
+        key: '#LDS#{0} products have been successfully added to the shopping cart.',
+        parameters: [requests.length - errorRequests.length],
+      });
+      if (errorRequests.length > 0) {
+        const errorText = errorRequests.map((request) => request.DisplayOrg.Column.GetDisplayValue()).join(', ');
+        this.messageService.subject.next({
+          text: this.ldsReplace.transform(this.translate.instant('#LDS#The following {0} products could not be added to the shopping cart: {1}'), errorRequests.length, errorText),
+          type: 'error',
+        });
+      }
+      this.applied.next();
+    }
+  }
+
   private async editAction(config: any): Promise<void> {
-    const result = await this.sideSheet.open(RequestActionComponent, {
-      title: await this.translate.get(config.title).toPromise(),
-      headerColour: 'iris-blue',
-      padding: '10px',
-      width: '600px',
-      testId: config.testId,
-      data: config.data
-    }).afterClosed().toPromise();
+    const result = await this.sideSheet
+      .open(RequestActionComponent, {
+        title: await this.translate.get(config.title).toPromise(),
+        subTitle: config.data.requests.length === 1 ? config.data.requests[0].GetEntity().GetDisplay() : ' ',
+        padding: '0',
+        width: '600px',
+        testId: config.testId,
+        data: config.data,
+      })
+      .afterClosed()
+      .toPromise();
 
     if (result) {
       let busyIndicator: OverlayRef;
-      setTimeout(() => busyIndicator = this.busyService.show());
+      setTimeout(() => (busyIndicator = this.busyService.show()));
 
       let success: boolean;
       try {
@@ -308,7 +364,8 @@ export class RequestActionService {
 
       if (success) {
         this.snackBar.open({
-          key: config.message, parameters: [config.data.requests.length]
+          key: config.message,
+          parameters: [config.data.requests.length],
         });
         this.applied.next();
       }
@@ -322,7 +379,7 @@ export class RequestActionService {
       ColumnName: 'ReasonHead',
       Type: ValType.Text,
       IsMultiLine: true,
-      MinLen: required ? 0 : 1
+      MinLen: required ? 0 : 1,
     });
 
     return new BaseCdr(column, display);

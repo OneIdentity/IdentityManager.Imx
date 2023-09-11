@@ -1,23 +1,99 @@
-.imx-accept-terms-container {
-  overflow: auto;
-  white-space: pre-line;
-  max-height: 20vh;
-  margin-bottom: 10px;
-}
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
-.imx-accept-terms-list-heading {
-  margin: 20px 0 10px;
-}
+:host {
+  display: flex;
 
-.imx-accept-terms-list-serviceitems {
-  margin-bottom: 30px;
+  .imx-accept-terms-container {
+    overflow: auto;
+    white-space: pre-line;
+    margin-bottom: 10px;
+    padding: 20px;
+    border-radius: 9px;
+    display: flex;
+    flex-direction: column;
+  }
 
-  >li {
-    list-style-type: initial;
+  .imx-accept-terms-list-heading {
+    margin: 20px 0 10px;
+  }
+
+  .imx-accept-terms-list-serviceitems {
+    margin-bottom: 30px;
+
+    > li {
+      list-style-type: initial;
+    }
+  }
+
+  .imx-accept-terms-list-content {
+    flex: 1 1 auto;
+    overflow: auto;
+    max-height: 20vh;
+    padding-bottom: 5px;
+  }
+
+  .imx-accept-checkbox {
+    font-weight: bold;
+    height: 4em;
+  }
+
+  imx-busy-indicator {
+    align-self: center;
+    justify-content: center;
+  }
+
+  .imx-single-term {
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+
+    > .mat-stroked-button {
+      align-self: flex-end;
+    }
   }
 }
 
-.imx-accept-checkbox {
-  font-weight: bold;
-  height: 4em;
+.eui-light-theme {
+  :host {
+    .imx-single-term {
+      border-top: $color-gray-20 solid 1px;
+    }
+    .imx-accept-terms-list-content {
+      border-bottom: $color-gray-20 solid 1px;
+    }
+
+    .imx-accept-terms-container {
+      border: $color-gray-20 solid 1px;
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-single-term {
+      border-top: $color-gray-50 solid 1px;
+    }
+    .imx-accept-terms-list-content {
+      border-bottom: $color-gray-50 solid 1px;
+    }
+
+    .imx-accept-terms-container {
+      border: $color-gray-50 solid 1px;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-single-term {
+      border-top: $color-gray-0 solid 1px;
+    }
+    .imx-accept-terms-list-content {
+      border-bottom: $color-gray-0 solid 1px;
+    }
+
+    .imx-accept-terms-container {
+      border: $color-gray-0 solid 1px;
+    }
+  }
 }

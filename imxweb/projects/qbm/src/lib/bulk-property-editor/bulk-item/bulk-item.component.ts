@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { AbstractControl, FormGroup } from '@angular/forms';
+import { AbstractControl, UntypedFormGroup } from '@angular/forms';
 import { MatExpansionPanel } from '@angular/material/expansion';
 
 import { BulkItem, BulkItemStatus } from './bulk-item';
@@ -54,7 +54,7 @@ export class BulkItemComponent implements OnInit {
   @Output() public validationStateChanged = new EventEmitter<BulkItem>();
   @Output() public controlCreated: EventEmitter<AbstractControl> = new EventEmitter();
 
-  public readonly formGroup = new FormGroup({});
+  public readonly formGroup = new UntypedFormGroup({});
 
   private readonly icons: { [key: number]: BulkItemIcon } = {};
 

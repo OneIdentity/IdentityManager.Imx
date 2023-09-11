@@ -1,6 +1,6 @@
 @use '@angular/material' as mat;
-@import "@elemental-ui/core/src/styles/_palette.scss";
-@import "@angular/material/theming";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import '@angular/material/theming';
 
 :host {
   display: flex;
@@ -15,16 +15,26 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: mat.get-color-from-palette($asher-gray-palette, 100);
   flex: 1 1 auto;
 }
 
+.imx-badge-container {
+  > div {
+    display: table-cell;
+
+    > .eui-badge {
+      margin: 0 5px;
+
+      ::ng-deep .eui-badge-content {
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
+
 // Create a config with the default typography levels.
 $config: mat.define-typography-config();
-
-imx-data-source-toolbar {
-  margin-bottom: 20px;
-}
 
 imx-data-source-toolbar-custom button {
   margin-right: 5px;
@@ -35,6 +45,8 @@ imx-data-source-toolbar-custom button {
   flex-direction: column;
   align-items: center;
   margin-bottom: 10px;
+  flex: 1 1 auto;
+  justify-content: center;
 
   h2 {
     font-weight: 600;
@@ -45,7 +57,7 @@ imx-data-source-toolbar-custom button {
   }
 
   > .eui-icon {
-    color: $black-b;
+    color: $color-gray-30;
   }
 
   .imx-aob-entitlements-empty-description {
@@ -100,5 +112,25 @@ imx-data-source-toolbar-custom button {
 
 div[subtitle] {
   font-size: smaller;
-  color: $black-9;
+  color: $color-gray-40;
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-aob-entitlements-empty > .eui-icon {
+      color: $color-gray-60;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-aob-entitlements-empty > .eui-icon {
+      color: $color-gray-40;
+    }
+
+    .imx-entitlements-site {
+      background-color: $color-gray-100;
+    }
+  }
 }

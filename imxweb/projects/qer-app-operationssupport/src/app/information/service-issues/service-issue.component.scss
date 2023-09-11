@@ -1,4 +1,5 @@
 @import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 mat-card {
   padding: 0px;
@@ -50,5 +51,41 @@ mat-card {
 
   .issueIconLine::before {
     font-size: 65px;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .issueTitle {
+      color: $color-gray-5;
+    }
+
+    .issueContent {
+      color: $color-gray-5;
+    }
+
+    eui-icon
+    {
+      color: $color-gray-2;
+      background-color: $color-gray-60;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .issueTitle {
+      color: $color-gray-0;
+    }
+
+    .issueContent {
+      color: $color-gray-0;
+    }
+
+    eui-icon
+    {
+      color: $color-gray-0;
+      background-color: $color-gray-80;
+    }
   }
 }

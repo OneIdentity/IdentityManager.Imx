@@ -1,0 +1,153 @@
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  height: 100%;
+
+  mat-card {
+    display: flex;
+  }
+
+  .imx-helper-alert {
+    margin: 20px;
+  }
+
+  .imx-mitigating-control {
+    display: flex;
+    flex-direction: row;
+    margin: 3px 3px 10px 3px;
+
+    :first-child {
+      flex: 1 1 auto;
+    }
+
+    button {
+      margin-top: 10px;
+    }
+  }
+
+  .imx-mitigating-controls-card {
+    flex: 1 1 auto;
+    display: flex;
+    margin: 20px;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .imx-spacer {
+    flex: 1 1 auto;
+  }
+
+  .imx-content {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex: 1 1 auto;
+  }
+
+  .eui-sidesheet-actions {
+    margin: 0;
+  }
+
+  .imx-save-button {
+    align-self: flex-end;
+  }
+
+  .imx-data-no-results {
+    text-align: center;
+    flex: 1 1 auto;
+
+    .eui-icon {
+      font-size: 100px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 18px;
+    }
+    button {
+      margin-top : 10px;
+    }
+  }
+
+  .imx-mitigating-form{
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-self: flex-start;
+    overflow: auto;
+    max-height: 100%;
+    padding: 2px;
+  }
+
+  .mat-error {
+    margin-top: 0.6666666667em;
+    margin-left: 1em;
+  }
+}
+
+:host {
+  .delete-icon {
+    color: $color-red-60;
+  }
+
+  .add-icon {
+    color: $color-blue-60;
+  }
+
+  .imx-data-no-results {
+    .eui-icon {
+      color: $color-gray-10;
+    }
+
+    p {
+      color: $color-gray-50;
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .delete-icon {
+      color: $color-red-40;
+    }
+
+    .add-icon {
+      color: $color-blue-40;
+    }
+
+    .imx-data-no-results {
+      .eui-icon {
+        color: $color-gray-20;
+      }
+
+      p {
+        color: $color-gray-10;
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .delete-icon {
+      color: $color-red-60;
+    }
+
+    .add-icon {
+      color: $color-blue-60;
+    }
+
+    .imx-data-no-results {
+      .eui-icon {
+        color: $color-gray-10;
+      }
+
+      p {
+        color: $color-gray-0;
+      }
+    }
+  }
+}

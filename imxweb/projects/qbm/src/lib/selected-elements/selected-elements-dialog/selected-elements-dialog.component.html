@@ -1,0 +1,30 @@
+<h1 mat-dialog-title>{{ data.header }}</h1>
+<div mat-dialog-content>
+  <mat-card>
+    <imx-data-source-toolbar
+      #dst
+      [settings]="dstSettings"
+      [options]="['search', 'filter']"
+      (navigationStateChanged)="navigate($event)"
+      (search)="search($event)"
+      data-imx-identifier="typed-entity-candidates-dst"
+    >
+    </imx-data-source-toolbar>
+    <div class="imx-table-container">
+      <imx-data-table [dst]="dst" mode="manual" [detailViewVisible]="false" [selectable]="false" data-imx-identifier="typed-entity-candidates-datatable">
+        <imx-data-table-column [entityColumn]="entitySchemaCandidates?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" columnLabel="">
+          <ng-template let-item>
+            <div>{{ item.GetEntity().GetDisplay() }}</div>
+            <div *ngIf="this.data.tables && this.data.tables.length > 1" subtitle>{{ getTable(item) }}</div>
+          </ng-template>
+        </imx-data-table-column>
+      </imx-data-table>
+    </div>
+    <imx-data-source-paginator [dst]="dst" data-imx-identifier="typed-entity-candidates-paginator"> </imx-data-source-paginator>
+  </mat-card>
+</div>
+<div mat-dialog-actions>
+  <button mat-flat-button color="primary" mat-dialog-close cdkFocusInitial data-imx-identifier="selectionlist-button-close">
+    {{ '#LDS#Close' | translate }}
+  </button>
+</div>

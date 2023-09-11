@@ -1,6 +1,7 @@
 @import "@elemental-ui/core/src/styles/_palette.scss";
-
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 :host {
+  flex-grow: 1;
   display: flex;
   align-items: center;
 }
@@ -20,24 +21,13 @@
   height: 50px;
 
   .imx-candidate-item {
-    display: flex;
-    align-items: center;
     width: 100%;
 
-    .imx-candidate-icon {
-      background-repeat: no-repeat;
-      min-width: 20px;
-      min-height: 20px;
-      margin-right: 10px;
-    }
-
     .imx-candidate-content {
-      flex: 1;
-      width: calc(100% - 25px);
+      width: 100%;
       overflow: hidden;
 
       .imx-candidate-display {
-        color: $black-3;
         font-size: 14px;
         line-height: 14px;
         text-overflow: ellipsis;
@@ -46,7 +36,6 @@
       }
 
       .imx-candidate-longdisplay {
-        color: $black-9;
         font-size: 12px;
         text-overflow: ellipsis;
         overflow: hidden;
@@ -80,4 +69,40 @@
   margin-top: 0;
   display: inline;
   line-height: 35px;
+}
+
+.eui-dark-theme {
+  :host {
+    color: $color-gray-2;
+    .imx-candidate-option{
+      .imx-candidate-item{
+        .imx-candidate-content{
+          .imx-candidate-display{
+            color: $color-gray-5;
+          }
+          .imx-candidate-longdisplay {
+            color: $color-gray-10;
+          }
+        }
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    color: $color-gray-0;
+    .imx-candidate-option{
+      .imx-candidate-item{
+        .imx-candidate-content{
+          .imx-candidate-display{
+            color: $color-gray-0;
+          }
+          .imx-candidate-longdisplay {
+            color: $color-gray-0;
+          }
+        }
+      }
+    }
+  }
 }

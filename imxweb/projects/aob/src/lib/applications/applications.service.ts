@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,15 +26,13 @@
 
 import { OverlayRef } from '@angular/cdk/overlay';
 import { Injectable, ErrorHandler } from '@angular/core';
-import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
+import { EuiLoadingService, EuiSidesheetService, EuiTheme } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 import { PortalApplication, PortalApplicationInteractive, PortalApplicationNew } from 'imx-api-aob';
-import {
-  TypedEntityCollectionData, CollectionLoadParameters, EntitySchema
-} from 'imx-qbm-dbts';
-import { ApiClientService, ClassloggerService, DataTileBadge, isIE, SnackBarService } from 'qbm';
-import { Subject } from 'rxjs';
+import { TypedEntityCollectionData, CollectionLoadParameters, EntitySchema } from 'imx-qbm-dbts';
+import { ApiClientService, ClassloggerService, DataTileBadge, SnackBarService } from 'qbm';
 import { AobApiService } from '../aob-api-client.service';
 import { ApplicationCreateComponent } from './application-create/application-create.component';
 
@@ -43,11 +41,12 @@ import { ApplicationCreateComponent } from './application-create/application-cre
  * {@link ApplicationCardComponent|ApplicationCardComponent}.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApplicationsService {
   public readonly onApplicationCreated = new Subject<string>();
   public readonly onApplicationDeleted = new Subject<string>();
+  public applicationRefresh: BehaviorSubject<Boolean> = new BehaviorSubject<Boolean>(false);
 
   private badgePublished: DataTileBadge;
   private badgeKpiErrors: DataTileBadge;
@@ -61,6 +60,17 @@ export class ApplicationsService {
     return this.aobClient.typedClient.PortalApplication.GetSchema();
   }
 
+  private get theme(): string {
+    const bodyClasses = document.body.classList;
+    return bodyClasses.contains(EuiTheme.LIGHT)
+      ? EuiTheme.LIGHT
+      : bodyClasses.contains(EuiTheme.DARK)
+      ? EuiTheme.DARK
+      : bodyClasses.contains(EuiTheme.CONTRAST)
+      ? EuiTheme.CONTRAST
+      : '';
+  }
+
   constructor(
     private readonly aobClient: AobApiService,
     private readonly logger: ClassloggerService,
@@ -71,24 +81,9 @@ export class ApplicationsService {
     private readonly snackbar: SnackBarService,
     private readonly busyService: EuiLoadingService
   ) {
-    this.translateService.get('#LDS#Published').subscribe((trans: string) => this.publishedText = trans);
-    this.translateService.get('#LDS#KPI issues').subscribe((trans: string) => this.kpiErrorsText = trans);
-    this.translateService.get('#LDS#New').subscribe((trans: string) => this.newBadgeText = trans);
-
-    this.badgePublished = {
-      content: this.publishedText,
-      color: '#618f3e'
-    };
-
-    this.badgeKpiErrors = {
-      content: this.kpiErrorsText,
-      color: '#f4770b'
-    };
-
-    this.badgeNew = {
-      content: this.newBadgeText,
-      color: '#02556d'
-    };
+    this.translateService.get('#LDS#Published').subscribe((trans: string) => (this.publishedText = trans));
+    this.translateService.get('#LDS#KPI issues').subscribe((trans: string) => (this.kpiErrorsText = trans));
+    this.translateService.get('#LDS#New').subscribe((trans: string) => (this.newBadgeText = trans));
   }
 
   /**
@@ -103,7 +98,8 @@ export class ApplicationsService {
 
   public async reload(uidApplication: string): Promise<PortalApplicationInteractive> {
     return await this.apiProvider.request(
-      async () => (await this.aobClient.typedClient.PortalApplicationInteractive.Get_byid(uidApplication)).Data[0]);
+      async () => (await this.aobClient.typedClient.PortalApplicationInteractive.Get_byid(uidApplication)).Data[0]
+    );
   }
 
   public createNew(): PortalApplicationNew {
@@ -128,7 +124,7 @@ export class ApplicationsService {
   /**
    * Publishs the given {@link PortalApplication[]|applications} by setting IsInactive to false or an ActivationDate to the given date.
    */
-  public async publish(application: PortalApplication, publishData: { publishFuture: boolean, date: Date }): Promise<boolean> {
+  public async publish(application: PortalApplication, publishData: { publishFuture: boolean; date: Date }): Promise<boolean> {
     if (!publishData.publishFuture) {
       await application.IsInActive.Column.PutValue(publishData.publishFuture);
     } else {
@@ -155,6 +151,7 @@ export class ApplicationsService {
    * if the application is published or has kpi issues.
    */
   public getApplicationBadges(application: PortalApplication | PortalApplicationNew): DataTileBadge[] {
+    this.updateBadges(this.theme);
 
     if (application instanceof PortalApplicationNew) {
       this.logger.trace(this, 'Add a new badge to the badgelist.');
@@ -186,20 +183,23 @@ export class ApplicationsService {
   public async createApplication(): Promise<void> {
     const application = this.createNew();
 
-    const result = await this.sidesheet.open(ApplicationCreateComponent, {
-      title: await this.translateService.get('#LDS#Heading Create Application').toPromise(),
-      headerColour: 'iris-blue',
-      padding: '0px',
-      width: isIE() ? '60%' : 'max(600px, 60%)',
-      disableClose: true,
-      data: {
-        application
-      }
-    }).afterClosed().toPromise();
+    const result = await this.sidesheet
+      .open(ApplicationCreateComponent, {
+        title: await this.translateService.get('#LDS#Heading Create Application').toPromise(),
+        padding: '0px',
+        width: 'max(600px, 60%)',
+        disableClose: true,
+        testId: 'create-aob-application',
+        data: {
+          application,
+        },
+      })
+      .afterClosed()
+      .toPromise();
 
     if (result) {
       let overlayRef: OverlayRef;
-      setTimeout(() => overlayRef = this.busyService.show());
+      setTimeout(() => (overlayRef = this.busyService.show()));
 
       try {
         await application.GetEntity().Commit(true);
@@ -214,7 +214,6 @@ export class ApplicationsService {
       this.snackbar.open({ key: '#LDS#The creation of the application has been canceled.' });
     }
   }
-
 
   public async deleteApplication(uid: string): Promise<void> {
     await this.aobClient.client.portal_application_delete(uid);
@@ -239,8 +238,50 @@ export class ApplicationsService {
   }
 
   private createdToday(app: PortalApplication): boolean {
-    return app != null
-      && app.XDateInserted != null
-      && new Date(app.XDateInserted.value).toLocaleDateString() === new Date().toLocaleDateString();
+    return (
+      app != null && app.XDateInserted != null && new Date(app.XDateInserted.value).toLocaleDateString() === new Date().toLocaleDateString()
+    );
+  }
+
+  /**
+   * Updates the badges, that are used on the application tiles, according to the used theme
+   * 
+   * @param theme Currently used EuiTheme
+   */
+  private updateBadges(theme: string): void {
+    //ToDo Bug422573 find a better solution for theming
+
+    const published = {};
+    published[EuiTheme.LIGHT] = '#0a96d1';
+    published[EuiTheme.DARK] = '#016b91';
+    published[EuiTheme.CONTRAST] = '#016b91';
+
+    const newb = {};
+    newb[EuiTheme.LIGHT] = '#4ba803';
+    newb[EuiTheme.DARK] = '#327301';
+    newb[EuiTheme.CONTRAST] = '#327301';
+
+    const kpi = {};
+    kpi[EuiTheme.LIGHT] = '#e36a00';
+    kpi[EuiTheme.DARK] = '#900';
+    kpi[EuiTheme.CONTRAST] = '#900';
+
+    this.badgePublished = {
+      content: this.publishedText,
+      color: published[theme] ?? '#618f3e',
+      textColor: '#ffffff',
+    };
+
+    this.badgeKpiErrors = {
+      content: this.kpiErrorsText,
+      color: kpi[theme] ?? '#f4770b',
+      textColor: '#ffffff',
+    };
+
+    this.badgeNew = {
+      content: this.newBadgeText,
+      color: newb[theme] ?? '#02556d',
+      textColor: theme === EuiTheme.LIGHT ? '#ffffff' : '#000000',
+    };
   }
 }

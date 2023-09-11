@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,8 +25,10 @@
  */
 
 import { HistoryData } from "imx-qbm-dbts";
+import { HistoryComparisonData } from "imx-api-qbm";
 
 export abstract class ObjectHistoryApiService {
 
   abstract getHistoryData(table: string, uid: string): Promise<HistoryData[]>;
+  abstract getHistoryComparisonData(table: string, uid: string,options?: {CompareDate?: Date;}):Promise<HistoryComparisonData[]>;
 }

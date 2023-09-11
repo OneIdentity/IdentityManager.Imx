@@ -1,0 +1,35 @@
+@import '../../../../../../shared/scss/common-table.scss';
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: inherit;
+
+  .button-row {
+   @include imx-button-bar();
+  }
+
+  .imx-button-column {
+   @include imx-button-column-right();
+  }
+
+  .imx-margin-right {
+    margin-right: 10px;
+  }
+
+  .imx-content-card {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    margin: 3px;
+    overflow: hidden;
+  }
+
+  .imx-table-container {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: inherit;
+    flex: 1 1 auto;
+  }
+}

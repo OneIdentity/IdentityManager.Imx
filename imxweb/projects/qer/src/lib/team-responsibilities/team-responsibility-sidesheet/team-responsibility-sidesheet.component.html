@@ -1,0 +1,15 @@
+<div eui-sidesheet-content class="imx-team-responsibilities-sidesheet">
+  <eui-alert type="info" condensed="true" [colored]="true" [dismissable]="true" *ngIf="data.extendedData?.OtherIdentities.length == 0">
+    <span> {{ '#LDS#There are no other identities who are also responsible for the object.' | translate }} </span>
+  </eui-alert>
+  <mat-card *ngIf="data.extendedData?.OtherIdentities.length > 0">
+    <mat-list role="list" >
+      <mat-list-item role="listitem" *ngFor="let identity of data.extendedData?.OtherIdentities">{{ identity.Display }}</mat-list-item>
+    </mat-list>
+  </mat-card>
+</div>
+<div eui-sidesheet-actions>
+  <button mat-flat-button color="primary" (click)="closeSidesheet()">
+    {{ '#LDS#Close' | translate }}
+  </button>
+</div>

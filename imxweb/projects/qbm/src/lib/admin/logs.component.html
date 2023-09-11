@@ -1,0 +1,112 @@
+<mat-tab-group (selectedTabChange)="onSelectedTabChanged($event)">
+  <mat-tab label="{{ '#LDS#Heading Session Log' | translate }}" data-imx-identifier="session-logs">
+    <div class="imx-log-timeline-container">
+      <div class="flex-container">
+        <imx-data-source-toolbar
+          #dstSession
+          [options]="['search', 'filter']"
+          [settings]="dstSettingsSession"
+          (search)="onSessionLogSearch($event)"
+          (navigationStateChanged)="onSessionLogSearch($event?.search ?? '')"
+          [searchBoxText]="searchBoxText | translate"
+          [isRegex]="isRegexChecked"
+          [alwaysVisible]="true"
+        >
+        </imx-data-source-toolbar>
+        <mat-slide-toggle class="slide-toggle" [(ngModel)]="isRegexChecked" (change)="onRegexToggle($event)">
+          <span translate>#LDS#Use regular expressions</span>
+        </mat-slide-toggle>
+        <ng-template #infoContent>
+          <p>{{ '#LDS#You can use regular expressions when searching.' | translate }}</p>
+        </ng-template>
+        <imx-info-button
+          class="imx-info-button"
+          [templateRef]="infoContent"
+          [title]="'#LDS#Heading Regular Expressions' | translate"
+        ></imx-info-button>
+      </div>
+      <div *ngIf="isRegexChecked && !isRegexValid" class="imx-error-message">
+        <eui-icon icon="warning" size="s"></eui-icon>
+        <span translate>#LDS#The regular expression you entered is invalid.</span>
+      </div>
+      <mat-nav-list>
+        <mat-list-item *ngFor="let log of sessionLogsOnPage" (click)="openLogSideSheet(log)">
+          <eui-icon mat-list-icon [class]="getIconColor(log.Level)" [icon]="getListIcon(log.Level)"></eui-icon>
+          <div mat-line>{{ log.Message }}</div>
+          <div mat-line>{{ log.TimeStamp | localizedDate }}</div>
+        </mat-list-item>
+        <div *ngIf="sessionLogs.length === 0" class="no-data">
+          <eui-icon icon="table"></eui-icon>
+          <p>{{ '#LDS#There are currently no log entries.' | translate }}</p>
+        </div>
+        <div *ngIf="sessionLogs.length > 0 && sessionLogsFiltered.length === 0" class="no-result">
+          <eui-icon icon="search"></eui-icon>
+          <p>{{ '#LDS#There is no data matching your search.' | translate }}</p>
+        </div>
+      </mat-nav-list>
+      <mat-paginator #sessionPaginator [pageSizeOptions]="pageSizeOptions" [pageSize]="pageSize" [length]="sessionTotalCount" (page)="onSessionPageChange($event)"></mat-paginator>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="{{ '#LDS#Heading Live Log' | translate }}" data-imx-identifier="live-logs">
+    <div class="imx-log-timeline-container">
+      <div class="flex-container">
+        <imx-data-source-toolbar
+          #dstLive
+          [options]="['search', 'filter']"
+          [settings]="dstSettingsLive"
+          (search)="onLiveLogSearch($event)"
+          (navigationStateChanged)="onLiveLogSearch($event?.search ?? '')"
+          [searchBoxText]="searchBoxText | translate"
+          [isRegex]="isRegexChecked"
+          [alwaysVisible]="true"
+        >
+        </imx-data-source-toolbar>
+        <mat-slide-toggle class="slide-toggle" [(ngModel)]="isRegexChecked" (change)="onRegexToggle($event)">
+          <span translate>#LDS#Use regular expressions</span>
+          <ng-template #infoContent>
+            <p>{{ '#LDS#You can use regular expressions when searching.' | translate }}</p>
+          </ng-template>
+          <imx-info-button
+            [templateRef]="infoContent"
+            [title]="'#LDS#Heading Regular Expressions' | translate"
+          ></imx-info-button>
+        </mat-slide-toggle>
+      </div>
+      <div *ngIf="isRegexChecked && !isRegexValid" class="imx-error-message">
+        <eui-icon icon="warning" size="m"></eui-icon>
+        <span translate>#LDS#The regular expression you entered is invalid.</span>
+      </div>
+      <mat-nav-list>
+        <mat-list-item *ngFor="let log of liveLogsOnPage" (click)="openLogSideSheet(log)">
+          <eui-icon mat-list-icon [class]="getIconColor(log.Level)" [icon]="getListIcon(log.Level)"></eui-icon>
+          <div mat-line>{{ log.Message }}</div>
+          <div mat-line>{{ log.TimeStamp | localizedDate }}</div>
+        </mat-list-item>
+        <div *ngIf="liveLogs.length === 0" class="no-data">
+          <eui-icon icon="table"></eui-icon>
+          <p>{{ '#LDS#There are currently no log entries.' | translate }}</p>
+        </div>
+        <div *ngIf="liveLogs.length > 0 && liveLogsFiltered.length === 0" class="no-result">
+          <eui-icon icon="search"></eui-icon>
+          <p>{{ '#LDS#There is no data matching your search.' | translate }}</p>
+        </div>
+      </mat-nav-list>
+      <mat-paginator #livePaginator [pageSizeOptions]="pageSizeOptions" [pageSize]="pageSize" [length]="liveTotalCount" (page)="onLivePageChange($event)"></mat-paginator>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="{{ '#LDS#Heading Log Files' | translate }}" data-imx-identifier="log-files">
+    <div class="imx-log-timeline-container">
+      <mat-nav-list>
+        <mat-list-item *ngFor="let log of logFiles; let i = index" [euiDownload]="logDownloads[i]">
+          <div mat-line>{{ log.File }}</div>
+          <div mat-line>{{ log.LastModified | localizedDate }}</div>
+        </mat-list-item>
+        <mat-list-item *ngIf="logFiles.length == 0">
+          <div mat-line>{{ '#LDS#There are currently no log entries.' | translate }}</div>
+        </mat-list-item>
+      </mat-nav-list>
+    </div>
+  </mat-tab>
+</mat-tab-group>

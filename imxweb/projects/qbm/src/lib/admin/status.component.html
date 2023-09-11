@@ -1,100 +1,90 @@
 <ng-container *ngIf="pingResult && pingResult.NoDbConnection">
-  <p>{{ '#LDS#An error occurred while connecting to the database. Please try again. If the problem persists, contact your administrator.'|translate}}</p>
+  <p>{{ '#LDS#An error occurred while connecting to the database. Please try again. If the problem persists, contact your administrator.' | translate }}</p>
 </ng-container>
 
-<ng-container *ngIf="dataReady">
-
-  <h2 class="mat-headline">{{'#LDS#Overview' | translate}}</h2>
-  <table class="status-table" data-imx-identifier="admin-status-table">
-    <tbody>
-      <tr>
-        <td colspan="2">
-          <button data-imx-identifier="admin-status-reload" mat-raised-button color="primary"
-            (click)="Reload()">{{'#LDS#Refresh' | translate}}</button>
-        </td>
-      </tr>
-      <tr>
-        <td>{{'#LDS#API projects' | translate }}</td>
-        <td>
-          <mat-chip-list data-imx-identifier="admin-status-api-projects">
-            <mat-chip *ngFor="let p of apiProjects">
-              {{p.AppId}}
-            </mat-chip>
-          </mat-chip-list>
-        </td>
-      </tr>
-      <tr>
-        <td>{{'#LDS#Software update' | translate }}</td>
-        <td data-imx-identifier="admin-status-software-update">
-          <div *ngIf="updaterState == UpdaterState.AlreadyRunning">{{ '#LDS#Update is currently running.' | translate }}
-          </div>
-          <div *ngIf="updaterState == UpdaterState.Disabled">{{ '#LDS#Software updates are not enabled for this server.'
-            | translate }}</div>
-          <div *ngIf="updaterState == UpdaterState.UpdatesAvailable">{{ '#LDS#Updates are available.' |
-            translate }}
-            <p><button mat-raised-button matTooltip="{{'#LDS#Installs updates and restarts the server.' | translate}}"
-                color="primary" data-imx-identifier="admin-status-update" (click)="StartUpdate()">{{'#LDS#Install updates now' | translate}}</button>
-            </p>
-          </div>
-          <div *ngIf="updaterState == UpdaterState.NoUpdatesAvailable">{{ '#LDS#The server is up-to-date.' | translate
-            }}</div>
-        </td>
-      </tr>
-      <ng-container *ngIf="config">
+<h2 class="mat-headline">{{ '#LDS#Overview' | translate }}</h2>
+<div class="content-container" [ngClass]="{ loading: !dataReady }">
+  <mat-spinner *ngIf="!dataReady" [attr.aria-label]="'#LDS#Loading...' | translate"></mat-spinner>
+  <mat-card class="imx-billboard-card">
+    <mat-card-header>
+        <mat-card-title>{{'#LDS#Sessions' | translate}} </mat-card-title>
+    </mat-card-header>
+      <eui-billboard [options]="chartOptions"></eui-billboard>
+  </mat-card>
+  <ng-container *ngIf="dataReady">
+    <table class="status-table mat-table" data-imx-identifier="admin-status-table">
+      <tbody>
         <tr>
-          <td>{{'#LDS#Product name' | translate }}</td>
-          <td>{{ config.ProductName }}</td>
-        </tr>
-        <tr>
-          <td>{{'#LDS#Product version' | translate }}</td>
-          <td>{{ config.ProductVersion }}</td>
-        </tr>
-      </ng-container>
-      <ng-container *ngIf="systemInfo">
-        <tr>
-          <td>{{'#LDS#Database name' | translate }}</td>
-          <td>{{ systemInfo.DbDisplay }}</td>
-        </tr>
-        <tr>
-          <td>{{'#LDS#Last migration' | translate }}</td>
-          <td>{{ systemInfo.LastMigrationDate }}</td>
-        </tr>
-        <tr>
-          <td>{{'#LDS#Customer name' | translate }}</td>
-          <td>{{ systemInfo.CustomerName }}</td>
-        </tr>
-        <tr>
-          <td>{{'#LDS#Staging level' | translate }}</td>
-          <td>
-            <ng-container *ngIf="0==systemInfo.ProductionLevel">{{'#LDS#Development system'|translate}}</ng-container>
-            <ng-container *ngIf="1==systemInfo.ProductionLevel">{{'#LDS#Test environment'|translate}}</ng-container>
-            <ng-container *ngIf="2==systemInfo.ProductionLevel">{{'#LDS#Production system'|translate}}</ng-container>
-            <ng-container *ngIf="systemInfo.ProductionLevelAddOn">
-              ({{systemInfo.ProductionLevelAddOn}})</ng-container>
+          <td colspan="2">
+            <button data-imx-identifier="admin-status-reload" mat-raised-button color="primary" (click)="Reload()">{{ '#LDS#Refresh' | translate }}</button>
           </td>
         </tr>
-      </ng-container>
-    </tbody>
-  </table>
-
-  <h2>{{'#LDS#Plugins' | translate}}</h2>
-  <table class="plugin-table" data-imx-identifier="admin-status-plugins">
-    <tbody>
-      <tr *ngFor="let p of plugins">
-        <td>
-          {{p.Plugin}}
-        </td>
-        <td>
-          <eui-alert *ngIf="p.Exception" [dismissable]="false" type="error" class="mat-elevation-z0">
-            <eui-alert-header class="mat-elevation-z0">{{ p.Exception }}</eui-alert-header>
-          </eui-alert>
-
-          <ng-container *ngIf="!p.Exception">
-            <mat-icon icon="check">check</mat-icon>
-            {{'#LDS#Running' |translate}}
-          </ng-container>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</ng-container>
+        <tr>
+          <td>{{ '#LDS#API projects' | translate }}</td>
+          <td>
+            <mat-chip-list data-imx-identifier="admin-status-api-projects">
+              <mat-chip *ngFor="let p of apiProjects">
+                {{ p.AppId }}
+              </mat-chip>
+            </mat-chip-list>
+          </td>
+        </tr>
+        <tr>
+          <td>{{ '#LDS#Software update' | translate }}</td>
+          <td data-imx-identifier="admin-status-software-update">
+            <div *ngIf="updaterState == UpdaterState.AlreadyRunning">{{ '#LDS#Update is currently running.' | translate }}</div>
+            <div *ngIf="updaterState == UpdaterState.Disabled">{{ '#LDS#Software updates are not enabled for this server.' | translate }}</div>
+            <div *ngIf="updaterState == UpdaterState.UpdatesAvailable">
+              {{ '#LDS#Updates are available.' | translate }}
+              <p>
+                <button
+                  mat-raised-button
+                  matTooltip="{{ '#LDS#Installs updates and restarts the server.' | translate }}"
+                  color="primary"
+                  data-imx-identifier="admin-status-update"
+                  (click)="StartUpdate()"
+                >
+                  {{ '#LDS#Install updates now' | translate }}
+                </button>
+              </p>
+            </div>
+            <div *ngIf="updaterState == UpdaterState.NoUpdatesAvailable">{{ '#LDS#The server is up-to-date.' | translate }}</div>
+          </td>
+        </tr>
+        <ng-container *ngIf="config">
+          <tr>
+            <td>{{ '#LDS#Product name' | translate }}</td>
+            <td>{{ config.ProductName }}</td>
+          </tr>
+          <tr>
+            <td>{{ '#LDS#Product version' | translate }}</td>
+            <td>{{ config.ProductVersion }}</td>
+          </tr>
+        </ng-container>
+        <ng-container *ngIf="systemInfo">
+          <tr>
+            <td>{{ '#LDS#Database name' | translate }}</td>
+            <td>{{ systemInfo.DbDisplay }}</td>
+          </tr>
+          <tr>
+            <td>{{ '#LDS#Last migration' | translate }}</td>
+            <td>{{ systemInfo.LastMigrationDate }}</td>
+          </tr>
+          <tr>
+            <td>{{ '#LDS#Customer name' | translate }}</td>
+            <td>{{ systemInfo.CustomerName }}</td>
+          </tr>
+          <tr>
+            <td>{{ '#LDS#Staging level' | translate }}</td>
+            <td>
+              <ng-container *ngIf="0 == systemInfo.ProductionLevel">{{ '#LDS#Development system' | translate }}</ng-container>
+              <ng-container *ngIf="1 == systemInfo.ProductionLevel">{{ '#LDS#Test environment' | translate }}</ng-container>
+              <ng-container *ngIf="2 == systemInfo.ProductionLevel">{{ '#LDS#Production system' | translate }}</ng-container>
+              <ng-container *ngIf="systemInfo.ProductionLevelAddOn"> ({{ systemInfo.ProductionLevelAddOn }})</ng-container>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </ng-container>
+</div>

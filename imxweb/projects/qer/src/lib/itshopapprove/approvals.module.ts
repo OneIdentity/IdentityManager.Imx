@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,6 +30,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { MatTabsModule } from '@angular/material/tabs';
 
 import {
   BulkPropertyEditorModule,
@@ -42,7 +43,11 @@ import {
   LdsReplaceModule,
   MenuItem,
   MenuService,
-  RouteGuardService
+  BusyIndicatorModule,
+  RouteGuardService,
+  SelectedElementsModule,
+  HelpContextualModule,
+  HELP_CONTEXTUAL
 } from 'qbm';
 
 import { ApprovalsComponent } from './approvals.component';
@@ -58,6 +63,10 @@ import { JustificationModule } from '../justification/justification.module';
 import { WorkflowMultiActionComponent } from './workflow-action/workflow-multi-action/workflow-multi-action.component';
 import { WorkflowSingleActionComponent } from './workflow-action/workflow-single-action/workflow-single-action.component';
 import { RecommendationSidesheetComponent } from './recommendation-sidesheet/recommendation-sidesheet.component';
+import { ApprovalHistoryComponent } from './workflow-action/approval-history/approval-history.component';
+import { HistoryFilterComponent } from './workflow-action/approval-history/history-filter/history-filter.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { InquiriesComponent } from './inquiries/inquiries.component'
 
 const routes: Routes = [
   {
@@ -77,10 +86,16 @@ const routes: Routes = [
     WorkflowActionComponent,
     WorkflowMultiActionComponent,
     WorkflowSingleActionComponent,
-    RecommendationSidesheetComponent
+    RecommendationSidesheetComponent,
+    InquiriesComponent,
+    ApprovalHistoryComponent,
+    HistoryFilterComponent
   ],
   imports: [
     BulkPropertyEditorModule,
+    BusyIndicatorModule,
+    MatCheckboxModule,
+    MatTabsModule,
     CdrModule,
     CommonModule,
     DataSourceToolbarModule,
@@ -96,11 +111,16 @@ const routes: Routes = [
     ReactiveFormsModule,
     RequestHistoryModule,
     RouterModule.forChild(routes),
-    TranslateModule
+    TranslateModule,
+    SelectedElementsModule,
+    HelpContextualModule,
   ],
   providers: [
     ApprovalsService
   ],
+  exports: [
+    RecommendationSidesheetComponent
+  ]
 })
 export class ApprovalsModule {
   constructor(
@@ -113,7 +133,7 @@ export class ApprovalsModule {
 
   private setupMenu(): void {
     this.menuService.addMenuFactories(
-      (preProps: string[], groups: string[]) => {
+      (preProps: string[], features: string[]) => {
 
         const items: MenuItem[] = [];
 

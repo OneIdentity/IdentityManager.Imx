@@ -1,9 +1,12 @@
+@import '../../../../../shared/scss/common-table.scss';
 @import 'pick-category-common.scss';
 
 :host {
   @include imx-flex-column-container();
   overflow: hidden;
   height: inherit;
+  display: flex;
+  flex-direction: column;
   max-width: 100%;
 }
 
@@ -11,15 +14,17 @@
   background-color: inherit;
   @include imx-flex-column-container();
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
 
   div.imx-table-container {
     @include imx-flex-column-container();
     overflow: hidden;
     height: inherit;
-
-    imx-data-source-toolbar {
-      margin-bottom: 20px;
-    }
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
 
     .imx-pickcategory-table {
       flex-grow: 1;
@@ -28,31 +33,11 @@
   }
 
   .imx-button-bar {
-    @include imx-flex-row-container();
-    margin-top: 20px;
-    flex: 0 0 auto;
+    @include imx-button-bar();
+  }
 
-    .imx-badge {
-      background-color: inherit;
-
-      ::ng-deep .eui-badge-content {
-        font-size: 14px;
-        line-height: 14px;
-      }
-    }
-
-    .imx-selected-items {
-      margin: 0;
-      line-height: 36px;
-    }
-
-    button {
-      margin-left: 10px;
-    }
-
-    .imx-menu-spacer {
-      flex-grow: 1;
-    }
+  .mat-card {
+   @include imx-flex-fill-control-hidden-overflow();
   }
 }
 

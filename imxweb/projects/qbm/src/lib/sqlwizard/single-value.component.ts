@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -69,6 +69,25 @@ export class SingleValueComponent implements OnInit, OnDestroy {
       this.expr.Data.Value = val;
     }
   }
+
+  get displayValue() {
+    if (this.mode == 'array') {
+      return this.expr.Data.DisplayValues[this.index];
+    }
+    else {
+      return this.expr.Data.DisplayValues ? this.expr.Data.DisplayValues[0] : null;
+    }
+  }
+
+  set displayValue(val) {
+    if (this.mode == 'array') {
+      this.expr.Data.DisplayValues[this.index] = val;
+    }
+    else {
+      this.expr.Data.DisplayValues = [val];
+    }
+  }
+
   @Input() public expr: SqlNodeView;
   @Input() public mode: 'array' | 'single' = 'single';
   @Input() public index: number;
@@ -133,13 +152,17 @@ export class SingleValueComponent implements OnInit, OnDestroy {
     };
 
     const column = this.entityService.createLocalEntityColumn(property, [this._fkProviderItem], {
-      Value: this.value
+      Value: this.value,
+      DisplayValue: this.displayValue
     });
 
     // when the CDR value changes, write back to the SQL wizard data structure
     column.ColumnChanged.subscribe(() => {
-      this.value = column.GetValue();
-      this.emitChanges();
+      setTimeout(() => {
+        this.displayValue = column.GetDisplayValue();
+        this.value = column.GetValue();
+        this.emitChanges();
+      }, 0);
     });
     this.cdr = new BaseCdr(column, '#LDS#Value');
   }

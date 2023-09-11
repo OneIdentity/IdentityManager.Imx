@@ -1,4 +1,9 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
+
+:host {
+  flex-grow: 1;
+}
+
 .slider-container {
   display: flex;
   align-items: center;
@@ -52,7 +57,7 @@
   width: 30px;
   height: 30px;
 
-  > {
+  > * {
     margin-right: 5px;
     margin-top: 0;
   }

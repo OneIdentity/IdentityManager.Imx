@@ -1,13 +1,13 @@
 <mat-card class="data-explorer data-explorer--identities" [class.identities--fullscreen]="showFullscreen">
   <div class="data-explorer-card-header">
     <div class="data-explorer-card-header-bg">
-      <eui-icon icon="contactinfo" size="28px"></eui-icon>
       <span translate>#LDS#Identities</span>
+      <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
     </div>
   </div>
-  <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['search', 'filter', 'groupBy', 'settings']"
+  <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['search', 'sort', 'filter', 'groupBy', 'settings']" [busyService]="busyService"
     [searchBoxText]="'#LDS#Search' | translate" (navigationStateChanged)="onNavigationStateChanged($event)"
-    (search)="onSearch($event)"></imx-data-source-toolbar>
+    (search)="onSearch($event)" (updateConfig)="updateConfig($event)" (deleteConfigById)="deleteConfigById($event)"></imx-data-source-toolbar>
   <div class="data-explorer-table">
     <imx-data-table [dst]="dst" (highlightedEntityChanged)="onIdentityChanged($event)" detailViewVisible="false"
       data-imx-identifier="identities-tabledata-table" mode="manual" [groupData]="groupData"
@@ -44,21 +44,26 @@
       </imx-data-table-generic-column>
     </imx-data-table>
 
-    <imx-data-source-paginator *ngIf="!dstSettings?.groupData?.currentGrouping" [dst]="dst"></imx-data-source-paginator>
+    <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
   </div>
 </mat-card>
 <div class="data-explorer-bottom-button-row">
-  <button mat-button [matMenuTriggerFor]="menu" data-imx-identifier="identities-button-actions" *ngIf="isManagerForPersons">
+  <button mat-button [matMenuTriggerFor]="menu" data-imx-identifier="identities-button-actions" *ngIf="isManagerForPersons || isAuditor">
     <eui-icon icon="ellipsisvertical"></eui-icon>
+    {{'#LDS#Actions' | translate}}
   </button>
-  <button mat-stroked-button data-imx-identifier="identities-button-create-new-identity" (click)="createNewIdentity()" class="imx-right-button">
+  <button *ngIf="isPersonAdmin || isManagerForPersons" mat-raised-button color="primary" data-imx-identifier="identities-button-create-new-identity" (click)="createNewIdentity()" class="imx-right-button">
+    <eui-icon icon="add"></eui-icon>
     <span translate>#LDS#Create identity</span>
   </button>
   <mat-menu #menu="matMenu">
-    <button mat-menu-item data-imx-identifier="identities-menu-item-download-report" [euiDownload]="downloadOptions">
-      {{'#LDS#Download report on identities who report directly to you' | translate}}
+    <button *ngIf="isManagerForPersons && !isAdmin" mat-menu-item data-imx-identifier="identities-menu-item-download-report" (click)="personsManagedReport()">
+      {{'#LDS#Download report on identities you are directly responsible for' | translate}}
     </button>
-    <imx-ext id="identityReports" [referrer]="currentUser"></imx-ext>
+    <!-- Created this way because of the accessibility -->
+    <ng-container *ngFor="let extension of extensions; let index">
+      <button mat-menu-item (click)="showDynamicReport(extension)">{{extension?.inputData?.caption | translate}}</button>
+    </ng-container>
   </mat-menu>
-  
 </div>
+<ng-template #dynamicReport></ng-template>

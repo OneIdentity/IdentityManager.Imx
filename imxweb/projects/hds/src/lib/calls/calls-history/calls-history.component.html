@@ -1,0 +1,17 @@
+
+<eui-alert class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true">
+  <span> {{ '#LDS#Here you can get an overview of all changes to this ticket.' | translate }} </span>
+</eui-alert>
+<mat-card>
+  <imx-data-source-toolbar #dst data-imx-identifier="calls-history-data-source-toolbar" [settings]="dstSettings"
+    [options]="['search', 'filter']" [hiddenFilters]="['namespace']" [searchBoxText]="'#LDS#Search' | translate"
+    (navigationStateChanged)="onNavigationStateChanged($event)" (search)="onSearch($event)">
+  </imx-data-source-toolbar>
+  <div class="calls-history-data-table">
+    <imx-data-table data-imx-identifier="calls-history-data-table" [dst]="dst"
+      (highlightedEntityChanged)="onSelected($event)" detailViewVisible="false">
+    </imx-data-table>
+  </div>
+  <imx-data-source-paginator data-imx-identifier="calls-history-data-source-paginator" [dst]="dst">
+  </imx-data-source-paginator>
+</mat-card>

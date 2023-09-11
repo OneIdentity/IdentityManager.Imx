@@ -17,8 +17,7 @@
     "@ngx-translate/core",
     "@ngx-translate/http-loader",
     "applicationinsights-js",
-    "billboard.js",
-    "chap-timeline"
+    "billboard.js"
   ],
   "dest": "../../html/uci",
   "lib": {

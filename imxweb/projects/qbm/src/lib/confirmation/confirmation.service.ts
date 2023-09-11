@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,11 +32,17 @@ import { MessageDialogResult } from '../message-dialog/message-dialog-result.enu
 import { MessageDialogComponent } from '../message-dialog/message-dialog.component';
 import { MessageParameter } from '../message-dialog/message-parameter.interface';
 
+import { LdsReplacePipe } from '../lds-replace/lds-replace.pipe';
+
 @Injectable({
   providedIn: 'root',
 })
 export class ConfirmationService {
-  constructor(private readonly dialogService: MatDialog, private readonly translate: TranslateService) { }
+  constructor(
+    private readonly dialogService: MatDialog,
+    private readonly translate: TranslateService,
+    private readonly pipe: LdsReplacePipe
+  ) {}
 
   public async confirmLeaveWithUnsavedChanges(title?: string, message?: string, disableClose?: boolean): Promise<boolean> {
     const dialogRef = this.dialogService.open(MessageDialogComponent, {
@@ -48,18 +54,35 @@ export class ConfirmationService {
           .toPromise(),
       },
       panelClass: 'imx-messageDialog',
-      disableClose: disableClose
+      disableClose: disableClose,
     });
     return (await dialogRef.beforeClosed().toPromise()) === MessageDialogResult.YesResult ? true : false;
   }
 
   public async confirm(data: MessageParameter): Promise<boolean> {
+    const message = data?.Message ? await this.translate.get(data.Message).toPromise() : '';
+
     const dialogRef = this.dialogService.open(MessageDialogComponent, {
       data: {
+        Title: data?.Title ? await this.translate.get(data.Title).toPromise() : '',
+        Message: data.Parameter ? this.pipe.transform(message, ...data.Parameter) : message,
         ShowYesNo: true,
-        Title: await this.translate.get(data.Title).toPromise(),
-        Message: await this.translate.get(data.Message).toPromise(),
-        identifier: data.identifier
+      },
+      panelClass: 'imx-messageDialog',
+    });
+    return (await dialogRef.afterClosed().toPromise()) === MessageDialogResult.YesResult ? true : false;
+  }
+
+  public async confirmGeneral(data: MessageParameter): Promise<boolean> {
+    const message = data?.Message ? await this.translate.get(data.Message).toPromise() : '';
+    const dialogRef = this.dialogService.open(MessageDialogComponent, {
+      data: {
+        Title: data?.Title ? await this.translate.get(data.Title).toPromise() : '',
+        Message: data.Parameter ? this.pipe.transform(message, ...data.Parameter) : message,
+        ShowOk: data?.ShowOk ? true : false,
+        ShowYesNo: data?.ShowYesNo ? true : false,
+        ShowCancel: data?.ShowCancel ? true : false,
+        identifier: data?.identifier,
       },
       panelClass: 'imx-messageDialog',
     });
@@ -70,8 +93,7 @@ export class ConfirmationService {
   public async confirmDelete(title?: string, message?: string): Promise<boolean> {
     return this.confirm({
       Title: title || '#LDS#Heading Delete Object',
-      Message: message || '#LDS#Are you sure you want to delete the object?'
+      Message: message || '#LDS#Are you sure you want to delete the object?',
     });
   }
 }
-

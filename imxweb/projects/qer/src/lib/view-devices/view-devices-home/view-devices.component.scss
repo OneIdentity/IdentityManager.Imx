@@ -1,0 +1,62 @@
+@import '../../../../../../shared/scss/common-table.scss';
+@mixin imx-flex-column-container {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin imx-flex-row-container {
+  display: flex;
+  flex-direction: row;
+}
+
+:host {
+  @include imx-flex-column-container();
+  overflow: hidden;
+  max-width: 100%;
+  height: 100%;
+}
+
+.heading-wrapper {
+  @include imx-flex-row-container();
+  flex: 0 0 auto;
+}
+
+.mat-card {
+ @include imx-flex-fill-control-hidden-overflow();
+
+  div.imx-table-container {
+    @include imx-flex-column-container();
+    overflow: hidden;
+    flex: 1 1 auto;
+
+    .mat-card {
+      height: inherit;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .imx-pickcategory-table {
+      flex-grow: 1;
+      overflow: auto;
+    }
+  }
+  &-actions {
+    display: flex;
+    flex-direction: row-reverse;
+    padding: 16px 0;
+    gap: 16px;
+    align-items: center;
+  }
+}
+
+.imx-button-bar {
+  @include imx-button-bar();
+
+  button {
+    eui-icon {
+      font-size: 14px;
+      margin-right: 4px;
+    }
+  }
+}

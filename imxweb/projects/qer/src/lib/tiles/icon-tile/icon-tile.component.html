@@ -1,5 +1,5 @@
 <imx-tile  size="Custom-Tile" [attr.data-imx-identifier]="'iconTile' + identifier"
-      [identifier]="identifier">
+      [identifier]="identifier" [loadingState]="loadingState">
       <ng-template #CustomTemplate>
         <mat-card-title [matTooltip]="caption">
             <eui-icon *ngIf="image" data-imx-identifier="iconTile-eui-icon" size="m" icon="{{image}}"></eui-icon>

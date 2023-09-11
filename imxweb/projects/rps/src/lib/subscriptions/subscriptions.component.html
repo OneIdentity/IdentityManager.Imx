@@ -1,59 +1,67 @@
 <mat-card>
   <mat-card-content>
     <div class="imx-table-container">
-      <imx-data-source-toolbar #dst [settings]="dstSettings" data-imx-identifier="subscriptions-table-toolbar"
+      <imx-data-source-toolbar
+        #dst
+        [settings]="dstSettings"
+        [busyService]="busyService"
+        data-imx-identifier="subscriptions-table-toolbar"
         [options]="['search']"
         (search)="onSearch($event)"
-        (navigationStateChanged)="onNavigationStateChanged($event)">
+        (navigationStateChanged)="onNavigationStateChanged($event)"
+      >
       </imx-data-source-toolbar>
 
-      <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual" data-imx-identifier="subscriptions-table">
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-          columnLabel="{{'#LDS#Subscription' | translate}}">
+      <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual" data-imx-identifier="subscriptions-table" (highlightedEntityChanged)="editSubscription($event)">
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" columnLabel="{{ '#LDS#Subscription' | translate }}">
         </imx-data-table-column>
-        <imx-data-table-generic-column columnName="edit" columnLabel="">
-          <ng-template let-subscription>
-            <button mat-stroked-button color="primary" (click)="editSubscription(subscription)"
-              data-imx-identifier="subscriptions-edit">
-              {{'#LDS#Edit' | translate}}
-            </button>
-          </ng-template>
-        </imx-data-table-generic-column>
         <imx-data-table-generic-column columnName="actions" columnLabel="">
           <ng-template let-subscription>
-            <button mat-button data-imx-identifier="subscriptions-actions" title="{{ '#LDS#Actions' | translate }}"
-              [matMenuTriggerFor]="actionsMenu">
-              <eui-icon icon='ellipsisvertical'></eui-icon>
+            <button
+              mat-stroked-button
+              class="imx-right-button"
+              data-imx-identifier="subscriptions-actions"
+              (click)="$event.stopPropagation()"
+              title="{{ '#LDS#Actions' | translate }}"
+              [matMenuTriggerFor]="actionsMenu"
+            >
+              <eui-icon icon="ellipsisvertical"></eui-icon>
+              {{ '#LDS#Actions' | translate }}
             </button>
             <mat-menu data-imx-identifier="subscriptions-actions-menu" #actionsMenu="matMenu">
-              <button mat-menu-item color="primary" (click)="delete(subscription)"
-                data-imx-identifier="subscriptions-show-edit">
-                {{'#LDS#Unsubscribe' | translate}}
+              <button mat-menu-item color="primary" (click)="delete(subscription)" data-imx-identifier="subscriptions-show-edit">
+                {{ '#LDS#Unsubscribe' | translate }}
               </button>
-              <button mat-menu-item color="primary" class="imx-separate-menu-item"
-                (click)="sendMail(subscription, false)" data-imx-identifier="subscriptions-send-mail">
-                {{'#LDS#Send report to me' | translate}}
+              <button mat-menu-item color="primary" class="imx-separate-menu-item" (click)="sendMail(subscription, false)" data-imx-identifier="subscriptions-send-mail">
+                {{ '#LDS#Send report to me' | translate }}
               </button>
-              <button mat-menu-item color="primary" (click)="sendMail(subscription, true)"
-                data-imx-identifier="subscriptions-send-mail-to-subscribers">
-                {{'#LDS#Send report to all subscribers' | translate}}
+              <button mat-menu-item color="primary" (click)="sendMail(subscription, true)" data-imx-identifier="subscriptions-send-mail-to-subscribers">
+                {{ '#LDS#Send report to all subscribers' | translate }}
+              </button>
+              <button
+                mat-menu-item
+                color="primary"
+                *ngIf="subscription.IsListReport.value"
+                (click)="viewReportSubscription(subscription)"
+                data-imx-identifier="subscriptions-send-mail-to-subscribers"
+              >
+                {{ '#LDS#View report' | translate }}
               </button>
             </mat-menu>
           </ng-template>
         </imx-data-table-generic-column>
       </imx-data-table>
-      <imx-data-source-paginator data-imx-identifier="subscriptions-table-paginator" [dst]="dst">
-      </imx-data-source-paginator>
+      <imx-data-source-paginator data-imx-identifier="subscriptions-table-paginator" [dst]="dst"> </imx-data-source-paginator>
     </div>
   </mat-card-content>
-  <mat-card-actions align="end">
-    <button [disabled]="!canAddSubscription" mat-raised-button (click)="viewReport()" color="primary"
-      data-imx-identifier="subscriptions-view-report">
-      {{'#LDS#View a report' | translate}}    
-    </button>
-    <button [disabled]="!canAddSubscription" mat-raised-button (click)="createSubscription()" color="primary"
-      data-imx-identifier="subscriptions-create-new-subscription">
-      {{'#LDS#Add subscription' | translate}}
-    </button>
-  </mat-card-actions>
 </mat-card>
+
+<div class="imx-button-bar">
+  <button [disabled]="!canAddSubscription" mat-stroked-button (click)="viewReport()" data-imx-identifier="subscriptions-view-report">
+    {{ '#LDS#View a report' | translate }}
+  </button>
+  <button [disabled]="!canAddSubscription" mat-raised-button (click)="createSubscription()" color="primary" data-imx-identifier="subscriptions-create-new-subscription">
+    <eui-icon icon="add"></eui-icon>
+    {{ '#LDS#Add subscription' | translate }}
+  </button>
+</div>

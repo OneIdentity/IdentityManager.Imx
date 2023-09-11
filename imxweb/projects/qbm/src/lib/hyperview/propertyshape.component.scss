@@ -1,6 +1,7 @@
 @import "variables.scss";
 
 table.LayoutpPropItems {
+  cursor: pointer;
   width: 100%;
 }
 
@@ -39,4 +40,9 @@ table.LayoutpPropItems {
 
 .imx-layoutpanel-cell {
   display: table-cell;
+}
+
+.endsSection {
+  border-bottom: solid 1px lightgray;
+  margin-bottom: .5em;
 }

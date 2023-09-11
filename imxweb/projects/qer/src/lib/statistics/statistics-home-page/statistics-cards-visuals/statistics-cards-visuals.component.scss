@@ -1,0 +1,130 @@
+@use '../statistics-cards/statistics-cards.component.scss';
+@import '../../stat-mixins.scss';
+@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+
+:host {
+
+  .card-content {
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+
+  .visual {
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 150px;
+
+    .chart-container {
+      width: 100%;
+      overflow: hidden;
+    }
+  }
+
+
+  .favorites-icon, .org-icon {
+    position: absolute;
+    bottom: 5px;
+    z-index: 10;
+
+    > button {
+      // Overwrite button values
+      width: 30px;
+      height: 30px;
+      min-width: unset;
+      padding: 0;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .favorites-icon {
+    right: 5px;
+  }
+
+  .org-icon {
+    left: 5px;
+  }
+
+  .center-content {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+  }
+
+
+  .card-no-data, .card-zero-data {
+  @include Empty-Card;
+  }
+}
+
+// Need to use an ng-deep outside of :host here since mat-menu is a cdk overlay
+::ng-deep .statistics-card-dropdown-container {
+  button {
+    display: flex;
+
+    eui-icon {
+      margin-right: 10px;
+    }
+
+    mat-spinner {
+      margin: 0 auto;
+    }
+  }
+}
+
+// Theming
+:host {
+  .card-no-data, .card-zero-data {
+    @include Stats-No-Data-Theme;
+  }
+
+  .colored-favorite-icon {
+    color: $color-orange-60;
+  }
+
+  .colored-org-icon {
+    // For now this value will be gray to not look like a button. Remove later when we have the button again
+    // color: $color-blue-60;
+    color: $color-gray-20;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .card-no-data, .card-zero-data {
+      @include Stats-No-Data-Theme(dark);
+    }
+
+    .colored-favorite-icon {
+      color: $color-orange-40;
+    }
+
+    .colored-org-icon {
+      // For now this value will be gray to not look like a button. Remove later when we have the button again
+      // color: $color-blue-40;
+      color: $color-gray-40;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .card-no-data, .card-zero-data {
+      @include Stats-No-Data-Theme(dark);
+    }
+
+    .colored-favorite-icon {
+      color: $color-orange-40;
+    }
+
+    .colored-org-icon {
+      // For now this value will be gray to not look like a button. Remove later when we have the button again
+      // color: $color-blue-40;
+      color: $color-gray-40;
+    }
+  }
+}

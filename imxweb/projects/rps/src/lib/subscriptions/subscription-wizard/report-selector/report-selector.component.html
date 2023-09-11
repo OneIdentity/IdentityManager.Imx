@@ -9,7 +9,7 @@
 <mat-form-field appearance="outline">
   <mat-label>{{ '#LDS#Report' | translate }}</mat-label>
   <input value="_hidden" matInput hidden [required]="true">
-  <cdk-virtual-scroll-viewport #viewport [itemSize]="50" minBufferPx="200" maxBufferPx="400" class="imx-viewport">
+  <cdk-virtual-scroll-viewport #viewport [itemSize]="50" [minBufferPx]="controlHeigth" [maxBufferPx]="controlHeigth*2" [ngStyle]="{'height': controlHeigth +'px'}" class="imx-viewport">
     <mat-selection-list [multiple]="false" (selectionChange)="updateSelected($event)" data-imx-identifier="report-selector-selectionList">
       <mat-list-option *cdkVirtualFor="let candidate of candidates; index as i" [value]="candidate"
         class="imx-candidate-option" [attr.data-imx-identifier]="'report-selector-selectionList-element-' + i">

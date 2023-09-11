@@ -19,7 +19,6 @@
         class="imx-candidate-option"
         [attr.data-imx-identifier]="'cdr-edit-fk-mat-option-assign-candidate-' + columnContainer?.name">
         <div class="imx-candidate-item">
-          <div *ngIf="selectedTable" class="imx-candidate-icon imx-table-{{selectedTable.TableName}}"></div>
           <div class="imx-candidate-content">
             <div class="imx-candidate-display">{{ getDisplay(candidate) }}</div>
             <div *ngIf="getDisplay(candidate) !== candidate.displayLong" class="imx-candidate-longdisplay">
@@ -38,12 +37,9 @@
     <button *ngIf="columnContainer?.canEdit && (isHierarchical ||columnContainer?.fkRelations?.length > 1)" mat-button
       color="primary" type="button" (click)="editAssignment($event)"
       [attr.data-imx-identifier]="'cdr-edit-fk-button-open-picker-' + columnContainer?.name">
-      {{ columnContainer?.value?.length ? ('#LDS#Change' | translate) : ('#LDS#Assign' | translate) }}
+      {{ columnContainer?.value?.length ? ('#LDS#Change' | translate) : ('#LDS#Select' | translate) }}
     </button>
   </div>
-  <mat-hint *ngIf="!control.errors && columnContainer?.hint">
-    {{ columnContainer.hint | translate }}
-  </mat-hint>
   <mat-error *ngIf="control.errors?.checkAutocomplete">
     {{ '#LDS#The value entered in the {0} box could not be found. Please select a value from the list.' | translate |
     ldsReplace:(columnContainer?.display | translate) }}

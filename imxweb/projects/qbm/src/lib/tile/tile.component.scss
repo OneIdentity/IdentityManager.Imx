@@ -1,5 +1,6 @@
 @import "variables.scss";
 @import "./tile-variables.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 // TODO: Cleanup. Do we need all classed?
 
@@ -176,7 +177,9 @@ section.imx-generic-tile.addon-tile > .mat-card > a {
   overflow: auto;
   padding: 0;
 }
-
+section{
+  position: relative;
+}
 section.imx-generic-tile {
   display: inline-flex;
   margin-right: 20px;
@@ -292,10 +295,29 @@ section.imx-generic-tile.dashboard > .mat-card {
   line-height: 1.05em;
   font-size: 1.05em;
 }
+::ng-deep {
+  .loading-overlay {
+    position: absolute;
+    z-index: 999;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba($color-gray-100, 0.32);
+    border-radius: 4px;
+    .mat-spinner,
+    .mat-spinner svg {
+      max-height: 40px;
+      max-width: 40px;
+    }
+  }
+}
+
 
 /** TODO (TFS 805997)
-.highlighted .imx-generic-tile-iconfont { 
- color: $VI_Common_Color_Badge_Warning; 
+.highlighted .imx-generic-tile-iconfont {
+ color: $VI_Common_Color_Badge_Warning;
 }
 */
 

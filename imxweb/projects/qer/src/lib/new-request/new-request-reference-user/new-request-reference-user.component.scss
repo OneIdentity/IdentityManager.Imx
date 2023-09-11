@@ -1,0 +1,37 @@
+@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '../new-request-global.scss';
+
+@include Layout-Styles;
+@include Table-Styles;
+
+:host {
+  flex-direction: column;
+
+  .imx-reference-toolbar {
+    display: flex;
+    align-items: center;
+
+    > :first-child {
+      flex-grow: 1;
+    }
+
+    .imx-info-button-caption { 
+      @include imx-text();
+    }
+  }
+}
+
+// Theming
+:host {
+  .imx-info-button-caption {
+    color: $color-gray-60;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-info-button-caption {
+      color: $color-gray-20;
+    }
+  }
+}

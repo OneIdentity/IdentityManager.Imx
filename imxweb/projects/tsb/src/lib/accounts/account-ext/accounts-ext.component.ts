@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,22 +24,17 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, Input, OnInit } from '@angular/core';
-import { EuiLoadingService } from '@elemental-ui/core';
 
 import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings, DynamicTabDataProviderDirective, SettingsService } from 'qbm';
+import { DataSourceToolbarSettings, DynamicTabDataProviderDirective, SettingsService, BusyService } from 'qbm';
 import { AccountsExtService } from './account-ext.service';
 
 @Component({
   templateUrl: './accounts-ext.component.html',
-  styleUrls: [
-    '../accounts.component.scss',
-    './accounts-ext.component.scss'],
+  styleUrls: ['../accounts.component.scss', './accounts-ext.component.scss'],
 })
 export class AccountsExtComponent implements OnInit {
-
   @Input() public referrer: {
     objecttable?: string;
     objectuid?: string;
@@ -50,12 +45,12 @@ export class AccountsExtComponent implements OnInit {
   public readonly DisplayColumns = DisplayColumns;
 
   public entitySchemaAccount: EntitySchema;
+  public busyService = new BusyService();
 
   private displayColumns: IClientProperty[] = [];
   private navigationState: CollectionLoadParameters;
 
   constructor(
-    private readonly busyService: EuiLoadingService,
     private readonly settingService: SettingsService,
     private readonly accountsService: AccountsExtService,
     dataProvider: DynamicTabDataProviderDirective
@@ -63,10 +58,12 @@ export class AccountsExtComponent implements OnInit {
     this.referrer = dataProvider?.data;
     this.navigationState = { PageSize: this.settingService.DefaultPageSize };
     this.entitySchemaAccount = accountsService.portalPersonAccountsSchema;
+    /** if you like to add columns, please check {@link DataExplorerAccountsComponent | Accounts Component} as well */
     this.displayColumns = [
-      this.entitySchemaAccount.Columns.AccountName,
-      this.entitySchemaAccount.Columns.UID_DPRNameSpace,
-      this.entitySchemaAccount.Columns.UID_UNSRoot
+      this.entitySchemaAccount.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
+      this.entitySchemaAccount.Columns.UID_UNSRoot,
+      this.entitySchemaAccount.Columns.AccountDisabled,
+      this.entitySchemaAccount.Columns.XMarkedForDeletion,
     ];
   }
 
@@ -88,19 +85,17 @@ export class AccountsExtComponent implements OnInit {
   }
 
   private async getData(): Promise<void> {
-
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    const isBusy = this.busyService.beginBusy();
     try {
       const groupsPerIdentity = await this.accountsService.getAccounts(this.referrer.objectuid);
       this.dstSettings = {
         displayedColumns: this.displayColumns,
         dataSource: groupsPerIdentity,
         entitySchema: this.entitySchemaAccount,
-        navigationState: this.navigationState
+        navigationState: this.navigationState,
       };
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      isBusy.endBusy();
     }
   }
 }

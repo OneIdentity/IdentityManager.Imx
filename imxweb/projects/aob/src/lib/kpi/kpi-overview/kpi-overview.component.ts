@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,14 +24,12 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, OnChanges, Input, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnChanges, Input, TemplateRef, ViewChild, SimpleChanges } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { EuiLoadingService } from '@elemental-ui/core';
 import { ChartOptions } from 'billboard.js';
 import { TranslateService } from '@ngx-translate/core';
 
-import { XAxisInformation, LineChartOptions, YAxisInformation, SeriesInformation, ClassloggerService } from 'qbm';
+import { XAxisInformation, LineChartOptions, YAxisInformation, SeriesInformation, ClassloggerService, BusyService } from 'qbm';
 import { ChartDto, PortalApplication, ChartDataPoint } from 'imx-api-aob';
 import { KpiOverviewService } from './kpi-overview.service';
 
@@ -44,7 +42,7 @@ import { KpiOverviewService } from './kpi-overview.service';
 @Component({
   selector: 'imx-kpi-overview',
   templateUrl: './kpi-overview.component.html',
-  styleUrls: ['./kpi-overview.component.scss']
+  styleUrls: ['./kpi-overview.component.scss'],
 })
 export class KpiOverviewComponent implements OnChanges {
   /**
@@ -74,33 +72,39 @@ export class KpiOverviewComponent implements OnChanges {
 
   private errorThreshhold: string;
 
+  public busyService = new BusyService();
+  public isLoading = false;
+
   constructor(
     readonly translateService: TranslateService,
     private kpiOverviewProvider: KpiOverviewService,
     private logger: ClassloggerService,
-    private readonly busyService: EuiLoadingService,
-    private matDialog: MatDialog,
+    private matDialog: MatDialog
   ) {
-    translateService.get('#LDS#Error threshold')
-      .subscribe((trans: string) => this.errorThreshhold = trans);
+    translateService.get('#LDS#Error threshold').subscribe((trans: string) => (this.errorThreshhold = trans));
+    this.busyService.busyStateChanged.subscribe((elem) => (this.isLoading = elem));
   }
 
   /**
    * Displays a busyIndicator and initializes the data, when the OnChanges life cycle hook is called
    */
-  public async ngOnChanges(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+  public async ngOnChanges(changes: SimpleChanges): Promise<void> {
+
+    if (changes.application?.currentValue?.UID_AOBApplication.value === changes.application?.previousValue?.UID_AOBApplication.value) {
+      return;
+    } 
+    
+    const isBusy = this.busyService.beginBusy();
     try {
       const data = await this.kpiOverviewProvider.get(this.application.UID_AOBApplication.value);
       if (data) {
-        this.chartDataPass = data.filter(kpi => kpi.Data.length > 0 && kpi.Data[0].Points[0].Value < kpi.ErrorThreshold);
-        this.chartDataFail = data.filter(kpi => kpi.Data.length > 0 && kpi.Data[0].Points[0].Value >= kpi.ErrorThreshold);
+        this.chartDataPass = data.filter((kpi) => kpi.Data.length > 0 && kpi.Data[0].Points[0].Value < kpi.ErrorThreshold);
+        this.chartDataFail = data.filter((kpi) => kpi.Data.length > 0 && kpi.Data[0].Points[0].Value >= kpi.ErrorThreshold);
       } else {
         this.logger.error(this, 'ChartDto[] is undefined');
       }
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      isBusy.endBusy();
     }
   }
 
@@ -110,7 +114,7 @@ export class KpiOverviewComponent implements OnChanges {
    */
   public showDetails(chart: ChartDto, isFail: boolean): void {
     if (!this.hasDetails(chart)) { return; }
-    this.matDialog.open(this.chartDialog, { data: { chart: this.getChartData(chart), failed: isFail }, width: '600px', autoFocus: false });
+    this.matDialog.open(this.chartDialog, { data: { chart: this.getChartData(chart), failed: isFail }, width: '600px', autoFocus: false, panelClass: 'kpi-overview-modal' });
   }
 
   /**
@@ -126,8 +130,7 @@ export class KpiOverviewComponent implements OnChanges {
    * @returns true, if there are failed or passed KPIs else it returns false
    */
   public hasKpis(): boolean {
-    return (this.chartDataFail != null && this.chartDataFail.length > 0)
-      || (this.chartDataPass != null && this.chartDataPass.length > 0);
+    return (this.chartDataFail != null && this.chartDataFail.length > 0) || (this.chartDataPass != null && this.chartDataPass.length > 0);
   }
 
   /**
@@ -136,7 +139,7 @@ export class KpiOverviewComponent implements OnChanges {
    * @returns the local date string for a date represented by an other string
    */
   public getDateDisplay(date: string): string {
-    return new Date(date).toLocaleString(this.translateService.getBrowserCultureLang());
+    return new Date(date).toLocaleString(this.translateService.currentLang);
   }
 
   /**
@@ -153,7 +156,7 @@ export class KpiOverviewComponent implements OnChanges {
    * @param chart the data of a single chart
    * @returns a dictionary, that can be display on the details dialog
    */
-  private getChartData(chart: ChartDto): { [id: string]: any; } {
+  private getChartData(chart: ChartDto): { [id: string]: any } {
     return { display: chart.Display, description: chart.Description, options: this.buildOptions(chart) };
   }
 
@@ -163,21 +166,29 @@ export class KpiOverviewComponent implements OnChanges {
    * @returns a ChartOptions object, that can be used by billboard.js
    */
   private buildOptions(chart: ChartDto): ChartOptions {
-    const yAxis = new YAxisInformation(chart.Data.map(serie =>
-      new SeriesInformation(chart.Display,
-        serie.Points.map((point: ChartDataPoint) => point.Value)
-      )));
+    const yAxis = new YAxisInformation(
+      chart.Data.map(
+        (serie) =>
+          new SeriesInformation(
+            chart.Display,
+            serie.Points.map((point: ChartDataPoint) => point.Value)
+          )
+      )
+    );
 
-    const browserCulture = this.translateService.getBrowserCultureLang();
+    const browserCulture = this.translateService.currentLang;
 
-    yAxis.tickConfiguration = {format : d => d.toLocaleString(browserCulture), values: this.accumulateTicks(chart)};
+    yAxis.tickConfiguration = { format: (d) => d.toLocaleString(browserCulture), values: this.accumulateTicks(chart) };
 
     const lineChartOptions = new LineChartOptions(
-      new XAxisInformation('date',
-        chart.Data[0].Points.map((point: ChartDataPoint) => new Date(point.Date) ), {
-        count: 6,
-        format: (d: Date) => d.toLocaleDateString(browserCulture)
-      }),
+      new XAxisInformation(
+        'date',
+        chart.Data[0].Points.map((point: ChartDataPoint) => new Date(point.Date)),
+        {
+          count: 6,
+          format: (d: Date) => d.toLocaleDateString(browserCulture),
+        }
+      ),
       yAxis
     );
     lineChartOptions.useCurvedLines = false;
@@ -186,20 +197,29 @@ export class KpiOverviewComponent implements OnChanges {
     lineChartOptions.additionalLines = [
       {
         value: chart.ErrorThreshold,
-        text: this.errorThreshhold
-      }
+        text: this.errorThreshhold,
+      },
     ];
+    lineChartOptions.size = {
+      height: 400,
+      width: 500
+    }
     this.logger.debug(this, 'Options', lineChartOptions.options);
     return lineChartOptions.options;
   }
 
   private accumulateTicks(chart: ChartDto): number[] {
     const ret = [];
-    const max = Math.max.apply(Math, chart.Data[0].Points.map(o => o.Value));
+    const max = Math.max.apply(
+      Math,
+      chart.Data[0].Points.map((o) => o.Value)
+    );
     const steps = Math.max(1, Math.trunc(max / 10)) + 1;
 
     ret.push(0);
-    if (max <= 0) {return ret; }
+    if (max <= 0) {
+      return ret;
+    }
 
     for (let index = 1; index <= 10; index++) {
       ret.push(index * steps);

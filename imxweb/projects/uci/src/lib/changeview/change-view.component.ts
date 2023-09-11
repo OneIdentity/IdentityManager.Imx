@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,41 +24,41 @@
  *
  */
 
-import { Component, OnInit } from "@angular/core";
-import { EuiSidesheetService } from "@elemental-ui/core";
-import { TranslateService } from "@ngx-translate/core";
+import { Component, OnInit } from '@angular/core';
+import { EuiSidesheetService } from '@elemental-ui/core';
+import { TranslateService } from '@ngx-translate/core';
+
 import { ManualChangeOperationData, OpsupportUciChangedetail, OpsupportUciChanges } from 'imx-api-uci';
-import { CollectionLoadParameters, DataModel, DbObjectKey, ExtendedTypedEntityCollection, TypedEntity, ValType } from "imx-qbm-dbts";
+import { CollectionLoadParameters, DataModel, DbObjectKey, EntitySchema, ExtendedTypedEntityCollection, TypedEntity, ValType } from 'imx-qbm-dbts';
 import { DataSourceToolbarFilter, DataSourceToolbarSettings, DataSourceWrapper, MetadataService } from 'qbm';
-import { UciApiService } from "../uci-api-client.service";
-import { ChangeSidesheetComponent } from "./change-sidesheet.component";
-import { ChangeViewService } from "./change-view.service";
+import { UciApiService } from '../uci-api-client.service';
+import { ChangeSidesheetComponent } from './change-sidesheet.component';
+import { ChangeViewService } from './change-view.service';
 
 @Component({
-	templateUrl: "./change-view.component.html",
-	styleUrls: ['./change-view.component.scss'],
-	selector: "imx-change-view"
+  templateUrl: './change-view.component.html',
+  styleUrls: ['./change-view.component.scss'],
+  selector: 'imx-change-view',
 })
 export class ChangeViewComponent implements OnInit {
-	constructor(private readonly translator: TranslateService,
+  public dstWrapper: DataSourceWrapper<OpsupportUciChanges>;
+	public dstSettings: DataSourceToolbarSettings;
+	public selectedChange: OpsupportUciChanges;
+  public entitySchema: EntitySchema;
+	private filterOptions: DataSourceToolbarFilter[] = [];
+
+	constructor(
+    private readonly translator: TranslateService,
 		private readonly uciApi: UciApiService,
 		private readonly changeviewService: ChangeViewService,
 		private readonly sidesheet: EuiSidesheetService,
 		private readonly metadatasvc: MetadataService,
 	) {
+    this.entitySchema = this.uciApi.typedClient.OpsupportUciChanges.GetSchema();
 	}
 
-	public dstWrapper: DataSourceWrapper<OpsupportUciChanges>;
-	public dstSettings: DataSourceToolbarSettings;
-	public selectedChange: OpsupportUciChanges;
-	private filterOptions: DataSourceToolbarFilter[] = [];
-
 	public async ngOnInit(): Promise<void> {
-
-		const entitySchema = this.uciApi.typedClient.OpsupportUciChanges.GetSchema();
-
 		const dataModel = await this.getDataModel();
-
 		this.filterOptions = dataModel.Filters;
 
 		// set initial value for state =0 (only pending processes)
@@ -70,16 +70,12 @@ export class ChangeViewComponent implements OnInit {
 		this.dstWrapper = new DataSourceWrapper(
 			state => this.uciApi.typedClient.OpsupportUciChanges.Get(state),
 			[
-				entitySchema.Columns.ObjectKeyElement,
-				entitySchema.Columns.UID_UCIRoot,
-				entitySchema.Columns.XDateInserted,
-				{
-					ColumnName: 'viewDetailsButton',
-					Type: ValType.String,
-					afterAdditionals: true
-				},
+				this.entitySchema.Columns.ObjectKeyElement,
+				this.entitySchema.Columns.IsProcessed,
+				this.entitySchema.Columns.UID_UCIRoot,
+				this.entitySchema.Columns.XDateInserted
 			],
-			entitySchema,
+			this.entitySchema,
 			{
 				dataModel: dataModel,
 			}
@@ -121,8 +117,8 @@ export class ChangeViewComponent implements OnInit {
 		}
 
 		const result = await this.sidesheet.open(ChangeSidesheetComponent, {
-			title: await this.translator.get('#LDS#Heading Edit Change').toPromise(),
-			headerColour: 'iris-blue',
+			title: await this.translator.get('#LDS#Heading View Provisioning Process Details').toPromise(),
+      subTitle: change.ObjectKeyElement.Column.GetDisplayValue(),
 			padding: '0',
 			width: '600px',
 			testId: 'changeview-details-sidesheet',
@@ -137,5 +133,4 @@ export class ChangeViewComponent implements OnInit {
 	public async getDataModel(): Promise<DataModel> {
 		return this.uciApi.client.opsupport_uci_changes_datamodel_get();
 	}
-
 }

@@ -1,0 +1,43 @@
+$theme_font_family: 'Source Sans Pro, "Helvetica Neue", sans-serif' !default;
+
+@use 'sass:math';
+@use '@angular/material' as mat;
+
+@import '@elemental-ui/core/src/styles/functions/to_number';
+
+@import '@elemental-ui/core/src/styles/reset';
+@import '@elemental-ui/core/src/styles/billboard';
+@import '@elemental-ui/core/src/styles/cadence';
+@import '@elemental-ui/core/src/styles/material_icons';
+@import '@elemental-ui/core/src/styles/source_sans_pro';
+@import '@elemental-ui/core/src/styles/palette';
+@import '@elemental-ui/core/src/styles/typography';
+@import '@elemental-ui/core/src/styles/material_fixes';
+@import '@elemental-ui/core/src/styles/inputs';
+@import '@elemental-ui/core/src/styles/clickables';
+@import '@elemental-ui/core/src/styles/common';
+
+$custom-typography: mat.define-typography-config(
+  $font-family: $theme_font_family,
+  $button: mat.define-typography-level(14px, 14px, 400),
+);
+@include mat.core($custom-typography);
+
+// Define the custom theme.
+$primary: mat.define-palette($gunmetal-palette);
+$accent: mat.define-palette($corbin-orange-palette);
+$warn: mat.define-palette($phoenix-red-palette);
+
+$theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $primary,
+      accent: $accent,
+      warn: $warn,
+    ),
+  )
+);
+
+.custom-theme {
+  @include mat.all-component-themes($theme);
+}

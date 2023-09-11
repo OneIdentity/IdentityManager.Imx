@@ -1,0 +1,14 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: inherit;
+    max-width: 100%;
+  }
+
+.imx-application-details {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 100%;
+  }

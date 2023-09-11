@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -43,7 +43,7 @@ export class DataTableCellComponent {
 
   public get column(): IEntityColumn{
     try{
-      return this.entity.GetEntity().GetColumn(this.property.ColumnName);
+      return this.entity?.GetEntity()?.GetColumn(this.property?.ColumnName);
     }catch {
       return undefined;
     }

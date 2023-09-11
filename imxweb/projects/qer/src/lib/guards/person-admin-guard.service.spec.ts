@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,76 +24,42 @@
  *
  */
 
-import { Component } from '@angular/core';
-import { TestBed, fakeAsync, flush } from '@angular/core/testing';
+import { fakeAsync, flush } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { configureTestSuite } from 'ng-bullet';
-import { Subject } from 'rxjs';
 
-import { AppConfigService, AuthenticationService, ISessionState } from 'qbm';
-import { UserModelService } from '../user/user-model.service';
+import { AppConfigService, AuthenticationService } from 'qbm';
 import { PersonAdminGuardService } from './person-admin-guard.service';
 import { QerPermissionsService } from '../admin/qer-permissions.service';
+import { MockBuilder, MockRender } from 'ng-mocks';
+import { Router, RouterModule } from '@angular/router';
+import { QbmDefaultMocks } from '../../../../qbm/src/default-mocks.spec';
 
-@Component({
-  template: `<div>Dummy</div>`
-})
-class DummyComponent {
-}
 
 describe('PersonAdminGuardService', () => {
   let service: PersonAdminGuardService;
-
-  const mockUserModelService = {
-    getGroups: () => {
-      return [];
-    },
-  };
-
-  const authenticationServiceStub = {
-    onSessionResponse: new Subject<ISessionState>(),
-  };
-  
-  let isPersonAdmin = false; 
+  let isPersonAdmin = false;
 
   const qerPermissionsServiceStub = {
-    isPersonAdmin: jasmine.createSpy('isPersonAdmin').and.callFake(() => isPersonAdmin)
+    isPersonAdmin: jasmine.createSpy('isPersonAdmin').and.callFake(() => isPersonAdmin),
   };
 
-  configureTestSuite(() => {
-    TestBed.configureTestingModule({
-      declarations: [DummyComponent],
-      imports: [RouterTestingModule.withRoutes([
-        { path: 'dashboard', component: DummyComponent }
-      ])],
-      providers: [
-        PersonAdminGuardService,
-        {
-          provide: QerPermissionsService,
-          useValue: qerPermissionsServiceStub,
+  beforeEach(() => {
+    return MockBuilder([PersonAdminGuardService, RouterModule, RouterTestingModule.withRoutes([])])
+      .mock(AuthenticationService)
+      .mock(QerPermissionsService, qerPermissionsServiceStub)
+      .mock(Router, { export: true })
+      .mock(AppConfigService, {
+        Config: {
+          Title: '',
+          routeConfig: {
+            start: 'dashboard',
+          },
         },
-        {
-          provide: AuthenticationService,
-          useValue: authenticationServiceStub,
-        },
-        {
-          provide: AppConfigService,
-          useValue: {
-            Config: {
-              Title: '',
-              routeConfig: {
-                start: 'dashboard'
-              }
-            }
-          }
-        },
-      ],
-    });
+      } as unknown);
   });
 
-
   beforeEach(() => {
-    service = TestBed.inject(PersonAdminGuardService);
+    service = MockRender(PersonAdminGuardService).point.componentInstance;
   });
 
   it('should be created', () => {
@@ -107,19 +73,19 @@ describe('PersonAdminGuardService', () => {
       expect(val).toEqual(true);
     });
 
-    authenticationServiceStub.onSessionResponse.next({ IsLoggedIn: true });
+    QbmDefaultMocks.authServiceStub.onSessionResponse.next({ IsLoggedIn: true });
 
     flush();
   }));
 
   it("canActivate() should return false if user doesn't have VI_4_PERSONADMIN group", fakeAsync(() => {
-    isPersonAdmin = false; 
+    isPersonAdmin = false;
 
     service.canActivate(undefined, null).subscribe((val: boolean) => {
       expect(val).toEqual(false);
     });
 
-    authenticationServiceStub.onSessionResponse.next({ IsLoggedIn: true });
+    QbmDefaultMocks.authServiceStub.onSessionResponse.next({ IsLoggedIn: true });
 
     flush();
   }));

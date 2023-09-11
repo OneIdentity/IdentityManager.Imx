@@ -1,0 +1,7 @@
+::ng-deep .cytoscape-root-node,
+::ng-deep .cytoscape-level-node,
+::ng-deep .cytoscape-step-node {
+  display: inline;
+  position: absolute;
+  z-index: 10;
+}

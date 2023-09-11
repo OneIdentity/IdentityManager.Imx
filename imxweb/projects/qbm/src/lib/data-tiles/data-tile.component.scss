@@ -1,5 +1,5 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
-
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 @mixin imx-data-tile-title-mixin {
   white-space: nowrap;
   overflow: hidden;
@@ -7,7 +7,7 @@
 }
 
 :host {
-  margin: 10px 20px 10px 0;
+  margin: 10px 20px 10px 10px;
 }
 
 .cardContainer {
@@ -128,4 +128,22 @@
   color: $black-b;
 }
 
+.imx-margin-right {
+  margin-right: 10px;
+}
 
+.eui-dark-theme {
+  :host {
+    .imx-data-tile-container{
+      background-color: $color-gray-70;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-data-tile-container{
+      background-color: $color-gray-90;
+    }
+  }
+}

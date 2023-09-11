@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -53,6 +53,11 @@ export class EditReportService {
   public async getReportsOwnedByUser(navigationState?: CollectionLoadParameters):
     Promise<ExtendedTypedEntityCollection<PortalReports, unknown>> {
     return this.api.typedClient.PortalReports.Get({ owned: true, ...navigationState });
+  }
+
+  public async getAllReports(navigationState?: CollectionLoadParameters):
+    Promise<ExtendedTypedEntityCollection<PortalReports, unknown>> {
+    return this.api.typedClient.PortalReports.Get(navigationState);
   }
 
   public async deleteReport(report: PortalReports) {

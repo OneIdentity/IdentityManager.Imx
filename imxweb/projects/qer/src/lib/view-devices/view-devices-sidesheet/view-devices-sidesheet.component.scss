@@ -1,0 +1,20 @@
+:host {
+  eui-icon {
+    font-size: 14px;
+    margin-right: 4px;
+  }
+}
+
+.eui-sidesheet-actions {
+  button:not(:last-of-type) {
+    margin-right: 10px;
+  }
+}
+
+.imx-devices-sidesheet {
+  ul {
+    li {
+      list-style-type: disc;
+    }
+  }
+}

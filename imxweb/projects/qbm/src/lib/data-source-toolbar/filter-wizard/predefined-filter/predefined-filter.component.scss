@@ -1,0 +1,26 @@
+@import '@elemental-ui/core/src/styles/_palette.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+  padding: 10px 0 10px 0;
+
+  .mat-checkbox {
+    display: block;
+  }
+
+  .mat-radio-button {
+    display: block;
+    margin-right: 5px;
+
+    label.mat-radio-label {
+      white-space: normal;
+    }
+  }
+
+  .imx-filter-title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+}

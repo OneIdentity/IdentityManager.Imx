@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2022 One Identity LLC.
+ * Copyright 2023 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,11 +25,11 @@
  */
 
 import { Component, Inject, OnDestroy, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { PortalServiceitemsInteractive } from 'imx-api-qer';
+import { PortalServiceitems } from 'imx-api-qer';
 
-import { ClassloggerService, ColumnDependentReference, ConfirmationService, SnackBarService } from 'qbm';
+import { ClassloggerService, ColumnDependentReference, ConfirmationService, HELP_CONTEXTUAL, SnackBarService } from 'qbm';
 import { Subscription } from 'rxjs';
 import { ServiceItemsEditService } from '../../service-items-edit/service-items-edit.service';
 import { ServiceItemsEditFormComponent } from '../service-items-edit-form/service-items-edit-form.component';
@@ -43,22 +43,23 @@ export class ServiceItemsEditSidesheetComponent implements OnDestroy {
 
   @ViewChild('serviceItemsEditForm') public serviceItemsEditForm: ServiceItemsEditFormComponent;
 
-  public readonly formGroup: FormGroup;
+  public readonly formGroup: UntypedFormGroup;
   public cdrList: ColumnDependentReference[] = [];
-  public isInActiveFormControl = new FormControl();
+  public isInActiveFormControl = new UntypedFormControl();
+  public contextId = HELP_CONTEXTUAL.ServiceItemsEdit
 
   private readonly subscriptions: Subscription[] = [];
 
   constructor(
-    formBuilder: FormBuilder,
-    @Inject(EUI_SIDESHEET_DATA) public serviceItem: PortalServiceitemsInteractive,
+    formBuilder: UntypedFormBuilder,
+    @Inject(EUI_SIDESHEET_DATA) public serviceItem: PortalServiceitems,
     private serviceItemsEditService: ServiceItemsEditService,
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly logger: ClassloggerService,
     private readonly snackbar: SnackBarService,
     confirmation: ConfirmationService
   ) {
-    this.formGroup = new FormGroup({ formArray: formBuilder.array([]) });
+    this.formGroup = new UntypedFormGroup({ formArray: formBuilder.array([]) });
 
     this.subscriptions.push(this.sidesheetRef.closeClicked().subscribe(async () => {
       if (this.formGroup.pristine || await confirmation.confirmLeaveWithUnsavedChanges()) {
@@ -67,8 +68,8 @@ export class ServiceItemsEditSidesheetComponent implements OnDestroy {
     }));
   }
 
-  get formArray(): FormArray {
-    return this.formGroup.get('formArray') as FormArray;
+  get formArray(): UntypedFormArray {
+    return this.formGroup.get('formArray') as UntypedFormArray;
   }
 
   public ngOnDestroy(): void {
