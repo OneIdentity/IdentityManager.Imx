@@ -129,9 +129,7 @@ import { EditUrlComponent } from './edit-url/edit-url.component';
     DateModule,
     ImageModule
   ],
-  providers: [
-    CdrRegistryService
-  ],
+  providers: [  ],
   exports: [
     CdrEditorComponent,
     EditDefaultComponent,
