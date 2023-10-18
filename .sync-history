@@ -1,0 +1,6 @@
+fb3af0a6a1 2023-09-26 Merged PR 60237: 433260 - v92 - Fix new request product loading
+c595127061 2023-09-26 Merged PR 60078: 432836 - v92 - Fix new request category filter wizard
+c1a6b79119 2023-09-25 Merged PR 59801: 431854 - CDR editor poblems with dynamic parameters
+b3e3e9f5d7 2023-09-22 Merge branch 'v92' of https://dev.azure.com/1id/Identity%20Manager/_git/One%20Identity%20Manager into change/v92/433260-new-request-duplicate-service-category
+311094241f 2023-09-22 Merge branch 'v92' of https://dev.azure.com/1id/Identity%20Manager/_git/One%20Identity%20Manager into change/v92/432836-service-category-filter
+d0d1d661b7 2023-09-14 Merged PR 59899: 432538 - v92 - Fix new request service category search

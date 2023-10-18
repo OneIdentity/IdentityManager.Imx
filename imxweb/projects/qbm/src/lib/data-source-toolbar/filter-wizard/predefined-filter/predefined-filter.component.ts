@@ -383,7 +383,7 @@ export class PredefinedFilterComponent implements OnInit, AfterViewInit, OnDestr
    */
   private rebuildSelectedDelimitedValue(filter: DataSourceToolbarFilter): void {
     let val = '';
-    this.selectedFilters.forEach((sfilter) => {
+    this.internalSelectedFilters.forEach((sfilter) => {
       if (sfilter.filter.Name === filter.Name) {
         val += `${sfilter.selectedOption.Value}${filter.Delimiter}`;
       }

@@ -28,7 +28,7 @@ import { Component } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { MultiValue } from 'imx-qbm-dbts';
-import { ConfirmationService, FkAdvancedPickerComponent } from 'qbm';
+import { ConfirmationService, FkAdvancedPickerComponent, MultiValueService } from 'qbm';
 import { NewRequestOrchestrationService } from '../../new-request-orchestration.service';
 import { FKAdvancedPickerResponse } from '../../new-request-product/fk-advanced-picker-response';
 import { RecipientsApiService } from './recipients-api.service';
@@ -41,7 +41,8 @@ import { RecipientsApiService } from './recipients-api.service';
 export class NewRequestRecipientsComponent {
 
   constructor(
-    public readonly orchestration: NewRequestOrchestrationService,
+    public readonly orchestration: NewRequestOrchestrationService,    
+    private readonly multiValueProvider: MultiValueService,
     private recipientsApi: RecipientsApiService,
     private sidesheetService: EuiSidesheetService,
     private translateService: TranslateService,
@@ -71,8 +72,11 @@ export class NewRequestRecipientsComponent {
     }).afterClosed().toPromise();
 
     if (response && response?.candidates.length > 0) {
-      const multiValue = new MultiValue(response.candidates.map(value => value.DataValue)).GetStringValue();
-      await this.orchestration.setRecipients(multiValue);
+      const recipients = {
+        DataValue: this.multiValueProvider.getMultiValue(response.candidates.map((v) => v.DataValue)),
+        DisplayValue: this.multiValueProvider.getMultiValue(response.candidates.map((v) => v.DisplayValue)),
+      };
+      await this.orchestration.setRecipients(recipients);
     }
   }
 

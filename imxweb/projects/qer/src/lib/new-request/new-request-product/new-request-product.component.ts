@@ -114,7 +114,7 @@ export class NewRequestProductComponent implements OnInit, OnDestroy {
         children: children,
       };
       const dstSettingsDynamicDatasource = totalCount > 0 ? dstSettings : undefined;
-      return { rootNode, dstSettingsDynamicDatasource, totalCount };
+      return { rootNode, dstSettings: dstSettingsDynamicDatasource, totalCount };
     },
     getChildren: async (leaf, onlyCheck?: boolean) => {
       if (leaf.children && leaf.children.length > 0) {
@@ -166,17 +166,21 @@ export class NewRequestProductComponent implements OnInit, OnDestroy {
       const userParams = {
         UID_Person: this.orchestration.recipients ? MultiValue.FromString(this.orchestration.recipients.value).GetValues().join(',') : undefined,
       };
-      const response = await this.categoryApi.get({ ...params, ...userParams });
+      const response = await this.categoryApi.get({ ParentKey: '', ...params, ...userParams });
       const searchNodes = response.Data.map((datum) => {
         const node: NewRequestCategoryNode = {
           entity: datum,
           isSelected: false,
-          level: 0,
+          level: 1,
         };
         return node;
       });
-
-      return { searchNodes, totalCount: response.totalCount };
+      const rootNode: NewRequestCategoryNode = {
+        isSelected: true,
+        level: 0,
+        children: searchNodes
+      }
+      return { searchNodes, totalCount: response.totalCount, rootNode};
     },
     changeSelection: (data: NewRequestCategoryNode[], selectedNode: NewRequestCategoryNode) => {
       // Reset all other selections and set this one if its keys match
@@ -258,14 +262,6 @@ export class NewRequestProductComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.subscriptions.push(this.orchestration.recipients$.subscribe(async (recipients: IWriteValue<string>) => {
-        this.recipients = recipients
-
-        // if the recipients changes, update the service categories
-        await Promise.all([this.dynamicDataSource.setup(true)]);
-      })
-    );
-
     this.subscriptions.push(
       this.orchestration.includeChildCategories$.subscribe(async (includeChilds: boolean) => {
         if (this.includeChildCategories != includeChilds) {
@@ -284,11 +280,16 @@ export class NewRequestProductComponent implements OnInit, OnDestroy {
     //#endregion
   }
 
-  public ngOnInit(): void {
+  public async ngOnInit(): Promise<void> {
     this.productNavigationState = { StartIndex: 0 };
     this.orchestration.selectedCategory = null;
     this.updateDisplayedColumns(this.displayedProductColumns);
-    setTimeout(async () => await Promise.all([this.dynamicDataSource.setup(true)]));
+    this.subscriptions.push(this.orchestration.recipients$.subscribe(async (recipients: IWriteValue<string>) => {
+      this.recipients = recipients;
+      // if the recipients changes, update the service categories
+      await this.dynamicDataSource.setup(true);
+    }));
+
   }
 
   public ngOnDestroy(): void {

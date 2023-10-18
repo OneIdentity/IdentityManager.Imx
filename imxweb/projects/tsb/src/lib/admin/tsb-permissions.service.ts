@@ -36,6 +36,6 @@ export class TsbPermissionsService {
   constructor(private readonly userService: UserModelService) { }
 
   public async isTsbNameSpaceAdminBase(): Promise<boolean> {
-    return isTsbNameSpaceAdminBase((await this.userService.getFeatures()).Features);
+    return isTsbNameSpaceAdminBase((await this.userService.getGroups()).map(userGroupInfo => userGroupInfo.Name));
   }
 }

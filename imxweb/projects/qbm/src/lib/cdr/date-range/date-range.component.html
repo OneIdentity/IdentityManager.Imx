@@ -1,4 +1,4 @@
-<mat-form-field appearance="outline">
+<mat-form-field appearance="outline" *ngIf="columnContainer?.canEdit; else isReadonly">
   <mat-label>{{ columnContainer?.display | translate }}</mat-label>
   <input matInput hidden value=" ">
   <mat-checkbox [(ngModel)]="dateRangeTypeDynamic" [attr.data-imx-identifier]="'-dynamic-range-checkbox-' + columnContainer?.name">{{'#LDS#Use dynamic time frame' | translate}}</mat-checkbox>
@@ -34,3 +34,14 @@
     </imx-date>
   </div>
 </mat-form-field>
+
+<ng-template #isReadonly>
+  <imx-view-property
+    [columnContainer]="columnContainer"
+    defaultValue="#LDS#Not set"
+  >
+  </imx-view-property>
+</ng-template>
+
+
+

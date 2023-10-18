@@ -285,8 +285,8 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
     try {
       this.cd.detectChanges();
       this.orchestration.abortCall();
-      let recipientsVals = MultiValue.FromString(this.orchestration.recipients.Column.GetValue());
-      if (recipientsVals.GetValues().length > 1) {
+      let recipientsVals = MultiValue.FromString(this.orchestration.recipients.Column.GetValue())?.GetValues();
+      if (recipientsVals.length > 1) {
         if (this.selectionService.selectedProducts.length > 0)
         {
           load = await this.discardSelectedProducts();
@@ -298,7 +298,11 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
 
         // select first recipient
         // TODO #427279: ask user to select one of his recipients
-        await this.orchestration.setRecipients(recipientsVals.GetValues()[0]);
+        const firstRecipient = {
+          DataValue: recipientsVals?.[0],
+          DisplayValue: MultiValue.FromString(this.orchestration.recipients.Column.GetDisplayValue()).GetValues()?.[0],
+        }
+        await this.orchestration.setRecipients(firstRecipient);
       }
 
       setTimeout(() => busy = this.busyService.beginBusy());

@@ -25,5 +25,5 @@
  */
 
 export function isTsbNameSpaceAdminBase(groups: string[]): boolean {
-  return groups.find(item => item === 'Portal_UI_TSBStatistics') != null;
+  return groups.find(item => item.toUpperCase() === 'TSB_4_NAMESPACEADMIN_BASE') != null;
 }

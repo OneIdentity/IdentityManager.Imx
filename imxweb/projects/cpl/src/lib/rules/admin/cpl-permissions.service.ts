@@ -27,13 +27,17 @@
 import { Injectable } from '@angular/core';
 
 import { UserModelService } from 'qer';
-import { isRuleStatistics } from './permissions-helper';
+import { isExceptionAdmin, isRuleStatistics } from './permissions-helper';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CplPermissionsService {
   constructor(private readonly userService: UserModelService) { }
+
+  public async isExceptionAdmin(): Promise<boolean> {
+    return isExceptionAdmin((await this.userService.getGroups()).map(group => group.Name));
+  }
 
   public async isRuleStatistics(): Promise<boolean> {
     return isRuleStatistics((await this.userService.getFeatures()).Features);

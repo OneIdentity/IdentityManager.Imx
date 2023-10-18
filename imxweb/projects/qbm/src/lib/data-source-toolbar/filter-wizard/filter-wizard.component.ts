@@ -36,7 +36,6 @@ import { FilterFormState, FilterTypeIdentifier, FilterWizardSidesheetData } from
 import { MatTabChangeEvent } from '@angular/material/tabs';
 import { SqlWizardApiService } from '../../sqlwizard/sqlwizard-api.service';
 
-
 @Component({
   selector: 'imx-filter-wizard',
   templateUrl: './filter-wizard.component.html',
@@ -103,7 +102,7 @@ export class FilterWizardComponent implements OnDestroy {
   }
 
   public get canUseCustomFilters(): boolean {
-    return !this.data.isDataSourceLocal;
+    return !this.data.isDataSourceLocal && this.showSqlWizard;
   }
 
   /**
@@ -155,7 +154,7 @@ export class FilterWizardComponent implements OnDestroy {
     return filters && filters.find((item) => item.Name === 'namespace') != null;
   }
 
-  public showSqlWizard(): boolean {
+  public get showSqlWizard(): boolean {
     return this.sqlWizardSvc.implemented;
   }
 

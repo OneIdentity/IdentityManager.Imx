@@ -92,6 +92,7 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
             this.updateRequested.subscribe(() =>
               setTimeout(() => {
                 this.initValues();
+                this.control.updateValueAndValidity({ onlySelf: true, emitEvent: false });
               })
             )
           );

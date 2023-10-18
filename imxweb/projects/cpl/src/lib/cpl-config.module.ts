@@ -48,6 +48,7 @@ import { RulesViolationsModule } from './rules-violations/rules-violations.modul
 import { RulesViolationsComponent } from './rules-violations/rules-violations.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ComplianceRulesGuardService } from './guards/compliance-rules-guard.service';
+import { RuleViolationsGuardService } from './guards/rule-violations-guard.service';
 import { MatCardModule } from '@angular/material/card';
 import { RequestModule} from './request/request.module';
 const routes: Routes = [
@@ -63,7 +64,7 @@ const routes: Routes = [
   {
     path: 'compliance/rulesviolations/approve',
     component: RulesViolationsComponent,
-    canActivate: [RouteGuardService, ComplianceRulesGuardService],
+    canActivate: [RouteGuardService, RuleViolationsGuardService],
     resolve: [RouteGuardService],
     data:{
       contextId: HELP_CONTEXTUAL.ComplianceRulesViolationsApprove

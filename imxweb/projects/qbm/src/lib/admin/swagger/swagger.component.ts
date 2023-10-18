@@ -53,6 +53,7 @@ export class SwaggerComponent implements AfterViewInit {
           if (token) {
             req.headers['X-XSRF-TOKEN'] = token;
           }
+          return req;
         },
       });
     }

@@ -24,7 +24,7 @@
  *
  */
 
-import { ComponentFactoryResolver, ViewContainerRef, ComponentRef } from '@angular/core';
+import { ViewContainerRef, ComponentRef } from '@angular/core';
 import * as TypeMoq from 'typemoq';
 
 import { DefaultCdrEditorProvider } from './default-cdr-editor-provider';
@@ -42,10 +42,8 @@ import { ViewPropertyDefaultComponent } from './view-property-default/view-prope
 import { clearStylesFromDOM } from '../testing/clear-styles.spec';
 
 describe('DefaultCdrEditorProvider', () => {
-  let factoryResolverMock: TypeMoq.IMock<ComponentFactoryResolver>;
-
   beforeEach(() => {
-    factoryResolverMock = TypeMoq.Mock.ofType<ComponentFactoryResolver>();
+    
   });
 
   afterAll(() => {
@@ -53,7 +51,7 @@ describe('DefaultCdrEditorProvider', () => {
   });
 
   it('should create an instance', () => {
-    expect(new DefaultCdrEditorProvider(factoryResolverMock.object)).toBeDefined();
+    expect(new DefaultCdrEditorProvider()).toBeDefined();
   });
 
   it('should create EditBooleanComponent for simple bool cdr', () => {
@@ -160,21 +158,17 @@ function testCreateEditor<T extends CdrEditor>(TCtor: new (...args: any[]) => T,
       const editorMock = TypeMoq.Mock.ofType<T>();
       const parentMock = TypeMoq.Mock.ofType<ViewContainerRef>();
       const childMock = createComponentMock<T>(editorMock.object);
-      const factoryResolverMock = TypeMoq.Mock.ofType<ComponentFactoryResolver>();
 
       parentMock.setup( p => p.createComponent(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => childMock.object);
-      factoryResolverMock.setup(r => r.resolveComponentFactory(TCtor)).returns(() => null);
 
       // Act
-      const provider = new DefaultCdrEditorProvider(factoryResolverMock.object);
+      const provider = new DefaultCdrEditorProvider();
       const editor = provider.createEditor(parentMock.object, cdrMock.object);
 
       // Assert
       expect(editor === childMock.object).toBeTruthy();
       editorMock.verify(e => e.bind(cdrMock.object), TypeMoq.Times.once());
       editorMock.verify(e => e.bind(TypeMoq.It.isAny()), TypeMoq.Times.once());
-      factoryResolverMock.verify(e => e.resolveComponentFactory(TCtor), TypeMoq.Times.once());
-      factoryResolverMock.verify(e => e.resolveComponentFactory(TypeMoq.It.isAny()), TypeMoq.Times.once());
 }
 
 export function createComponentMock<T extends CdrEditor>(instance: T): TypeMoq.IMock<ComponentRef<T>> {

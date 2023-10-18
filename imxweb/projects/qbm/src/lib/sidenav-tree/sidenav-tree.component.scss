@@ -58,9 +58,12 @@
               translate: 0 100%;
               width: 1px; // prevent content from overflowing
               -webkit-backface-visibility: hidden; // Handle the anti-aliasing from chrome on rotations
+              font-size: 16px;
             }
           }
-
+          imx-data-source-toolbar {
+            margin-top: 15px,
+          }
         }
 
         .snavigation-side-content--center {

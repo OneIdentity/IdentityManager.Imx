@@ -70,3 +70,6 @@ export function isPasswordHelpdesk(features: string[]): boolean {
 export function isAuditor(groups: string[]): boolean {
   return groups.find(item => item.toUpperCase() === 'VI_4_AUDITING_AUDITOR') != null;
 }
+export function isStatistics(features: string[]): boolean {
+  return features.find((item) => item === 'Portal_UI_TSBStatistics') != null;
+}

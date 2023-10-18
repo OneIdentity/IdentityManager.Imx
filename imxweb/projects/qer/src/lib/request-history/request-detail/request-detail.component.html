@@ -1,7 +1,7 @@
 <div class="imx-request-detail">
-  <imx-requestinfo [isReadOnly]="data.isReadOnly || data.personWantsOrg.isPrivateRequest" [isApproval]="false" [request]="data.personWantsOrg" [userId]="data.userUid"></imx-requestinfo>
+  <imx-requestinfo [isReadOnly]="data.isReadOnly" [isApproval]="false" [request]="data.personWantsOrg" [userId]="data.userUid"></imx-requestinfo>
 
-  <mat-card eui-sidesheet-actions *ngIf="!data.isReadOnly && !data.personWantsOrg.isPrivateRequest && allowedActionCount > 0">
+  <mat-card eui-sidesheet-actions *ngIf="!data.isReadOnly && allowedActionCount > 0">
     <!-- TODO later
     <button mat-stroked-button *ngIf="data.personWantsOrg.ResendRequestAllowed.value"
       data-imx-identifier="request-detail-submit-again" (click)="submitAgain()">

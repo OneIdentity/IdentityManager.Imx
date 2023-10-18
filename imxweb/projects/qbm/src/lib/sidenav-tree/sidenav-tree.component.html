@@ -25,6 +25,7 @@
           [searchBoxText]="'#LDS#Search' | translate"
           [useThemedStyle]="true"
           (search)="onSearch($event)"
+          (navigationStateChanged)="onSearch()"
           ></imx-data-source-toolbar>
           <button
             *ngIf="sideNavExpanded"

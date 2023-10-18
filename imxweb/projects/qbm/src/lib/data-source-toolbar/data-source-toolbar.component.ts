@@ -295,6 +295,11 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
   @Input() isStandaloneToolbar: boolean = false;
 
   /**
+   * An optional input to disable the filter wizard.
+   */
+  @Input() disableFilterWizard: boolean = false;
+
+  /**
    * @ignore Reserved for future use.
    * List of icons that will represent an view from the 'views' Input list.
    */
@@ -1349,7 +1354,9 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
   }
 
   public canShowFilterWizard(): boolean {
-    let result = (this.settings?.entitySchema?.TypeName != null && this.filterService.isSqlWizardImplemented && !this.isDataSourceLocal) || this.settings?.filters?.length > 0;
+    let result =
+      (this.settings?.entitySchema?.TypeName != null && this.filterService.isSqlWizardImplemented && !this.isDataSourceLocal && !this.disableFilterWizard) ||
+      this.settings?.filters?.length > 0;
     return result;
   }
 
@@ -1704,6 +1711,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
       },
     });
     if (this.isDataSourceLocal) {
+      this.localFilterState.keywords = '';
       return;
     }
 

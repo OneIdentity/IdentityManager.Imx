@@ -35,7 +35,7 @@ export class DynamicDataApiControls<T> {
   setup: () => Promise<{rootNode: T, dstSettings?: DataSourceToolbarSettings, totalCount?: number}>;
   getChildren: (node: T, onlyCheck?: boolean) => Promise<T[]>;
   loadMore?: (root: T) => Promise<T[]>;
-  search?: (params: CollectionLoadParameters) => Promise<{searchNodes: T[],  totalCount?: number}>;
+  search?: (params: CollectionLoadParameters) => Promise<{searchNodes: T[],  totalCount?: number, rootNode?: T}>;
   searchLoadMore?: (params: CollectionLoadParameters) => Promise<T[]>;
   changeSelection?: (data: T[], selectedNode: T) => T[]
 }
@@ -145,7 +145,13 @@ export class DynamicDataSource<T> {
         this.totalCount = response?.totalCount;
         const nodes = this._apiControls.changeSelection(response.searchNodes, this.selectedNode);
         this.currentCount = nodes.length;
-        this.dataChange.next(nodes);
+        if(nodes.length>0){
+          this.rootNode = response.rootNode || this.rootNode;
+          this.dataChange.next([this.rootNode, ...nodes]);
+          this._treeControl.expand(this.rootNode);
+        }else{
+          this.dataChange.next(nodes);
+        }
       }
     } finally {
       this.initializingData = false;

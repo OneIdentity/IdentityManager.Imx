@@ -116,16 +116,15 @@ import { UserMessageModule } from './user-message/user-message.module';
 import { HelpContextualModule } from './help-contextual/help-contextual.module';
 import { TempBillboardModule } from './temp-billboard/temp-billboard.module';
 import { TempBillboardComponent } from './temp-billboard/temp-billboard.component';
-import { TempBillboardService } from './temp-billboard/temp-billboard.service';
 import { ConnectionComponent } from './connection/connection.component';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 
-export function initApp(registry: CdrRegistryService, resolver: ComponentFactoryResolver, logger: NGXLogger): () => Promise<any> {
+export function initApp(registry: CdrRegistryService, logger: NGXLogger): () => Promise<any> {
   logger.debug('init qbm');
   return () =>
     new Promise<any>(async (resolve: any) => {
-      registry.register(new DefaultCdrEditorProvider(resolver));
-      registry.register(new FkCdrEditorProvider(resolver));
+      registry.register(new DefaultCdrEditorProvider());
+      registry.register(new FkCdrEditorProvider());
       resolve();
     });
 }
@@ -249,9 +248,9 @@ const routes: Routes = [
   ],
 })
 export class QbmModule {
-  constructor(registry: CdrRegistryService, resolver: ComponentFactoryResolver, logger: ClassloggerService) {
+  constructor(registry: CdrRegistryService, logger: ClassloggerService) {
     logger.info(this, '▶️ QbmModule loaded');
-    registry.register(new DefaultCdrEditorProvider(resolver));
-    registry.register(new FkCdrEditorProvider(resolver));
+    registry.register(new DefaultCdrEditorProvider());
+    registry.register(new FkCdrEditorProvider());
   }
 }

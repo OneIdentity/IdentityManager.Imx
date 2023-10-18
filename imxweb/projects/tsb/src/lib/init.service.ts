@@ -55,6 +55,7 @@ import { DataExplorerGroupsComponent } from './groups/groups.component';
 import { ReportButtonExtComponent } from './report-button-ext/report-button-ext.component';
 import { TsbApiService } from './tsb-api-client.service';
 import { GroupMembershipsExtComponent } from './groups/group-memberships-ext/group-memberships-ext.component';
+import { ProjectConfig } from 'imx-api-qbm';
 
 @Injectable({ providedIn: 'root' })
 export class InitService {
@@ -123,8 +124,8 @@ export class InitService {
     this.entlTypeService.Register(() => this.loadUnsTypes());
 
     this.dataExplorerRegistryService.registerFactory(
-      (preProps: string[], features: string[]) => {
-        if (!preProps.includes('ITSHOP') || !isTsbNameSpaceAdminBase(features)) {
+      (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
+        if (!preProps.includes('ITSHOP') || !isTsbNameSpaceAdminBase(groups)) {
           return;
         }
         return {
@@ -135,8 +136,8 @@ export class InitService {
           icon: 'account',
         };
       },
-      (preProps: string[], features: string[]) => {
-        if (!preProps.includes('ITSHOP') || !isTsbNameSpaceAdminBase(features)) {
+      (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
+        if (!preProps.includes('ITSHOP') || !isTsbNameSpaceAdminBase(groups)) {
           return;
         }
         return {
@@ -203,8 +204,8 @@ export class InitService {
           ],
         };
       },
-      (preProps: string[], features: string[]) => {
-        if (!preProps.includes('ITSHOP') || !isTsbNameSpaceAdminBase(features)) {
+      (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
+        if (!preProps.includes('ITSHOP') || !isTsbNameSpaceAdminBase(groups)) {
           return null;
         }
 

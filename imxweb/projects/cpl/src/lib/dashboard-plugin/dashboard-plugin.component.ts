@@ -28,6 +28,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { DashboardService, PendingItemsType, UserModelService } from 'qer';
+import { CplPermissionsService } from '../rules/admin/cpl-permissions.service';
 
 @Component({
   templateUrl: './dashboard-plugin.component.html'
@@ -36,9 +37,12 @@ export class DashboardPluginComponent implements OnInit {
 
   public pendingItems: PendingItemsType;
 
+  public isExceptionAdmin = false;
+
   constructor(
     public readonly router: Router,
     private readonly dashboardService: DashboardService,
+    private readonly permissionService: CplPermissionsService,
     private readonly userModelSvc: UserModelService
   ) { }
 
@@ -47,7 +51,10 @@ export class DashboardPluginComponent implements OnInit {
     const busy = this.dashboardService.beginBusy();
 
     try {
-      this.pendingItems = await this.userModelSvc.getPendingItems();
+      this.isExceptionAdmin = await this.permissionService.isExceptionAdmin();
+      if (this.isExceptionAdmin) {
+        this.pendingItems = await this.userModelSvc.getPendingItems();
+      }
     } finally {
       busy.endBusy();
     }

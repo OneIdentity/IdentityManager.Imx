@@ -28,7 +28,7 @@
     </span>
   </div>
 </ng-template>
-<mat-card class="imx-card-container" *ngIf="serviceCategoriesTotalCount > 0">
+<mat-card class="imx-card-container" *ngIf="serviceCategoriesTotalCount > 0" [ngClass]="{'imx-card-container-wide': !categorySideNavExpanded}">
   <imx-data-table
     *ngIf="dst"
     [dst]="dst"
@@ -49,18 +49,24 @@
             <eui-icon icon="application" class="larger-icon colored-icon"></eui-icon>
           </ng-template>
           &nbsp;&nbsp;
-          <span class="imx-request-col-display">{{ prod.GetEntity()?.GetDisplay() }} </span>
+          <span class="imx-request-col-display"  [matTooltip]="prod.GetEntity()?.GetDisplay()">{{ prod.GetEntity()?.GetDisplay() }} </span>
         </div>
       </ng-template>
     </imx-data-table-column>
     <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns['ServiceCategoryFullPath']">
       <ng-template let-prod>
-        <div class="imx-request-col-text">
+        <div class="imx-request-col-text" [matTooltip]="prod.ServiceCategoryFullPath?.Column.GetDisplayValue()">
           {{ prod.ServiceCategoryFullPath?.Column.GetDisplayValue() }}
         </div>
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns['Description']"></imx-data-table-column>
+    <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns['Description']">
+      <ng-template let-prod>
+        <div class="imx-request-col-text imx-request-col-text-long" [matTooltip]="prod.GetEntity().GetColumn('Description').GetDisplayValue()">
+          {{ prod.GetEntity().GetColumn('Description').GetDisplayValue() }}
+        </div>
+      </ng-template>
+    </imx-data-table-column>
     <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns['OrderableStatus']" columnLabel="{{ '#LDS#Status' | translate }}" align="center">
       <ng-template let-prod>
         <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, ['PERSONHASOBJECT', 'PERSONHASASSIGNMENTORDER', 'ASSIGNED'])" class="imx-request-col-status">

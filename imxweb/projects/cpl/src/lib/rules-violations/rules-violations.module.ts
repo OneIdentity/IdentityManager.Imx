@@ -28,7 +28,6 @@ import { CommonModule } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
-import { RouterModule, Routes } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -41,7 +40,6 @@ import {
   ExtModule,
   MenuItem,
   MenuService,
-  RouteGuardService,
   SelectedElementsModule
 } from 'qbm';
 import { RulesViolationsComponent } from './rules-violations.component';
@@ -52,10 +50,11 @@ import { RulesViolationsMultiActionComponent } from './rules-violations-action/r
 import { RulesViolationsSingleActionComponent } from './rules-violations-action/rules-violations-single-action/rules-violations-single-action.component';
 import { ResolveComponent } from './resolve/resolve.component';
 import { MatStepperModule } from '@angular/material/stepper';
-import { isRuleStatistics } from '../rules/admin/permissions-helper';
+import { isExceptionAdmin } from '../rules/admin/permissions-helper';
 import { MitigatingControlsPersonComponent } from './mitigating-controls-person/mitigating-controls-person.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MitigatingControlContainerModule } from '../mitigating-control-container/mitigating-control-container.module';
+import { ProjectConfig } from 'imx-api-qer';
 
 
 @NgModule({
@@ -102,11 +101,11 @@ export class RulesViolationsModule {
 
   private setupMenu(): void {
     this.menuService.addMenuFactories(
-      (preProps: string[], features: string[]) => {
+      (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
 
         const items: MenuItem[] = [];
 
-        if (preProps.includes('ITSHOP') && isRuleStatistics(features)) {
+        if (preProps.includes('ITSHOP') && isExceptionAdmin(groups)) {
           items.push(
             {
               id: 'CPL_Compliance_RulesViolations',

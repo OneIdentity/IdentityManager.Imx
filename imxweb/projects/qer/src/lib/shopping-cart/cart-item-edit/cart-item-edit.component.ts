@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Inject, OnDestroy, QueryList, ViewChildren } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
@@ -52,7 +52,8 @@ export class CartItemEditComponent implements OnDestroy {
     @Inject(EUI_SIDESHEET_DATA) public readonly data: CartItemEditParameter,
     public readonly cartItemSvc: CartItemsService,
     public readonly sideSheetRef: EuiSidesheetRef,
-    confirmation: ConfirmationService
+    confirmation: ConfirmationService,
+    changeDetector: ChangeDetectorRef
   ) {
     this.shoppingCartItem = this.data.entityWrapper.typedEntity;
 
@@ -62,6 +63,7 @@ export class CartItemEditComponent implements OnDestroy {
       this.subscriptions.push(
         data.updated.subscribe(() => {
           this.editors.forEach((elem) => elem.update());
+          changeDetector.detectChanges();
         })
       );
     }

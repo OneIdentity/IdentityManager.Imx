@@ -28,7 +28,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-import { CollectionLoadParameters, EntityValue, IWriteValue, LocalProperty, MultiValue, ValueStruct } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, EntityValue, IWriteValue, LocalProperty, ValueStruct } from 'imx-qbm-dbts';
 import { PortalItshopPatternRequestable, PortalServicecategories, PortalShopServiceitems } from 'imx-api-qer';
 
 import { AuthenticationService, DataSourceToolbarComponent, DataSourceToolbarSettings, EntityService, SettingsService } from 'qbm';
@@ -258,17 +258,8 @@ export class NewRequestOrchestrationService implements OnDestroy {
     this.recipients$.next(this.recipients);
   }
 
-  public async setRecipients(value: string): Promise<void> {
-    const recipientsLength = MultiValue.FromString(value).GetValues().length;
-    if (recipientsLength === 1) {
-      const recipientsDisplay = await this.getPersonDisplay(value);
-      await this.recipients.Column.PutValueStruct({
-        DataValue: value,
-        DisplayValue: recipientsDisplay,
-      });
-    } else {
-      await this.recipients.Column.PutValue(value);
-    }
+  public async setRecipients(value: ValueStruct<string>): Promise<void> {
+    await this.recipients.Column.PutValueStruct(value);    
     this.recipients$.next(this.recipients);
   }
 
@@ -313,7 +304,6 @@ export class NewRequestOrchestrationService implements OnDestroy {
       // TODO in this case, CanRequestForSomebodyElse is false
     }
     this.defaultUser = this.recipients.Column.GetValue();
-    this.recipients$.next(this.recipients);
   }
 
   private async getPersonDisplay(uid: string): Promise<string> {

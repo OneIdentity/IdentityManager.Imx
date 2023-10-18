@@ -110,11 +110,7 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
       if (cdref.minlengthSubject) {
         this.subscribers.push(
           cdref.minlengthSubject.subscribe((elem) => {
-            if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
-              this.control.setValidators((control) => (control.value == null || control.value.length === 0 ? { required: true } : null));
-            } else {
-              this.control.setValidators(null);
-            }
+            this.setValidators();
           })
         );
       }
@@ -152,6 +148,7 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
               };
               const candidateCollection = await this.columnContainer.fkRelations[0]?.Get({ PageSize: -1 });
               this.isHierarchical = candidateCollection?.Hierarchy != null;
+              this.setValidators();
               this.control.setValue(await this.multiValueToDisplay(this.currentValueStruct), { emitEvent: false });
               this.valueHasChanged.emit({ value: this.currentValueStruct });
             } finally {
@@ -164,6 +161,18 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
     } else {
       this.logger.error(this, 'The Column Dependent Reference is undefined');
     }
+  }
+
+  /**
+   * Sets Validators.required, if the control is mandatory, else it's set to null.
+   * @ignore used internally
+   */
+  private setValidators():void{
+      if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
+        this.control.setValidators((control) => (control.value == null || control.value.length === 0 ? { required: true } : null));
+      } else {
+        this.control.setValidators(null);
+      }
   }
 
   /**

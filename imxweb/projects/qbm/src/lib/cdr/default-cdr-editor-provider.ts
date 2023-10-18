@@ -25,7 +25,7 @@
  */
 
 import { CdrEditorProvider } from './cdr-editor-provider.interface';
-import { ViewContainerRef, ComponentRef, ComponentFactoryResolver } from '@angular/core';
+import { ViewContainerRef, ComponentRef, Type } from '@angular/core';
 import { ColumnDependentReference } from './column-dependent-reference.interface';
 import { CdrEditor } from './cdr-editor.interface';
 import { ValType, IValueMetadata } from 'imx-qbm-dbts';
@@ -38,13 +38,12 @@ import { EditMultilineComponent } from './edit-multiline/edit-multiline.componen
 import { EditImageComponent } from './edit-image/edit-image.component';
 import { EditDateComponent } from './edit-date/edit-date.component';
 import { EditRiskIndexComponent } from './edit-risk-index/edit-risk-index.component';
-import { ViewPropertyDefaultComponent } from './view-property-default/view-property-default.component';
 import { DateRangeComponent } from './date-range/date-range.component';
 import { EditUrlComponent } from './edit-url/edit-url.component';
 
 export class DefaultCdrEditorProvider implements CdrEditorProvider {
 
-    constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
+    constructor() { }
 
     public createEditor(parent: ViewContainerRef, cdref: ColumnDependentReference): ComponentRef<CdrEditor> {
         const meta = cdref.column.GetMetadata();
@@ -53,16 +52,15 @@ export class DefaultCdrEditorProvider implements CdrEditorProvider {
         const range = meta.IsRange();
         const limitedValues = this.isLimitedValues(meta);
         const schemaKey = meta.GetSchemaKey();
-        const isRiskIndexColumn = ['RiskIndex', 'RiskLevel'].includes(schemaKey.substr(schemaKey.lastIndexOf('.') + 1))
+        const isRiskIndexColumn = ['RiskIndex', 'RiskLevel'].includes(schemaKey.substring(schemaKey.lastIndexOf('.') + 1))
             || schemaKey == 'QERRiskIndex.Weight';
         const type = meta.GetType();
-        const isReadonly = cdref.isReadOnly() || !meta.CanEdit();
 
         if (type === ValType.Binary) {
             return this.createBound(EditImageComponent, parent, cdref);
         }
 
-        if (!multiLine && !multiValue && !range && !limitedValues && !isRiskIndexColumn && !isReadonly) {
+        if (!multiLine && !multiValue && !range && !limitedValues && !isRiskIndexColumn) {
             switch (type) {
 
                 case ValType.Bool: return this.createBound(EditBooleanComponent, parent, cdref);
@@ -76,8 +74,7 @@ export class DefaultCdrEditorProvider implements CdrEditorProvider {
 
                 case ValType.Date: return this.createBound(EditDateComponent, parent, cdref);
             }
-        } else if (isReadonly) {
-            return this.createBound(ViewPropertyDefaultComponent, parent, cdref);
+        
         } else if (limitedValues) {
             return multiValue
                 ? this.createBound(EditMultiLimitedValueComponent, parent, cdref)
@@ -101,9 +98,9 @@ export class DefaultCdrEditorProvider implements CdrEditorProvider {
         return null;
     }
 
-    private createBound<T extends CdrEditor>(tCtor: new (...args: any[]) => T, parent: ViewContainerRef, cdref: ColumnDependentReference)
+    private createBound<T extends CdrEditor>(editor: Type<T>, parent: ViewContainerRef, cdref: ColumnDependentReference)
         : ComponentRef<CdrEditor> {
-        const result = parent.createComponent(this.componentFactoryResolver.resolveComponentFactory(tCtor));
+        const result = parent.createComponent(editor);
         result.instance.bind(cdref);
         return result;
     }

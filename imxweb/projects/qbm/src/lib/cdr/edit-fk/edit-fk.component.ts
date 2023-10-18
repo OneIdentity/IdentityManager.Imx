@@ -320,6 +320,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
             try {
               this.setControlValue();
               await this.initCandidates();
+              this.control.updateValueAndValidity({ onlySelf: true, emitEvent: false });
             } finally {
               this.loading = false;
             }

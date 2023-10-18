@@ -24,20 +24,25 @@
  *
  */
 
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { AbstractControl, UntypedFormGroup } from '@angular/forms';
 import { MatExpansionPanel } from '@angular/material/expansion';
 
 import { BulkItem, BulkItemStatus } from './bulk-item';
 import { BulkItemIcon } from './bulk-item-icon';
+import { CdrEditorComponent } from '../../cdr/cdr-editor/cdr-editor.component';
+import { isEqual } from 'lodash';
+import { EntityWriteDataSingle } from 'imx-qbm-dbts';
 
 @Component({
   selector: 'imx-bulk-item',
   templateUrl: './bulk-item.component.html',
-  styleUrls: ['./bulk-item.component.scss']
+  styleUrls: ['./bulk-item.component.scss'],
 })
 export class BulkItemComponent implements OnInit {
-  public get icon(): BulkItemIcon { return this.icons[this.bulkItem?.status]; }
+  public get icon(): BulkItemIcon {
+    return this.icons[this.bulkItem?.status];
+  }
 
   public iconStyle = {};
 
@@ -56,20 +61,22 @@ export class BulkItemComponent implements OnInit {
 
   public readonly formGroup = new UntypedFormGroup({});
 
+  private diffData: EntityWriteDataSingle;
   private readonly icons: { [key: number]: BulkItemIcon } = {};
+  @ViewChildren(CdrEditorComponent) private cdrEditors: QueryList<CdrEditorComponent>;
 
   constructor() {
     this.icons[BulkItemStatus.unknown] = {
       name: 'help',
-      color: 'grey'
+      color: 'grey',
     };
     this.icons[BulkItemStatus.skipped] = {
       name: 'delete',
-      color: 'grey'
+      color: 'grey',
     };
     this.icons[BulkItemStatus.saved] = {
       name: 'check',
-      color: 'green'
+      color: 'green',
     };
   }
   public ngOnInit(): void {
@@ -80,8 +87,8 @@ export class BulkItemComponent implements OnInit {
       }
 
       this.setIconStyle();
-      this.bulkItem.readonly = this.bulkItem.properties.every(p => p.isReadOnly());
-      this.bulkItem.mandatory = this.bulkItem.properties.some(p => p.column.GetMetadata().GetMinLength() > 0);
+      this.bulkItem.readonly = this.bulkItem.properties.every((p) => p.isReadOnly());
+      this.bulkItem.mandatory = this.bulkItem.properties.some((p) => p.column.GetMetadata().GetMinLength() > 0);
     });
   }
 
@@ -114,13 +121,20 @@ export class BulkItemComponent implements OnInit {
       this.statusUnknown.emit(this.bulkItem);
     }
 
+    const areEqual = isEqual(this.diffData, this.bulkItem.entity.GetEntity().GetDiffData());
+    this.diffData = { ...this.bulkItem.entity.GetEntity().GetDiffData() };
+
+    if (!areEqual) {
+      this.cdrEditors.forEach((item) => {
+        item.update();
+      });
+    }
+
     this.validate();
   }
 
   public addControl(name: string, control: AbstractControl): void {
-    setTimeout(() =>
-      this.formGroup.addControl(name, control)
-    );
+    setTimeout(() => this.formGroup.addControl(name, control));
   }
 
   private validate(): void {
@@ -130,7 +144,7 @@ export class BulkItemComponent implements OnInit {
 
   private setIconStyle(): void {
     let visible = false;
-    this.bulkItem.properties.every(item => {
+    this.bulkItem.properties.every((item) => {
       if (item.column.GetMetadata().GetMinLength() > 0) {
         visible = true;
         return;
@@ -141,6 +155,6 @@ export class BulkItemComponent implements OnInit {
       visible = true;
     }
 
-    visible ? this.iconStyle = {visibility: 'visible'} : this.iconStyle = {visibility: 'hidden'};
+    visible ? (this.iconStyle = { visibility: 'visible' }) : (this.iconStyle = { visibility: 'hidden' });
   }
 }
