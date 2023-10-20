@@ -28,7 +28,6 @@ import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 
 import { AppConfigService } from 'qbm';
-import { QerPermissionsService } from 'qer';
 import { CplPermissionsService } from '../rules/admin/cpl-permissions.service';
 
 @Injectable({
@@ -37,7 +36,6 @@ import { CplPermissionsService } from '../rules/admin/cpl-permissions.service';
 export class ComplianceRulesGuardService implements CanActivate {
   constructor(
     private readonly permissionService: CplPermissionsService,
-    private readonly permissionsQer: QerPermissionsService,
     private readonly appConfig: AppConfigService,
     private readonly router: Router
   ) { }

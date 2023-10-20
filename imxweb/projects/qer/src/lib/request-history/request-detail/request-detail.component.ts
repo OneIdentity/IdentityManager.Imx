@@ -48,17 +48,21 @@ export class RequestDetailComponent implements OnDestroy {
     public readonly actionService: RequestActionService,
     private readonly sideSheetRef: EuiSidesheetRef
   ) {
-    this.allowedActionCount = data.disableActions === true ? 0 : [
-      // TODO Later: this.data.personWantsOrg.ResendRequestAllowed.value,
-      this.data.personWantsOrg.canProlongate,
-      this.data.personWantsOrg.CancelRequestAllowed.value,
-      this.data.personWantsOrg.canWithdrawDelegation && this.data.itShopConfig.VI_ITShop_OrderHistory_CancelOrder,
-      this.data.personWantsOrg.canWithdrawAdditionalApprover && this.data.itShopConfig.VI_ITShop_OrderHistory_CancelOrder,
-      this.data.personWantsOrg.canRecallLastQuestion,
-      this.data.personWantsOrg.canRevokeHoldStatus,
-      this.data.personWantsOrg.canRecallDecision,
-      this.data.personWantsOrg.canCopyItems
-    ].filter(condition => condition).length;
+    this.allowedActionCount =
+      data.disableActions === true
+        ? 0
+        : [
+            // TODO Later: this.data.personWantsOrg.ResendRequestAllowed.value,
+            this.data.personWantsOrg.canProlongate,
+            this.data.personWantsOrg.CancelRequestAllowed.value,
+            this.data.personWantsOrg.canWithdrawDelegation && this.data.itShopConfig.VI_ITShop_OrderHistory_CancelOrder,
+            this.data.personWantsOrg.canWithdrawAdditionalApprover && this.data.itShopConfig.VI_ITShop_OrderHistory_CancelOrder,
+            this.data.personWantsOrg.canRecallLastQuestion,
+            this.data.personWantsOrg.canRevokeHoldStatus,
+            this.data.personWantsOrg.canRecallDecision,
+            this.data.personWantsOrg.canCopyItems,
+            this.data.personWantsOrg.UnsubscribeRequestAllowed.value,
+          ].filter((condition) => condition).length;
 
     this.subscriptions.push(this.actionService.applied.subscribe(() => this.sideSheetRef.close(true)));
   }

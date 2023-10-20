@@ -42,6 +42,7 @@ import {
   isStructStatistics,
   hasFeatures,
   isAuditor,
+  isStatistics,
 } from './qer-permissions-helper';
 
 @Injectable({
@@ -91,5 +92,8 @@ export class QerPermissionsService {
   }
   public async isAuditor(): Promise<boolean> {
     return isAuditor((await this.userService.getGroups()).map((group) => group.Name));
+  }
+  public async isStatistics(): Promise<boolean> {
+    return isStatistics((await this.userService.getFeatures()).Features);
   }
 }

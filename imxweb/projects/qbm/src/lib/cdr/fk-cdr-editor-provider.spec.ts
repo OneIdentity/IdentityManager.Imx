@@ -24,7 +24,7 @@
  *
  */
 
-import { ComponentFactoryResolver, ViewContainerRef, ComponentRef } from '@angular/core';
+import {  ViewContainerRef, ComponentRef } from '@angular/core';
 import * as TypeMoq from 'typemoq';
 
 import { IValueMetadata, IForeignKeyInfo, IEntityColumn } from 'imx-qbm-dbts';
@@ -37,10 +37,8 @@ import { clearStylesFromDOM } from '../testing/clear-styles.spec';
 import { ViewPropertyDefaultComponent } from './view-property-default/view-property-default.component';
 
 describe('FkCdrEditorProvider', () => {
-  let factoryResolverMock: TypeMoq.IMock<ComponentFactoryResolver>;
 
   beforeEach(() => {
-    factoryResolverMock = TypeMoq.Mock.ofType<ComponentFactoryResolver>();
   });
 
   afterAll(() => {
@@ -48,7 +46,7 @@ describe('FkCdrEditorProvider', () => {
   });
 
   it('should create an instance', () => {
-    expect(new FkCdrEditorProvider(factoryResolverMock.object)).toBeDefined();
+    expect(new FkCdrEditorProvider()).toBeDefined();
   });
 
   it('should return null, if non fk column', () => {
@@ -76,13 +74,11 @@ function testCreateEditor<T extends CdrEditor>(TCtor: new (...args: any[]) => T,
       const editorMock = TypeMoq.Mock.ofType<T>();
       const parentMock = TypeMoq.Mock.ofType<ViewContainerRef>();
       const childMock = createComponentMock<T>(editorMock.object);
-      const factoryResolverMock = TypeMoq.Mock.ofType<ComponentFactoryResolver>();
 
       parentMock.setup( p => p.createComponent(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => childMock.object);
-      factoryResolverMock.setup(r => r.resolveComponentFactory(TCtor)).returns(() => null);
 
       // Act
-      const provider = new FkCdrEditorProvider(factoryResolverMock.object);
+      const provider = new FkCdrEditorProvider();
       const editor = provider.createEditor(parentMock.object, cdrMock.object);
 
       // Assert
@@ -93,8 +89,6 @@ function testCreateEditor<T extends CdrEditor>(TCtor: new (...args: any[]) => T,
       }
       editorMock.verify(e => e.bind(cdrMock.object), TypeMoq.Times.atMostOnce());
       editorMock.verify(e => e.bind(TypeMoq.It.isAny()), TypeMoq.Times.atMostOnce());
-      factoryResolverMock.verify(e => e.resolveComponentFactory(TCtor), TypeMoq.Times.atMostOnce());
-      factoryResolverMock.verify(e => e.resolveComponentFactory(TypeMoq.It.isAny()), TypeMoq.Times.atMostOnce());
 
       return editor;
 }

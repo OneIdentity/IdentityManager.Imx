@@ -104,7 +104,7 @@ import { DynamicDataSource } from './sidenav-tree-dynamic-extension';
       state(
         'opened',
         style({
-          width: 'calc({{ expandWidth }}/2)',
+          width: '320px',
           visibility: 'visible',
         }),
         { params: { expandWidth: '*' } }

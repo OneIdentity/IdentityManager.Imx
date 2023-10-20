@@ -25,12 +25,12 @@
  */
 
 import { Injectable } from '@angular/core';
+import { isEqual, uniqWith } from 'lodash';
 import {
   CartPatternItemDataRead,
   PortalItshopPatternItem,
   PortalItshopPatternRequestable,
   PortalShopServiceitems,
-  RequestableProductForPerson,
   portal_itshop_pattern_get_args,
 } from 'imx-api-qer';
 import {
@@ -46,7 +46,6 @@ import {
 import { QerApiService } from '../qer-api-client.service';
 import { ServiceItemsService } from '../service-items/service-items.service';
 import { RequestableProduct } from '../shopping-cart/requestable-product.interface';
-import { ItshopPatternService } from '../itshop-pattern/itshop-pattern.service';
 
 @Injectable({
   providedIn: 'root',
@@ -54,7 +53,6 @@ import { ItshopPatternService } from '../itshop-pattern/itshop-pattern.service';
 export class PatternItemService {
   constructor(
     private readonly qerClient: QerApiService,
-    private readonly patternItemsService: ItshopPatternService,
     private readonly serviceItemsProvider: ServiceItemsService
     ) {}
 
@@ -138,41 +136,38 @@ export class PatternItemService {
     recipients: ValueStruct<string>[],
     uidITShopOrg?: string,
     onlySelected?: boolean
-  ): Promise<RequestableProductForPerson[]> {
+  ): Promise<RequestableProduct[]> {
     const serviceItemEntities = await Promise.all(
       patternRequestables.map(async (patternRequestable) => this.getServiceItemEntities(patternRequestable))
     );
-    const serviceItemsEntitesFlat = serviceItemEntities.reduce((a, b) => a.concat(b), []);
-    let allItems = serviceItemsEntitesFlat
+    // make flat list without duplicates
+    const serviceItemsEntitesFlat = uniqWith(serviceItemEntities.reduce((a, b) => a.concat(b), []), isEqual);
+    let allItems: RequestableProduct[];
+    allItems = serviceItemsEntitesFlat
       .map((serviceItem) =>
         recipients.map((recipient) => ({
           UidPerson: recipient.DataValue,
           UidITShopOrg: uidITShopOrg,
-          UidAccProduct: serviceItem.Columns.UID_AccProduct.Value,
+          UidAccProduct: serviceItem?.Columns?.UID_AccProduct.Value,
           Display: serviceItem.Display,
           DisplayRecipient: recipient.DisplayValue,
         }))
       )
       .reduce((a, b) => a.concat(b), []);
 
-    let selectedItems = [];
-    let selectedItemsWithDuplicates = [];
-
+    let selectedItems: RequestableProduct[] = [];
     if (onlySelected) {
-      selectedItemsWithDuplicates = allItems.filter((itemAll) => {
+      const selectedItemsWithDuplicates = allItems.filter((itemAll) => {
         return patternRequestables.some((item) => {
-          return itemAll.UidAccProduct === item.GetEntity().GetColumn('UID_AccProduct').GetValue();
+          const isSelected = itemAll.UidAccProduct === item.GetEntity().GetColumn('UID_AccProduct').GetValue();
+          // store the pattern item uid to load saved request params 
+          itemAll.UidPatternItem = item.GetEntity().GetKeys()[0];
+          return isSelected;
         });
       });
-      // selectedItems =  [...new Map(selectedItemsWithDuplicates.map(v => [v.UidAccProduct, v])).values()];
-      selectedItems = selectedItemsWithDuplicates.reduce((accumulator, current) => {
-        if (!accumulator.find((item) => item.UidAccProduct === current.UidAccProduct && item.UidPerson === item.UidPerson)) {
-          accumulator.push(current);
-        }
-        return accumulator;
-      }, []);
+      selectedItems = uniqWith(selectedItemsWithDuplicates, isEqual);
     }
 
-    return onlySelected ? selectedItemsWithDuplicates : allItems;
+    return onlySelected ? selectedItems : allItems;
   }
 }

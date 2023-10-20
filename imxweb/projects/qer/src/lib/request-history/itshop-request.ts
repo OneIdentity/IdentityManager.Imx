@@ -51,7 +51,6 @@ export class ItshopRequest extends PortalItshopRequests implements RequestParame
   public isArchived = false;
   public readonly pwoData: PwoData;
   public readonly canEscalateDecision: boolean;
-  public readonly isPrivateRequest: boolean;                                                                                             
   public readonly canCopyItems:boolean;
 
   constructor(entity: IEntity, pwoData: PwoData, parameterColumns: IEntityColumn[], userUid: string) {
@@ -71,9 +70,6 @@ export class ItshopRequest extends PortalItshopRequests implements RequestParame
         this.canWithdrawDelegation = workflowWrapper.canRevokeDelegatedApprover(userUid, this.DecisionLevel.value);
 
         this.canEscalateDecision = workflowWrapper.canEscalateDecision(this.DecisionLevel.value) && isAffectedEmployee;
-
-        this.isPrivateRequest =
-          this.UID_PersonHead.value !== userUid && this.UID_PersonInserted.value !== userUid && this.UID_PersonOrdered.value !== userUid;
 
         if (this.UID_PersonHead.value === userUid) {
           this.canRecallDecision = this.pwoData.CanRecallDecision;

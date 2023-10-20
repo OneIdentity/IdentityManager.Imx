@@ -30,7 +30,6 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { CollectionLoadParameters, EntitySchema, TypedEntity, ValType } from 'imx-qbm-dbts';
 import { ActivatedRoute, Params } from '@angular/router';
-import { OverlayRef } from '@angular/cdk/overlay';
 
 import {
   ClassloggerService,

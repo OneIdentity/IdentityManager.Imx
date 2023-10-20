@@ -71,12 +71,14 @@ import { ChartTileComponent } from './charts/chart-tile/chart-tile.component';
 import { HeatmapTileComponent } from './heatmaps/heatmap-tile/heatmap-tile.component';
 import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { StatisticsGuardService } from '../guards/statistics-guard.service';
+import { isStatistics } from '../admin/qer-permissions-helper';
 
 const routes: Routes = [
   {
     path: 'statistics',
     component: StatisticsHomePageComponent,
-    canActivate: [RouteGuardService],
+    canActivate: [RouteGuardService, StatisticsGuardService],
     resolve: [RouteGuardService],
     data: {
       contextId: HELP_CONTEXTUAL.StatisticsPage,
@@ -138,14 +140,16 @@ export class StatisticsModule {
 
   /** This method defines the menu structure for the portal. */
   private setupMenu(): void {
-    this.menuService.addMenuFactories(() => {
-      const menu: MenuItem = {
-        id: 'ROOT_Statistics',
-        title: '#LDS#Statistics',
-        sorting: '50',
-        route: routes[0].path,
-      };
-      return menu;
+    this.menuService.addMenuFactories((preProps: string[], features: string[]) => {
+      if(isStatistics(features)){
+        const menu: MenuItem = {
+          id: 'ROOT_Statistics',
+          title: '#LDS#Statistics',
+          sorting: '50',
+          route: routes[0].path,
+        };
+        return menu;
+      }
     });
   }
 }

@@ -28,7 +28,7 @@ import { Injectable } from '@angular/core';
 import { bar, ChartOptions, donut, line, zoom } from 'billboard.js';
 import { ChartData, ChartDto } from 'imx-api-qer';
 import { StatisticsConstantsService } from '../statistics-home-page/statistics-constants.service';
-import {chain, uniqBy} from 'lodash';
+import { chain, uniqBy } from 'lodash';
 import { ShortDatePipe } from 'qbm';
 
 export interface ChartNamesValues {
@@ -55,10 +55,7 @@ export interface DisplayOptions {
   providedIn: 'root',
 })
 export class StatisticsChartHandlerService {
-  constructor(
-    private constantsService: StatisticsConstantsService,
-    private shortDate: ShortDatePipe
-    ) {}
+  constructor(private constantsService: StatisticsConstantsService, private shortDate: ShortDatePipe) {}
 
   public dataHasNonZero(chart: ChartDto): boolean {
     // This will check the data to see if we have all 0 values and should display text instead of a chart
@@ -132,9 +129,11 @@ export class StatisticsChartHandlerService {
   }
 
   public hasUniqueObjectDisplay(data: ChartData[]): boolean {
-    return data.map(datum => {
-      return datum?.ObjectDisplay && datum.ObjectDisplay != datum.Name;
-    }).some(val => val);
+    return data
+      .map((datum) => {
+        return datum?.ObjectDisplay && datum.ObjectDisplay != datum.Name;
+      })
+      .some((val) => val);
   }
 
   public getBarData(chart: ChartDto, displayOptions: DisplayOptions): ChartOptions {
@@ -142,9 +141,6 @@ export class StatisticsChartHandlerService {
     const dataLength = chart.Data.length;
     const limitLessThanData = displayOptions.dataLimit && displayOptions.dataLimit < dataLength;
     const cutoff = limitLessThanData ? displayOptions.dataLimit - 1 : dataLength;
-
-    // Sort data by highest value first
-    chart.Data.sort((a, b) => a.Points[0].Value - b.Points[0].Value).reverse();
 
     let chartValues: ChartNamesValues;
     let columns: (string | number)[][];
@@ -268,9 +264,7 @@ export class StatisticsChartHandlerService {
 
     const slicedData = chart.Data.slice(0, cutoff);
     // Stash the time axis
-    const columns: (string | number)[][] = [
-      ['x', ...slicedData[0].Points.slice(0, timecutoff).map((datum) => datum.Date.toString())],
-    ];
+    const columns: (string | number)[][] = [['x', ...slicedData[0].Points.slice(0, timecutoff).map((datum) => datum.Date.toString())]];
 
     slicedData.forEach((data) => {
       columns.push([data.Name, ...data.Points.slice(0, timecutoff).map((datum) => datum.Value)]);
@@ -306,11 +300,11 @@ export class StatisticsChartHandlerService {
         },
       },
       zoom: {
-        enabled: displayOptions?.enableZoom ? zoom(): false,
+        enabled: displayOptions?.enableZoom ? zoom() : false,
         type: 'drag',
         resetButton: {
-          text: this.constantsService.resetZoomText
-        }
+          text: this.constantsService.resetZoomText,
+        },
       },
 
       size: displayOptions?.size,

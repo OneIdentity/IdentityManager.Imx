@@ -1,4 +1,4 @@
-<mat-form-field appearance="outline">
+<mat-form-field appearance="outline" *ngIf="columnContainer?.canEdit; else isReadonly">
   <mat-label>{{ columnContainer?.display | translate }}</mat-label>
   <input matInput type="text" [formControl]="control" [readonly]="true"
     [attr.data-imx-identifier]="'cdr-edit-fk-multi-input-' + columnContainer?.name"
@@ -15,3 +15,12 @@
     {{ '#LDS#This field is mandatory.' | translate }}
   </mat-error>
 </mat-form-field>
+
+
+<ng-template #isReadonly>
+  <imx-view-property
+    [columnContainer]="columnContainer"
+    defaultValue="#LDS#Not set"
+  >
+  </imx-view-property>
+</ng-template>

@@ -28,7 +28,7 @@
   </mat-card>
 
   <mat-card *ngIf="!hasSampleData" class="imx-cases-card">
-    <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['settings']" (navigationStateChanged)="onNavigationStateChanged($event)"> </imx-data-source-toolbar>
+    <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['settings']" [disableFilterWizard]="true" (navigationStateChanged)="onNavigationStateChanged($event)"> </imx-data-source-toolbar>
 
     <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual" [selectable]="data.canCreateRuns" (selectionChanged)="onSelectionChanged($event)">
       <imx-data-table-column [entityColumn]="entitySchemaPolicy?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">

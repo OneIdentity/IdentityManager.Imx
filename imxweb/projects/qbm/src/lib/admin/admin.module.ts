@@ -64,6 +64,8 @@ import { SwaggerComponent } from './swagger/swagger.component';
 import { CacheComponent } from './cache.component';
 import { PluginsComponent } from './plugins.component';
 import { InfoModalDialogModule } from './../info-modal-dialog/info-modal-dialog.module';
+import { SqlWizardApiService } from '../sqlwizard/sqlwizard-api.service';
+import { QbmSqlWizardService } from '../base/qbm-sqlwizard.service';
 
 @NgModule({
   imports: [
@@ -88,9 +90,16 @@ import { InfoModalDialogModule } from './../info-modal-dialog/info-modal-dialog.
     TranslateModule,
     DateModule,
     ScrollingModule,
-    InfoModalDialogModule
+    InfoModalDialogModule,
   ],
-  providers: [ConfigService, StatusService],
+  providers: [
+    ConfigService,
+    StatusService,
+    {
+      provide: SqlWizardApiService,
+      useClass: QbmSqlWizardService,
+    },
+  ],
   declarations: [
     AddConfigSidesheetComponent,
     ApplyConfigSidesheetComponent,
@@ -110,4 +119,4 @@ import { InfoModalDialogModule } from './../info-modal-dialog/info-modal-dialog.
     SwaggerComponent,
   ],
 })
-export class AdminModule { }
+export class AdminModule {}

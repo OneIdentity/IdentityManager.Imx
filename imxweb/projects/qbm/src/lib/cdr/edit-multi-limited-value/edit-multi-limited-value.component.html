@@ -1,4 +1,4 @@
-<mat-form-field appearance="outline"  [class]="control.errors?.['required'] ? 'mat-form-field-invalid' : ''">
+<mat-form-field appearance="outline"  *ngIf="columnContainer?.canEdit; else isReadonly" [class]="control.errors?.['required'] ? 'mat-form-field-invalid' : ''">
     <mat-label>{{ columnContainer?.display | translate }}</mat-label>
     <input matInput value="_hidden" [hidden]="true" [required]="this.columnContainer?.isValueRequired"/>
     <div [ngClass]="control.errors?.['required'] ? 'mat-error' : ''" [formGroup]="control" class="imx-multi-value-container">
@@ -10,3 +10,11 @@
 <mat-error class="imx-error-margin mat-form-field-subscript-wrapper" *ngIf="control.errors?.['required']">
     {{ '#LDS#This field is mandatory.' | translate }}
 </mat-error>
+
+<ng-template #isReadonly>
+  <imx-view-property
+    [columnContainer]="columnContainer"
+    defaultValue="#LDS#Not set"
+  >
+  </imx-view-property>
+</ng-template>

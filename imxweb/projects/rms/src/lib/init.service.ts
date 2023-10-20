@@ -180,7 +180,7 @@ export class InitService {
     this.setupMenu();
 
     this.dataExplorerRegistryService.registerFactory((preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
-      if (isRoleAdmin(features) && !isRoleStatistics(features) && !isAuditor(groups)) {
+      if (!isRoleAdmin(features) && !isRoleStatistics(features) && !isAuditor(groups)) {
         return;
       }
       return {

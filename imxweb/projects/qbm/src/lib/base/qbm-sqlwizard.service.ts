@@ -24,11 +24,24 @@
  *
  */
 
+import { Injectable } from '@angular/core';
+import { FilterProperty, CollectionLoadParameters, EntityCollectionData } from 'imx-qbm-dbts';
+import { SqlWizardApiService } from '../sqlwizard/sqlwizard-api.service';
 
-export function isExceptionAdmin(groups: string[]): boolean {
-  return groups.find(item => item === 'vi_4_RULEADMIN_EXCEPTION') != null;
-}
+@Injectable({
+  providedIn: 'root',
+})
+export class QbmSqlWizardService extends SqlWizardApiService {
+  public implemented: boolean = false;
 
-export function isRuleStatistics(features: string[]): boolean {
-  return features.find(item => item === 'Portal_UI_RuleStatistics') != null;
+  getFilterProperties(table: string): Promise<FilterProperty[]> {
+    return new Promise((resolve) => resolve([]));
+  }
+  getCandidates(parentTable: string, options?: CollectionLoadParameters): Promise<EntityCollectionData> {
+    return new Promise((resolve) => resolve({ TotalCount: 0 }));
+  }
+
+  constructor() {
+    super();
+  }
 }

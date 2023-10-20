@@ -24,11 +24,28 @@
  *
  */
 
+import { Injectable } from '@angular/core';
+import { CanActivate, Router } from '@angular/router';
 
-export function isExceptionAdmin(groups: string[]): boolean {
-  return groups.find(item => item === 'vi_4_RULEADMIN_EXCEPTION') != null;
-}
+import { AppConfigService } from 'qbm';
+import { CplPermissionsService } from '../rules/admin/cpl-permissions.service';
 
-export function isRuleStatistics(features: string[]): boolean {
-  return features.find(item => item === 'Portal_UI_RuleStatistics') != null;
+@Injectable({
+  providedIn: 'root',
+})
+export class RuleViolationsGuardService implements CanActivate {
+  constructor(
+    private readonly permissionService: CplPermissionsService,
+    private readonly appConfig: AppConfigService,
+    private readonly router: Router
+  ) { }
+
+  public async canActivate(): Promise<boolean> {
+    const isExceptionAdmin = await this.permissionService.isExceptionAdmin();
+    if (!isExceptionAdmin) {
+      this.router.navigate([this.appConfig.Config.routeConfig.start], { queryParams: {} });
+      return false;
+    }
+    return isExceptionAdmin;
+  }
 }

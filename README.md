@@ -4,6 +4,11 @@
 
 ## Change log
 
+### October 20, 2023
+
+- The repository has been updated with the source code for the Identity Manager 9.2 release in the `v92` branch.
+  For information about new features and enhancements in this version, please refer to the Identity Manager 9.2 Release Notes.
+
 ### October 15, 2022
 
 - There is a new application in the workspace called `custom-app`. This application is a template that provides the basic building blocks (such as Material integration, session handling, login, and the API client configuration) can be used as a starting point for building new applications. See [`readme.md`](./imxweb/projects/custom-app/readme.md) for more information.
@@ -34,6 +39,8 @@ This repository contains the source code for the HTML5 applications contained in
 
 It is a monorepo containing the Angular [workspace](https://angular.io/guide/workspace-config), which consists of apps and [libraries](https://angular.io/guide/libraries).
 
+We strongly recommend to read the [HTML Development Guide](https://support.oneidentity.com/technical-documents/identity-manager/9.2/html5-development-guide) before starting to work with the code in this repository.
+
 By forking this repository, you may create customized versions of the projects and add them to your Identity Manager deployment.
 
 ## Workspace overview
@@ -60,9 +67,9 @@ Each Angular library and app belongs to a folder in the `projects` directory. Th
 |`olg`|Angular plugin library|`qbm`, `qer`|
 |`pol`|Angular plugin library|`qbm`, `qer`|
 
-Each Angular library belongs to the Identity Manager module of the same name.
+Each Angular library belongs to the Identity Manager module of the same name. You do not need to build Angular libraries for modules that are not part of your Identity Manager installation.
 
-A (non-plugin) library acts like a regular compile-time dependency. A _plugin_ library is loaded dynamically at runtime, as determined by the plugins' `imx-plugin-config.json` files.
+A (non-plugin) library acts like a regular compile-time dependency. A _plugin_ library is loaded dynamically at runtime, as determined by each plugin's `imx-plugin-config.json` file.
 
 For more information about each project, see the `readme.md` files in each project's folder.
 
@@ -76,9 +83,9 @@ For more information about each project, see the `readme.md` files in each proje
 |`qer-app-pwdportal`|Password Reset Portal|Angular app|`qbm`, `qer`|
 |`custom-app`|Template for custom applications|Angular app|`qbm`|
 
-## Installing node.js
+## Installing Node.js
 
-Verify that you have installed the correct `node.js` version for your branch. The version used by the CI build is defined in the [`.github/workflows/npm-build.yml`](.github/workflows/npm-build.yml) file in the `node-version` property. Other versions of `node.js`, including newer versions, are not guaranteed to be compatible with other Angular versions.
+Verify that you have installed a compatible `node.js` version for your branch. The version used by the CI build is defined in the [`.github/workflows/npm-build.yml`](.github/workflows/npm-build.yml) file in the `node-version` property. Other versions of `node.js`, including newer versions, are not guaranteed to be compatible with other Angular versions. Please see the [version compatibility table](https://angular.io/guide/versions) on the official Angular site.
 
 ## Building
 
@@ -107,7 +114,7 @@ imxclient.exe run-apiserver -B
 
 The web apps will connect to the API Server using the URL defined in the application's `environment.ts` file. The default setting is `http://localhost:8182` which is the default URL that a local API Server will run on.
 
-## More information
+## Getting started
 
 Please refer to the [HTML Development Guide](https://support.oneidentity.com/technical-documents/identity-manager/8.2.1/html5-development-guide#TOPIC-1801966) for step-by-step instructions on getting started.
 
@@ -115,14 +122,22 @@ Please refer to the [HTML Development Guide](https://support.oneidentity.com/tec
 
 The following table shows the branches in this repository corresponding to each product version.
 
-|Branch|Product version|`node.js` version|
+|Branch|Product version|Angular version|
 |-|-|-|
-|`v91`|Identity Manager 9.1.x|14|
-|`v90`|Identity Manager 9.0|14|
-|`v82`|Identity Manager 8.2.x|14|
+|`v92`|Identity Manager 9.2.x|14|
+|`v91`|Identity Manager 9.1.x|13|
+|`v90`|Identity Manager 9.0|13|
+|`v82`|Identity Manager 8.2.x|11|
 |`master`|The `master` branch does not correspond to a supported version of Identity Manager. Do not use this branch for development purposes.||
 
+Please also see the [version compatibility table](https://angular.io/guide/versions).
+
 We plan to push updates for each minor and major product release, allowing developers to track source code changes from one version to the next. Occasionally we may also publish important bug fixes.
+
+## Step-by-step guides
+
+- [Theming guide](./imxweb/custom-theme/readme.md)
+- [CDR guide](./imxweb/projects/qbm/src/lib/cdr/Readme.md)
 
 ## Contributing
 

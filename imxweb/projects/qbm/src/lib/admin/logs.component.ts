@@ -43,11 +43,10 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import moment from 'moment-timezone';
 import { DataSourceToolbarFilter } from '../data-source-toolbar/data-source-toolbar-filters.interface';
 
-
 @Component({
   selector: 'imx-logs',
   templateUrl: './logs.component.html',
-  styleUrls: ['./logs.component.scss']
+  styleUrls: ['./logs.component.scss'],
 })
 export class LogsComponent implements OnInit {
   private stream: EventSource;
@@ -66,18 +65,19 @@ export class LogsComponent implements OnInit {
   public liveLogsOnPage: ApiLogEntry[] = [];
   public liveTotalCount: number;
   public pageSize: number = 20;
-  public searchText: string = "";
+  public searchText: string = '';
   public searchBoxText: string = '#LDS#Search';
   public isRegexChecked: boolean = false;
   public isRegexValid: boolean = true;
   public logDownloads: EuiDownloadOptions[] = [];
 
-  @ViewChild("dstSession") dstSession: DataSourceToolbarComponent;
-  @ViewChild("dstLive") dstLive: DataSourceToolbarComponent;
-  @ViewChild("sessionPaginator") sessionPaginator: MatPaginator;
-  @ViewChild("livePaginator") livePaginator: MatPaginator;
+  @ViewChild('dstSession') dstSession: DataSourceToolbarComponent;
+  @ViewChild('dstLive') dstLive: DataSourceToolbarComponent;
+  @ViewChild('sessionPaginator') sessionPaginator: MatPaginator;
+  @ViewChild('livePaginator') livePaginator: MatPaginator;
 
-  constructor( private readonly appConfigService: AppConfigService,
+  constructor(
+    private readonly appConfigService: AppConfigService,
     private readonly sidesheet: EuiSidesheetService,
     private readonly busyService: EuiLoadingService,
     private readonly translateService: TranslateService,
@@ -85,11 +85,9 @@ export class LogsComponent implements OnInit {
     private logger: ClassloggerService,
     private elementalUiConfigService: ElementalUiConfigService,
     private translator: TranslateService
-  ) { }
+  ) {}
 
-
-
-  public async ngOnInit(): Promise<void>  {
+  public async ngOnInit(): Promise<void> {
     const overlayRef = this.busyService.show();
 
     try {
@@ -134,16 +132,14 @@ export class LogsComponent implements OnInit {
             Logs: {
               ColumnName: 'Logs',
               Type: ValType.String,
-            }
-          }
+            },
+          },
         },
         navigationState: {
           StartIndex: 0,
-          PageSize: 20
+          PageSize: 20,
         },
-        filters: [
-          timeFilter
-        ],
+        filters: [timeFilter],
       };
 
       this.dstSettingsLive = JSON.parse(JSON.stringify(this.dstSettingsSession));
@@ -172,7 +168,6 @@ export class LogsComponent implements OnInit {
       this.stream.onerror = (err) => {
         this.logger.error('An error occured in data stream:', err);
       };
-
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
@@ -182,7 +177,7 @@ export class LogsComponent implements OnInit {
     const overlayRef = this.busyService.show();
     try {
       return await this.appConfigService.client.admin_systeminfo_log_session_get();
-    } finally{
+    } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
   }
@@ -197,13 +192,16 @@ export class LogsComponent implements OnInit {
       try {
         this.logFiles = await this.appConfigService.client.admin_systeminfo_logs_get();
 
-        this.logFiles.forEach(log => {
-          var dir = log.Path.split("\\");
-          const url = this.appConfigService.BaseUrl + new MethodDefinition(new V2ApiClientMethodFactory().admin_systeminfo_log_get(dir[0], dir[1])).path;
+        this.logFiles.forEach((log) => {
+          var dir = log.Path.split('\\');
+          const url =
+            this.appConfigService.BaseUrl +
+            new MethodDefinition(new V2ApiClientMethodFactory().admin_systeminfo_log_get(dir[0], dir[1])).path;
           this.logDownloads.push({
             ...this.elementalUiConfigService.Config.downloadOptions,
-            url: url,
-            fileName: log.File
+            fileMimeType: '',
+            url,
+            fileName: log.File,
           });
         });
       } finally {
@@ -213,22 +211,27 @@ export class LogsComponent implements OnInit {
   }
 
   public onSessionLogSearch(keywords: string): void {
-    const sessionKeywords: ({IsRegex?: boolean} & FilterData)[] = this.dstSettingsSession.navigationState.filter?.filter(filter => filter.Type === 1);
+    const sessionKeywords: ({ IsRegex?: boolean } & FilterData)[] = this.dstSettingsSession.navigationState.filter?.filter(
+      (filter) => filter.Type === 1
+    );
     this.sessionLogsFiltered = this.sessionLogs;
 
     //Handles keyword filters
     if (sessionKeywords && sessionKeywords.length > 0) {
-      this.sessionLogsFiltered = this.sessionLogsFiltered.filter(log =>
-        sessionKeywords.every(keyword => keyword.IsRegex
-          ? this.regexTest(keyword.Value1.toLowerCase(), log.Message?.toLowerCase())
-          : log.Message?.toLowerCase().includes(keyword.Value1.toLowerCase())
+      this.sessionLogsFiltered = this.sessionLogsFiltered.filter((log) =>
+        sessionKeywords.every((keyword) =>
+          keyword.IsRegex
+            ? this.regexTest(keyword.Value1.toLowerCase(), log.Message?.toLowerCase())
+            : log.Message?.toLowerCase().includes(keyword.Value1.toLowerCase())
         )
       );
     }
 
     //Handles time filters
     if (this.dstSettingsSession.navigationState.TimeFilter) {
-      this.sessionLogsFiltered = this.sessionLogsFiltered.filter(log => moment(log.TimeStamp).isAfter(this.dstSettingsSession.navigationState.TimeFilter));
+      this.sessionLogsFiltered = this.sessionLogsFiltered.filter((log) =>
+        moment(log.TimeStamp).isAfter(this.dstSettingsSession.navigationState.TimeFilter)
+      );
     }
 
     if (this.isRegexChecked) {
@@ -239,8 +242,8 @@ export class LogsComponent implements OnInit {
       }
     } else {
       this.sessionLogsFiltered = keywords
-      ? this.sessionLogsFiltered.filter(log => log.Message?.toLowerCase().includes(keywords?.toLowerCase()))
-      : this.sessionLogsFiltered;
+        ? this.sessionLogsFiltered.filter((log) => log.Message?.toLowerCase().includes(keywords?.toLowerCase()))
+        : this.sessionLogsFiltered;
     }
 
     this.sessionTotalCount = this.sessionLogsFiltered.length;
@@ -249,22 +252,27 @@ export class LogsComponent implements OnInit {
   }
 
   public onLiveLogSearch(keywords: string): void {
-    const liveKeywords: ({IsRegex?: boolean} & FilterData)[] = this.dstSettingsLive.navigationState.filter?.filter(filter => filter.Type === 1);
+    const liveKeywords: ({ IsRegex?: boolean } & FilterData)[] = this.dstSettingsLive.navigationState.filter?.filter(
+      (filter) => filter.Type === 1
+    );
     this.liveLogsFiltered = this.liveLogs;
 
     //Handles keyword filters
     if (liveKeywords && liveKeywords.length > 0) {
-      this.liveLogsFiltered = this.liveLogsFiltered.filter(log =>
-        liveKeywords.every(keyword => keyword.IsRegex
-          ? this.regexTest(keyword.Value1.toLowerCase(), log.Message?.toLowerCase())
-          : log.Message?.toLowerCase().includes(keyword.Value1.toLowerCase())
+      this.liveLogsFiltered = this.liveLogsFiltered.filter((log) =>
+        liveKeywords.every((keyword) =>
+          keyword.IsRegex
+            ? this.regexTest(keyword.Value1.toLowerCase(), log.Message?.toLowerCase())
+            : log.Message?.toLowerCase().includes(keyword.Value1.toLowerCase())
         )
       );
     }
 
     //Handles time filters
     if (this.dstSettingsLive.navigationState.TimeFilter) {
-      this.liveLogsFiltered = this.liveLogsFiltered.filter(log => moment(log.TimeStamp).isAfter(this.dstSettingsLive.navigationState.TimeFilter));
+      this.liveLogsFiltered = this.liveLogsFiltered.filter((log) =>
+        moment(log.TimeStamp).isAfter(this.dstSettingsLive.navigationState.TimeFilter)
+      );
     }
 
     if (this.isRegexChecked) {
@@ -275,8 +283,8 @@ export class LogsComponent implements OnInit {
       }
     } else {
       this.liveLogsFiltered = keywords
-      ? this.liveLogsFiltered.filter(log => log.Message?.toLowerCase().includes(keywords?.toLowerCase()))
-      : this.liveLogsFiltered;
+        ? this.liveLogsFiltered.filter((log) => log.Message?.toLowerCase().includes(keywords?.toLowerCase()))
+        : this.liveLogsFiltered;
     }
 
     this.liveTotalCount = this.liveLogsFiltered.length;
@@ -286,30 +294,25 @@ export class LogsComponent implements OnInit {
 
   private regexTest(keywords: string, message: string) {
     try {
-      return new RegExp(keywords, "gi").test(message);
-    } catch (e) {
-    }
+      return new RegExp(keywords, 'gi').test(message);
+    } catch (e) {}
   }
 
   public onRegexSessionLogSearch(keywords: string): void {
     this.sessionLogsFiltered = keywords
-    ? this.sessionLogsFiltered.filter(log => this.regexTest(keywords, log.Message))
-    : this.sessionLogsFiltered;
+      ? this.sessionLogsFiltered.filter((log) => this.regexTest(keywords, log.Message))
+      : this.sessionLogsFiltered;
   }
 
   public onRegexLiveLogSearch(keywords: string): void {
-    this.liveLogsFiltered = keywords
-    ? this.liveLogsFiltered.filter(log => this.regexTest(keywords, log.Message))
-    : this.liveLogsFiltered;
+    this.liveLogsFiltered = keywords ? this.liveLogsFiltered.filter((log) => this.regexTest(keywords, log.Message)) : this.liveLogsFiltered;
   }
 
   public onRegexToggle(event: MatSlideToggleChange): void {
-      this.searchBoxText = event.checked
-      ? '#LDS#Search using regular expressions'
-      : '#LDS#Search';
+    this.searchBoxText = event.checked ? '#LDS#Search using regular expressions' : '#LDS#Search';
 
-      if (this.currentTab === 0) this.onSessionLogSearch(this.dstSession.settings.navigationState.search);
-      if (this.currentTab === 1) this.onLiveLogSearch(this.dstLive.settings.navigationState.search);
+    if (this.currentTab === 0) this.onSessionLogSearch(this.dstSession.settings.navigationState.search);
+    if (this.currentTab === 1) this.onLiveLogSearch(this.dstLive.settings.navigationState.search);
   }
 
   public validateRegex(keywords: string): boolean {
@@ -353,31 +356,35 @@ export class LogsComponent implements OnInit {
     this.setLivePage();
   }
 
-  public getListIcon(changeType:string): string
-  {
+  public getListIcon(changeType: string): string {
     let icon = 'clock';
-    switch(changeType)
-    {
-      case 'Error': icon = 'error'; break;
-      case 'Warn': icon = 'warning'; break;
+    switch (changeType) {
+      case 'Error':
+        icon = 'error';
+        break;
+      case 'Warn':
+        icon = 'warning';
+        break;
     }
     return icon;
   }
 
-  public getIconColor(changeType:string): string
-  {
+  public getIconColor(changeType: string): string {
     let color = 'imx-primary-icon';
-    switch(changeType)
-    {
-      case 'Error': color = 'imx-error-icon'; break;
-      case 'Warn': color = 'imx-warning-icon'; break;
+    switch (changeType) {
+      case 'Error':
+        color = 'imx-error-icon';
+        break;
+      case 'Warn':
+        color = 'imx-warning-icon';
+        break;
     }
     return color;
   }
 
   public async openLogSideSheet(log: ApiLogEntry): Promise<void> {
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     let config: EuiSidesheetConfig;
     try {
       config = {
@@ -386,17 +393,15 @@ export class LogsComponent implements OnInit {
         padding: '0',
         width: 'max(600px, 60%)',
         testId: 'log-details-sidesheet',
-        data: log
+        data: log,
       };
     } finally {
-        setTimeout(() => this.busyService.hide(overlayRef));
+      setTimeout(() => this.busyService.hide(overlayRef));
     }
     this.sidesheet.open(LogDetailsSidesheetComponent, config);
   }
 
   public ngOnDestroy(): void {
-    if (this.stream)
-        this.stream.close();
+    if (this.stream) this.stream.close();
   }
-
 }

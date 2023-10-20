@@ -30,7 +30,7 @@ import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@element
 import { TranslateService } from '@ngx-translate/core';
 
 import { PortalAttestationFilterMatchingobjects } from 'imx-api-att';
-import { CollectionLoadParameters, IClientProperty, DisplayColumns, ValType, EntitySchema, DataModel } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DisplayColumns, ValType, EntitySchema } from 'imx-qbm-dbts';
 import { ClassloggerService, ClientPropertyForTableColumns, ConfirmationService, DataSourceToolbarSettings, LdsReplacePipe, SettingsService, SnackBarService } from 'qbm';
 import { PolicyService } from '../policy.service';
 import { AttestationCasesComponentParameter } from './attestation-cases-component-parameter.interface';
@@ -50,7 +50,6 @@ export class AttestationCasesComponent implements OnInit {
 
   private navigationState: CollectionLoadParameters;
   private displayedColumns: ClientPropertyForTableColumns[];
-  private dataModel: DataModel;
   private threshold = -1;
 
   constructor(
@@ -86,7 +85,6 @@ export class AttestationCasesComponent implements OnInit {
     let overlayRef: OverlayRef;
     setTimeout(() => (overlayRef = this.busyService.show()));
     try {
-      this.dataModel = await this.policyService.getDataModel();
       this.threshold = await this.policyService.getCasesThreshold();
     } finally {
       setTimeout(async () => {
@@ -161,8 +159,7 @@ export class AttestationCasesComponent implements OnInit {
         displayedColumns: this.displayedColumns,
         dataSource: datasource,
         entitySchema: this.entitySchemaPolicy,
-        navigationState: this.navigationState,
-        dataModel: this.dataModel
+        navigationState: this.navigationState
       };
 
       this.logger.debug(this, 'matching objects table navigated to', this.navigationState);
