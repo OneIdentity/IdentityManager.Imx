@@ -4,7 +4,7 @@
 
 ## Change log
 
-### October 15, 2023
+### October 20, 2023
 
 - The repository has been updated with the source code for the Identity Manager 9.2 release in the `v92` branch.
   For information about new features and enhancements in this version, please refer to the Identity Manager 9.2 Release Notes.
