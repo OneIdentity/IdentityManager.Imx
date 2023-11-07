@@ -25,7 +25,7 @@ The HTML5 applications support the integration of **custom themes**. Before proc
     "Themes": [
         {
             "Name": "space-theme",
-            "Display Name": "Space Theme",
+            "DisplayName": "Space Theme",
             "Class": "space-theme",
             "Urls": [
                 "../space-theme/custom-theme.css"
