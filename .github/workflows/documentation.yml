@@ -27,7 +27,7 @@ jobs:
           path: imxweb/documentation/ # or path/to/artifact
 
 
-          deploy:
+  deploy:
     # Add a dependency to the build job
     needs: build
 
