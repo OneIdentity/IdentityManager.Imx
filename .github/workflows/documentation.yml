@@ -24,4 +24,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: documentation
-          path: ./documentation/ # or path/to/artifact
+          path: ../../documentation/ # or path/to/artifact
