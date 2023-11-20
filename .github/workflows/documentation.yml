@@ -19,9 +19,3 @@ jobs:
       - name: Generate documentation for qbm
         run: npm run doc:qbm
         working-directory: ./imxweb
-
-      - name: Deploy documentation
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
