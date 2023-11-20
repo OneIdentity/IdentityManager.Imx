@@ -5,7 +5,7 @@
   "theme": "material",
   "customLogo": "../../compodoc/assets/images/oneidentity-logo.png",
   "customFavicon": "../../compodoc/assets/images/favicon.ico",
-  "serve": true,
-  "watch": true,
+  "serve": false,
+  "watch": false,
   "coverageTest": 0
 }
