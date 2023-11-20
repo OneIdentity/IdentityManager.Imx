@@ -19,3 +19,9 @@ jobs:
       - name: Generate documentation for qbm
         run: npm run doc:qbm
         working-directory: ./imxweb
+
+      - name: Deploy the documentation
+        uses: actions/upload-artifact@v3
+        with:
+          name: documentation
+          path: ./documentation/ # or path/to/artifact
