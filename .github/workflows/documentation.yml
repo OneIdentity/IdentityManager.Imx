@@ -27,6 +27,7 @@ jobs:
 
 
   deploy:
+    runs-on: ubuntu-latest
     env: 
       CI_COMMIT_MESSAGE: Automatic compoDoc documentation
       CI_COMMIT_AUTHOR: Compodoc Integration Process
