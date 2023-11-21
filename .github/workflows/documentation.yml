@@ -2,10 +2,7 @@ name: Documentation
 
 on:
   push:
-    branches: [master, v92, change/v92/testForActions]
-    paths-ignore: 
-     - 'imxweb/documentation/**'
-    
+    branches: [master, v92, change/v92/testForActions]    
 
 jobs:
   build:
@@ -24,7 +21,7 @@ jobs:
     - name: Generate documentation for qbm
       run: npm run doc:qbm
       working-directory: ./imxweb
-      
+
     - name: GIT Commit Documentation
     # Only run on main branch push (e.g. pull request merge).
       if: github.event_name == 'push'
