@@ -28,6 +28,6 @@ jobs:
       run: |
         git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
         git config --global user.email "martina.graeber@oneidentity.com"
-        git add imxweb/docu
+        git add imxweb/doc
         git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
         git push
