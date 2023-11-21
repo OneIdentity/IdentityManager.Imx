@@ -9,6 +9,9 @@ on:
 
 jobs:
   build:
+   env: 
+      CI_COMMIT_MESSAGE: Automatic compoDoc documentation
+      CI_COMMIT_AUTHOR: Compodoc Integration Process
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -21,19 +24,7 @@ jobs:
       - name: Generate documentation for qbm
         run: npm run doc:qbm
         working-directory: ./imxweb
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
-
-
-  deploy:
-    runs-on: ubuntu-latest
-    env: 
-      CI_COMMIT_MESSAGE: Automatic compoDoc documentation
-      CI_COMMIT_AUTHOR: Compodoc Integration Process
-    needs: build
-    steps:
-      - name: GIT Commit Build Artifacts (coverage, dist, devdist, docs)
+      - name: GIT Commit Documentation
       # Only run on main branch push (e.g. pull request merge).
         if: github.event_name == 'push'
         run: |
