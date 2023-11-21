@@ -3,6 +3,8 @@ name: Documentation
 on:
   push:
     branches: [master, v92, change/v92/testForActions]
+    paths-ignore: 
+     - 'imxweb/documentation/**'
     
 
 jobs:
@@ -25,12 +27,17 @@ jobs:
 
 
   deploy:
-    environment:
-      name: github-pages
-      url: ${{steps.deployment.outputs.page_url}}
-    runs-on: ubuntu-latest
+    env: 
+      CI_COMMIT_MESSAGE: Automatic compoDoc documentation
+      CI_COMMIT_AUTHOR: Compodoc Integration Process
     needs: build
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+      name: GIT Commit Build Artifacts (coverage, dist, devdist, docs)
+      # Only run on main branch push (e.g. pull request merge).
+      if: github.event_name == 'push'
+      run: |
+        git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+        git config --global user.email "martina.graeber@oneidentity.com"
+        git add imxweb/documentation
+        git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
+        git push
