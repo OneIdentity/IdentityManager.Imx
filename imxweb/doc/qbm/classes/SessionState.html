@@ -1,0 +1,832 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>IMX Web - QBM Library</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/material.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">IMX Web - QBM Library</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content class">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >SessionState</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/lib/session/session-state.ts</code>
+        </p>
+
+
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>Encapsulates SessionResponse and provides properties for determining the current state of the sessions</p>
+
+            </p>
+
+
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/ISessionState.html" target="_self" >ISessionState</a></code>
+            </p>
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#configurationProviders" >configurationProviders</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#culture" >culture</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#cultureFormat" >cultureFormat</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#currentAuthStep" >currentAuthStep</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#externalLogoutUrl" >externalLogoutUrl</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#GetConfigurationProviders" >GetConfigurationProviders</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#GetCurrentAuthStep" >GetCurrentAuthStep</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Accessors</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                    <a href="#IsLoggedOut" >IsLoggedOut</a>
+                                </li>
+                                <li>
+                                    <a href="#IsAwaitingSecondaryAuth" >IsAwaitingSecondaryAuth</a>
+                                </li>
+                                <li>
+                                    <a href="#IsLoggedIn" >IsLoggedIn</a>
+                                </li>
+                                <li>
+                                    <a href="#Username" >Username</a>
+                                </li>
+                                <li>
+                                    <a href="#UserUid" >UserUid</a>
+                                </li>
+                                <li>
+                                    <a href="#SecondaryAuthName" >SecondaryAuthName</a>
+                                </li>
+                                <li>
+                                    <a href="#SecondaryErrorMessage" >SecondaryErrorMessage</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(sessionResponse: SessionResponse)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="82" class="link-to-prism">src/lib/session/session-state.ts:82</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>sessionResponse</td>
+                                                  
+                                                        <td>
+                                                                    <code>SessionResponse</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="configurationProviders"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>configurationProviders</b></span>
+                        <a href="#configurationProviders"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/AuthConfigProvider.html" target="_self" >AuthConfigProvider[]</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="77" class="link-to-prism">src/lib/session/session-state.ts:77</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="culture"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>culture</b></span>
+                        <a href="#culture"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="79" class="link-to-prism">src/lib/session/session-state.ts:79</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="cultureFormat"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>cultureFormat</b></span>
+                        <a href="#cultureFormat"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="80" class="link-to-prism">src/lib/session/session-state.ts:80</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="currentAuthStep"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>currentAuthStep</b></span>
+                        <a href="#currentAuthStep"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#AuthStepLevels" target="_self" >AuthStepLevels</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>AuthStepLevels.LoggedOut</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="82" class="link-to-prism">src/lib/session/session-state.ts:82</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="externalLogoutUrl"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>externalLogoutUrl</b></span>
+                        <a href="#externalLogoutUrl"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="78" class="link-to-prism">src/lib/session/session-state.ts:78</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="GetConfigurationProviders"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>GetConfigurationProviders</b></span>
+                        <a href="#GetConfigurationProviders"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>GetConfigurationProviders()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="113"
+                            class="link-to-prism">src/lib/session/session-state.ts:113</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/AuthConfigProvider.html" target="_self" >AuthConfigProvider[]</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="GetCurrentAuthStep"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>GetCurrentAuthStep</b></span>
+                        <a href="#GetCurrentAuthStep"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>GetCurrentAuthStep()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="94"
+                            class="link-to-prism">src/lib/session/session-state.ts:94</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#AuthStepLevels" target="_self" >AuthStepLevels</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+
+
+
+
+            <section data-compodoc="block-accessors">
+    <h3 id="accessors">
+        Accessors
+    </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="IsLoggedOut"></a>
+                        <span class="name"><b>IsLoggedOut</b><a href="#IsLoggedOut"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>IsLoggedOut()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="60" class="link-to-prism">src/lib/session/session-state.ts:60</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="IsAwaitingSecondaryAuth"></a>
+                        <span class="name"><b>IsAwaitingSecondaryAuth</b><a href="#IsAwaitingSecondaryAuth"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>IsAwaitingSecondaryAuth()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="61" class="link-to-prism">src/lib/session/session-state.ts:61</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="IsLoggedIn"></a>
+                        <span class="name"><b>IsLoggedIn</b><a href="#IsLoggedIn"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>IsLoggedIn()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">src/lib/session/session-state.ts:62</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="Username"></a>
+                        <span class="name"><b>Username</b><a href="#Username"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>Username()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="63" class="link-to-prism">src/lib/session/session-state.ts:63</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="UserUid"></a>
+                        <span class="name"><b>UserUid</b><a href="#UserUid"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>UserUid()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="64" class="link-to-prism">src/lib/session/session-state.ts:64</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="SecondaryAuthName"></a>
+                        <span class="name"><b>SecondaryAuthName</b><a href="#SecondaryAuthName"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>SecondaryAuthName()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="65" class="link-to-prism">src/lib/session/session-state.ts:65</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="SecondaryErrorMessage"></a>
+                        <span class="name"><b>SecondaryErrorMessage</b><a href="#SecondaryErrorMessage"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>SecondaryErrorMessage()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="71" class="link-to-prism">src/lib/session/session-state.ts:71</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+</section>
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SessionResponse, AuthPropType } from &#x27;imx-api-qbm&#x27;;
+import { AuthConfigProvider } from &#x27;../authentication/auth-config-provider.interface&#x27;;
+
+export enum AuthStepLevels {
+  LoggedOut &#x3D; 0,
+  AwaitsSecondaryAuth &#x3D; 1,
+  LoggedIn &#x3D; 2
+}
+
+export interface ISessionState {
+  IsLoggedOut?: boolean;
+  IsAwaitingSecondaryAuth?: boolean;
+  IsLoggedIn?: boolean;
+  Username?: string;
+
+  /** Returns the UID of the identity associated with the session. Note that this may
+   * be &#x60;null&#x60; when the session has no associated identity.
+   */
+  UserUid?: string;
+  SecondaryAuthName?: string;
+  SecondaryErrorMessage?: string;
+  configurationProviders?: AuthConfigProvider[];
+  externalLogoutUrl?: string;
+  isOAuth?: boolean;
+  hasErrorState?: boolean;
+  culture?: string;
+  cultureFormat?: string;
+}
+
+/**
+ * Encapsulates SessionResponse and provides properties for determining the current state of the sessions
+ */
+export class SessionState implements ISessionState {
+  public get IsLoggedOut(): boolean { return this.currentAuthStep &#x3D;&#x3D;&#x3D; AuthStepLevels.LoggedOut; }
+  public get IsAwaitingSecondaryAuth(): boolean { return this.currentAuthStep &#x3D;&#x3D;&#x3D; AuthStepLevels.AwaitsSecondaryAuth; }
+  public get IsLoggedIn(): boolean { return this.currentAuthStep &#x3D;&#x3D;&#x3D; AuthStepLevels.LoggedIn; }
+  public get Username(): string { return this.sessionResponse &amp;&amp; this.IsLoggedIn ? this.sessionResponse.Status.PrimaryAuth.Display : null; }
+  public get UserUid(): string { return this.sessionResponse &amp;&amp; this.IsLoggedIn ? this.sessionResponse.Status.PrimaryAuth.Uid : null; }
+  public get SecondaryAuthName(): string {
+    return this.sessionResponse &amp;&amp; this.sessionResponse.Status &amp;&amp; this.sessionResponse.Status.SecondaryAuth ?
+           this.sessionResponse.Status.SecondaryAuth.Name :
+           null;
+  }
+
+  public get SecondaryErrorMessage(): string {
+    return this.sessionResponse &amp;&amp; this.sessionResponse.Status &amp;&amp; this.sessionResponse.Status.SecondaryAuth ?
+           this.sessionResponse.Status.SecondaryAuth.ErrorMessage :
+           null;
+  }
+
+  public readonly configurationProviders: AuthConfigProvider[];
+  public readonly externalLogoutUrl: string;
+  public readonly culture: string;
+  public readonly cultureFormat: string;
+
+  private currentAuthStep: AuthStepLevels &#x3D; AuthStepLevels.LoggedOut;
+
+  constructor(private sessionResponse: SessionResponse) {
+    this.currentAuthStep &#x3D; this.GetCurrentAuthStep();
+    this.configurationProviders &#x3D; this.GetConfigurationProviders();
+    if (this.sessionResponse &amp;&amp; this.sessionResponse.Status) {
+      this.externalLogoutUrl &#x3D; this.sessionResponse.Status.ExternalLogoutUrl;
+    }
+    this.culture &#x3D; this.sessionResponse?.Status?.Culture;
+    this.cultureFormat  &#x3D; this.sessionResponse?.Status?.CultureFormat ;
+  }
+
+  private GetCurrentAuthStep(): AuthStepLevels {
+    if (
+      !this.sessionResponse ||
+      !this.sessionResponse.Status ||
+      !this.sessionResponse.Status.PrimaryAuth.IsAuthenticated
+    ) {
+      return AuthStepLevels.LoggedOut;
+    }
+
+    if (
+      this.sessionResponse.Status.SecondaryAuth.IsEnabled &amp;&amp;
+      !this.sessionResponse.Status.SecondaryAuth.IsAuthenticated
+    ) {
+      return AuthStepLevels.AwaitsSecondaryAuth;
+    }
+
+    return AuthStepLevels.LoggedIn;
+  }
+
+  private GetConfigurationProviders(): AuthConfigProvider[] {
+    if (this.sessionResponse &amp;&amp; this.sessionResponse.Config) {
+      return this.sessionResponse.Config.map(config &#x3D;&gt; {
+        const configProvider: AuthConfigProvider &#x3D; {
+          name: config.Name,
+          display: config.Display,
+          externalLogoutUrl: config.ExternalLogoutUrl
+        };
+
+        if (config.AuthProps) {
+          configProvider.authProps &#x3D; [];
+          config.AuthProps.forEach(authProp &#x3D;&gt; {
+            if (authProp.Type &#x3D;&#x3D;&#x3D; AuthPropType.OAuth2Code) {
+              configProvider.isOAuth2 &#x3D; true;
+            }
+
+            configProvider.authProps.push({
+              name: authProp.Name,
+              inputType: authProp.Type &#x3D;&#x3D;&#x3D; AuthPropType.Password ? &#x27;Password&#x27; : &#x27;Text&#x27;,
+              display: authProp.Display
+            });
+          });
+        }
+
+        return configProvider;
+      });
+    }
+
+    return undefined;
+  }
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'SessionState.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

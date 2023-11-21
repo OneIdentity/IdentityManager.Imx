@@ -1,0 +1,2175 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>IMX Web - QBM Library</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/material.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">IMX Web - QBM Library</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  DataTreeComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/lib/data-tree/data-tree.component.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                <code>OnChanges</code>
+                <code>OnDestroy</code>
+    </p>
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>imx-data-tree</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./data-tree.component.scss,<br>./data-tree-no-results.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./data-tree.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#hasTreeData" >hasTreeData</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#sidesheet" >sidesheet</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#subscriptions" >subscriptions</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                <a href="#templateRef" >templateRef</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#add" >add</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#clearSelection" >clearSelection</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#deleteNode" >deleteNode</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#expandNode" >expandNode</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getEntityById" >getEntityById</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#hasChildren" >hasChildren</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#hasSearchResults" >hasSearchResults</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#isExpanded" >isExpanded</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#ngOnChanges" >ngOnChanges</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#ngOnDestroy" >ngOnDestroy</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#reload" >reload</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#updateNode" >updateNode</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Inputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#database" >database</a>
+                            </li>
+                            <li>
+                                <a href="#emptyNodeCaption" >emptyNodeCaption</a>
+                            </li>
+                            <li>
+                                <a href="#hideSelection" >hideSelection</a>
+                            </li>
+                            <li>
+                                <a href="#isNodeSelectable" >isNodeSelectable</a>
+                            </li>
+                            <li>
+                                <a href="#navigationState" >navigationState</a>
+                            </li>
+                            <li>
+                                <a href="#noDataIcon" >noDataIcon</a>
+                            </li>
+                            <li>
+                                <a href="#noDataText" >noDataText</a>
+                            </li>
+                            <li>
+                                <a href="#selectedEntities" >selectedEntities</a>
+                            </li>
+                            <li>
+                                <a href="#withMultiSelect" >withMultiSelect</a>
+                            </li>
+                            <li>
+                                <a href="#withSelectedNodeHighlight" >withSelectedNodeHighlight</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Outputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#checkedNodesChanged" >checkedNodesChanged</a>
+                            </li>
+                            <li>
+                                <a href="#nodeSelected" >nodeSelected</a>
+                            </li>
+                            <li>
+                                <a href="#treeRendered" >treeRendered</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(sidesheet: EuiSidesheetService, logger: <a href="../injectables/ClassloggerService.html" target="_self">ClassloggerService</a>, translator: <a href="../undefineds/T.html" target="_self">TranslateService</a>, changeDetector: ChangeDetectorRef)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="123" class="link-to-prism">src/lib/data-tree/data-tree.component.ts:123</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>sidesheet</td>
+                                                  
+                                                        <td>
+                                                                    <code>EuiSidesheetService</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ClassloggerService.html" target="_self" >ClassloggerService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>translator</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../miscellaneous/typealiases.html#T" target="_self" >TranslateService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>changeDetector</td>
+                                                  
+                                                        <td>
+                                                                    <code>ChangeDetectorRef</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+    <section data-compodoc="block-inputs">
+    <h3 id="inputs">Inputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="database"></a>
+                        <b>database</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/TreeDatabase.html" target="_self" >TreeDatabase</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="80" class="link-to-prism">src/lib/data-tree/data-tree.component.ts:80</a></div>
+                            </td>
+                        </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>the service providing the data for the <a href="../classes/TreeDatasource.html"> TreeDatasource</a></p>
+</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="emptyNodeCaption"></a>
+                        <b>emptyNodeCaption</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="83" class="link-to-prism">src/lib/data-tree/data-tree.component.ts:83</a></div>
+                            </td>
+                        </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>the caption displaying when an empty node is added at the top of the tree</p>
+</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="hideSelection"></a>
+                        <b>hideSelection</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="90" class="link-to-prism">src/lib/data-tree/data-tree.component.ts:90</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="isNodeSelectable"></a>
+                        <b>isNodeSelectable</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="93" class="link-to-prism">src/lib/data-tree/data-tree.component.ts:93</a></div>
+                            </td>
+                        </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>modify tree node style, set true if using nodeSelected event emitter</p>
+</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="navigationState"></a>
+                        <b>navigationState</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>CollectionLoadParameters</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="88" class="link-to-prism">src/lib/data-tree/data-tree.component.ts:88</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="noDataIcon"></a>
+                        <b>noDataIcon</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;table&#x27;</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="72" class="link-to-prism">src/lib/data-tree/data-tree.component.ts:72</a></div>
+                            </td>
+                        </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>This icon will be displayed when there is no data on the datasource (and a search is not applied)
+Defaults to the &#39;table&#39; icon when not supplied</p>
+</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="noDataText"></a>
+                        <b>noDataText</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;#LDS#No data&#x27;</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="66" class="link-to-prism">src/lib/data-tree/data-tree.component.ts:66</a></div>
+                            </td>
+                        </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>This text will be displayed when there is no data on the datasource (and a search/filter is not applied)
+Defaults to a generic message when not supplied</p>
+</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="selectedEntities"></a>
+                        <b>selectedEntities</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>IEntity[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="77" class="link-to-prism">src/lib/data-tree/data-tree.component.ts:77</a></div>
+                            </td>
+                        </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>currently selected entities</p>
+</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="withMultiSelect"></a>
+                        <b>withMultiSelect</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="86" class="link-to-prism">src/lib/data-tree/data-tree.component.ts:86</a></div>
+                            </td>
+                        </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>determines whether the control allows multiselect or not</p>
+</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="withSelectedNodeHighlight"></a>
+                        <b>withSelectedNodeHighlight</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="74" class="link-to-prism">src/lib/data-tree/data-tree.component.ts:74</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <section data-compodoc="block-outputs">
+    <h3 id="outputs">Outputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="checkedNodesChanged"></a>
+                        <b>checkedNodesChanged</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="102" class="link-to-prism">src/lib/data-tree/data-tree.component.ts:102</a></div>
+                            </td>
+                        </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>Event, that will fire, if the checked nodes ware updated</p>
+</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="nodeSelected"></a>
+                        <b>nodeSelected</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="99" class="link-to-prism">src/lib/data-tree/data-tree.component.ts:99</a></div>
+                            </td>
+                        </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>Event, that will fire when the a node was selected and emitting a list of
+<a href="IEntity"> Entities</a> of the selected node and it&#39;s parents.</p>
+</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="treeRendered"></a>
+                        <b>treeRendered</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="105" class="link-to-prism">src/lib/data-tree/data-tree.component.ts:105</a></div>
+                            </td>
+                        </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>Event, that fires, after the tree is rendered</p>
+</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="add"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>add</b></span>
+                        <a href="#add"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>add(childEntity: IEntity, uidParent: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="202"
+                            class="link-to-prism">src/lib/data-tree/data-tree.component.ts:202</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Adds a child entity to a parent, identified by the parents uid</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>childEntity</td>
+                                    <td>
+                                            <code>IEntity</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>new entity to be added to the tree</p>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>uidParent</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>uid for the parent</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="clearSelection"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>clearSelection</b></span>
+                        <a href="#clearSelection"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>clearSelection()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="166"
+                            class="link-to-prism">src/lib/data-tree/data-tree.component.ts:166</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>clears all selected nodes for the tree and listings</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteNode"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>deleteNode</b></span>
+                        <a href="#deleteNode"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteNode(entity: IEntity, withDescendants: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="219"
+                            class="link-to-prism">src/lib/data-tree/data-tree.component.ts:219</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Deletes a node identified by its identity</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>entity</td>
+                                    <td>
+                                            <code>IEntity</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>entity, for identifying the node</p>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>withDescendants</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="expandNode"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>expandNode</b></span>
+                        <a href="#expandNode"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>expandNode(entity: IEntity)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="193"
+                            class="link-to-prism">src/lib/data-tree/data-tree.component.ts:193</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Expands a node identified by its entity</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>entity</td>
+                                    <td>
+                                            <code>IEntity</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>entity, for identifying the node</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getEntityById"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>getEntityById</b></span>
+                        <a href="#getEntityById"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getEntityById(id: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="185"
+                            class="link-to-prism">src/lib/data-tree/data-tree.component.ts:185</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>id</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>IEntity</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="hasChildren"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>hasChildren</b></span>
+                        <a href="#hasChildren"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>hasChildren(entity: IEntity)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="181"
+                            class="link-to-prism">src/lib/data-tree/data-tree.component.ts:181</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>entity</td>
+                                    <td>
+                                            <code>IEntity</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="hasSearchResults"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>hasSearchResults</b></span>
+                        <a href="#hasSearchResults"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>hasSearchResults()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="241"
+                            class="link-to-prism">src/lib/data-tree/data-tree.component.ts:241</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isExpanded"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>isExpanded</b></span>
+                        <a href="#isExpanded"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isExpanded(entity: IEntity)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="177"
+                            class="link-to-prism">src/lib/data-tree/data-tree.component.ts:177</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>entity</td>
+                                    <td>
+                                            <code>IEntity</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnChanges"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>ngOnChanges</b></span>
+                        <a href="#ngOnChanges"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ngOnChanges(changes: SimpleChanges)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="132"
+                            class="link-to-prism">src/lib/data-tree/data-tree.component.ts:132</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>changes</td>
+                                    <td>
+                                            <code>SimpleChanges</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnDestroy"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>ngOnDestroy</b></span>
+                        <a href="#ngOnDestroy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ngOnDestroy()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="149"
+                            class="link-to-prism">src/lib/data-tree/data-tree.component.ts:149</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="reload"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>reload</b></span>
+                        <a href="#reload"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>reload()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="173"
+                            class="link-to-prism">src/lib/data-tree/data-tree.component.ts:173</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>reloads data for the tree and the result list</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateNode"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>updateNode</b></span>
+                        <a href="#updateNode"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateNode(entity: IEntity, newNodeInfo: <a href="../interfaces/TreeNodeInfo.html" target="_self">TreeNodeInfo</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="211"
+                            class="link-to-prism">src/lib/data-tree/data-tree.component.ts:211</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>entity</td>
+                                    <td>
+                                            <code>IEntity</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>entity, for identifying the node</p>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>newNodeInfo</td>
+                                    <td>
+                                                <code><a href="../interfaces/TreeNodeInfo.html" target="_self" >TreeNodeInfo</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>new information for the node</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="hasTreeData"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>hasTreeData</b></span>
+                        <a href="#hasTreeData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>true</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="107" class="link-to-prism">src/lib/data-tree/data-tree.component.ts:107</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sidesheet"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>sidesheet</b></span>
+                        <a href="#sidesheet"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EuiSidesheetService</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="126" class="link-to-prism">src/lib/data-tree/data-tree.component.ts:126</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="subscriptions"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>subscriptions</b></span>
+                        <a href="#subscriptions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="123" class="link-to-prism">src/lib/data-tree/data-tree.component.ts:123</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="templateRef"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                        <span ><b>templateRef</b></span>
+                        <a href="#templateRef"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#T" target="_self" >TemplateRef&lt;any&gt;</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ContentChild(TemplateRef, {static: true})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="121" class="link-to-prism">src/lib/data-tree/data-tree.component.ts:121</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+  ChangeDetectorRef,
+  Component,
+  ContentChild,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Output,
+  SimpleChanges,
+  TemplateRef,
+  ViewChild,
+} from &#x27;@angular/core&#x27;;
+import { EuiSidesheetService } from &#x27;@elemental-ui/core&#x27;;
+import { TranslateService } from &#x27;@ngx-translate/core&#x27;;
+import { Subscription } from &#x27;rxjs&#x27;;
+
+import { CollectionLoadParameters, IEntity } from &#x27;imx-qbm-dbts&#x27;;
+import { ClassloggerService } from &#x27;../classlogger/classlogger.service&#x27;;
+import { CheckableTreeComponent } from &#x27;./checkable-tree/checkable-tree.component&#x27;;
+import { DataTreeSearchResultsComponent } from &#x27;./data-tree-search-results/data-tree-search-results.component&#x27;;
+import { TreeDatabase } from &#x27;./tree-database&#x27;;
+import { TreeSelectionListComponent } from &#x27;./tree-selection-list/tree-selection-list.component&#x27;;
+import { TreeNodeInfo } from &#x27;./tree-node&#x27;;
+
+@Component({
+  selector: &#x27;imx-data-tree&#x27;,
+  templateUrl: &#x27;./data-tree.component.html&#x27;,
+  styleUrls: [&#x27;./data-tree.component.scss&#x27;, &#x27;./data-tree-no-results.scss&#x27;],
+})
+/**
+ * A tree component consinsting of a {@link CheckableTreeComponent|checkable tree component}, an
+ *  {@link EuiSearchComponent|elemental UI search control} an a {@link DataTreeSearchResultsComponent|result list}
+ */
+export class DataTreeComponent implements OnChanges, OnDestroy {
+  /**
+   * This text will be displayed when there is no data on the datasource (and a search/filter is not applied)
+   * Defaults to a generic message when not supplied
+   */
+  @Input() public noDataText &#x3D; &#x27;#LDS#No data&#x27;;
+
+  /**
+   * This icon will be displayed when there is no data on the datasource (and a search is not applied)
+   * Defaults to the &#x27;table&#x27; icon when not supplied
+   */
+  @Input() public noDataIcon &#x3D; &#x27;table&#x27;;
+
+  @Input() public withSelectedNodeHighlight: boolean;
+
+  /** currently selected entities */
+  @Input() public selectedEntities: IEntity[] &#x3D; [];
+
+  /** the service providing the data for the {@link TreeDatasource| TreeDatasource} */
+  @Input() public database: TreeDatabase;
+
+  /** the caption displaying when an empty node is added at the top of the tree  */
+  @Input() public emptyNodeCaption: string;
+
+  /** determines whether the control allows multiselect or not  */
+  @Input() public withMultiSelect: boolean;
+
+  @Input() public navigationState: CollectionLoadParameters;
+
+  @Input() public hideSelection &#x3D; false;
+
+  /** modify tree node style, set true if using nodeSelected event emitter  */
+  @Input() public isNodeSelectable &#x3D; false;
+
+  /**
+   * Event, that will fire when the a node was selected and emitting a list of
+   * {@link IEntity| Entities} of the selected node and it&#x27;s parents.
+   */
+  @Output() public nodeSelected &#x3D; new EventEmitter&lt;IEntity&gt;();
+
+  /** Event, that will fire, if the checked nodes ware updated */
+  @Output() public checkedNodesChanged &#x3D; new EventEmitter();
+
+  /** Event, that fires, after the tree is rendered */
+  @Output() public treeRendered &#x3D; new EventEmitter();
+
+  public hasTreeData &#x3D; true;
+
+  /**
+   * @ignore
+   * internal handler for loading
+   */
+  public isLoading &#x3D; true;
+
+  /** @ignore The actual tree control */
+  @ViewChild(CheckableTreeComponent) public simpleTree: CheckableTreeComponent;
+
+  /** @ignore the search resulst */
+  @ViewChild(DataTreeSearchResultsComponent) public searchResults: DataTreeSearchResultsComponent;
+
+  @ContentChild(TemplateRef, { static: true }) public templateRef: TemplateRef&lt;any&gt;;
+
+  private subscriptions: Subscription[] &#x3D; [];
+
+  constructor(
+    public sidesheet: EuiSidesheetService,
+    private readonly logger: ClassloggerService,
+    private readonly translator: TranslateService,
+    private readonly changeDetector: ChangeDetectorRef
+  ) {}
+
+  public async ngOnChanges(changes: SimpleChanges): Promise&lt;void&gt; {
+    if (changes[&#x27;database&#x27;]) {
+      this.hasTreeData &#x3D; true; // because of 298890: (await this.database.getData(true, { PageSize: -1 })).totalCount &gt; 0;
+      if (this.database !&#x3D; null) {
+        if (this.database.busyService) {
+          this.subscriptions.push(
+            this.database.busyService.busyStateChanged.subscribe((value: boolean) &#x3D;&gt; {
+              this.isLoading &#x3D; value;
+              this.changeDetector.detectChanges();
+            })
+          );
+        }
+        this.isLoading &#x3D; this.database?.busyService?.isBusy ?? false;
+      }
+    }
+  }
+
+  public ngOnDestroy(): void {
+    for (const subscription of this.subscriptions) {
+      subscription.unsubscribe();
+    }
+  }
+
+  /** @ignore redirects the checkedNodesChanged event from the {@link CheckableTreeComponent|checkable tree component} */
+  public selectedNodesChanged(): void {
+    this.checkedNodesChanged.emit();
+  }
+
+  /** @ignore redirects the nodeSelected event from the {@link CheckableTreeComponent|checkable tree component} */
+  public async onNodeSelected(entity: IEntity): Promise&lt;void&gt; {
+    this.nodeSelected.emit(entity);
+  }
+
+  /** clears all selected nodes for the tree and listings */
+  public clearSelection(): void {
+    this.selectedEntities &#x3D; [];
+    this.simpleTree?.clearSelection();
+    this.searchResults?.clearSelection();
+  }
+
+  /** reloads data for the tree and the result list */
+  public reload(): void {
+    this.simpleTree?.reload();
+  }
+
+  public isExpanded(entity: IEntity): boolean {
+    return this.simpleTree?.isExpanded(entity);
+  }
+
+  public hasChildren(entity: IEntity): boolean {
+    return this.simpleTree?.hasChildren(entity);
+  }
+
+  public getEntityById(id: string): IEntity {
+    return this.simpleTree?.getEntityById(id);
+  }
+
+  /**
+   * Expands a node identified by its entity
+   * @param entity entity, for identifying the node
+   */
+  public expandNode(entity: IEntity) {
+    this.simpleTree?.expandNode(entity);
+  }
+
+  /**
+   * Adds a child entity to a parent, identified by the parents uid
+   * @param childEntity new entity to be added to the tree
+   * @param uidParent uid for the parent
+   */
+  public add(childEntity: IEntity, uidParent: string) {
+    this.simpleTree?.add(childEntity, uidParent);
+  }
+
+  /**
+   *
+   * @param entity entity, for identifying the node
+   * @param newNodeInfo new information for the node
+   */
+  public updateNode(entity: IEntity, newNodeInfo: TreeNodeInfo) {
+    this.simpleTree?.updateNode(entity, newNodeInfo);
+  }
+
+  /**
+   * Deletes a node identified by its identity
+   * @param entity entity, for identifying the node
+   */
+  public deleteNode(entity: IEntity, withDescendants: boolean) {
+    this.simpleTree?.deleteNode(entity,withDescendants);
+  }
+
+  /** @ignore opens a side sheet containing the  {@link TreeSelectionListComponent|selected elements} */
+  public async onOpenSelectionSidesheet(): Promise&lt;void&gt; {
+    const sidesheetRef &#x3D; this.sidesheet.open(TreeSelectionListComponent, {
+      title: await this.translator.get(&#x27;#LDS#Heading Selected Items&#x27;).toPromise(),
+      panelClass: &#x27;imx-sidesheet&#x27;,
+      padding: &#x27;0&#x27;,
+      width: &#x27;50%&#x27;,
+      testId: &#x27;data-tree-selected-elements-sidesheet&#x27;,
+      data: this.selectedEntities,
+    });
+
+    this.subscriptions.push(
+      sidesheetRef.afterClosed().subscribe((result) &#x3D;&gt; {
+        this.logger.log(this, &#x27;The sidesheet was closed&#x27;, result);
+      })
+    );
+  }
+
+  public hasSearchResults(): boolean {
+    return this.navigationState?.search &amp;&amp; this.navigationState?.search !&#x3D;&#x3D; null &amp;&amp; this.navigationState?.search !&#x3D;&#x3D; &#x27;&#x27;;
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;imx-busy-indicator *ngIf&#x3D;&quot;isLoading&quot;&gt;&lt;/imx-busy-indicator&gt;
+
+&lt;ng-container *ngIf&#x3D;&quot;hasTreeData; else noDataContainer&quot;&gt;
+  &lt;div class&#x3D;&quot;imx-selected-items-button-containter&quot; [ngClass]&#x3D;&quot;{ hidden: isLoading }&quot;&gt;
+    &lt;button
+      *ngIf&#x3D;&quot;withMultiSelect &amp;&amp; !hideSelection&quot;
+      [disabled]&#x3D;&quot;selectedEntities.length &#x3D;&#x3D;&#x3D; 0&quot;
+      mat-flat-button
+      class&#x3D;&quot;imx-data-table-selection-info mat-caption&quot;
+      (click)&#x3D;&quot;onOpenSelectionDialog()&quot;
+      data-imx-identifier&#x3D;&quot;datatree-button-show-selected&quot;
+    &gt;
+      {{ &#x27;#LDS#Selected items&#x27; | translate }} ({{ selectedEntities.length }})
+    &lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div [ngClass]&#x3D;&quot;{ hidden: isLoading }&quot; class&#x3D;&quot;imx-data-tree-content&quot;&gt;
+    &lt;imx-checkable-tree
+      *ngIf&#x3D;&quot;!hasSearchResults()&quot;
+      [database]&#x3D;&quot;database&quot;
+      [withSelectedNodeHighlight]&#x3D;&quot;withSelectedNodeHighlight&quot;
+      [selectedEntities]&#x3D;&quot;selectedEntities&quot;
+      [withMultiSelect]&#x3D;&quot;withMultiSelect&quot;
+      [emptyNodeCaption]&#x3D;&quot;emptyNodeCaption&quot;
+      [navigationState]&#x3D;&quot;navigationState&quot;
+      [isNodeSelectable]&#x3D;&quot;isNodeSelectable&quot;
+      (checkedNodesChanged)&#x3D;&quot;selectedNodesChanged()&quot;
+      (nodeSelected)&#x3D;&quot;onNodeSelected($event)&quot;
+      (treeRendered)&#x3D;&quot;treeRendered.emit()&quot;
+    &gt;
+      &lt;ng-template let-entity&gt;
+        &lt;ng-container *ngTemplateOutlet&#x3D;&quot;templateRef; context: { $implicit: entity }&quot;&gt; &lt;/ng-container&gt;
+      &lt;/ng-template&gt;
+    &lt;/imx-checkable-tree&gt;
+
+    &lt;div class&#x3D;&quot;imx-search-selection&quot;&gt;
+      &lt;imx-data-tree-search-results
+        #treeSearchResults
+        *ngIf&#x3D;&quot;hasSearchResults()&quot;
+        [withMultiSelect]&#x3D;&quot;withMultiSelect&quot;
+        [withSelectedNodeHighlight]&#x3D;&quot;withSelectedNodeHighlight&quot;
+        [selectedEntities]&#x3D;&quot;selectedEntities&quot;
+        (checkedNodesChanged)&#x3D;&quot;selectedNodesChanged()&quot;
+        (nodeSelected)&#x3D;&quot;onNodeSelected($event)&quot;
+        [database]&#x3D;&quot;database&quot;
+        [navigationState]&#x3D;&quot;navigationState&quot;
+      &gt;
+        &lt;ng-template let-entity&gt;
+          &lt;ng-container *ngTemplateOutlet&#x3D;&quot;templateRef; context: { $implicit: entity }&quot;&gt; &lt;/ng-container&gt;
+        &lt;/ng-template&gt;
+      &lt;/imx-data-tree-search-results&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/ng-container&gt;
+
+&lt;ng-template #noDataContainer&gt;
+  &lt;div [ngClass]&#x3D;&quot;{ hidden: isLoading || !database.rootNodes }&quot; class&#x3D;&quot;imx-data-tree-no-results&quot;&gt;
+    &lt;eui-icon [icon]&#x3D;&quot;noDataIcon&quot;&gt;&lt;/eui-icon&gt;
+    &lt;p [translate]&#x3D;&quot;noDataText&quot;&gt;&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/ng-template&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./data-tree.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">@import &quot;@elemental-ui/core/src/styles/_palette.scss&quot;;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  flex: 1 1 auto;
+}
+
+.multi-select-formcontrol-eui-search {
+  width: 100%;
+  display: flex;
+
+  .eui-search {
+    width: 100%;
+  }
+
+  ::ng-deep .eui-search.mat-form-field.mat-form-field-appearance-outline {
+    min-width: 280px;
+    flex: 1;
+    margin-bottom: 10px;
+  }
+}
+
+.mat-form-field {
+  flex: 1;
+}
+
+.imx-data-tree-content {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.imx-search-selection {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+.mat-tree-node .mat-icon-button.mat-button-base {
+  flex: 0 0 40px;
+}
+
+.imx-selected-items-button-containter {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-bottom: 5px;
+}
+
+.imx-data-table-selection-info {
+  padding-right: 5px;
+  color: $iris-blue;
+}
+
+.hidden {
+  display: none;
+}</code></pre>
+                <p class="comment">
+                    <code>./data-tree-no-results.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">@import &quot;@elemental-ui/core/src/styles/_palette.scss&quot;;
+
+.imx-data-tree-no-results {
+  text-align: center;
+  display: flex;
+  margin: 20px 0;
+  flex: 1 1 auto;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  
+  .eui-icon {
+    font-size: 100px;
+    color: rgba($black-c, 0.55);
+  }
+
+  p {
+    margin: 0;
+    font-size: 18px;
+    color: $black-9;
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><imx-busy-indicator *ngIf="isLoading"></imx-busy-indicator><ng-container *ngIf="hasTreeData; else noDataContainer">  <div class="imx-selected-items-button-containter" [ngClass]="{ hidden: isLoading }">    <button      *ngIf="withMultiSelect && !hideSelection"      [disabled]="selectedEntities.length === 0"      mat-flat-button      class="imx-data-table-selection-info mat-caption"      (click)="onOpenSelectionDialog()"      data-imx-identifier="datatree-button-show-selected"    >      {{ \'#LDS#Selected items\' | translate }} ({{ selectedEntities.length }})    </button>  </div>  <div [ngClass]="{ hidden: isLoading }" class="imx-data-tree-content">    <imx-checkable-tree      *ngIf="!hasSearchResults()"      [database]="database"      [withSelectedNodeHighlight]="withSelectedNodeHighlight"      [selectedEntities]="selectedEntities"      [withMultiSelect]="withMultiSelect"      [emptyNodeCaption]="emptyNodeCaption"      [navigationState]="navigationState"      [isNodeSelectable]="isNodeSelectable"      (checkedNodesChanged)="selectedNodesChanged()"      (nodeSelected)="onNodeSelected($event)"      (treeRendered)="treeRendered.emit()"    >      <ng-template let-entity>        <ng-container *ngTemplateOutlet="templateRef; context: { $implicit: entity }"> </ng-container>      </ng-template>    </imx-checkable-tree>    <div class="imx-search-selection">      <imx-data-tree-search-results        #treeSearchResults        *ngIf="hasSearchResults()"        [withMultiSelect]="withMultiSelect"        [withSelectedNodeHighlight]="withSelectedNodeHighlight"        [selectedEntities]="selectedEntities"        (checkedNodesChanged)="selectedNodesChanged()"        (nodeSelected)="onNodeSelected($event)"        [database]="database"        [navigationState]="navigationState"      >        <ng-template let-entity>          <ng-container *ngTemplateOutlet="templateRef; context: { $implicit: entity }"> </ng-container>        </ng-template>      </imx-data-tree-search-results>    </div>  </div></ng-container><ng-template #noDataContainer>  <div [ngClass]="{ hidden: isLoading || !database.rootNodes }" class="imx-data-tree-no-results">    <eui-icon [icon]="noDataIcon"></eui-icon>    <p [translate]="noDataText"></p>  </div></ng-template></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'imx-about'},{'name': 'AddConfigSidesheetComponent', 'selector': ''},{'name': 'AdditionalInfosComponent', 'selector': 'imx-additional-infos'},{'name': 'ApplyConfigSidesheetComponent', 'selector': ''},{'name': 'AutoCompleteComponent', 'selector': 'imx-auto-complete'},{'name': 'AutocompleteComponent', 'selector': 'imx-autocomplete'},{'name': 'BulkItemComponent', 'selector': 'imx-bulk-item'},{'name': 'BulkPropertyEditorComponent', 'selector': 'imx-bulk-editor'},{'name': 'BusyIndicatorComponent', 'selector': 'imx-busy-indicator'},{'name': 'CacheComponent', 'selector': 'imx-cache'},{'name': 'CalendarComponent', 'selector': 'imx-calendar'},{'name': 'CaptchaComponent', 'selector': 'imx-captcha'},{'name': 'CdrEditorComponent', 'selector': 'imx-cdr-editor'},{'name': 'CdrSidesheetComponent', 'selector': ''},{'name': 'ChartTileComponent', 'selector': 'imx-chart-tile'},{'name': 'CheckableTreeComponent', 'selector': 'imx-checkable-tree'},{'name': 'ColumnSelectionComponent', 'selector': 'imx-sqlwizard-columnselection'},{'name': 'ConfigComponent', 'selector': 'imx-config'},{'name': 'ConfigKeyPathComponent', 'selector': 'config-key-path'},{'name': 'ConnectionComponent', 'selector': ''},{'name': 'ConvertConfigSidesheetComponent', 'selector': ''},{'name': 'DashboardComponent', 'selector': ''},{'name': 'DataExportComponent', 'selector': 'imx-data-export'},{'name': 'DataSourcePaginatorComponent', 'selector': 'imx-data-source-paginator'},{'name': 'DataSourceToolbarComponent', 'selector': 'imx-data-source-toolbar'},{'name': 'DataSourceToolbarCustomComponent', 'selector': 'imx-data-source-toolbar-custom'},{'name': 'DataTableCellComponent', 'selector': 'imx-data-table-cell'},{'name': 'DataTableColumnComponent', 'selector': 'imx-data-table-column'},{'name': 'DataTableComponent', 'selector': 'imx-data-table'},{'name': 'DataTableDisplayCellComponent', 'selector': 'imx-data-table-display-cell'},{'name': 'DataTableGenericColumnComponent', 'selector': 'imx-data-table-generic-column'},{'name': 'DataTileComponent', 'selector': 'imx-data-tile'},{'name': 'DataTilesComponent', 'selector': 'imx-data-tiles'},{'name': 'DataTreeComponent', 'selector': 'imx-data-tree'},{'name': 'DataTreeSearchResultsComponent', 'selector': 'imx-data-tree-search-results'},{'name': 'DataTreeWrapperComponent', 'selector': 'imx-data-tree-wrapper'},{'name': 'DateComponent', 'selector': 'imx-date'},{'name': 'DatePickerComponent', 'selector': 'imx-sqlwizard-datepicker'},{'name': 'DateRangeComponent', 'selector': 'imx-date-range'},{'name': 'DeleteConfigSidesheetComponent', 'selector': ''},{'name': 'EditBinaryComponent', 'selector': 'imx-edit-binary'},{'name': 'EditBooleanComponent', 'selector': 'imx-checkbox-editor'},{'name': 'EditDateComponent', 'selector': 'imx-edit-date'},{'name': 'EditDefaultComponent', 'selector': 'imx-edit-default'},{'name': 'EditFkComponent', 'selector': 'imx-edit-fk'},{'name': 'EditFkMultiComponent', 'selector': 'imx-edit-fk-multi'},{'name': 'EditImageComponent', 'selector': 'imx-edit-image'},{'name': 'EditLimitedValueComponent', 'selector': 'imx-edit-limited-value'},{'name': 'EditMultiLimitedValueComponent', 'selector': 'imx-edit-multi-limited-value'},{'name': 'EditMultilineComponent', 'selector': 'imx-edit-multiline'},{'name': 'EditMultiValueComponent', 'selector': 'imx-edit-multi-value'},{'name': 'EditNumberComponent', 'selector': 'imx-edit-number'},{'name': 'EditorBase', 'selector': ''},{'name': 'EditRiskIndexComponent', 'selector': 'imx-edit-risk-index'},{'name': 'EditUrlComponent', 'selector': 'imx-edit-url'},{'name': 'EntityColumnEditorComponent', 'selector': 'imx-entity-column-editor'},{'name': 'EntitySelectComponent', 'selector': 'imx-entity-select'},{'name': 'ExtComponent', 'selector': 'imx-ext'},{'name': 'FilterTileComponent', 'selector': 'imx-filter-tile'},{'name': 'FilterTreeComponent', 'selector': 'imx-filter-tree'},{'name': 'FilterWizardComponent', 'selector': 'imx-filter-wizard'},{'name': 'FkAdvancedPickerComponent', 'selector': ''},{'name': 'FkCandidatesComponent', 'selector': 'imx-fk-candidates'},{'name': 'FkHierarchicalDialogComponent', 'selector': 'imx-fk-hierarchical-dialog'},{'name': 'FkSelectorComponent', 'selector': 'imx-fk-selector'},{'name': 'FkTableSelectComponent', 'selector': 'imx-fk-table-select'},{'name': 'GroupPaginatorComponent', 'selector': 'imx-group-paginator'},{'name': 'HelpContextualComponent', 'selector': 'imx-help-contextual'},{'name': 'HelpContextualDialogComponent', 'selector': 'imx-help-contextual-dialog'},{'name': 'HyperviewComponent', 'selector': 'imx-hyperview'},{'name': 'IconStackComponent', 'selector': 'imx-icon-stack'},{'name': 'ImageSelectComponent', 'selector': 'imx-image-select'},{'name': 'ImageViewComponent', 'selector': 'imx-image-view'},{'name': 'ImxMatColumnComponent', 'selector': 'imx-column'},{'name': 'ImxProgressbarComponent', 'selector': 'imx-progressbar'},{'name': 'ImxTreeTableComponent', 'selector': 'imx-tree-table'},{'name': 'IndexBarComponent', 'selector': 'imx-indexbar'},{'name': 'InfoBadgeComponent', 'selector': 'imx-info-badge'},{'name': 'InfoButtonComponent', 'selector': 'imx-info-button'},{'name': 'InfoDialogComponent', 'selector': 'imx-info-dialog'},{'name': 'JobQueueOverviewComponent', 'selector': 'imx-jobqueue-overview'},{'name': 'ListSettingComponent', 'selector': 'imx-list-setting'},{'name': 'ListShapeComponent', 'selector': 'imx-hyperview-listshape'},{'name': 'LogDetailsSidesheetComponent', 'selector': 'imx-log-details-sidesheet'},{'name': 'LoginComponent', 'selector': 'imx-login'},{'name': 'LogsComponent', 'selector': 'imx-logs'},{'name': 'MasterDetailComponent', 'selector': 'imx-master-detail'},{'name': 'MastHeadComponent', 'selector': 'imx-mast-head'},{'name': 'MenuComponent', 'selector': 'imx-menu'},{'name': 'MessageDialogComponent', 'selector': 'imx-message-dialog'},{'name': 'MultiSelectFormcontrolComponent', 'selector': 'imx-multi-select-formcontrol'},{'name': 'ObjectHistoryComponent', 'selector': 'imx-object-history'},{'name': 'ObjectHistoryGridviewComponent', 'selector': 'imx-object-history-gridview'},{'name': 'ObjectHistoryStateComparisonComponent', 'selector': 'imx-object-history-state-comparison'},{'name': 'ObjectHistoryStateOverviewComponent', 'selector': 'imx-object-history-state-overview'},{'name': 'OrderedListComponent', 'selector': 'imx-ordered-list'},{'name': 'PackagesComponent', 'selector': 'imx-packages'},{'name': 'ParameterizedTextComponent', 'selector': 'imx-parameterized-text'},{'name': 'PluginsComponent', 'selector': 'imx-plugins'},{'name': 'PredefinedFilterComponent', 'selector': 'imx-predefined-filter'},{'name': 'PredefinedFilterTreeComponent', 'selector': 'imx-predefined-filter-tree'},{'name': 'PropertyShapeComponent', 'selector': 'imx-hyperview-propertyshape'},{'name': 'PropertyViewerComponent', 'selector': 'imx-property-viewer'},{'name': 'SaveConfigDialogComponent', 'selector': 'imx-save-config-dialog'},{'name': 'SearchBarComponent', 'selector': 'imx-searchbar'},{'name': 'SelectComponent', 'selector': 'imx-select'},{'name': 'SelectedElementsComponent', 'selector': 'imx-selected-elements'},{'name': 'SelectedElementsDialog', 'selector': ''},{'name': 'SelectValueComponent', 'selector': 'imx-config-select'},{'name': 'ShapeComponent', 'selector': 'imx-hyperview-shape'},{'name': 'SideNavigationViewComponent', 'selector': 'imx-side-navigation-view'},{'name': 'SidenavTreeComponent', 'selector': 'imx-sidenav-tree'},{'name': 'SimpleExpressionComponent', 'selector': 'imx-sqlwizard-simpleexpression'},{'name': 'SimpleShapeComponent', 'selector': 'imx-hyperview-simpleshape'},{'name': 'SingleExpressionComponent', 'selector': 'imx-sqlwizard-singleexpression'},{'name': 'SingleValueComponent', 'selector': 'imx-sqlwizard-singlevalue'},{'name': 'SqlWizardComponent', 'selector': 'imx-sqlwizard'},{'name': 'StatusComponent', 'selector': 'imx-status'},{'name': 'SwaggerComponent', 'selector': 'imx-swagger'},{'name': 'TableSelectionComponent', 'selector': 'imx-sqlwizard-tableselection'},{'name': 'TempBillboardComponent', 'selector': 'imx-temp-billboard'},{'name': 'TileComponent', 'selector': 'imx-tile'},{'name': 'TimelineComponent', 'selector': 'imx-timeline'},{'name': 'TimePickerComponent', 'selector': 'imx-time-picker'},{'name': 'TranslationEditorComponent', 'selector': 'imx-translation-editor'},{'name': 'TreeSelectionListComponent', 'selector': ''},{'name': 'TwoFactorAuthenticationComponent', 'selector': 'imx-2fahost'},{'name': 'TypedEntityCandidateSidesheetComponent', 'selector': ''},{'name': 'TypedEntitySelectComponent', 'selector': 'imx-typed-entity-select'},{'name': 'TypedEntitySelectorComponent', 'selector': 'imx-typed-entity-selector'},{'name': 'UserMessageComponent', 'selector': 'imx-usermessage'},{'name': 'ViewPropertyComponent', 'selector': 'imx-view-property'},{'name': 'ViewPropertyDefaultComponent', 'selector': 'imx-view-property-default'},{'name': 'WhereClauseExpressionComponent', 'selector': 'imx-sqlwizard-whereclauseexpression'}];
+    var DIRECTIVES = [{'name': 'DisableControlDirective', 'selector': '[imxDisableControl]'},{'name': 'DynamicTabDataProviderDirective', 'selector': '[imxDataProvider]'},{'name': 'ExtDirective', 'selector': '[imxExtd]'},{'name': 'MatSelectionListMultipleDirective', 'selector': 'mat-selection-list[multiple]'},{'name': 'TableAccessiblilityDirective', 'selector': '[tableAccessiblility]'},{'name': 'ZoomPanDirective', 'selector': '[imxZoomPan]'}];
+    var ACTUAL_COMPONENT = {'name': 'DataTreeComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'DataTreeComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

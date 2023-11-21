@@ -1,0 +1,1007 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>IMX Web - QBM Library</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/material.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">IMX Web - QBM Library</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content class">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >DateParser</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/lib/date/date/date-parser.ts</code>
+        </p>
+
+
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>Internally used date parser for strings representing date and (optionally) time
+using &quot;L LT&quot; format for date and time and &quot;L&quot; format for date only.</p>
+<p>See <a href="https://momentjs.com/docs/#/parsing/">Moment.js parsing</a>.</p>
+
+            </p>
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#asDateOnly" >asDateOnly</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#asTimeOnly" >asTimeOnly</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#format" >format</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#parseDate" >parseDate</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#parseDateAndTimeString" >parseDateAndTimeString</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#parseTime" >parseTime</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(logger: <a href="../injectables/ClassloggerService.html" target="_self">ClassloggerService</a>, withTime: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">src/lib/date/date/date-parser.ts:62</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div class="io-description"><p>Creates a new DateParser.</p>
+</div>
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                                    <td>Description</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ClassloggerService.html" target="_self" >ClassloggerService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                        <td>
+                                                                <p>The logger</p>
+
+                                                        </td>
+                                                </tr>
+                                                <tr>
+                                                        <td>withTime</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                        <td>
+                                                                <p>Whether the string should contain a time part.</p>
+
+                                                        </td>
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="asDateOnly"></a>
+                    <span class="name">
+                        <span class="modifier">Static</span>
+                        <span ><b>asDateOnly</b></span>
+                        <a href="#asDateOnly"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>asDateOnly(value: Moment)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="153"
+                            class="link-to-prism">src/lib/date/date/date-parser.ts:153</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Takes some momemt and returns a clean new moment</p>
+<ul>
+<li>containing only the date part (only years, months and days, no hours, minutes etc.)</li>
+<li>set to the right date format</li>
+</ul>
+<p>NOTE: if the input is invalid the return value will be undefined.</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>value</td>
+                                    <td>
+                                            <code>Moment</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>a moment possibly containing more than date</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Moment</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>a clean date only moment</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="asTimeOnly"></a>
+                    <span class="name">
+                        <span class="modifier">Static</span>
+                        <span ><b>asTimeOnly</b></span>
+                        <a href="#asTimeOnly"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>asTimeOnly(value: Moment)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="167"
+                            class="link-to-prism">src/lib/date/date/date-parser.ts:167</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Takes some momemt and returns a clean new moment</p>
+<ul>
+<li>containing only the time part (only hours and minutes)</li>
+<li>set to the right date format</li>
+</ul>
+<p>NOTE: if the input is invalid the return value will be undefined.</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>value</td>
+                                    <td>
+                                            <code>Moment</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>a moment possibly containing more than time</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Moment</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>a clean time only moment</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="format"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>format</b></span>
+                        <a href="#format"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>format(date: Moment)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="78"
+                            class="link-to-prism">src/lib/date/date/date-parser.ts:78</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Returns the formatted value for a given date (and time).</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>date</td>
+                                    <td>
+                                            <code>Moment</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>The date (and time).</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>The string representation of the date (and time).</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="parseDate"></a>
+                    <span class="name">
+                        <span class="modifier">Static</span>
+                        <span ><b>parseDate</b></span>
+                        <a href="#parseDate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>parseDate(text: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="182"
+                            class="link-to-prism">src/lib/date/date/date-parser.ts:182</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Parses the date part of a string representation of a date (and time).</p>
+<p>This function is half-strict.
+The start if the string should be a strictly valid date but the rest of the
+string doesn&#39;t care as long as it is clearly <a href="SEPARATOR_BETWEEN_DATE_AND_TIME">separated</a>.</p>
+<p>If parsing fails the return value will not be undefined but <a href="https://momentjs.com/docs/#/parsing/">invalid</a>.</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>text</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>The string representation</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Moment</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>A moment according to the date part.</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="parseDateAndTimeString"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>parseDateAndTimeString</b></span>
+                        <a href="#parseDateAndTimeString"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>parseDateAndTimeString(dateAndTimeString: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="90"
+                            class="link-to-prism">src/lib/date/date/date-parser.ts:90</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Parses the date and time of a string representation of a date (and time).</p>
+<p>If parsing fails the return value will not be undefined but <a href="https://momentjs.com/docs/#/parsing/">invalid</a>.</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>dateAndTimeString</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Moment</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>A moment according to the date and time part.</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="parseTime"></a>
+                    <span class="name">
+                        <span class="modifier">Static</span>
+                        <span ><b>parseTime</b></span>
+                        <a href="#parseTime"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>parseTime(text: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="214"
+                            class="link-to-prism">src/lib/date/date/date-parser.ts:214</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Parses the time part of a string representation of a date (and time).</p>
+<p>This function is half-strict.
+The end of the string should be a strictly valid time but the start of the
+string doesn&#39;t care as long as it is clearly <a href="SEPARATOR_BETWEEN_DATE_AND_TIME">separated</a>.</p>
+<p>If parsing fails the return value will not be undefined but <a href="https://momentjs.com/docs/#/parsing/">invalid</a>.</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>text</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>The string representation</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Moment</code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>A moment according to the time part.</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+
+
+
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ClassloggerService } from &#x27;../../classlogger/classlogger.service&#x27;;
+import moment from &#x27;moment-timezone&#x27;;
+import { Moment } from &#x27;moment-timezone&#x27;;
+
+
+/**
+ * Internally used date parser for strings representing date and (optionally) time
+ * using &quot;L LT&quot; format for date and time and &quot;L&quot; format for date only.
+ *
+ * See {@link https://momentjs.com/docs/#/parsing/|Moment.js parsing}.
+ */
+export class DateParser {
+
+  /**
+   * @ignore
+   * The format for the date part.
+   */
+  private static readonly FORMAT_DATE &#x3D; &#x27;L&#x27;;
+
+  /**
+   * @ignore
+   * The format for the time part.
+   */
+  private static readonly FORMAT_TIME &#x3D; &#x27;LT&#x27;;
+
+  /**
+   * @ignore
+   * The combined date and time format.
+   */
+  private static readonly FORMAT_DATEANDTIME &#x3D; &#x27;L LT&#x27;;
+
+  /**
+   * @ignore
+   * The separator between date format and time format in FORMAT_DATEANDTIME.
+   */
+  private static readonly SEPARATOR_BETWEEN_DATE_AND_TIME &#x3D; &#x27; &#x27;;
+
+
+  /**
+   * Creates a new DateParser.
+   *
+   * @param logger The logger
+   * @param withTime Whether the string should contain a time part.
+   */
+  constructor(private logger: ClassloggerService, private withTime: boolean) { }
+
+  /**
+   * Returns the formatted value for a given date (and time).
+   * @param date The date (and time).
+   * @returns The string representation of the date (and time).
+   */
+  public format(date: Moment): string {
+    return date?.format(this.fullFormat) ?? &#x27;&#x27;;
+  }
+
+  /**
+   * Parses the date and time of a string representation of a date (and time).
+   *
+   * If parsing fails the return value will not be undefined but {@link https://momentjs.com/docs/#/parsing/|invalid}.
+   *
+   * @param text The string representation
+   * @returns A moment according to the date and time part.
+   */
+  public parseDateAndTimeString(dateAndTimeString: string): Moment {
+    try {
+
+      if (!dateAndTimeString || dateAndTimeString.trim().length &#x3D;&#x3D;&#x3D; 0) {
+        return undefined;
+      }
+
+      const date &#x3D; DateParser.parseDate(dateAndTimeString);
+      if (!date.isValid()) {
+        this.logger.debug(this, &#x60;Invalid date: &#x27;${dateAndTimeString}&#x27;: does not define a valid date.&#x60;);
+        return moment.invalid();
+      }
+
+      if (!this.withTime) {
+        return moment(date.format(DateParser.FORMAT_DATE), DateParser.FORMAT_DATE, true);
+      }
+
+      const time &#x3D; DateParser.parseTime(dateAndTimeString);
+      if (!time.isValid()) {
+        return moment(date.format(DateParser.FORMAT_DATEANDTIME), DateParser.FORMAT_DATEANDTIME, true);
+      }
+
+      // date and time have not necessarily been evaluated in &#x27;strict&#x27; mode.
+      // that&#x27;s ok, but at least their separate values need to match the combined value then.
+      const combined &#x3D; moment(dateAndTimeString, DateParser.FORMAT_DATEANDTIME, false);
+
+      if (!combined.isValid()
+        || combined.year() !&#x3D;&#x3D; date.year()
+        || combined.month() !&#x3D;&#x3D; date.month()
+        || combined.date() !&#x3D;&#x3D; date.date()
+        || combined.hour() !&#x3D;&#x3D; time.hour()
+        || combined.seconds() !&#x3D;&#x3D; time.seconds()) {
+        return moment.invalid();
+
+      }
+
+      // We cannot simply parse the date and time string, since the moment.js documentation suggests
+      // that this is not guaranteed to work in a pleasant manner.
+      // So we create the moment with just the date parts we need (no milliseconds or so).
+      let m &#x3D; moment({ year: date.year(), month: date.month(), day: date.date(), hour: time.hour(), minute: time.minute() });
+
+      // Right now the moment instance is missing the right formatting information.
+      // Reconstruction with the parsing constructor helps.
+      m &#x3D; moment(m.format(DateParser.FORMAT_DATEANDTIME), DateParser.FORMAT_DATEANDTIME, true);
+
+      return m;
+
+    } catch (error) {
+      this.logger.debug(this, &#x60;Invalid date string &#x27;${dateAndTimeString}&#x27;: ${error}&#x60;);
+      return moment(&#x27;invalid&#x27;);
+    }
+  }
+
+  /**
+   * Takes some momemt and returns a clean new moment
+   * - containing only the date part (only years, months and days, no hours, minutes etc.)
+   * - set to the right date format
+   *
+   * NOTE: if the input is invalid the return value will be undefined.
+   *
+   * @param value a moment possibly containing more than date
+   * @returns a clean date only moment
+   */
+  public static asDateOnly(value: Moment): Moment {
+    return value?.isValid() ? moment(moment(value).format(DateParser.FORMAT_DATE), DateParser.FORMAT_DATE, true) : undefined;
+  }
+
+  /**
+   * Takes some momemt and returns a clean new moment
+   * - containing only the time part (only hours and minutes)
+   * - set to the right date format
+   *
+   * NOTE: if the input is invalid the return value will be undefined.
+   *
+   * @param value a moment possibly containing more than time
+   * @returns a clean time only moment
+   */
+  public static asTimeOnly(value: Moment): Moment {
+    return value?.isValid() ? moment(moment(value).format(DateParser.FORMAT_TIME), DateParser.FORMAT_TIME, true) : undefined;
+  }
+
+  /**
+   * Parses the date part of a string representation of a date (and time).
+   *
+   * This function is half-strict.
+   * The start if the string should be a strictly valid date but the rest of the
+   * string doesn&#x27;t care as long as it is clearly {@link SEPARATOR_BETWEEN_DATE_AND_TIME|separated}.
+   *
+   * If parsing fails the return value will not be undefined but {@link https://momentjs.com/docs/#/parsing/|invalid}.
+   * @param text The string representation
+   * @returns A moment according to the date part.
+   */
+     public static parseDate(text: string): Moment {
+      const s &#x3D; (text ?? &#x27;&#x27;).trim();
+      let date &#x3D; moment(s, DateParser.FORMAT_DATE, true);
+
+    if (!date.isValid()) {
+
+        // maybe it&#x27;s s.th. like 3/4/21 instead of 04/04/2021
+        // we look for that.
+        const generous &#x3D; moment(s, DateParser.FORMAT_DATE, false);
+
+        // TODO: Reactivate
+        // if (generous.isValid() &amp;&amp; (! generous.unusedInput || generous.unusedInput.length &#x3D;&#x3D;&#x3D; 0)) {
+        if (generous.isValid()) {
+          date &#x3D; generous;
+        }
+      }
+
+      return date;
+    }
+
+
+  /**
+   * Parses the time part of a string representation of a date (and time).
+   *
+   * This function is half-strict.
+   * The end of the string should be a strictly valid time but the start of the
+   * string doesn&#x27;t care as long as it is clearly {@link SEPARATOR_BETWEEN_DATE_AND_TIME|separated}.
+   *
+   * If parsing fails the return value will not be undefined but {@link https://momentjs.com/docs/#/parsing/|invalid}.
+   * @param text The string representation
+   * @returns A moment according to the time part.
+   */
+  public static parseTime(text: string): Moment {
+    const s &#x3D; (text ?? &#x27;&#x27;).trim();
+    let time &#x3D; moment(s, DateParser.FORMAT_TIME, true);
+
+    // if invalid, maybe the time part is prefixed by a valid date?
+    if (!time.isValid() &amp;&amp; DateParser.parseDate(s).isValid()) {
+      const separatorIndex &#x3D; s.indexOf(DateParser.SEPARATOR_BETWEEN_DATE_AND_TIME);
+
+      const suffix &#x3D; separatorIndex &gt; 0 ? s.substring(separatorIndex + 1).trim() : &#x27;&#x27;;
+      if (suffix.length &#x3D;&#x3D;&#x3D; 0) {
+        // if there is no suffix, there is no time
+        return moment.invalid();
+      } else {
+        // try to parse the rest as time - this could still be invalid though
+        time &#x3D; moment(suffix, DateParser.FORMAT_TIME, false);
+      }
+    }
+
+    // if still invalid, try being generous
+    if (!time.isValid()) {
+      time &#x3D; moment(s, DateParser.FORMAT_TIME, false);
+    }
+
+    return time;
+  }
+
+  /**
+   * @ignore
+   *
+   * Returns the format for a complete date string depending on whether time shoul be included or not.
+   */
+  private get fullFormat(): string {
+    return this.withTime ? DateParser.FORMAT_DATEANDTIME : DateParser.FORMAT_DATE;
+  }
+
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'DateParser.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

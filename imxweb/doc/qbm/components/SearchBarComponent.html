@@ -1,0 +1,2190 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>IMX Web - QBM Library</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/material.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">IMX Web - QBM Library</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  SearchBarComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/lib/searchbar/searchbar.component.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                <code>OnInit</code>
+                <code>OnDestroy</code>
+    </p>
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>imx-searchbar</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./searchbar.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./searchbar.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#autocompleteFocus" >autocompleteFocus</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                <a href="#autoCompleteTrigger" >autoCompleteTrigger</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#filterComponentId" >filterComponentId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#filterFocus" >filterFocus</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#noEntriesVisible" >noEntriesVisible</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                <a href="#resultTemplate" >resultTemplate</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#searchResults" >searchResults</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#selectedTables" >selectedTables</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#subscriptions" >subscriptions</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#tableList" >tableList</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#tables" >tables</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                <a href="#tableSelect" >tableSelect</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#term" >term</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#displayItem" >displayItem</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#handleSelection" >handleSelection</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#ngOnDestroy" >ngOnDestroy</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#onComponentLostFocus" >onComponentLostFocus</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#onInputFocus" >onInputFocus</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#onInputLostFocus" >onInputLostFocus</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#onSelectFocus" >onSelectFocus</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#onSelectLostFocus" >onSelectLostFocus</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#search" >search</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#searchInternal" >searchInternal</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#selectedTableChanges" >selectedTableChanges</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#setNoEntriesVisibility" >setNoEntriesVisibility</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#ToJson" >ToJson</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Inputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#debounce" >debounce</a>
+                            </li>
+                            <li>
+                                <a href="#debounceTime" >debounceTime</a>
+                            </li>
+                            <li>
+                                <a href="#searchService" >searchService</a>
+                            </li>
+                            <li>
+                                <a href="#watermark" >watermark</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Outputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#selectionChange" >selectionChange</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Accessors</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                    <a href="#autoCompleteIsFocused" >autoCompleteIsFocused</a>
+                                </li>
+                                <li>
+                                    <a href="#filterIsFocused" >filterIsFocused</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(busyService: EuiLoadingService)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="78" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:78</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>busyService</td>
+                                                  
+                                                        <td>
+                                                                    <code>EuiLoadingService</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+    <section data-compodoc="block-inputs">
+    <h3 id="inputs">Inputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="debounce"></a>
+                        <b>debounce</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="66" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:66</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="debounceTime"></a>
+                        <b>debounceTime</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>300</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="67" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:67</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="searchService"></a>
+                        <b>searchService</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/imx_ISearchService.html" target="_self" >imx_ISearchService</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="65" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:65</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="watermark"></a>
+                        <b>watermark</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;#LDS#Insert Text&#x27;</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="68" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:68</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <section data-compodoc="block-outputs">
+    <h3 id="outputs">Outputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="selectionChange"></a>
+                        <b>selectionChange</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="69" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:69</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="displayItem"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>displayItem</b></span>
+                        <a href="#displayItem"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>displayItem(item?: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="135"
+                            class="link-to-prism">src/lib/searchbar/searchbar.component.ts:135</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>item</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>string | undefined</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleSelection"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>handleSelection</b></span>
+                        <a href="#handleSelection"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handleSelection(dataitem: MatAutocompleteSelectedEvent)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="118"
+                            class="link-to-prism">src/lib/searchbar/searchbar.component.ts:118</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>dataitem</td>
+                                    <td>
+                                            <code>MatAutocompleteSelectedEvent</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnDestroy"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>ngOnDestroy</b></span>
+                        <a href="#ngOnDestroy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ngOnDestroy()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="107"
+                            class="link-to-prism">src/lib/searchbar/searchbar.component.ts:107</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="83"
+                            class="link-to-prism">src/lib/searchbar/searchbar.component.ts:83</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onComponentLostFocus"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>onComponentLostFocus</b></span>
+                        <a href="#onComponentLostFocus"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>onComponentLostFocus(_: FocusEvent)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="161"
+                            class="link-to-prism">src/lib/searchbar/searchbar.component.ts:161</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>_</td>
+                                    <td>
+                                            <code>FocusEvent</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onInputFocus"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>onInputFocus</b></span>
+                        <a href="#onInputFocus"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>onInputFocus()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="169"
+                            class="link-to-prism">src/lib/searchbar/searchbar.component.ts:169</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onInputLostFocus"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>onInputLostFocus</b></span>
+                        <a href="#onInputLostFocus"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>onInputLostFocus()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="177"
+                            class="link-to-prism">src/lib/searchbar/searchbar.component.ts:177</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onSelectFocus"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>onSelectFocus</b></span>
+                        <a href="#onSelectFocus"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>onSelectFocus()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="183"
+                            class="link-to-prism">src/lib/searchbar/searchbar.component.ts:183</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onSelectLostFocus"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>onSelectLostFocus</b></span>
+                        <a href="#onSelectLostFocus"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>onSelectLostFocus()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="189"
+                            class="link-to-prism">src/lib/searchbar/searchbar.component.ts:189</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="search"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>search</b></span>
+                        <a href="#search"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>search(term: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, evt?: KeyboardEvent)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="111"
+                            class="link-to-prism">src/lib/searchbar/searchbar.component.ts:111</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>term</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>evt</td>
+                                    <td>
+                                            <code>KeyboardEvent</code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="searchInternal"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>searchInternal</b></span>
+                        <a href="#searchInternal"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>searchInternal(item: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="141"
+                            class="link-to-prism">src/lib/searchbar/searchbar.component.ts:141</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>item</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedTableChanges"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>selectedTableChanges</b></span>
+                        <a href="#selectedTableChanges"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>selectedTableChanges()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="157"
+                            class="link-to-prism">src/lib/searchbar/searchbar.component.ts:157</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setNoEntriesVisibility"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>setNoEntriesVisibility</b></span>
+                        <a href="#setNoEntriesVisibility"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>setNoEntriesVisibility()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="195"
+                            class="link-to-prism">src/lib/searchbar/searchbar.component.ts:195</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ToJson"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>ToJson</b></span>
+                        <a href="#ToJson"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ToJson(link: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="122"
+                            class="link-to-prism">src/lib/searchbar/searchbar.component.ts:122</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>link</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="autocompleteFocus"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>autocompleteFocus</b></span>
+                        <a href="#autocompleteFocus"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="75" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:75</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="autoCompleteTrigger"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                        <span ><b>autoCompleteTrigger</b></span>
+                        <a href="#autoCompleteTrigger"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#T" target="_self" >MatAutocompleteTrigger</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ViewChild(MatAutocompleteTrigger, {static: true})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="73" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:73</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="filterComponentId"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>filterComponentId</b></span>
+                        <a href="#filterComponentId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="56" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:56</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="filterFocus"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>filterFocus</b></span>
+                        <a href="#filterFocus"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="76" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:76</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="noEntriesVisible"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>noEntriesVisible</b></span>
+                        <a href="#noEntriesVisible"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="59" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:59</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="resultTemplate"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                        <span ><b>resultTemplate</b></span>
+                        <a href="#resultTemplate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#T" target="_self" >TemplateRef&lt;ElementRef&gt;</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ContentChild(&#x27;imxResultTemplate&#x27;, {})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="71" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:71</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="searchResults"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>searchResults</b></span>
+                        <a href="#searchResults"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>any[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="63" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:63</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedTables"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>selectedTables</b></span>
+                        <a href="#selectedTables"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>string[]</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:62</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="subscriptions"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>subscriptions</b></span>
+                        <a href="#subscriptions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="78" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:78</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tableList"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>tableList</b></span>
+                        <a href="#tableList"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#T" target="_self" >TypedEntity[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="60" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:60</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tables"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>tables</b></span>
+                        <a href="#tables"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new UntypedFormControl()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="61" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:61</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tableSelect"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                        <span ><b>tableSelect</b></span>
+                        <a href="#tableSelect"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>MatSelect</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ViewChild(&#x27;tableSelect&#x27;, {static: true})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="72" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:72</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="term"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>term</b></span>
+                        <a href="#term"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="77" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:77</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-accessors">
+    <h3 id="accessors">
+        Accessors
+    </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="autoCompleteIsFocused"></a>
+                        <span class="name"><b>autoCompleteIsFocused</b><a href="#autoCompleteIsFocused"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>autoCompleteIsFocused()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="49" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:49</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="filterIsFocused"></a>
+                        <span class="name"><b>filterIsFocused</b><a href="#filterIsFocused"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>filterIsFocused()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="52" class="link-to-prism">src/lib/searchbar/searchbar.component.ts:52</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+</section>
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OverlayRef } from &#x27;@angular/cdk/overlay&#x27;;
+import {
+  Component,
+  OnInit, Input, ContentChild, TemplateRef, ElementRef, ViewChild, Output, EventEmitter, OnDestroy
+} from &#x27;@angular/core&#x27;;
+import { UntypedFormControl } from &#x27;@angular/forms&#x27;;
+import { MatAutocompleteSelectedEvent, MatAutocompleteTrigger } from &#x27;@angular/material/autocomplete&#x27;;
+import { MatSelect } from &#x27;@angular/material/select&#x27;;
+import { EuiLoadingService } from &#x27;@elemental-ui/core&#x27;;
+import { distinctUntilChanged, debounceTime } from &#x27;rxjs/operators&#x27;;
+
+import { TypedEntity } from &#x27;imx-qbm-dbts&#x27;;
+import { imx_ISearchService } from &#x27;./iSearchService&#x27;;
+import { Subscription } from &#x27;rxjs&#x27;;
+
+@Component({
+  selector: &#x27;imx-searchbar&#x27;,
+  templateUrl: &#x27;./searchbar.component.html&#x27;,
+  styleUrls: [&#x27;./searchbar.component.scss&#x27;]
+})
+export class SearchBarComponent implements OnInit, OnDestroy {
+
+  public get autoCompleteIsFocused(): boolean {
+    return this.autocompleteFocus;
+  }
+  public get filterIsFocused(): boolean {
+    return this.filterFocus;
+  }
+
+  public readonly filterComponentId &#x3D;
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15);
+  public noEntriesVisible &#x3D; false;
+  public tableList: TypedEntity[] &#x3D; [];
+  public tables &#x3D; new UntypedFormControl();
+  public selectedTables: string[];
+  public searchResults: any[] &#x3D; [];
+
+  @Input() public searchService: imx_ISearchService;
+  @Input() public debounce &#x3D; false;
+  @Input() public debounceTime &#x3D; 300;
+  @Input() public watermark &#x3D; &#x27;#LDS#Insert Text&#x27;;
+  @Output() public selectionChange &#x3D; new EventEmitter&lt;any&gt;();
+
+  @ContentChild(&#x27;imxResultTemplate&#x27;, /* TODO: add static flag */ {}) public resultTemplate: TemplateRef&lt;ElementRef&gt;;
+  @ViewChild(&#x27;tableSelect&#x27;, { static: true }) public tableSelect: MatSelect;
+  @ViewChild(MatAutocompleteTrigger, { static: true }) public autoCompleteTrigger: MatAutocompleteTrigger;
+
+  private autocompleteFocus &#x3D; false;
+  private filterFocus &#x3D; false;
+  private term &#x3D; &#x27;&#x27;;
+  private readonly subscriptions: Subscription[] &#x3D; [];
+
+  constructor(private busyService: EuiLoadingService) {
+  }
+
+  public async ngOnInit(): Promise&lt;void&gt; {
+    let result: TypedEntity[];
+    let overlayRef: OverlayRef;
+    setTimeout(() &#x3D;&gt; overlayRef &#x3D; this.busyService.show());
+
+    try {
+      result &#x3D; await this.searchService.getIndexedTables();
+    } finally {
+      setTimeout(() &#x3D;&gt; this.busyService.hide(overlayRef));
+    }
+    this.tableList &#x3D; result;
+
+    this.subscriptions.push(this.searchService.searchTermStream
+      .pipe(
+        debounceTime(this.debounceTime),
+        distinctUntilChanged()
+      )
+      .subscribe(async (term: string) &#x3D;&gt; {
+        this.term &#x3D; term;
+        await this.searchInternal(term);
+      })
+    );
+  }
+
+  public ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription &#x3D;&gt; subscription.unsubscribe());
+  }
+
+  public search(term: string, evt?: KeyboardEvent): void {
+    // trigger search after debounce or with Enter-Key
+    if ((evt !&#x3D;&#x3D; undefined &amp;&amp; evt.key.toLocaleLowerCase() &#x3D;&#x3D;&#x3D; &#x27;enter&#x27;) || this.debounce) {
+      this.searchService.searchTermStream.next(term);
+    }
+  }
+
+  public handleSelection(dataitem: MatAutocompleteSelectedEvent): void {
+    this.selectionChange.emit(dataitem.option.value);
+  }
+
+  public ToJson(link: any): string {
+    let json &#x3D; JSON.stringify(link);
+
+    if (json !&#x3D;&#x3D; &#x27;{}&#x27;) {
+      return json;
+    }
+
+    json &#x3D; &#x27;&#x27;;
+    Object.keys(link).forEach(key &#x3D;&gt; (json +&#x3D; key + &#x27;: &#x27; + link[key] + &#x27;\n&#x27;));
+
+    return json.substring(0, json.length - 1);
+  }
+
+  public displayItem(item?: any): string | undefined {
+    return item ? item.Display : undefined;
+  }
+
+  /* *** Event handling *** */
+
+  public async searchInternal(item: string): Promise&lt;void&gt; {
+    const selectedtables &#x3D; this.selectedTables !&#x3D;&#x3D; undefined &amp;&amp; this.selectedTables.length &gt; 0 ? this.selectedTables.join(&#x27;,&#x27;) : &#x27;&#x27;;
+
+    let result: TypedEntity[];
+    let overlayRef: OverlayRef;
+    setTimeout(() &#x3D;&gt; overlayRef &#x3D; this.busyService.show());
+
+    try {
+      result &#x3D; await this.searchService.search(item, selectedtables);
+    } finally {
+      setTimeout(() &#x3D;&gt; this.busyService.hide(overlayRef));
+    }
+    this.searchResults &#x3D; result;
+    this.setNoEntriesVisibility();
+  }
+
+  public async selectedTableChanges(): Promise&lt;void&gt; {
+    return this.searchInternal(this.term);
+  }
+
+  public onComponentLostFocus(_: FocusEvent): void {
+    setTimeout(() &#x3D;&gt; {
+      if (!this.autocompleteFocus &amp;&amp; !this.filterFocus &amp;&amp; document.activeElement.id !&#x3D;&#x3D; this.filterComponentId) {
+        this.noEntriesVisible &#x3D; false;
+      }
+    });
+  }
+
+  public onInputFocus(): void {
+    setTimeout(() &#x3D;&gt; {
+      this.autocompleteFocus &#x3D; true;
+
+      this.setNoEntriesVisibility();
+    });
+  }
+
+  public onInputLostFocus(): void {
+    setTimeout(() &#x3D;&gt; {
+      this.autocompleteFocus &#x3D; false;
+    });
+  }
+
+  public onSelectFocus(): void {
+    setTimeout(() &#x3D;&gt; {
+      this.filterFocus &#x3D; true;
+    });
+  }
+
+  public onSelectLostFocus(): void {
+    setTimeout(() &#x3D;&gt; {
+      this.filterFocus &#x3D; false;
+    });
+  }
+
+  private setNoEntriesVisibility(): void {
+    if (this.searchResults &amp;&amp; this.searchResults.length &gt; 0) {
+      this.noEntriesVisible &#x3D; false;
+    } else if (this.term &amp;&amp; this.term.length &gt; 0) {
+      this.noEntriesVisible &#x3D; true;
+    }
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;div (focusout)&#x3D;&quot;onComponentLostFocus($event)&quot; style&#x3D;&quot;display: flex&quot;&gt;
+  &lt;div #searchbar class&#x3D;&quot;imx-searchbar-control&quot;&gt;
+    &lt;mat-card class&#x3D;&quot;imx-searchbar-card&quot;&gt;
+      &lt;mat-card-content class&#x3D;&quot;imx-searchbar-card-content&quot;&gt;
+        &lt;div class&#x3D;&quot;imx-searchbar-table&quot;&gt;
+          &lt;a #searchBtn mat-icon-button class&#x3D;&quot;imx-searchbar-tablecellsmall&quot; href&#x3D;&quot;javascript:void(0)&quot;
+            (click)&#x3D;&quot;searchInternal(input.value)&quot; data-imx-identifier&#x3D;&quot;searchbar-button-searchInternal&quot;&gt;
+            &lt;eui-icon icon&#x3D;&quot;search&quot; size&#x3D;&quot;21px&quot; [title]&#x3D;&quot;&#x27;#LDS#WD_SearchItem&#x27; | translate&quot;&gt;&lt;/eui-icon&gt;
+          &lt;/a&gt;
+          &lt;input type&#x3D;&quot;text&quot; class&#x3D;&quot;imx-searchbar-input&quot; [placeholder]&#x3D;&quot;watermark&quot; aria-label&#x3D;&quot;searchbox&quot; #input
+            (keyup)&#x3D;&quot;search(input.value, $event)&quot; matInput [matAutocomplete]&#x3D;&quot;auto&quot; (focus)&#x3D;&quot;onInputFocus()&quot;
+            (focusout)&#x3D;&quot;onInputLostFocus()&quot; data-imx-identifier&#x3D;&quot;searchbar-input-searchText&quot; /&gt;
+          &lt;mat-autocomplete #auto&#x3D;&quot;matAutocomplete&quot; class&#x3D;&quot;imx-searchbar-ac&quot; panelWidth&#x3D;&quot;auto&quot;
+            (optionSelected)&#x3D;&quot;handleSelection($event)&quot; [displayWith]&#x3D;&quot;displayItem&quot;
+            data-imx-identifier&#x3D;&quot;searchbar-autocomplete&quot;&gt;
+            &lt;mat-option *ngFor&#x3D;&quot;let link of searchResults&quot; [value]&#x3D;&quot;link&quot;&gt;
+              &lt;ng-template [ngIf]&#x3D;&quot;resultTemplate&quot;&gt;
+                &lt;ng-container [ngTemplateOutlet]&#x3D;&quot;resultTemplate&quot; [ngTemplateOutletContext]&#x3D;&quot;{ $implicit: link }&quot;&gt;
+                &lt;/ng-container&gt;
+              &lt;/ng-template&gt;
+              &lt;ng-template [ngIf]&#x3D;&quot;!resultTemplate&quot;&gt;
+                &lt;ng-container [ngTemplateOutlet]&#x3D;&quot;DefaultTemplate&quot; [ngTemplateOutletContext]&#x3D;&quot;{ $implicit: link }&quot;&gt;
+                &lt;/ng-container&gt;
+              &lt;/ng-template&gt;
+            &lt;/mat-option&gt;
+          &lt;/mat-autocomplete&gt;
+          &lt;div class&#x3D;&quot;imx-searchbar-noitems&quot; translate *ngIf&#x3D;&quot;noEntriesVisible&quot;&gt;#LDS#No entries found.&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/mat-card-content&gt;
+    &lt;/mat-card&gt;
+  &lt;/div&gt;
+  &lt;div class&#x3D;&quot;imx-searchbar-tablefilter&quot;&gt;
+    &lt;mat-form-field&gt;
+      &lt;mat-select #tableSelect placeholder&#x3D;&quot;{{ &#x27;#LDS#Search in&#x27; | translate }}&quot; [formControl]&#x3D;&quot;tables&quot;
+        [(value)]&#x3D;&quot;selectedTables&quot; multiple panelClass&#x3D;&quot;imx-searchbar-select&quot; (selectionChange)&#x3D;&quot;selectedTableChanges()&quot;
+        (focus)&#x3D;&quot;onSelectFocus()&quot; (focusout)&#x3D;&quot;onSelectLostFocus()&quot; [id]&#x3D;&quot;filterComponentId&quot;
+        data-imx-identifier&#x3D;&quot;searchbar-select-tablefilter&quot;&gt;
+        &lt;mat-option *ngFor&#x3D;&quot;let table of tableList&quot; [value]&#x3D;&quot;searchService.GetTableValue(table)&quot;&gt;{{
+          searchService.GetTableDisplay(table) }}&lt;/mat-option&gt;
+      &lt;/mat-select&gt;
+    &lt;/mat-form-field&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;ng-template #DefaultTemplate let-link&gt;
+  &lt;span class&#x3D;&quot;imx-searchbar-simpleText&quot;&gt;{{ ToJson(link) }}&lt;/span&gt;
+&lt;/ng-template&gt;</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./searchbar.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">@import &#x27;@elemental-ui/core/src/styles/_palette.scss&#x27;;
+
+$SearchBarWidth: 535px;
+$SearchBarHeight: 53px;
+
+$VI_Common_Color_Blue_1: #69CCE9;
+
+.imx-searchbar-card {
+  max-width: $SearchBarWidth;
+  width: $SearchBarWidth;
+  padding: 0;
+}
+
+.imx-searchbar-resultcard {
+  padding: 0 !important;
+  background: $white !important;
+  min-height: 50px !important;
+  z-index: 100;
+}
+
+.imx-searchbar-noitems {
+  // color: $VI_Common_Color_Font;
+  padding: 15px;
+  font-size: 1.2em;
+}
+
+.imx-searchbar-dropdown {
+  max-width: $SearchBarWidth;
+  margin-top: 2px;
+  padding: 0;
+}
+
+.matlistItem:hover {
+  background-color: $VI_Common_Color_Blue_1;
+}
+
+.matlistItem {
+  white-space: pre-line;
+}
+
+.mat-list-option {
+  height: auto !important;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+
+  .mat-list-text {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    // color: $VI_Common_Color_Font !important;
+  }
+}
+
+.mat-card .imx-searchbar-input {
+  border: 0 solid transparent !important;
+  font-size: 1.2em;
+  margin-bottom: 0;
+  height: $SearchBarHeight;
+  box-sizing: border-box;
+  flex-grow: 0;
+  flex-shrink: 0;
+  /* use flex-basis, because of flex shorthand with calc()s doesn&#x27;t work in IE */
+  flex-basis: calc(100% - 52px);
+}
+
+.mat-card .imx-searchbar-input::placeholder {
+  font-style: italic;
+}
+
+.imx-searchbar-input::-ms-clear {
+  /* hide input-clear button (the &#x27;X&#x27;) in &gt; IE 10 */
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.imx-searchbar-input::placeholder {
+  font-style: italic;
+}
+
+imx-searchbar {
+  display: flex;
+}
+
+.imx-searchbar-tablefilter {
+  margin-left: 15px;
+
+  .mat-form-field-wrapper {
+    line-height: 20px;
+  }
+}
+
+.imx-searchbar-control {
+  height: $SearchBarHeight;
+}
+
+.imx-searchbar-table {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+  line-height: $SearchBarHeight;
+}
+
+.imx-searchbar-select {
+  margin-top: 30px;
+  margin-left: 40px;
+}
+
+.mat-autocomplete-panel.mat-autocomplete-visible {
+  width: $SearchBarWidth;
+  margin-right: -13px;
+  margin-left: -40px;
+}
+
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><div (focusout)="onComponentLostFocus($event)" style="display: flex">  <div #searchbar class="imx-searchbar-control">    <mat-card class="imx-searchbar-card">      <mat-card-content class="imx-searchbar-card-content">        <div class="imx-searchbar-table">          <a #searchBtn mat-icon-button class="imx-searchbar-tablecellsmall" href="javascript:void(0)"            (click)="searchInternal(input.value)" data-imx-identifier="searchbar-button-searchInternal">            <eui-icon icon="search" size="21px" [title]="\'#LDS#WD_SearchItem\' | translate"></eui-icon>          </a>          <input type="text" class="imx-searchbar-input" [placeholder]="watermark" aria-label="searchbox" #input            (keyup)="search(input.value, $event)" matInput [matAutocomplete]="auto" (focus)="onInputFocus()"            (focusout)="onInputLostFocus()" data-imx-identifier="searchbar-input-searchText" />          <mat-autocomplete #auto="matAutocomplete" class="imx-searchbar-ac" panelWidth="auto"            (optionSelected)="handleSelection($event)" [displayWith]="displayItem"            data-imx-identifier="searchbar-autocomplete">            <mat-option *ngFor="let link of searchResults" [value]="link">              <ng-template [ngIf]="resultTemplate">                <ng-container [ngTemplateOutlet]="resultTemplate" [ngTemplateOutletContext]="{ $implicit: link }">                </ng-container>              </ng-template>              <ng-template [ngIf]="!resultTemplate">                <ng-container [ngTemplateOutlet]="DefaultTemplate" [ngTemplateOutletContext]="{ $implicit: link }">                </ng-container>              </ng-template>            </mat-option>          </mat-autocomplete>          <div class="imx-searchbar-noitems" translate *ngIf="noEntriesVisible">#LDS#No entries found.</div>        </div>      </mat-card-content>    </mat-card>  </div>  <div class="imx-searchbar-tablefilter">    <mat-form-field>      <mat-select #tableSelect placeholder="{{ \'#LDS#Search in\' | translate }}" [formControl]="tables"        [(value)]="selectedTables" multiple panelClass="imx-searchbar-select" (selectionChange)="selectedTableChanges()"        (focus)="onSelectFocus()" (focusout)="onSelectLostFocus()" [id]="filterComponentId"        data-imx-identifier="searchbar-select-tablefilter">        <mat-option *ngFor="let table of tableList" [value]="searchService.GetTableValue(table)">{{          searchService.GetTableDisplay(table) }}</mat-option>      </mat-select>    </mat-form-field>  </div></div><ng-template #DefaultTemplate let-link>  <span class="imx-searchbar-simpleText">{{ ToJson(link) }}</span></ng-template></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'imx-about'},{'name': 'AddConfigSidesheetComponent', 'selector': ''},{'name': 'AdditionalInfosComponent', 'selector': 'imx-additional-infos'},{'name': 'ApplyConfigSidesheetComponent', 'selector': ''},{'name': 'AutoCompleteComponent', 'selector': 'imx-auto-complete'},{'name': 'AutocompleteComponent', 'selector': 'imx-autocomplete'},{'name': 'BulkItemComponent', 'selector': 'imx-bulk-item'},{'name': 'BulkPropertyEditorComponent', 'selector': 'imx-bulk-editor'},{'name': 'BusyIndicatorComponent', 'selector': 'imx-busy-indicator'},{'name': 'CacheComponent', 'selector': 'imx-cache'},{'name': 'CalendarComponent', 'selector': 'imx-calendar'},{'name': 'CaptchaComponent', 'selector': 'imx-captcha'},{'name': 'CdrEditorComponent', 'selector': 'imx-cdr-editor'},{'name': 'CdrSidesheetComponent', 'selector': ''},{'name': 'ChartTileComponent', 'selector': 'imx-chart-tile'},{'name': 'CheckableTreeComponent', 'selector': 'imx-checkable-tree'},{'name': 'ColumnSelectionComponent', 'selector': 'imx-sqlwizard-columnselection'},{'name': 'ConfigComponent', 'selector': 'imx-config'},{'name': 'ConfigKeyPathComponent', 'selector': 'config-key-path'},{'name': 'ConnectionComponent', 'selector': ''},{'name': 'ConvertConfigSidesheetComponent', 'selector': ''},{'name': 'DashboardComponent', 'selector': ''},{'name': 'DataExportComponent', 'selector': 'imx-data-export'},{'name': 'DataSourcePaginatorComponent', 'selector': 'imx-data-source-paginator'},{'name': 'DataSourceToolbarComponent', 'selector': 'imx-data-source-toolbar'},{'name': 'DataSourceToolbarCustomComponent', 'selector': 'imx-data-source-toolbar-custom'},{'name': 'DataTableCellComponent', 'selector': 'imx-data-table-cell'},{'name': 'DataTableColumnComponent', 'selector': 'imx-data-table-column'},{'name': 'DataTableComponent', 'selector': 'imx-data-table'},{'name': 'DataTableDisplayCellComponent', 'selector': 'imx-data-table-display-cell'},{'name': 'DataTableGenericColumnComponent', 'selector': 'imx-data-table-generic-column'},{'name': 'DataTileComponent', 'selector': 'imx-data-tile'},{'name': 'DataTilesComponent', 'selector': 'imx-data-tiles'},{'name': 'DataTreeComponent', 'selector': 'imx-data-tree'},{'name': 'DataTreeSearchResultsComponent', 'selector': 'imx-data-tree-search-results'},{'name': 'DataTreeWrapperComponent', 'selector': 'imx-data-tree-wrapper'},{'name': 'DateComponent', 'selector': 'imx-date'},{'name': 'DatePickerComponent', 'selector': 'imx-sqlwizard-datepicker'},{'name': 'DateRangeComponent', 'selector': 'imx-date-range'},{'name': 'DeleteConfigSidesheetComponent', 'selector': ''},{'name': 'EditBinaryComponent', 'selector': 'imx-edit-binary'},{'name': 'EditBooleanComponent', 'selector': 'imx-checkbox-editor'},{'name': 'EditDateComponent', 'selector': 'imx-edit-date'},{'name': 'EditDefaultComponent', 'selector': 'imx-edit-default'},{'name': 'EditFkComponent', 'selector': 'imx-edit-fk'},{'name': 'EditFkMultiComponent', 'selector': 'imx-edit-fk-multi'},{'name': 'EditImageComponent', 'selector': 'imx-edit-image'},{'name': 'EditLimitedValueComponent', 'selector': 'imx-edit-limited-value'},{'name': 'EditMultiLimitedValueComponent', 'selector': 'imx-edit-multi-limited-value'},{'name': 'EditMultilineComponent', 'selector': 'imx-edit-multiline'},{'name': 'EditMultiValueComponent', 'selector': 'imx-edit-multi-value'},{'name': 'EditNumberComponent', 'selector': 'imx-edit-number'},{'name': 'EditorBase', 'selector': ''},{'name': 'EditRiskIndexComponent', 'selector': 'imx-edit-risk-index'},{'name': 'EditUrlComponent', 'selector': 'imx-edit-url'},{'name': 'EntityColumnEditorComponent', 'selector': 'imx-entity-column-editor'},{'name': 'EntitySelectComponent', 'selector': 'imx-entity-select'},{'name': 'ExtComponent', 'selector': 'imx-ext'},{'name': 'FilterTileComponent', 'selector': 'imx-filter-tile'},{'name': 'FilterTreeComponent', 'selector': 'imx-filter-tree'},{'name': 'FilterWizardComponent', 'selector': 'imx-filter-wizard'},{'name': 'FkAdvancedPickerComponent', 'selector': ''},{'name': 'FkCandidatesComponent', 'selector': 'imx-fk-candidates'},{'name': 'FkHierarchicalDialogComponent', 'selector': 'imx-fk-hierarchical-dialog'},{'name': 'FkSelectorComponent', 'selector': 'imx-fk-selector'},{'name': 'FkTableSelectComponent', 'selector': 'imx-fk-table-select'},{'name': 'GroupPaginatorComponent', 'selector': 'imx-group-paginator'},{'name': 'HelpContextualComponent', 'selector': 'imx-help-contextual'},{'name': 'HelpContextualDialogComponent', 'selector': 'imx-help-contextual-dialog'},{'name': 'HyperviewComponent', 'selector': 'imx-hyperview'},{'name': 'IconStackComponent', 'selector': 'imx-icon-stack'},{'name': 'ImageSelectComponent', 'selector': 'imx-image-select'},{'name': 'ImageViewComponent', 'selector': 'imx-image-view'},{'name': 'ImxMatColumnComponent', 'selector': 'imx-column'},{'name': 'ImxProgressbarComponent', 'selector': 'imx-progressbar'},{'name': 'ImxTreeTableComponent', 'selector': 'imx-tree-table'},{'name': 'IndexBarComponent', 'selector': 'imx-indexbar'},{'name': 'InfoBadgeComponent', 'selector': 'imx-info-badge'},{'name': 'InfoButtonComponent', 'selector': 'imx-info-button'},{'name': 'InfoDialogComponent', 'selector': 'imx-info-dialog'},{'name': 'JobQueueOverviewComponent', 'selector': 'imx-jobqueue-overview'},{'name': 'ListSettingComponent', 'selector': 'imx-list-setting'},{'name': 'ListShapeComponent', 'selector': 'imx-hyperview-listshape'},{'name': 'LogDetailsSidesheetComponent', 'selector': 'imx-log-details-sidesheet'},{'name': 'LoginComponent', 'selector': 'imx-login'},{'name': 'LogsComponent', 'selector': 'imx-logs'},{'name': 'MasterDetailComponent', 'selector': 'imx-master-detail'},{'name': 'MastHeadComponent', 'selector': 'imx-mast-head'},{'name': 'MenuComponent', 'selector': 'imx-menu'},{'name': 'MessageDialogComponent', 'selector': 'imx-message-dialog'},{'name': 'MultiSelectFormcontrolComponent', 'selector': 'imx-multi-select-formcontrol'},{'name': 'ObjectHistoryComponent', 'selector': 'imx-object-history'},{'name': 'ObjectHistoryGridviewComponent', 'selector': 'imx-object-history-gridview'},{'name': 'ObjectHistoryStateComparisonComponent', 'selector': 'imx-object-history-state-comparison'},{'name': 'ObjectHistoryStateOverviewComponent', 'selector': 'imx-object-history-state-overview'},{'name': 'OrderedListComponent', 'selector': 'imx-ordered-list'},{'name': 'PackagesComponent', 'selector': 'imx-packages'},{'name': 'ParameterizedTextComponent', 'selector': 'imx-parameterized-text'},{'name': 'PluginsComponent', 'selector': 'imx-plugins'},{'name': 'PredefinedFilterComponent', 'selector': 'imx-predefined-filter'},{'name': 'PredefinedFilterTreeComponent', 'selector': 'imx-predefined-filter-tree'},{'name': 'PropertyShapeComponent', 'selector': 'imx-hyperview-propertyshape'},{'name': 'PropertyViewerComponent', 'selector': 'imx-property-viewer'},{'name': 'SaveConfigDialogComponent', 'selector': 'imx-save-config-dialog'},{'name': 'SearchBarComponent', 'selector': 'imx-searchbar'},{'name': 'SelectComponent', 'selector': 'imx-select'},{'name': 'SelectedElementsComponent', 'selector': 'imx-selected-elements'},{'name': 'SelectedElementsDialog', 'selector': ''},{'name': 'SelectValueComponent', 'selector': 'imx-config-select'},{'name': 'ShapeComponent', 'selector': 'imx-hyperview-shape'},{'name': 'SideNavigationViewComponent', 'selector': 'imx-side-navigation-view'},{'name': 'SidenavTreeComponent', 'selector': 'imx-sidenav-tree'},{'name': 'SimpleExpressionComponent', 'selector': 'imx-sqlwizard-simpleexpression'},{'name': 'SimpleShapeComponent', 'selector': 'imx-hyperview-simpleshape'},{'name': 'SingleExpressionComponent', 'selector': 'imx-sqlwizard-singleexpression'},{'name': 'SingleValueComponent', 'selector': 'imx-sqlwizard-singlevalue'},{'name': 'SqlWizardComponent', 'selector': 'imx-sqlwizard'},{'name': 'StatusComponent', 'selector': 'imx-status'},{'name': 'SwaggerComponent', 'selector': 'imx-swagger'},{'name': 'TableSelectionComponent', 'selector': 'imx-sqlwizard-tableselection'},{'name': 'TempBillboardComponent', 'selector': 'imx-temp-billboard'},{'name': 'TileComponent', 'selector': 'imx-tile'},{'name': 'TimelineComponent', 'selector': 'imx-timeline'},{'name': 'TimePickerComponent', 'selector': 'imx-time-picker'},{'name': 'TranslationEditorComponent', 'selector': 'imx-translation-editor'},{'name': 'TreeSelectionListComponent', 'selector': ''},{'name': 'TwoFactorAuthenticationComponent', 'selector': 'imx-2fahost'},{'name': 'TypedEntityCandidateSidesheetComponent', 'selector': ''},{'name': 'TypedEntitySelectComponent', 'selector': 'imx-typed-entity-select'},{'name': 'TypedEntitySelectorComponent', 'selector': 'imx-typed-entity-selector'},{'name': 'UserMessageComponent', 'selector': 'imx-usermessage'},{'name': 'ViewPropertyComponent', 'selector': 'imx-view-property'},{'name': 'ViewPropertyDefaultComponent', 'selector': 'imx-view-property-default'},{'name': 'WhereClauseExpressionComponent', 'selector': 'imx-sqlwizard-whereclauseexpression'}];
+    var DIRECTIVES = [{'name': 'DisableControlDirective', 'selector': '[imxDisableControl]'},{'name': 'DynamicTabDataProviderDirective', 'selector': '[imxDataProvider]'},{'name': 'ExtDirective', 'selector': '[imxExtd]'},{'name': 'MatSelectionListMultipleDirective', 'selector': 'mat-selection-list[multiple]'},{'name': 'TableAccessiblilityDirective', 'selector': '[tableAccessiblility]'},{'name': 'ZoomPanDirective', 'selector': '[imxZoomPan]'}];
+    var ACTUAL_COMPONENT = {'name': 'SearchBarComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'SearchBarComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

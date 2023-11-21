@@ -1,0 +1,2116 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>IMX Web - QBM Library</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/material.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">IMX Web - QBM Library</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  ConfigComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/lib/admin/config.component.ts</code>
+</p>
+
+
+
+
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>imx-config</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./config.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./config.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#apiProjects" >apiProjects</a>
+                            </li>
+                            <li>
+                                <a href="#ConfigSettingType" >ConfigSettingType</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#configSvc" >configSvc</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#dstSettings" >dstSettings</a>
+                            </li>
+                            <li>
+                                <a href="#loading" >loading</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#add" >add</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#confTrackByFn" >confTrackByFn</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getData" >getData</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getValuePreview" >getValuePreview</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#isArray" >isArray</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#isBoolean" >isBoolean</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#onChangeEvent" >onChangeEvent</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#onSearch" >onSearch</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#openApplySidesheet" >openApplySidesheet</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#openConvertSidesheet" >openConvertSidesheet</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#openDeleteSidesheet" >openDeleteSidesheet</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#optionSelected" >optionSelected</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#revertAll" >revertAll</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#sectionTrackByFn" >sectionTrackByFn</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#updateConfigServiceFilter" >updateConfigServiceFilter</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Accessors</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                    <a href="#sectionsFiltered" >sectionsFiltered</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(appConfigSvc: <a href="../injectables/AppConfigService.html" target="_self">AppConfigService</a>, configSvc: <a href="../injectables/ConfigService.html" target="_self">ConfigService</a>, translator: <a href="../undefineds/T.html" target="_self">TranslateService</a>, sidesheet: EuiSidesheetService, translate: <a href="../undefineds/T.html" target="_self">TranslateService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">src/lib/admin/config.component.ts:45</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>appConfigSvc</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AppConfigService.html" target="_self" >AppConfigService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>configSvc</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ConfigService.html" target="_self" >ConfigService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>translator</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../miscellaneous/typealiases.html#T" target="_self" >TranslateService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>sidesheet</td>
+                                                  
+                                                        <td>
+                                                                    <code>EuiSidesheetService</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>translate</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../miscellaneous/typealiases.html#T" target="_self" >TranslateService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="add"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>add</b></span>
+                        <a href="#add"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>add()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="164"
+                            class="link-to-prism">src/lib/admin/config.component.ts:164</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="confTrackByFn"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>confTrackByFn</b></span>
+                        <a href="#confTrackByFn"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>confTrackByFn(index: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, item: <a href="../interfaces/KeyData.html" target="_self">KeyData</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="187"
+                            class="link-to-prism">src/lib/admin/config.component.ts:187</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>index</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>item</td>
+                                    <td>
+                                                <code><a href="../interfaces/KeyData.html" target="_self" >KeyData</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getData"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>getData</b></span>
+                        <a href="#getData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getData(filter)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="102"
+                            class="link-to-prism">src/lib/admin/config.component.ts:102</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>filter</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getValuePreview"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>getValuePreview</b></span>
+                        <a href="#getValuePreview"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getValuePreview(conf: <a href="../interfaces/KeyData.html" target="_self">KeyData</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="126"
+                            class="link-to-prism">src/lib/admin/config.component.ts:126</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>conf</td>
+                                    <td>
+                                                <code><a href="../interfaces/KeyData.html" target="_self" >KeyData</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isArray"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>isArray</b></span>
+                        <a href="#isArray"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isArray(conf: <a href="../interfaces/KeyData.html" target="_self">KeyData</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="122"
+                            class="link-to-prism">src/lib/admin/config.component.ts:122</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>conf</td>
+                                    <td>
+                                                <code><a href="../interfaces/KeyData.html" target="_self" >KeyData</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isBoolean"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>isBoolean</b></span>
+                        <a href="#isBoolean"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isBoolean(conf: <a href="../interfaces/KeyData.html" target="_self">KeyData</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="118"
+                            class="link-to-prism">src/lib/admin/config.component.ts:118</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>conf</td>
+                                    <td>
+                                                <code><a href="../interfaces/KeyData.html" target="_self" >KeyData</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="63"
+                            class="link-to-prism">src/lib/admin/config.component.ts:63</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onChangeEvent"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>onChangeEvent</b></span>
+                        <a href="#onChangeEvent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>onChangeEvent(conf: <a href="../interfaces/KeyData.html" target="_self">KeyData</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="132"
+                            class="link-to-prism">src/lib/admin/config.component.ts:132</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>conf</td>
+                                    <td>
+                                                <code><a href="../interfaces/KeyData.html" target="_self" >KeyData</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onSearch"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>onSearch</b></span>
+                        <a href="#onSearch"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>onSearch(keywords: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="97"
+                            class="link-to-prism">src/lib/admin/config.component.ts:97</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>keywords</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="openApplySidesheet"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>openApplySidesheet</b></span>
+                        <a href="#openApplySidesheet"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>openApplySidesheet()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="154"
+                            class="link-to-prism">src/lib/admin/config.component.ts:154</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="openConvertSidesheet"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>openConvertSidesheet</b></span>
+                        <a href="#openConvertSidesheet"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>openConvertSidesheet()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="144"
+                            class="link-to-prism">src/lib/admin/config.component.ts:144</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="openDeleteSidesheet"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>openDeleteSidesheet</b></span>
+                        <a href="#openDeleteSidesheet"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>openDeleteSidesheet()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="174"
+                            class="link-to-prism">src/lib/admin/config.component.ts:174</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="optionSelected"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>optionSelected</b></span>
+                        <a href="#optionSelected"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>optionSelected(projectId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="108"
+                            class="link-to-prism">src/lib/admin/config.component.ts:108</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>projectId</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="revertAll"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>revertAll</b></span>
+                        <a href="#revertAll"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>revertAll(isGlobal: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="140"
+                            class="link-to-prism">src/lib/admin/config.component.ts:140</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>isGlobal</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sectionTrackByFn"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>sectionTrackByFn</b></span>
+                        <a href="#sectionTrackByFn"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>sectionTrackByFn(index: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, item: <a href="../classes/ConfigSection.html" target="_self">ConfigSection</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="183"
+                            class="link-to-prism">src/lib/admin/config.component.ts:183</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>index</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>item</td>
+                                    <td>
+                                                <code><a href="../classes/ConfigSection.html" target="_self" >ConfigSection</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateConfigServiceFilter"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>updateConfigServiceFilter</b></span>
+                        <a href="#updateConfigServiceFilter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateConfigServiceFilter()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="191"
+                            class="link-to-prism">src/lib/admin/config.component.ts:191</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="apiProjects"></a>
+                    <span class="name">
+                        <span ><b>apiProjects</b></span>
+                        <a href="#apiProjects"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>MethodSetInfo[]</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="59" class="link-to-prism">src/lib/admin/config.component.ts:59</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ConfigSettingType"></a>
+                    <span class="name">
+                        <span ><b>ConfigSettingType</b></span>
+                        <a href="#ConfigSettingType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>ConfigSettingType</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="57" class="link-to-prism">src/lib/admin/config.component.ts:57</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>expose the enum type to the template</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="configSvc"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>configSvc</b></span>
+                        <a href="#configSvc"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../injectables/ConfigService.html" target="_self" >ConfigService</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">src/lib/admin/config.component.ts:48</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="dstSettings"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>dstSettings</b></span>
+                        <a href="#dstSettings"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/DataSourceToolbarSettings.html" target="_self" >DataSourceToolbarSettings</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="54" class="link-to-prism">src/lib/admin/config.component.ts:54</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="loading"></a>
+                    <span class="name">
+                        <span ><b>loading</b></span>
+                        <a href="#loading"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>true</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="61" class="link-to-prism">src/lib/admin/config.component.ts:61</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-accessors">
+    <h3 id="accessors">
+        Accessors
+    </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="sectionsFiltered"></a>
+                        <span class="name"><b>sectionsFiltered</b><a href="#sectionsFiltered"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>sectionsFiltered()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="136" class="link-to-prism">src/lib/admin/config.component.ts:136</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+</section>
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component } from &#x27;@angular/core&#x27;;
+import { EuiSidesheetService } from &#x27;@elemental-ui/core&#x27;;
+import { TranslateService } from &#x27;@ngx-translate/core&#x27;;
+import { ConfigSettingType, MethodSetInfo } from &#x27;imx-api-qbm&#x27;;
+import { AppConfigService } from &#x27;../appConfig/appConfig.service&#x27;;
+import { DataSourceToolbarSettings } from &#x27;../data-source-toolbar/data-source-toolbar-settings&#x27;;
+import { AddConfigSidesheetComponent } from &#x27;./add-config-sidesheet.component&#x27;;
+import { ApplyConfigSidesheetComponent } from &#x27;./apply-config-sidesheet.component&#x27;;
+import { ConfigSection, KeyData } from &#x27;./config-section&#x27;;
+import { ConfigService } from &#x27;./config.service&#x27;;
+import { ConvertConfigSidesheetComponent } from &#x27;./convert-config-sidesheet.component&#x27;;
+import { DeleteConfigSidesheetComponent } from &#x27;./delete-config-sidesheet.component&#x27;;
+
+@Component({
+  templateUrl: &#x27;./config.component.html&#x27;,
+  styleUrls: [&#x27;./config.component.scss&#x27;],
+  selector: &#x27;imx-config&#x27;,
+})
+export class ConfigComponent {
+  constructor(
+    private readonly appConfigSvc: AppConfigService,
+    public readonly configSvc: ConfigService,
+    private readonly translator: TranslateService,
+    private readonly sidesheet: EuiSidesheetService,
+    private readonly translate: TranslateService
+  ) {}
+
+  public dstSettings: DataSourceToolbarSettings;
+
+  /** expose the enum type to the template */
+  ConfigSettingType &#x3D; ConfigSettingType;
+
+  apiProjects: MethodSetInfo[];
+
+  loading: boolean &#x3D; true;
+
+  async ngOnInit() {
+    const filter &#x3D; {
+      Description: &#x27;Customized&#x27;,
+      Name: &#x27;customized&#x27;,
+      Options: [],
+    };
+
+    this.dstSettings &#x3D; {
+      dataSource: {
+        Data: [],
+        totalCount: 0,
+      },
+      entitySchema: { Columns: {} },
+      filters: [filter],
+      displayedColumns: [],
+      navigationState: {
+        StartIndex: 0,
+      },
+    };
+
+    // add async filter only after dstSettings has been assigned
+    filter.Options.push({
+      Display: await this.translator.get(&#x27;#LDS#Customized settings&#x27;).toPromise(),
+      Value: &#x27;1&#x27;,
+    });
+
+    this.configSvc.filter.keywords &#x3D; null;
+
+    this.apiProjects &#x3D; await this.appConfigSvc.client.admin_projects_get();
+    if (this.apiProjects.length &gt; 0) {
+      this.optionSelected(this.apiProjects[0].AppId);
+    }
+  }
+
+  public onSearch(keywords: string): Promise&lt;void&gt; {
+    this.updateConfigServiceFilter();
+    return this.configSvc.search();
+  }
+
+  public getData(filter): Promise&lt;void&gt; {
+    this.updateConfigServiceFilter();
+    this.configSvc.filter.customized &#x3D; filter?.customized &#x3D;&#x3D; &#x27;1&#x27;;
+    return this.configSvc.search();
+  }
+
+  public async optionSelected(projectId: string): Promise&lt;void&gt; {
+    this.loading &#x3D; true;
+    this.configSvc.appId &#x3D; projectId;
+    try {
+      await this.configSvc.load();
+    } finally {
+      this.loading &#x3D; false;
+    }
+  }
+
+  public isBoolean(conf: KeyData): boolean {
+    return conf.Type !&#x3D; ConfigSettingType.LimitedValues &amp;&amp; typeof conf.Value &#x3D;&#x3D; &#x27;boolean&#x27;;
+  }
+
+  public isArray(conf: KeyData): boolean {
+    return Array.isArray(conf.Value);
+  }
+
+  public getValuePreview(conf: KeyData): string {
+    var d &#x3D; conf.Value + &#x27;&#x27;;
+    if (d.length &gt; 30) d &#x3D; d.substring(0, 30) + &#x27;...&#x27;;
+    return d;
+  }
+
+  public onChangeEvent(conf: KeyData) {
+    this.configSvc.addChange(conf);
+  }
+
+  get sectionsFiltered() {
+    return this.configSvc.sectionsFiltered;
+  }
+
+  public revertAll(isGlobal: boolean) {
+    this.configSvc.revertAll(isGlobal);
+  }
+
+  public async openConvertSidesheet(): Promise&lt;void&gt; {
+    this.sidesheet.open(ConvertConfigSidesheetComponent, {
+      title: await this.translate.get(&#x27;#LDS#Heading Convert Locally Customized Settings to Global Settings&#x27;).toPromise(),
+      panelClass: &#x27;imx-sidesheet&#x27;,
+      padding: &#x27;0&#x27;,
+      width: &#x27;600px&#x27;,
+      testId: &#x27;admin-convert-config-sidesheet&#x27;,
+    });
+  }
+
+  public async openApplySidesheet(): Promise&lt;void&gt; {
+    this.sidesheet.open(ApplyConfigSidesheetComponent, {
+      title: await this.translate.get(&#x27;#LDS#Heading Apply Configuration&#x27;).toPromise(),
+      panelClass: &#x27;imx-sidesheet&#x27;,
+      padding: &#x27;0&#x27;,
+      width: &#x27;600px&#x27;,
+      testId: &#x27;admin-apply-config-sidesheet&#x27;,
+    });
+  }
+
+  public async add(): Promise&lt;void&gt; {
+    this.sidesheet.open(AddConfigSidesheetComponent, {
+      title: await this.translate.get(&#x27;#LDS#Heading Create Configuration Key&#x27;).toPromise(),
+      panelClass: &#x27;imx-sidesheet&#x27;,
+      padding: &#x27;0&#x27;,
+      width: &#x27;600px&#x27;,
+      testId: &#x27;admin-add-config-sidesheet&#x27;,
+    });
+  }
+
+  public async openDeleteSidesheet(): Promise&lt;void&gt; {
+    this.sidesheet.open(DeleteConfigSidesheetComponent, {
+      title: await this.translate.get(&#x27;#LDS#Heading Delete Configuration Key&#x27;).toPromise(),
+      panelClass: &#x27;imx-sidesheet&#x27;,
+      padding: &#x27;0&#x27;,
+      width: &#x27;600px&#x27;,
+      testId: &#x27;admin-delete-config-sidesheet&#x27;,
+    });
+  }
+  public sectionTrackByFn(index: number, item: ConfigSection) {
+    return index;
+  }
+
+  public confTrackByFn(index: number, item: KeyData) {
+    return item.Key;
+  }
+
+  private updateConfigServiceFilter():void{
+    let keywords &#x3D; this.dstSettings.navigationState.filter?.map(filter &#x3D;&gt; filter.Value1) || [];
+    if(this.dstSettings.navigationState.search){
+      keywords.push(this.dstSettings.navigationState.search)
+    }
+    this.configSvc.filter.keywords &#x3D; keywords;
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;div class&#x3D;&quot;flex-container&quot;&gt;
+  &lt;h1 class&#x3D;&quot;mat-headline&quot; translate&gt;#LDS#Configuration&lt;/h1&gt;
+
+  &lt;div class&#x3D;&quot;config-summary&quot;&gt;
+    &lt;mat-form-field class&#x3D;&quot;project-selector&quot;&gt;
+      &lt;mat-label&gt;{{ &#x27;#LDS#Show configuration for the following API project&#x27; | translate }}&lt;/mat-label&gt;
+      &lt;mat-select (selectionChange)&#x3D;&quot;optionSelected($event.value)&quot; [(ngModel)]&#x3D;&quot;configSvc.appId&quot;&gt;
+        &lt;mat-option *ngFor&#x3D;&quot;let pr of apiProjects&quot; [value]&#x3D;&quot;pr.AppId&quot;&gt;
+          {{ pr.DisplayName }}
+        &lt;/mat-option&gt;
+      &lt;/mat-select&gt;
+    &lt;/mat-form-field&gt;
+
+    &lt;div class&#x3D;&quot;config-changes&quot;&gt;
+      &lt;button [matMenuTriggerFor]&#x3D;&quot;revertMenu&quot; mat-raised-button color&#x3D;&quot;secondary&quot;&gt;
+        &lt;mat-icon&gt;more_vert&lt;/mat-icon&gt;
+      &lt;/button&gt;
+      &lt;mat-menu #revertMenu&#x3D;&quot;matMenu&quot;&gt;
+        &lt;button mat-menu-item (click)&#x3D;&quot;revertAll(true)&quot;&gt;
+          &lt;span&gt;{{ &#x27;#LDS#Revert all globally customized settings&#x27; | translate }}&lt;/span&gt;
+        &lt;/button&gt;
+        &lt;button mat-menu-item (click)&#x3D;&quot;revertAll(false)&quot;&gt;
+          &lt;span&gt;{{ &#x27;#LDS#Revert all locally customized settings&#x27; | translate }}&lt;/span&gt;
+        &lt;/button&gt;
+        &lt;button mat-menu-item (click)&#x3D;&quot;openConvertSidesheet()&quot; *ngIf&#x3D;&quot;configSvc.getLocalCustomizations().length &gt; 0&quot;&gt;
+          &lt;span&gt;{{ &#x27;#LDS#Convert locally customized settings to global settings&#x27; | translate }}&lt;/span&gt;
+        &lt;/button&gt;
+
+        &lt;button mat-menu-item data-imx-identifier&#x3D;&quot;admin-add-config-setting-button&quot; (click)&#x3D;&quot;add()&quot; *ngIf&#x3D;&quot;configSvc.canAddAnyConfigKey&quot;&gt;
+          {{ &#x27;#LDS#Create configuration key&#x27; | translate }}
+        &lt;/button&gt;
+
+        &lt;button mat-menu-item data-imx-identifier&#x3D;&quot;admin-delete-config-setting-button&quot; (click)&#x3D;&quot;openDeleteSidesheet()&quot; *ngIf&#x3D;&quot;configSvc.deletableKeys.length &gt; 0&quot;&gt;
+          {{ &#x27;#LDS#Delete configuration key&#x27; | translate }}
+        &lt;/button&gt;
+      &lt;/mat-menu&gt;
+
+      &lt;button mat-raised-button color&#x3D;&quot;primary&quot; data-imx-identifier&#x3D;&quot;admin-apply-config-change&quot; [disabled]&#x3D;&quot;configSvc.pendingChangeCount &#x3D;&#x3D; 0&quot; (click)&#x3D;&quot;openApplySidesheet()&quot;&gt;
+        {{ &#x27;#LDS#Apply&#x27; | translate | ldsReplace : [configSvc.pendingChangeCount] }}
+      &lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class&#x3D;&quot;scroll-container&quot; [ngClass]&#x3D;&quot;{ loading: loading }&quot;&gt;
+    &lt;imx-data-source-toolbar
+      #dataSourceToolbar
+      [alwaysVisible]&#x3D;&quot;true&quot;
+      [settings]&#x3D;&quot;dstSettings&quot;
+      (search)&#x3D;&quot;onSearch($event)&quot;
+      (navigationStateChanged)&#x3D;&quot;getData($event)&quot;
+      [options]&#x3D;&quot;[&#x27;search&#x27;, &#x27;filter&#x27;]&quot;
+    &gt;
+    &lt;/imx-data-source-toolbar&gt;
+
+    &lt;cdk-virtual-scroll-viewport itemSize&#x3D;&quot;2&quot;&gt;
+      &lt;div [ngClass]&#x3D;&quot;{ loading: loading }&quot;&gt;
+        &lt;mat-spinner *ngIf&#x3D;&quot;loading&quot; [attr.aria-label]&#x3D;&quot;&#x27;#LDS#Loading...&#x27; | translate&quot;&gt;&lt;/mat-spinner&gt;
+
+        &lt;ng-container *ngIf&#x3D;&quot;!loading&quot;&gt;
+          &lt;div *ngIf&#x3D;&quot;sectionsFiltered.length &#x3D;&#x3D; 0&quot; class&#x3D;&quot;no-results&quot;&gt;&lt;eui-icon [icon]&#x3D;&quot;&#x27;search&#x27;&quot;&gt;&lt;/eui-icon&gt;{{ &#x27;#LDS#There are no configuration keys matching your search.&#x27; | translate }}&lt;/div&gt;
+
+          &lt;ng-container *cdkVirtualFor&#x3D;&quot;let section of sectionsFiltered; trackBy: sectionTrackByFn&quot;&gt;
+            &lt;h2 class&#x3D;&quot;section-header&quot;&gt;{{ section.Title }}&lt;/h2&gt;
+
+            &lt;p class&#x3D;&quot;section-subtitle&quot;&gt;{{ section.Description }}&lt;/p&gt;
+
+            &lt;mat-accordion&gt;
+              &lt;mat-expansion-panel *ngFor&#x3D;&quot;let conf of section.Keys; trackBy: confTrackByFn&quot;&gt;
+                &lt;mat-expansion-panel-header&gt;
+                  &lt;mat-panel-title&gt;
+                    &lt;config-key-path [path]&#x3D;&quot;conf.DisplayPath&quot;&gt;&lt;/config-key-path&gt;
+                    &lt;eui-badge *ngIf&#x3D;&quot;conf.HasCustomGlobalValue&quot; style&#x3D;&quot;margin-left: 1em&quot;&gt;
+                      {{ &#x27;#LDS#Customized&#x27; | translate }}
+                    &lt;/eui-badge&gt;
+                    &lt;eui-badge *ngIf&#x3D;&quot;conf.HasCustomLocalValue&quot; style&#x3D;&quot;margin-left: 1em&quot;&gt;
+                      {{ &#x27;#LDS#Customized locally&#x27; | translate }}
+                    &lt;/eui-badge&gt;
+                  &lt;/mat-panel-title&gt;
+                  &lt;mat-panel-description class&#x3D;&quot;right-aligned-description&quot;&gt;
+                    &lt;ng-container *ngIf&#x3D;&quot;isBoolean(conf)&quot;&gt;
+                      &lt;ng-container *ngIf&#x3D;&quot;conf.Value&quot;&gt;{{ &#x27;#LDS#Activated&#x27; | translate }}&lt;/ng-container&gt;
+                      &lt;ng-container *ngIf&#x3D;&quot;!conf.Value&quot;&gt;{{ &#x27;#LDS#Deactivated&#x27; | translate }}&lt;/ng-container&gt;
+                    &lt;/ng-container&gt;
+                  &lt;/mat-panel-description&gt;
+                &lt;/mat-expansion-panel-header&gt;
+
+                &lt;!-- defer content rendering until panel is opened--&gt;
+                &lt;ng-template matExpansionPanelContent&gt;
+                  &lt;ng-container *ngIf&#x3D;&quot;isArray(conf)&quot;&gt;
+                    &lt;p class&#x3D;&quot;key-description&quot;&gt;{{ conf.Description }}&lt;/p&gt;
+                    &lt;imx-list-setting [setting]&#x3D;&quot;conf&quot;&gt;&lt;/imx-list-setting&gt;
+                  &lt;/ng-container&gt;
+                  &lt;ng-container *ngIf&#x3D;&quot;!isArray(conf)&quot;&gt;
+                    &lt;ng-container *ngIf&#x3D;&quot;isBoolean(conf)&quot;&gt;
+                      &lt;mat-checkbox [(ngModel)]&#x3D;&quot;conf.Value&quot; (change)&#x3D;&quot;onChangeEvent(conf)&quot;&gt;{{ conf.DisplayPath[conf.DisplayPath.length - 1] }} &lt;/mat-checkbox&gt;
+                      &lt;p class&#x3D;&quot;key-description&quot;&gt;{{ conf.Description }}&lt;/p&gt;
+                    &lt;/ng-container&gt;
+                    &lt;ng-container *ngIf&#x3D;&quot;!isBoolean(conf)&quot;&gt;
+                      &lt;p class&#x3D;&quot;key-description&quot;&gt;{{ conf.Description }}&lt;/p&gt;
+
+                      &lt;imx-config-select [conf]&#x3D;&quot;conf&quot; *ngIf&#x3D;&quot;conf.Type &#x3D;&#x3D; ConfigSettingType.LimitedValues&quot;&gt; &lt;/imx-config-select&gt;
+                      &lt;mat-form-field appearance&#x3D;&quot;outline&quot; class&#x3D;&quot;wide-field&quot; *ngIf&#x3D;&quot;conf.Type !&#x3D; ConfigSettingType.LimitedValues&quot;&gt;
+                        &lt;mat-label&gt;{{ &#x27;#LDS#Value&#x27; | translate }}&lt;/mat-label&gt;
+
+                        &lt;ng-container *ngIf&#x3D;&quot;conf.Type &#x3D;&#x3D; ConfigSettingType.PositiveInt&quot;&gt;
+                          &lt;input matInput [(ngModel)]&#x3D;&quot;conf.Value&quot; type&#x3D;&quot;number&quot; min&#x3D;&quot;0&quot; step&#x3D;&quot;1&quot; (change)&#x3D;&quot;onChangeEvent(conf)&quot; /&gt;
+                        &lt;/ng-container&gt;
+                        &lt;ng-container *ngIf&#x3D;&quot;conf.Type &#x3D;&#x3D; ConfigSettingType.Int&quot;&gt;
+                          &lt;input matInput [(ngModel)]&#x3D;&quot;conf.Value&quot; type&#x3D;&quot;number&quot; step&#x3D;&quot;1&quot; (change)&#x3D;&quot;onChangeEvent(conf)&quot; /&gt;
+                        &lt;/ng-container&gt;
+
+                        &lt;ng-container *ngIf&#x3D;&quot;conf.Type &#x3D;&#x3D; ConfigSettingType.Double&quot;&gt;
+                          &lt;input matInput [(ngModel)]&#x3D;&quot;conf.Value&quot; type&#x3D;&quot;number&quot; step&#x3D;&quot;0.01&quot; (change)&#x3D;&quot;onChangeEvent(conf)&quot; /&gt;
+                        &lt;/ng-container&gt;
+                        &lt;ng-container *ngIf&#x3D;&quot;conf.Type &#x3D;&#x3D; ConfigSettingType.PositiveDouble&quot;&gt;
+                          &lt;input matInput [(ngModel)]&#x3D;&quot;conf.Value&quot; type&#x3D;&quot;number&quot; min&#x3D;&quot;0&quot; step&#x3D;&quot;0.01&quot; (change)&#x3D;&quot;onChangeEvent(conf)&quot; /&gt;
+                        &lt;/ng-container&gt;
+                        &lt;ng-container *ngIf&#x3D;&quot;conf.Type &#x3D;&#x3D; ConfigSettingType.RiskIndex&quot;&gt;
+                          &lt;input matInput [(ngModel)]&#x3D;&quot;conf.Value&quot; type&#x3D;&quot;number&quot; min&#x3D;&quot;0&quot; max&#x3D;&quot;1&quot; step&#x3D;&quot;0.01&quot; (change)&#x3D;&quot;onChangeEvent(conf)&quot; /&gt;
+                        &lt;/ng-container&gt;
+
+                        &lt;ng-container *ngIf&#x3D;&quot;conf.Type &#x3D;&#x3D; ConfigSettingType.None || conf.Type &#x3D;&#x3D; ConfigSettingType.Sql&quot;&gt;
+                          &lt;textarea matInput [(ngModel)]&#x3D;&quot;conf.Value&quot; (change)&#x3D;&quot;onChangeEvent(conf)&quot;&gt;&lt;/textarea&gt;
+                        &lt;/ng-container&gt;
+                      &lt;/mat-form-field&gt;
+                    &lt;/ng-container&gt;
+                  &lt;/ng-container&gt;
+
+                  &lt;ng-container *ngIf&#x3D;&quot;conf.HasCustomLocalValue || conf.HasCustomGlobalValue&quot;&gt;
+                    &lt;ng-container *ngIf&#x3D;&quot;isArray(conf) &amp;&amp; conf.OriginalValue &amp;&amp; conf.OriginalValue.length &gt; 0&quot;&gt;
+                      &lt;mat-label&gt;{{ &#x27;#LDS#Original value&#x27; | translate }}&lt;/mat-label&gt;
+                      &lt;ul&gt;
+                        &lt;li *ngFor&#x3D;&quot;let originalElem of conf.OriginalValue&quot;&gt;
+                          {{ originalElem }}
+                        &lt;/li&gt;
+                      &lt;/ul&gt;
+                    &lt;/ng-container&gt;
+                    &lt;ng-container *ngIf&#x3D;&quot;!isArray(conf)&quot;&gt;
+                      &lt;ng-container *ngIf&#x3D;&quot;isBoolean(conf)&quot;&gt;
+                        {{ &#x27;#LDS#This setting has been customized and no longer uses its original value.&#x27; | translate }}
+                      &lt;/ng-container&gt;
+                      &lt;ng-container *ngIf&#x3D;&quot;!isBoolean(conf)&quot;&gt;
+                        &lt;ng-container
+                          *ngIf&#x3D;&quot;
+                            conf.Type &#x3D;&#x3D; ConfigSettingType.PositiveInt ||
+                            conf.Type &#x3D;&#x3D; ConfigSettingType.Int ||
+                            conf.Type &#x3D;&#x3D; ConfigSettingType.Double ||
+                            conf.Type &#x3D;&#x3D; ConfigSettingType.PositiveDouble ||
+                            conf.Type &#x3D;&#x3D; ConfigSettingType.RiskIndex
+                          &quot;
+                        &gt;
+                          &lt;mat-form-field appearance&#x3D;&quot;outline&quot; class&#x3D;&quot;wide-field&quot;&gt;
+                            &lt;mat-label&gt;{{ &#x27;#LDS#Original value&#x27; | translate }}&lt;/mat-label&gt;
+                            &lt;input matInput readonly [(ngModel)]&#x3D;&quot;conf.OriginalValue&quot; type&#x3D;&quot;number&quot; /&gt;
+                          &lt;/mat-form-field&gt;
+                        &lt;/ng-container&gt;
+
+                        &lt;ng-container *ngIf&#x3D;&quot;conf.Type &#x3D;&#x3D; ConfigSettingType.None || conf.Type &#x3D;&#x3D; ConfigSettingType.Sql&quot;&gt;
+                          &lt;mat-form-field appearance&#x3D;&quot;outline&quot; class&#x3D;&quot;wide-field&quot;&gt;
+                            &lt;mat-label&gt;{{ &#x27;#LDS#Original value&#x27; | translate }}&lt;/mat-label&gt;
+                            &lt;textarea readonly matInput&gt;{{ conf.OriginalValue }}&lt;/textarea&gt;
+                          &lt;/mat-form-field&gt;
+                        &lt;/ng-container&gt;
+                      &lt;/ng-container&gt;
+                    &lt;/ng-container&gt;
+
+                    &lt;div class&#x3D;&quot;buttonbar&quot;&gt;
+                      &lt;button
+                        mat-raised-button
+                        matTooltip&#x3D;&quot;{{ &#x27;#LDS#Resets this setting to its original value.&#x27; | translate }}&quot;
+                        color&#x3D;&quot;primary&quot;
+                        data-imx-identifier&#x3D;&quot;admin-revert-setting&quot;
+                        (click)&#x3D;&quot;configSvc.revert(conf)&quot;
+                      &gt;
+                        {{ &#x27;#LDS#Reset&#x27; | translate }}
+                      &lt;/button&gt;
+                    &lt;/div&gt;
+                  &lt;/ng-container&gt;
+
+                  &lt;p class&#x3D;&quot;key-path&quot;&gt;{{ conf.Path }}&lt;/p&gt;
+                &lt;/ng-template&gt;
+              &lt;/mat-expansion-panel&gt;
+            &lt;/mat-accordion&gt;
+          &lt;/ng-container&gt;
+        &lt;/ng-container&gt;
+      &lt;/div&gt;
+    &lt;/cdk-virtual-scroll-viewport&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./config.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">@import &#x27;variables.scss&#x27;;
+
+:host {
+  min-width: 800px;
+  margin-bottom: 1em;
+}
+
+.buttonbar {
+  margin-top: 1em;
+}
+
+.config-summary {
+  display: flex;
+  flex-direction: row;
+}
+
+.config-changes {
+  flex: 1 1 auto;
+  text-align: right;
+
+  button {
+    margin: 0 0 0 1em;
+  }
+}
+
+.flex-container {
+  position: absolute;
+  top: 32px;
+  bottom: 32px;
+  left: 32px;
+  right: 32px;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+}
+
+.section-header {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+
+.section-subtitle {
+  font-size: smaller;
+  color: $black-9;
+}
+
+.key-path {
+  font-family: monospace;
+  font-size: smaller;
+  text-align: right;
+  color: $VI_Common_Color_Gray;
+}
+
+.setting-novalue {
+  font-style: italic;
+}
+
+.right-aligned-description {
+  flex-grow: 0;
+}
+
+.project-selector {
+  min-width: 450px;
+}
+
+.wide-field {
+  min-width: 450px;
+  margin-right: 1em;
+}
+
+.scroll-container {
+  padding: 0.5em 0.5em 0.5em 0;
+  flex: 1 1 auto;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  &amp;.loading {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .loading {
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    align-content: center;
+    flex-flow: wrap;
+  }
+}
+
+.no-results {
+  text-align: center;
+  margin: 20px 0;
+
+  .eui-icon {
+    font-size: 100px;
+    color: rgba($black-c, 0.55);
+  }
+
+  p {
+    margin: 0;
+    font-size: 18px;
+    color: $black-9;
+  }
+}
+.mat-expansion-panel-header,
+.mat-expansion-panel-header.mat-expanded {
+  height: 50px;
+}
+.cdk-virtual-scroll-viewport {
+  flex-grow: 1;
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><div class="flex-container">  <h1 class="mat-headline" translate>#LDS#Configuration</h1>  <div class="config-summary">    <mat-form-field class="project-selector">      <mat-label>{{ \'#LDS#Show configuration for the following API project\' | translate }}</mat-label>      <mat-select (selectionChange)="optionSelected($event.value)" [(ngModel)]="configSvc.appId">        <mat-option *ngFor="let pr of apiProjects" [value]="pr.AppId">          {{ pr.DisplayName }}        </mat-option>      </mat-select>    </mat-form-field>    <div class="config-changes">      <button [matMenuTriggerFor]="revertMenu" mat-raised-button color="secondary">        <mat-icon>more_vert</mat-icon>      </button>      <mat-menu #revertMenu="matMenu">        <button mat-menu-item (click)="revertAll(true)">          <span>{{ \'#LDS#Revert all globally customized settings\' | translate }}</span>        </button>        <button mat-menu-item (click)="revertAll(false)">          <span>{{ \'#LDS#Revert all locally customized settings\' | translate }}</span>        </button>        <button mat-menu-item (click)="openConvertSidesheet()" *ngIf="configSvc.getLocalCustomizations().length > 0">          <span>{{ \'#LDS#Convert locally customized settings to global settings\' | translate }}</span>        </button>        <button mat-menu-item data-imx-identifier="admin-add-config-setting-button" (click)="add()" *ngIf="configSvc.canAddAnyConfigKey">          {{ \'#LDS#Create configuration key\' | translate }}        </button>        <button mat-menu-item data-imx-identifier="admin-delete-config-setting-button" (click)="openDeleteSidesheet()" *ngIf="configSvc.deletableKeys.length > 0">          {{ \'#LDS#Delete configuration key\' | translate }}        </button>      </mat-menu>      <button mat-raised-button color="primary" data-imx-identifier="admin-apply-config-change" [disabled]="configSvc.pendingChangeCount == 0" (click)="openApplySidesheet()">        {{ \'#LDS#Apply\' | translate | ldsReplace : [configSvc.pendingChangeCount] }}      </button>    </div>  </div>  <div class="scroll-container" [ngClass]="{ loading: loading }">    <imx-data-source-toolbar      #dataSourceToolbar      [alwaysVisible]="true"      [settings]="dstSettings"      (search)="onSearch($event)"      (navigationStateChanged)="getData($event)"      [options]="[\'search\', \'filter\']"    >    </imx-data-source-toolbar>    <cdk-virtual-scroll-viewport itemSize="2">      <div [ngClass]="{ loading: loading }">        <mat-spinner *ngIf="loading" [attr.aria-label]="\'#LDS#Loading...\' | translate"></mat-spinner>        <ng-container *ngIf="!loading">          <div *ngIf="sectionsFiltered.length == 0" class="no-results"><eui-icon [icon]="\'search\'"></eui-icon>{{ \'#LDS#There are no configuration keys matching your search.\' | translate }}</div>          <ng-container *cdkVirtualFor="let section of sectionsFiltered; trackBy: sectionTrackByFn">            <h2 class="section-header">{{ section.Title }}</h2>            <p class="section-subtitle">{{ section.Description }}</p>            <mat-accordion>              <mat-expansion-panel *ngFor="let conf of section.Keys; trackBy: confTrackByFn">                <mat-expansion-panel-header>                  <mat-panel-title>                    <config-key-path [path]="conf.DisplayPath"></config-key-path>                    <eui-badge *ngIf="conf.HasCustomGlobalValue" style="margin-left: 1em">                      {{ \'#LDS#Customized\' | translate }}                    </eui-badge>                    <eui-badge *ngIf="conf.HasCustomLocalValue" style="margin-left: 1em">                      {{ \'#LDS#Customized locally\' | translate }}                    </eui-badge>                  </mat-panel-title>                  <mat-panel-description class="right-aligned-description">                    <ng-container *ngIf="isBoolean(conf)">                      <ng-container *ngIf="conf.Value">{{ \'#LDS#Activated\' | translate }}</ng-container>                      <ng-container *ngIf="!conf.Value">{{ \'#LDS#Deactivated\' | translate }}</ng-container>                    </ng-container>                  </mat-panel-description>                </mat-expansion-panel-header>                <!-- defer content rendering until panel is opened-->                <ng-template matExpansionPanelContent>                  <ng-container *ngIf="isArray(conf)">                    <p class="key-description">{{ conf.Description }}</p>                    <imx-list-setting [setting]="conf"></imx-list-setting>                  </ng-container>                  <ng-container *ngIf="!isArray(conf)">                    <ng-container *ngIf="isBoolean(conf)">                      <mat-checkbox [(ngModel)]="conf.Value" (change)="onChangeEvent(conf)">{{ conf.DisplayPath[conf.DisplayPath.length - 1] }} </mat-checkbox>                      <p class="key-description">{{ conf.Description }}</p>                    </ng-container>                    <ng-container *ngIf="!isBoolean(conf)">                      <p class="key-description">{{ conf.Description }}</p>                      <imx-config-select [conf]="conf" *ngIf="conf.Type == ConfigSettingType.LimitedValues"> </imx-config-select>                      <mat-form-field appearance="outline" class="wide-field" *ngIf="conf.Type != ConfigSettingType.LimitedValues">                        <mat-label>{{ \'#LDS#Value\' | translate }}</mat-label>                        <ng-container *ngIf="conf.Type == ConfigSettingType.PositiveInt">                          <input matInput [(ngModel)]="conf.Value" type="number" min="0" step="1" (change)="onChangeEvent(conf)" />                        </ng-container>                        <ng-container *ngIf="conf.Type == ConfigSettingType.Int">                          <input matInput [(ngModel)]="conf.Value" type="number" step="1" (change)="onChangeEvent(conf)" />                        </ng-container>                        <ng-container *ngIf="conf.Type == ConfigSettingType.Double">                          <input matInput [(ngModel)]="conf.Value" type="number" step="0.01" (change)="onChangeEvent(conf)" />                        </ng-container>                        <ng-container *ngIf="conf.Type == ConfigSettingType.PositiveDouble">                          <input matInput [(ngModel)]="conf.Value" type="number" min="0" step="0.01" (change)="onChangeEvent(conf)" />                        </ng-container>                        <ng-container *ngIf="conf.Type == ConfigSettingType.RiskIndex">                          <input matInput [(ngModel)]="conf.Value" type="number" min="0" max="1" step="0.01" (change)="onChangeEvent(conf)" />                        </ng-container>                        <ng-container *ngIf="conf.Type == ConfigSettingType.None || conf.Type == ConfigSettingType.Sql">                          <textarea matInput [(ngModel)]="conf.Value" (change)="onChangeEvent(conf)"></textarea>                        </ng-container>                      </mat-form-field>                    </ng-container>                  </ng-container>                  <ng-container *ngIf="conf.HasCustomLocalValue || conf.HasCustomGlobalValue">                    <ng-container *ngIf="isArray(conf) && conf.OriginalValue && conf.OriginalValue.length > 0">                      <mat-label>{{ \'#LDS#Original value\' | translate }}</mat-label>                      <ul>                        <li *ngFor="let originalElem of conf.OriginalValue">                          {{ originalElem }}                        </li>                      </ul>                    </ng-container>                    <ng-container *ngIf="!isArray(conf)">                      <ng-container *ngIf="isBoolean(conf)">                        {{ \'#LDS#This setting has been customized and no longer uses its original value.\' | translate }}                      </ng-container>                      <ng-container *ngIf="!isBoolean(conf)">                        <ng-container                          *ngIf="                            conf.Type == ConfigSettingType.PositiveInt ||                            conf.Type == ConfigSettingType.Int ||                            conf.Type == ConfigSettingType.Double ||                            conf.Type == ConfigSettingType.PositiveDouble ||                            conf.Type == ConfigSettingType.RiskIndex                          "                        >                          <mat-form-field appearance="outline" class="wide-field">                            <mat-label>{{ \'#LDS#Original value\' | translate }}</mat-label>                            <input matInput readonly [(ngModel)]="conf.OriginalValue" type="number" />                          </mat-form-field>                        </ng-container>                        <ng-container *ngIf="conf.Type == ConfigSettingType.None || conf.Type == ConfigSettingType.Sql">                          <mat-form-field appearance="outline" class="wide-field">                            <mat-label>{{ \'#LDS#Original value\' | translate }}</mat-label>                            <textarea readonly matInput>{{ conf.OriginalValue }}</textarea>                          </mat-form-field>                        </ng-container>                      </ng-container>                    </ng-container>                    <div class="buttonbar">                      <button                        mat-raised-button                        matTooltip="{{ \'#LDS#Resets this setting to its original value.\' | translate }}"                        color="primary"                        data-imx-identifier="admin-revert-setting"                        (click)="configSvc.revert(conf)"                      >                        {{ \'#LDS#Reset\' | translate }}                      </button>                    </div>                  </ng-container>                  <p class="key-path">{{ conf.Path }}</p>                </ng-template>              </mat-expansion-panel>            </mat-accordion>          </ng-container>        </ng-container>      </div>    </cdk-virtual-scroll-viewport>  </div></div></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'imx-about'},{'name': 'AddConfigSidesheetComponent', 'selector': ''},{'name': 'AdditionalInfosComponent', 'selector': 'imx-additional-infos'},{'name': 'ApplyConfigSidesheetComponent', 'selector': ''},{'name': 'AutoCompleteComponent', 'selector': 'imx-auto-complete'},{'name': 'AutocompleteComponent', 'selector': 'imx-autocomplete'},{'name': 'BulkItemComponent', 'selector': 'imx-bulk-item'},{'name': 'BulkPropertyEditorComponent', 'selector': 'imx-bulk-editor'},{'name': 'BusyIndicatorComponent', 'selector': 'imx-busy-indicator'},{'name': 'CacheComponent', 'selector': 'imx-cache'},{'name': 'CalendarComponent', 'selector': 'imx-calendar'},{'name': 'CaptchaComponent', 'selector': 'imx-captcha'},{'name': 'CdrEditorComponent', 'selector': 'imx-cdr-editor'},{'name': 'CdrSidesheetComponent', 'selector': ''},{'name': 'ChartTileComponent', 'selector': 'imx-chart-tile'},{'name': 'CheckableTreeComponent', 'selector': 'imx-checkable-tree'},{'name': 'ColumnSelectionComponent', 'selector': 'imx-sqlwizard-columnselection'},{'name': 'ConfigComponent', 'selector': 'imx-config'},{'name': 'ConfigKeyPathComponent', 'selector': 'config-key-path'},{'name': 'ConnectionComponent', 'selector': ''},{'name': 'ConvertConfigSidesheetComponent', 'selector': ''},{'name': 'DashboardComponent', 'selector': ''},{'name': 'DataExportComponent', 'selector': 'imx-data-export'},{'name': 'DataSourcePaginatorComponent', 'selector': 'imx-data-source-paginator'},{'name': 'DataSourceToolbarComponent', 'selector': 'imx-data-source-toolbar'},{'name': 'DataSourceToolbarCustomComponent', 'selector': 'imx-data-source-toolbar-custom'},{'name': 'DataTableCellComponent', 'selector': 'imx-data-table-cell'},{'name': 'DataTableColumnComponent', 'selector': 'imx-data-table-column'},{'name': 'DataTableComponent', 'selector': 'imx-data-table'},{'name': 'DataTableDisplayCellComponent', 'selector': 'imx-data-table-display-cell'},{'name': 'DataTableGenericColumnComponent', 'selector': 'imx-data-table-generic-column'},{'name': 'DataTileComponent', 'selector': 'imx-data-tile'},{'name': 'DataTilesComponent', 'selector': 'imx-data-tiles'},{'name': 'DataTreeComponent', 'selector': 'imx-data-tree'},{'name': 'DataTreeSearchResultsComponent', 'selector': 'imx-data-tree-search-results'},{'name': 'DataTreeWrapperComponent', 'selector': 'imx-data-tree-wrapper'},{'name': 'DateComponent', 'selector': 'imx-date'},{'name': 'DatePickerComponent', 'selector': 'imx-sqlwizard-datepicker'},{'name': 'DateRangeComponent', 'selector': 'imx-date-range'},{'name': 'DeleteConfigSidesheetComponent', 'selector': ''},{'name': 'EditBinaryComponent', 'selector': 'imx-edit-binary'},{'name': 'EditBooleanComponent', 'selector': 'imx-checkbox-editor'},{'name': 'EditDateComponent', 'selector': 'imx-edit-date'},{'name': 'EditDefaultComponent', 'selector': 'imx-edit-default'},{'name': 'EditFkComponent', 'selector': 'imx-edit-fk'},{'name': 'EditFkMultiComponent', 'selector': 'imx-edit-fk-multi'},{'name': 'EditImageComponent', 'selector': 'imx-edit-image'},{'name': 'EditLimitedValueComponent', 'selector': 'imx-edit-limited-value'},{'name': 'EditMultiLimitedValueComponent', 'selector': 'imx-edit-multi-limited-value'},{'name': 'EditMultilineComponent', 'selector': 'imx-edit-multiline'},{'name': 'EditMultiValueComponent', 'selector': 'imx-edit-multi-value'},{'name': 'EditNumberComponent', 'selector': 'imx-edit-number'},{'name': 'EditorBase', 'selector': ''},{'name': 'EditRiskIndexComponent', 'selector': 'imx-edit-risk-index'},{'name': 'EditUrlComponent', 'selector': 'imx-edit-url'},{'name': 'EntityColumnEditorComponent', 'selector': 'imx-entity-column-editor'},{'name': 'EntitySelectComponent', 'selector': 'imx-entity-select'},{'name': 'ExtComponent', 'selector': 'imx-ext'},{'name': 'FilterTileComponent', 'selector': 'imx-filter-tile'},{'name': 'FilterTreeComponent', 'selector': 'imx-filter-tree'},{'name': 'FilterWizardComponent', 'selector': 'imx-filter-wizard'},{'name': 'FkAdvancedPickerComponent', 'selector': ''},{'name': 'FkCandidatesComponent', 'selector': 'imx-fk-candidates'},{'name': 'FkHierarchicalDialogComponent', 'selector': 'imx-fk-hierarchical-dialog'},{'name': 'FkSelectorComponent', 'selector': 'imx-fk-selector'},{'name': 'FkTableSelectComponent', 'selector': 'imx-fk-table-select'},{'name': 'GroupPaginatorComponent', 'selector': 'imx-group-paginator'},{'name': 'HelpContextualComponent', 'selector': 'imx-help-contextual'},{'name': 'HelpContextualDialogComponent', 'selector': 'imx-help-contextual-dialog'},{'name': 'HyperviewComponent', 'selector': 'imx-hyperview'},{'name': 'IconStackComponent', 'selector': 'imx-icon-stack'},{'name': 'ImageSelectComponent', 'selector': 'imx-image-select'},{'name': 'ImageViewComponent', 'selector': 'imx-image-view'},{'name': 'ImxMatColumnComponent', 'selector': 'imx-column'},{'name': 'ImxProgressbarComponent', 'selector': 'imx-progressbar'},{'name': 'ImxTreeTableComponent', 'selector': 'imx-tree-table'},{'name': 'IndexBarComponent', 'selector': 'imx-indexbar'},{'name': 'InfoBadgeComponent', 'selector': 'imx-info-badge'},{'name': 'InfoButtonComponent', 'selector': 'imx-info-button'},{'name': 'InfoDialogComponent', 'selector': 'imx-info-dialog'},{'name': 'JobQueueOverviewComponent', 'selector': 'imx-jobqueue-overview'},{'name': 'ListSettingComponent', 'selector': 'imx-list-setting'},{'name': 'ListShapeComponent', 'selector': 'imx-hyperview-listshape'},{'name': 'LogDetailsSidesheetComponent', 'selector': 'imx-log-details-sidesheet'},{'name': 'LoginComponent', 'selector': 'imx-login'},{'name': 'LogsComponent', 'selector': 'imx-logs'},{'name': 'MasterDetailComponent', 'selector': 'imx-master-detail'},{'name': 'MastHeadComponent', 'selector': 'imx-mast-head'},{'name': 'MenuComponent', 'selector': 'imx-menu'},{'name': 'MessageDialogComponent', 'selector': 'imx-message-dialog'},{'name': 'MultiSelectFormcontrolComponent', 'selector': 'imx-multi-select-formcontrol'},{'name': 'ObjectHistoryComponent', 'selector': 'imx-object-history'},{'name': 'ObjectHistoryGridviewComponent', 'selector': 'imx-object-history-gridview'},{'name': 'ObjectHistoryStateComparisonComponent', 'selector': 'imx-object-history-state-comparison'},{'name': 'ObjectHistoryStateOverviewComponent', 'selector': 'imx-object-history-state-overview'},{'name': 'OrderedListComponent', 'selector': 'imx-ordered-list'},{'name': 'PackagesComponent', 'selector': 'imx-packages'},{'name': 'ParameterizedTextComponent', 'selector': 'imx-parameterized-text'},{'name': 'PluginsComponent', 'selector': 'imx-plugins'},{'name': 'PredefinedFilterComponent', 'selector': 'imx-predefined-filter'},{'name': 'PredefinedFilterTreeComponent', 'selector': 'imx-predefined-filter-tree'},{'name': 'PropertyShapeComponent', 'selector': 'imx-hyperview-propertyshape'},{'name': 'PropertyViewerComponent', 'selector': 'imx-property-viewer'},{'name': 'SaveConfigDialogComponent', 'selector': 'imx-save-config-dialog'},{'name': 'SearchBarComponent', 'selector': 'imx-searchbar'},{'name': 'SelectComponent', 'selector': 'imx-select'},{'name': 'SelectedElementsComponent', 'selector': 'imx-selected-elements'},{'name': 'SelectedElementsDialog', 'selector': ''},{'name': 'SelectValueComponent', 'selector': 'imx-config-select'},{'name': 'ShapeComponent', 'selector': 'imx-hyperview-shape'},{'name': 'SideNavigationViewComponent', 'selector': 'imx-side-navigation-view'},{'name': 'SidenavTreeComponent', 'selector': 'imx-sidenav-tree'},{'name': 'SimpleExpressionComponent', 'selector': 'imx-sqlwizard-simpleexpression'},{'name': 'SimpleShapeComponent', 'selector': 'imx-hyperview-simpleshape'},{'name': 'SingleExpressionComponent', 'selector': 'imx-sqlwizard-singleexpression'},{'name': 'SingleValueComponent', 'selector': 'imx-sqlwizard-singlevalue'},{'name': 'SqlWizardComponent', 'selector': 'imx-sqlwizard'},{'name': 'StatusComponent', 'selector': 'imx-status'},{'name': 'SwaggerComponent', 'selector': 'imx-swagger'},{'name': 'TableSelectionComponent', 'selector': 'imx-sqlwizard-tableselection'},{'name': 'TempBillboardComponent', 'selector': 'imx-temp-billboard'},{'name': 'TileComponent', 'selector': 'imx-tile'},{'name': 'TimelineComponent', 'selector': 'imx-timeline'},{'name': 'TimePickerComponent', 'selector': 'imx-time-picker'},{'name': 'TranslationEditorComponent', 'selector': 'imx-translation-editor'},{'name': 'TreeSelectionListComponent', 'selector': ''},{'name': 'TwoFactorAuthenticationComponent', 'selector': 'imx-2fahost'},{'name': 'TypedEntityCandidateSidesheetComponent', 'selector': ''},{'name': 'TypedEntitySelectComponent', 'selector': 'imx-typed-entity-select'},{'name': 'TypedEntitySelectorComponent', 'selector': 'imx-typed-entity-selector'},{'name': 'UserMessageComponent', 'selector': 'imx-usermessage'},{'name': 'ViewPropertyComponent', 'selector': 'imx-view-property'},{'name': 'ViewPropertyDefaultComponent', 'selector': 'imx-view-property-default'},{'name': 'WhereClauseExpressionComponent', 'selector': 'imx-sqlwizard-whereclauseexpression'}];
+    var DIRECTIVES = [{'name': 'DisableControlDirective', 'selector': '[imxDisableControl]'},{'name': 'DynamicTabDataProviderDirective', 'selector': '[imxDataProvider]'},{'name': 'ExtDirective', 'selector': '[imxExtd]'},{'name': 'MatSelectionListMultipleDirective', 'selector': 'mat-selection-list[multiple]'},{'name': 'TableAccessiblilityDirective', 'selector': '[tableAccessiblility]'},{'name': 'ZoomPanDirective', 'selector': '[imxZoomPan]'}];
+    var ACTUAL_COMPONENT = {'name': 'ConfigComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'ConfigComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

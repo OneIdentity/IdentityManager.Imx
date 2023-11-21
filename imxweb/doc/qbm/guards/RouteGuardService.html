@@ -1,0 +1,742 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>IMX Web - QBM Library</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/material.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">IMX Web - QBM Library</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content guard">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">Guards</li>
+    <li class="breadcrumb-item" >RouteGuardService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+        <div class="tab-pane fade active in" id="info">
+            <p class="comment">
+            <h3>File</h3>
+            </p>
+            <p class="comment">
+                <code>src/lib/route-guard/route-guard.service.ts</code>
+            </p>
+
+
+
+
+
+
+                <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#confirmLeaveMessage" >confirmLeaveMessage</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#confirmLeaveTitle" >confirmLeaveTitle</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#isLoggedIn" >isLoggedIn</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#lastRoute" >lastRoute</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#canActivate" >canActivate</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#canDeactivate" >canDeactivate</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#resolve" >resolve</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+                <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(config: <a href="../injectables/AppConfigService.html" target="_self">AppConfigService</a>, router: Router, session: <a href="../injectables/imx_SessionService.html" target="_self">imx_SessionService</a>, errorHandler: ErrorHandler, confirmation: <a href="../injectables/ConfirmationService.html" target="_self">ConfirmationService</a>, oauthService: <a href="../injectables/OAuthService.html" target="_self">OAuthService</a>, logger: <a href="../injectables/ClassloggerService.html" target="_self">ClassloggerService</a>, authentication: <a href="../injectables/AuthenticationService.html" target="_self">AuthenticationService</a>, storage: <a href="../injectables/StorageService.html" target="_self">StorageService</a>, translation: <a href="../undefineds/T.html" target="_self">TranslateService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">src/lib/route-guard/route-guard.service.ts:48</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>config</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AppConfigService.html" target="_self" >AppConfigService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>router</td>
+                                                  
+                                                        <td>
+                                                                    <code>Router</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>session</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/imx_SessionService.html" target="_self" >imx_SessionService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>errorHandler</td>
+                                                  
+                                                        <td>
+                                                                    <code>ErrorHandler</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>confirmation</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ConfirmationService.html" target="_self" >ConfirmationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>oauthService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/OAuthService.html" target="_self" >OAuthService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ClassloggerService.html" target="_self" >ClassloggerService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>authentication</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AuthenticationService.html" target="_self" >AuthenticationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>storage</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/StorageService.html" target="_self" >StorageService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>translation</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../miscellaneous/typealiases.html#T" target="_self" >TranslateService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+                <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="canActivate"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>canActivate</b></span>
+                        <a href="#canActivate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>canActivate(route: ActivatedRouteSnapshot, state?: RouterStateSnapshot)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="71"
+                            class="link-to-prism">src/lib/route-guard/route-guard.service.ts:71</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>route</td>
+                                    <td>
+                                            <code>ActivatedRouteSnapshot</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>state</td>
+                                    <td>
+                                            <code>RouterStateSnapshot</code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="canDeactivate"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>canDeactivate</b></span>
+                        <a href="#canDeactivate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>canDeactivate(component: <a href="../interfaces/ComponentCanDeactivate.html" target="_self">ComponentCanDeactivate</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="100"
+                            class="link-to-prism">src/lib/route-guard/route-guard.service.ts:100</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>component</td>
+                                    <td>
+                                                <code><a href="../interfaces/ComponentCanDeactivate.html" target="_self" >ComponentCanDeactivate</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="resolve"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>resolve</b></span>
+                        <a href="#resolve"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>resolve(route: ActivatedRouteSnapshot, _: RouterStateSnapshot)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="108"
+                            class="link-to-prism">src/lib/route-guard/route-guard.service.ts:108</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>route</td>
+                                    <td>
+                                            <code>ActivatedRouteSnapshot</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>_</td>
+                                    <td>
+                                            <code>RouterStateSnapshot</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+        </div>
+
+
+        <div class="tab-pane fade  tab-source-code" id="source">
+            <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, ErrorHandler } from &#x27;@angular/core&#x27;;
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, CanDeactivate } from &#x27;@angular/router&#x27;;
+import { TranslateService } from &#x27;@ngx-translate/core&#x27;;
+
+import { imx_SessionService } from &#x27;../session/imx-session.service&#x27;;
+import { AppConfigService } from &#x27;../appConfig/appConfig.service&#x27;;
+import { ComponentCanDeactivate } from &#x27;./component-can-deactivate.interface&#x27;;
+import { OAuthService } from &#x27;../authentication/oauth.service&#x27;;
+import { QueryParametersHandler } from &#x27;../base/query-parameters-handler&#x27;;
+import { ClassloggerService } from &#x27;../classlogger/classlogger.service&#x27;;
+import { AuthenticationService } from &#x27;../authentication/authentication.service&#x27;;
+import { StorageService } from &#x27;../storage/storage.service&#x27;;
+import { ConfirmationService } from &#x27;../confirmation/confirmation.service&#x27;;
+
+@Injectable({
+  providedIn: &#x27;root&#x27;
+})
+export class RouteGuardService implements CanActivate, CanDeactivate&lt;ComponentCanDeactivate&gt; {
+  private confirmLeaveTitle &#x3D; &#x27;&#x27;;
+  private confirmLeaveMessage &#x3D; &#x27;&#x27;;
+  private isLoggedIn: boolean;
+  private lastRoute: ActivatedRouteSnapshot;
+
+  constructor(
+    private readonly config: AppConfigService,
+    private readonly router: Router,
+    private readonly session: imx_SessionService,
+    private readonly errorHandler: ErrorHandler,
+    private confirmation: ConfirmationService,
+    private readonly oauthService: OAuthService,
+    private readonly logger: ClassloggerService,
+    private readonly authentication: AuthenticationService,
+    private readonly storage: StorageService,
+    readonly translation: TranslateService
+  ) {
+    translation.get(&#x27;#LDS#Heading Cancel Editing&#x27;)
+      .subscribe((value: string) &#x3D;&gt; this.confirmLeaveTitle &#x3D; value);
+
+    translation.get(&#x27;#LDS#You have unsaved changes. Are you sure you want to cancel editing and discard your changes?&#x27;)
+      .subscribe((value: string) &#x3D;&gt; this.confirmLeaveMessage &#x3D; value);
+
+    this.authentication.onSessionResponse.subscribe(sessionState &#x3D;&gt; this.isLoggedIn &#x3D; sessionState &amp;&amp; sessionState.IsLoggedIn);
+  }
+
+  public async canActivate(route: ActivatedRouteSnapshot, state?: RouterStateSnapshot): Promise&lt;boolean&gt; {
+    try {
+      if (this.isLoggedIn) {
+        return true;
+      }
+
+      const sessionState &#x3D; await this.session.getSessionState();
+
+      if (sessionState &amp;&amp; sessionState.IsLoggedIn) {
+        return true;
+      }
+
+      const queryParamsHandler &#x3D; new QueryParametersHandler(document.location.search, route);
+      const loginData &#x3D; queryParamsHandler.GetQueryParameters(this.oauthService.IsOAuthParameter);
+
+      if (loginData &amp;&amp; (await this.authentication.oauthLogin(loginData, sessionState)).IsLoggedIn) {
+        return true;
+      }
+    } catch (error) {
+      this.errorHandler.handleError(error);
+    }
+
+    this.lastRoute &#x3D; route;
+    this.storage.lastUrl &#x3D; state?.url;
+
+    await this.router.navigate([this.config.Config.routeConfig.login], { queryParams: {} });
+    return false;
+  }
+
+  public async canDeactivate(component: ComponentCanDeactivate): Promise&lt;boolean&gt; {
+    if (!component.canDeactivate()) {
+      return this.confirmation.confirmLeaveWithUnsavedChanges(this.confirmLeaveTitle, this.confirmLeaveMessage);
+    } else {
+      return true;
+    }
+  }
+
+  public resolve(route: ActivatedRouteSnapshot, _: RouterStateSnapshot): void {
+    this.logger.debug(this, &#x27;resolve&#x27;);
+
+    if (!this.isLoggedIn) {
+      this.logger.debug(this, &#x27;resolve - not logged in&#x27;);
+      return;
+    }
+
+    const lastUrl &#x3D; this.storage.lastUrl;
+    const lastLocation &#x3D; (this.lastRoute || lastUrl) ? {
+      route: this.lastRoute,
+      url: lastUrl
+    } : undefined;
+
+    this.lastRoute &#x3D; undefined;
+    this.storage.lastUrl &#x3D; undefined;
+
+    try {
+      let queryParamsHandler &#x3D; new QueryParametersHandler(document.location.search, route);
+      const oAuthQueryParams &#x3D; queryParamsHandler.GetQueryParameters(this.oauthService.IsOAuthParameter);
+      const paramsContainsOAuth &#x3D; oAuthQueryParams !&#x3D; null;
+
+      if (lastLocation) {
+        queryParamsHandler &#x3D; new QueryParametersHandler(undefined, lastLocation.route, lastLocation.url);
+      }
+
+      if (paramsContainsOAuth &amp;&amp; this.oauthService.hasRequiredOAuthParameter(oAuthQueryParams) || lastLocation) {
+        this.logger.debug(this, &#x27;resolve - navigate - queryParamsHandler&#x27;, queryParamsHandler);
+
+        this.router.navigate(
+          [queryParamsHandler.path || this.config.Config.routeConfig.start],
+          { queryParams: queryParamsHandler.GetQueryParameters(name &#x3D;&gt; !this.oauthService.IsOAuthParameter(name)) }
+        );
+      }
+    } catch (error) {
+      this.errorHandler.handleError(error);
+    }
+  }
+}
+</code></pre>
+        </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'guard';
+            var COMPODOC_CURRENT_PAGE_URL = 'RouteGuardService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

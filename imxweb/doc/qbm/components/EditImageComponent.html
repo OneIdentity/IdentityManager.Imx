@@ -1,0 +1,1292 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>IMX Web - QBM Library</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/material.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">IMX Web - QBM Library</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  EditImageComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/lib/cdr/edit-image/edit-image.component.ts</code>
+</p>
+
+
+    <p class="comment">
+        <h3>Description</h3>
+    </p>
+    <p class="comment">
+        <p>A component for viewing / editing binary columns with image data</p>
+
+    </p>
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                    <code><a href="../interfaces/CdrEditor.html" target="_self" >CdrEditor</a></code>
+                <code>OnDestroy</code>
+    </p>
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>imx-edit-image</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./edit-image.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./edit-image.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#columnContainer" >columnContainer</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#control" >control</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#fileFormatError" >fileFormatError</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                <a href="#fileInput" >fileInput</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#isLoading" >isLoading</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#isWriting" >isWriting</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#subscriptions" >subscriptions</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#updateRequested" >updateRequested</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#valueHasChanged" >valueHasChanged</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#bind" >bind</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#emitFiles" >emitFiles</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#ngOnDestroy" >ngOnDestroy</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#remove" >remove</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#resetFileFormatErrorState" >resetFileFormatErrorState</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#writeValue" >writeValue</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Accessors</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                    <a href="#fileFormatHint" >fileFormatHint</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(logger: <a href="../injectables/ClassloggerService.html" target="_self">ClassloggerService</a>, imageProvider: <a href="../injectables/Base64ImageService.html" target="_self">Base64ImageService</a>, fileSelector: <a href="../injectables/FileSelectorService.html" target="_self">FileSelectorService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="65" class="link-to-prism">src/lib/cdr/edit-image/edit-image.component.ts:65</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ClassloggerService.html" target="_self" >ClassloggerService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>imageProvider</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/Base64ImageService.html" target="_self" >Base64ImageService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>fileSelector</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/FileSelectorService.html" target="_self" >FileSelectorService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="bind"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>bind</b></span>
+                        <a href="#bind"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>bind(cdref: <a href="../interfaces/ColumnDependentReference.html" target="_self">ColumnDependentReference</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="86"
+                            class="link-to-prism">src/lib/cdr/edit-image/edit-image.component.ts:86</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Binds a column dependent reference to the component</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>cdref</td>
+                                    <td>
+                                                <code><a href="../interfaces/ColumnDependentReference.html" target="_self" >ColumnDependentReference</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>a column dependent reference</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="emitFiles"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>emitFiles</b></span>
+                        <a href="#emitFiles"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>emitFiles(files: FileList)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="138"
+                            class="link-to-prism">src/lib/cdr/edit-image/edit-image.component.ts:138</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>files</td>
+                                    <td>
+                                            <code>FileList</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnDestroy"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>ngOnDestroy</b></span>
+                        <a href="#ngOnDestroy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ngOnDestroy()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="78"
+                            class="link-to-prism">src/lib/cdr/edit-image/edit-image.component.ts:78</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="remove"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>remove</b></span>
+                        <a href="#remove"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>remove()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="145"
+                            class="link-to-prism">src/lib/cdr/edit-image/edit-image.component.ts:145</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>removes the current image</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="resetFileFormatErrorState"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>resetFileFormatErrorState</b></span>
+                        <a href="#resetFileFormatErrorState"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>resetFileFormatErrorState()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="133"
+                            class="link-to-prism">src/lib/cdr/edit-image/edit-image.component.ts:133</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="writeValue"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>writeValue</b></span>
+                        <a href="#writeValue"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>writeValue(value: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="169"
+                            class="link-to-prism">src/lib/cdr/edit-image/edit-image.component.ts:169</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>updates the value for the CDR</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>value</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>the new image url</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="columnContainer"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>columnContainer</b></span>
+                        <a href="#columnContainer"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new EntityColumnContainer&lt;string&gt;()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="57" class="link-to-prism">src/lib/cdr/edit-image/edit-image.component.ts:57</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="control"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>control</b></span>
+                        <a href="#control"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new UntypedFormControl(undefined)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="55" class="link-to-prism">src/lib/cdr/edit-image/edit-image.component.ts:55</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fileFormatError"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>fileFormatError</b></span>
+                        <a href="#fileFormatError"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">src/lib/cdr/edit-image/edit-image.component.ts:62</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fileInput"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                        <span ><b>fileInput</b></span>
+                        <a href="#fileInput"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>ElementRef</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ViewChild(&#x27;file&#x27;)<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">src/lib/cdr/edit-image/edit-image.component.ts:47</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isLoading"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>isLoading</b></span>
+                        <a href="#isLoading"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="60" class="link-to-prism">src/lib/cdr/edit-image/edit-image.component.ts:60</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isWriting"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>isWriting</b></span>
+                        <a href="#isWriting"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="65" class="link-to-prism">src/lib/cdr/edit-image/edit-image.component.ts:65</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="subscriptions"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>subscriptions</b></span>
+                        <a href="#subscriptions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="64" class="link-to-prism">src/lib/cdr/edit-image/edit-image.component.ts:64</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateRequested"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>updateRequested</b></span>
+                        <a href="#updateRequested"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Subject&lt;void&gt;()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="53" class="link-to-prism">src/lib/cdr/edit-image/edit-image.component.ts:53</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="valueHasChanged"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>valueHasChanged</b></span>
+                        <a href="#valueHasChanged"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new EventEmitter&lt;ValueHasChangedEventArg&gt;()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="58" class="link-to-prism">src/lib/cdr/edit-image/edit-image.component.ts:58</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-accessors">
+    <h3 id="accessors">
+        Accessors
+    </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="fileFormatHint"></a>
+                        <span class="name"><b>fileFormatHint</b><a href="#fileFormatHint"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>fileFormatHint()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="49" class="link-to-prism">src/lib/cdr/edit-image/edit-image.component.ts:49</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+</section>
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, ElementRef, EventEmitter, OnDestroy, ViewChild } from &#x27;@angular/core&#x27;;
+import { UntypedFormControl, Validators } from &#x27;@angular/forms&#x27;;
+import { Subject, Subscription } from &#x27;rxjs&#x27;;
+
+import { ColumnDependentReference } from &#x27;../column-dependent-reference.interface&#x27;;
+import { CdrEditor, ValueHasChangedEventArg } from &#x27;../cdr-editor.interface&#x27;;
+import { EntityColumnContainer } from &#x27;../entity-column-container&#x27;;
+import { ClassloggerService } from &#x27;../../classlogger/classlogger.service&#x27;;
+import { Base64ImageService } from &#x27;../../images/base64-image.service&#x27;;
+import { FileSelectorService } from &#x27;../../file-selector/file-selector.service&#x27;;
+
+/**
+ * A component for viewing / editing binary columns with image data
+ */
+@Component({
+  selector: &#x27;imx-edit-image&#x27;,
+  templateUrl: &#x27;./edit-image.component.html&#x27;,
+  styleUrls: [&#x27;./edit-image.component.scss&#x27;],
+})
+export class EditImageComponent implements CdrEditor, OnDestroy {
+  @ViewChild(&#x27;file&#x27;) public fileInput: ElementRef;
+
+  public get fileFormatHint(): string {
+    return this.fileFormatError ? &#x27;#LDS#Please select an image in PNG format.&#x27; : undefined;
+  }
+
+  public readonly updateRequested &#x3D; new Subject&lt;void&gt;();
+
+  public readonly control &#x3D; new UntypedFormControl(undefined);
+
+  public readonly columnContainer &#x3D; new EntityColumnContainer&lt;string&gt;();
+  public readonly valueHasChanged &#x3D; new EventEmitter&lt;ValueHasChangedEventArg&gt;();
+
+  public isLoading &#x3D; false;
+
+  private fileFormatError &#x3D; false;
+
+  private readonly subscriptions: Subscription[] &#x3D; [];
+  private isWriting &#x3D; false;
+
+  constructor(
+    private readonly logger: ClassloggerService,
+    private readonly imageProvider: Base64ImageService,
+    private readonly fileSelector: FileSelectorService
+  ) {
+    this.subscriptions.push(
+      this.fileSelector.fileFormatError.subscribe(() &#x3D;&gt; (this.fileFormatError &#x3D; true)),
+      this.fileSelector.fileSelected.subscribe((filepath) &#x3D;&gt; this.writeValue(this.imageProvider.getImageData(filepath)))
+    );
+  }
+
+  public ngOnDestroy(): void {
+    this.subscriptions.forEach((s) &#x3D;&gt; s.unsubscribe());
+  }
+
+  /**
+   * Binds a column dependent reference to the component
+   * @param cdref a column dependent reference
+   */
+  public bind(cdref: ColumnDependentReference): void {
+    if (cdref &amp;&amp; cdref.column) {
+      this.columnContainer.init(cdref);
+      this.control.setValue(this.columnContainer.value, { emitEvent: false });
+      if (this.columnContainer.isValueRequired &amp;&amp; this.columnContainer.canEdit) {
+        this.control.setValidators(Validators.required);
+      }
+
+      if (cdref.minlengthSubject) {
+        this.subscriptions.push(
+          cdref.minlengthSubject.subscribe(() &#x3D;&gt; {
+            this.setValidators();
+          })
+        );
+      }
+      this.subscriptions.push(
+        this.columnContainer.subscribe(() &#x3D;&gt; {
+          if (this.isWriting) {
+            return;
+          }
+          if (this.control.value !&#x3D;&#x3D; this.columnContainer.value) {
+            this.logger.trace(this, &#x27;Control set to new value&#x27;);
+            this.control.setValue(this.columnContainer.value, { emitEvent: false });
+          }
+          this.valueHasChanged.emit({ value: this.control.value });
+        })
+      );
+
+      this.subscriptions.push(
+        this.updateRequested.subscribe(() &#x3D;&gt; {
+          setTimeout(() &#x3D;&gt; {
+            try {
+              if (this.control.value !&#x3D;&#x3D; this.columnContainer.value) {
+                this.logger.trace(this, &#x27;Control set to new value&#x27;);
+                this.control.setValue(this.columnContainer.value, { emitEvent: false });
+              }
+              this.valueHasChanged.emit({ value: this.control.value });
+              this.setValidators();
+              this.control.updateValueAndValidity({ onlySelf: true, emitEvent: false });
+            } finally {
+            }
+          });
+        })
+      );
+    }
+  }
+
+  public resetFileFormatErrorState(): void {
+    this.fileFormatError &#x3D; false;
+  }
+
+  // TODO: Check Upgrade
+  public emitFiles(files: FileList): void {
+    this.fileSelector.emitFiles(files, &#x27;image/png&#x27;);
+  }
+
+  /**
+   * removes the current image
+   */
+  public async remove(): Promise&lt;void&gt; {
+    this.fileInput.nativeElement.value &#x3D; &#x27;&#x27;;
+    this.fileFormatError &#x3D; false;
+
+    this.logger.debug(this, &#x27;Removing current image...&#x27;);
+    await this.writeValue(undefined);
+  }
+
+  /**
+   * Sets Validators.required, if the control is mandatory, else it&#x27;s set to null.
+   * @ignore used internally
+   */
+  private setValidators() {
+    if (this.columnContainer.isValueRequired &amp;&amp; this.columnContainer.canEdit) {
+      this.control.setValidators(Validators.required);
+    } else {
+      this.control.setValidators(null);
+    }
+  }
+
+  /**
+   * updates the value for the CDR
+   * @param value the new image url
+   */
+  private async writeValue(value: string): Promise&lt;void&gt; {
+    this.logger.debug(this, &#x27;writeValue called with value&#x27;, value);
+
+    if (!this.columnContainer.canEdit || this.columnContainer.value &#x3D;&#x3D;&#x3D; value) {
+      return;
+    }
+
+    this.control.setValue(value, { emitEvent: false });
+
+    try {
+      this.isLoading &#x3D; true;
+      this.isWriting &#x3D; true;
+      this.logger.debug(this, &#x27;writeValue - updateCdrValue...&#x27;);
+      await this.columnContainer.updateValue(value);
+    } catch (e) {
+      this.logger.error(this, e);
+    } finally {
+      this.isLoading &#x3D; false;
+      this.isWriting &#x3D; false;
+
+      if (this.control.value !&#x3D;&#x3D; this.columnContainer.value) {
+        this.control.setValue(this.columnContainer.value, { emitEvent: false });
+        this.logger.debug(this, &#x27;form control value is set to&#x27;, this.control.value);
+      }
+      this.valueHasChanged.emit({ value: this.control.value, forceEmit: true });
+    }
+
+    this.control.markAsDirty();
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;input [hidden]&#x3D;&quot;true&quot; #file type&#x3D;&quot;file&quot; multiple&#x3D;&quot;false&quot; accept&#x3D;&quot;image/png&quot; (change)&#x3D;&quot;emitFiles($event.target.files)&quot;/&gt;
+
+&lt;imx-image-select *ngIf&#x3D;&quot;columnContainer?.canEdit; else imageView&quot;
+  [valueWrapper]&#x3D;&quot;columnContainer&quot;
+  [control]&#x3D;&quot;control&quot;
+  [fileFormatHint]&#x3D;&quot;fileFormatHint&quot;
+  [isLoading]&#x3D;&quot;isLoading&quot;
+  (change)&#x3D;&quot;resetFileFormatErrorState();file.click()&quot;
+  (remove)&#x3D;&quot;remove()&quot;&gt;
+&lt;/imx-image-select&gt;
+
+&lt;ng-template #imageView&gt;
+  &lt;imx-image-view [valueWrapper]&#x3D;&quot;columnContainer&quot; defaultValue&#x3D;&quot;#LDS#Not set&quot;&gt;&lt;/imx-image-view&gt;
+&lt;/ng-template&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./edit-image.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">:host {
+  flex-grow: 1;
+}</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><input [hidden]="true" #file type="file" multiple="false" accept="image/png" (change)="emitFiles($event.target.files)"/><imx-image-select *ngIf="columnContainer?.canEdit; else imageView"  [valueWrapper]="columnContainer"  [control]="control"  [fileFormatHint]="fileFormatHint"  [isLoading]="isLoading"  (change)="resetFileFormatErrorState();file.click()"  (remove)="remove()"></imx-image-select><ng-template #imageView>  <imx-image-view [valueWrapper]="columnContainer" defaultValue="#LDS#Not set"></imx-image-view></ng-template></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'imx-about'},{'name': 'AddConfigSidesheetComponent', 'selector': ''},{'name': 'AdditionalInfosComponent', 'selector': 'imx-additional-infos'},{'name': 'ApplyConfigSidesheetComponent', 'selector': ''},{'name': 'AutoCompleteComponent', 'selector': 'imx-auto-complete'},{'name': 'AutocompleteComponent', 'selector': 'imx-autocomplete'},{'name': 'BulkItemComponent', 'selector': 'imx-bulk-item'},{'name': 'BulkPropertyEditorComponent', 'selector': 'imx-bulk-editor'},{'name': 'BusyIndicatorComponent', 'selector': 'imx-busy-indicator'},{'name': 'CacheComponent', 'selector': 'imx-cache'},{'name': 'CalendarComponent', 'selector': 'imx-calendar'},{'name': 'CaptchaComponent', 'selector': 'imx-captcha'},{'name': 'CdrEditorComponent', 'selector': 'imx-cdr-editor'},{'name': 'CdrSidesheetComponent', 'selector': ''},{'name': 'ChartTileComponent', 'selector': 'imx-chart-tile'},{'name': 'CheckableTreeComponent', 'selector': 'imx-checkable-tree'},{'name': 'ColumnSelectionComponent', 'selector': 'imx-sqlwizard-columnselection'},{'name': 'ConfigComponent', 'selector': 'imx-config'},{'name': 'ConfigKeyPathComponent', 'selector': 'config-key-path'},{'name': 'ConnectionComponent', 'selector': ''},{'name': 'ConvertConfigSidesheetComponent', 'selector': ''},{'name': 'DashboardComponent', 'selector': ''},{'name': 'DataExportComponent', 'selector': 'imx-data-export'},{'name': 'DataSourcePaginatorComponent', 'selector': 'imx-data-source-paginator'},{'name': 'DataSourceToolbarComponent', 'selector': 'imx-data-source-toolbar'},{'name': 'DataSourceToolbarCustomComponent', 'selector': 'imx-data-source-toolbar-custom'},{'name': 'DataTableCellComponent', 'selector': 'imx-data-table-cell'},{'name': 'DataTableColumnComponent', 'selector': 'imx-data-table-column'},{'name': 'DataTableComponent', 'selector': 'imx-data-table'},{'name': 'DataTableDisplayCellComponent', 'selector': 'imx-data-table-display-cell'},{'name': 'DataTableGenericColumnComponent', 'selector': 'imx-data-table-generic-column'},{'name': 'DataTileComponent', 'selector': 'imx-data-tile'},{'name': 'DataTilesComponent', 'selector': 'imx-data-tiles'},{'name': 'DataTreeComponent', 'selector': 'imx-data-tree'},{'name': 'DataTreeSearchResultsComponent', 'selector': 'imx-data-tree-search-results'},{'name': 'DataTreeWrapperComponent', 'selector': 'imx-data-tree-wrapper'},{'name': 'DateComponent', 'selector': 'imx-date'},{'name': 'DatePickerComponent', 'selector': 'imx-sqlwizard-datepicker'},{'name': 'DateRangeComponent', 'selector': 'imx-date-range'},{'name': 'DeleteConfigSidesheetComponent', 'selector': ''},{'name': 'EditBinaryComponent', 'selector': 'imx-edit-binary'},{'name': 'EditBooleanComponent', 'selector': 'imx-checkbox-editor'},{'name': 'EditDateComponent', 'selector': 'imx-edit-date'},{'name': 'EditDefaultComponent', 'selector': 'imx-edit-default'},{'name': 'EditFkComponent', 'selector': 'imx-edit-fk'},{'name': 'EditFkMultiComponent', 'selector': 'imx-edit-fk-multi'},{'name': 'EditImageComponent', 'selector': 'imx-edit-image'},{'name': 'EditLimitedValueComponent', 'selector': 'imx-edit-limited-value'},{'name': 'EditMultiLimitedValueComponent', 'selector': 'imx-edit-multi-limited-value'},{'name': 'EditMultilineComponent', 'selector': 'imx-edit-multiline'},{'name': 'EditMultiValueComponent', 'selector': 'imx-edit-multi-value'},{'name': 'EditNumberComponent', 'selector': 'imx-edit-number'},{'name': 'EditorBase', 'selector': ''},{'name': 'EditRiskIndexComponent', 'selector': 'imx-edit-risk-index'},{'name': 'EditUrlComponent', 'selector': 'imx-edit-url'},{'name': 'EntityColumnEditorComponent', 'selector': 'imx-entity-column-editor'},{'name': 'EntitySelectComponent', 'selector': 'imx-entity-select'},{'name': 'ExtComponent', 'selector': 'imx-ext'},{'name': 'FilterTileComponent', 'selector': 'imx-filter-tile'},{'name': 'FilterTreeComponent', 'selector': 'imx-filter-tree'},{'name': 'FilterWizardComponent', 'selector': 'imx-filter-wizard'},{'name': 'FkAdvancedPickerComponent', 'selector': ''},{'name': 'FkCandidatesComponent', 'selector': 'imx-fk-candidates'},{'name': 'FkHierarchicalDialogComponent', 'selector': 'imx-fk-hierarchical-dialog'},{'name': 'FkSelectorComponent', 'selector': 'imx-fk-selector'},{'name': 'FkTableSelectComponent', 'selector': 'imx-fk-table-select'},{'name': 'GroupPaginatorComponent', 'selector': 'imx-group-paginator'},{'name': 'HelpContextualComponent', 'selector': 'imx-help-contextual'},{'name': 'HelpContextualDialogComponent', 'selector': 'imx-help-contextual-dialog'},{'name': 'HyperviewComponent', 'selector': 'imx-hyperview'},{'name': 'IconStackComponent', 'selector': 'imx-icon-stack'},{'name': 'ImageSelectComponent', 'selector': 'imx-image-select'},{'name': 'ImageViewComponent', 'selector': 'imx-image-view'},{'name': 'ImxMatColumnComponent', 'selector': 'imx-column'},{'name': 'ImxProgressbarComponent', 'selector': 'imx-progressbar'},{'name': 'ImxTreeTableComponent', 'selector': 'imx-tree-table'},{'name': 'IndexBarComponent', 'selector': 'imx-indexbar'},{'name': 'InfoBadgeComponent', 'selector': 'imx-info-badge'},{'name': 'InfoButtonComponent', 'selector': 'imx-info-button'},{'name': 'InfoDialogComponent', 'selector': 'imx-info-dialog'},{'name': 'JobQueueOverviewComponent', 'selector': 'imx-jobqueue-overview'},{'name': 'ListSettingComponent', 'selector': 'imx-list-setting'},{'name': 'ListShapeComponent', 'selector': 'imx-hyperview-listshape'},{'name': 'LogDetailsSidesheetComponent', 'selector': 'imx-log-details-sidesheet'},{'name': 'LoginComponent', 'selector': 'imx-login'},{'name': 'LogsComponent', 'selector': 'imx-logs'},{'name': 'MasterDetailComponent', 'selector': 'imx-master-detail'},{'name': 'MastHeadComponent', 'selector': 'imx-mast-head'},{'name': 'MenuComponent', 'selector': 'imx-menu'},{'name': 'MessageDialogComponent', 'selector': 'imx-message-dialog'},{'name': 'MultiSelectFormcontrolComponent', 'selector': 'imx-multi-select-formcontrol'},{'name': 'ObjectHistoryComponent', 'selector': 'imx-object-history'},{'name': 'ObjectHistoryGridviewComponent', 'selector': 'imx-object-history-gridview'},{'name': 'ObjectHistoryStateComparisonComponent', 'selector': 'imx-object-history-state-comparison'},{'name': 'ObjectHistoryStateOverviewComponent', 'selector': 'imx-object-history-state-overview'},{'name': 'OrderedListComponent', 'selector': 'imx-ordered-list'},{'name': 'PackagesComponent', 'selector': 'imx-packages'},{'name': 'ParameterizedTextComponent', 'selector': 'imx-parameterized-text'},{'name': 'PluginsComponent', 'selector': 'imx-plugins'},{'name': 'PredefinedFilterComponent', 'selector': 'imx-predefined-filter'},{'name': 'PredefinedFilterTreeComponent', 'selector': 'imx-predefined-filter-tree'},{'name': 'PropertyShapeComponent', 'selector': 'imx-hyperview-propertyshape'},{'name': 'PropertyViewerComponent', 'selector': 'imx-property-viewer'},{'name': 'SaveConfigDialogComponent', 'selector': 'imx-save-config-dialog'},{'name': 'SearchBarComponent', 'selector': 'imx-searchbar'},{'name': 'SelectComponent', 'selector': 'imx-select'},{'name': 'SelectedElementsComponent', 'selector': 'imx-selected-elements'},{'name': 'SelectedElementsDialog', 'selector': ''},{'name': 'SelectValueComponent', 'selector': 'imx-config-select'},{'name': 'ShapeComponent', 'selector': 'imx-hyperview-shape'},{'name': 'SideNavigationViewComponent', 'selector': 'imx-side-navigation-view'},{'name': 'SidenavTreeComponent', 'selector': 'imx-sidenav-tree'},{'name': 'SimpleExpressionComponent', 'selector': 'imx-sqlwizard-simpleexpression'},{'name': 'SimpleShapeComponent', 'selector': 'imx-hyperview-simpleshape'},{'name': 'SingleExpressionComponent', 'selector': 'imx-sqlwizard-singleexpression'},{'name': 'SingleValueComponent', 'selector': 'imx-sqlwizard-singlevalue'},{'name': 'SqlWizardComponent', 'selector': 'imx-sqlwizard'},{'name': 'StatusComponent', 'selector': 'imx-status'},{'name': 'SwaggerComponent', 'selector': 'imx-swagger'},{'name': 'TableSelectionComponent', 'selector': 'imx-sqlwizard-tableselection'},{'name': 'TempBillboardComponent', 'selector': 'imx-temp-billboard'},{'name': 'TileComponent', 'selector': 'imx-tile'},{'name': 'TimelineComponent', 'selector': 'imx-timeline'},{'name': 'TimePickerComponent', 'selector': 'imx-time-picker'},{'name': 'TranslationEditorComponent', 'selector': 'imx-translation-editor'},{'name': 'TreeSelectionListComponent', 'selector': ''},{'name': 'TwoFactorAuthenticationComponent', 'selector': 'imx-2fahost'},{'name': 'TypedEntityCandidateSidesheetComponent', 'selector': ''},{'name': 'TypedEntitySelectComponent', 'selector': 'imx-typed-entity-select'},{'name': 'TypedEntitySelectorComponent', 'selector': 'imx-typed-entity-selector'},{'name': 'UserMessageComponent', 'selector': 'imx-usermessage'},{'name': 'ViewPropertyComponent', 'selector': 'imx-view-property'},{'name': 'ViewPropertyDefaultComponent', 'selector': 'imx-view-property-default'},{'name': 'WhereClauseExpressionComponent', 'selector': 'imx-sqlwizard-whereclauseexpression'}];
+    var DIRECTIVES = [{'name': 'DisableControlDirective', 'selector': '[imxDisableControl]'},{'name': 'DynamicTabDataProviderDirective', 'selector': '[imxDataProvider]'},{'name': 'ExtDirective', 'selector': '[imxExtd]'},{'name': 'MatSelectionListMultipleDirective', 'selector': 'mat-selection-list[multiple]'},{'name': 'TableAccessiblilityDirective', 'selector': '[tableAccessiblility]'},{'name': 'ZoomPanDirective', 'selector': '[imxZoomPan]'}];
+    var ACTUAL_COMPONENT = {'name': 'EditImageComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'EditImageComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

@@ -1,0 +1,1824 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>IMX Web - QBM Library</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/material.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">IMX Web - QBM Library</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  LoginComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/lib/login/login.component.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                <code>OnInit</code>
+                <code>OnDestroy</code>
+    </p>
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>imx-login</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./login.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./login.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#appConfigService" >appConfigService</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#authProviderStorageKey" >authProviderStorageKey</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#configurationProviders" >configurationProviders</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                <a href="#directive" >directive</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#loginData" >loginData</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#logoUrl" >logoUrl</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#newUserConfigProvider" >newUserConfigProvider</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#newUserConfigProviderName" >newUserConfigProviderName</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#product" >product</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#selectedConfigProvider" >selectedConfigProvider</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#sessionState" >sessionState</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#subscriptions" >subscriptions</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#title" >title</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#buildConfigurationProviders" >buildConfigurationProviders</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#createNewAccount" >createNewAccount</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#initCustomAuthFlowView" >initCustomAuthFlowView</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#login" >login</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#logoutOAuth" >logoutOAuth</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#ngOnDestroy" >ngOnDestroy</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#onSelectAuthConfig" >onSelectAuthConfig</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(appConfigService: <a href="../injectables/AppConfigService.html" target="_self">AppConfigService</a>, authentication: <a href="../injectables/AuthenticationService.html" target="_self">AuthenticationService</a>, router: Router, logger: <a href="../injectables/ClassloggerService.html" target="_self">ClassloggerService</a>, systemInfoService: <a href="../injectables/SystemInfoService.html" target="_self">SystemInfoService</a>, componentFactoryResolver: ComponentFactoryResolver, splash: EuiSplashScreenService, busyService: EuiLoadingService, themeService: <a href="../undefineds/T.html" target="_self">EuiThemeService</a>, detector: HighContrastModeDetector)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="65" class="link-to-prism">src/lib/login/login.component.ts:65</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>appConfigService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AppConfigService.html" target="_self" >AppConfigService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>authentication</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AuthenticationService.html" target="_self" >AuthenticationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>router</td>
+                                                  
+                                                        <td>
+                                                                    <code>Router</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ClassloggerService.html" target="_self" >ClassloggerService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>systemInfoService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SystemInfoService.html" target="_self" >SystemInfoService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>componentFactoryResolver</td>
+                                                  
+                                                        <td>
+                                                                    <code>ComponentFactoryResolver</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>splash</td>
+                                                  
+                                                        <td>
+                                                                    <code>EuiSplashScreenService</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>busyService</td>
+                                                  
+                                                        <td>
+                                                                    <code>EuiLoadingService</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>themeService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../miscellaneous/typealiases.html#T" target="_self" >EuiThemeService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>detector</td>
+                                                  
+                                                        <td>
+                                                                    <code>HighContrastModeDetector</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildConfigurationProviders"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>buildConfigurationProviders</b></span>
+                        <a href="#buildConfigurationProviders"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildConfigurationProviders()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="184"
+                            class="link-to-prism">src/lib/login/login.component.ts:184</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createNewAccount"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>createNewAccount</b></span>
+                        <a href="#createNewAccount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createNewAccount()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="214"
+                            class="link-to-prism">src/lib/login/login.component.ts:214</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="initCustomAuthFlowView"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>initCustomAuthFlowView</b></span>
+                        <a href="#initCustomAuthFlowView"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>initCustomAuthFlowView(configProvider: <a href="../interfaces/AuthConfigProvider.html" target="_self">AuthConfigProvider</a>, shouldClear)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="201"
+                            class="link-to-prism">src/lib/login/login.component.ts:201</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>configProvider</td>
+                                    <td>
+                                                <code><a href="../interfaces/AuthConfigProvider.html" target="_self" >AuthConfigProvider</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>shouldClear</td>
+                                    <td>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>true</code>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="login"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>login</b></span>
+                        <a href="#login"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>login()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="123"
+                            class="link-to-prism">src/lib/login/login.component.ts:123</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="logoutOAuth"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>logoutOAuth</b></span>
+                        <a href="#logoutOAuth"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>logoutOAuth()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="118"
+                            class="link-to-prism">src/lib/login/login.component.ts:118</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnDestroy"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>ngOnDestroy</b></span>
+                        <a href="#ngOnDestroy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ngOnDestroy()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="173"
+                            class="link-to-prism">src/lib/login/login.component.ts:173</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="148"
+                            class="link-to-prism">src/lib/login/login.component.ts:148</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onSelectAuthConfig"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>onSelectAuthConfig</b></span>
+                        <a href="#onSelectAuthConfig"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>onSelectAuthConfig()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="177"
+                            class="link-to-prism">src/lib/login/login.component.ts:177</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="appConfigService"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>appConfigService</b></span>
+                        <a href="#appConfigService"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../injectables/AppConfigService.html" target="_self" >AppConfigService</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="68" class="link-to-prism">src/lib/login/login.component.ts:68</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="authProviderStorageKey"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>authProviderStorageKey</b></span>
+                        <a href="#authProviderStorageKey"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;selectedAuthProvider&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="64" class="link-to-prism">src/lib/login/login.component.ts:64</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="configurationProviders"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>configurationProviders</b></span>
+                        <a href="#configurationProviders"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/AuthConfigProvider.html" target="_self" >AuthConfigProvider[]</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="59" class="link-to-prism">src/lib/login/login.component.ts:59</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="directive"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                        <span ><b>directive</b></span>
+                        <a href="#directive"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../directives/ExtDirective.html" target="_self" >ExtDirective</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ViewChild(ExtDirective, {static: true})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="49" class="link-to-prism">src/lib/login/login.component.ts:49</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="loginData"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>loginData</b></span>
+                        <a href="#loginData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>literal type</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{}</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="56" class="link-to-prism">src/lib/login/login.component.ts:56</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="logoUrl"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>logoUrl</b></span>
+                        <a href="#logoUrl"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="60" class="link-to-prism">src/lib/login/login.component.ts:60</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="newUserConfigProvider"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>newUserConfigProvider</b></span>
+                        <a href="#newUserConfigProvider"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/AuthConfigProvider.html" target="_self" >AuthConfigProvider</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="61" class="link-to-prism">src/lib/login/login.component.ts:61</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="newUserConfigProviderName"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>newUserConfigProviderName</b></span>
+                        <a href="#newUserConfigProviderName"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;NewUser&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="63" class="link-to-prism">src/lib/login/login.component.ts:63</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="product"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>product</b></span>
+                        <a href="#product"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>literal type</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    name: Globals.QIM_ProductNameFull,
+    copyright: Globals.QBM_Copyright,
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="52" class="link-to-prism">src/lib/login/login.component.ts:52</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedConfigProvider"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>selectedConfigProvider</b></span>
+                        <a href="#selectedConfigProvider"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/AuthConfigProvider.html" target="_self" >AuthConfigProvider</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="57" class="link-to-prism">src/lib/login/login.component.ts:57</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sessionState"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>sessionState</b></span>
+                        <a href="#sessionState"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/ISessionState.html" target="_self" >ISessionState</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="58" class="link-to-prism">src/lib/login/login.component.ts:58</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="subscriptions"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>subscriptions</b></span>
+                        <a href="#subscriptions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="65" class="link-to-prism">src/lib/login/login.component.ts:65</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="title"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>title</b></span>
+                        <a href="#title"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">src/lib/login/login.component.ts:51</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OverlayRef } from &#x27;@angular/cdk/overlay&#x27;;
+import { Component, OnInit, OnDestroy, ViewChild, ComponentFactoryResolver } from &#x27;@angular/core&#x27;;
+import { Router } from &#x27;@angular/router&#x27;;
+import { EuiLoadingService, EuiSplashScreenService, EuiTheme, EuiThemeService } from &#x27;@elemental-ui/core&#x27;;
+import { Subscription } from &#x27;rxjs&#x27;;
+
+import { Globals } from &#x27;imx-qbm-dbts&#x27;;
+import { ISessionState } from &#x27;../session/session-state&#x27;;
+import { AuthenticationService } from &#x27;../authentication/authentication.service&#x27;;
+import { AppConfigService } from &#x27;../appConfig/appConfig.service&#x27;;
+import { AuthConfigProvider } from &#x27;../authentication/auth-config-provider.interface&#x27;;
+import { ClassloggerService } from &#x27;../classlogger/classlogger.service&#x27;;
+import { ExtDirective } from &#x27;../ext/ext.directive&#x27;;
+import { SystemInfoService } from &#x27;../system-info/system-info.service&#x27;;
+import { HighContrastModeDetector } from &#x27;@angular/cdk/a11y&#x27;;
+
+@Component({
+  selector: &#x27;imx-login&#x27;,
+  templateUrl: &#x27;./login.component.html&#x27;,
+  styleUrls: [&#x27;./login.component.scss&#x27;],
+})
+export class LoginComponent implements OnInit, OnDestroy {
+  @ViewChild(ExtDirective, { static: true }) public directive: ExtDirective;
+
+  public title: string;
+  public readonly product: { name: string; copyright: string } &#x3D; {
+    name: Globals.QIM_ProductNameFull,
+    copyright: Globals.QBM_Copyright,
+  };
+  public loginData: { [id: string]: string } &#x3D; {};
+  public selectedConfigProvider: AuthConfigProvider;
+  public sessionState: ISessionState;
+  public configurationProviders: AuthConfigProvider[];
+  public logoUrl: string;
+  public newUserConfigProvider: AuthConfigProvider;
+
+  private readonly newUserConfigProviderName &#x3D; &#x27;NewUser&#x27;;
+  private readonly authProviderStorageKey &#x3D; &#x27;selectedAuthProvider&#x27;;
+  private readonly subscriptions: Subscription[] &#x3D; [];
+
+  constructor(
+    public readonly appConfigService: AppConfigService,
+    private readonly authentication: AuthenticationService,
+    private readonly router: Router,
+    private readonly logger: ClassloggerService,
+    private readonly systemInfoService: SystemInfoService,
+    private readonly componentFactoryResolver: ComponentFactoryResolver,
+    private readonly splash: EuiSplashScreenService,
+    private readonly busyService: EuiLoadingService,
+    private readonly themeService: EuiThemeService,
+    private readonly detector: HighContrastModeDetector
+  ) {
+    this.title &#x3D; this.appConfigService.Config.Title;
+    this.subscriptions.push(
+      this.appConfigService.onConfigTitleUpdated.subscribe(() &#x3D;&gt; {
+        this.title &#x3D; this.appConfigService.Config.Title;
+      })
+    );
+
+    this.subscriptions.push(
+      this.authentication.onSessionResponse.subscribe((sessionState: ISessionState) &#x3D;&gt; {
+        this.logger.debug(this, &#x27;LoginComponent - subscription - onSessionResponse&#x27;);
+        this.logger.trace(this, &#x27;sessionState&#x27;, sessionState);
+        const existingConfig &#x3D; this.sessionState?.configurationProviders;
+        this.sessionState &#x3D; sessionState;
+        if (this.sessionState.IsLoggedIn) {
+          this.logger.debug(this, &#x27;subscription - call navigate&#x27;);
+          this.router.navigate([this.appConfigService.Config.routeConfig.start], { queryParams: {} });
+        } else {
+          // Cover the case where an error has occurred and the new sessionState does not contain the configurationProviders
+          if (!this.sessionState.configurationProviders) {
+            // fallback to the previous known configuration, so the login form fields can still be displayed
+            this.logger.debug(this, &#x27;subscription - no new session config, falling back to previous&#x27;);
+            this.sessionState.configurationProviders &#x3D; existingConfig;
+          }
+
+          this.buildConfigurationProviders();
+
+          if (this.sessionState.configurationProviders &amp;&amp; this.sessionState.configurationProviders.length &gt; 0) {
+            this.logger.debug(this, &#x27;subscription - updating session config&#x27;);
+            this.selectedConfigProvider &#x3D;
+              this.sessionState.configurationProviders.find(
+                (authProvider) &#x3D;&gt; authProvider.name &#x3D;&#x3D;&#x3D; localStorage.getItem(this.authProviderStorageKey)
+              ) || this.sessionState.configurationProviders[0];
+            this.onSelectAuthConfig();
+          }
+        }
+      })
+    );
+  }
+
+  public async logoutOAuth(): Promise&lt;void&gt; {
+    this.logger.debug(this, &#x27;logoutOAuth&#x27;);
+    return this.authentication.logout(this.sessionState);
+  }
+
+  public async login(): Promise&lt;void&gt; {
+    this.logger.debug(this, &#x27;LoginComponent - login&#x27;);
+
+    if (this.selectedConfigProvider) {
+      if (this.selectedConfigProvider.isOAuth2) {
+        this.logger.debug(this, &#x27;LoginComponent - login - oauth2&#x27;);
+        await this.authentication.oauthRedirect(this.selectedConfigProvider.name);
+        return;
+      } else if (this.selectedConfigProvider.customAuthFlow) {
+        throw new Error(&#x27;Method not valid for a custom auth flow.&#x27;);
+      }
+    }
+
+    let overlayRef: OverlayRef;
+    setTimeout(() &#x3D;&gt; (overlayRef &#x3D; this.busyService.show()));
+    try {
+      await this.authentication.login(this.loginData);
+    } finally {
+      this.logger.debug(this, &#x27;LoginComponent - login - attempt completed&#x27;);
+      setTimeout(() &#x3D;&gt; this.busyService.hide(overlayRef));
+    }
+
+    return Promise.resolve();
+  }
+
+  public async ngOnInit(): Promise&lt;void&gt; {
+    const config &#x3D; await this.systemInfoService.getImxConfig();
+    if (config.DefaultHtmlTheme) {
+      let key &#x3D; Object.keys(EuiTheme).find((x) &#x3D;&gt; x.toUpperCase() &#x3D;&#x3D; config.DefaultHtmlTheme?.toUpperCase());
+      if (key &#x3D;&#x3D;&#x3D; &#x27;AUTO&#x27; &amp;&amp; this.detector.getHighContrastMode() &gt; 0) {
+        this.themeService.setTheme(EuiTheme[&#x27;CONTRAST&#x27;]);
+      } else if (this.title &#x3D;&#x3D;&#x3D; &#x27;Administration Portal&#x27;) {
+        this.themeService.setTheme(EuiTheme[&#x27;LIGHT&#x27;]);
+      } else {
+        this.themeService.setTheme(EuiTheme[key]);
+      }
+    }
+    if (config.CompanyLogoUrl) {
+      // make relative URL absolute if needed
+      this.logoUrl &#x3D; new URL(config.CompanyLogoUrl, this.appConfigService.BaseUrl).href;
+    }
+    const name &#x3D; config.ProductName;
+    if (name) {
+      this.product.name &#x3D; name;
+    }
+
+    this.initCustomAuthFlowView(this.selectedConfigProvider);
+    this.splash.close();
+  }
+
+  public ngOnDestroy(): void {
+    this.subscriptions.forEach((subscription) &#x3D;&gt; subscription.unsubscribe());
+  }
+
+  public onSelectAuthConfig(): void {
+    this.logger.debug(this, &#x27;LoginComponent - onSelectAuthConfig&#x27;, this.selectedConfigProvider.name);
+    localStorage.setItem(this.authProviderStorageKey, this.selectedConfigProvider.name);
+    this.loginData &#x3D; { Module: this.selectedConfigProvider.name };
+    this.initCustomAuthFlowView(this.selectedConfigProvider);
+  }
+
+  private buildConfigurationProviders(): void {
+    const providers &#x3D; this.sessionState?.configurationProviders ?? [];
+
+    this.authentication.authConfigProviders.forEach((registeredProvider) &#x3D;&gt; {
+      if (!providers.find((provider) &#x3D;&gt; provider.name &#x3D;&#x3D;&#x3D; registeredProvider.name)) {
+        providers.push(registeredProvider);
+      }
+    });
+
+    const newUserIndex &#x3D; providers.findIndex((x) &#x3D;&gt; x.name &#x3D;&#x3D;&#x3D; this.newUserConfigProviderName);
+    if (newUserIndex &gt; -1) {
+      // Remove the newuser provider from the list, it isn&#x27;t a dropdown option but rather a button
+      [this.newUserConfigProvider] &#x3D; providers.splice(newUserIndex, 1);
+    }
+    this.configurationProviders &#x3D; providers;
+  }
+
+  private initCustomAuthFlowView(configProvider: AuthConfigProvider, shouldClear &#x3D; true): void {
+    if (this.directive) {
+      if (shouldClear) {
+        this.directive.viewContainerRef.clear();
+      }
+      if (configProvider?.customAuthFlow) {
+        this.directive.viewContainerRef.createComponent(
+          this.componentFactoryResolver.resolveComponentFactory(configProvider.customAuthFlow.getEntryComponent())
+        );
+      }
+    }
+  }
+
+  public async createNewAccount(): Promise&lt;void&gt; {
+    // Prevent the content from being cleared incase the sidesheet is closed unsuccessfully
+    this.initCustomAuthFlowView(this.newUserConfigProvider, false);
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;div class&#x3D;&quot;imx-loginPage&quot;&gt;
+  &lt;div class&#x3D;&quot;imx-loginFormcontainer&quot;&gt;
+    &lt;div *ngIf&#x3D;&quot;!logoUrl&quot;&gt;
+      &lt;eui-logo [size]&#x3D;&quot;72&quot;&gt;&lt;/eui-logo&gt;
+    &lt;/div&gt;
+    &lt;div *ngIf&#x3D;&quot;logoUrl&quot;&gt;
+      &lt;img class&#x3D;&quot;custom-logo&quot; [src]&#x3D;&quot;logoUrl&quot;&gt;
+    &lt;/div&gt;
+    &lt;h1 data-imx-identifier&#x3D;&quot;product-name-title&quot;&gt;{{ product.name }}
+      &lt;br&gt;
+      &lt;ng-container *ngIf&#x3D;&quot;!appConfigService.Config.DoNotShowAppNameWithProduct&quot;&gt;
+        {{ title }}
+      &lt;/ng-container&gt;
+    &lt;/h1&gt;
+    &lt;imx-usermessage class&#x3D;&quot;usermessage&quot; panelClass&#x3D;&quot;imx-small-message&quot;&gt;&lt;/imx-usermessage&gt;
+    &lt;div *ngIf&#x3D;&quot;sessionState?.isOAuth; else loginMask&quot; class&#x3D;&quot;imx-loginButtonpanel&quot;&gt;
+      &lt;button data-imx-identifier&#x3D;&quot;logout-oauth-button&quot; mat-button type&#x3D;&quot;button&quot; class&#x3D;&quot;imx-button&quot;
+        (click)&#x3D;&quot;logoutOAuth()&quot;&gt;{{&#x27;#LDS#OAuth logout&#x27; | translate }}&lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;ng-template imxExtd&gt;&lt;/ng-template&gt;
+
+    &lt;!-- We want this to appear after the extension above, but only if we are not OAuth --&gt;
+    &lt;div class&#x3D;&quot;imx-loginButtonpanel&quot; *ngIf&#x3D;&quot;!sessionState?.isOAuth&quot;&gt;
+      &lt;button *ngIf&#x3D;&quot;!selectedConfigProvider?.customAuthFlow&quot;
+        color&#x3D;&quot;primary&quot;
+        data-imx-identifier&#x3D;&quot;login-button-submit&quot; mat-raised-button type&#x3D;&quot;button&quot; class&#x3D;&quot;imx-button&quot;
+        (click)&#x3D;&quot;login()&quot;&gt;
+        {{&#x27;#LDS#Log in&#x27; | translate }}
+      &lt;/button&gt;
+      &lt;button *ngIf&#x3D;&quot;newUserConfigProvider&quot;
+        color&#x3D;&quot;primary&quot;
+        data-imx-identifier&#x3D;&quot;signup-button-submit&quot; mat-raised-button type&#x3D;&quot;button&quot; class&#x3D;&quot;imx-button&quot;
+        (click)&#x3D;&quot;createNewAccount()&quot;&gt;
+        {{&#x27;#LDS#Create new account&#x27; | translate }}
+      &lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;ng-template #loginMask&gt;
+      &lt;div class&#x3D;&quot;imx-loginMask&quot;&gt;
+        &lt;div *ngIf&#x3D;&quot;sessionState?.IsLoggedOut&quot; class&#x3D;&quot;imx-loginData&quot;&gt;
+          &lt;div *ngIf&#x3D;&quot;configurationProviders&quot; class&#x3D;&quot;imx-loginInput&quot;&gt;
+            &lt;mat-form-field&gt;
+              &lt;mat-select data-imx-identifier&#x3D;&quot;login-select-auth-provider&quot;
+                placeholder&#x3D;&quot;{{&#x27;#LDS#Authentication&#x27; | translate}}&quot; [(ngModel)]&#x3D;&quot;selectedConfigProvider&quot;
+                (selectionChange)&#x3D;&quot;onSelectAuthConfig()&quot;&gt;
+                &lt;mat-option *ngFor&#x3D;&quot;let authConfig of configurationProviders&quot; [value]&#x3D;&quot;authConfig&quot;
+                  [attr.data-imx-identifier]&#x3D;&quot;&#x27;login-option-auth-provider&#x27; + authConfig.name&quot;&gt;
+                  {{ authConfig.display | translate }}
+                &lt;/mat-option&gt;
+              &lt;/mat-select&gt;
+            &lt;/mat-form-field&gt;
+          &lt;/div&gt;
+          &lt;div [hidden]&#x3D;&quot;selectedConfigProvider?.isOAuth2&quot; *ngFor&#x3D;&quot;let authProp of selectedConfigProvider?.authProps&quot;
+            class&#x3D;&quot;imx-loginInput&quot;&gt;
+            &lt;input attr.data-imx-identifier&#x3D;&quot;login-input-{{ authProp.name.toLowerCase() }}&quot; [type]&#x3D;&quot;authProp.inputType&quot;
+              [placeholder]&#x3D;&quot;authProp.display&quot; [(ngModel)]&#x3D;&quot;loginData[authProp.name]&quot; (keyup.enter)&#x3D;&quot;login()&quot;
+              class&#x3D;&quot;imx-login-input&quot; /&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div *ngIf&#x3D;&quot;sessionState?.IsAwaitingSecondaryAuth&quot;&gt;
+          &lt;imx-2fahost&gt;&lt;/imx-2fahost&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/ng-template&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class&#x3D;&quot;imx-loginFooter&quot;&gt;{{ product.name }}
+  &lt;br&gt;{{ product.copyright }}
+&lt;/div&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./login.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">@import &quot;variables.scss&quot;;
+@import &#x27;@elemental-ui/core/src/styles/_eui_palette.scss&#x27;;
+
+$inputWidth: calc(40vw + 2px);
+
+.imx-loginPage {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: $iris-blue;
+  color: $white;
+  align-items: center;
+}
+
+.imx-loginFormcontainer {
+  min-height: 400px;
+  position: absolute;
+  top: 50px;
+  left: 25px;
+  right: 25px;
+  bottom: 25px;
+  color: $white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  h1 {
+    text-align: center;
+  }
+
+
+}
+
+.imx-loginMask {
+  padding-top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.imx-loginInput {
+  margin: auto 12px;
+
+  ::ng-deep {
+    input {
+      width: $propertylabelwidth;
+      box-sizing: content-box;
+      margin-bottom: 9px;
+      height: 30px;
+      padding-left: 6px;
+      width: calc(40vw - 6px);
+    }
+
+    .mat-form-field-infix {
+      color: $VI_Common_Color_Font;
+    }
+
+    .mat-form-field-flex {
+      background-color: $white;
+      padding-left: 6px;
+    }
+
+    .mat-form-field-appearance-legacy .mat-form-field-underline {
+      bottom: $ImxLoginControlsMargin;
+    }
+
+    .mat-form-field-appearance-legacy .mat-form-field-wrapper {
+      padding-bottom: $ImxLoginControlsMargin;
+    }
+  }
+}
+
+.imx-loginButtonpanel {
+  text-align: center;
+  padding: 30px 0;
+  margin: 0 auto;
+  width: 100%;
+  display: inline-block;
+
+  button {
+    margin: 0 10px;
+  }
+}
+
+.imx-loginData {
+  display: table;
+  margin: 0 auto;
+}
+
+.imx-forgottenPassword {
+  text-align: center;
+  width: 512px;
+  margin: auto;
+}
+
+.imx-loginFooter {
+  text-align: center;
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  color: $white;
+}
+
+.imx-loginMessageContainer {
+  width: 100%;
+  text-align: center;
+}
+
+.imx-logoutOAuthInfo {
+  text-align: center;
+  width: 512px;
+  margin: 16px auto auto;
+}
+
+.imx-loginTextBox {
+  width: 224px;
+  color: $VI_Common_Color_Font !important;
+}
+
+a.imx-loginLink {
+  color: $white !important;
+}
+
+a.imx-loginLink:hover {
+  text-decoration: underline;
+}
+
+.imx-passwordreset-login .imx-loginMask {
+  margin: inherit;
+  padding: 0;
+  width: inherit;
+}
+
+.imx-passwordreset-login .imx-loginInput {
+  margin: 0 12px 0 0;
+  width: inherit;
+}
+
+.imx-passwordreset-login .imx-loginButtonpanel {
+  text-align: right;
+}
+
+.imx-passwordreset-login .imx-loginData {
+  margin: 0;
+}
+
+mat-form-field {
+  width: $inputWidth;
+}
+
+// on smaller screens
+@media screen and (max-width : 600px) {
+  .imx-loginInput {
+    width: 95%;
+    text-align: center;
+  }
+
+  .imx-forgottenPassword {
+    width: 100%;
+  }
+
+  .imx-loginMask {
+    width: 100%;
+    padding-top: 0;
+  }
+}
+
+@media screen and (max-height: 530px) {
+  .imx-loginFooter {
+    visibility: hidden;
+  }
+}
+
+.custom-logo {
+  max-width: 400px;
+  max-height: 150px;
+  margin-bottom: 1em;
+}
+
+.usermessage {
+  margin-top: 1em;
+}
+
+.eui-dark-theme {
+  :host{
+    .imx-loginPage{
+      background-color: $color-gray-80;
+    }
+    .imx-loginInput {
+      ::ng-deep {
+        input {
+          background-color: $color-gray-70;
+          border: none;
+          color: $color-gray-0;
+        }
+
+        .mat-form-field-infix {
+          color: $color-gray-0
+        }
+
+        .mat-form-field-flex {
+          background-color:$color-gray-70;
+        }
+
+      }
+    }
+
+  }
+}
+
+.eui-contrast-theme {
+  :host{
+    .imx-loginPage{
+      background-color: $color-gray-100;
+    }
+    .imx-loginInput {
+      ::ng-deep {
+        input {
+          background-color: $color-gray-90;
+          border: none;
+          color: $color-gray-0;
+        }
+
+        .mat-form-field-infix {
+          color: $color-gray-0
+        }
+
+        .mat-form-field-flex {
+          background-color:$color-gray-90;
+        }
+
+      }
+    }
+
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><div class="imx-loginPage">  <div class="imx-loginFormcontainer">    <div *ngIf="!logoUrl">      <eui-logo [size]="72"></eui-logo>    </div>    <div *ngIf="logoUrl">      <img class="custom-logo" [src]="logoUrl">    </div>    <h1 data-imx-identifier="product-name-title">{{ product.name }}      <br>      <ng-container *ngIf="!appConfigService.Config.DoNotShowAppNameWithProduct">        {{ title }}      </ng-container>    </h1>    <imx-usermessage class="usermessage" panelClass="imx-small-message"></imx-usermessage>    <div *ngIf="sessionState?.isOAuth; else loginMask" class="imx-loginButtonpanel">      <button data-imx-identifier="logout-oauth-button" mat-button type="button" class="imx-button"        (click)="logoutOAuth()">{{\'#LDS#OAuth logout\' | translate }}</button>    </div>    <ng-template imxExtd></ng-template>    <!-- We want this to appear after the extension above, but only if we are not OAuth -->    <div class="imx-loginButtonpanel" *ngIf="!sessionState?.isOAuth">      <button *ngIf="!selectedConfigProvider?.customAuthFlow"        color="primary"        data-imx-identifier="login-button-submit" mat-raised-button type="button" class="imx-button"        (click)="login()">        {{\'#LDS#Log in\' | translate }}      </button>      <button *ngIf="newUserConfigProvider"        color="primary"        data-imx-identifier="signup-button-submit" mat-raised-button type="button" class="imx-button"        (click)="createNewAccount()">        {{\'#LDS#Create new account\' | translate }}      </button>    </div>    <ng-template #loginMask>      <div class="imx-loginMask">        <div *ngIf="sessionState?.IsLoggedOut" class="imx-loginData">          <div *ngIf="configurationProviders" class="imx-loginInput">            <mat-form-field>              <mat-select data-imx-identifier="login-select-auth-provider"                placeholder="{{\'#LDS#Authentication\' | translate}}" [(ngModel)]="selectedConfigProvider"                (selectionChange)="onSelectAuthConfig()">                <mat-option *ngFor="let authConfig of configurationProviders" [value]="authConfig"                  [attr.data-imx-identifier]="\'login-option-auth-provider\' + authConfig.name">                  {{ authConfig.display | translate }}                </mat-option>              </mat-select>            </mat-form-field>          </div>          <div [hidden]="selectedConfigProvider?.isOAuth2" *ngFor="let authProp of selectedConfigProvider?.authProps"            class="imx-loginInput">            <input attr.data-imx-identifier="login-input-{{ authProp.name.toLowerCase() }}" [type]="authProp.inputType"              [placeholder]="authProp.display" [(ngModel)]="loginData[authProp.name]" (keyup.enter)="login()"              class="imx-login-input" />          </div>        </div>        <div *ngIf="sessionState?.IsAwaitingSecondaryAuth">          <imx-2fahost></imx-2fahost>        </div>      </div>    </ng-template>  </div></div><div class="imx-loginFooter">{{ product.name }}  <br>{{ product.copyright }}</div></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'imx-about'},{'name': 'AddConfigSidesheetComponent', 'selector': ''},{'name': 'AdditionalInfosComponent', 'selector': 'imx-additional-infos'},{'name': 'ApplyConfigSidesheetComponent', 'selector': ''},{'name': 'AutoCompleteComponent', 'selector': 'imx-auto-complete'},{'name': 'AutocompleteComponent', 'selector': 'imx-autocomplete'},{'name': 'BulkItemComponent', 'selector': 'imx-bulk-item'},{'name': 'BulkPropertyEditorComponent', 'selector': 'imx-bulk-editor'},{'name': 'BusyIndicatorComponent', 'selector': 'imx-busy-indicator'},{'name': 'CacheComponent', 'selector': 'imx-cache'},{'name': 'CalendarComponent', 'selector': 'imx-calendar'},{'name': 'CaptchaComponent', 'selector': 'imx-captcha'},{'name': 'CdrEditorComponent', 'selector': 'imx-cdr-editor'},{'name': 'CdrSidesheetComponent', 'selector': ''},{'name': 'ChartTileComponent', 'selector': 'imx-chart-tile'},{'name': 'CheckableTreeComponent', 'selector': 'imx-checkable-tree'},{'name': 'ColumnSelectionComponent', 'selector': 'imx-sqlwizard-columnselection'},{'name': 'ConfigComponent', 'selector': 'imx-config'},{'name': 'ConfigKeyPathComponent', 'selector': 'config-key-path'},{'name': 'ConnectionComponent', 'selector': ''},{'name': 'ConvertConfigSidesheetComponent', 'selector': ''},{'name': 'DashboardComponent', 'selector': ''},{'name': 'DataExportComponent', 'selector': 'imx-data-export'},{'name': 'DataSourcePaginatorComponent', 'selector': 'imx-data-source-paginator'},{'name': 'DataSourceToolbarComponent', 'selector': 'imx-data-source-toolbar'},{'name': 'DataSourceToolbarCustomComponent', 'selector': 'imx-data-source-toolbar-custom'},{'name': 'DataTableCellComponent', 'selector': 'imx-data-table-cell'},{'name': 'DataTableColumnComponent', 'selector': 'imx-data-table-column'},{'name': 'DataTableComponent', 'selector': 'imx-data-table'},{'name': 'DataTableDisplayCellComponent', 'selector': 'imx-data-table-display-cell'},{'name': 'DataTableGenericColumnComponent', 'selector': 'imx-data-table-generic-column'},{'name': 'DataTileComponent', 'selector': 'imx-data-tile'},{'name': 'DataTilesComponent', 'selector': 'imx-data-tiles'},{'name': 'DataTreeComponent', 'selector': 'imx-data-tree'},{'name': 'DataTreeSearchResultsComponent', 'selector': 'imx-data-tree-search-results'},{'name': 'DataTreeWrapperComponent', 'selector': 'imx-data-tree-wrapper'},{'name': 'DateComponent', 'selector': 'imx-date'},{'name': 'DatePickerComponent', 'selector': 'imx-sqlwizard-datepicker'},{'name': 'DateRangeComponent', 'selector': 'imx-date-range'},{'name': 'DeleteConfigSidesheetComponent', 'selector': ''},{'name': 'EditBinaryComponent', 'selector': 'imx-edit-binary'},{'name': 'EditBooleanComponent', 'selector': 'imx-checkbox-editor'},{'name': 'EditDateComponent', 'selector': 'imx-edit-date'},{'name': 'EditDefaultComponent', 'selector': 'imx-edit-default'},{'name': 'EditFkComponent', 'selector': 'imx-edit-fk'},{'name': 'EditFkMultiComponent', 'selector': 'imx-edit-fk-multi'},{'name': 'EditImageComponent', 'selector': 'imx-edit-image'},{'name': 'EditLimitedValueComponent', 'selector': 'imx-edit-limited-value'},{'name': 'EditMultiLimitedValueComponent', 'selector': 'imx-edit-multi-limited-value'},{'name': 'EditMultilineComponent', 'selector': 'imx-edit-multiline'},{'name': 'EditMultiValueComponent', 'selector': 'imx-edit-multi-value'},{'name': 'EditNumberComponent', 'selector': 'imx-edit-number'},{'name': 'EditorBase', 'selector': ''},{'name': 'EditRiskIndexComponent', 'selector': 'imx-edit-risk-index'},{'name': 'EditUrlComponent', 'selector': 'imx-edit-url'},{'name': 'EntityColumnEditorComponent', 'selector': 'imx-entity-column-editor'},{'name': 'EntitySelectComponent', 'selector': 'imx-entity-select'},{'name': 'ExtComponent', 'selector': 'imx-ext'},{'name': 'FilterTileComponent', 'selector': 'imx-filter-tile'},{'name': 'FilterTreeComponent', 'selector': 'imx-filter-tree'},{'name': 'FilterWizardComponent', 'selector': 'imx-filter-wizard'},{'name': 'FkAdvancedPickerComponent', 'selector': ''},{'name': 'FkCandidatesComponent', 'selector': 'imx-fk-candidates'},{'name': 'FkHierarchicalDialogComponent', 'selector': 'imx-fk-hierarchical-dialog'},{'name': 'FkSelectorComponent', 'selector': 'imx-fk-selector'},{'name': 'FkTableSelectComponent', 'selector': 'imx-fk-table-select'},{'name': 'GroupPaginatorComponent', 'selector': 'imx-group-paginator'},{'name': 'HelpContextualComponent', 'selector': 'imx-help-contextual'},{'name': 'HelpContextualDialogComponent', 'selector': 'imx-help-contextual-dialog'},{'name': 'HyperviewComponent', 'selector': 'imx-hyperview'},{'name': 'IconStackComponent', 'selector': 'imx-icon-stack'},{'name': 'ImageSelectComponent', 'selector': 'imx-image-select'},{'name': 'ImageViewComponent', 'selector': 'imx-image-view'},{'name': 'ImxMatColumnComponent', 'selector': 'imx-column'},{'name': 'ImxProgressbarComponent', 'selector': 'imx-progressbar'},{'name': 'ImxTreeTableComponent', 'selector': 'imx-tree-table'},{'name': 'IndexBarComponent', 'selector': 'imx-indexbar'},{'name': 'InfoBadgeComponent', 'selector': 'imx-info-badge'},{'name': 'InfoButtonComponent', 'selector': 'imx-info-button'},{'name': 'InfoDialogComponent', 'selector': 'imx-info-dialog'},{'name': 'JobQueueOverviewComponent', 'selector': 'imx-jobqueue-overview'},{'name': 'ListSettingComponent', 'selector': 'imx-list-setting'},{'name': 'ListShapeComponent', 'selector': 'imx-hyperview-listshape'},{'name': 'LogDetailsSidesheetComponent', 'selector': 'imx-log-details-sidesheet'},{'name': 'LoginComponent', 'selector': 'imx-login'},{'name': 'LogsComponent', 'selector': 'imx-logs'},{'name': 'MasterDetailComponent', 'selector': 'imx-master-detail'},{'name': 'MastHeadComponent', 'selector': 'imx-mast-head'},{'name': 'MenuComponent', 'selector': 'imx-menu'},{'name': 'MessageDialogComponent', 'selector': 'imx-message-dialog'},{'name': 'MultiSelectFormcontrolComponent', 'selector': 'imx-multi-select-formcontrol'},{'name': 'ObjectHistoryComponent', 'selector': 'imx-object-history'},{'name': 'ObjectHistoryGridviewComponent', 'selector': 'imx-object-history-gridview'},{'name': 'ObjectHistoryStateComparisonComponent', 'selector': 'imx-object-history-state-comparison'},{'name': 'ObjectHistoryStateOverviewComponent', 'selector': 'imx-object-history-state-overview'},{'name': 'OrderedListComponent', 'selector': 'imx-ordered-list'},{'name': 'PackagesComponent', 'selector': 'imx-packages'},{'name': 'ParameterizedTextComponent', 'selector': 'imx-parameterized-text'},{'name': 'PluginsComponent', 'selector': 'imx-plugins'},{'name': 'PredefinedFilterComponent', 'selector': 'imx-predefined-filter'},{'name': 'PredefinedFilterTreeComponent', 'selector': 'imx-predefined-filter-tree'},{'name': 'PropertyShapeComponent', 'selector': 'imx-hyperview-propertyshape'},{'name': 'PropertyViewerComponent', 'selector': 'imx-property-viewer'},{'name': 'SaveConfigDialogComponent', 'selector': 'imx-save-config-dialog'},{'name': 'SearchBarComponent', 'selector': 'imx-searchbar'},{'name': 'SelectComponent', 'selector': 'imx-select'},{'name': 'SelectedElementsComponent', 'selector': 'imx-selected-elements'},{'name': 'SelectedElementsDialog', 'selector': ''},{'name': 'SelectValueComponent', 'selector': 'imx-config-select'},{'name': 'ShapeComponent', 'selector': 'imx-hyperview-shape'},{'name': 'SideNavigationViewComponent', 'selector': 'imx-side-navigation-view'},{'name': 'SidenavTreeComponent', 'selector': 'imx-sidenav-tree'},{'name': 'SimpleExpressionComponent', 'selector': 'imx-sqlwizard-simpleexpression'},{'name': 'SimpleShapeComponent', 'selector': 'imx-hyperview-simpleshape'},{'name': 'SingleExpressionComponent', 'selector': 'imx-sqlwizard-singleexpression'},{'name': 'SingleValueComponent', 'selector': 'imx-sqlwizard-singlevalue'},{'name': 'SqlWizardComponent', 'selector': 'imx-sqlwizard'},{'name': 'StatusComponent', 'selector': 'imx-status'},{'name': 'SwaggerComponent', 'selector': 'imx-swagger'},{'name': 'TableSelectionComponent', 'selector': 'imx-sqlwizard-tableselection'},{'name': 'TempBillboardComponent', 'selector': 'imx-temp-billboard'},{'name': 'TileComponent', 'selector': 'imx-tile'},{'name': 'TimelineComponent', 'selector': 'imx-timeline'},{'name': 'TimePickerComponent', 'selector': 'imx-time-picker'},{'name': 'TranslationEditorComponent', 'selector': 'imx-translation-editor'},{'name': 'TreeSelectionListComponent', 'selector': ''},{'name': 'TwoFactorAuthenticationComponent', 'selector': 'imx-2fahost'},{'name': 'TypedEntityCandidateSidesheetComponent', 'selector': ''},{'name': 'TypedEntitySelectComponent', 'selector': 'imx-typed-entity-select'},{'name': 'TypedEntitySelectorComponent', 'selector': 'imx-typed-entity-selector'},{'name': 'UserMessageComponent', 'selector': 'imx-usermessage'},{'name': 'ViewPropertyComponent', 'selector': 'imx-view-property'},{'name': 'ViewPropertyDefaultComponent', 'selector': 'imx-view-property-default'},{'name': 'WhereClauseExpressionComponent', 'selector': 'imx-sqlwizard-whereclauseexpression'}];
+    var DIRECTIVES = [{'name': 'DisableControlDirective', 'selector': '[imxDisableControl]'},{'name': 'DynamicTabDataProviderDirective', 'selector': '[imxDataProvider]'},{'name': 'ExtDirective', 'selector': '[imxExtd]'},{'name': 'MatSelectionListMultipleDirective', 'selector': 'mat-selection-list[multiple]'},{'name': 'TableAccessiblilityDirective', 'selector': '[tableAccessiblility]'},{'name': 'ZoomPanDirective', 'selector': '[imxZoomPan]'}];
+    var ACTUAL_COMPONENT = {'name': 'LoginComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'LoginComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

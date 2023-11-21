@@ -1,0 +1,2572 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>IMX Web - QBM Library</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/material.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">IMX Web - QBM Library</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  PredefinedFilterComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                <code>OnInit</code>
+                <code>AfterViewInit</code>
+                <code>OnDestroy</code>
+    </p>
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>imx-predefined-filter</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./predefined-filter.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./predefined-filter.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#data" >data</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#filterOptionLengthThreshold" >filterOptionLengthThreshold</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#filterTypeIndentifier" >filterTypeIndentifier</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#formState" >formState</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#hiddenFilterSet" >hiddenFilterSet</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#internalDataSource" >internalDataSource</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#internalSelectedFilters" >internalSelectedFilters</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#searchTerms" >searchTerms</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#subscriptions" >subscriptions</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#applyDynamicPropsAsSelectedFilters" >applyDynamicPropsAsSelectedFilters</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#applyFilters" >applyFilters</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#applyLocalFilter" >applyLocalFilter</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#applyLocalPredicate" >applyLocalPredicate</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getMultiSelectCurrentValue" >getMultiSelectCurrentValue</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getSelectedFilterFromName" >getSelectedFilterFromName</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#localFilter" >localFilter</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#multiSelectFilterValueChange" >multiSelectFilterValueChange</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#ngAfterViewInit" >ngAfterViewInit</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#ngOnDestroy" >ngOnDestroy</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#onCheckboxFilterChanged" >onCheckboxFilterChanged</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#onRadioFilterChanged" >onRadioFilterChanged</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#removeSelectedFilter" >removeSelectedFilter</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#selectFilterValueChanged" >selectFilterValueChanged</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Inputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#hiddenFilters" >hiddenFilters</a>
+                            </li>
+                            <li>
+                                <a href="#isDataSourceLocal" >isDataSourceLocal</a>
+                            </li>
+                            <li>
+                                <a href="#selectedFilters" >selectedFilters</a>
+                            </li>
+                            <li>
+                                <a href="#settings" >settings</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Outputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#customSelectedFilterRemoved" >customSelectedFilterRemoved</a>
+                            </li>
+                            <li>
+                                <a href="#navigationStateChanged" >navigationStateChanged</a>
+                            </li>
+                            <li>
+                                <a href="#settingsChanged" >settingsChanged</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Accessors</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                    <a href="#hiddenFilters" >hiddenFilters</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(filterService: <a href="../injectables/FilterWizardService.html" target="_self">FilterWizardService</a>, data?: <a href="../interfaces/FilterWizardSidesheetData.html" target="_self">FilterWizardSidesheetData</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="123" class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:123</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>filterService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/FilterWizardService.html" target="_self" >FilterWizardService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>data</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/FilterWizardSidesheetData.html" target="_self" >FilterWizardSidesheetData</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            Yes
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+    <section data-compodoc="block-inputs">
+    <h3 id="inputs">Inputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="hiddenFilters"></a>
+                        <b>hiddenFilters</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>string[]</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="55" class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:55</a></div>
+                            </td>
+                        </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>List of filter names that should be hidden
+Allows overrides to the underlying DataModelFilter defined filters
+Overrides should be in the form of a string matching the <code>DataModelFilter.Name</code> property of the filter to hide. E.g &#39;namespace&#39;</p>
+</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="isDataSourceLocal"></a>
+                        <b>isDataSourceLocal</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="67" class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:67</a></div>
+                            </td>
+                        </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>If set to &#39;false&#39; (= default) pagination, filtering etc is done on the server side.
+The server will send chunks of data, when the user clicks on next/previous page button and DST will handle the response.
+If set to &#39;true&#39; the server will send all data in one go. DST will internally handle page sizing and navigation.</p>
+</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="selectedFilters"></a>
+                        <b>selectedFilters</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/DataSourceToolbarSelectedFilter.html" target="_self" >DataSourceToolbarSelectedFilter[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="72" class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:72</a></div>
+                            </td>
+                        </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>The list of filters currently applied</p>
+</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="settings"></a>
+                        <b>settings</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/DataSourceToolbarSettings.html" target="_self" >DataSourceToolbarSettings</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:48</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <section data-compodoc="block-outputs">
+    <h3 id="outputs">Outputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="customSelectedFilterRemoved"></a>
+                        <b>customSelectedFilterRemoved</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="78" class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:78</a></div>
+                            </td>
+                        </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>Occurs when a selectedFilter that is marked as custom is removed from the selectedFilters array</p>
+</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="navigationStateChanged"></a>
+                        <b>navigationStateChanged</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="83" class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:83</a></div>
+                            </td>
+                        </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>Occurs when user presses next/previous page button or changes the page size.</p>
+</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="settingsChanged"></a>
+                        <b>settingsChanged</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="91" class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:91</a></div>
+                            </td>
+                        </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>Occurs when the datasource toolbar settings object has changed.</p>
+<p>NOTE: An event is emitted only when the whole settings object has changed.
+It will not fire if only parts - like the entity schema, or the datasource - changes.</p>
+</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="applyDynamicPropsAsSelectedFilters"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>applyDynamicPropsAsSelectedFilters</b></span>
+                        <a href="#applyDynamicPropsAsSelectedFilters"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>applyDynamicPropsAsSelectedFilters(config: <a href="../interfaces/DSTViewConfig.html" target="_self">DSTViewConfig</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="221"
+                            class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:221</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Applys all filters saved in DSTViewConfig.AdditionalParameters to the selected filters</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>config</td>
+                                    <td>
+                                                <code><a href="../interfaces/DSTViewConfig.html" target="_self" >DSTViewConfig</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>DSTViewConfig used to get and apply filters from</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="applyFilters"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>applyFilters</b></span>
+                        <a href="#applyFilters"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>applyFilters()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="293"
+                            class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:293</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="applyLocalFilter"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>applyLocalFilter</b></span>
+                        <a href="#applyLocalFilter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>applyLocalFilter()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="430"
+                            class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:430</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="applyLocalPredicate"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>applyLocalPredicate</b></span>
+                        <a href="#applyLocalPredicate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>applyLocalPredicate()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="399"
+                            class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:399</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getMultiSelectCurrentValue"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>getMultiSelectCurrentValue</b></span>
+                        <a href="#getMultiSelectCurrentValue"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getMultiSelectCurrentValue(filter: <a href="../interfaces/DataSourceToolbarFilter.html" target="_self">DataSourceToolbarFilter</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="173"
+                            class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:173</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>filter</td>
+                                    <td>
+                                                <code><a href="../interfaces/DataSourceToolbarFilter.html" target="_self" >DataSourceToolbarFilter</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>string[]</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getSelectedFilterFromName"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>getSelectedFilterFromName</b></span>
+                        <a href="#getSelectedFilterFromName"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getSelectedFilterFromName(filterName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, value: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="237"
+                            class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:237</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Finds the filter in settings.filter with the same filterName, applies the value and returns the filter</p>
+</div>
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Description</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>filterName</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>name of the filter</p>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>value</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                    <td>
+                                        <p>value of the filter</p>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../interfaces/DataSourceToolbarSelectedFilter.html" target="_self" >DataSourceToolbarSelectedFilter</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        <p>the filter with the selected option</p>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="localFilter"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>localFilter</b></span>
+                        <a href="#localFilter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>localFilter()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="394"
+                            class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:394</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="multiSelectFilterValueChange"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>multiSelectFilterValueChange</b></span>
+                        <a href="#multiSelectFilterValueChange"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>multiSelectFilterValueChange(filter: <a href="../interfaces/DataSourceToolbarFilter.html" target="_self">DataSourceToolbarFilter</a>, event: MatSelectChange)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="181"
+                            class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:181</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>filter</td>
+                                    <td>
+                                                <code><a href="../interfaces/DataSourceToolbarFilter.html" target="_self" >DataSourceToolbarFilter</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>event</td>
+                                    <td>
+                                            <code>MatSelectChange</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngAfterViewInit"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>ngAfterViewInit</b></span>
+                        <a href="#ngAfterViewInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ngAfterViewInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="145"
+                            class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:145</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnDestroy"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>ngOnDestroy</b></span>
+                        <a href="#ngOnDestroy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ngOnDestroy()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="152"
+                            class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:152</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="148"
+                            class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:148</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onCheckboxFilterChanged"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>onCheckboxFilterChanged</b></span>
+                        <a href="#onCheckboxFilterChanged"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>onCheckboxFilterChanged(filter: <a href="../interfaces/DataSourceToolbarFilter.html" target="_self">DataSourceToolbarFilter</a>, option: DataModelFilterOption, event: MatCheckboxChange)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="156"
+                            class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:156</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>filter</td>
+                                    <td>
+                                                <code><a href="../interfaces/DataSourceToolbarFilter.html" target="_self" >DataSourceToolbarFilter</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>option</td>
+                                    <td>
+                                            <code>DataModelFilterOption</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>event</td>
+                                    <td>
+                                            <code>MatCheckboxChange</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onRadioFilterChanged"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>onRadioFilterChanged</b></span>
+                        <a href="#onRadioFilterChanged"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>onRadioFilterChanged(filter: <a href="../interfaces/DataSourceToolbarFilter.html" target="_self">DataSourceToolbarFilter</a>, option: DataModelFilterOption)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="196"
+                            class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:196</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>filter</td>
+                                    <td>
+                                                <code><a href="../interfaces/DataSourceToolbarFilter.html" target="_self" >DataSourceToolbarFilter</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>option</td>
+                                    <td>
+                                            <code>DataModelFilterOption</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="removeSelectedFilter"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>removeSelectedFilter</b></span>
+                        <a href="#removeSelectedFilter"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>removeSelectedFilter(filter: <a href="../interfaces/DataSourceToolbarFilter.html" target="_self">DataSourceToolbarFilter</a>, emitChange: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>, optionValue?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, selectedFilter?: <a href="../interfaces/DataSourceToolbarSelectedFilter.html" target="_self">DataSourceToolbarSelectedFilter</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="246"
+                            class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:246</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                    <td>Default value</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>filter</td>
+                                    <td>
+                                                <code><a href="../interfaces/DataSourceToolbarFilter.html" target="_self" >DataSourceToolbarFilter</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>emitChange</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+                                    <td>
+                                        <code>true</code>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>optionValue</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>selectedFilter</td>
+                                    <td>
+                                                <code><a href="../interfaces/DataSourceToolbarSelectedFilter.html" target="_self" >DataSourceToolbarSelectedFilter</a></code>
+                                    </td>
+
+                                    <td>
+                                        Yes
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectFilterValueChanged"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>selectFilterValueChanged</b></span>
+                        <a href="#selectFilterValueChanged"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>selectFilterValueChanged(filter: <a href="../interfaces/DataSourceToolbarFilter.html" target="_self">DataSourceToolbarFilter</a>, event: MatSelectChange)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="210"
+                            class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:210</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>filter</td>
+                                    <td>
+                                                <code><a href="../interfaces/DataSourceToolbarFilter.html" target="_self" >DataSourceToolbarFilter</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>event</td>
+                                    <td>
+                                            <code>MatSelectChange</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="data"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>data</b></span>
+                        <a href="#data"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/FilterWizardSidesheetData.html" target="_self" >FilterWizardSidesheetData</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Inject(EUI_SIDESHEET_DATA)<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="125" class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:125</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="filterOptionLengthThreshold"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>filterOptionLengthThreshold</b></span>
+                        <a href="#filterOptionLengthThreshold"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>5</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="99" class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:99</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="filterTypeIndentifier"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>filterTypeIndentifier</b></span>
+                        <a href="#filterTypeIndentifier"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#FilterTypeIdentifier" target="_self" >FilterTypeIdentifier</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>FilterTypeIdentifier.Predefined</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="108" class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:108</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="formState"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>formState</b></span>
+                        <a href="#formState"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/FilterFormState.html" target="_self" >FilterFormState</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="107" class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:107</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="hiddenFilterSet"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>hiddenFilterSet</b></span>
+                        <a href="#hiddenFilterSet"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Set&lt;string&gt;</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Set([])</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="98" class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:98</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="internalDataSource"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>internalDataSource</b></span>
+                        <a href="#internalDataSource"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#T" target="_self" >MatTableDataSource&lt;TypedEntity&gt;</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new MatTableDataSource&lt;TypedEntity&gt;([])</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="104" class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:104</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>This is the mat table datasource.</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="internalSelectedFilters"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>internalSelectedFilters</b></span>
+                        <a href="#internalSelectedFilters"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/DataSourceToolbarSelectedFilter.html" target="_self" >DataSourceToolbarSelectedFilter[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="73" class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:73</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="searchTerms"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>searchTerms</b></span>
+                        <a href="#searchTerms"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/DataSourceToolbarSelectedFilter.html" target="_self" >DataSourceToolbarSelectedFilter[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="96" class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:96</a></div>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>The list of search terms currently applied</p>
+</div>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="subscriptions"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>subscriptions</b></span>
+                        <a href="#subscriptions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="106" class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:106</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-accessors">
+    <h3 id="accessors">
+        Accessors
+    </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="hiddenFilters"></a>
+                        <span class="name"><b>hiddenFilters</b><a href="#hiddenFilters"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>hiddenFilters()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="55" class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:55</a></div>
+                                </td>
+                            </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-description"><p>List of filter names that should be hidden
+Allows overrides to the underlying DataModelFilter defined filters
+Overrides should be in the form of a string matching the <code>DataModelFilter.Name</code> property of the filter to hide. E.g &#39;namespace&#39;</p>
+</div>
+
+                                <div class="io-description">
+                                    <b>Returns : </b>    <code>string[]</code>
+
+                                </div>
+                        </td>
+                    </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>set</b><code>hiddenFilters(value: string[])</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="58" class="link-to-prism">src/lib/data-source-toolbar/filter-wizard/predefined-filter/predefined-filter.component.ts:58</a></div>
+                                </td>
+                            </tr>
+                    <tr>
+                        <td class="col-md-4">
+
+                                <div class="io-description">
+                                        <b>Parameters :</b>
+                                        <table class="params">
+                                            <thead>
+                                                <tr>
+                                                    <td>Name</td>
+                                                        <td>Type</td>
+                                                    <td>Optional</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr>
+                                                            <td>value</td>
+                                                    
+                                                            <td>
+                                                                        <code>string[]</code>
+                                                            </td>
+                                                    
+                                                        <td>
+                                                                No
+                                                        </td>
+                                                        
+                                                    </tr>
+                                            </tbody>
+                                        </table>
+                                </div>
+                                <div>
+                                </div>
+                                <div class="io-description">
+                                    <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                                </div>
+                        </td>
+                    </tr>
+            </tbody>
+        </table>
+</section>
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AfterViewInit, Component, EventEmitter, Inject, Input, NgZone, OnDestroy, OnInit, Output, QueryList, ViewChildren } from &#x27;@angular/core&#x27;;
+import { FormBuilder } from &#x27;@angular/forms&#x27;;
+import { MatCardContent } from &#x27;@angular/material/card&#x27;;
+import { MatCheckboxChange } from &#x27;@angular/material/checkbox&#x27;;
+import { MatSelectChange } from &#x27;@angular/material/select&#x27;;
+import { MatTableDataSource } from &#x27;@angular/material/table&#x27;;
+import { EUI_SIDESHEET_DATA } from &#x27;@elemental-ui/core&#x27;;
+import { CollectionLoadParameters, DataModelFilterOption, TypedEntity } from &#x27;imx-qbm-dbts&#x27;;
+import { Subscription } from &#x27;rxjs/internal/Subscription&#x27;;
+import { DataSourceToolbarFilter, DataSourceToolbarSelectedFilter } from &#x27;../../data-source-toolbar-filters.interface&#x27;;
+import { DataSourceToolbarSettings } from &#x27;../../data-source-toolbar-settings&#x27;;
+import { DSTViewConfig } from &#x27;../../data-source-toolbar-view-config.interface&#x27;;
+import { FilterFormState, FilterTypeIdentifier, FilterWizardSidesheetData } from &#x27;../filter-wizard.interfaces&#x27;;
+import { FilterWizardService } from &#x27;../filter-wizard.service&#x27;;
+
+@Component({
+  selector: &#x27;imx-predefined-filter&#x27;,
+  templateUrl: &#x27;./predefined-filter.component.html&#x27;,
+  styleUrls: [&#x27;./predefined-filter.component.scss&#x27;],
+})
+export class PredefinedFilterComponent implements OnInit, AfterViewInit, OnDestroy {
+  @Input() public settings: DataSourceToolbarSettings;
+
+  /**
+   * List of filter names that should be hidden
+   * Allows overrides to the underlying DataModelFilter defined filters
+   * Overrides should be in the form of a string matching the &#x60;DataModelFilter.Name&#x60; property of the filter to hide. E.g &#x27;namespace&#x27;
+   */
+  @Input() public get hiddenFilters(): string[] {
+    return Array.from(this.hiddenFilterSet);
+  }
+  public set hiddenFilters(value: string[]) {
+    this.hiddenFilterSet &#x3D; new Set(value);
+  }
+
+  /**
+   * If set to &#x27;false&#x27; (&#x3D; default) pagination, filtering etc is done on the server side.
+   * The server will send chunks of data, when the user clicks on next/previous page button and DST will handle the response.
+   * If set to &#x27;true&#x27; the server will send all data in one go. DST will internally handle page sizing and navigation.
+   */
+  @Input() public isDataSourceLocal &#x3D; false;
+
+  /**
+   * The list of filters currently applied
+   */
+  @Input() public selectedFilters: DataSourceToolbarSelectedFilter[] &#x3D; [];
+  public internalSelectedFilters: DataSourceToolbarSelectedFilter[] &#x3D; [];
+
+  /**
+   * Occurs when a selectedFilter that is marked as custom is removed from the selectedFilters array
+   */
+  @Output() public customSelectedFilterRemoved &#x3D; new EventEmitter&lt;DataSourceToolbarSelectedFilter&gt;();
+
+  /**
+   * Occurs when user presses next/previous page button or changes the page size.
+   */
+  @Output() public navigationStateChanged &#x3D; new EventEmitter&lt;CollectionLoadParameters&gt;();
+
+  /**
+   * Occurs when the datasource toolbar settings object has changed.
+   *
+   * NOTE: An event is emitted only when the whole settings object has changed.
+   * It will not fire if only parts - like the entity schema, or the datasource - changes.
+   */
+  @Output() public settingsChanged &#x3D; new EventEmitter&lt;DataSourceToolbarSettings&gt;();
+
+  /**
+   * The list of search terms currently applied
+   */
+  public searchTerms: DataSourceToolbarSelectedFilter[] &#x3D; [];
+
+  public hiddenFilterSet: Set&lt;string&gt; &#x3D; new Set([]);
+  public filterOptionLengthThreshold &#x3D; 5;
+
+  /**
+   * This is the mat table datasource.
+   */
+  public internalDataSource: MatTableDataSource&lt;TypedEntity&gt; &#x3D; new MatTableDataSource&lt;TypedEntity&gt;([]);
+
+  private readonly subscriptions: Subscription[] &#x3D; [];
+  private formState: FilterFormState;
+  private filterTypeIndentifier: FilterTypeIdentifier &#x3D; FilterTypeIdentifier.Predefined;
+
+  /**
+   * @ignore Used internally.
+   * Filters the data source with these arguments locally.
+   * Will only be used, when &#x27;isDataSourceLocal&#x27; is set to true.
+   */
+  private localFilterState: {
+    filterColumns: { [column: string]: string };
+    searchColumns: string[];
+    keywords: string;
+  } &#x3D; {
+    filterColumns: {},
+    searchColumns: [],
+    keywords: &#x27;&#x27;,
+  };
+
+  constructor(private readonly filterService: FilterWizardService, @Inject(EUI_SIDESHEET_DATA) public data?: FilterWizardSidesheetData) {
+    // this.hiddenFilters &#x3D; [&#x27;namespace&#x27;];
+    this.settings &#x3D; data.settings;
+     this.selectedFilters &#x3D; data.selectedFilters;
+     this.internalSelectedFilters &#x3D; Object.create(this.selectedFilters);
+     this.formState &#x3D; { canClearFilters: this.selectedFilters.length &gt; 0, dirty: false, filterIdentifier: FilterTypeIdentifier.Predefined };
+
+    this.subscriptions.push(
+      this.filterService.applyFiltersEvent.subscribe(() &#x3D;&gt; {
+        this.applyFilters();
+      })
+    );
+
+    this.subscriptions.push(
+      this.filterService.clearFiltersEvent.subscribe(() &#x3D;&gt; {
+        this.clearFilters();
+      })
+    );
+  }
+
+  public ngAfterViewInit(): void {
+  }
+
+  public ngOnInit(): void {
+    this.filterService.formStatusChanged(this.formState);
+  }
+
+  public ngOnDestroy(): void {
+    this.subscriptions.forEach((s) &#x3D;&gt; s.unsubscribe());
+  }
+
+  public onCheckboxFilterChanged(filter: DataSourceToolbarFilter, option: DataModelFilterOption, event: MatCheckboxChange): void {
+    let selectedFilterData: DataSourceToolbarSelectedFilter;
+    if (event.checked) {
+      if (filter.Delimiter) {
+        this.setDelimitedFilterCurrentValue(filter, option);
+      } else {
+        filter.CurrentValue &#x3D; option.Value;
+      }
+      selectedFilterData &#x3D; { selectedOption: option, filter };
+      this.internalSelectedFilters.push(selectedFilterData);
+    } else {
+      this.removeSelectedFilter(filter, false, option.Value);
+    }
+    this.formState.dirty &#x3D; true;
+    this.filterService.formStatusChanged(this.formState);
+  }
+
+  public getMultiSelectCurrentValue(filter: DataSourceToolbarFilter): string[] {
+    let display &#x3D; [];
+    if (filter.Delimiter &amp;&amp; filter.CurrentValue) {
+      display &#x3D; filter.CurrentValue.split(filter.Delimiter);
+    }
+    return display;
+  }
+
+  public multiSelectFilterValueChange(filter: DataSourceToolbarFilter, event: MatSelectChange): void {
+    filter.CurrentValue &#x3D; undefined;
+    const relevantSelectedItems &#x3D; this.internalSelectedFilters.filter((sfilter) &#x3D;&gt; sfilter.filter.Name &#x3D;&#x3D;&#x3D; filter.Name);
+    relevantSelectedItems.forEach((rsi) &#x3D;&gt; {
+      this.removeSelectedFilter(filter, false, rsi.selectedOption.Value);
+    });
+    event.value.forEach((value) &#x3D;&gt; {
+      const option &#x3D; this.findFilterOptionFromValue(value, filter);
+      this.internalSelectedFilters.push({ selectedOption: option, filter });
+    });
+    this.rebuildSelectedDelimitedValue(filter);
+    this.formState.dirty &#x3D; true;
+    this.filterService.formStatusChanged(this.formState);
+  }
+
+  public onRadioFilterChanged(filter: DataSourceToolbarFilter, option: DataModelFilterOption): void {
+    let selectedFilterData: DataSourceToolbarSelectedFilter;
+    filter.CurrentValue &#x3D; option ? option.Value : undefined;
+    selectedFilterData &#x3D; { selectedOption: option, filter };
+    const index &#x3D; this.findSelectedFilterIndex(filter.Name);
+    if (index &gt;&#x3D; 0) {
+      this.internalSelectedFilters[index] &#x3D; selectedFilterData;
+    } else {
+      this.internalSelectedFilters.push(selectedFilterData);
+    }
+    this.formState.dirty &#x3D; true;
+    this.filterService.formStatusChanged(this.formState);
+  }
+
+  public selectFilterValueChanged(filter: DataSourceToolbarFilter, event: MatSelectChange): void {
+    const option &#x3D; this.findFilterOptionFromValue(event.value, filter);
+    this.onRadioFilterChanged(filter, option);
+    this.formState.dirty &#x3D; true;
+    this.filterService.formStatusChanged(this.formState);
+  }
+
+  /**
+   * Applys all filters saved in DSTViewConfig.AdditionalParameters to the selected filters
+   * @param config DSTViewConfig used to get and apply filters from
+   */
+  public applyDynamicPropsAsSelectedFilters(config: DSTViewConfig): void {
+    // Handle filters from dynamic properties
+    Object.entries(config.AdditionalParameters).forEach(([filterName, value]) &#x3D;&gt; {
+      const filter &#x3D; this.getSelectedFilterFromName(filterName, value);
+      if (filter) {
+        this.internalSelectedFilters.push(filter);
+      }
+    });
+  }
+
+  /**
+   * Finds the filter in settings.filter with the same filterName, applies the value and returns the filter
+   * @param filterName name of the filter
+   * @param value value of the filter
+   * @returns the filter with the selected option
+   */
+  public getSelectedFilterFromName(filterName: string, value: string): DataSourceToolbarSelectedFilter {
+    const filter &#x3D; this.settings.filters?.find((filter) &#x3D;&gt; filter.Name &#x3D;&#x3D;&#x3D; filterName);
+    if (filter) {
+      filter.CurrentValue &#x3D; value;
+      const selectedOption &#x3D; this.findFilterOptionFromValue(value, filter);
+      return { filter, selectedOption };
+    }
+  }
+
+  public removeSelectedFilter(
+    filter: DataSourceToolbarFilter,
+    emitChange: boolean &#x3D; true,
+    optionValue?: string,
+    selectedFilter?: DataSourceToolbarSelectedFilter
+  ): void {
+    filter.CurrentValue &#x3D; undefined;
+    const index &#x3D; this.findSelectedFilterIndex(filter.Name, optionValue);
+    if (index &gt;&#x3D; 0) {
+      this.internalSelectedFilters.splice(index, 1);
+
+      // If filter allows delimited values then we need to only remove the selected option and rebuild
+      // currentValue to include any other selected options
+      if (filter.Delimiter) {
+        this.rebuildSelectedDelimitedValue(filter);
+      }
+
+      // If the selected filter is custom, emit the custom event
+      // to allow calling code to handle the change
+      if (selectedFilter &amp;&amp; selectedFilter.isCustom) {
+        this.customSelectedFilterRemoved.emit(selectedFilter);
+      }
+
+      // Emit the navigation change event if &#x60;emitChange&#x60; is true and the filter is not custom
+      // (custom filters changes can be responded to through the customSelectedFilterRemoved emitter)
+      // if (emitChange &amp;&amp; !selectedFilter?.isCustom) {
+      //   this.updateNavigateStateWithFilters();
+      // }
+    }
+  }
+
+  /**
+   * @ignore Used internally.
+   * Is called internally when the clear all filters menu option is clicked
+   * Clears all selected filter values and updates and emits the new navigationState
+   */
+  private clearFilters(emit &#x3D; true): void {
+    this.settings.filters?.forEach((filter) &#x3D;&gt; (filter.CurrentValue &#x3D; undefined));
+    const containsCustomFilters &#x3D; this.selectedFiltersContainsCustomFilters();
+    if (containsCustomFilters) {
+      this.customSelectedFilterRemoved.emit();
+    }
+    this.selectedFilters &#x3D; [];
+    this.internalSelectedFilters &#x3D; [];
+    this.updateNavigateStateWithFilters(emit);
+  }
+
+  private applyFilters(): void {
+    this.updateNavigateStateWithFilters();
+  }
+
+  /**
+   * @ignore Used internally
+   * Attempts to find any selected filters that are marked as isCustom
+   * Returns a boolean indicating if any are found or not
+   */
+  private selectedFiltersContainsCustomFilters(): boolean {
+    let containsCustom &#x3D; false;
+    const result &#x3D; this.internalSelectedFilters.find((sf) &#x3D;&gt; sf.isCustom);
+    containsCustom &#x3D; result !&#x3D;&#x3D; undefined;
+    return containsCustom;
+  }
+
+  /**
+   * @ignore Used internally
+   * Loops over the filters and adds any selected filters to the navigation state
+   * as query parameters, and emits a navigationStateChanged event to let calling code know of the change
+   *
+   * If the datasource is local, will apply the filters here and emit a settingsChanged signal instead of a navigationStateChanged
+   */
+  private updateNavigateStateWithFilters(emit &#x3D; true): void {
+    this.selectedFilters &#x3D; Object.create(this.internalSelectedFilters);
+    this.settings.filters?.forEach((filter) &#x3D;&gt; {
+      if (filter.CurrentValue) {
+        this.settings.navigationState[filter.Name] &#x3D; filter.CurrentValue;
+        if (filter?.Column) {
+          // This is a local filter and we must filter over this column
+          this.localFilterState.filterColumns[filter.Column] &#x3D; filter.CurrentValue;
+        }
+      } else {
+        delete this.settings.navigationState[filter.Name];
+        if (filter?.Column) {
+          delete this.localFilterState.filterColumns[filter.Column];
+        }
+      }
+    });
+    this.settings.navigationState.StartIndex &#x3D; 0;
+    if (!emit) {
+      return;
+    }
+    if (this.isDataSourceLocal) {
+      // Do filter locally
+      this.localFilter();
+    } else {
+      this.filterService.updateNavigation(this.settings.navigationState, this.selectedFilters);
+    }
+  }
+
+  /**
+   * @ignore Used internally in components template.
+   * Updates the filters current value to add supplied option delimited when needed
+   */
+  private setDelimitedFilterCurrentValue(filter: DataSourceToolbarFilter, option: DataModelFilterOption): void {
+    if (filter.CurrentValue &amp;&amp; filter.CurrentValue.length) {
+      filter.CurrentValue &#x3D; filter.CurrentValue +&#x3D; &#x60;${filter.Delimiter}${option.Value}&#x60;;
+    } else {
+      filter.CurrentValue &#x3D; option.Value;
+    }
+  }
+
+  /**
+   * @ignore Used internally
+   * Finds the relevant DataModelFilterOption from the supplied option value and filter
+   */
+  private findFilterOptionFromValue(optionValue: string, filter: DataSourceToolbarFilter): DataModelFilterOption {
+    const index &#x3D; filter.Options.map((opt) &#x3D;&gt; opt.Value).indexOf(optionValue);
+    return filter.Options[index];
+  }
+
+  /**
+   * @ignore Used internally
+   * Attempts to find an existing selected filter matching the given name.
+   * Returns the index or -1 if no match was found
+   */
+  private findSelectedFilterIndex(filterName: string, optionValue?: string): number {
+    let index: number;
+    if (optionValue) {
+      index &#x3D; this.internalSelectedFilters.map((f) &#x3D;&gt; f.filter.Name + f.selectedOption.Value).indexOf(filterName + optionValue);
+    } else {
+      index &#x3D; this.internalSelectedFilters.map((f) &#x3D;&gt; f.filter.Name).indexOf(filterName);
+    }
+    return index;
+  }
+
+  /**
+   * @ignore Used internally in components template.
+   * Updates the current value of a filter based on all the selected options with the delimiters
+   */
+  private rebuildSelectedDelimitedValue(filter: DataSourceToolbarFilter): void {
+    let val &#x3D; &#x27;&#x27;;
+    this.internalSelectedFilters.forEach((sfilter) &#x3D;&gt; {
+      if (sfilter.filter.Name &#x3D;&#x3D;&#x3D; filter.Name) {
+        val +&#x3D; &#x60;${sfilter.selectedOption.Value}${filter.Delimiter}&#x60;;
+      }
+    });
+    filter.CurrentValue &#x3D; val.length ? val.slice(0, -1) : undefined;
+  }
+
+  private localFilter(): void {
+    this.applyLocalPredicate();
+    this.applyLocalFilter();
+  }
+
+  private applyLocalPredicate(): void {
+    this.internalDataSource.filterPredicate &#x3D; (data: TypedEntity, filter: string) &#x3D;&gt; {
+      const entity &#x3D; data.GetEntity();
+
+      // Search with OR statement over keywords and search terms
+      let searchResult &#x3D; false;
+      for (let column of this.localFilterState.searchColumns) {
+        const val &#x3D; (entity.GetColumn(column).GetValue() as string).toLocaleLowerCase();
+        searchResult &#x3D; this.localFilterState.keywords ? val.includes(this.localFilterState.keywords.toLocaleLowerCase()) : false;
+        // Allow for short circuiting
+        searchResult &amp;&amp;&#x3D; this.searchTerms.every((term) &#x3D;&gt; val.includes(term.selectedOption.Display));
+        if (searchResult) {
+          // Exit for loop if we have a positive hit
+          break;
+        }
+      }
+
+      // Filter with AND statement
+      let filterResult &#x3D; true;
+      if (Object.keys(this.localFilterState.filterColumns).length &gt; 0) {
+        // If there are terms to filter over do so
+        filterResult &#x3D; Object.entries(this.localFilterState.filterColumns).every(([column, value]) &#x3D;&gt; {
+          return value.toLocaleLowerCase().includes((entity.GetColumn(column).GetValue() as string).toLocaleLowerCase());
+        });
+      }
+
+      // Combine with an AND
+      return searchResult &amp;&amp; filterResult;
+    };
+  }
+
+  private applyLocalFilter(): void {
+    this.internalDataSource.filter &#x3D; &#x27;Not Empty&#x27;;
+    this.settings.dataSource &#x3D; {
+      Data: this.internalDataSource.filteredData,
+      totalCount: this.internalDataSource.filteredData.length,
+    };
+    this.settingsChanged.emit(this.settings);
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;ng-container *ngFor&#x3D;&quot;let filter of settings?.filters&quot;&gt;
+  &lt;mat-card class&#x3D;&quot;mat-elevation-z2&quot; *ngIf&#x3D;&quot;!hiddenFilterSet.has(filter.Name)&quot;&gt;
+    &lt;mat-card-content&gt;
+      &lt;h1 *ngIf&#x3D;&quot;filter.Options.length &gt; 1&quot; class&#x3D;&quot;imx-filter-title&quot;&gt;{{ filter.Description || filter.Name }}&lt;/h1&gt;
+      &lt;mat-checkbox
+        *ngIf&#x3D;&quot;filter.Options.length &#x3D;&#x3D;&#x3D; 1&quot;
+        [checked]&#x3D;&quot;filter.CurrentValue&quot;
+        (change)&#x3D;&quot;onCheckboxFilterChanged(filter, filter.Options[0], $event)&quot;
+        [attr.data-imx-identifier]&#x3D;&quot;&#x27;dst-checkbox-filtermenu-option-&#x27; + filter.Name + &#x27;-&#x27; + filter.Options[0].Value&quot;
+      &gt;
+        {{ filter.Options[0].Display }}
+      &lt;/mat-checkbox&gt;
+      &lt;ng-container *ngIf&#x3D;&quot;filter.Delimiter &amp;&amp; filter.Options.length &gt; 1&quot;&gt;
+        &lt;mat-checkbox
+          *ngFor&#x3D;&quot;let fopt of filter.Options&quot;
+          [checked]&#x3D;&quot;filter.CurrentValue?.includes(fopt.Value)&quot;
+          (change)&#x3D;&quot;onCheckboxFilterChanged(filter, fopt, $event)&quot;
+          [attr.data-imx-identifier]&#x3D;&quot;&#x27;dst-checkbox-filtermenu-option-&#x27; + filter.Name + &#x27;-&#x27; + fopt.Value&quot;
+        &gt;
+          {{ fopt.Display }}
+        &lt;/mat-checkbox&gt;
+      &lt;/ng-container&gt;
+      &lt;mat-radio-group *ngIf&#x3D;&quot;!filter.Delimiter &amp;&amp; filter.Options.length &gt; 1&quot; [value]&#x3D;&quot;filter.CurrentValue&quot;&gt;
+        &lt;mat-radio-button
+          *ngFor&#x3D;&quot;let foption of filter.Options&quot;
+          [value]&#x3D;&quot;foption.Value&quot;
+          (change)&#x3D;&quot;onRadioFilterChanged(filter, foption)&quot;
+          [attr.data-imx-identifier]&#x3D;&quot;&#x27;dst-radiobutton-filtermenu-option-&#x27; + filter.Name + &#x27;-&#x27; + foption.Value&quot;
+        &gt;
+          &lt;span&gt;{{ foption.Display }}&lt;/span&gt;
+        &lt;/mat-radio-button&gt;
+      &lt;/mat-radio-group&gt;
+    &lt;/mat-card-content&gt;
+  &lt;/mat-card&gt;
+&lt;/ng-container&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./predefined-filter.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">@import &#x27;@elemental-ui/core/src/styles/_palette.scss&#x27;;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+  padding: 10px 0 10px 0;
+
+  .mat-checkbox {
+    display: block;
+  }
+
+  .mat-radio-button {
+    display: block;
+    margin-right: 5px;
+
+    label.mat-radio-label {
+      white-space: normal;
+    }
+  }
+
+  .imx-filter-title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><ng-container *ngFor="let filter of settings?.filters">  <mat-card class="mat-elevation-z2" *ngIf="!hiddenFilterSet.has(filter.Name)">    <mat-card-content>      <h1 *ngIf="filter.Options.length > 1" class="imx-filter-title">{{ filter.Description || filter.Name }}</h1>      <mat-checkbox        *ngIf="filter.Options.length === 1"        [checked]="filter.CurrentValue"        (change)="onCheckboxFilterChanged(filter, filter.Options[0], $event)"        [attr.data-imx-identifier]="\'dst-checkbox-filtermenu-option-\' + filter.Name + \'-\' + filter.Options[0].Value"      >        {{ filter.Options[0].Display }}      </mat-checkbox>      <ng-container *ngIf="filter.Delimiter && filter.Options.length > 1">        <mat-checkbox          *ngFor="let fopt of filter.Options"          [checked]="filter.CurrentValue?.includes(fopt.Value)"          (change)="onCheckboxFilterChanged(filter, fopt, $event)"          [attr.data-imx-identifier]="\'dst-checkbox-filtermenu-option-\' + filter.Name + \'-\' + fopt.Value"        >          {{ fopt.Display }}        </mat-checkbox>      </ng-container>      <mat-radio-group *ngIf="!filter.Delimiter && filter.Options.length > 1" [value]="filter.CurrentValue">        <mat-radio-button          *ngFor="let foption of filter.Options"          [value]="foption.Value"          (change)="onRadioFilterChanged(filter, foption)"          [attr.data-imx-identifier]="\'dst-radiobutton-filtermenu-option-\' + filter.Name + \'-\' + foption.Value"        >          <span>{{ foption.Display }}</span>        </mat-radio-button>      </mat-radio-group>    </mat-card-content>  </mat-card></ng-container></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'imx-about'},{'name': 'AddConfigSidesheetComponent', 'selector': ''},{'name': 'AdditionalInfosComponent', 'selector': 'imx-additional-infos'},{'name': 'ApplyConfigSidesheetComponent', 'selector': ''},{'name': 'AutoCompleteComponent', 'selector': 'imx-auto-complete'},{'name': 'AutocompleteComponent', 'selector': 'imx-autocomplete'},{'name': 'BulkItemComponent', 'selector': 'imx-bulk-item'},{'name': 'BulkPropertyEditorComponent', 'selector': 'imx-bulk-editor'},{'name': 'BusyIndicatorComponent', 'selector': 'imx-busy-indicator'},{'name': 'CacheComponent', 'selector': 'imx-cache'},{'name': 'CalendarComponent', 'selector': 'imx-calendar'},{'name': 'CaptchaComponent', 'selector': 'imx-captcha'},{'name': 'CdrEditorComponent', 'selector': 'imx-cdr-editor'},{'name': 'CdrSidesheetComponent', 'selector': ''},{'name': 'ChartTileComponent', 'selector': 'imx-chart-tile'},{'name': 'CheckableTreeComponent', 'selector': 'imx-checkable-tree'},{'name': 'ColumnSelectionComponent', 'selector': 'imx-sqlwizard-columnselection'},{'name': 'ConfigComponent', 'selector': 'imx-config'},{'name': 'ConfigKeyPathComponent', 'selector': 'config-key-path'},{'name': 'ConnectionComponent', 'selector': ''},{'name': 'ConvertConfigSidesheetComponent', 'selector': ''},{'name': 'DashboardComponent', 'selector': ''},{'name': 'DataExportComponent', 'selector': 'imx-data-export'},{'name': 'DataSourcePaginatorComponent', 'selector': 'imx-data-source-paginator'},{'name': 'DataSourceToolbarComponent', 'selector': 'imx-data-source-toolbar'},{'name': 'DataSourceToolbarCustomComponent', 'selector': 'imx-data-source-toolbar-custom'},{'name': 'DataTableCellComponent', 'selector': 'imx-data-table-cell'},{'name': 'DataTableColumnComponent', 'selector': 'imx-data-table-column'},{'name': 'DataTableComponent', 'selector': 'imx-data-table'},{'name': 'DataTableDisplayCellComponent', 'selector': 'imx-data-table-display-cell'},{'name': 'DataTableGenericColumnComponent', 'selector': 'imx-data-table-generic-column'},{'name': 'DataTileComponent', 'selector': 'imx-data-tile'},{'name': 'DataTilesComponent', 'selector': 'imx-data-tiles'},{'name': 'DataTreeComponent', 'selector': 'imx-data-tree'},{'name': 'DataTreeSearchResultsComponent', 'selector': 'imx-data-tree-search-results'},{'name': 'DataTreeWrapperComponent', 'selector': 'imx-data-tree-wrapper'},{'name': 'DateComponent', 'selector': 'imx-date'},{'name': 'DatePickerComponent', 'selector': 'imx-sqlwizard-datepicker'},{'name': 'DateRangeComponent', 'selector': 'imx-date-range'},{'name': 'DeleteConfigSidesheetComponent', 'selector': ''},{'name': 'EditBinaryComponent', 'selector': 'imx-edit-binary'},{'name': 'EditBooleanComponent', 'selector': 'imx-checkbox-editor'},{'name': 'EditDateComponent', 'selector': 'imx-edit-date'},{'name': 'EditDefaultComponent', 'selector': 'imx-edit-default'},{'name': 'EditFkComponent', 'selector': 'imx-edit-fk'},{'name': 'EditFkMultiComponent', 'selector': 'imx-edit-fk-multi'},{'name': 'EditImageComponent', 'selector': 'imx-edit-image'},{'name': 'EditLimitedValueComponent', 'selector': 'imx-edit-limited-value'},{'name': 'EditMultiLimitedValueComponent', 'selector': 'imx-edit-multi-limited-value'},{'name': 'EditMultilineComponent', 'selector': 'imx-edit-multiline'},{'name': 'EditMultiValueComponent', 'selector': 'imx-edit-multi-value'},{'name': 'EditNumberComponent', 'selector': 'imx-edit-number'},{'name': 'EditorBase', 'selector': ''},{'name': 'EditRiskIndexComponent', 'selector': 'imx-edit-risk-index'},{'name': 'EditUrlComponent', 'selector': 'imx-edit-url'},{'name': 'EntityColumnEditorComponent', 'selector': 'imx-entity-column-editor'},{'name': 'EntitySelectComponent', 'selector': 'imx-entity-select'},{'name': 'ExtComponent', 'selector': 'imx-ext'},{'name': 'FilterTileComponent', 'selector': 'imx-filter-tile'},{'name': 'FilterTreeComponent', 'selector': 'imx-filter-tree'},{'name': 'FilterWizardComponent', 'selector': 'imx-filter-wizard'},{'name': 'FkAdvancedPickerComponent', 'selector': ''},{'name': 'FkCandidatesComponent', 'selector': 'imx-fk-candidates'},{'name': 'FkHierarchicalDialogComponent', 'selector': 'imx-fk-hierarchical-dialog'},{'name': 'FkSelectorComponent', 'selector': 'imx-fk-selector'},{'name': 'FkTableSelectComponent', 'selector': 'imx-fk-table-select'},{'name': 'GroupPaginatorComponent', 'selector': 'imx-group-paginator'},{'name': 'HelpContextualComponent', 'selector': 'imx-help-contextual'},{'name': 'HelpContextualDialogComponent', 'selector': 'imx-help-contextual-dialog'},{'name': 'HyperviewComponent', 'selector': 'imx-hyperview'},{'name': 'IconStackComponent', 'selector': 'imx-icon-stack'},{'name': 'ImageSelectComponent', 'selector': 'imx-image-select'},{'name': 'ImageViewComponent', 'selector': 'imx-image-view'},{'name': 'ImxMatColumnComponent', 'selector': 'imx-column'},{'name': 'ImxProgressbarComponent', 'selector': 'imx-progressbar'},{'name': 'ImxTreeTableComponent', 'selector': 'imx-tree-table'},{'name': 'IndexBarComponent', 'selector': 'imx-indexbar'},{'name': 'InfoBadgeComponent', 'selector': 'imx-info-badge'},{'name': 'InfoButtonComponent', 'selector': 'imx-info-button'},{'name': 'InfoDialogComponent', 'selector': 'imx-info-dialog'},{'name': 'JobQueueOverviewComponent', 'selector': 'imx-jobqueue-overview'},{'name': 'ListSettingComponent', 'selector': 'imx-list-setting'},{'name': 'ListShapeComponent', 'selector': 'imx-hyperview-listshape'},{'name': 'LogDetailsSidesheetComponent', 'selector': 'imx-log-details-sidesheet'},{'name': 'LoginComponent', 'selector': 'imx-login'},{'name': 'LogsComponent', 'selector': 'imx-logs'},{'name': 'MasterDetailComponent', 'selector': 'imx-master-detail'},{'name': 'MastHeadComponent', 'selector': 'imx-mast-head'},{'name': 'MenuComponent', 'selector': 'imx-menu'},{'name': 'MessageDialogComponent', 'selector': 'imx-message-dialog'},{'name': 'MultiSelectFormcontrolComponent', 'selector': 'imx-multi-select-formcontrol'},{'name': 'ObjectHistoryComponent', 'selector': 'imx-object-history'},{'name': 'ObjectHistoryGridviewComponent', 'selector': 'imx-object-history-gridview'},{'name': 'ObjectHistoryStateComparisonComponent', 'selector': 'imx-object-history-state-comparison'},{'name': 'ObjectHistoryStateOverviewComponent', 'selector': 'imx-object-history-state-overview'},{'name': 'OrderedListComponent', 'selector': 'imx-ordered-list'},{'name': 'PackagesComponent', 'selector': 'imx-packages'},{'name': 'ParameterizedTextComponent', 'selector': 'imx-parameterized-text'},{'name': 'PluginsComponent', 'selector': 'imx-plugins'},{'name': 'PredefinedFilterComponent', 'selector': 'imx-predefined-filter'},{'name': 'PredefinedFilterTreeComponent', 'selector': 'imx-predefined-filter-tree'},{'name': 'PropertyShapeComponent', 'selector': 'imx-hyperview-propertyshape'},{'name': 'PropertyViewerComponent', 'selector': 'imx-property-viewer'},{'name': 'SaveConfigDialogComponent', 'selector': 'imx-save-config-dialog'},{'name': 'SearchBarComponent', 'selector': 'imx-searchbar'},{'name': 'SelectComponent', 'selector': 'imx-select'},{'name': 'SelectedElementsComponent', 'selector': 'imx-selected-elements'},{'name': 'SelectedElementsDialog', 'selector': ''},{'name': 'SelectValueComponent', 'selector': 'imx-config-select'},{'name': 'ShapeComponent', 'selector': 'imx-hyperview-shape'},{'name': 'SideNavigationViewComponent', 'selector': 'imx-side-navigation-view'},{'name': 'SidenavTreeComponent', 'selector': 'imx-sidenav-tree'},{'name': 'SimpleExpressionComponent', 'selector': 'imx-sqlwizard-simpleexpression'},{'name': 'SimpleShapeComponent', 'selector': 'imx-hyperview-simpleshape'},{'name': 'SingleExpressionComponent', 'selector': 'imx-sqlwizard-singleexpression'},{'name': 'SingleValueComponent', 'selector': 'imx-sqlwizard-singlevalue'},{'name': 'SqlWizardComponent', 'selector': 'imx-sqlwizard'},{'name': 'StatusComponent', 'selector': 'imx-status'},{'name': 'SwaggerComponent', 'selector': 'imx-swagger'},{'name': 'TableSelectionComponent', 'selector': 'imx-sqlwizard-tableselection'},{'name': 'TempBillboardComponent', 'selector': 'imx-temp-billboard'},{'name': 'TileComponent', 'selector': 'imx-tile'},{'name': 'TimelineComponent', 'selector': 'imx-timeline'},{'name': 'TimePickerComponent', 'selector': 'imx-time-picker'},{'name': 'TranslationEditorComponent', 'selector': 'imx-translation-editor'},{'name': 'TreeSelectionListComponent', 'selector': ''},{'name': 'TwoFactorAuthenticationComponent', 'selector': 'imx-2fahost'},{'name': 'TypedEntityCandidateSidesheetComponent', 'selector': ''},{'name': 'TypedEntitySelectComponent', 'selector': 'imx-typed-entity-select'},{'name': 'TypedEntitySelectorComponent', 'selector': 'imx-typed-entity-selector'},{'name': 'UserMessageComponent', 'selector': 'imx-usermessage'},{'name': 'ViewPropertyComponent', 'selector': 'imx-view-property'},{'name': 'ViewPropertyDefaultComponent', 'selector': 'imx-view-property-default'},{'name': 'WhereClauseExpressionComponent', 'selector': 'imx-sqlwizard-whereclauseexpression'}];
+    var DIRECTIVES = [{'name': 'DisableControlDirective', 'selector': '[imxDisableControl]'},{'name': 'DynamicTabDataProviderDirective', 'selector': '[imxDataProvider]'},{'name': 'ExtDirective', 'selector': '[imxExtd]'},{'name': 'MatSelectionListMultipleDirective', 'selector': 'mat-selection-list[multiple]'},{'name': 'TableAccessiblilityDirective', 'selector': '[tableAccessiblility]'},{'name': 'ZoomPanDirective', 'selector': '[imxZoomPan]'}];
+    var ACTUAL_COMPONENT = {'name': 'PredefinedFilterComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'PredefinedFilterComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

@@ -1,0 +1,1525 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>IMX Web - QBM Library</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/material.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">IMX Web - QBM Library</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  SingleValueComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/lib/sqlwizard/single-value.component.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                <code>OnInit</code>
+                <code>OnDestroy</code>
+    </p>
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>imx-sqlwizard-singlevalue</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./sqlwizard.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./single-value.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_fkProviderItem" >_fkProviderItem</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_fkRelation" >_fkRelation</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#_selectedTable" >_selectedTable</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#cdr" >cdr</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#ColumnType" >ColumnType</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#subscriptions" >subscriptions</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#ValType" >ValType</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#buildCdr" >buildCdr</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#emitChanges" >emitChanges</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#ngOnDestroy" >ngOnDestroy</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Inputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#expr" >expr</a>
+                            </li>
+                            <li>
+                                <a href="#index" >index</a>
+                            </li>
+                            <li>
+                                <a href="#mode" >mode</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Outputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#change" >change</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Accessors</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                    <a href="#selectedTable" >selectedTable</a>
+                                </li>
+                                <li>
+                                    <a href="#value" >value</a>
+                                </li>
+                                <li>
+                                    <a href="#displayValue" >displayValue</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(entityService: <a href="../injectables/EntityService.html" target="_self">EntityService</a>, sqlWizardApi: <a href="../classes/SqlWizardApiService.html" target="_self">SqlWizardApiService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="118" class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:118</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>entityService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/EntityService.html" target="_self" >EntityService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>sqlWizardApi</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/SqlWizardApiService.html" target="_self" >SqlWizardApiService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+    <section data-compodoc="block-inputs">
+    <h3 id="inputs">Inputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="expr"></a>
+                        <b>expr</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/SqlNodeView.html" target="_self" >SqlNodeView</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="96" class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:96</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="index"></a>
+                        <b>index</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="98" class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:98</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="mode"></a>
+                        <b>mode</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>&quot;array&quot; | &quot;single&quot;</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;single&#x27;</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="97" class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:97</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <section data-compodoc="block-outputs">
+    <h3 id="outputs">Outputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="change"></a>
+                        <b>change</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="100" class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:100</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildCdr"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span ><b>buildCdr</b></span>
+                        <a href="#buildCdr"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildCdr()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="138"
+                            class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:138</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="emitChanges"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>emitChanges</b></span>
+                        <a href="#emitChanges"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>emitChanges()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="134"
+                            class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:134</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnDestroy"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>ngOnDestroy</b></span>
+                        <a href="#ngOnDestroy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ngOnDestroy()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="168"
+                            class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:168</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="124"
+                            class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:124</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_fkProviderItem"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>_fkProviderItem</b></span>
+                        <a href="#_fkProviderItem"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>FkProviderItem</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    columnName: &#x27;dummycolumn&#x27;,
+    fkTableName: &#x27;not_set&#x27;,
+    parameterNames: [&#x27;OrderBy&#x27;, &#x27;StartIndex&#x27;, &#x27;PageSize&#x27;, &#x27;filter&#x27;, &#x27;search&#x27;],
+    load: async (_, parameters &#x3D; {}) &#x3D;&gt; this.sqlWizardApi.getCandidates(this._fkRelation.ParentTableName, parameters),
+    getFilterTree: async () &#x3D;&gt; ({ Elements: [] }),
+    getDataModel: async () &#x3D;&gt; ({}),
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="111" class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:111</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_fkRelation"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>_fkRelation</b></span>
+                        <a href="#_fkRelation"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#T" target="_self" >MetaTableRelationData</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    IsMemberRelation: false,
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="108" class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:108</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_selectedTable"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>_selectedTable</b></span>
+                        <a href="#_selectedTable"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#T" target="_self" >SqlTable</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="107" class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:107</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="cdr"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>cdr</b></span>
+                        <a href="#cdr"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/BaseCdr.html" target="_self" >BaseCdr</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="105" class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:105</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ColumnType"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>ColumnType</b></span>
+                        <a href="#ColumnType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>SqlColumnTypes</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="103" class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:103</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="subscriptions"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>subscriptions</b></span>
+                        <a href="#subscriptions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="122" class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:122</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ValType"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>ValType</b></span>
+                        <a href="#ValType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>_valType</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="102" class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:102</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-accessors">
+    <h3 id="accessors">
+        Accessors
+    </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="selectedTable"></a>
+                        <span class="name"><b>selectedTable</b><a href="#selectedTable"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>selectedTable()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="49" class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:49</a></div>
+                                </td>
+                            </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>set</b><code>selectedTable(val)</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="53" class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:53</a></div>
+                                </td>
+                            </tr>
+                    <tr>
+                        <td class="col-md-4">
+
+                                <div class="io-description">
+                                        <b>Parameters :</b>
+                                        <table class="params">
+                                            <thead>
+                                                <tr>
+                                                    <td>Name</td>
+                                                    <td>Optional</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr>
+                                                            <td>val</td>
+                                                    
+                                                    
+                                                        <td>
+                                                                No
+                                                        </td>
+                                                        
+                                                    </tr>
+                                            </tbody>
+                                        </table>
+                                </div>
+                                <div>
+                                </div>
+                                <div class="io-description">
+                                    <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                                </div>
+                        </td>
+                    </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="value"></a>
+                        <span class="name"><b>value</b><a href="#value"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>value()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:62</a></div>
+                                </td>
+                            </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>set</b><code>value(val)</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="70" class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:70</a></div>
+                                </td>
+                            </tr>
+                    <tr>
+                        <td class="col-md-4">
+
+                                <div class="io-description">
+                                        <b>Parameters :</b>
+                                        <table class="params">
+                                            <thead>
+                                                <tr>
+                                                    <td>Name</td>
+                                                    <td>Optional</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr>
+                                                            <td>val</td>
+                                                    
+                                                    
+                                                        <td>
+                                                                No
+                                                        </td>
+                                                        
+                                                    </tr>
+                                            </tbody>
+                                        </table>
+                                </div>
+                                <div>
+                                </div>
+                                <div class="io-description">
+                                    <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                                </div>
+                        </td>
+                    </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="displayValue"></a>
+                        <span class="name"><b>displayValue</b><a href="#displayValue"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>displayValue()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="78" class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:78</a></div>
+                                </td>
+                            </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>set</b><code>displayValue(val)</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="85" class="link-to-prism">src/lib/sqlwizard/single-value.component.ts:85</a></div>
+                                </td>
+                            </tr>
+                    <tr>
+                        <td class="col-md-4">
+
+                                <div class="io-description">
+                                        <b>Parameters :</b>
+                                        <table class="params">
+                                            <thead>
+                                                <tr>
+                                                    <td>Name</td>
+                                                    <td>Optional</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr>
+                                                            <td>val</td>
+                                                    
+                                                    
+                                                        <td>
+                                                                No
+                                                        </td>
+                                                        
+                                                    </tr>
+                                            </tbody>
+                                        </table>
+                                </div>
+                                <div>
+                                </div>
+                                <div class="io-description">
+                                    <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                                </div>
+                        </td>
+                    </tr>
+            </tbody>
+        </table>
+</section>
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from &#x27;@angular/core&#x27;;
+import {
+  FkProviderItem,
+  IClientProperty,
+  MetaTableRelationData,
+  SqlColumnTypes,
+  SqlTable,
+  ValType,
+  ValType as _valType,
+} from &#x27;imx-qbm-dbts&#x27;;
+import { Subscription } from &#x27;rxjs&#x27;;
+import { BaseCdr } from &#x27;../cdr/base-cdr&#x27;;
+import { EntityService } from &#x27;../entity/entity.service&#x27;;
+import { SqlNodeView } from &#x27;./SqlNodeView&#x27;;
+import { SqlWizardApiService } from &#x27;./sqlwizard-api.service&#x27;;
+
+@Component({
+  selector: &#x27;imx-sqlwizard-singlevalue&#x27;,
+  styleUrls: [&#x27;./sqlwizard.scss&#x27;],
+  templateUrl: &#x27;./single-value.component.html&#x27;,
+})
+export class SingleValueComponent implements OnInit, OnDestroy {
+  public get selectedTable() {
+    return this._selectedTable;
+  }
+
+  public set selectedTable(val) {
+    this._selectedTable &#x3D; val;
+    if (val) {
+      this._fkRelation.ParentTableName &#x3D; val.Name;
+      this._fkRelation.ParentColumnName &#x3D; val.ParentColumnName;
+      this._fkProviderItem.fkTableName &#x3D; val.Name;
+    }
+  }
+
+  get value() {
+    if (this.mode &#x3D;&#x3D; &#x27;array&#x27; &amp;&amp; this.expr.Data.Value) {
+      return this.expr.Data.Value[this.index];
+    } else {
+      return this.expr.Data.Value;
+    }
+  }
+
+  set value(val) {
+    if (this.mode &#x3D;&#x3D; &#x27;array&#x27; &amp;&amp; this.expr.Data.Value) {
+      this.expr.Data.Value[this.index] &#x3D; val;
+    } else {
+      this.expr.Data.Value &#x3D; val;
+    }
+  }
+
+  get displayValue() {
+    if (!this.expr.Data.DisplayValues) {
+      return null;
+    }
+    return this.expr.Data.DisplayValues[this.mode &#x3D;&#x3D;&#x3D; &#x27;array&#x27; ? this.index : 0];
+  }
+
+  set displayValue(val) {
+    if(!this.expr.Data?.DisplayValues){
+      return;
+    }
+    if (this.mode &#x3D;&#x3D; &#x27;array&#x27; &amp;&amp; this.expr.Data.DisplayValues) {
+      this.expr.Data.DisplayValues[this.index] &#x3D; val;
+    } else {
+      this.expr.Data.DisplayValues &#x3D; [val];
+    }
+  }
+
+  @Input() public expr: SqlNodeView;
+  @Input() public mode: &#x27;array&#x27; | &#x27;single&#x27; &#x3D; &#x27;single&#x27;;
+  @Input() public index: number;
+
+  @Output() public change &#x3D; new EventEmitter&lt;any&gt;();
+
+  public ValType &#x3D; _valType;
+  public ColumnType &#x3D; SqlColumnTypes;
+
+  public cdr: BaseCdr;
+
+  private _selectedTable: SqlTable;
+  private _fkRelation: MetaTableRelationData &#x3D; {
+    IsMemberRelation: false,
+  };
+  private _fkProviderItem: FkProviderItem &#x3D; {
+    columnName: &#x27;dummycolumn&#x27;,
+    fkTableName: &#x27;not_set&#x27;,
+    parameterNames: [&#x27;OrderBy&#x27;, &#x27;StartIndex&#x27;, &#x27;PageSize&#x27;, &#x27;filter&#x27;, &#x27;search&#x27;],
+    load: async (_, parameters &#x3D; {}) &#x3D;&gt; this.sqlWizardApi.getCandidates(this._fkRelation.ParentTableName, parameters),
+    getFilterTree: async () &#x3D;&gt; ({ Elements: [] }),
+    getDataModel: async () &#x3D;&gt; ({}),
+  };
+
+  constructor(private readonly entityService: EntityService, private readonly sqlWizardApi: SqlWizardApiService) {}
+
+  private subscriptions: Subscription[] &#x3D; [];
+
+  public ngOnInit(): void {
+    this.subscriptions.push(
+      this.expr.columnChanged.subscribe((_) &#x3D;&gt; {
+        this.buildCdr();
+      })
+    );
+
+    this.buildCdr();
+  }
+
+  public emitChanges(): void {
+    this.change.emit();
+  }
+
+  private buildCdr() {
+    const tables &#x3D; this.expr.Property.SelectionTables;
+    if (tables &amp;&amp; tables.length &gt; 0) {
+      this.selectedTable &#x3D; tables[0];
+    } else {
+      this.selectedTable &#x3D; null;
+    }
+
+    const property: IClientProperty &#x3D; {
+      ColumnName: &#x27;dummycolumn&#x27;,
+      Type: ValType.String,
+      FkRelation: this._fkRelation,
+    };
+
+    const column &#x3D; this.entityService.createLocalEntityColumn(property, [this._fkProviderItem], {
+      Value: this.value,
+      DisplayValue: this.displayValue,
+    });
+
+    // when the CDR value changes, write back to the SQL wizard data structure
+    column.ColumnChanged.subscribe(() &#x3D;&gt; {
+      setTimeout(() &#x3D;&gt; {
+        this.displayValue &#x3D; column.GetDisplayValue();
+        this.value &#x3D; column.GetValue();
+        this.emitChanges();
+      }, 0);
+    });
+    this.cdr &#x3D; new BaseCdr(column, &#x27;#LDS#Value&#x27;);
+  }
+
+  public ngOnDestroy(): void {
+    for (var s of this.subscriptions) s.unsubscribe();
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;!-- Limited Values--&gt;
+&lt;mat-form-field appearance&#x3D;&quot;outline&quot; class&#x3D;&quot;operand&quot; *ngIf&#x3D;&quot;expr.Property.LimitedValues&quot;&gt;
+  &lt;mat-label&gt;{{ &#x27;#LDS#Value&#x27; | translate }}&lt;/mat-label&gt;
+  &lt;mat-select [(ngModel)]&#x3D;&quot;value&quot; data-imx-identifier&#x3D;&quot;single-value-select-limvalue&quot; (change)&#x3D;&quot;emitChanges()&quot;&gt;
+    &lt;mat-option *ngFor&#x3D;&quot;let lv of expr.Property.LimitedValues&quot; [value]&#x3D;&quot;lv.Value&quot;&gt;
+      {{lv.Description}}
+    &lt;/mat-option&gt;
+  &lt;/mat-select&gt;
+&lt;/mat-form-field&gt;
+
+&lt;ng-container *ngIf&#x3D;&quot;expr.Property.SelectionTables&quot;&gt;
+  &lt;imx-cdr-editor [cdr]&#x3D;&quot;cdr&quot; class&#x3D;&quot;auto-flex&quot; (valueChange)&#x3D;&quot;emitChanges()&quot;&gt;
+  &lt;/imx-cdr-editor&gt;
+&lt;/ng-container&gt;
+
+&lt;ng-container [ngSwitch]&#x3D;&quot;expr.Property.Type&quot; *ngIf&#x3D;&quot;!expr.Property.LimitedValues &amp;&amp; !expr.Property.SelectionTables&quot;&gt;
+  &lt;div *ngSwitchCase&#x3D;&quot;ValType.Bool&quot; class&#x3D;&quot;operand&quot;&gt;
+    &lt;mat-slide-toggle data-imx-identifier&#x3D;&quot;single-value-toggle&quot; [(ngModel)]&#x3D;&quot;value&quot; (change)&#x3D;&quot;emitChanges()&quot;&gt;{{ &#x27;#LDS#Property is activated&#x27; | translate }}
+    &lt;/mat-slide-toggle&gt;
+  &lt;/div&gt;
+  &lt;div *ngSwitchCase&#x3D;&quot;ValType.Date&quot; class&#x3D;&quot;operand&quot;&gt;
+    &lt;imx-sqlwizard-datepicker [expr]&#x3D;&quot;expr&quot; (change)&#x3D;&quot;emitChanges()&quot;&gt;&lt;/imx-sqlwizard-datepicker&gt;
+  &lt;/div&gt;
+  &lt;div *ngSwitchCase&#x3D;&quot;ValType.Int&quot; class&#x3D;&quot;operand&quot;&gt;
+    &lt;mat-form-field appearance&#x3D;&quot;outline&quot;&gt;
+      &lt;mat-label&gt;{{ &#x27;#LDS#Value&#x27; | translate }}&lt;/mat-label&gt;
+      &lt;input matInput type&#x3D;&quot;number&quot; [(ngModel)]&#x3D;&quot;value&quot; (change)&#x3D;&quot;emitChanges()&quot;&gt;
+    &lt;/mat-form-field&gt;
+  &lt;/div&gt;
+  &lt;div *ngSwitchDefault class&#x3D;&quot;operand&quot;&gt;
+
+    &lt;mat-form-field class&#x3D;&quot;flex-grow&quot; appearance&#x3D;&quot;outline&quot;&gt;
+      &lt;mat-label&gt;{{ &#x27;#LDS#Value&#x27; | translate }}&lt;/mat-label&gt;
+      &lt;input matInput type&#x3D;&quot;text&quot; [(ngModel)]&#x3D;&quot;value&quot; data-imx-identifier&#x3D;&quot;single-value-input-value&quot; (change)&#x3D;&quot;emitChanges()&quot;&gt;
+    &lt;/mat-form-field&gt;
+  &lt;/div&gt;
+&lt;/ng-container&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./sqlwizard.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">@import &#x27;@elemental-ui/core/src/styles/_palette.scss&#x27;;
+
+
+.column-selector {
+  flex-grow: 1;
+  padding-top: 0.25em;
+}
+
+.operator {
+  padding: 0 1em;
+}
+
+.operator,
+.operator-select {
+  display: inline-block;
+}
+
+li {
+  margin: 0;
+}
+
+.operand {
+  display: flex;
+  flex-grow: 1;
+  flex-shrink: 1;
+  align-items: center;
+
+  .mat-slide-toggle {
+    margin-top: 10px;
+  }
+}
+
+.expression {
+  display: flex;
+}
+
+.logical-operator {
+  cursor: pointer;
+  display: flex;
+  width: 50px;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-grow {
+  flex-grow: 1;
+  flex-wrap: wrap;
+}
+
+.remove-btn {
+  display: flex;
+  align-items: center;
+}
+
+.date-diff-value {
+  width: 100px;
+}
+
+.relative-date {
+  display: flex;
+}
+
+.expression-container {
+  transition: all .6s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: 1px $color-gray-20 solid;
+  border-radius: 5px;
+  display: flex;
+
+  .expression-container-header {
+    transition: all .6s cubic-bezier(0.25, 0.8, 0.25, 1);
+    width: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 16px;
+    border-radius: 2px 0 0 2px;
+  }
+}
+
+.expression-list {
+  overflow: auto;
+}
+
+.logical-op-container {
+  display: flex;
+  align-items: baseline;
+  column-gap: 10px;
+}
+
+.selected-logical-op {
+  display: flex;
+  flex-direction: row;
+  margin: 10px 0 10px 0;
+}
+
+.selected-logical-op:before,
+.selected-logical-op:after {
+  content: &#x27;&#x27;;
+  flex: 1 1;
+  border-bottom: 1px solid $color-gray-10;
+  margin: auto;
+}
+
+.selected-logical-op::before {
+  margin-right: 10px;
+}
+
+.selected-logical-op:after {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.imx-spacer {
+  flex: 1 1 auto;
+}
+
+mat-radio-button {
+  margin-right: 1em;
+}
+
+/* undo Elemental UI fix */
+::ng-deep .mat-form-field-wrapper,
+::ng-deep mat-form-field.ng-untouched .mat-form-field-wrapper,
+::ng-deep mat-form-field.ng-valid .mat-form-field-wrapper {
+  padding-bottom: 0;
+}
+
+::ng-deep .mat-form-field-infix .mat-select-trigger {
+  vertical-align: middle;
+
+  .mat-select-arrow-wrapper {
+    vertical-align: bottom;
+  }
+}
+
+imx-sqlwizard-singlevalue {
+  display: flex;
+  flex-grow: 2;
+}
+
+.auto-flex {
+  flex: auto;
+}
+
+// Theme
+.eui-light-theme {
+  :host {
+    .expression-container-header {
+      background-color: $color-gray-10;
+      color: $color-blue-60;
+    }
+
+    .expression-container:hover .expression-container-header {
+      background-color: $color-blue-60;
+      color: $color-gray-0;
+    }
+
+    .expression-container:hover {
+      border-color: $color-blue-60;
+    }
+
+    .selected-logical-op {
+      color: $color-blue-60;
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .expression-container-header {
+      background-color: $color-gray-50;
+      color: $color-blue-40;
+    }
+
+    .expression-container:hover .expression-container-header {
+      background-color: $color-blue-40;
+      color: $color-gray-0;
+    }
+
+    .expression-container:hover {
+      border-color: $color-blue-40;
+    }
+
+    .selected-logical-op {
+      color: $color-blue-40;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .expression-container-header {
+      background-color: $color-gray-0;
+      color: $color-blue-60;
+    }
+    .expression-container:hover .expression-container-header {
+      background-color: $color-blue-60;
+      color: $color-gray-0;
+    }
+
+    .expression-container:hover {
+      border-color: $color-blue-60;
+    }
+
+    .selected-logical-op {
+      color: $color-blue-60;
+    }
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><!-- Limited Values--><mat-form-field appearance="outline" class="operand" *ngIf="expr.Property.LimitedValues">  <mat-label>{{ \'#LDS#Value\' | translate }}</mat-label>  <mat-select [(ngModel)]="value" data-imx-identifier="single-value-select-limvalue" (change)="emitChanges()">    <mat-option *ngFor="let lv of expr.Property.LimitedValues" [value]="lv.Value">      {{lv.Description}}    </mat-option>  </mat-select></mat-form-field><ng-container *ngIf="expr.Property.SelectionTables">  <imx-cdr-editor [cdr]="cdr" class="auto-flex" (valueChange)="emitChanges()">  </imx-cdr-editor></ng-container><ng-container [ngSwitch]="expr.Property.Type" *ngIf="!expr.Property.LimitedValues && !expr.Property.SelectionTables">  <div *ngSwitchCase="ValType.Bool" class="operand">    <mat-slide-toggle data-imx-identifier="single-value-toggle" [(ngModel)]="value" (change)="emitChanges()">{{ \'#LDS#Property is activated\' | translate }}    </mat-slide-toggle>  </div>  <div *ngSwitchCase="ValType.Date" class="operand">    <imx-sqlwizard-datepicker [expr]="expr" (change)="emitChanges()"></imx-sqlwizard-datepicker>  </div>  <div *ngSwitchCase="ValType.Int" class="operand">    <mat-form-field appearance="outline">      <mat-label>{{ \'#LDS#Value\' | translate }}</mat-label>      <input matInput type="number" [(ngModel)]="value" (change)="emitChanges()">    </mat-form-field>  </div>  <div *ngSwitchDefault class="operand">    <mat-form-field class="flex-grow" appearance="outline">      <mat-label>{{ \'#LDS#Value\' | translate }}</mat-label>      <input matInput type="text" [(ngModel)]="value" data-imx-identifier="single-value-input-value" (change)="emitChanges()">    </mat-form-field>  </div></ng-container></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'imx-about'},{'name': 'AddConfigSidesheetComponent', 'selector': ''},{'name': 'AdditionalInfosComponent', 'selector': 'imx-additional-infos'},{'name': 'ApplyConfigSidesheetComponent', 'selector': ''},{'name': 'AutoCompleteComponent', 'selector': 'imx-auto-complete'},{'name': 'AutocompleteComponent', 'selector': 'imx-autocomplete'},{'name': 'BulkItemComponent', 'selector': 'imx-bulk-item'},{'name': 'BulkPropertyEditorComponent', 'selector': 'imx-bulk-editor'},{'name': 'BusyIndicatorComponent', 'selector': 'imx-busy-indicator'},{'name': 'CacheComponent', 'selector': 'imx-cache'},{'name': 'CalendarComponent', 'selector': 'imx-calendar'},{'name': 'CaptchaComponent', 'selector': 'imx-captcha'},{'name': 'CdrEditorComponent', 'selector': 'imx-cdr-editor'},{'name': 'CdrSidesheetComponent', 'selector': ''},{'name': 'ChartTileComponent', 'selector': 'imx-chart-tile'},{'name': 'CheckableTreeComponent', 'selector': 'imx-checkable-tree'},{'name': 'ColumnSelectionComponent', 'selector': 'imx-sqlwizard-columnselection'},{'name': 'ConfigComponent', 'selector': 'imx-config'},{'name': 'ConfigKeyPathComponent', 'selector': 'config-key-path'},{'name': 'ConnectionComponent', 'selector': ''},{'name': 'ConvertConfigSidesheetComponent', 'selector': ''},{'name': 'DashboardComponent', 'selector': ''},{'name': 'DataExportComponent', 'selector': 'imx-data-export'},{'name': 'DataSourcePaginatorComponent', 'selector': 'imx-data-source-paginator'},{'name': 'DataSourceToolbarComponent', 'selector': 'imx-data-source-toolbar'},{'name': 'DataSourceToolbarCustomComponent', 'selector': 'imx-data-source-toolbar-custom'},{'name': 'DataTableCellComponent', 'selector': 'imx-data-table-cell'},{'name': 'DataTableColumnComponent', 'selector': 'imx-data-table-column'},{'name': 'DataTableComponent', 'selector': 'imx-data-table'},{'name': 'DataTableDisplayCellComponent', 'selector': 'imx-data-table-display-cell'},{'name': 'DataTableGenericColumnComponent', 'selector': 'imx-data-table-generic-column'},{'name': 'DataTileComponent', 'selector': 'imx-data-tile'},{'name': 'DataTilesComponent', 'selector': 'imx-data-tiles'},{'name': 'DataTreeComponent', 'selector': 'imx-data-tree'},{'name': 'DataTreeSearchResultsComponent', 'selector': 'imx-data-tree-search-results'},{'name': 'DataTreeWrapperComponent', 'selector': 'imx-data-tree-wrapper'},{'name': 'DateComponent', 'selector': 'imx-date'},{'name': 'DatePickerComponent', 'selector': 'imx-sqlwizard-datepicker'},{'name': 'DateRangeComponent', 'selector': 'imx-date-range'},{'name': 'DeleteConfigSidesheetComponent', 'selector': ''},{'name': 'EditBinaryComponent', 'selector': 'imx-edit-binary'},{'name': 'EditBooleanComponent', 'selector': 'imx-checkbox-editor'},{'name': 'EditDateComponent', 'selector': 'imx-edit-date'},{'name': 'EditDefaultComponent', 'selector': 'imx-edit-default'},{'name': 'EditFkComponent', 'selector': 'imx-edit-fk'},{'name': 'EditFkMultiComponent', 'selector': 'imx-edit-fk-multi'},{'name': 'EditImageComponent', 'selector': 'imx-edit-image'},{'name': 'EditLimitedValueComponent', 'selector': 'imx-edit-limited-value'},{'name': 'EditMultiLimitedValueComponent', 'selector': 'imx-edit-multi-limited-value'},{'name': 'EditMultilineComponent', 'selector': 'imx-edit-multiline'},{'name': 'EditMultiValueComponent', 'selector': 'imx-edit-multi-value'},{'name': 'EditNumberComponent', 'selector': 'imx-edit-number'},{'name': 'EditorBase', 'selector': ''},{'name': 'EditRiskIndexComponent', 'selector': 'imx-edit-risk-index'},{'name': 'EditUrlComponent', 'selector': 'imx-edit-url'},{'name': 'EntityColumnEditorComponent', 'selector': 'imx-entity-column-editor'},{'name': 'EntitySelectComponent', 'selector': 'imx-entity-select'},{'name': 'ExtComponent', 'selector': 'imx-ext'},{'name': 'FilterTileComponent', 'selector': 'imx-filter-tile'},{'name': 'FilterTreeComponent', 'selector': 'imx-filter-tree'},{'name': 'FilterWizardComponent', 'selector': 'imx-filter-wizard'},{'name': 'FkAdvancedPickerComponent', 'selector': ''},{'name': 'FkCandidatesComponent', 'selector': 'imx-fk-candidates'},{'name': 'FkHierarchicalDialogComponent', 'selector': 'imx-fk-hierarchical-dialog'},{'name': 'FkSelectorComponent', 'selector': 'imx-fk-selector'},{'name': 'FkTableSelectComponent', 'selector': 'imx-fk-table-select'},{'name': 'GroupPaginatorComponent', 'selector': 'imx-group-paginator'},{'name': 'HelpContextualComponent', 'selector': 'imx-help-contextual'},{'name': 'HelpContextualDialogComponent', 'selector': 'imx-help-contextual-dialog'},{'name': 'HyperviewComponent', 'selector': 'imx-hyperview'},{'name': 'IconStackComponent', 'selector': 'imx-icon-stack'},{'name': 'ImageSelectComponent', 'selector': 'imx-image-select'},{'name': 'ImageViewComponent', 'selector': 'imx-image-view'},{'name': 'ImxMatColumnComponent', 'selector': 'imx-column'},{'name': 'ImxProgressbarComponent', 'selector': 'imx-progressbar'},{'name': 'ImxTreeTableComponent', 'selector': 'imx-tree-table'},{'name': 'IndexBarComponent', 'selector': 'imx-indexbar'},{'name': 'InfoBadgeComponent', 'selector': 'imx-info-badge'},{'name': 'InfoButtonComponent', 'selector': 'imx-info-button'},{'name': 'InfoDialogComponent', 'selector': 'imx-info-dialog'},{'name': 'JobQueueOverviewComponent', 'selector': 'imx-jobqueue-overview'},{'name': 'ListSettingComponent', 'selector': 'imx-list-setting'},{'name': 'ListShapeComponent', 'selector': 'imx-hyperview-listshape'},{'name': 'LogDetailsSidesheetComponent', 'selector': 'imx-log-details-sidesheet'},{'name': 'LoginComponent', 'selector': 'imx-login'},{'name': 'LogsComponent', 'selector': 'imx-logs'},{'name': 'MasterDetailComponent', 'selector': 'imx-master-detail'},{'name': 'MastHeadComponent', 'selector': 'imx-mast-head'},{'name': 'MenuComponent', 'selector': 'imx-menu'},{'name': 'MessageDialogComponent', 'selector': 'imx-message-dialog'},{'name': 'MultiSelectFormcontrolComponent', 'selector': 'imx-multi-select-formcontrol'},{'name': 'ObjectHistoryComponent', 'selector': 'imx-object-history'},{'name': 'ObjectHistoryGridviewComponent', 'selector': 'imx-object-history-gridview'},{'name': 'ObjectHistoryStateComparisonComponent', 'selector': 'imx-object-history-state-comparison'},{'name': 'ObjectHistoryStateOverviewComponent', 'selector': 'imx-object-history-state-overview'},{'name': 'OrderedListComponent', 'selector': 'imx-ordered-list'},{'name': 'PackagesComponent', 'selector': 'imx-packages'},{'name': 'ParameterizedTextComponent', 'selector': 'imx-parameterized-text'},{'name': 'PluginsComponent', 'selector': 'imx-plugins'},{'name': 'PredefinedFilterComponent', 'selector': 'imx-predefined-filter'},{'name': 'PredefinedFilterTreeComponent', 'selector': 'imx-predefined-filter-tree'},{'name': 'PropertyShapeComponent', 'selector': 'imx-hyperview-propertyshape'},{'name': 'PropertyViewerComponent', 'selector': 'imx-property-viewer'},{'name': 'SaveConfigDialogComponent', 'selector': 'imx-save-config-dialog'},{'name': 'SearchBarComponent', 'selector': 'imx-searchbar'},{'name': 'SelectComponent', 'selector': 'imx-select'},{'name': 'SelectedElementsComponent', 'selector': 'imx-selected-elements'},{'name': 'SelectedElementsDialog', 'selector': ''},{'name': 'SelectValueComponent', 'selector': 'imx-config-select'},{'name': 'ShapeComponent', 'selector': 'imx-hyperview-shape'},{'name': 'SideNavigationViewComponent', 'selector': 'imx-side-navigation-view'},{'name': 'SidenavTreeComponent', 'selector': 'imx-sidenav-tree'},{'name': 'SimpleExpressionComponent', 'selector': 'imx-sqlwizard-simpleexpression'},{'name': 'SimpleShapeComponent', 'selector': 'imx-hyperview-simpleshape'},{'name': 'SingleExpressionComponent', 'selector': 'imx-sqlwizard-singleexpression'},{'name': 'SingleValueComponent', 'selector': 'imx-sqlwizard-singlevalue'},{'name': 'SqlWizardComponent', 'selector': 'imx-sqlwizard'},{'name': 'StatusComponent', 'selector': 'imx-status'},{'name': 'SwaggerComponent', 'selector': 'imx-swagger'},{'name': 'TableSelectionComponent', 'selector': 'imx-sqlwizard-tableselection'},{'name': 'TempBillboardComponent', 'selector': 'imx-temp-billboard'},{'name': 'TileComponent', 'selector': 'imx-tile'},{'name': 'TimelineComponent', 'selector': 'imx-timeline'},{'name': 'TimePickerComponent', 'selector': 'imx-time-picker'},{'name': 'TranslationEditorComponent', 'selector': 'imx-translation-editor'},{'name': 'TreeSelectionListComponent', 'selector': ''},{'name': 'TwoFactorAuthenticationComponent', 'selector': 'imx-2fahost'},{'name': 'TypedEntityCandidateSidesheetComponent', 'selector': ''},{'name': 'TypedEntitySelectComponent', 'selector': 'imx-typed-entity-select'},{'name': 'TypedEntitySelectorComponent', 'selector': 'imx-typed-entity-selector'},{'name': 'UserMessageComponent', 'selector': 'imx-usermessage'},{'name': 'ViewPropertyComponent', 'selector': 'imx-view-property'},{'name': 'ViewPropertyDefaultComponent', 'selector': 'imx-view-property-default'},{'name': 'WhereClauseExpressionComponent', 'selector': 'imx-sqlwizard-whereclauseexpression'}];
+    var DIRECTIVES = [{'name': 'DisableControlDirective', 'selector': '[imxDisableControl]'},{'name': 'DynamicTabDataProviderDirective', 'selector': '[imxDataProvider]'},{'name': 'ExtDirective', 'selector': '[imxExtd]'},{'name': 'MatSelectionListMultipleDirective', 'selector': 'mat-selection-list[multiple]'},{'name': 'TableAccessiblilityDirective', 'selector': '[tableAccessiblility]'},{'name': 'ZoomPanDirective', 'selector': '[imxZoomPan]'}];
+    var ACTUAL_COMPONENT = {'name': 'SingleValueComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'SingleValueComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

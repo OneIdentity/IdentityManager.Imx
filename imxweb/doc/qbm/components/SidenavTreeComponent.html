@@ -1,0 +1,2052 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>IMX Web - QBM Library</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/material.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">IMX Web - QBM Library</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  SidenavTreeComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/lib/sidenav-tree/sidenav-tree.component.ts</code>
+</p>
+
+
+    <p class="comment">
+        <h3>Description</h3>
+    </p>
+    <p class="comment">
+        <p>Handles creating a responsive nested sidenav tree.</p>
+<p>Requires:</p>
+<p>Optional:</p>
+
+    </p>
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                <code>OnChanges</code>
+    </p>
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>imx-sidenav-tree</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./sidenav-tree.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./sidenav-tree.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#isLoadingMore" >isLoadingMore</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#searchEnabled" >searchEnabled</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#closeAllNodes" >closeAllNodes</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#enableSearch" >enableSearch</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#ngOnChanges" >ngOnChanges</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#onLoadMore" >onLoadMore</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#onSearch" >onSearch</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#selectNode" >selectNode</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#toggleExpand" >toggleExpand</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Inputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#dataSource" >dataSource</a>
+                            </li>
+                            <li>
+                                <a href="#dynamicDataSource" >dynamicDataSource</a>
+                            </li>
+                            <li>
+                                <a href="#expandWidth" >expandWidth</a>
+                            </li>
+                            <li>
+                                <a href="#hasChild" >hasChild</a>
+                            </li>
+                            <li>
+                                <a href="#headerText" >headerText</a>
+                            </li>
+                            <li>
+                                <a href="#isLoading" >isLoading</a>
+                            </li>
+                            <li>
+                                <a href="#isSelected" >isSelected</a>
+                            </li>
+                            <li>
+                                <a href="#manageExpandedExternally" >manageExpandedExternally</a>
+                            </li>
+                            <li>
+                                <a href="#nodeContent" >nodeContent</a>
+                            </li>
+                            <li>
+                                <a href="#noResultText" >noResultText</a>
+                            </li>
+                            <li>
+                                <a href="#showSidenavHeader" >showSidenavHeader</a>
+                            </li>
+                            <li>
+                                <a href="#sideNavExpanded" >sideNavExpanded</a>
+                            </li>
+                            <li>
+                                <a href="#treeControl" >treeControl</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Outputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#selectedNode" >selectedNode</a>
+                            </li>
+                            <li>
+                                <a href="#sideNavExpandedChange" >sideNavExpandedChange</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Accessors</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                    <a href="#initializingData" >initializingData</a>
+                                </li>
+                                <li>
+                                    <a href="#hasData" >hasData</a>
+                                </li>
+                                <li>
+                                    <a href="#canLoadMore" >canLoadMore</a>
+                                </li>
+                                <li>
+                                    <a href="#expandState" >expandState</a>
+                                </li>
+                                <li>
+                                    <a href="#searchState" >searchState</a>
+                                </li>
+                                <li>
+                                    <a href="#anyNodeOpen" >anyNodeOpen</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+        </tbody>
+    </table>
+</section>
+
+
+    <section data-compodoc="block-inputs">
+    <h3 id="inputs">Inputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="dataSource"></a>
+                        <b>dataSource</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#T" target="_self" >MatTreeNestedDataSource&lt;any&gt;</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="155" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:155</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="dynamicDataSource"></a>
+                        <b>dynamicDataSource</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/DynamicDataSource.html" target="_self" >DynamicDataSource&lt;any&gt;</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="158" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:158</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="expandWidth"></a>
+                        <b>expandWidth</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;600px&#x27;</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="177" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:177</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="hasChild"></a>
+                        <b>hasChild</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>(_: number, node: any) &#x3D;&gt; boolean</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>(_: number, node: any) &#x3D;&gt; node?.children &amp;&amp; node.children.length &gt; 0</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="180" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:180</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="headerText"></a>
+                        <b>headerText</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="164" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:164</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="isLoading"></a>
+                        <b>isLoading</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>(node: any) &#x3D;&gt; boolean</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>(node: any) &#x3D;&gt; false</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="186" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:186</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="isSelected"></a>
+                        <b>isSelected</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>(node: any) &#x3D;&gt; any</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>(node: any) &#x3D;&gt; node.isSelected</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="183" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:183</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="manageExpandedExternally"></a>
+                        <b>manageExpandedExternally</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="174" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:174</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="nodeContent"></a>
+                        <b>nodeContent</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#T" target="_self" >TemplateRef&lt;any&gt;</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="167" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:167</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="noResultText"></a>
+                        <b>noResultText</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;#LDS#There are no items matching your search.&#x27;</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="192" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:192</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="showSidenavHeader"></a>
+                        <b>showSidenavHeader</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>true</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="189" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:189</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="sideNavExpanded"></a>
+                        <b>sideNavExpanded</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="171" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:171</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="treeControl"></a>
+                        <b>treeControl</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#T" target="_self" >NestedTreeControl&lt;any&gt; | FlatTreeControl&lt;any&gt;</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="161" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:161</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <section data-compodoc="block-outputs">
+    <h3 id="outputs">Outputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="selectedNode"></a>
+                        <b>selectedNode</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="199" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:199</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="sideNavExpandedChange"></a>
+                        <b>sideNavExpandedChange</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="196" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:196</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="closeAllNodes"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>closeAllNodes</b></span>
+                        <a href="#closeAllNodes"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>closeAllNodes()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="233"
+                            class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:233</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="enableSearch"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>enableSearch</b></span>
+                        <a href="#enableSearch"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>enableSearch()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="260"
+                            class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:260</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnChanges"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>ngOnChanges</b></span>
+                        <a href="#ngOnChanges"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ngOnChanges(changes: SimpleChanges)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="201"
+                            class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:201</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>changes</td>
+                                    <td>
+                                            <code>SimpleChanges</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onLoadMore"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>onLoadMore</b></span>
+                        <a href="#onLoadMore"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>onLoadMore()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="251"
+                            class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:251</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onSearch"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>onSearch</b></span>
+                        <a href="#onSearch"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>onSearch(search: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="264"
+                            class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:264</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>search</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectNode"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>selectNode</b></span>
+                        <a href="#selectNode"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>selectNode(node: <a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank">any</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="244"
+                            class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:244</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>node</td>
+                                    <td>
+                                                <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="toggleExpand"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>toggleExpand</b></span>
+                        <a href="#toggleExpand"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>toggleExpand()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="237"
+                            class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:237</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isLoadingMore"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>isLoadingMore</b></span>
+                        <a href="#isLoadingMore"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="150" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:150</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="searchEnabled"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>searchEnabled</b></span>
+                        <a href="#searchEnabled"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="151" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:151</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-accessors">
+    <h3 id="accessors">
+        Accessors
+    </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="initializingData"></a>
+                        <span class="name"><b>initializingData</b><a href="#initializingData"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>initializingData()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="207" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:207</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="hasData"></a>
+                        <span class="name"><b>hasData</b><a href="#hasData"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>hasData()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="211" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:211</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="canLoadMore"></a>
+                        <span class="name"><b>canLoadMore</b><a href="#canLoadMore"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>canLoadMore()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="215" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:215</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="expandState"></a>
+                        <span class="name"><b>expandState</b><a href="#expandState"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>expandState()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="219" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:219</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="searchState"></a>
+                        <span class="name"><b>searchState</b><a href="#searchState"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>searchState()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="223" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:223</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="anyNodeOpen"></a>
+                        <span class="name"><b>anyNodeOpen</b><a href="#anyNodeOpen"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>anyNodeOpen()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="227" class="link-to-prism">src/lib/sidenav-tree/sidenav-tree.component.ts:227</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+</section>
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { animate, animateChild, group, query, state, style, transition, trigger } from &#x27;@angular/animations&#x27;;
+import { FlatTreeControl, NestedTreeControl } from &#x27;@angular/cdk/tree&#x27;;
+import { Component, Input, Output, EventEmitter, TemplateRef, SimpleChanges, OnChanges } from &#x27;@angular/core&#x27;;
+import { MatTreeNestedDataSource } from &#x27;@angular/material/tree&#x27;;
+import { DynamicDataSource } from &#x27;./sidenav-tree-dynamic-extension&#x27;;
+
+/**
+ * Handles creating a responsive nested sidenav tree.
+ *
+ *
+ * Requires:
+ * @param {MatTreeNestedDataSource&lt;any&gt;} dataSource: Static datasource with all data available at once, use dynamicDatasource otherwise.
+ * @param {DynamicDataSource&lt;any&gt;} dynamicDataSource: Dynamic datasource for loading more data incrementally.
+ * @param {NestedTreeControl&lt;any&gt; | FlatTreeControl&lt;any&gt;} treeControl: Controls tree behavior.
+ * @param {string} headerText: Text that will appear on side and at top of sidenav.
+ * @param {TemplateRef&lt;any&gt;} nodeContent: A template ref of how the node of the tree will look.
+ *
+ * Optional:
+ * @param {boolean} [sideNavExpanded&#x3D;false] Sets whether the sidenav is open or closed initially, defaults to false.
+ * @param {boolean} [manageExpandedExternally&#x3D;false] This prevents the internal sideNavExpanded management and requires the sideNavExpanded to be managed externally. This allows additional logic to be stuck in between. Defaults to false.
+ * @param {string} [expandWidth&#x3D;&quot;600px&quot;] Set the width of the expansion, according to material avoid percent based widths. Default is &#x27;600px&#x27;
+
+ * @param {Function} [hasChild] Function to determine if a node has children or not. By default uses the children property.
+ * @param {Function} [isSelected] Function to determine if a node is currently selected. By default uses the isSelected property.
+ * @param {Function} [isLoading] Function to indicate if a node is currently getting children from the server.
+ * @param {boolean} [showSidenavHeader&#x3D;true] Indicates if we should have the header and mat card present or not. Defaults to true.
+ * @param {string} [noResultText] The text shown in case of no search results
+
+
+ */
+@Component({
+  selector: &#x27;imx-sidenav-tree&#x27;,
+  templateUrl: &#x27;./sidenav-tree.component.html&#x27;,
+  styleUrls: [&#x27;./sidenav-tree.component.scss&#x27;],
+  animations: [
+    trigger(&#x27;expandDiv&#x27;, [
+      state(
+        &#x27;closed&#x27;,
+        style({
+          width: &#x27;48px&#x27;,
+        })
+      ),
+      state(&#x27;opened&#x27;, style({ width: &#x27;{{ expandWidth }}&#x27; }), { params: { expandWidth: &#x27;*&#x27; } }),
+      transition(&#x27;* &lt;&#x3D;&gt; *&#x27;, [
+        group([
+          query(&#x27;@expandSearch&#x27;, animateChild(), { optional: true }),
+          animate(&#x27;200ms ease&#x27;),
+          query(&#x27;@fadeIcon&#x27;, animateChild(), { optional: true }),
+          animate(&#x27;200ms ease&#x27;),
+          query(&#x27;@rotateIcon&#x27;, animateChild()),
+          animate(&#x27;400ms ease&#x27;),
+        ]),
+      ]),
+    ]),
+    trigger(&#x27;rotateIcon&#x27;, [
+      state(
+        &#x27;closed&#x27;,
+        style({
+          rotate: &#x27;180deg&#x27;,
+        })
+      ),
+      state(
+        &#x27;opened&#x27;,
+        style({
+          rotate: &#x27;0deg&#x27;,
+        })
+      ),
+      transition(&#x27;* &lt;&#x3D;&gt; *&#x27;, animate(&#x27;400ms ease&#x27;)),
+    ]),
+    trigger(&#x27;expandSearch&#x27;, [
+      state(
+        &#x27;closed&#x27;,
+        style({
+          width: &#x27;0px&#x27;,
+          visibility: &#x27;hidden&#x27;,
+        })
+      ),
+      state(
+        &#x27;opened&#x27;,
+        style({
+          width: &#x27;320px&#x27;,
+          visibility: &#x27;visible&#x27;,
+        }),
+        { params: { expandWidth: &#x27;*&#x27; } }
+      ),
+      state(
+        &#x27;hidden&#x27;,
+        style({
+          width: 0,
+          visibility: &#x27;hidden&#x27;,
+        })
+      ),
+      transition(&#x27;* &lt;&#x3D;&gt; *&#x27;, [group([query(&#x27;@fadeIcon&#x27;, animateChild(), { optional: true }), animate(&#x27;400ms ease&#x27;)])]),
+    ]),
+    trigger(&#x27;fadeIcon&#x27;, [
+      state(
+        &#x27;opened&#x27;,
+        style({
+          opacity: &#x27;0&#x27;,
+          width: &#x27;0px&#x27;,
+          visibility: &#x27;hidden&#x27;,
+        })
+      ),
+      state(
+        &#x27;closed&#x27;,
+        style({
+          opacity: &#x27;1&#x27;,
+          width: &#x27;40px&#x27;,
+          visibility: &#x27;visible&#x27;,
+        })
+      ),
+      state(
+        &#x27;hidden&#x27;,
+        style({
+          width: 0,
+          visibility: &#x27;hidden&#x27;,
+        })
+      ),
+      transition(&#x27;* &lt;&#x3D;&gt; *&#x27;, animate(&#x27;400ms ease&#x27;)),
+    ]),
+  ],
+})
+export class SidenavTreeComponent implements OnChanges {
+  public isLoadingMore: boolean;
+  private searchEnabled &#x3D; false;
+
+  // Required input
+  // Either dataSource as a MatTreeNestedDataSource
+  @Input() public dataSource: MatTreeNestedDataSource&lt;any&gt;;
+
+  // Or dynamicDataSource as a DynamicDataSource
+  @Input() public dynamicDataSource: DynamicDataSource&lt;any&gt;;
+
+  // treeControl as a NestedTreeControl
+  @Input() public treeControl: NestedTreeControl&lt;any&gt; | FlatTreeControl&lt;any&gt;;
+
+  // headerText is  Make sure it is already translated before input.
+  @Input() public headerText: string;
+
+  // nodeContent will a template rendered inside each node and it uses a node variable.
+  @Input() public nodeContent: TemplateRef&lt;any&gt;;
+
+  // Optional input
+  // Start with the sideNav expanded - default is false
+  @Input() public sideNavExpanded &#x3D; false;
+
+  // This prevents the internal sideNavExpanded management and requires the sideNavExpanded to be managed externally. This allows additional logic to be stuck in between.
+  @Input() public manageExpandedExternally &#x3D; false;
+
+  // Set the width of the expansion, according to material avoid percent based widths. default is &#x27;600px&#x27;
+  @Input() public expandWidth &#x3D; &#x27;600px&#x27;;
+
+  // Function used to determine if there are children under the node, defaults to look for a children property of length &gt; 0.
+  @Input() public hasChild &#x3D; (_: number, node: any) &#x3D;&gt; node?.children &amp;&amp; node.children.length &gt; 0;
+
+  // Function used to determine if the node is currently selected, this value is maintained outside this component
+  @Input() public isSelected &#x3D; (node: any) &#x3D;&gt; node.isSelected;
+
+  // Function used to determine if the node is loading children, this value is maintained outside this component
+  @Input() public isLoading &#x3D; (node: any) &#x3D;&gt; false;
+
+  // Remove the header and hide the mat-card style in false state
+  @Input() public showSidenavHeader &#x3D; true;
+
+  // Text to show when search is empty
+  @Input() public noResultText &#x3D; &#x27;#LDS#There are no items matching your search.&#x27;;
+
+  // Output
+  // Emits when the sidenav state changed
+  @Output() public sideNavExpandedChange &#x3D; new EventEmitter&lt;boolean&gt;();
+
+  // selectedNode outputs the node that was chosen
+  @Output() public selectedNode &#x3D; new EventEmitter&lt;any&gt;();
+
+  public async ngOnChanges(changes: SimpleChanges): Promise&lt;void&gt; {
+    if (changes[&#x27;database&#x27;]) {
+      console.log(&#x27;Need to refresh tree&#x27;);
+    }
+  }
+
+  get initializingData(): boolean {
+    return this.dynamicDataSource?.initializingData;
+  }
+
+  get hasData(): boolean {
+    return this.dynamicDataSource?.hasData;
+  }
+
+  get canLoadMore(): boolean {
+    return this.dynamicDataSource?.canLoadMore;
+  }
+
+  get expandState(): string {
+    return this.sideNavExpanded ? &#x27;opened&#x27; : &#x27;closed&#x27;;
+  }
+
+  get searchState(): string {
+    return this.sideNavExpanded ? (this.searchEnabled ? &#x27;opened&#x27; : &#x27;closed&#x27;) : &#x27;hidden&#x27;;
+  }
+
+  public get anyNodeOpen(): boolean {
+    return this.dynamicDataSource
+      ? this.dynamicDataSource.isRootNodeOpen || this.dynamicDataSource.isSearch
+      : this.treeControl.expansionModel.selected.length &gt; 0;
+  }
+
+  public closeAllNodes(): void {
+    this.treeControl.collapseAll();
+  }
+
+  public toggleExpand(): void {
+    if (!this.manageExpandedExternally) {
+      this.sideNavExpanded &#x3D; !this.sideNavExpanded;
+    }
+    this.sideNavExpandedChange.emit(this.sideNavExpanded);
+  }
+
+  public selectNode(node: any): void {
+    if (this.dynamicDataSource) {
+      this.dynamicDataSource.setSelection(node);
+    }
+    this.selectedNode.emit(node);
+  }
+
+  public async onLoadMore(): Promise&lt;void&gt; {
+    this.isLoadingMore &#x3D; true;
+    try {
+      await this.dynamicDataSource.loadMore();
+    } finally {
+      this.isLoadingMore &#x3D; false;
+    }
+  }
+
+  public enableSearch(): void {
+    this.searchEnabled &#x3D; true;
+  }
+
+  public async onSearch(search: string): Promise&lt;void&gt; {
+    if (search &#x3D;&#x3D;&#x3D; &#x27;&#x27;) {
+      this.searchEnabled &#x3D; false;
+    }
+    await this.dynamicDataSource.onSearch();
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;mat-card [@expandDiv]&#x3D;&quot;{ value: expandState, params: { expandWidth: expandWidth } }&quot; class&#x3D;&quot;snavigation&quot; [ngClass]&#x3D;&quot;{ &#x27;snavigation--expanded&#x27;: sideNavExpanded, &#x27;mat-card--hidden&#x27;: !showSidenavHeader}&quot;&gt;
+  &lt;mat-sidenav-container&gt;
+    &lt;mat-sidenav mode&#x3D;&quot;side&quot; opened disableClose&#x3D;&quot;true&quot; [ngClass]&#x3D;&quot;{ &#x27;snavigation-side--expanded&#x27;: sideNavExpanded }&quot;&gt;
+      &lt;div class&#x3D;&quot;snavigation-side&quot;&gt;
+        &lt;div class&#x3D;&quot;snavigation-side-toggle&quot; *ngIf&#x3D;&quot;showSidenavHeader&quot;&gt;
+          &lt;h3 class&#x3D;&quot;snavigation-side-toggle-header&quot;&gt;{{ headerText }}&lt;/h3&gt;
+          &lt;button
+            *ngIf&#x3D;&quot;dynamicDataSource?.dstSettings&quot;
+            [@fadeIcon]&#x3D;&quot;searchState&quot;
+            data-imx-identifier&#x3D;&quot;sidenav-tree-collapse-all-toggle&quot;
+            mat-button
+            class&#x3D;&quot;mat-icon-button&quot;
+            color&#x3D;&quot;primary&quot;
+            (click)&#x3D;&quot;enableSearch()&quot;
+            [matTooltip]&#x3D;&quot;&#x27;#LDS#Search&#x27; | translate&quot;
+          &gt;
+            &lt;eui-icon icon&#x3D;&quot;search&quot;&gt;&lt;/eui-icon&gt;
+          &lt;/button&gt;
+          &lt;imx-data-source-toolbar #dst
+          *ngIf&#x3D;&quot;dynamicDataSource?.dstSettings&quot;
+          [@expandSearch]&#x3D;&quot;{ value: searchState, params: { expandWidth: expandWidth } }&quot;
+          [alwaysVisible]&#x3D;&quot;true&quot;
+          [settings]&#x3D;&quot;dynamicDataSource.dstSettings&quot;
+          [options]&#x3D;&quot;[&#x27;search&#x27;]&quot;
+          [searchBoxText]&#x3D;&quot;&#x27;#LDS#Search&#x27; | translate&quot;
+          [useThemedStyle]&#x3D;&quot;true&quot;
+          (search)&#x3D;&quot;onSearch($event)&quot;
+          (navigationStateChanged)&#x3D;&quot;onSearch()&quot;
+          &gt;&lt;/imx-data-source-toolbar&gt;
+          &lt;button
+            *ngIf&#x3D;&quot;sideNavExpanded&quot;
+            data-imx-identifier&#x3D;&quot;sidenav-tree-collapse-all-toggle&quot;
+            mat-button
+            class&#x3D;&quot;mat-icon-button&quot;
+            color&#x3D;&quot;primary&quot;
+            (click)&#x3D;&quot;closeAllNodes()&quot;
+            [disabled]&#x3D;&quot;!anyNodeOpen&quot;
+            [matTooltip]&#x3D;&quot;&#x27;#LDS#Collapse all&#x27; | translate&quot;
+            [attr.aria-label]&#x3D;&quot;&#x27;#LDS#Collapse all&#x27; | translate&quot;
+          &gt;
+            &lt;eui-icon icon&#x3D;&quot;compress&quot;&gt;&lt;/eui-icon&gt;
+          &lt;/button&gt;
+          &lt;button
+            class&#x3D;&quot;expand-control-button&quot;
+            data-imx-identifier&#x3D;&quot;sidenav-tree-expand-toggle&quot;
+            mat-button
+            color&#x3D;&quot;primary&quot;
+            (click)&#x3D;&quot;toggleExpand()&quot;
+            [ngClass]&#x3D;&quot;{ &#x27;mat-icon-button&#x27;: sideNavExpanded }&quot;
+            [matTooltip]&#x3D;&quot;(sideNavExpanded ? &#x27;#LDS#Hide&#x27; : &#x27;#LDS#Show&#x27;) | translate&quot;
+            [attr.aria-label]&#x3D;&quot;(sideNavExpanded ? &#x27;#LDS#Hide&#x27; : &#x27;#LDS#Show&#x27;) | translate&quot;
+          &gt;
+            &lt;eui-icon [@rotateIcon]&#x3D;&quot;expandState&quot; icon&#x3D;&quot;collapseleft&quot;&gt;&lt;/eui-icon&gt;
+            &lt;h3 class&#x3D;&quot;rotate-90&quot;&gt;{{ headerText }}&lt;/h3&gt;
+          &lt;/button&gt;
+        &lt;/div&gt;
+
+        &lt;!-- Nested Tree --&gt;
+        &lt;mat-card *ngIf&#x3D;&quot;dataSource&quot; class&#x3D;&quot;snavigation-side-content&quot;&gt;
+          &lt;mat-tree *ngIf&#x3D;&quot;!initializingData&quot; [dataSource]&#x3D;&quot;dataSource&quot; [treeControl]&#x3D;&quot;treeControl&quot; class&#x3D;&quot;tree&quot;&gt;
+            &lt;mat-tree-node *matTreeNodeDef&#x3D;&quot;let node&quot;&gt;
+              &lt;div class&#x3D;&quot;mat-tree-node&quot; [ngClass]&#x3D;&quot;{&#x27;mat-tree-node--selected&#x27;: isSelected(node)}&quot;&gt;
+                &lt;button mat-icon-button disabled&gt;
+                  &lt;eui-icon size&#x3D;&quot;s&quot;&gt;&lt;/eui-icon&gt;
+                &lt;/button&gt;
+                &lt;button mat-button class&#x3D;&quot;tree-item-button&quot; data-imx-identifier&#x3D;&quot;sidenav-tree-child-select&quot; (click)&#x3D;&quot;selectNode(node)&quot;&gt;
+                  &lt;ng-container *ngTemplateOutlet&#x3D;&quot;treeNodeTemplate; context: { $implicit: node, selected: isSelected(node) }&quot;&gt;&lt;/ng-container&gt;
+                &lt;/button&gt;
+              &lt;/div&gt;
+            &lt;/mat-tree-node&gt;
+
+            &lt;mat-nested-tree-node *matTreeNodeDef&#x3D;&quot;let node; when: hasChild&quot;&gt;
+                &lt;div class&#x3D;&quot;mat-tree-node&quot; [ngClass]&#x3D;&quot;{&#x27;mat-tree-node--selected&#x27;: isSelected(node)}&quot;&gt;
+                  &lt;button
+                    mat-button
+                    matTreeNodeToggle
+                    class&#x3D;&quot;mat-icon-button&quot;
+                    [attr.aria-label]&#x3D;&quot;&#x27;#LDS#Expand&#x27; | translate&quot;
+                    data-imx-identifier&#x3D;&quot;sidenav-tree-parent-toggle&quot;
+                  &gt;
+                    &lt;eui-icon size&#x3D;&quot;s&quot; [icon]&#x3D;&quot;treeControl.isExpanded(node) ? &#x27;chevrondown&#x27; : &#x27;chevronright&#x27;&quot;&gt;&lt;/eui-icon&gt;
+                  &lt;/button&gt;
+                  &lt;button mat-button class&#x3D;&quot;tree-item-button&quot; data-imx-identifier&#x3D;&quot;sidenav-tree-parent-select&quot; (click)&#x3D;&quot;selectNode(node)&quot;&gt;
+                    &lt;ng-container *ngTemplateOutlet&#x3D;&quot;treeNodeTemplate; context: { $implicit: node, selected: isSelected(node)}&quot;&gt;&lt;/ng-container&gt;
+                  &lt;/button&gt;
+                &lt;/div&gt;
+                &lt;div [class.tree-invisible]&#x3D;&quot;!treeControl.isExpanded(node)&quot; role&#x3D;&quot;group&quot;&gt;
+                  &lt;ng-container matTreeNodeOutlet&gt;&lt;/ng-container&gt;
+                &lt;/div&gt;
+            &lt;/mat-nested-tree-node&gt;
+          &lt;/mat-tree&gt;
+        &lt;/mat-card&gt;
+
+        &lt;!-- Dynamic tree --&gt;
+        &lt;mat-card *ngIf&#x3D;&quot;dynamicDataSource&quot; class&#x3D;&quot;snavigation-side-content&quot; [ngClass]&#x3D;&quot;{ &#x27;snavigation-side-content--center&#x27;: initializingData || !hasData}&quot;&gt;
+          &lt;mat-spinner *ngIf&#x3D;&quot;initializingData&quot; [diameter]&#x3D;&quot;100&quot; [attr.aria-label]&#x3D;&quot;&#x27;#LDS#Loading...&#x27; | translate&quot;&gt;&lt;/mat-spinner&gt;
+          &lt;div *ngIf&#x3D;&quot;!initializingData &amp;&amp; !hasData&quot; class&#x3D;&quot;imx-no-data&quot;&gt;
+            &lt;eui-icon icon&#x3D;&quot;content-alert&quot;&gt;&lt;/eui-icon&gt;
+            &lt;span&gt;{{noResultText | translate}}&lt;/span&gt;
+          &lt;/div&gt;
+          &lt;mat-tree *ngIf&#x3D;&quot;!initializingData&quot; [dataSource]&#x3D;&quot;dynamicDataSource&quot; [treeControl]&#x3D;&quot;treeControl&quot; class&#x3D;&quot;tree&quot;&gt;
+            &lt;mat-tree-node *matTreeNodeDef&#x3D;&quot;let node&quot; matTreeNodePadding matTreeNodePaddingIndent&#x3D;&quot;20&quot;&gt;
+              &lt;div class&#x3D;&quot;mat-tree-node&quot; [ngClass]&#x3D;&quot;{ &#x27;mat-tree-node--selected&#x27;: isSelected(node) }&quot;&gt;
+                &lt;button mat-icon-button disabled&gt;
+                  &lt;eui-icon size&#x3D;&quot;s&quot;&gt;&lt;/eui-icon&gt;
+                &lt;/button&gt;
+                &lt;button mat-button color&#x3D;&quot;primary&quot; class&#x3D;&quot;tree-item-button&quot; data-imx-identifier&#x3D;&quot;sidenav-tree-child-select&quot; (click)&#x3D;&quot;selectNode(node)&quot;&gt;
+                  &lt;ng-container *ngTemplateOutlet&#x3D;&quot;treeNodeTemplate; context: { $implicit: node, selected: isSelected(node) }&quot;&gt;&lt;/ng-container&gt;
+                &lt;/button&gt;
+              &lt;/div&gt;
+            &lt;/mat-tree-node&gt;
+
+            &lt;mat-tree-node *matTreeNodeDef&#x3D;&quot;let node; when: hasChild&quot; matTreeNodePadding matTreeNodePaddingIndent&#x3D;&quot;20&quot;&gt;
+              &lt;div class&#x3D;&quot;mat-tree-node&quot; [ngClass]&#x3D;&quot;{ &#x27;mat-tree-node--selected&#x27;: isSelected(node) }&quot;&gt;
+                &lt;button
+                  mat-button
+                  matTreeNodeToggle
+                  class&#x3D;&quot;mat-icon-button&quot;
+                  [attr.aria-label]&#x3D;&quot;&#x27;#LDS#Expand&#x27; | translate&quot;
+                  data-imx-identifier&#x3D;&quot;sidenav-tree-parent-toggle&quot;
+                &gt;
+                  &lt;eui-icon size&#x3D;&quot;s&quot; [icon]&#x3D;&quot;treeControl.isExpanded(node) ? &#x27;chevrondown&#x27; : &#x27;chevronright&#x27;&quot;&gt;&lt;/eui-icon&gt;
+                &lt;/button&gt;
+                &lt;button mat-button color&#x3D;&quot;primary&quot; class&#x3D;&quot;tree-item-button&quot; data-imx-identifier&#x3D;&quot;sidenav-tree-parent-select&quot; (click)&#x3D;&quot;selectNode(node)&quot;&gt;
+                  &lt;ng-container *ngTemplateOutlet&#x3D;&quot;treeNodeTemplate; context: { $implicit: node, selected: isSelected(node) }&quot;&gt;&lt;/ng-container&gt;
+                &lt;/button&gt;
+                &lt;mat-progress-bar *ngIf&#x3D;&quot;isLoading(node)&quot; mode&#x3D;&quot;indeterminate&quot; class&#x3D;&quot;child-progress-bar&quot; [attr.aria-label]&#x3D;&quot;&#x27;#LDS#Loading...&#x27; | translate&quot;&gt;&lt;/mat-progress-bar&gt;
+              &lt;/div&gt;
+              &lt;div *ngIf&#x3D;&quot;treeControl.isExpanded(node)&quot; role&#x3D;&quot;group&quot;&gt;
+                &lt;ng-container matTreeNodeOutlet&gt;&lt;/ng-container&gt;
+              &lt;/div&gt;
+            &lt;/mat-tree-node&gt;
+          &lt;/mat-tree&gt;
+          &lt;button *ngIf&#x3D;&quot;!initializingData &amp;&amp; anyNodeOpen &amp;&amp; canLoadMore &amp;&amp; !isLoadingMore&quot; mat-button color&#x3D;&quot;primary&quot; (click)&#x3D;&quot;onLoadMore()&quot;&gt;
+            &lt;span&gt;{{ &#x27;#LDS#Show more&#x27; | translate }}&lt;/span&gt;
+          &lt;/button&gt;
+          &lt;mat-progress-bar *ngIf&#x3D;&quot;!initializingData &amp;&amp; isLoadingMore&quot; mode&#x3D;&quot;indeterminate&quot; [attr.aria-label]&#x3D;&quot;&#x27;#LDS#Loading...&#x27; | translate&quot;&gt;&lt;/mat-progress-bar&gt;
+        &lt;/mat-card&gt;
+      &lt;/div&gt;
+    &lt;/mat-sidenav&gt;
+  &lt;/mat-sidenav-container&gt;
+&lt;/mat-card&gt;
+
+&lt;ng-template #treeNodeTemplate let-node let-selected&#x3D;&quot;selected&quot;&gt;
+  &lt;ng-content *ngTemplateOutlet&#x3D;&quot;nodeContent; context: { $implicit: node, selected: selected }&quot;&gt;&lt;/ng-content&gt;
+&lt;/ng-template&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./sidenav-tree.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">@import &quot;@elemental-ui/core/src/styles/_eui_palette.scss&quot;;
+
+:host {
+  height: 100%;
+  border-radius: 4px;
+
+  ::ng-deep .mat-drawer-inner-container {
+    overflow: hidden;
+  }
+}
+
+.snavigation {
+  height: 100%;
+  padding: 0;
+
+  .mat-sidenav-container {
+    height: 100%;
+    border-radius: 4px;
+
+    .mat-sidenav {
+      width: 100%;
+      overflow: hidden;
+      border-radius: 4px;
+
+      .snavigation-side {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+
+        .snavigation-side-toggle {
+          display: flex;
+          justify-content: flex-end;
+
+          .snavigation-side-toggle-header {
+            margin: auto;
+            margin-left: 24px;
+            font-size: 16px;
+            line-height: 20px;
+            font-weight: 600;
+          }
+
+          .toolbar--hidden {
+            width: 0;
+          }
+
+          .expand-control-button {
+            ::ng-deep .mat-button-wrapper {
+              width: 100%;
+              height: 100%;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+            }
+
+            .rotate-90 {
+              margin: auto;
+              rotate: -90deg;
+              translate: 0 100%;
+              width: 1px; // prevent content from overflowing
+              -webkit-backface-visibility: hidden; // Handle the anti-aliasing from chrome on rotations
+              font-size: 16px;
+            }
+          }
+          imx-data-source-toolbar {
+            margin-top: 15px,
+          }
+        }
+
+        .snavigation-side-content--center {
+          justify-content: center;
+          display: flex;
+          align-items: center;
+        }
+
+        .imx-no-data {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+
+          eui-icon {
+            font-size: 100px;
+            line-height: 100px;
+          }
+        }
+
+        .snavigation-side-content {
+          height: 100%;
+          overflow: auto;
+          margin: 0 24px 24px;
+
+          mat-tree {
+            background-color: transparent;
+          }
+
+          .mat-tree-node {
+            border-radius: 4px;
+
+            .child-progress-bar {
+              margin-left: 10px;
+              max-width: 60%;
+            }
+          }
+
+          /*
+          * This padding sets alignment of the nested nodes.
+          */
+          .tree .mat-nested-tree-node div[role&#x3D;group] {
+            margin-left: 20px;
+          }
+
+          .tree-item-button {
+            width: 100%;
+            padding: 0;
+            color: unset;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+
+            ::ng-deep .mat-button-wrapper {
+              display: flex;
+              align-items: center;
+            }
+          }
+          .tree-invisible {
+            display: none;
+          }
+        }
+      }
+
+      &amp;:not(.snavigation-side--expanded) {
+        .snavigation-side-toggle {
+          height: 100%;
+        }
+        .snavigation-side-toggle-header, .snavigation-side-content {
+          display: none;
+        }
+        .expand-control-button {
+          width: 48px;
+          padding: 0;
+          min-width: unset;
+        }
+      }
+
+      &amp;:is(.snavigation-side--expanded) {
+        .snavigation-side-toggle{
+          align-items: center;
+        }
+
+        .expand-control-button {
+          margin-right: 16px;
+        }
+        .rotate-90 {
+          display: none;
+        }
+      }
+    }
+
+    .mat-sidenav-content {
+      padding: 32px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    // .mat-drawer-side seems to have a scss style - seems to leak from material
+    .mat-drawer-side {
+      border-right: none;
+    }
+  }
+  &amp;.mat-card--hidden{
+    .mat-sidenav-container{
+      .mat-sidenav{
+        .snavigation-side{
+          .snavigation-side-content{
+            margin: 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Theming
+:host {
+  .snavigation-side-toggle-header {
+    color: $color-gray-60;
+  }
+
+  .snavigation.snavigation--expanded {
+    border: 1px solid $color-gray-20;
+    &amp;.mat-card--hidden{
+      border:none;
+      box-shadow: none;
+    }
+  }
+
+  .mat-sidenav:not(.snavigation-side--expanded) {
+    .expand-control-button {
+      background-color: $color-blue-10;
+      border: 1px solid $color-blue-20;
+    }
+  }
+  .snavigation-side-content {
+    background-color: $color-blue-10;
+    border: 1px solid $color-blue-20;
+  }
+  .mat-tree-node--selected {
+    background-color: $color-gray-0;
+    border: 1px solid $color-blue-40;
+    color: $color-orange-60;
+  }
+
+  .imx-no-data {
+    eui-icon, span {
+      color: $color-gray-60;
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .snavigation-side-toggle-header {
+      color: $color-gray-20;
+    }
+
+    .snavigation.snavigation--expanded {
+      border: 1px solid $color-gray-60;
+    }
+
+    .mat-sidenav:not(.snavigation-side--expanded) {
+      .expand-control-button {
+        background-color: $color-blue-90;
+        border: 1px solid $color-blue-80;
+      }
+    }
+    .snavigation-side-content {
+      background-color: $color-blue-90;
+      border: 1px solid $color-blue-80;
+    }
+    .mat-tree-node--selected {
+      background-color: $color-gray-80;
+      border: 1px solid $color-blue-40;
+      color: $color-orange-40;
+    }
+
+    .imx-no-data {
+      eui-icon, span {
+        color: $color-gray-20;
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .snavigation-side-toggle-header {
+      color: $color-gray-0;
+    }
+
+    .snavigation.snavigation--expanded {
+      border: 1px solid $color-gray-60;
+    }
+
+    .mat-sidenav:not(.snavigation-side--expanded) {
+      .expand-control-button {
+        background-color: $color-gray-90;
+        border: 1px solid $color-gray-0;
+      }
+    }
+    .snavigation-side-content {
+      background-color: $color-gray-90;
+      border: 1px solid $color-gray-0;
+    }
+    .mat-tree-node--selected {
+      background-color: $color-gray-80;
+      border: 1px solid $color-gray-0;
+      color: $color-gray-0;
+    }
+
+    .imx-no-data {
+      eui-icon, span {
+        color: $color-gray-0;
+      }
+    }
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><mat-card [@expandDiv]="{ value: expandState, params: { expandWidth: expandWidth } }" class="snavigation" [ngClass]="{ \'snavigation--expanded\': sideNavExpanded, \'mat-card--hidden\': !showSidenavHeader}">  <mat-sidenav-container>    <mat-sidenav mode="side" opened disableClose="true" [ngClass]="{ \'snavigation-side--expanded\': sideNavExpanded }">      <div class="snavigation-side">        <div class="snavigation-side-toggle" *ngIf="showSidenavHeader">          <h3 class="snavigation-side-toggle-header">{{ headerText }}</h3>          <button            *ngIf="dynamicDataSource?.dstSettings"            [@fadeIcon]="searchState"            data-imx-identifier="sidenav-tree-collapse-all-toggle"            mat-button            class="mat-icon-button"            color="primary"            (click)="enableSearch()"            [matTooltip]="\'#LDS#Search\' | translate"          >            <eui-icon icon="search"></eui-icon>          </button>          <imx-data-source-toolbar #dst          *ngIf="dynamicDataSource?.dstSettings"          [@expandSearch]="{ value: searchState, params: { expandWidth: expandWidth } }"          [alwaysVisible]="true"          [settings]="dynamicDataSource.dstSettings"          [options]="[\'search\']"          [searchBoxText]="\'#LDS#Search\' | translate"          [useThemedStyle]="true"          (search)="onSearch($event)"          (navigationStateChanged)="onSearch()"          ></imx-data-source-toolbar>          <button            *ngIf="sideNavExpanded"            data-imx-identifier="sidenav-tree-collapse-all-toggle"            mat-button            class="mat-icon-button"            color="primary"            (click)="closeAllNodes()"            [disabled]="!anyNodeOpen"            [matTooltip]="\'#LDS#Collapse all\' | translate"            [attr.aria-label]="\'#LDS#Collapse all\' | translate"          >            <eui-icon icon="compress"></eui-icon>          </button>          <button            class="expand-control-button"            data-imx-identifier="sidenav-tree-expand-toggle"            mat-button            color="primary"            (click)="toggleExpand()"            [ngClass]="{ \'mat-icon-button\': sideNavExpanded }"            [matTooltip]="(sideNavExpanded ? \'#LDS#Hide\' : \'#LDS#Show\') | translate"            [attr.aria-label]="(sideNavExpanded ? \'#LDS#Hide\' : \'#LDS#Show\') | translate"          >            <eui-icon [@rotateIcon]="expandState" icon="collapseleft"></eui-icon>            <h3 class="rotate-90">{{ headerText }}</h3>          </button>        </div>        <!-- Nested Tree -->        <mat-card *ngIf="dataSource" class="snavigation-side-content">          <mat-tree *ngIf="!initializingData" [dataSource]="dataSource" [treeControl]="treeControl" class="tree">            <mat-tree-node *matTreeNodeDef="let node">              <div class="mat-tree-node" [ngClass]="{\'mat-tree-node--selected\': isSelected(node)}">                <button mat-icon-button disabled>                  <eui-icon size="s"></eui-icon>                </button>                <button mat-button class="tree-item-button" data-imx-identifier="sidenav-tree-child-select" (click)="selectNode(node)">                  <ng-container *ngTemplateOutlet="treeNodeTemplate; context: { $implicit: node, selected: isSelected(node) }"></ng-container>                </button>              </div>            </mat-tree-node>            <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">                <div class="mat-tree-node" [ngClass]="{\'mat-tree-node--selected\': isSelected(node)}">                  <button                    mat-button                    matTreeNodeToggle                    class="mat-icon-button"                    [attr.aria-label]="\'#LDS#Expand\' | translate"                    data-imx-identifier="sidenav-tree-parent-toggle"                  >                    <eui-icon size="s" [icon]="treeControl.isExpanded(node) ? \'chevrondown\' : \'chevronright\'"></eui-icon>                  </button>                  <button mat-button class="tree-item-button" data-imx-identifier="sidenav-tree-parent-select" (click)="selectNode(node)">                    <ng-container *ngTemplateOutlet="treeNodeTemplate; context: { $implicit: node, selected: isSelected(node)}"></ng-container>                  </button>                </div>                <div [class.tree-invisible]="!treeControl.isExpanded(node)" role="group">                  <ng-container matTreeNodeOutlet></ng-container>                </div>            </mat-nested-tree-node>          </mat-tree>        </mat-card>        <!-- Dynamic tree -->        <mat-card *ngIf="dynamicDataSource" class="snavigation-side-content" [ngClass]="{ \'snavigation-side-content--center\': initializingData || !hasData}">          <mat-spinner *ngIf="initializingData" [diameter]="100" [attr.aria-label]="\'#LDS#Loading...\' | translate"></mat-spinner>          <div *ngIf="!initializingData && !hasData" class="imx-no-data">            <eui-icon icon="content-alert"></eui-icon>            <span>{{noResultText | translate}}</span>          </div>          <mat-tree *ngIf="!initializingData" [dataSource]="dynamicDataSource" [treeControl]="treeControl" class="tree">            <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding matTreeNodePaddingIndent="20">              <div class="mat-tree-node" [ngClass]="{ \'mat-tree-node--selected\': isSelected(node) }">                <button mat-icon-button disabled>                  <eui-icon size="s"></eui-icon>                </button>                <button mat-button color="primary" class="tree-item-button" data-imx-identifier="sidenav-tree-child-select" (click)="selectNode(node)">                  <ng-container *ngTemplateOutlet="treeNodeTemplate; context: { $implicit: node, selected: isSelected(node) }"></ng-container>                </button>              </div>            </mat-tree-node>            <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding matTreeNodePaddingIndent="20">              <div class="mat-tree-node" [ngClass]="{ \'mat-tree-node--selected\': isSelected(node) }">                <button                  mat-button                  matTreeNodeToggle                  class="mat-icon-button"                  [attr.aria-label]="\'#LDS#Expand\' | translate"                  data-imx-identifier="sidenav-tree-parent-toggle"                >                  <eui-icon size="s" [icon]="treeControl.isExpanded(node) ? \'chevrondown\' : \'chevronright\'"></eui-icon>                </button>                <button mat-button color="primary" class="tree-item-button" data-imx-identifier="sidenav-tree-parent-select" (click)="selectNode(node)">                  <ng-container *ngTemplateOutlet="treeNodeTemplate; context: { $implicit: node, selected: isSelected(node) }"></ng-container>                </button>                <mat-progress-bar *ngIf="isLoading(node)" mode="indeterminate" class="child-progress-bar" [attr.aria-label]="\'#LDS#Loading...\' | translate"></mat-progress-bar>              </div>              <div *ngIf="treeControl.isExpanded(node)" role="group">                <ng-container matTreeNodeOutlet></ng-container>              </div>            </mat-tree-node>          </mat-tree>          <button *ngIf="!initializingData && anyNodeOpen && canLoadMore && !isLoadingMore" mat-button color="primary" (click)="onLoadMore()">            <span>{{ \'#LDS#Show more\' | translate }}</span>          </button>          <mat-progress-bar *ngIf="!initializingData && isLoadingMore" mode="indeterminate" [attr.aria-label]="\'#LDS#Loading...\' | translate"></mat-progress-bar>        </mat-card>      </div>    </mat-sidenav>  </mat-sidenav-container></mat-card><ng-template #treeNodeTemplate let-node let-selected="selected">  <ng-content *ngTemplateOutlet="nodeContent; context: { $implicit: node, selected: selected }"></ng-content></ng-template></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'imx-about'},{'name': 'AddConfigSidesheetComponent', 'selector': ''},{'name': 'AdditionalInfosComponent', 'selector': 'imx-additional-infos'},{'name': 'ApplyConfigSidesheetComponent', 'selector': ''},{'name': 'AutoCompleteComponent', 'selector': 'imx-auto-complete'},{'name': 'AutocompleteComponent', 'selector': 'imx-autocomplete'},{'name': 'BulkItemComponent', 'selector': 'imx-bulk-item'},{'name': 'BulkPropertyEditorComponent', 'selector': 'imx-bulk-editor'},{'name': 'BusyIndicatorComponent', 'selector': 'imx-busy-indicator'},{'name': 'CacheComponent', 'selector': 'imx-cache'},{'name': 'CalendarComponent', 'selector': 'imx-calendar'},{'name': 'CaptchaComponent', 'selector': 'imx-captcha'},{'name': 'CdrEditorComponent', 'selector': 'imx-cdr-editor'},{'name': 'CdrSidesheetComponent', 'selector': ''},{'name': 'ChartTileComponent', 'selector': 'imx-chart-tile'},{'name': 'CheckableTreeComponent', 'selector': 'imx-checkable-tree'},{'name': 'ColumnSelectionComponent', 'selector': 'imx-sqlwizard-columnselection'},{'name': 'ConfigComponent', 'selector': 'imx-config'},{'name': 'ConfigKeyPathComponent', 'selector': 'config-key-path'},{'name': 'ConnectionComponent', 'selector': ''},{'name': 'ConvertConfigSidesheetComponent', 'selector': ''},{'name': 'DashboardComponent', 'selector': ''},{'name': 'DataExportComponent', 'selector': 'imx-data-export'},{'name': 'DataSourcePaginatorComponent', 'selector': 'imx-data-source-paginator'},{'name': 'DataSourceToolbarComponent', 'selector': 'imx-data-source-toolbar'},{'name': 'DataSourceToolbarCustomComponent', 'selector': 'imx-data-source-toolbar-custom'},{'name': 'DataTableCellComponent', 'selector': 'imx-data-table-cell'},{'name': 'DataTableColumnComponent', 'selector': 'imx-data-table-column'},{'name': 'DataTableComponent', 'selector': 'imx-data-table'},{'name': 'DataTableDisplayCellComponent', 'selector': 'imx-data-table-display-cell'},{'name': 'DataTableGenericColumnComponent', 'selector': 'imx-data-table-generic-column'},{'name': 'DataTileComponent', 'selector': 'imx-data-tile'},{'name': 'DataTilesComponent', 'selector': 'imx-data-tiles'},{'name': 'DataTreeComponent', 'selector': 'imx-data-tree'},{'name': 'DataTreeSearchResultsComponent', 'selector': 'imx-data-tree-search-results'},{'name': 'DataTreeWrapperComponent', 'selector': 'imx-data-tree-wrapper'},{'name': 'DateComponent', 'selector': 'imx-date'},{'name': 'DatePickerComponent', 'selector': 'imx-sqlwizard-datepicker'},{'name': 'DateRangeComponent', 'selector': 'imx-date-range'},{'name': 'DeleteConfigSidesheetComponent', 'selector': ''},{'name': 'EditBinaryComponent', 'selector': 'imx-edit-binary'},{'name': 'EditBooleanComponent', 'selector': 'imx-checkbox-editor'},{'name': 'EditDateComponent', 'selector': 'imx-edit-date'},{'name': 'EditDefaultComponent', 'selector': 'imx-edit-default'},{'name': 'EditFkComponent', 'selector': 'imx-edit-fk'},{'name': 'EditFkMultiComponent', 'selector': 'imx-edit-fk-multi'},{'name': 'EditImageComponent', 'selector': 'imx-edit-image'},{'name': 'EditLimitedValueComponent', 'selector': 'imx-edit-limited-value'},{'name': 'EditMultiLimitedValueComponent', 'selector': 'imx-edit-multi-limited-value'},{'name': 'EditMultilineComponent', 'selector': 'imx-edit-multiline'},{'name': 'EditMultiValueComponent', 'selector': 'imx-edit-multi-value'},{'name': 'EditNumberComponent', 'selector': 'imx-edit-number'},{'name': 'EditorBase', 'selector': ''},{'name': 'EditRiskIndexComponent', 'selector': 'imx-edit-risk-index'},{'name': 'EditUrlComponent', 'selector': 'imx-edit-url'},{'name': 'EntityColumnEditorComponent', 'selector': 'imx-entity-column-editor'},{'name': 'EntitySelectComponent', 'selector': 'imx-entity-select'},{'name': 'ExtComponent', 'selector': 'imx-ext'},{'name': 'FilterTileComponent', 'selector': 'imx-filter-tile'},{'name': 'FilterTreeComponent', 'selector': 'imx-filter-tree'},{'name': 'FilterWizardComponent', 'selector': 'imx-filter-wizard'},{'name': 'FkAdvancedPickerComponent', 'selector': ''},{'name': 'FkCandidatesComponent', 'selector': 'imx-fk-candidates'},{'name': 'FkHierarchicalDialogComponent', 'selector': 'imx-fk-hierarchical-dialog'},{'name': 'FkSelectorComponent', 'selector': 'imx-fk-selector'},{'name': 'FkTableSelectComponent', 'selector': 'imx-fk-table-select'},{'name': 'GroupPaginatorComponent', 'selector': 'imx-group-paginator'},{'name': 'HelpContextualComponent', 'selector': 'imx-help-contextual'},{'name': 'HelpContextualDialogComponent', 'selector': 'imx-help-contextual-dialog'},{'name': 'HyperviewComponent', 'selector': 'imx-hyperview'},{'name': 'IconStackComponent', 'selector': 'imx-icon-stack'},{'name': 'ImageSelectComponent', 'selector': 'imx-image-select'},{'name': 'ImageViewComponent', 'selector': 'imx-image-view'},{'name': 'ImxMatColumnComponent', 'selector': 'imx-column'},{'name': 'ImxProgressbarComponent', 'selector': 'imx-progressbar'},{'name': 'ImxTreeTableComponent', 'selector': 'imx-tree-table'},{'name': 'IndexBarComponent', 'selector': 'imx-indexbar'},{'name': 'InfoBadgeComponent', 'selector': 'imx-info-badge'},{'name': 'InfoButtonComponent', 'selector': 'imx-info-button'},{'name': 'InfoDialogComponent', 'selector': 'imx-info-dialog'},{'name': 'JobQueueOverviewComponent', 'selector': 'imx-jobqueue-overview'},{'name': 'ListSettingComponent', 'selector': 'imx-list-setting'},{'name': 'ListShapeComponent', 'selector': 'imx-hyperview-listshape'},{'name': 'LogDetailsSidesheetComponent', 'selector': 'imx-log-details-sidesheet'},{'name': 'LoginComponent', 'selector': 'imx-login'},{'name': 'LogsComponent', 'selector': 'imx-logs'},{'name': 'MasterDetailComponent', 'selector': 'imx-master-detail'},{'name': 'MastHeadComponent', 'selector': 'imx-mast-head'},{'name': 'MenuComponent', 'selector': 'imx-menu'},{'name': 'MessageDialogComponent', 'selector': 'imx-message-dialog'},{'name': 'MultiSelectFormcontrolComponent', 'selector': 'imx-multi-select-formcontrol'},{'name': 'ObjectHistoryComponent', 'selector': 'imx-object-history'},{'name': 'ObjectHistoryGridviewComponent', 'selector': 'imx-object-history-gridview'},{'name': 'ObjectHistoryStateComparisonComponent', 'selector': 'imx-object-history-state-comparison'},{'name': 'ObjectHistoryStateOverviewComponent', 'selector': 'imx-object-history-state-overview'},{'name': 'OrderedListComponent', 'selector': 'imx-ordered-list'},{'name': 'PackagesComponent', 'selector': 'imx-packages'},{'name': 'ParameterizedTextComponent', 'selector': 'imx-parameterized-text'},{'name': 'PluginsComponent', 'selector': 'imx-plugins'},{'name': 'PredefinedFilterComponent', 'selector': 'imx-predefined-filter'},{'name': 'PredefinedFilterTreeComponent', 'selector': 'imx-predefined-filter-tree'},{'name': 'PropertyShapeComponent', 'selector': 'imx-hyperview-propertyshape'},{'name': 'PropertyViewerComponent', 'selector': 'imx-property-viewer'},{'name': 'SaveConfigDialogComponent', 'selector': 'imx-save-config-dialog'},{'name': 'SearchBarComponent', 'selector': 'imx-searchbar'},{'name': 'SelectComponent', 'selector': 'imx-select'},{'name': 'SelectedElementsComponent', 'selector': 'imx-selected-elements'},{'name': 'SelectedElementsDialog', 'selector': ''},{'name': 'SelectValueComponent', 'selector': 'imx-config-select'},{'name': 'ShapeComponent', 'selector': 'imx-hyperview-shape'},{'name': 'SideNavigationViewComponent', 'selector': 'imx-side-navigation-view'},{'name': 'SidenavTreeComponent', 'selector': 'imx-sidenav-tree'},{'name': 'SimpleExpressionComponent', 'selector': 'imx-sqlwizard-simpleexpression'},{'name': 'SimpleShapeComponent', 'selector': 'imx-hyperview-simpleshape'},{'name': 'SingleExpressionComponent', 'selector': 'imx-sqlwizard-singleexpression'},{'name': 'SingleValueComponent', 'selector': 'imx-sqlwizard-singlevalue'},{'name': 'SqlWizardComponent', 'selector': 'imx-sqlwizard'},{'name': 'StatusComponent', 'selector': 'imx-status'},{'name': 'SwaggerComponent', 'selector': 'imx-swagger'},{'name': 'TableSelectionComponent', 'selector': 'imx-sqlwizard-tableselection'},{'name': 'TempBillboardComponent', 'selector': 'imx-temp-billboard'},{'name': 'TileComponent', 'selector': 'imx-tile'},{'name': 'TimelineComponent', 'selector': 'imx-timeline'},{'name': 'TimePickerComponent', 'selector': 'imx-time-picker'},{'name': 'TranslationEditorComponent', 'selector': 'imx-translation-editor'},{'name': 'TreeSelectionListComponent', 'selector': ''},{'name': 'TwoFactorAuthenticationComponent', 'selector': 'imx-2fahost'},{'name': 'TypedEntityCandidateSidesheetComponent', 'selector': ''},{'name': 'TypedEntitySelectComponent', 'selector': 'imx-typed-entity-select'},{'name': 'TypedEntitySelectorComponent', 'selector': 'imx-typed-entity-selector'},{'name': 'UserMessageComponent', 'selector': 'imx-usermessage'},{'name': 'ViewPropertyComponent', 'selector': 'imx-view-property'},{'name': 'ViewPropertyDefaultComponent', 'selector': 'imx-view-property-default'},{'name': 'WhereClauseExpressionComponent', 'selector': 'imx-sqlwizard-whereclauseexpression'}];
+    var DIRECTIVES = [{'name': 'DisableControlDirective', 'selector': '[imxDisableControl]'},{'name': 'DynamicTabDataProviderDirective', 'selector': '[imxDataProvider]'},{'name': 'ExtDirective', 'selector': '[imxExtd]'},{'name': 'MatSelectionListMultipleDirective', 'selector': 'mat-selection-list[multiple]'},{'name': 'TableAccessiblilityDirective', 'selector': '[tableAccessiblility]'},{'name': 'ZoomPanDirective', 'selector': '[imxZoomPan]'}];
+    var ACTUAL_COMPONENT = {'name': 'SidenavTreeComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'SidenavTreeComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

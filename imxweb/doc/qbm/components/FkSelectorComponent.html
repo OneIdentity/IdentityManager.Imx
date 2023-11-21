@@ -1,0 +1,1530 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>IMX Web - QBM Library</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/material.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">IMX Web - QBM Library</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  FkSelectorComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/lib/fk-advanced-picker/fk-selector.component.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                <code>OnInit</code>
+    </p>
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>imx-fk-selector</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./fk-selector.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./fk-selector.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#builder" >builder</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#busyService" >busyService</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#dataModel" >dataModel</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                <a href="#dataTable" >dataTable</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#DisplayColumns" >DisplayColumns</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#entitySchema" >entitySchema</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#filters" >filters</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#metadataProvider" >metadataProvider</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#preselectedEntities" >preselectedEntities</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#selectedCandidates" >selectedCandidates</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#selectedTable" >selectedTable</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#settings" >settings</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#amIDisabled" >amIDisabled</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#filterByTree" >filterByTree</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#search" >search</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Inputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#data" >data</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Outputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#elementSelected" >elementSelected</a>
+                            </li>
+                            <li>
+                                <a href="#selectedCandidatesChanges" >selectedCandidatesChanges</a>
+                            </li>
+                            <li>
+                                <a href="#tableselected" >tableselected</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(metadataProvider: <a href="../injectables/MetadataService.html" target="_self">MetadataService</a>, settingsService: <a href="../injectables/SettingsService.html" target="_self">SettingsService</a>, logger: <a href="../injectables/ClassloggerService.html" target="_self">ClassloggerService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="76" class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:76</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>metadataProvider</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/MetadataService.html" target="_self" >MetadataService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>settingsService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SettingsService.html" target="_self" >SettingsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ClassloggerService.html" target="_self" >ClassloggerService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+    <section data-compodoc="block-inputs">
+    <h3 id="inputs">Inputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="data"></a>
+                        <b>data</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/ForeignKeyPickerData.html" target="_self" >ForeignKeyPickerData</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="66" class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:66</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+    <section data-compodoc="block-outputs">
+    <h3 id="outputs">Outputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="elementSelected"></a>
+                        <b>elementSelected</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="67" class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:67</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="selectedCandidatesChanges"></a>
+                        <b>selectedCandidatesChanges</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="69" class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:69</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="tableselected"></a>
+                        <b>tableselected</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>EventEmitter</code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="68" class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:68</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="amIDisabled"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>amIDisabled</b></span>
+                        <a href="#amIDisabled"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>amIDisabled(item: <a href="../undefineds/T.html" target="_self">TypedEntity</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="112"
+                            class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:112</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>item</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#T" target="_self" >TypedEntity</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="filterByTree"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>filterByTree</b></span>
+                        <a href="#filterByTree"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>filterByTree(filters: FilterData[])</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="160"
+                            class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:160</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>filters</td>
+                                    <td>
+                                            <code>FilterData[]</code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="84"
+                            class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:84</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="search"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>search</b></span>
+                        <a href="#search"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>search(keywords: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="107"
+                            class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:107</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>keywords</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="builder"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>builder</b></span>
+                        <a href="#builder"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new TypedEntityBuilder(CandidateEntity)</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="73" class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:73</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="busyService"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>busyService</b></span>
+                        <a href="#busyService"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new BusyService()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="71" class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:71</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="dataModel"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>dataModel</b></span>
+                        <a href="#dataModel"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>DataModel</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="76" class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:76</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="dataTable"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                        <span ><b>dataTable</b></span>
+                        <a href="#dataTable"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../components/DataTableComponent.html" target="_self" >DataTableComponent&lt;TypedEntity&gt;</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ViewChild(DataTableComponent)<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="65" class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:65</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="DisplayColumns"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>DisplayColumns</b></span>
+                        <a href="#DisplayColumns"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>DisplayColumns</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="63" class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:63</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="entitySchema"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>entitySchema</b></span>
+                        <a href="#entitySchema"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>CandidateEntity.GetEntitySchema()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="74" class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:74</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="filters"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>filters</b></span>
+                        <a href="#filters"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>DataModelFilter[]</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="75" class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:75</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="metadataProvider"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>metadataProvider</b></span>
+                        <a href="#metadataProvider"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../injectables/MetadataService.html" target="_self" >MetadataService</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="79" class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:79</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="preselectedEntities"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>preselectedEntities</b></span>
+                        <a href="#preselectedEntities"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#T" target="_self" >TypedEntity[]</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="61" class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:61</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedCandidates"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>selectedCandidates</b></span>
+                        <a href="#selectedCandidates"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#T" target="_self" >TypedEntity[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="60" class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:60</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedTable"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>selectedTable</b></span>
+                        <a href="#selectedTable"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>IForeignKeyInfo</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="59" class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:59</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="settings"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>settings</b></span>
+                        <a href="#settings"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/DataSourceToolbarSettings.html" target="_self" >DataSourceToolbarSettings</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="58" class="link-to-prism">src/lib/fk-advanced-picker/fk-selector.component.ts:58</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from &#x27;@angular/core&#x27;;
+
+import {
+  TypedEntityBuilder,
+  CollectionLoadParameters,
+  DisplayColumns, ValType,
+  TypedEntity,
+  IForeignKeyInfo,
+  FilterType,
+  CompareOperator,
+  DbObjectKey,
+  DataModelFilter,
+  FilterData,
+  DataModel
+} from &#x27;imx-qbm-dbts&#x27;;
+import { ClassloggerService } from &#x27;../classlogger/classlogger.service&#x27;;
+import { MetadataService } from &#x27;../base/metadata.service&#x27;;
+import { DataSourceToolbarSettings } from &#x27;../data-source-toolbar/data-source-toolbar-settings&#x27;;
+import { CandidateEntity } from &#x27;./candidate-entity&#x27;;
+import { DataTableComponent } from &#x27;../data-table/data-table.component&#x27;;
+import { ForeignKeyPickerData } from &#x27;./foreign-key-picker-data.interface&#x27;;
+import { SettingsService } from &#x27;../settings/settings-service&#x27;;
+import { ClientPropertyForTableColumns } from &#x27;../data-source-toolbar/client-property-for-table-columns&#x27;;
+import { BusyService } from &#x27;../base/busy.service&#x27;;
+
+@Component({
+  selector: &#x27;imx-fk-selector&#x27;,
+  templateUrl: &#x27;./fk-selector.component.html&#x27;,
+  styleUrls: [&#x27;./fk-selector.component.scss&#x27;]
+})
+export class FkSelectorComponent implements OnInit {
+  public settings: DataSourceToolbarSettings;
+  public selectedTable: IForeignKeyInfo;
+  public selectedCandidates: TypedEntity[] &#x3D; [];
+  public preselectedEntities: TypedEntity[];
+
+  public readonly DisplayColumns &#x3D; DisplayColumns; // Enables use of this static class in Angular Templates.
+
+  @ViewChild(DataTableComponent) public dataTable: DataTableComponent&lt;TypedEntity&gt;;
+  @Input() public data: ForeignKeyPickerData;
+  @Output() public elementSelected &#x3D; new EventEmitter&lt;TypedEntity&gt;();
+  @Output() public tableselected &#x3D; new EventEmitter&lt;IForeignKeyInfo&gt;();
+  @Output() public selectedCandidatesChanges &#x3D; new EventEmitter();
+
+  public busyService &#x3D; new BusyService();
+
+  private readonly builder &#x3D; new TypedEntityBuilder(CandidateEntity);
+  private readonly entitySchema &#x3D; CandidateEntity.GetEntitySchema();
+  private filters: DataModelFilter[];
+  private dataModel: DataModel;
+
+  constructor(
+    public readonly metadataProvider: MetadataService,
+    private readonly settingsService: SettingsService,
+    private readonly logger: ClassloggerService) {
+  }
+
+  public async ngOnInit(): Promise&lt;void&gt; {
+    const isBusy &#x3D; this.busyService.beginBusy();
+
+    if (this.data.fkRelations &amp;&amp; this.data.fkRelations.length &gt; 0) {
+      this.logger.trace(this, &#x27;Pre-select the first candidate table&#x27;);
+      this.selectedTable &#x3D; this.data.fkRelations.find(fkr &#x3D;&gt; fkr.TableName &#x3D;&#x3D;&#x3D; this.data.selectedTableName) || this.data.fkRelations[0];
+      this.dataModel &#x3D; await this.selectedTable.GetDataModel();
+      this.filters &#x3D; this.dataModel.Filters;
+    }
+
+    if (this.data.fkRelations &amp;&amp; this.data.fkRelations.length &gt; 0) {
+      await this.metadataProvider.update(this.data.fkRelations.map(fkr &#x3D;&gt; fkr.TableName));
+    }
+    await this.loadTableData();
+    await this.getPreselectedEntities();
+    if (this.preselectedEntities) {
+      this.selectedCandidates &#x3D; this.preselectedEntities;
+    }
+    this.logger.debug(this, &#x27;Pre selected elements&#x27;, this.selectedCandidates.length);
+
+    isBusy.endBusy();    
+  }
+
+  public search(keywords: string): void {
+    this.logger.debug(this, &#x27;Search - keywords&#x27;, keywords);
+    this.loadTableData({ search: keywords });
+  }
+
+  public amIDisabled(item: TypedEntity): boolean {
+    return this.data.disabledIds?.find( x &#x3D;&gt; x &#x3D;&#x3D;&#x3D; item.GetEntity().GetKeys()[0]) ? true : false;
+  }
+
+  /**
+   * @ignore
+   */
+  public setSelectedClass(item: TypedEntity): any {
+    if (this.data.isMultiValue || this.selectedCandidates.length &#x3D;&#x3D;&#x3D; 0) {
+      return;
+    }
+
+    return this.selectedCandidates[0] &#x3D;&#x3D;&#x3D; item ?  {&#x27;imx-selected-row&#x27;: true} : {};
+  }
+
+  /**
+   * @ignore
+   */
+  public selectionChanged(selection: TypedEntity[]): void {
+    this.logger.debug(this, &#x27;Selected elements&#x27;, selection.length);
+    // TODO (TFS 806235): save selected object to MRU list
+    this.selectedCandidates &#x3D; selection;
+    this.selectedCandidatesChanges.emit();
+  }
+
+  /**
+   * @ignore
+   */
+  public selectObject(typedEntity: TypedEntity): void {
+    this.selectionChanged([typedEntity]);
+    this.elementSelected.emit(typedEntity);
+  }
+
+  /**
+   * @ignore
+   */
+  public clearSelection(): void {
+    this.dataTable.clearSelection();
+  }
+
+  /**
+   * @ignore
+   */
+  public async tableChanged(): Promise&lt;void&gt; {
+    await this.loadTableData({ StartIndex: 0, filter: undefined });
+    this.tableselected.emit(this.selectedTable);
+  }
+
+  public async filterByTree(filters: FilterData[]): Promise&lt;void&gt; {
+    return this.loadTableData({ StartIndex: 0, filter: filters });
+  }
+
+  /**
+   * @ignore
+   * updates the data source
+   * @param newState the state of the data source
+   */
+  public async loadTableData(newState?: CollectionLoadParameters): Promise&lt;void&gt; {
+    if (this.selectedTable) {
+      const isBusy &#x3D; this.busyService.beginBusy();
+      try {
+        let navigationState &#x3D; this.settings &amp;&amp; this.settings.navigationState ?
+          this.settings.navigationState :
+          { PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 };
+
+        if (newState) {
+          navigationState &#x3D; { ...navigationState, ...newState };
+        }
+
+        this.logger.debug(this, &#x27;LoadTableData - loading with navigationState&#x27;, navigationState);
+        const displayedColumns: ClientPropertyForTableColumns[] &#x3D; [];
+
+        if (!this.data.isMultiValue) {
+          displayedColumns.push({
+            Type: ValType.String,
+            ColumnName: &#x27;Select&#x27;,
+            untranslatedDisplay: &#x27;#LDS#Selection&#x27;
+      });
+        }
+
+        displayedColumns.push(DisplayColumns.DISPLAY_PROPERTY);
+
+        this.settings &#x3D; {
+          dataSource: this.builder.buildReadWriteEntities(
+            await this.selectedTable.Get(navigationState),
+            this.entitySchema
+          ),
+          displayedColumns,
+          entitySchema: this.entitySchema,
+          filters: this.filters,
+          dataModel: this.dataModel,
+          navigationState,
+          filterTree: {
+            multiSelect: true,
+            filterMethode: async (parentKey) &#x3D;&gt; this.selectedTable.GetFilterTree(parentKey)
+          }
+        };
+      } finally {
+        isBusy.endBusy();
+      }
+    }
+  }
+
+  /**
+   * @ignore
+   * Gets the list of preselected entities.
+   */
+  private async getPreselectedEntities(): Promise&lt;void&gt; {
+    if (this.data.fkRelations &amp;&amp; this.data.fkRelations.length &gt; 0 &amp;&amp; this.data.idList &amp;&amp; this.data.idList.length &gt; 0) {
+      const isBusy &#x3D; this.busyService.beginBusy();
+      try {
+        const preselectedTemp: TypedEntity[] &#x3D; [];
+        this.preselectedEntities &#x3D; null;
+
+        this.logger.debug(this, &#x27;Getting preselected entities&#x27;);
+
+        for (const key of this.data.idList) {
+          let table: IForeignKeyInfo;
+          if (this.data.fkRelations.length &gt; 1) {
+            const tableName &#x3D; DbObjectKey.FromXml(key).TableName;
+            table &#x3D; this.data.fkRelations.find(fkr &#x3D;&gt; fkr.TableName &#x3D;&#x3D;&#x3D; tableName);
+          }
+
+          table &#x3D; table || this.data.fkRelations[0];
+
+          const navigationState: CollectionLoadParameters &#x3D; {
+            filter: [
+              {
+                ColumnName: table.ColumnName,
+                Type: FilterType.Compare,
+                CompareOp: CompareOperator.Equal,
+                Value1: key
+              }
+            ]
+          };
+          this.logger.debug(this, &#x27;Getting preselected entity with navigation state&#x27;, navigationState);
+
+          const result &#x3D; this.builder.buildReadWriteEntities(
+            await table.Get(navigationState),
+            this.entitySchema
+          );
+
+          if (result.Data.length) {
+            preselectedTemp.push(result.Data[0]);
+          }
+        }
+
+        this.preselectedEntities &#x3D; preselectedTemp;
+        this.logger.debug(this, &#x60;Retrieved ${this.preselectedEntities.length} preselected entities&#x60;);
+      } finally {
+        isBusy.endBusy();
+      }
+    }
+  }
+}
+
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;div *ngIf&#x3D;&quot;data?.fkRelations&quot; class&#x3D;&quot;imx-fk-selector&quot;&gt;
+  &lt;!-- more than 3 candidate tables -&gt; show combo box --&gt;
+  &lt;mat-select *ngIf&#x3D;&quot;data.fkRelations.length &gt; 3&quot; [(ngModel)]&#x3D;&quot;selectedTable&quot; (selectionChange)&#x3D;&quot;tableChanged()&quot; data-imx-identifier&#x3D;&quot;cdr-fkadvancedpicker-select-tables&quot;&gt;
+    &lt;mat-option *ngFor&#x3D;&quot;let item of data.fkRelations&quot; [value]&#x3D;&quot;item&quot;&gt;
+      {{ metadataProvider.tables[item.TableName]?.DisplaySingular || item.TableName }}
+    &lt;/mat-option&gt;
+  &lt;/mat-select&gt;
+
+  &lt;!-- if more than 1 candidate table -&gt; show radio buttons --&gt;
+  &lt;mat-radio-group
+    *ngIf&#x3D;&quot;data.fkRelations.length &lt;&#x3D; 3 &amp;&amp; data.fkRelations.length &gt; 1&quot;
+    [(ngModel)]&#x3D;&quot;selectedTable&quot;
+    (change)&#x3D;&quot;tableChanged()&quot;
+    data-imx-identifier&#x3D;&quot;cdr-fkadvancedpicker-radiogroup-tables&quot;
+  &gt;
+    &lt;mat-radio-button *ngFor&#x3D;&quot;let item of data.fkRelations&quot; [value]&#x3D;&quot;item&quot; data-imx-identifier&#x3D;&quot;cdr-fkadvancedpicker-radiogroup-tables&quot;&gt;
+      {{ metadataProvider.tables[item.TableName]?.DisplaySingular || item.TableName }}
+    &lt;/mat-radio-button&gt;
+  &lt;/mat-radio-group&gt;
+
+  &lt;ng-container *ngIf&#x3D;&quot;true&quot;&gt;
+    &lt;imx-data-source-toolbar
+      #dst
+      [settings]&#x3D;&quot;settings&quot;      
+      [busyService]&#x3D;&quot;busyService&quot;
+      (navigationStateChanged)&#x3D;&quot;loadTableData($event)&quot;
+      [preSelection]&#x3D;&quot;preselectedEntities&quot;
+      (filterTreeSelectionChanged)&#x3D;&quot;filterByTree($event)&quot;
+      [options]&#x3D;&quot;[&#x27;search&#x27;, &#x27;filterTree&#x27;, &#x27;filter&#x27;, &#x27;settings&#x27;]&quot;
+      (search)&#x3D;&quot;search($event)&quot;
+      data-imx-identifier&#x3D;&quot;cdr-fkadvancedpicker-dst&quot;
+    &gt;
+    &lt;/imx-data-source-toolbar&gt;
+    &lt;div class&#x3D;&quot;imx-table-container&quot;&gt;
+      &lt;imx-data-table
+        [dst]&#x3D;&quot;dst&quot;
+        mode&#x3D;&quot;manual&quot;
+        [detailViewVisible]&#x3D;&quot;false&quot;
+        [selectable]&#x3D;&quot;data.isMultiValue&quot;
+        (selectionChanged)&#x3D;&quot;selectionChanged($event)&quot;
+        [showSelectedItemsMenu]&#x3D;&quot;false&quot;
+        data-imx-identifier&#x3D;&quot;cdr-fkadvancedpicker-datatable&quot;
+      &gt;
+        &lt;imx-data-table-generic-column *ngIf&#x3D;&quot;!data.isMultiValue&quot; columnName&#x3D;&quot;Select&quot;&gt;
+          &lt;ng-template let-item&gt;
+            &lt;ng-container *ngIf&#x3D;&quot;!amIDisabled(item)&quot;&gt;
+              &lt;mat-radio-button
+                [value]&#x3D;&quot;item&quot;
+                (click)&#x3D;&quot;selectObject(item)&quot;
+                class&#x3D;&quot;imx-radio-button&quot;
+              &gt;&lt;/mat-radio-button&gt;
+            &lt;/ng-container&gt;
+          &lt;/ng-template&gt;
+        &lt;/imx-data-table-generic-column&gt;
+
+        &lt;imx-data-table-column [entityColumn]&#x3D;&quot;entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]&quot;&gt;
+          &lt;ng-template let-item&gt;
+            &lt;div class&#x3D;&quot;imx-main-display&quot; #mainDisplay [ngClass]&#x3D;&quot;setSelectedClass(item)&quot;&gt;{{ item?.GetEntity()?.GetDisplay() }}&lt;/div&gt;
+          &lt;/ng-template&gt;
+        &lt;/imx-data-table-column&gt;
+      &lt;/imx-data-table&gt;
+    &lt;/div&gt;
+    &lt;imx-data-source-paginator [dst]&#x3D;&quot;dst&quot; data-imx-identifier&#x3D;&quot;cdr-fkadvancedpicker-paginator&quot;&gt; &lt;/imx-data-source-paginator&gt;
+  &lt;/ng-container&gt;
+&lt;/div&gt;
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./fk-selector.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">@import &#x27;@elemental-ui/core/src/styles/_palette.scss&#x27;;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1 1 auto;
+}
+
+.imx-fk-selector {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.mat-radio-group {
+  display: flex;
+
+  .mat-radio-button {
+    margin-right: 5px;
+  }
+}
+
+.imx-table-container {
+  flex-grow: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+
+  .imx-radio-button {
+    margin-right: 10px;
+  }
+
+  .imx-main-display {
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 48px;
+  }
+
+  &gt; imx-data-table {
+    display: flex;
+    flex-direction: column;
+
+    .imx-selected-row {
+      color: $color-orange-60
+    }
+
+    ::ng-deep .mat-sidenav-container {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><div *ngIf="data?.fkRelations" class="imx-fk-selector">  <!-- more than 3 candidate tables -> show combo box -->  <mat-select *ngIf="data.fkRelations.length > 3" [(ngModel)]="selectedTable" (selectionChange)="tableChanged()" data-imx-identifier="cdr-fkadvancedpicker-select-tables">    <mat-option *ngFor="let item of data.fkRelations" [value]="item">      {{ metadataProvider.tables[item.TableName]?.DisplaySingular || item.TableName }}    </mat-option>  </mat-select>  <!-- if more than 1 candidate table -> show radio buttons -->  <mat-radio-group    *ngIf="data.fkRelations.length <= 3 && data.fkRelations.length > 1"    [(ngModel)]="selectedTable"    (change)="tableChanged()"    data-imx-identifier="cdr-fkadvancedpicker-radiogroup-tables"  >    <mat-radio-button *ngFor="let item of data.fkRelations" [value]="item" data-imx-identifier="cdr-fkadvancedpicker-radiogroup-tables">      {{ metadataProvider.tables[item.TableName]?.DisplaySingular || item.TableName }}    </mat-radio-button>  </mat-radio-group>  <ng-container *ngIf="true">    <imx-data-source-toolbar      #dst      [settings]="settings"            [busyService]="busyService"      (navigationStateChanged)="loadTableData($event)"      [preSelection]="preselectedEntities"      (filterTreeSelectionChanged)="filterByTree($event)"      [options]="[\'search\', \'filterTree\', \'filter\', \'settings\']"      (search)="search($event)"      data-imx-identifier="cdr-fkadvancedpicker-dst"    >    </imx-data-source-toolbar>    <div class="imx-table-container">      <imx-data-table        [dst]="dst"        mode="manual"        [detailViewVisible]="false"        [selectable]="data.isMultiValue"        (selectionChanged)="selectionChanged($event)"        [showSelectedItemsMenu]="false"        data-imx-identifier="cdr-fkadvancedpicker-datatable"      >        <imx-data-table-generic-column *ngIf="!data.isMultiValue" columnName="Select">          <ng-template let-item>            <ng-container *ngIf="!amIDisabled(item)">              <mat-radio-button                [value]="item"                (click)="selectObject(item)"                class="imx-radio-button"              ></mat-radio-button>            </ng-container>          </ng-template>        </imx-data-table-generic-column>        <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">          <ng-template let-item>            <div class="imx-main-display" #mainDisplay [ngClass]="setSelectedClass(item)">{{ item?.GetEntity()?.GetDisplay() }}</div>          </ng-template>        </imx-data-table-column>      </imx-data-table>    </div>    <imx-data-source-paginator [dst]="dst" data-imx-identifier="cdr-fkadvancedpicker-paginator"> </imx-data-source-paginator>  </ng-container></div></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'imx-about'},{'name': 'AddConfigSidesheetComponent', 'selector': ''},{'name': 'AdditionalInfosComponent', 'selector': 'imx-additional-infos'},{'name': 'ApplyConfigSidesheetComponent', 'selector': ''},{'name': 'AutoCompleteComponent', 'selector': 'imx-auto-complete'},{'name': 'AutocompleteComponent', 'selector': 'imx-autocomplete'},{'name': 'BulkItemComponent', 'selector': 'imx-bulk-item'},{'name': 'BulkPropertyEditorComponent', 'selector': 'imx-bulk-editor'},{'name': 'BusyIndicatorComponent', 'selector': 'imx-busy-indicator'},{'name': 'CacheComponent', 'selector': 'imx-cache'},{'name': 'CalendarComponent', 'selector': 'imx-calendar'},{'name': 'CaptchaComponent', 'selector': 'imx-captcha'},{'name': 'CdrEditorComponent', 'selector': 'imx-cdr-editor'},{'name': 'CdrSidesheetComponent', 'selector': ''},{'name': 'ChartTileComponent', 'selector': 'imx-chart-tile'},{'name': 'CheckableTreeComponent', 'selector': 'imx-checkable-tree'},{'name': 'ColumnSelectionComponent', 'selector': 'imx-sqlwizard-columnselection'},{'name': 'ConfigComponent', 'selector': 'imx-config'},{'name': 'ConfigKeyPathComponent', 'selector': 'config-key-path'},{'name': 'ConnectionComponent', 'selector': ''},{'name': 'ConvertConfigSidesheetComponent', 'selector': ''},{'name': 'DashboardComponent', 'selector': ''},{'name': 'DataExportComponent', 'selector': 'imx-data-export'},{'name': 'DataSourcePaginatorComponent', 'selector': 'imx-data-source-paginator'},{'name': 'DataSourceToolbarComponent', 'selector': 'imx-data-source-toolbar'},{'name': 'DataSourceToolbarCustomComponent', 'selector': 'imx-data-source-toolbar-custom'},{'name': 'DataTableCellComponent', 'selector': 'imx-data-table-cell'},{'name': 'DataTableColumnComponent', 'selector': 'imx-data-table-column'},{'name': 'DataTableComponent', 'selector': 'imx-data-table'},{'name': 'DataTableDisplayCellComponent', 'selector': 'imx-data-table-display-cell'},{'name': 'DataTableGenericColumnComponent', 'selector': 'imx-data-table-generic-column'},{'name': 'DataTileComponent', 'selector': 'imx-data-tile'},{'name': 'DataTilesComponent', 'selector': 'imx-data-tiles'},{'name': 'DataTreeComponent', 'selector': 'imx-data-tree'},{'name': 'DataTreeSearchResultsComponent', 'selector': 'imx-data-tree-search-results'},{'name': 'DataTreeWrapperComponent', 'selector': 'imx-data-tree-wrapper'},{'name': 'DateComponent', 'selector': 'imx-date'},{'name': 'DatePickerComponent', 'selector': 'imx-sqlwizard-datepicker'},{'name': 'DateRangeComponent', 'selector': 'imx-date-range'},{'name': 'DeleteConfigSidesheetComponent', 'selector': ''},{'name': 'EditBinaryComponent', 'selector': 'imx-edit-binary'},{'name': 'EditBooleanComponent', 'selector': 'imx-checkbox-editor'},{'name': 'EditDateComponent', 'selector': 'imx-edit-date'},{'name': 'EditDefaultComponent', 'selector': 'imx-edit-default'},{'name': 'EditFkComponent', 'selector': 'imx-edit-fk'},{'name': 'EditFkMultiComponent', 'selector': 'imx-edit-fk-multi'},{'name': 'EditImageComponent', 'selector': 'imx-edit-image'},{'name': 'EditLimitedValueComponent', 'selector': 'imx-edit-limited-value'},{'name': 'EditMultiLimitedValueComponent', 'selector': 'imx-edit-multi-limited-value'},{'name': 'EditMultilineComponent', 'selector': 'imx-edit-multiline'},{'name': 'EditMultiValueComponent', 'selector': 'imx-edit-multi-value'},{'name': 'EditNumberComponent', 'selector': 'imx-edit-number'},{'name': 'EditorBase', 'selector': ''},{'name': 'EditRiskIndexComponent', 'selector': 'imx-edit-risk-index'},{'name': 'EditUrlComponent', 'selector': 'imx-edit-url'},{'name': 'EntityColumnEditorComponent', 'selector': 'imx-entity-column-editor'},{'name': 'EntitySelectComponent', 'selector': 'imx-entity-select'},{'name': 'ExtComponent', 'selector': 'imx-ext'},{'name': 'FilterTileComponent', 'selector': 'imx-filter-tile'},{'name': 'FilterTreeComponent', 'selector': 'imx-filter-tree'},{'name': 'FilterWizardComponent', 'selector': 'imx-filter-wizard'},{'name': 'FkAdvancedPickerComponent', 'selector': ''},{'name': 'FkCandidatesComponent', 'selector': 'imx-fk-candidates'},{'name': 'FkHierarchicalDialogComponent', 'selector': 'imx-fk-hierarchical-dialog'},{'name': 'FkSelectorComponent', 'selector': 'imx-fk-selector'},{'name': 'FkTableSelectComponent', 'selector': 'imx-fk-table-select'},{'name': 'GroupPaginatorComponent', 'selector': 'imx-group-paginator'},{'name': 'HelpContextualComponent', 'selector': 'imx-help-contextual'},{'name': 'HelpContextualDialogComponent', 'selector': 'imx-help-contextual-dialog'},{'name': 'HyperviewComponent', 'selector': 'imx-hyperview'},{'name': 'IconStackComponent', 'selector': 'imx-icon-stack'},{'name': 'ImageSelectComponent', 'selector': 'imx-image-select'},{'name': 'ImageViewComponent', 'selector': 'imx-image-view'},{'name': 'ImxMatColumnComponent', 'selector': 'imx-column'},{'name': 'ImxProgressbarComponent', 'selector': 'imx-progressbar'},{'name': 'ImxTreeTableComponent', 'selector': 'imx-tree-table'},{'name': 'IndexBarComponent', 'selector': 'imx-indexbar'},{'name': 'InfoBadgeComponent', 'selector': 'imx-info-badge'},{'name': 'InfoButtonComponent', 'selector': 'imx-info-button'},{'name': 'InfoDialogComponent', 'selector': 'imx-info-dialog'},{'name': 'JobQueueOverviewComponent', 'selector': 'imx-jobqueue-overview'},{'name': 'ListSettingComponent', 'selector': 'imx-list-setting'},{'name': 'ListShapeComponent', 'selector': 'imx-hyperview-listshape'},{'name': 'LogDetailsSidesheetComponent', 'selector': 'imx-log-details-sidesheet'},{'name': 'LoginComponent', 'selector': 'imx-login'},{'name': 'LogsComponent', 'selector': 'imx-logs'},{'name': 'MasterDetailComponent', 'selector': 'imx-master-detail'},{'name': 'MastHeadComponent', 'selector': 'imx-mast-head'},{'name': 'MenuComponent', 'selector': 'imx-menu'},{'name': 'MessageDialogComponent', 'selector': 'imx-message-dialog'},{'name': 'MultiSelectFormcontrolComponent', 'selector': 'imx-multi-select-formcontrol'},{'name': 'ObjectHistoryComponent', 'selector': 'imx-object-history'},{'name': 'ObjectHistoryGridviewComponent', 'selector': 'imx-object-history-gridview'},{'name': 'ObjectHistoryStateComparisonComponent', 'selector': 'imx-object-history-state-comparison'},{'name': 'ObjectHistoryStateOverviewComponent', 'selector': 'imx-object-history-state-overview'},{'name': 'OrderedListComponent', 'selector': 'imx-ordered-list'},{'name': 'PackagesComponent', 'selector': 'imx-packages'},{'name': 'ParameterizedTextComponent', 'selector': 'imx-parameterized-text'},{'name': 'PluginsComponent', 'selector': 'imx-plugins'},{'name': 'PredefinedFilterComponent', 'selector': 'imx-predefined-filter'},{'name': 'PredefinedFilterTreeComponent', 'selector': 'imx-predefined-filter-tree'},{'name': 'PropertyShapeComponent', 'selector': 'imx-hyperview-propertyshape'},{'name': 'PropertyViewerComponent', 'selector': 'imx-property-viewer'},{'name': 'SaveConfigDialogComponent', 'selector': 'imx-save-config-dialog'},{'name': 'SearchBarComponent', 'selector': 'imx-searchbar'},{'name': 'SelectComponent', 'selector': 'imx-select'},{'name': 'SelectedElementsComponent', 'selector': 'imx-selected-elements'},{'name': 'SelectedElementsDialog', 'selector': ''},{'name': 'SelectValueComponent', 'selector': 'imx-config-select'},{'name': 'ShapeComponent', 'selector': 'imx-hyperview-shape'},{'name': 'SideNavigationViewComponent', 'selector': 'imx-side-navigation-view'},{'name': 'SidenavTreeComponent', 'selector': 'imx-sidenav-tree'},{'name': 'SimpleExpressionComponent', 'selector': 'imx-sqlwizard-simpleexpression'},{'name': 'SimpleShapeComponent', 'selector': 'imx-hyperview-simpleshape'},{'name': 'SingleExpressionComponent', 'selector': 'imx-sqlwizard-singleexpression'},{'name': 'SingleValueComponent', 'selector': 'imx-sqlwizard-singlevalue'},{'name': 'SqlWizardComponent', 'selector': 'imx-sqlwizard'},{'name': 'StatusComponent', 'selector': 'imx-status'},{'name': 'SwaggerComponent', 'selector': 'imx-swagger'},{'name': 'TableSelectionComponent', 'selector': 'imx-sqlwizard-tableselection'},{'name': 'TempBillboardComponent', 'selector': 'imx-temp-billboard'},{'name': 'TileComponent', 'selector': 'imx-tile'},{'name': 'TimelineComponent', 'selector': 'imx-timeline'},{'name': 'TimePickerComponent', 'selector': 'imx-time-picker'},{'name': 'TranslationEditorComponent', 'selector': 'imx-translation-editor'},{'name': 'TreeSelectionListComponent', 'selector': ''},{'name': 'TwoFactorAuthenticationComponent', 'selector': 'imx-2fahost'},{'name': 'TypedEntityCandidateSidesheetComponent', 'selector': ''},{'name': 'TypedEntitySelectComponent', 'selector': 'imx-typed-entity-select'},{'name': 'TypedEntitySelectorComponent', 'selector': 'imx-typed-entity-selector'},{'name': 'UserMessageComponent', 'selector': 'imx-usermessage'},{'name': 'ViewPropertyComponent', 'selector': 'imx-view-property'},{'name': 'ViewPropertyDefaultComponent', 'selector': 'imx-view-property-default'},{'name': 'WhereClauseExpressionComponent', 'selector': 'imx-sqlwizard-whereclauseexpression'}];
+    var DIRECTIVES = [{'name': 'DisableControlDirective', 'selector': '[imxDisableControl]'},{'name': 'DynamicTabDataProviderDirective', 'selector': '[imxDataProvider]'},{'name': 'ExtDirective', 'selector': '[imxExtd]'},{'name': 'MatSelectionListMultipleDirective', 'selector': 'mat-selection-list[multiple]'},{'name': 'TableAccessiblilityDirective', 'selector': '[tableAccessiblility]'},{'name': 'ZoomPanDirective', 'selector': '[imxZoomPan]'}];
+    var ACTUAL_COMPONENT = {'name': 'FkSelectorComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'FkSelectorComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

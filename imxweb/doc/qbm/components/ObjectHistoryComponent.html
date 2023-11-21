@@ -1,0 +1,2053 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>IMX Web - QBM Library</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+        <link rel="stylesheet" href="../styles/material.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">IMX Web - QBM Library</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content component">
+                   <div class="content-data">
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Components</li>
+  <li class="breadcrumb-item"
+  >
+  ObjectHistoryComponent</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" class="nav-link"
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+        <li class="nav-item">
+            <a href="#templateData" class="nav-link"
+                role="tab" id="templateData-tab" data-bs-toggle="tab" data-link="template">Template</a>
+        </li>
+        <li class="nav-item">
+            <a href="#styleData" class="nav-link"
+                role="tab" id="styleData-tab" data-bs-toggle="tab" data-link="style">Styles</a>
+        </li>
+        <li class="nav-item">
+            <a href="#tree" class="nav-link"
+                role="tab" id="tree-tab" data-bs-toggle="tab" data-link="dom-tree">DOM Tree</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info"><p class="comment">
+    <h3>File</h3>
+</p>
+<p class="comment">
+    <code>src/lib/object-history/object-history.component.ts</code>
+</p>
+
+
+
+
+    <p class="comment">
+        <h3>Implements</h3>
+    </p>
+    <p class="comment">
+                <code>OnInit</code>
+                <code>OnDestroy</code>
+    </p>
+
+
+<section data-compodoc="block-metadata">
+    <h3>Metadata</h3>
+    <table class="table table-sm table-hover metadata">
+        <tbody>
+
+
+
+
+
+
+
+
+
+
+
+
+            <tr>
+                <td class="col-md-3">selector</td>
+                <td class="col-md-9"><code>imx-object-history</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">styleUrls</td>
+                <td class="col-md-9"><code>./object-history.component.scss</code></td>
+            </tr>
+
+
+
+            <tr>
+                <td class="col-md-3">templateUrl</td>
+                <td class="col-md-9"><code>./object-history.component.html</code></td>
+            </tr>
+
+
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#compareDateFormControl" >compareDateFormControl</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#historyComparisonData" >historyComparisonData</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#historyData" >historyData</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#lookIcons" >lookIcons</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#selectedLook" >selectedLook</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#stateOverviewItems" >stateOverviewItems</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#subscriptions" >subscriptions</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#timelineFrom" >timelineFrom</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#timelineFromDateFormControl" >timelineFromDateFormControl</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#timelineFromTimeFormControl" >timelineFromTimeFormControl</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#timelineTo" >timelineTo</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#timelineToDateFormControl" >timelineToDateFormControl</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#timelineToTimeFormControl" >timelineToTimeFormControl</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#viewModes" >viewModes</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#viewModeValue" >viewModeValue</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#addViewMode" >addViewMode</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#ngOnDestroy" >ngOnDestroy</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#ngOnInit" >ngOnInit</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#onLookSelectionChanged" >onLookSelectionChanged</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#onViewModeChange" >onViewModeChange</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#refresh" >refresh</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#setLocale" >setLocale</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#setTimeline" >setTimeline</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Inputs</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#looks" >looks</a>
+                            </li>
+                            <li>
+                                <a href="#objectType" >objectType</a>
+                            </li>
+                            <li>
+                                <a href="#objectUid" >objectUid</a>
+                            </li>
+                            <li>
+                                <a href="#showTitle" >showTitle</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Accessors</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                    <a href="#viewModeGrid" >viewModeGrid</a>
+                                </li>
+                                <li>
+                                    <a href="#viewModeStateOverview" >viewModeStateOverview</a>
+                                </li>
+                                <li>
+                                    <a href="#viewModeStateComparison" >viewModeStateComparison</a>
+                                </li>
+                                <li>
+                                    <a href="#timelineFromString" >timelineFromString</a>
+                                </li>
+                                <li>
+                                    <a href="#timelineToString" >timelineToString</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(translate: <a href="../undefineds/T.html" target="_self">TranslateService</a>, activatedRoute: ActivatedRoute, busyService: EuiLoadingService, historyService: <a href="../injectables/ObjectHistoryService.html" target="_self">ObjectHistoryService</a>, dateAdapter: DateAdapter<any>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="104" class="link-to-prism">src/lib/object-history/object-history.component.ts:104</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>translate</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../miscellaneous/typealiases.html#T" target="_self" >TranslateService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>activatedRoute</td>
+                                                  
+                                                        <td>
+                                                                    <code>ActivatedRoute</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>busyService</td>
+                                                  
+                                                        <td>
+                                                                    <code>EuiLoadingService</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>historyService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ObjectHistoryService.html" target="_self" >ObjectHistoryService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>dateAdapter</td>
+                                                  
+                                                        <td>
+                                                                    <code>DateAdapter&lt;any&gt;</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+    <section data-compodoc="block-inputs">
+    <h3 id="inputs">Inputs</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="looks"></a>
+                        <b>looks</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>string[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[&#x27;timeline&#x27;, &#x27;table&#x27;]</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="56" class="link-to-prism">src/lib/object-history/object-history.component.ts:56</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="objectType"></a>
+                        <b>objectType</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="57" class="link-to-prism">src/lib/object-history/object-history.component.ts:57</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="objectUid"></a>
+                        <b>objectUid</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="58" class="link-to-prism">src/lib/object-history/object-history.component.ts:58</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="showTitle"></a>
+                        <b>showTitle</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>true</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-2" colspan="2">
+                                    <div class="io-line">Defined in <a href="" data-line="59" class="link-to-prism">src/lib/object-history/object-history.component.ts:59</a></div>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
+
+
+
+    <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addViewMode"></a>
+                    <span class="name">
+                        <span class="modifier">Private</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>addViewMode</b></span>
+                        <a href="#addViewMode"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addViewMode(value: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, displayKey: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="191"
+                            class="link-to-prism">src/lib/object-history/object-history.component.ts:191</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>value</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>displayKey</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnDestroy"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>ngOnDestroy</b></span>
+                        <a href="#ngOnDestroy"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ngOnDestroy()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="198"
+                            class="link-to-prism">src/lib/object-history/object-history.component.ts:198</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ngOnInit"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>ngOnInit</b></span>
+                        <a href="#ngOnInit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>ngOnInit()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="114"
+                            class="link-to-prism">src/lib/object-history/object-history.component.ts:114</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onLookSelectionChanged"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>onLookSelectionChanged</b></span>
+                        <a href="#onLookSelectionChanged"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>onLookSelectionChanged(event)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="146"
+                            class="link-to-prism">src/lib/object-history/object-history.component.ts:146</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>event</td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="onViewModeChange"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>onViewModeChange</b></span>
+                        <a href="#onViewModeChange"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>onViewModeChange()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="141"
+                            class="link-to-prism">src/lib/object-history/object-history.component.ts:141</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="refresh"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span class="modifier">Async</span>
+                        <span ><b>refresh</b></span>
+                        <a href="#refresh"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>refresh(fetchRemote: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="150"
+                            class="link-to-prism">src/lib/object-history/object-history.component.ts:150</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>fetchRemote</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setLocale"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>setLocale</b></span>
+                        <a href="#setLocale"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>setLocale(locale: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="127"
+                            class="link-to-prism">src/lib/object-history/object-history.component.ts:127</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>locale</td>
+                                    <td>
+                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setTimeline"></a>
+                    <span class="name">
+                        <span class="modifier">Public</span>
+                        <span ><b>setTimeline</b></span>
+                        <a href="#setTimeline"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>setTimeline()</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="132"
+                            class="link-to-prism">src/lib/object-history/object-history.component.ts:132</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+    <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="compareDateFormControl"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>compareDateFormControl</b></span>
+                        <a href="#compareDateFormControl"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new UntypedFormControl()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="90" class="link-to-prism">src/lib/object-history/object-history.component.ts:90</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="historyComparisonData"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>historyComparisonData</b></span>
+                        <a href="#historyComparisonData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>HistoryComparisonData[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="88" class="link-to-prism">src/lib/object-history/object-history.component.ts:88</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="historyData"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>historyData</b></span>
+                        <a href="#historyData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>ObjectHistoryEvent[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="86" class="link-to-prism">src/lib/object-history/object-history.component.ts:86</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="lookIcons"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>lookIcons</b></span>
+                        <a href="#lookIcons"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>string[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[&#x27;attributes&#x27;, &#x27;gridsmall&#x27;]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="83" class="link-to-prism">src/lib/object-history/object-history.component.ts:83</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="selectedLook"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>selectedLook</b></span>
+                        <a href="#selectedLook"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;timeline&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="84" class="link-to-prism">src/lib/object-history/object-history.component.ts:84</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="stateOverviewItems"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>stateOverviewItems</b></span>
+                        <a href="#stateOverviewItems"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>IStateOverviewItem[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="87" class="link-to-prism">src/lib/object-history/object-history.component.ts:87</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="subscriptions"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>subscriptions</b></span>
+                        <a href="#subscriptions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Subscription[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="104" class="link-to-prism">src/lib/object-history/object-history.component.ts:104</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="timelineFrom"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>timelineFrom</b></span>
+                        <a href="#timelineFrom"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/TimelineDateTimeFilter.html" target="_self" >TimelineDateTimeFilter</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    date: &#x27;Invalid date&#x27;,
+    time: &#x27;Invalid date&#x27;
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="95" class="link-to-prism">src/lib/object-history/object-history.component.ts:95</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="timelineFromDateFormControl"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>timelineFromDateFormControl</b></span>
+                        <a href="#timelineFromDateFormControl"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new UntypedFormControl()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="91" class="link-to-prism">src/lib/object-history/object-history.component.ts:91</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="timelineFromTimeFormControl"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>timelineFromTimeFormControl</b></span>
+                        <a href="#timelineFromTimeFormControl"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new UntypedFormControl()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="92" class="link-to-prism">src/lib/object-history/object-history.component.ts:92</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="timelineTo"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>timelineTo</b></span>
+                        <a href="#timelineTo"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/TimelineDateTimeFilter.html" target="_self" >TimelineDateTimeFilter</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+    date: &#x27;Invalid date&#x27;,
+    time: &#x27;Invalid date&#x27;
+  }</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="99" class="link-to-prism">src/lib/object-history/object-history.component.ts:99</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="timelineToDateFormControl"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>timelineToDateFormControl</b></span>
+                        <a href="#timelineToDateFormControl"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new UntypedFormControl()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="93" class="link-to-prism">src/lib/object-history/object-history.component.ts:93</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="timelineToTimeFormControl"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>timelineToTimeFormControl</b></span>
+                        <a href="#timelineToTimeFormControl"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new UntypedFormControl()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="94" class="link-to-prism">src/lib/object-history/object-history.component.ts:94</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="viewModes"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>viewModes</b></span>
+                        <a href="#viewModes"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/ViewMode.html" target="_self" >ViewMode[]</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[]</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="89" class="link-to-prism">src/lib/object-history/object-history.component.ts:89</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="viewModeValue"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>viewModeValue</b></span>
+                        <a href="#viewModeValue"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="85" class="link-to-prism">src/lib/object-history/object-history.component.ts:85</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    <section data-compodoc="block-accessors">
+    <h3 id="accessors">
+        Accessors
+    </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="viewModeGrid"></a>
+                        <span class="name"><b>viewModeGrid</b><a href="#viewModeGrid"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>viewModeGrid()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="61" class="link-to-prism">src/lib/object-history/object-history.component.ts:61</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="viewModeStateOverview"></a>
+                        <span class="name"><b>viewModeStateOverview</b><a href="#viewModeStateOverview"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>viewModeStateOverview()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="65" class="link-to-prism">src/lib/object-history/object-history.component.ts:65</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="viewModeStateComparison"></a>
+                        <span class="name"><b>viewModeStateComparison</b><a href="#viewModeStateComparison"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>viewModeStateComparison()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="69" class="link-to-prism">src/lib/object-history/object-history.component.ts:69</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="timelineFromString"></a>
+                        <span class="name"><b>timelineFromString</b><a href="#timelineFromString"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>timelineFromString()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="73" class="link-to-prism">src/lib/object-history/object-history.component.ts:73</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="timelineToString"></a>
+                        <span class="name"><b>timelineToString</b><a href="#timelineToString"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>timelineToString()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="78" class="link-to-prism">src/lib/object-history/object-history.component.ts:78</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+</section>
+</div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OverlayRef } from &#x27;@angular/cdk/overlay&#x27;;
+import { Component, Input, OnDestroy, OnInit } from &#x27;@angular/core&#x27;;
+import { ActivatedRoute } from &#x27;@angular/router&#x27;;
+import { EuiLoadingService } from &#x27;@elemental-ui/core&#x27;;
+import { TranslateService } from &#x27;@ngx-translate/core&#x27;;
+
+import { UntypedFormControl } from &#x27;@angular/forms&#x27;;
+import { HistoryComparisonData } from &#x27;imx-api-qbm&#x27;;
+import { IStateOverviewItem, ObjectHistoryEvent } from &#x27;imx-qbm-dbts&#x27;;
+import { ObjectHistoryParameters, ObjectHistoryService } from &#x27;./object-history.service&#x27;;
+
+import { DateAdapter } from &#x27;@angular/material/core&#x27;;
+import moment from &#x27;moment-timezone&#x27;;
+import { Subscription } from &#x27;rxjs&#x27;;
+import { TimelineDateTimeFilter } from &#x27;../timeline/timeline&#x27;;
+
+class ViewMode {
+  public value: string;
+  public display: string;
+}
+
+// TODO: One class per file.
+// tslint:disable-next-line: max-classes-per-file
+@Component({
+  selector: &#x27;imx-object-history&#x27;,
+  templateUrl: &#x27;./object-history.component.html&#x27;,
+  styleUrls: [&#x27;./object-history.component.scss&#x27;],
+})
+export class ObjectHistoryComponent implements OnInit, OnDestroy {
+  @Input() public looks: string[] &#x3D; [&#x27;timeline&#x27;, &#x27;table&#x27;];
+  @Input() public objectType: string;
+  @Input() public objectUid: string;
+  @Input() public showTitle &#x3D; true;
+
+  public get viewModeGrid(): string {
+    return &#x27;Grid&#x27;;
+  }
+
+  public get viewModeStateOverview(): string {
+    return &#x27;State Overview&#x27;;
+  }
+
+  public get viewModeStateComparison(): string {
+    return &#x27;State Comparison&#x27;;
+  }
+
+  public get timelineFromString(): string {
+    if (this.timelineFrom.date &#x3D;&#x3D;&#x3D; &#x27;Invalid date&#x27; || this.timelineFrom.time &#x3D;&#x3D;&#x3D; &#x27;Invalid date&#x27;) return this.timelineFrom.date;
+    return this.timelineFrom.date + &#x27; &#x27; + this.timelineFrom.time;
+  }
+
+  public get timelineToString(): string {
+    if (this.timelineTo.date &#x3D;&#x3D;&#x3D; &#x27;Invalid date&#x27; || this.timelineTo.time &#x3D;&#x3D;&#x3D; &#x27;Invalid date&#x27;) return this.timelineTo.date;
+    return this.timelineTo.date + &#x27; &#x27; + this.timelineTo.time;
+  }
+
+  public lookIcons: string[] &#x3D; [&#x27;attributes&#x27;, &#x27;gridsmall&#x27;];
+  public selectedLook: string &#x3D; &#x27;timeline&#x27;;
+  public viewModeValue: string;
+  public historyData: ObjectHistoryEvent[] &#x3D; [];
+  public stateOverviewItems: IStateOverviewItem[] &#x3D; [];
+  public historyComparisonData: HistoryComparisonData[] &#x3D; [];
+  public viewModes: ViewMode[] &#x3D; [];
+  public compareDateFormControl &#x3D; new UntypedFormControl();
+  public timelineFromDateFormControl &#x3D; new UntypedFormControl();
+  public timelineFromTimeFormControl &#x3D; new UntypedFormControl();
+  public timelineToDateFormControl &#x3D; new UntypedFormControl();
+  public timelineToTimeFormControl &#x3D; new UntypedFormControl();
+  public timelineFrom: TimelineDateTimeFilter &#x3D; {
+    date: &#x27;Invalid date&#x27;,
+    time: &#x27;Invalid date&#x27;
+  };
+  public timelineTo: TimelineDateTimeFilter &#x3D; {
+    date: &#x27;Invalid date&#x27;,
+    time: &#x27;Invalid date&#x27;
+  };
+
+  private subscriptions: Subscription[] &#x3D; [];
+
+  constructor(
+    private translate: TranslateService,
+    private activatedRoute: ActivatedRoute,
+    private busyService: EuiLoadingService,
+    private historyService: ObjectHistoryService,
+    private dateAdapter: DateAdapter&lt;any&gt;
+  ) {}
+
+  public async ngOnInit(): Promise&lt;void&gt; {
+    this.setLocale(this.translate.currentLang);
+    this.setTimeline();
+
+    this.addViewMode(this.viewModeGrid, &#x27;#LDS#Events&#x27;);
+    this.addViewMode(this.viewModeStateOverview, &#x27;#LDS#State overview&#x27;);
+    this.addViewMode(this.viewModeStateComparison, &#x27;#LDS#State comparison&#x27;);
+
+    this.viewModeValue &#x3D; this.viewModeGrid;
+    this.compareDateFormControl.setValue(new Date(new Date().setHours(23, 59, 59, 999)));
+    await this.refresh(true);
+  }
+
+  public setLocale(locale: string): void {
+    moment.locale(locale);
+    this.dateAdapter.setLocale(locale);
+  }
+
+  public setTimeline(): void {
+    this.subscriptions.push(
+      this.timelineFromDateFormControl.valueChanges.subscribe(date &#x3D;&gt; this.timelineFrom.date &#x3D; moment(date).format(&#x27;L&#x27;)),
+      this.timelineFromTimeFormControl.valueChanges.subscribe(time &#x3D;&gt; this.timelineFrom.time &#x3D; moment(time).format(&#x27;HH:mm:ss&#x27;)),
+      this.timelineToDateFormControl.valueChanges.subscribe(date &#x3D;&gt; this.timelineTo.date &#x3D; moment(date).format(&#x27;L&#x27;)),
+      this.timelineToTimeFormControl.valueChanges.subscribe(time &#x3D;&gt; this.timelineTo.time &#x3D; moment(time).format(&#x27;HH:mm:ss&#x27;)),
+    );
+  }
+
+  public async onViewModeChange(): Promise&lt;void&gt; {
+    this.selectedLook &#x3D; this.viewModeValue &#x3D;&#x3D;&#x3D; this.viewModeGrid ? &#x27;timeline&#x27; : &#x27;table&#x27;;
+    await this.refresh(false);
+  }
+
+  public onLookSelectionChanged(event) {
+    this.selectedLook &#x3D; event.value;
+  }
+
+  public async refresh(fetchRemote: boolean): Promise&lt;void&gt; {
+    let overlayRef: OverlayRef;
+    setTimeout(() &#x3D;&gt; (overlayRef &#x3D; this.busyService.show()));
+
+    try {
+      this.historyData &#x3D; [];
+      this.stateOverviewItems &#x3D; [];
+      this.historyComparisonData &#x3D; [];
+
+      const table &#x3D; this.objectType || this.activatedRoute.snapshot.paramMap.get(&#x27;table&#x27;);
+      const uid &#x3D; this.objectUid || this.activatedRoute.snapshot.paramMap.get(&#x27;uid&#x27;);
+
+      if (this.viewModeValue &#x3D;&#x3D;&#x3D; this.viewModeGrid) {
+        const parameters: ObjectHistoryParameters &#x3D; {
+          table,
+          uid,
+        };
+        this.historyData &#x3D; (await this.historyService.get(parameters, fetchRemote));
+      } else if (this.viewModeValue &#x3D;&#x3D;&#x3D; this.viewModeStateOverview) {
+        const stateOverviewItems &#x3D; await this.historyService.getStateOverviewItems(table, uid);
+        if (stateOverviewItems) {
+          this.stateOverviewItems &#x3D; stateOverviewItems;
+        }
+      } else if (this.viewModeValue &#x3D;&#x3D;&#x3D; this.viewModeStateComparison) {
+        const date &#x3D; this.compareDateFormControl.value;
+
+        if (date) {
+          this.historyComparisonData &#x3D; await this.historyService.getHistoryComparisonData(table, uid, { CompareDate: date });
+        } else {
+          this.historyComparisonData &#x3D; await this.historyService.getHistoryComparisonData(table, uid);
+        }
+      }
+    } catch {
+      this.historyData &#x3D; [];
+      this.stateOverviewItems &#x3D; [];
+      this.historyComparisonData &#x3D; [];
+    } finally {
+      setTimeout(() &#x3D;&gt; this.busyService.hide(overlayRef));
+    }
+  }
+
+  private async addViewMode(value: string, displayKey: string): Promise&lt;void&gt; {
+    const viewMode &#x3D; new ViewMode();
+    viewMode.value &#x3D; value;
+    viewMode.display &#x3D; await this.translate.get(displayKey).toPromise();
+    this.viewModes.push(viewMode);
+  }
+
+  public ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription &#x3D;&gt; subscription.unsubscribe());
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="templateData">
+        <pre class="line-numbers"><code class="language-html">&lt;div class&#x3D;&quot;imx-content-header&quot;&gt;
+  &lt;div class&#x3D;&quot;grid-title-inline-leftelem&quot;&gt;
+    &lt;div *ngIf&#x3D;&quot;showTitle&quot;&gt;
+      &lt;h1 class&#x3D;&quot;mat-headline&quot;&gt;
+        &lt;span class&#x3D;&quot;imx-object-overview-tab-header&quot;&gt;{{ &#x27;#LDS#History&#x27; | translate }}&lt;/span&gt;
+      &lt;/h1&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class&#x3D;&quot;imx-viewmode-content-controls&quot;&gt;
+    &lt;mat-form-field&gt;
+      &lt;mat-select [(ngModel)]&#x3D;&quot;viewModeValue&quot; (selectionChange)&#x3D;&quot;onViewModeChange()&quot;&gt;
+        &lt;mat-option *ngFor&#x3D;&quot;let mode of viewModes&quot; [value]&#x3D;&quot;mode.value&quot; class&#x3D;&quot;mat-option-object-history&quot;&gt;{{ mode.display }}&lt;/mat-option&gt;
+      &lt;/mat-select&gt;
+    &lt;/mat-form-field&gt;
+    &lt;button mat-icon-button color&#x3D;&quot;primary&quot; [attr.data-imx-identifier]&#x3D;&quot;&#x27;history-button-refresh&#x27;&quot; (click)&#x3D;&quot;refresh(true)&quot; matTooltip&#x3D;&quot;{{ &#x27;#LDS#Refresh&#x27; | translate }}&quot;&gt;
+      &lt;eui-icon icon&#x3D;&quot;sync&quot;&gt;&lt;/eui-icon&gt;
+    &lt;/button&gt;
+    &lt;ng-container *ngIf&#x3D;&quot;viewModeValue &#x3D;&#x3D;&#x3D; viewModeStateOverview&quot;&gt;
+      &lt;button
+        mat-icon-button
+        color&#x3D;&quot;primary&quot;
+        [attr.data-imx-identifier]&#x3D;&quot;&#x27;history-state-overview-mode-tooltip-button&#x27;&quot;
+        matTooltip&#x3D;&quot;{{ &#x27;#LDS#Here you can get an overview of all changes. Additionally, you can see how long the respective change was valid.&#x27; | translate }}&quot;
+        matTooltipPosition&#x3D;&quot;right&quot;
+      &gt;
+        &lt;eui-icon icon&#x3D;&quot;info&quot;&gt;&lt;/eui-icon&gt;
+      &lt;/button&gt;
+    &lt;/ng-container&gt;
+    &lt;ng-container *ngIf&#x3D;&quot;viewModeValue &#x3D;&#x3D;&#x3D; viewModeStateComparison&quot;&gt;
+      &lt;eui-date-picker
+        [dateControl]&#x3D;&quot;compareDateFormControl&quot;
+        appearance&#x3D;&quot;legacy&quot;
+        [allowTextInput]&#x3D;&quot;false&quot;
+        [useClearIcon]&#x3D;&quot;true&quot;
+      &gt;&lt;/eui-date-picker&gt;
+      &lt;button
+        mat-icon-button
+        color&#x3D;&quot;primary&quot;
+        [attr.data-imx-identifier]&#x3D;&quot;&#x27;history-state-comparison-mode-tooltip-button&#x27;&quot;
+        matTooltip&#x3D;&quot;{{ &#x27;#LDS#Here you can compare the current state of the object with the state of the object at a different point in time.&#x27; | translate }}&quot;
+        matTooltipPosition&#x3D;&quot;right&quot;
+      &gt;
+        &lt;eui-icon icon&#x3D;&quot;info&quot;&gt;&lt;/eui-icon&gt;
+      &lt;/button&gt;
+    &lt;/ng-container&gt;
+    &lt;ng-container *ngIf&#x3D;&quot;selectedLook &#x3D;&#x3D;&#x3D; &#x27;timeline&#x27;&quot;&gt;
+      &lt;div class&#x3D;&quot;imx-timeline-from&quot;&gt;
+        &lt;span&gt;{{&#x27;#LDS#From&#x27; | translate}}: &lt;/span&gt;
+        &lt;eui-date-picker
+          class&#x3D;&quot;small&quot;
+          [dateControl]&#x3D;&quot;timelineFromDateFormControl&quot;
+          [useClearIcon]&#x3D;&quot;true&quot;
+        &gt;&lt;/eui-date-picker&gt;
+        &lt;eui-time-picker
+          [timeControl]&#x3D;&quot;timelineFromTimeFormControl&quot;
+          [allowTextInput]&#x3D;&quot;true&quot;
+          [minuteResolution]&#x3D;&quot;5&quot;
+          [disabled]&#x3D;&quot;timelineFrom.date &#x3D;&#x3D;&#x3D; &#x27;Invalid date&#x27;&quot;
+          size&#x3D;&quot;s&quot;
+        &gt;&lt;/eui-time-picker&gt;
+      &lt;/div&gt;
+      &lt;div class&#x3D;&quot;imx-timeline-to&quot;&gt;
+        &lt;span class&#x3D;&quot;timeline-to-text&quot; translate&gt;{{&#x27;#LDS#To&#x27; | translate}}: &lt;/span&gt;
+        &lt;eui-date-picker
+          [dateControl]&#x3D;&quot;timelineToDateFormControl&quot;
+          [useClearIcon]&#x3D;&quot;true&quot;
+        &gt;&lt;/eui-date-picker&gt;
+        &lt;eui-time-picker
+          [timeControl]&#x3D;&quot;timelineToTimeFormControl&quot;
+          [allowTextInput]&#x3D;&quot;true&quot;
+          [minuteResolution]&#x3D;&quot;5&quot;
+          [disabled]&#x3D;&quot;timelineTo.date  &#x3D;&#x3D;&#x3D; &#x27;Invalid date&#x27;&quot;
+          size&#x3D;&quot;s&quot;
+        &gt;&lt;/eui-time-picker&gt;
+      &lt;/div&gt;
+    &lt;/ng-container&gt;
+    &lt;!-- Switches between new and old look --&gt;
+    &lt;mat-button-toggle-group *ngIf&#x3D;&quot;viewModeValue &#x3D;&#x3D;&#x3D; viewModeGrid&quot; (change)&#x3D;&quot;onLookSelectionChanged($event)&quot; data-imx-identifier&#x3D;&quot;object-history-toggle-group-looks&quot;&gt;
+      &lt;mat-button-toggle
+        *ngFor&#x3D;&quot;let look of looks; let index &#x3D; index&quot;
+        [value]&#x3D;&quot;look&quot;
+        [checked]&#x3D;&quot;look &#x3D;&#x3D;&#x3D; selectedLook&quot;
+        [attr.data-imx-identifier]&#x3D;&quot;&#x27;dst-togglegroup-looks-button-&#x27; + look&quot;&gt;
+        &lt;eui-icon [icon]&#x3D;&quot;lookIcons[index]&quot;&gt;&lt;/eui-icon&gt;
+      &lt;/mat-button-toggle&gt;
+    &lt;/mat-button-toggle-group&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;ng-container *ngIf&#x3D;&quot;selectedLook &#x3D;&#x3D;&#x3D; &#x27;table&#x27;&quot;&gt;
+  &lt;div class&#x3D;&quot;imx-viewmode-content&quot; *ngIf&#x3D;&quot;viewModeValue &#x3D;&#x3D;&#x3D; viewModeGrid&quot;&gt;
+    &lt;imx-object-history-gridview [historyData]&#x3D;&quot;historyData&quot;&gt;&lt;/imx-object-history-gridview&gt;
+  &lt;/div&gt;
+  &lt;div class&#x3D;&quot;imx-viewmode-content&quot; *ngIf&#x3D;&quot;viewModeValue &#x3D;&#x3D;&#x3D; viewModeStateOverview&quot;&gt;
+    &lt;imx-object-history-state-overview [stateOverviewItems]&#x3D;&quot;stateOverviewItems&quot;&gt;&lt;/imx-object-history-state-overview&gt;
+  &lt;/div&gt;
+  &lt;div class&#x3D;&quot;imx-viewmode-content&quot; *ngIf&#x3D;&quot;viewModeValue &#x3D;&#x3D;&#x3D; viewModeStateComparison&quot;&gt;
+    &lt;imx-object-history-state-comparison [historyComparisonData]&#x3D;&quot;historyComparisonData&quot;&gt;&lt;/imx-object-history-state-comparison&gt;
+  &lt;/div&gt;
+&lt;/ng-container&gt;
+&lt;div class&#x3D;&quot;imx-viewmode-content&quot; *ngIf&#x3D;&quot;selectedLook &#x3D;&#x3D;&#x3D; &#x27;timeline&#x27;&quot;&gt;
+  &lt;imx-timeline [data]&#x3D;&quot;historyData&quot; [from]&#x3D;&quot;timelineFromString&quot; [to]&#x3D;&quot;timelineToString&quot;&gt;&lt;/imx-timeline&gt;
+&lt;/div&gt;
+
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="styleData">
+                <p class="comment">
+                    <code>./object-history.component.scss</code>
+                </p>
+                <pre class="line-numbers"><code class="language-scss">@import &quot;@elemental-ui/core/src/styles/_eui_palette.scss&quot;;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+
+  ::ng-deep eui-date-picker {
+    .mat-form-field-wrapper {
+      padding: 0;
+
+      .mat-form-field-subscript-wrapper {
+        margin: 0;
+      }
+
+      .mat-form-field-flex {
+        padding: 0 0 0 0.5rem;
+
+        .mat-form-field-infix {
+          padding: 0.3rem 0 0.4rem 0;
+          width: 140px;
+        }
+      }
+    }
+  }
+
+  ::ng-deep eui-time-picker {
+    .eui-time-picker-container {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+
+.imx-viewmode-content {
+  flex: 1 1 auto;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.imx-viewmode-content-controls {
+  margin-bottom: 1rem;
+}
+
+.imx-timeline-from, .imx-timeline-to, .imx-viewmode-content-controls {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+
+  ::ng-deep .mat-form-field-type-mat-select &gt; .mat-form-field-wrapper {
+    padding: 0;
+
+    .mat-form-field-infix {
+      border: none;
+    }
+
+    .mat-form-field-subscript-wrapper {
+      margin: 0;
+    }
+  }
+
+  .timeline-to-text {
+    margin-left: 1rem;
+  }
+}
+
+mat-button-toggle-group {
+  margin-left: auto;
+}
+
+.eui-dark-theme {
+  :host {
+    mat-button-toggle-group {
+      .mat-button-toggle-checked {
+        background-color: $color-blue-40;
+      }
+    }
+
+    .imx-viewmode-dropdown {
+      .mat-form-field-infix {
+        color: $color-gray-40;
+      }
+
+      .mat-form-field-flex {
+        background-color: $color-gray-70;
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-viewmode-dropdown {
+      .mat-form-field-infix {
+        color: $color-gray-20;
+      }
+
+      .mat-form-field-flex {
+        background-color: $color-gray-90;
+      }
+    }
+  }
+}
+</code></pre>
+    </div>
+
+    <div class="tab-pane fade " id="tree">
+        <div id="tree-container"></div>
+        <div class="tree-legend">
+            <div class="title">
+                <b>Legend</b>
+            </div>
+            <div>
+                <div class="color htmlelement"></div><span>Html element</span>
+            </div>
+            <div>
+                <div class="color component"></div><span>Component</span>
+            </div>
+            <div>
+                <div class="color directive"></div><span>Html element with directive</span>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+<script src="../js/libs/vis.min.js"></script>
+<script src="../js/libs/htmlparser.js"></script>
+<script src="../js/libs/deep-iterator.js"></script>
+<script>
+        var COMPONENT_TEMPLATE = '<div><div class="imx-content-header">  <div class="grid-title-inline-leftelem">    <div *ngIf="showTitle">      <h1 class="mat-headline">        <span class="imx-object-overview-tab-header">{{ \'#LDS#History\' | translate }}</span>      </h1>    </div>  </div>  <div class="imx-viewmode-content-controls">    <mat-form-field>      <mat-select [(ngModel)]="viewModeValue" (selectionChange)="onViewModeChange()">        <mat-option *ngFor="let mode of viewModes" [value]="mode.value" class="mat-option-object-history">{{ mode.display }}</mat-option>      </mat-select>    </mat-form-field>    <button mat-icon-button color="primary" [attr.data-imx-identifier]="\'history-button-refresh\'" (click)="refresh(true)" matTooltip="{{ \'#LDS#Refresh\' | translate }}">      <eui-icon icon="sync"></eui-icon>    </button>    <ng-container *ngIf="viewModeValue === viewModeStateOverview">      <button        mat-icon-button        color="primary"        [attr.data-imx-identifier]="\'history-state-overview-mode-tooltip-button\'"        matTooltip="{{ \'#LDS#Here you can get an overview of all changes. Additionally, you can see how long the respective change was valid.\' | translate }}"        matTooltipPosition="right"      >        <eui-icon icon="info"></eui-icon>      </button>    </ng-container>    <ng-container *ngIf="viewModeValue === viewModeStateComparison">      <eui-date-picker        [dateControl]="compareDateFormControl"        appearance="legacy"        [allowTextInput]="false"        [useClearIcon]="true"      ></eui-date-picker>      <button        mat-icon-button        color="primary"        [attr.data-imx-identifier]="\'history-state-comparison-mode-tooltip-button\'"        matTooltip="{{ \'#LDS#Here you can compare the current state of the object with the state of the object at a different point in time.\' | translate }}"        matTooltipPosition="right"      >        <eui-icon icon="info"></eui-icon>      </button>    </ng-container>    <ng-container *ngIf="selectedLook === \'timeline\'">      <div class="imx-timeline-from">        <span>{{\'#LDS#From\' | translate}}: </span>        <eui-date-picker          class="small"          [dateControl]="timelineFromDateFormControl"          [useClearIcon]="true"        ></eui-date-picker>        <eui-time-picker          [timeControl]="timelineFromTimeFormControl"          [allowTextInput]="true"          [minuteResolution]="5"          [disabled]="timelineFrom.date === \'Invalid date\'"          size="s"        ></eui-time-picker>      </div>      <div class="imx-timeline-to">        <span class="timeline-to-text" translate>{{\'#LDS#To\' | translate}}: </span>        <eui-date-picker          [dateControl]="timelineToDateFormControl"          [useClearIcon]="true"        ></eui-date-picker>        <eui-time-picker          [timeControl]="timelineToTimeFormControl"          [allowTextInput]="true"          [minuteResolution]="5"          [disabled]="timelineTo.date  === \'Invalid date\'"          size="s"        ></eui-time-picker>      </div>    </ng-container>    <!-- Switches between new and old look -->    <mat-button-toggle-group *ngIf="viewModeValue === viewModeGrid" (change)="onLookSelectionChanged($event)" data-imx-identifier="object-history-toggle-group-looks">      <mat-button-toggle        *ngFor="let look of looks; let index = index"        [value]="look"        [checked]="look === selectedLook"        [attr.data-imx-identifier]="\'dst-togglegroup-looks-button-\' + look">        <eui-icon [icon]="lookIcons[index]"></eui-icon>      </mat-button-toggle>    </mat-button-toggle-group>  </div></div><ng-container *ngIf="selectedLook === \'table\'">  <div class="imx-viewmode-content" *ngIf="viewModeValue === viewModeGrid">    <imx-object-history-gridview [historyData]="historyData"></imx-object-history-gridview>  </div>  <div class="imx-viewmode-content" *ngIf="viewModeValue === viewModeStateOverview">    <imx-object-history-state-overview [stateOverviewItems]="stateOverviewItems"></imx-object-history-state-overview>  </div>  <div class="imx-viewmode-content" *ngIf="viewModeValue === viewModeStateComparison">    <imx-object-history-state-comparison [historyComparisonData]="historyComparisonData"></imx-object-history-state-comparison>  </div></ng-container><div class="imx-viewmode-content" *ngIf="selectedLook === \'timeline\'">  <imx-timeline [data]="historyData" [from]="timelineFromString" [to]="timelineToString"></imx-timeline></div></div>'
+    var COMPONENTS = [{'name': 'AboutComponent', 'selector': 'imx-about'},{'name': 'AddConfigSidesheetComponent', 'selector': ''},{'name': 'AdditionalInfosComponent', 'selector': 'imx-additional-infos'},{'name': 'ApplyConfigSidesheetComponent', 'selector': ''},{'name': 'AutoCompleteComponent', 'selector': 'imx-auto-complete'},{'name': 'AutocompleteComponent', 'selector': 'imx-autocomplete'},{'name': 'BulkItemComponent', 'selector': 'imx-bulk-item'},{'name': 'BulkPropertyEditorComponent', 'selector': 'imx-bulk-editor'},{'name': 'BusyIndicatorComponent', 'selector': 'imx-busy-indicator'},{'name': 'CacheComponent', 'selector': 'imx-cache'},{'name': 'CalendarComponent', 'selector': 'imx-calendar'},{'name': 'CaptchaComponent', 'selector': 'imx-captcha'},{'name': 'CdrEditorComponent', 'selector': 'imx-cdr-editor'},{'name': 'CdrSidesheetComponent', 'selector': ''},{'name': 'ChartTileComponent', 'selector': 'imx-chart-tile'},{'name': 'CheckableTreeComponent', 'selector': 'imx-checkable-tree'},{'name': 'ColumnSelectionComponent', 'selector': 'imx-sqlwizard-columnselection'},{'name': 'ConfigComponent', 'selector': 'imx-config'},{'name': 'ConfigKeyPathComponent', 'selector': 'config-key-path'},{'name': 'ConnectionComponent', 'selector': ''},{'name': 'ConvertConfigSidesheetComponent', 'selector': ''},{'name': 'DashboardComponent', 'selector': ''},{'name': 'DataExportComponent', 'selector': 'imx-data-export'},{'name': 'DataSourcePaginatorComponent', 'selector': 'imx-data-source-paginator'},{'name': 'DataSourceToolbarComponent', 'selector': 'imx-data-source-toolbar'},{'name': 'DataSourceToolbarCustomComponent', 'selector': 'imx-data-source-toolbar-custom'},{'name': 'DataTableCellComponent', 'selector': 'imx-data-table-cell'},{'name': 'DataTableColumnComponent', 'selector': 'imx-data-table-column'},{'name': 'DataTableComponent', 'selector': 'imx-data-table'},{'name': 'DataTableDisplayCellComponent', 'selector': 'imx-data-table-display-cell'},{'name': 'DataTableGenericColumnComponent', 'selector': 'imx-data-table-generic-column'},{'name': 'DataTileComponent', 'selector': 'imx-data-tile'},{'name': 'DataTilesComponent', 'selector': 'imx-data-tiles'},{'name': 'DataTreeComponent', 'selector': 'imx-data-tree'},{'name': 'DataTreeSearchResultsComponent', 'selector': 'imx-data-tree-search-results'},{'name': 'DataTreeWrapperComponent', 'selector': 'imx-data-tree-wrapper'},{'name': 'DateComponent', 'selector': 'imx-date'},{'name': 'DatePickerComponent', 'selector': 'imx-sqlwizard-datepicker'},{'name': 'DateRangeComponent', 'selector': 'imx-date-range'},{'name': 'DeleteConfigSidesheetComponent', 'selector': ''},{'name': 'EditBinaryComponent', 'selector': 'imx-edit-binary'},{'name': 'EditBooleanComponent', 'selector': 'imx-checkbox-editor'},{'name': 'EditDateComponent', 'selector': 'imx-edit-date'},{'name': 'EditDefaultComponent', 'selector': 'imx-edit-default'},{'name': 'EditFkComponent', 'selector': 'imx-edit-fk'},{'name': 'EditFkMultiComponent', 'selector': 'imx-edit-fk-multi'},{'name': 'EditImageComponent', 'selector': 'imx-edit-image'},{'name': 'EditLimitedValueComponent', 'selector': 'imx-edit-limited-value'},{'name': 'EditMultiLimitedValueComponent', 'selector': 'imx-edit-multi-limited-value'},{'name': 'EditMultilineComponent', 'selector': 'imx-edit-multiline'},{'name': 'EditMultiValueComponent', 'selector': 'imx-edit-multi-value'},{'name': 'EditNumberComponent', 'selector': 'imx-edit-number'},{'name': 'EditorBase', 'selector': ''},{'name': 'EditRiskIndexComponent', 'selector': 'imx-edit-risk-index'},{'name': 'EditUrlComponent', 'selector': 'imx-edit-url'},{'name': 'EntityColumnEditorComponent', 'selector': 'imx-entity-column-editor'},{'name': 'EntitySelectComponent', 'selector': 'imx-entity-select'},{'name': 'ExtComponent', 'selector': 'imx-ext'},{'name': 'FilterTileComponent', 'selector': 'imx-filter-tile'},{'name': 'FilterTreeComponent', 'selector': 'imx-filter-tree'},{'name': 'FilterWizardComponent', 'selector': 'imx-filter-wizard'},{'name': 'FkAdvancedPickerComponent', 'selector': ''},{'name': 'FkCandidatesComponent', 'selector': 'imx-fk-candidates'},{'name': 'FkHierarchicalDialogComponent', 'selector': 'imx-fk-hierarchical-dialog'},{'name': 'FkSelectorComponent', 'selector': 'imx-fk-selector'},{'name': 'FkTableSelectComponent', 'selector': 'imx-fk-table-select'},{'name': 'GroupPaginatorComponent', 'selector': 'imx-group-paginator'},{'name': 'HelpContextualComponent', 'selector': 'imx-help-contextual'},{'name': 'HelpContextualDialogComponent', 'selector': 'imx-help-contextual-dialog'},{'name': 'HyperviewComponent', 'selector': 'imx-hyperview'},{'name': 'IconStackComponent', 'selector': 'imx-icon-stack'},{'name': 'ImageSelectComponent', 'selector': 'imx-image-select'},{'name': 'ImageViewComponent', 'selector': 'imx-image-view'},{'name': 'ImxMatColumnComponent', 'selector': 'imx-column'},{'name': 'ImxProgressbarComponent', 'selector': 'imx-progressbar'},{'name': 'ImxTreeTableComponent', 'selector': 'imx-tree-table'},{'name': 'IndexBarComponent', 'selector': 'imx-indexbar'},{'name': 'InfoBadgeComponent', 'selector': 'imx-info-badge'},{'name': 'InfoButtonComponent', 'selector': 'imx-info-button'},{'name': 'InfoDialogComponent', 'selector': 'imx-info-dialog'},{'name': 'JobQueueOverviewComponent', 'selector': 'imx-jobqueue-overview'},{'name': 'ListSettingComponent', 'selector': 'imx-list-setting'},{'name': 'ListShapeComponent', 'selector': 'imx-hyperview-listshape'},{'name': 'LogDetailsSidesheetComponent', 'selector': 'imx-log-details-sidesheet'},{'name': 'LoginComponent', 'selector': 'imx-login'},{'name': 'LogsComponent', 'selector': 'imx-logs'},{'name': 'MasterDetailComponent', 'selector': 'imx-master-detail'},{'name': 'MastHeadComponent', 'selector': 'imx-mast-head'},{'name': 'MenuComponent', 'selector': 'imx-menu'},{'name': 'MessageDialogComponent', 'selector': 'imx-message-dialog'},{'name': 'MultiSelectFormcontrolComponent', 'selector': 'imx-multi-select-formcontrol'},{'name': 'ObjectHistoryComponent', 'selector': 'imx-object-history'},{'name': 'ObjectHistoryGridviewComponent', 'selector': 'imx-object-history-gridview'},{'name': 'ObjectHistoryStateComparisonComponent', 'selector': 'imx-object-history-state-comparison'},{'name': 'ObjectHistoryStateOverviewComponent', 'selector': 'imx-object-history-state-overview'},{'name': 'OrderedListComponent', 'selector': 'imx-ordered-list'},{'name': 'PackagesComponent', 'selector': 'imx-packages'},{'name': 'ParameterizedTextComponent', 'selector': 'imx-parameterized-text'},{'name': 'PluginsComponent', 'selector': 'imx-plugins'},{'name': 'PredefinedFilterComponent', 'selector': 'imx-predefined-filter'},{'name': 'PredefinedFilterTreeComponent', 'selector': 'imx-predefined-filter-tree'},{'name': 'PropertyShapeComponent', 'selector': 'imx-hyperview-propertyshape'},{'name': 'PropertyViewerComponent', 'selector': 'imx-property-viewer'},{'name': 'SaveConfigDialogComponent', 'selector': 'imx-save-config-dialog'},{'name': 'SearchBarComponent', 'selector': 'imx-searchbar'},{'name': 'SelectComponent', 'selector': 'imx-select'},{'name': 'SelectedElementsComponent', 'selector': 'imx-selected-elements'},{'name': 'SelectedElementsDialog', 'selector': ''},{'name': 'SelectValueComponent', 'selector': 'imx-config-select'},{'name': 'ShapeComponent', 'selector': 'imx-hyperview-shape'},{'name': 'SideNavigationViewComponent', 'selector': 'imx-side-navigation-view'},{'name': 'SidenavTreeComponent', 'selector': 'imx-sidenav-tree'},{'name': 'SimpleExpressionComponent', 'selector': 'imx-sqlwizard-simpleexpression'},{'name': 'SimpleShapeComponent', 'selector': 'imx-hyperview-simpleshape'},{'name': 'SingleExpressionComponent', 'selector': 'imx-sqlwizard-singleexpression'},{'name': 'SingleValueComponent', 'selector': 'imx-sqlwizard-singlevalue'},{'name': 'SqlWizardComponent', 'selector': 'imx-sqlwizard'},{'name': 'StatusComponent', 'selector': 'imx-status'},{'name': 'SwaggerComponent', 'selector': 'imx-swagger'},{'name': 'TableSelectionComponent', 'selector': 'imx-sqlwizard-tableselection'},{'name': 'TempBillboardComponent', 'selector': 'imx-temp-billboard'},{'name': 'TileComponent', 'selector': 'imx-tile'},{'name': 'TimelineComponent', 'selector': 'imx-timeline'},{'name': 'TimePickerComponent', 'selector': 'imx-time-picker'},{'name': 'TranslationEditorComponent', 'selector': 'imx-translation-editor'},{'name': 'TreeSelectionListComponent', 'selector': ''},{'name': 'TwoFactorAuthenticationComponent', 'selector': 'imx-2fahost'},{'name': 'TypedEntityCandidateSidesheetComponent', 'selector': ''},{'name': 'TypedEntitySelectComponent', 'selector': 'imx-typed-entity-select'},{'name': 'TypedEntitySelectorComponent', 'selector': 'imx-typed-entity-selector'},{'name': 'UserMessageComponent', 'selector': 'imx-usermessage'},{'name': 'ViewPropertyComponent', 'selector': 'imx-view-property'},{'name': 'ViewPropertyDefaultComponent', 'selector': 'imx-view-property-default'},{'name': 'WhereClauseExpressionComponent', 'selector': 'imx-sqlwizard-whereclauseexpression'}];
+    var DIRECTIVES = [{'name': 'DisableControlDirective', 'selector': '[imxDisableControl]'},{'name': 'DynamicTabDataProviderDirective', 'selector': '[imxDataProvider]'},{'name': 'ExtDirective', 'selector': '[imxExtd]'},{'name': 'MatSelectionListMultipleDirective', 'selector': 'mat-selection-list[multiple]'},{'name': 'TableAccessiblilityDirective', 'selector': '[tableAccessiblility]'},{'name': 'ZoomPanDirective', 'selector': '[imxZoomPan]'}];
+    var ACTUAL_COMPONENT = {'name': 'ObjectHistoryComponent'};
+</script>
+<script src="../js/tree.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'component';
+            var COMPODOC_CURRENT_PAGE_URL = 'ObjectHistoryComponent.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>
