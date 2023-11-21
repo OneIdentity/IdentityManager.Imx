@@ -9,27 +9,28 @@ on:
 
 jobs:
   build:
-   env: 
+    runs-on: ubuntu-latest
+    env: 
       CI_COMMIT_MESSAGE: Automatic compoDoc documentation
       CI_COMMIT_AUTHOR: Compodoc Integration Process
-    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Install dependencies
-        working-directory: ./imxweb
-        run: npm install
+    - name: Install dependencies
+      working-directory: ./imxweb
+      run: npm install
 
-      - name: Generate documentation for qbm
-        run: npm run doc:qbm
-        working-directory: ./imxweb
-      - name: GIT Commit Documentation
-      # Only run on main branch push (e.g. pull request merge).
-        if: github.event_name == 'push'
-        run: |
-          git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
-          git config --global user.email "martina.graeber@oneidentity.com"
-          git add imxweb/documentation
-          git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
-          git push
+    - name: Generate documentation for qbm
+      run: npm run doc:qbm
+      working-directory: ./imxweb
+      
+    - name: GIT Commit Documentation
+    # Only run on main branch push (e.g. pull request merge).
+      if: github.event_name == 'push'
+      run: |
+        git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+        git config --global user.email "martina.graeber@oneidentity.com"
+        git add imxweb/documentation
+        git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
+        git push
