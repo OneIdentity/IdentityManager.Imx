@@ -24,7 +24,7 @@ jobs:
         with:
           path: 'doc-files'
           ref: 'main'
-          repository: ' IdentityManager.ImxDoc'
+          repository: 'OneIdentity/IdentityManager.ImxDoc'
           token: ${{ secrets.BOT_TOKEN }}
           fetch-depth: 0
           persist-credentials: true
