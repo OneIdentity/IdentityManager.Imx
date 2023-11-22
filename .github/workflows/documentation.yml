@@ -25,7 +25,7 @@ jobs:
           path: 'doc-files'
           ref: 'main'
           repository: 'OneIdentity/IdentityManager.ImxDoc'
-          token: ${{ secrets.BOT_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
           persist-credentials: true
 
@@ -40,6 +40,7 @@ jobs:
         shell: bash
         working-directory: doc-files
         run: |
+          git config --unset-all http.https://github.com/.extraheader
           git config --global user.name "Automatic compoDoc documentation"
           git config --global user.email "martina.graeber@oneidentity.com"
           git add .
