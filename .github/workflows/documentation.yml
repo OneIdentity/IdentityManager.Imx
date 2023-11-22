@@ -25,7 +25,7 @@ jobs:
           path: 'doc-files'
           ref: 'main'
           repository: 'OneIdentity/IdentityManager.ImxDoc'
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.BOT_TOKEN }}
           fetch-depth: 0
           persist-credentials: true
 
