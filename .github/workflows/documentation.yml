@@ -32,8 +32,8 @@ jobs:
       - name: Copy files to folder
         shell: bash
         run: |
-          mkdir -p doc-files/doc
-          cp -rvT imxweb/doc/v92 doc-files/doc"
+          mkdir -p "doc-files/doc"
+          cp -rvT "imxweb/doc/v92" "doc-files/doc"
 
       - name: check for new files
         id: newFiles
