@@ -23,9 +23,9 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: 'doc-files'
-          ref: 'main'
+          ref: 'git@github.com:OneIdentity/IdentityManager.ImxDoc.git'
           repository: 'OneIdentity/IdentityManager.ImxDoc'
-          token: ${{ secrets.GITHUB_TOKEN }}
+          sss-key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMe7B3Z3rVWOKk/3fAPTx46MFaoNnFTxblvm39LZW8Ik prod\mgraeber@Q83KD6D3"
           fetch-depth: 0
           persist-credentials: true
 
@@ -40,7 +40,6 @@ jobs:
         shell: bash
         working-directory: doc-files
         run: |
-          git config --unset-all http.https://github.com/.extraheader
           git config --global user.name "Automatic compoDoc documentation"
           git config --global user.email "martina.graeber@oneidentity.com"
           git add .
