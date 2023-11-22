@@ -19,11 +19,6 @@ jobs:
         run: npm run doc:qbm
         working-directory: ./imxweb
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
-        with:
-          path: "imxweb/doc/v92/qbm/"
-
   deploy:
     # Specify runner + deployment step
     runs-on: ubuntu-latest
@@ -31,17 +26,32 @@ jobs:
     needs: build
 
     steps:
-      - name: deploy changes to a repo
-        uses: tagus/git-deploy@v0.5.0
-        with:
-          changes: imxweb/doc/v92/qbm/
-          repository: git@github.com:OneIdentity/IdentityManager.ImxDoc.git
-          ssh_key: ${{ secrets.REPO_DEPLOY_KEY }}
-          name: Compodoc Integration Process
-          email: martina.graeber@oneidentity.com  #maybe using a default later
-          clean_repo:
-            true
+       - name: Checkout doc
+         uses: actions/checkout@v3
+         with:
+          path: 'doc-files'
+          ref: 'main',
+          repository: ' IdentityManager.ImxDoc'
+          token: ${{ secrets.BOT_TOKEN }}
+          fetch-depth: 0
+          persist-credentials: true
 
+      - name: Copy files to folder
+        shell: bash
+        run: |
+          mkdir -p doc
+          cp -rvT imxweb/doc/v92 doc"
+      - name: check for new files
+        id: newFiles
+        shell: bash
+        working-directory: doc-files
+        run: |
+          git config --global user.name "Automatic compoDoc documentation"
+          git config --global user.email "martina.graeber@oneidentity.com"
+          git add imxweb/doc
+          git commit -m "${{  Automatic compoDoc documentation }}"
+          git push
+          
     # env:
     #   CI_COMMIT_MESSAGE: Automatic compoDoc documentation
     #   CI_COMMIT_AUTHOR: Compodoc Integration Process
