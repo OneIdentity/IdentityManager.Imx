@@ -43,7 +43,7 @@ jobs:
           git config --global user.name "Automatic compoDoc documentation"
           git config --global user.email "martina.graeber@oneidentity.com"
           git add imxweb/doc
-          git commit -m "${{  Automatic compoDoc documentation }}"
+          git commit -m "Automatic compoDoc documentation"
           git push
           
     # env:
