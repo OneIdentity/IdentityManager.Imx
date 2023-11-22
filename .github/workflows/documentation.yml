@@ -22,7 +22,8 @@ jobs:
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
-        
+        with:
+          path: "imxweb/doc/v92/qbm/"
   deploy:
     # Specify runner + deployment step
     runs-on: ubuntu-latest
