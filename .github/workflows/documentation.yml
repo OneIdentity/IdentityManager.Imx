@@ -3,7 +3,6 @@ name: Documentation
 on:
   push:
     branches: [master, v92, change/v92/testForActions]
-    
 
 jobs:
   build:
@@ -24,23 +23,38 @@ jobs:
         uses: actions/upload-pages-artifact@v2
         with:
           path: "imxweb/doc/v92/qbm/"
+
   deploy:
     # Specify runner + deployment step
     runs-on: ubuntu-latest
     # Add a dependency to the build job
     needs: build
 
-    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
-    permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
-
-    # Deploy to the github-pages environment
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2 # or the latest "vX.X.X" version tag for this action 
+      - name: deploy changes to a repo
+        uses: tagus/git-deploy@v0.5.0
+        with:
+          changes: imxweb/doc/v92/qbm/
+          repository: git@github.com:OneIdentity/IdentityManager.ImxDoc.git
+          ssh_key: ${{ secrets.REPO_DEPLOY_KEY }}
+          name: Compodoc Integration Process
+          email: martina.graeber@oneidentity.com  #maybe using a default later
+          clean_repo:
+            true
+
+    # env:
+    #   CI_COMMIT_MESSAGE: Automatic compoDoc documentation
+    #   CI_COMMIT_AUTHOR: Compodoc Integration Process
+    # steps:
+
+    # #ToDO: I need to change the repo here
+
+    # - name: GIT Commit Documentation
+    # # Only run on main branch push (e.g. pull request merge).
+    #   if: github.event_name == 'push'
+    #   run: |
+    #     git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+    #     git config --global user.email "martina.graeber@oneidentity.com"
+    #     git add imxweb/doc
+    #     git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
+    #     git push
