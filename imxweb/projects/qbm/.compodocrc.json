@@ -1,6 +1,6 @@
 {
   "name": "IMX Web - QBM Library",
-  "output": "../../doc/qbm",
+  "output": "../../doc/v92/qbm",
   "assetsFolder": "../../compodoc/assets",
   "theme": "material",
   "customLogo": "../../compodoc/assets/images/oneidentity-logo.png",
