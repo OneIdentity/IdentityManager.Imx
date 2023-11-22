@@ -19,27 +19,22 @@ jobs:
         run: npm run doc:qbm
         working-directory: ./imxweb
 
-  deploy:
-    # Specify runner + deployment step
-    runs-on: ubuntu-latest
-    # Add a dependency to the build job
-    needs: build
-    steps:
-       - name: Checkout doc
-         uses: actions/checkout@v3
-         with:
-          path: 'doc-files'
-          ref: 'main'
-          repository: ' IdentityManager.ImxDoc'
-          token: ${{ secrets.BOT_TOKEN }}
-          fetch-depth: 0
-          persist-credentials: true
+      - name: Checkout doc
+        uses: actions/checkout@v3
+        with:
+        path: 'doc-files'
+        ref: 'main'
+        repository: ' IdentityManager.ImxDoc'
+        token: ${{ secrets.BOT_TOKEN }}
+        fetch-depth: 0
+        persist-credentials: true
 
       - name: Copy files to folder
         shell: bash
         run: |
           mkdir -p doc
           cp -rvT imxweb/doc/v92 doc"
+          
       - name: check for new files
         id: newFiles
         shell: bash
