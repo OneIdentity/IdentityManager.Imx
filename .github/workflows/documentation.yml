@@ -2,32 +2,48 @@ name: Documentation
 
 on:
   push:
-    branches: [master, v92, change/v92/testForActions]    
+    branches: [master, v92, change/v92/testForActions]
+    
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    env: 
-      CI_COMMIT_MESSAGE: Automatic compoDoc documentation
-      CI_COMMIT_AUTHOR: Compodoc Integration Process
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Install dependencies
-      working-directory: ./imxweb
-      run: npm install
+      - name: Install dependencies
+        working-directory: ./imxweb
+        run: npm install
 
-    - name: Generate documentation for qbm
-      run: npm run doc:qbm
-      working-directory: ./imxweb
+      - name: Generate documentation for qbm
+        run: npm run doc:qbm
+        working-directory: ./imxweb
 
-    - name: GIT Commit Documentation
-    # Only run on main branch push (e.g. pull request merge).
-      if: github.event_name == 'push'
-      run: |
-        git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
-        git config --global user.email "martina.graeber@oneidentity.com"
-        git add imxweb/doc
-        git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
-        git push
+      - name: Deploy the documentation
+        uses: actions/upload-artifact@v3
+        with:
+          name: documentation
+          path: imxweb/documentation/ # or path/to/artifact
+
+
+          deploy:
+    # Add a dependency to the build job
+    needs: build
+
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    # Specify runner + deployment step
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2 # or the latest "vX.X.X" version tag for this action
