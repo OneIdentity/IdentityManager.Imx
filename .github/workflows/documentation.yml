@@ -19,6 +19,9 @@ jobs:
         run: npm run doc:qbm
         working-directory: ./imxweb
 
+      - name: echon name
+        run: echo ${{ secrets.GITHUB_TOKEN }}
+
       - name: Checkout doc
         uses: actions/checkout@v3
         with:
