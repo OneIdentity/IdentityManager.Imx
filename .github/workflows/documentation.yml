@@ -35,14 +35,14 @@ jobs:
           mkdir -p "doc-files/doc"
           cp -rvT "imxweb/doc/v92" "doc-files/doc"
 
-      - name: check for new files
+      - name: Commit files to doc repository
         id: newFiles
         shell: bash
         working-directory: doc-files
         run: |
           git config --global user.name "Automatic compoDoc documentation"
           git config --global user.email "martina.graeber@oneidentity.com"
-          git add imxweb/doc
+          git add .
           git commit -m "Automatic compoDoc documentation"
           git push
           
