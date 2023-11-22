@@ -25,7 +25,7 @@ jobs:
           path: 'doc-files'
           ref: 'git@github.com:OneIdentity/IdentityManager.ImxDoc.git'
           repository: 'OneIdentity/IdentityManager.ImxDoc'
-          sss-key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMe7B3Z3rVWOKk/3fAPTx46MFaoNnFTxblvm39LZW8Ik prod\mgraeber@Q83KD6D3"
+          sss-key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMe7B3Z3rVWOKk/3fAPTx46MFaoNnFTxblvm39LZW8Ik prod\\mgraeber@Q83KD6D3"
           fetch-depth: 0
           persist-credentials: true
 
