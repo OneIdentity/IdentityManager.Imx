@@ -11,6 +11,8 @@ jobs:
       contents: write
       pages: write      # to deploy to Pages
       id-token: write   # to verify the deployment originates from an appropriate source
+    env: 
+      TEST_TOKEN: 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
     
     steps:
       - name: Checkout code
@@ -30,7 +32,7 @@ jobs:
           path: 'doc-files'
           ref: 'main'
           repository: 'OneIdentity/IdentityManager.ImxDoc'
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ evt.TEST_TOKEN }}
           fetch-depth: 0
           persist-credentials: true
 
