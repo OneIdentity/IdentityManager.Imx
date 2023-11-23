@@ -26,6 +26,13 @@ jobs:
         run: npm run doc:qbm
         working-directory: ./imxweb
 
+      - name: test
+        id: test
+        shell: bash
+        run: |
+          git config --global credential.https://github.com.username git
+          git config --global credential.https://github.com.password "${{ env.TEST-TOKEN }}"
+
       - name: Checkout doc
         uses: actions/checkout@v2
         with:
