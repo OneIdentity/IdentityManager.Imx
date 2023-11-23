@@ -26,20 +26,13 @@ jobs:
         run: npm run doc:qbm
         working-directory: ./imxweb
 
-      - name: test
-        id: test
-        shell: bash
-        run: |
-          git config --global credential.https://github.com.username git
-          git config --global credential.https://github.com.password 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
-
       - name: Checkout doc
         uses: actions/checkout@v2
         with:
           path: 'doc-files'
           ref: 'main'
           repository: 'OneIdentity/IdentityManager.ImxDoc'
-          token: ${{ env.TEST_TOKEN }}
+          token: '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'
           fetch-depth: 0
           persist-credentials: true
 
