@@ -31,7 +31,7 @@ jobs:
         shell: bash
         run: |
           git config --global credential.https://github.com.username git
-          git config --global credential.https://github.com.password "${{ env.TEST-TOKEN }}"
+          git config --global credential.https://github.com.password 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
 
       - name: Checkout doc
         uses: actions/checkout@v2
