@@ -32,7 +32,7 @@ jobs:
           path: 'doc-files'
           ref: 'main'
           repository: 'OneIdentity/IdentityManager.ImxDoc'
-          token: ${{ evt.TEST_TOKEN }}
+          token: ${{ env.TEST_TOKEN }}
           fetch-depth: 0
           persist-credentials: true
 
