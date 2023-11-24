@@ -293,7 +293,10 @@ export class DateComponent implements OnInit, OnDestroy {
     validators.push((control) => this.validateTextInDateRange(control.value as string));
 
     this.shadowText.setValidators(validators);
-    this.control.setValidators((control) => this.validateMomentInDateRange(control.value as moment));
+    this.control.setValidators([
+      (control) => this.validateMomentInDateRange(control.value as moment),
+      ...this.isValueRequired ? [(control) => (control.value == undefined || control.value.length === 0 ? { required: true } : null)] : []
+    ]);
   }
 
   /**

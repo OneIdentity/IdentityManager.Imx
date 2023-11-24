@@ -34,6 +34,9 @@ import { QerApiService } from '../../qer-api-client.service';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
 import { IdentitySidesheetComponent } from '../../identities/identity-sidesheet/identity-sidesheet.component';
 import { QerPermissionsService } from '../../admin/qer-permissions.service';
+import { CreateNewIdentityComponent } from '../../identities/create-new-identity/create-new-identity.component';
+import { TranslateService } from '@ngx-translate/core';
+import { IdentitiesService } from '../../identities/identities.service';
 
 @Component({
   templateUrl: './businessowner-chartsummary.component.html',
@@ -44,6 +47,7 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
   public reports: PortalPersonReports[];
   public ownerships: OwnershipInformation[];
   public viewReady: boolean;
+  public allReportsCount: number;
 
   private projectConfig: ProjectConfig;
 
@@ -54,8 +58,10 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
     private readonly sideSheet: EuiSidesheetService,
     private readonly errorHandler: ErrorHandler,
     private readonly configService: ProjectConfigurationService,
+    private readonly identitiesService: IdentitiesService,
+    private readonly translate: TranslateService,
     private readonly userModelService: UserModelService,
-    private readonly qerPermissions: QerPermissionsService
+    public readonly qerPermissions: QerPermissionsService
   ) { }
 
   public async ngOnInit(): Promise<void> {
@@ -67,9 +73,7 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
 
       this.projectConfig = await this.configService.getConfig();
 
-      await this.loadDirectReports();
-
-      this.viewReady = true;
+      await this.getData();
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
@@ -116,8 +120,43 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
     await this.loadDirectReports();
   }
 
+  public async openCreateNewIdentitySidesheet(): Promise<void> {
+   const identityCreated = await this.sideSheet.open(CreateNewIdentityComponent, {
+      title: await this.translate.get('#LDS#Heading Create Identity').toPromise(),
+      headerColour: 'iris-blue',
+      bodyColour: 'asher-gray',
+      padding: '0px',
+      width: 'max(650px, 65%)',
+      disableClose: true,
+      testId: 'create-new-identity-sidesheet',
+      icon: 'contactinfo',
+      data: {
+        selectedIdentity: await this.identitiesService.createEmptyEntity(),
+        projectConfig: this.projectConfig
+      }
+    }).afterClosed().toPromise();
+
+    if (identityCreated) {
+      let overlayRef: OverlayRef;
+      setTimeout(() => overlayRef = this.busyService.show());
+      try {
+        await this.getData();
+      } finally {
+        setTimeout(() => this.busyService.hide(overlayRef));
+      }
+ }  }
+
   public openOwnership(ownerShip: OwnershipInformation): void {
     this.router.navigate(['resp', ownerShip.TableName]);
+  }
+
+  private async getData(): Promise<void> {    
+    this.viewReady = false;
+    await this.loadIndirectOrDirectReports();
+    if (this.allReportsCount > 0 ) {
+      await this.loadDirectReports();
+    }
+    this.viewReady = true;
   }
 
   private async loadDirectReports(): Promise<void> {
@@ -129,6 +168,20 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
           OnlyDirect: true, // direct reports only
           PageSize: 10000
         })).Data;
+      }
+    } finally {
+      setTimeout(() => this.busyService.hide(overlayRef));
+    }
+  }
+
+  private async loadIndirectOrDirectReports(): Promise<void> {
+    let overlayRef: OverlayRef;
+    setTimeout(() => overlayRef = this.busyService.show());
+    try {
+      if (await this.qerPermissions.isPersonManager()) {
+        this.allReportsCount = (await this.qerClient.typedClient.PortalPersonReports.Get({
+          PageSize: -1
+        })).totalCount;
       }
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));

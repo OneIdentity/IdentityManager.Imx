@@ -54,7 +54,7 @@ export class AppService {
 
     const imxConfig = await this.config.getImxConfig();
     const name = imxConfig.ProductName  || Globals.QIM_ProductNameFull;
-    this.config.Config.Title = await this.translateService.get('#LDS#Heading API Server').toPromise();
+    this.config.Config.Title = await this.translateService.get('#LDS#API Server').toPromise();
     const title = `${name} ${this.config.Config.Title}`;
     this.logger.debug(this, 'Set page title to', title);
     this.title.setTitle(title);

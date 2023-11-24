@@ -186,7 +186,7 @@ export class IdentityRoleMembershipsService {
           parameter?.search,
           'CU'
         ),
-      withAnalysis: true
+      withAnalysis: false
     });
   }
 }
