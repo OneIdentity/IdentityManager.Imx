@@ -11,9 +11,7 @@ jobs:
       contents: write
       pages: write      # to deploy to Pages
       id-token: write   # to verify the deployment originates from an appropriate source
-    env: 
-      TEST_TOKEN: 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
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -32,7 +30,7 @@ jobs:
           path: 'doc-files'
           ref: 'main'
           repository: 'OneIdentity/IdentityManager.ImxDoc'
-          token: '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'
+          token: ${{ secrets.GHPAGES_ACCESS_TOKEN}}
           fetch-depth: 0
           persist-credentials: true
 
