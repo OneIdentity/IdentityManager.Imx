@@ -9,12 +9,10 @@
 The `v82` branch has been updated with fixes for the following issues:
 
 - 37158/431567 Data Explorer: Removed assignment analysis button that was not intended to be shown
-- 423482/423488 Fix "My direct reports" tile:
-  - Show the tile if the identity  has at least one direct or indirect report
-  - Show a "Create identity" button in the tile if the user is a manager with no direct or indirect reports
-- 421566 Fix missing LDS keys for product names
+- 423482/423488 Fixed "My direct reports" tile: The tile is displayed if the identity has at least one direct or indirect report
+- 421566 Fixed missing LDS keys for product names
 - 416793 Fixed validation of the "valid until" date on the delegation form
-- 417211 New Request Prompt of product with request properties is cancelling the request when unintentionally clicking outside the window
+- 417211 Prompt of product with request properties is cancelling the request when unintentionally clicking outside the window
 
 ### May 25, 2023
 
