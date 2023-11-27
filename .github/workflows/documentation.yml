@@ -31,7 +31,7 @@ jobs:
       - name: Checkout doc
         uses: actions/checkout@v2
         with:
-          path: 'documentation'
+          path: 'doc-files'
           ref: 'main'
           repository: 'OneIdentity/IdentityManager.ImxDoc'
           token: ${{ secrets.GHPAGES_ACCESS_TOKEN}}
@@ -41,8 +41,8 @@ jobs:
       - name: Copy files to folder
         shell: bash
         run: |
-          mkdir -p "documentation/v92"
-          cp -rvT "imxweb/documentation/v92" documentation/v92"
+          mkdir -p "doc-files/doc"
+          cp -rvT "imxweb/documentation/v92" "doc-files/doc"
 
       - name: Commit files to doc repository
         id: newFiles
