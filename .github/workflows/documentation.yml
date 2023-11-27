@@ -5,13 +5,8 @@ on:
     branches: [master, v92, change/v92/testForActions]
 
 jobs:
-  build:
+  install:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -20,14 +15,29 @@ jobs:
         working-directory: ./imxweb
         run: npm install
 
-      - name: Generate documentation for qbm
-        run: npm run doc:qbm
+  build:
+    runs-on: ubuntu-latest
+    needs: install
+    strategy:
+      matrix:
+        project: [qbm, qer]
+    steps:
+      - name: Generate documentation for ${{matrix.project}}
+        run: npm run doc:${{matrix.project}}
         working-directory: ./imxweb
 
+  copy:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: write
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+    steps:
       - name: Checkout doc
         uses: actions/checkout@v2
         with:
-          path: 'doc-files'
+          path: 'documentation'
           ref: 'main'
           repository: 'OneIdentity/IdentityManager.ImxDoc'
           token: ${{ secrets.GHPAGES_ACCESS_TOKEN}}
@@ -37,33 +47,17 @@ jobs:
       - name: Copy files to folder
         shell: bash
         run: |
-          mkdir -p "doc-files/doc"
-          cp -rvT "imxweb/doc/v92" "doc-files/doc"
+          rm -r "documentation/v92"
+          mkdir -p "documentation/v92"
+          cp -rvT "imxweb/documentation/v92" "documentation/v92"   
 
       - name: Commit files to doc repository
         id: newFiles
         shell: bash
-        working-directory: doc-files
+        working-directory: documemtation # todo: Struktur festlegen (auch oben)
         run: |
           git config --global user.name "Automatic compoDoc documentation"
           git config --global user.email "martina.graeber@oneidentity.com"
           git add .
           git commit -m "Automatic compoDoc documentation"
           git push
-          
-    # env:
-    #   CI_COMMIT_MESSAGE: Automatic compoDoc documentation
-    #   CI_COMMIT_AUTHOR: Compodoc Integration Process
-    # steps:
-
-    # #ToDO: I need to change the repo here
-
-    # - name: GIT Commit Documentation
-    # # Only run on main branch push (e.g. pull request merge).
-    #   if: github.event_name == 'push'
-    #   run: |
-    #     git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
-    #     git config --global user.email "martina.graeber@oneidentity.com"
-    #     git add imxweb/doc
-    #     git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
-    #     git push

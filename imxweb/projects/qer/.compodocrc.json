@@ -1,11 +1,12 @@
 {
   "name": "IMX Web - QER Library",
-  "output": "../../documentation/qer",
+  "output": "../../documentation/v92/qer",
   "theme": "material",
   "assetsFolder": "../../compodoc/assets",
   "customLogo": "../../compodoc/assets/images/oneidentity-logo.png",
   "customFavicon": "../../compodoc/assets/images/favicon.ico",
-  "serve": true,
-  "watch": true,
-  "coverageTest": 0
+  "serve": false,
+  "watch": false,
+  "coverageTest": 0,
+  "disableCoverage": true
 }
