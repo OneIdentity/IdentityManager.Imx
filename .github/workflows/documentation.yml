@@ -41,7 +41,7 @@ jobs:
       - name: Copy files to folder
         shell: bash
         run: |
-          rm -r "doc-files/documentation/v92"
+          rm -rf "doc-files/documentation/v92"
           mkdir -p "doc-files/documentation/v92"
           cp -rvT "imxweb/documentation/v92" "doc-files/documentation/v92"
 
