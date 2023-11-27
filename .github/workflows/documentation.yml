@@ -41,8 +41,9 @@ jobs:
       - name: Copy files to folder
         shell: bash
         run: |
-          mkdir -p "doc-files/doc"
-          cp -rvT "imxweb/documentation/v92" "doc-files/doc"
+          rm -r "doc-files/documentation/v92"
+          mkdir -p "doc-files/documentation/v92"
+          cp -rvT "imxweb/documentation/v92" "doc-files/documentation/v92"
 
       - name: Commit files to doc repository
         id: newFiles
