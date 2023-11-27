@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: Generate documentation for ${{matrix.project}}
         run: npm run doc:${{matrix.project}}
-        working-directory: ./imxweb
+        working-directory: imxweb
 
   copy:
     runs-on: ubuntu-latest
