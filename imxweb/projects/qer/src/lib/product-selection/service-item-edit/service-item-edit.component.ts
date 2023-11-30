@@ -50,10 +50,15 @@ export class ServiceItemEditComponent {
 
   public async close(submit: boolean = true): Promise<void> {
     const bulkItemsWithNoDecision = this.bulkItems.filter(bulkItem => bulkItem.status === BulkItemStatus.unknown);
-    if (!submit && await this.confirmationService.confirm({
+    let cancel = false;
+    if (!submit && !(cancel = await this.confirmationService.confirm({
       Title: '#LDS#Heading Cancel Request Process',
       Message: '#LDS#Are you sure you want to cancel the request process and not add the products to your shopping cart?'
-    })) {
+    }))) {
+      return;
+    }
+
+    if (!submit && cancel) {
       this.bulkItems.forEach(item => item.status = BulkItemStatus.skipped);
       return this.sideSheetRef.close(false);
     } else if (submit && bulkItemsWithNoDecision && bulkItemsWithNoDecision.length > 0) {

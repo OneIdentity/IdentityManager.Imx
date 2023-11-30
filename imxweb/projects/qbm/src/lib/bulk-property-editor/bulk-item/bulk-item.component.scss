@@ -17,6 +17,12 @@ button {
   justify-content: end;
 }
 
+.mat-expansion-panel-header {
+  min-height: 24px;
+  height: auto;
+  padding: 12px 24px;
+}
+
 .mat-expansion-panel-header-description, .mat-expansion-panel-header-title {
   align-items: center;
 }

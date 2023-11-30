@@ -4,6 +4,16 @@
 
 ## Change log
 
+### November 24, 2023
+
+The `v82` branch has been updated with fixes for the following issues:
+
+- 37158/431567 Data Explorer: Removed assignment analysis button that was not intended to be shown
+- 423482/423488 Fixed "My direct reports" tile: The tile is displayed if the identity has at least one direct or indirect report
+- 421566 Fixed missing LDS keys for product names
+- 416793 Fixed validation of the "valid until" date on the delegation form
+- 417211 Prompt of product with request properties is cancelling the request when unintentionally clicking outside the window
+
 ### May 25, 2023
 
 The `v82` branch has been updated with fixes for the following issues:
