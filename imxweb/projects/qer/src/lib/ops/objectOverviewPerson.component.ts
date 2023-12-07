@@ -27,11 +27,9 @@
 import { Component, OnInit } from '@angular/core';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { OpsupportDbObjectService } from 'qbm';
+import { imx_SessionService, OpsupportDbObjectService } from 'qbm';
 import { ObjectOverviewContainer } from './objectOverviewContainer';
 import { PasscodeService } from './passcode.service';
-import { OpSupportUserService } from '../ops/user.service';
-import { QerPermissionsService } from '../admin/qer-permissions.service';
 
 @Component({
   templateUrl: './objectOverviewPerson.component.html',
@@ -48,15 +46,14 @@ export class ObjectOverviewPersonComponent implements OnInit {
   public isPasswordResetAllowed: boolean;
 
   constructor(
+    private readonly session: imx_SessionService,
     private readonly passcodeService: PasscodeService,
     private readonly busyService: EuiLoadingService,
-    private readonly userService: OpSupportUserService,
-    private readonly dbObjectService: OpsupportDbObjectService,
-    private readonly qerPermissionsService: QerPermissionsService
+    private readonly dbObjectService: OpsupportDbObjectService
   ) { }
 
   async ngOnInit(): Promise<void> {
-    this.isPasswordResetAllowed = await this.qerPermissionsService.isPasswordHelpdesk();
+    this.isPasswordResetAllowed = (await this.session.Client.opsupport_usergroups_get()).some(role => role.Name === 'QER_4_PasswordHelpdesk');   
   }
 
   get uidPerson(): string {

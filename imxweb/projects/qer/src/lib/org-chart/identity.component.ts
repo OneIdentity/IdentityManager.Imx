@@ -61,14 +61,14 @@ export class IdentityComponent {
       strings.push(this.translator.instant('#LDS#Delegated'));
     }
     var title = this.identity.PersonalTitle.Column.GetDisplayValue();
-    if (title) {
+    if (title && title.trim().length > 0) {
       strings.push(title);
     }
     var employeeType = this.identity.EmployeeType.Column.GetDisplayValue();
-    if (employeeType) {
+    if (employeeType && employeeType.trim().length > 0) {
       strings.push(employeeType);
     }
 
-    return strings.reduce((a, b) => a + ", " + b, "");
+    return strings.length > 0 ? strings.reduce((a, b) => a + ", " + b) : '';
   }
 }

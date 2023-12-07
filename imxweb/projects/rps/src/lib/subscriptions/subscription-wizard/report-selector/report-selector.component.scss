@@ -6,10 +6,6 @@
   flex-direction: column;
 }
 
-.imx-viewport {
-  overflow-x: hidden;
-}
-
 .report-selector-eui-search {
   display: flex;
 
@@ -24,31 +20,39 @@
   }
 }
 
-.imx-candidate-option {
-  display: flex;
-  height: auto;
-  margin: 10px 0;
+.imx-candidate {
+  &-list {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 
-  .imx-candidate-content {
+  &-option {
+    display: flex;
+    height: auto;
+    margin: 10px 0;
+  }
+
+  &-content {
     flex: 1;
     overflow: hidden;
+  }
 
-    .imx-candidate-display {
-      font-size: 14px;
-      line-height: 17px;
-      text-overflow: ellipsis;
-      overflow: hidden;
-    }
+  &-display {
+    font-size: 14px;
+    line-height: 17px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
 
-    .imx-candidate-longdisplay {
-      color: $black-9;
-      font-size: 12px;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      line-height: 17px;
-    }
+  &-longdisplay {
+    color: $black-9;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    line-height: 17px;
   }
 }
+
 
 .imx-report-listing {
   flex: 1;

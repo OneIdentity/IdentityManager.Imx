@@ -76,7 +76,10 @@ import {
   ViewDevicesModule,
   MyResponsibilitiesViewModule,
   ApprovalWorkFlowModule,
+  DataExplorerViewModule,
   UserProcessModule,
+  SourceDetectiveModule,
+  RoleMembershipsModule,
   TeamResponsibilitiesModule
 } from 'qer';
 
@@ -145,7 +148,10 @@ export function getBaseHref(): string {
     ViewDevicesModule,
     MyResponsibilitiesViewModule,
     ApprovalWorkFlowModule,
-    UserProcessModule,
+    DataExplorerViewModule,
+    UserProcessModule,    
+    SourceDetectiveModule,
+    RoleMembershipsModule,
     TeamResponsibilitiesModule
   ],
   providers: [

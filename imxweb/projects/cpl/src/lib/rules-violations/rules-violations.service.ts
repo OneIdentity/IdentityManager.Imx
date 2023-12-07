@@ -29,8 +29,20 @@ import { Injectable } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { ComplianceFeatureConfig, PortalRulesViolations, V2ApiClientMethodFactory } from 'imx-api-cpl';
-import { CollectionLoadParameters, CompareOperator, DataModel, EntityCollectionData, EntitySchema, ExtendedTypedEntityCollection, FilterData, FilterType, GroupInfoData, MethodDefinition, MethodDescriptor } from 'imx-qbm-dbts';
+import { ComplianceFeatureConfig, PortalRules, PortalRulesViolations, V2ApiClientMethodFactory } from 'imx-api-cpl';
+import {
+  CollectionLoadParameters,
+  CompareOperator,
+  DataModel,
+  EntityCollectionData,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  FilterData,
+  FilterType,
+  GroupInfoData,
+  MethodDefinition,
+  MethodDescriptor,
+} from 'imx-qbm-dbts';
 
 import { ClassloggerService, DataSourceToolbarExportMethod, SystemInfoService } from 'qbm';
 import { ApiService } from '../api.service';
@@ -101,7 +113,7 @@ export class RulesViolationsService {
       ...parameters,
     });
 
-    const hasRiskIndex = (await this.systemInfoService.get()).PreProps.includes("RISKINDEX");
+    const hasRiskIndex = (await this.systemInfoService.get()).PreProps.includes('RISKINDEX');
     return {
       tableName: collection.tableName,
       totalCount: collection.totalCount,
@@ -115,13 +127,13 @@ export class RulesViolationsService {
       getMethod: (withProperties: string, PageSize?: number) => {
         let method: MethodDescriptor<EntityCollectionData>;
         if (PageSize) {
-          method = factory.portal_rules_violations_get({...parameters, withProperties, PageSize, StartIndex: 0})
+          method = factory.portal_rules_violations_get({ ...parameters, withProperties, PageSize, StartIndex: 0 });
         } else {
-          method = factory.portal_rules_violations_get({...parameters, withProperties})
+          method = factory.portal_rules_violations_get({ ...parameters, withProperties });
         }
         return new MethodDefinition(method);
-      }
-    }
+      },
+    };
   }
 
   /**
@@ -147,12 +159,14 @@ export class RulesViolationsService {
     this.busyIndicatorCounter--;
   }
 
-  public async getComplianceRuleUId(rulesViolationsApproval: RulesViolationsApproval): Promise<string>{
-    const uidNonCompliance= rulesViolationsApproval.GetEntity().GetColumn('UID_NonCompliance').GetValue();
-    const call = await this.cplClient.client.portal_rules_get({filter:[
-      { ColumnName: 'UID_NonCompliance', CompareOp: CompareOperator.Equal, Type: FilterType.Compare, Value1: uidNonCompliance },
-      { ColumnName: 'isWorkingcopy', CompareOp: CompareOperator.Equal, Type: FilterType.Compare, Value1: false }
-    ]})
-    return call.Entities[0]?.Keys[0];
+  public async getComplianceRuleByUId(rulesViolationsApproval: RulesViolationsApproval): Promise<PortalRules> {
+    const uidNonCompliance = rulesViolationsApproval.GetEntity().GetColumn('UID_NonCompliance').GetValue();
+    const call = await this.cplClient.typedClient.PortalRules.Get({
+      filter: [
+        { ColumnName: 'UID_NonCompliance', CompareOp: CompareOperator.Equal, Type: FilterType.Compare, Value1: uidNonCompliance },
+        { ColumnName: 'isWorkingcopy', CompareOp: CompareOperator.Equal, Type: FilterType.Compare, Value1: false },
+      ],
+    });
+    return call.Data[0];
   }
 }

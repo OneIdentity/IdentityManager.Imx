@@ -1,31 +1,42 @@
-<div class="imx-timeline-content">
-  <div class="imx-timeline-events-group" *ngFor="let events of eventsGroupedByDate">
-    <div class="imx-timeline-date">
-      {{ events.date }}
-    </div>
-    <div class="imx-timeline-separator">
-      <div class="imx-timeline-separator-marker">
-        <div class="imx-timeline-separator-marker-hover-circle"></div>
+<div class="imx-timeline-content" [ngStyle]="!eventsGroupedByDate.length && { height: '100%' }">
+  <ng-container *ngIf="eventsGroupedByDate.length; else nonExisting">
+    <div class="imx-timeline-events-group" *ngFor="let events of eventsGroupedByDate">
+      <div class="imx-timeline-date">
+        {{ events.date }}
       </div>
-      <div class="imx-timeline-separator-connector"></div>
+      <div class="imx-timeline-separator">
+        <div class="imx-timeline-separator-marker">
+          <div class="imx-timeline-separator-marker-hover-circle"></div>
+        </div>
+        <div class="imx-timeline-separator-connector"></div>
+      </div>
+      <div class="imx-timeline-events">
+        <mat-card>
+          <mat-card-content>
+            <div class="imx-timeline-event" *ngFor="let event of events.events">
+              <span class="imx-timeline-event-time">{{ event.Time }}</span>
+              <span>
+                {{ event.ChangeType }} ({{ event.User }})
+                <span *ngIf="event.Property || event.Display"> - </span>
+              </span>
+              <span class="imx-timeline-event-display">
+                {{ event.Property }}
+                <span *ngIf="event.Property">: </span>
+                {{ event.Display }}
+              </span>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
     </div>
-    <div class="imx-timeline-events">
-      <mat-card>
-        <mat-card-content>
-          <div class="imx-timeline-event" *ngFor="let event of events.events">
-            <span class="imx-timeline-event-time">{{ event.Time }}</span>
-            <span>
-              {{ event.ChangeType }} ({{ event.User }})
-              <span *ngIf="event.Property || event.Display"> - </span>
-            </span>
-            <span class="imx-timeline-event-display">
-              {{ event.Property }}
-              <span *ngIf="event.Property">: </span>
-              {{ event.Display }}
-            </span>
-          </div>
-        </mat-card-content>
-      </mat-card>
-    </div>
-  </div>
+  </ng-container>
 </div>
+
+<ng-template #nonExisting>
+  <div class="imx-no-results">
+    <eui-icon size="100px" icon="table"></eui-icon>
+    <h2>
+      {{ '#LDS#No data' | translate }}
+    </h2>
+  </div>
+</ng-template>

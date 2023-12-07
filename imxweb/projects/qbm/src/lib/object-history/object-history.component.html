@@ -51,6 +51,7 @@
           class="small"
           [dateControl]="timelineFromDateFormControl"
           [useClearIcon]="true"
+          [max]="this.timelineTo.date !== 'Invalid date' ? this.timelineTo.date : momentToday"
         ></eui-date-picker>
         <eui-time-picker
           [timeControl]="timelineFromTimeFormControl"
@@ -65,6 +66,7 @@
         <eui-date-picker
           [dateControl]="timelineToDateFormControl"
           [useClearIcon]="true"
+          [max]="momentToday"
         ></eui-date-picker>
         <eui-time-picker
           [timeControl]="timelineToTimeFormControl"
@@ -81,8 +83,11 @@
         *ngFor="let look of looks; let index = index"
         [value]="look"
         [checked]="look === selectedLook"
+        matTooltipPosition="above"
+        [matTooltip]="(look === 'timeline' ? '#LDS#Show as timeline' : '#LDS#Show as table') | translate"
+        [attr.aria-label]="(look === 'timeline' ? '#LDS#Show as timeline' : '#LDS#Show as table') | translate"
         [attr.data-imx-identifier]="'dst-togglegroup-looks-button-' + look">
-        <eui-icon [icon]="lookIcons[index]"></eui-icon>
+        <eui-icon [size]="look === 'timeline' ? '24px' : '32px'" [icon]="lookIcons[index]"></eui-icon>
       </mat-button-toggle>
     </mat-button-toggle-group>
   </div>

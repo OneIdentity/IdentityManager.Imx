@@ -63,7 +63,6 @@ export class ReportSelectorComponent implements ControlValueAccessor, OnInit, On
   private parameters: CollectionLoadParameters;
   private readonly subscribers: Subscription[] = [];
 
-  @ViewChild('viewport') private viewport: CdkVirtualScrollViewport;
   @Input() controlHeigth = 200;
 
   constructor(
@@ -76,7 +75,7 @@ export class ReportSelectorComponent implements ControlValueAccessor, OnInit, On
     this.initSearchControl();
     await this.loadReports({
       StartIndex: 0,
-      PageSize: this.settings.DefaultPageSize,
+      PageSize: this.settings.PageSizeForAllElements,
       filter: undefined,
       search: undefined,
     });
@@ -97,21 +96,8 @@ export class ReportSelectorComponent implements ControlValueAccessor, OnInit, On
   }
 
   public async ngAfterViewInit(): Promise<void> {
-    this.parameters = { PageSize: this.settings.DefaultPageSize, StartIndex: 0 };
-
-    this.subscribers.push(
-      this.viewport.renderedRangeStream.subscribe(async (range: ListRange) => {
-        if (range.end === 20 + this.parameters.StartIndex) {
-          this.parameters.StartIndex += 20;
-
-          const tmpCandidates = Object.assign([], this.candidates);
-          await this.loadReports(this.parameters);
-
-          this.candidates.unshift(...tmpCandidates);
-          this.changeDetectorRef.detectChanges();
-        }
-      })
-    );
+    this.parameters = { PageSize: this.settings.PageSizeForAllElements, StartIndex: 0 };
+    await this.loadReports(this.parameters);
   }
 
   public ngOnDestroy(): void {
@@ -126,8 +112,9 @@ export class ReportSelectorComponent implements ControlValueAccessor, OnInit, On
   }
 
   private async loadReports(newState?: CollectionLoadParameters): Promise<void> {
+    this.loading = true;
+
     try {
-      setTimeout(() => (this.loading = true));
       this.parameters = { ...this.parameters, ...newState };
       this.candidates = (await this.reportSubscriptionService.getReportCandidates(this.parameters)).Data;
     } finally {
@@ -139,8 +126,7 @@ export class ReportSelectorComponent implements ControlValueAccessor, OnInit, On
     this.searchControl.setValue('');
     this.subscribers.push(
       this.searchControl.valueChanges.pipe(distinctUntilChanged(), debounceTime(300)).subscribe(async (value) => {
-        await this.loadReports({ StartIndex: 0, PageSize: this.settings.DefaultPageSize, search: value });
-        this.viewport.scrollToIndex(0);
+        await this.loadReports({ StartIndex: 0, PageSize: this.settings.PageSizeForAllElements, search: value });
         this.changeDetectorRef.detectChanges();
       })
     );

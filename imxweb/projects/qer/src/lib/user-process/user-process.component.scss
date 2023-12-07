@@ -1,5 +1,32 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
+@mixin imx-flex {
+  display: flex;
+  flex-direction: column;
+  padding: 3px;
+}
+
+@mixin imx-full-flex {
+  @include imx-flex();
+  overflow: hidden;
+  flex: 1 1 auto;
+}
+
+:host {
+  @include imx-flex();
+  height: 100%;
+  overflow: hidden;
+}
+
+.imx-card-fill {
+  @include imx-full-flex();
+}
+
+.imx-table-container {
+  flex: 1 1 auto;
+  overflow: auto;
+}
+
 table {
   width: 100%;
   max-height: 100%;

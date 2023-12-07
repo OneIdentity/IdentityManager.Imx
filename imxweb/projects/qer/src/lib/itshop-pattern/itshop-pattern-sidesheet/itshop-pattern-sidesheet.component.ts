@@ -65,7 +65,7 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
   }
   public cdrList: ColumnDependentReference[] = [];
   public readonly detailsFormGroup: UntypedFormGroup;
-  
+
   public busyService = new BusyService();
 
   public dstWrapper: DataSourceWrapper<PortalItshopPatternItem>;
@@ -109,7 +109,8 @@ export class ItshopPatternSidesheetComponent implements OnInit, OnDestroy {
     this.closeSubscription = this.sideSheetRef.closeClicked().subscribe(async () => {
       if (!this.detailsFormGroup.dirty
         || await confirmation.confirmLeaveWithUnsavedChanges()) {
-        this.sideSheetRef.close();
+          this.data.pattern.GetEntity().DiscardChanges();
+          this.sideSheetRef.close();
       }
     });
   }

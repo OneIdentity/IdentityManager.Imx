@@ -36,9 +36,9 @@ import moment from 'moment-timezone';
 export class TimelineComponent implements OnInit, OnChanges {
 
   @Input() public data: ExtendedObjectHistoryEvent[];
-  /**from input can be in the following form: 'Invalid data', '01/01/2000', '01/01/2000 00:00:00' */
+  /**from input can be in the following form: 'Invalid data', '2000-01-01', '2000-01-01 00:00:00' */
   @Input() public from: string;
-  /**to input can be in the following form: 'Invalid data', '01/01/2000', '01/01/2000 00:00:00' */
+  /**to input can be in the following form: 'Invalid data', '2000-01-01', '2000-01-01 00:00:00' */
   @Input() public to: string;
 
   public eventsGroupedByDate: TimelineEventsGroupedByDate[] = [];
@@ -72,7 +72,9 @@ export class TimelineComponent implements OnInit, OnChanges {
 
       elem.Time = moment(elem.ChangeTime).format("HH:mm:ss");
       if (this.eventsGroupedByDate.some((event) => event.date === date)) {
-        this.eventsGroupedByDate.find((event) => event.date === date).events.push(elem);
+        const dateEvents = this.eventsGroupedByDate.find((event) => event.date === date).events;
+        dateEvents.push(elem);
+        dateEvents.sort((a, b) => b.Time.localeCompare(a.Time));
       } else {
         this.eventsGroupedByDate.push({
           date: date,
@@ -93,11 +95,13 @@ export class TimelineComponent implements OnInit, OnChanges {
       return;
     }
 
+    const isFromValid = this.from !== 'Invalid date';
+    const isToValid = this.to !== 'Invalid date';
+
     results = this.data.filter((elem) => {
-      const isFromValid = this.from !== 'Invalid date';
-      const isToValid = this.to !== 'Invalid date';
-      const fromValidation = moment(elem.ChangeTime).isAfter(moment(this.from), 'minute');
-      const toValidation = moment(elem.ChangeTime).isBefore(moment(this.to), 'minute');
+      const momentElemTime = moment(elem.ChangeTime);
+      const fromValidation = momentElemTime.isAfter(moment(this.from), 'minute');
+      const toValidation = momentElemTime.isBefore(moment(this.to), 'minute');
 
       if (isFromValid && !isToValid) return fromValidation;
       if (!isFromValid && isToValid) return toValidation;

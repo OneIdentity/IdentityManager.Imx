@@ -39,6 +39,7 @@ export { BusinessownerAddonTileModule } from './lib/businessowner-addon-tile/bus
 export { BusinessOwnerOverviewTileComponent } from './lib/businessowner-overview-tile/businessowner-overview-tile.component';
 export { BusinessownerOverviewTileModule } from './lib/businessowner-overview-tile/businessowner-overview-tile.module';
 export { DataExplorerRegistryService } from './lib/data-explorer-view/data-explorer-registry.service';
+export { DataExplorerViewModule } from './lib/data-explorer-view/data-explorer-view.module';
 export { DelegationComponent } from './lib/delegation/delegation.component';
 export { DelegationModule } from './lib/delegation/delegation.module';
 export { DynamicExclusionDialogComponent } from './lib/dynamic-exclusion-dialog/dynamic-exclusion-dialog.component';
@@ -98,7 +99,6 @@ export { ObjectOverviewContainer } from './lib/ops/objectOverviewContainer';
 export { ObjectOverviewPersonComponent } from './lib/ops/objectOverviewPerson.component';
 export { OpsModule } from './lib/ops/ops.module';
 export { PasscodeService } from './lib/ops/passcode.service';
-export { PasscodeViewerComponent } from './lib/ops/passcodeViewer.component';
 export { OpSupportUserService } from './lib/ops/user.service';
 export { OwnerControlComponent } from './lib/owner-control/owner-control.component';
 export { OwnerControlModule } from './lib/owner-control/owner-control.module';
@@ -146,6 +146,7 @@ export { RoleManangementModule } from './lib/role-management/role-manangement.mo
 export { DataManagementService } from './lib/role-management/data-management.service';
 export { BaseMembership, IRoleMembershipType } from './lib/role-management/role-memberships/membership-handlers';
 export { RoleMembershipsComponent } from './lib/role-management/role-memberships/role-memberships.component';
+export { RoleMembershipsModule } from './lib/role-management/role-memberships/role-memberships.module';
 export { RoleService } from './lib/role-management/role.service';
 export { RolesOverviewComponent } from './lib/role-management/roles-overview/roles-overview.component';
 export { ServiceCategoriesModule } from './lib/service-categories/service-categories.module';
@@ -159,6 +160,7 @@ export {
 } from './lib/service-items-edit/service-items-edit-form/service-items-edit-form.component';
 export { ServiceItemsEditFormModule } from './lib/service-items-edit/service-items-edit-form/service-items-edit-form.module';
 export { ServiceItemsEditModule } from './lib/service-items-edit/service-items-edit.module';
+export { StartComponent } from './lib/wport/start/start.component';
 export { BaseViewerComponent } from './lib/shopping-cart-validation-detail/base-viewer/base-viewer.component';
 export { DetailViewerComponent } from './lib/shopping-cart-validation-detail/detail-viewer/detail-viewer.component';
 export { DetailsView } from './lib/shopping-cart-validation-detail/details-view.interface';

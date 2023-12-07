@@ -70,6 +70,10 @@
 
 mat-button-toggle-group {
   margin-left: auto;
+
+  ::ng-deep .mat-button-toggle-appearance-standard[ng-reflect-value='table'] .mat-button-toggle-label-content {
+    padding: 0 8px;
+  }
 }
 
 .eui-dark-theme {

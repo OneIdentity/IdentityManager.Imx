@@ -47,7 +47,6 @@ import {
   AuthenticationModule,
   RouteGuardService,
   CustomThemeModule,
-  QbmModule,
   SqlWizardApiService,
   SqlWizardModule,
 } from 'qbm';
@@ -69,11 +68,11 @@ import appConfigJson from '../appconfig.json';
 import { DataChangesModule } from './data-changes/data-changes.module';
 import { DbQueueModule } from './db-queue/db-queue.module';
 import { OpsSqlWizardApiService } from './base/ops-sql-wizard-api.service';
+import { QerModule } from 'qer';
 
 @NgModule({
   declarations: [AppComponent],
   imports: [
-    QbmModule,
     AppRoutingModule,
     AuthenticationModule,
     BrowserAnimationsModule,
@@ -108,6 +107,7 @@ import { OpsSqlWizardApiService } from './base/ops-sql-wizard-api.service';
     ProcessesModule,
     OutstandingModule,
     DataChangesModule,
+    QerModule,
     SqlWizardModule
   ],
   providers: [

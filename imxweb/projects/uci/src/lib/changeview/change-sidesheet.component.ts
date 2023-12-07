@@ -65,7 +65,7 @@ export class ChangeSidesheetComponent {
     });
   }
 
-  public async MarkAsDone(detail: OpsupportUciChangedetail): Promise<void> {
+  public async markAsDone(detail: OpsupportUciChangedetail): Promise<void> {
     if (await this.confirmation.confirm({
       Title: '#LDS#Heading Mark As Successful',
       Message: '#LDS#The provisioning process will be marked as successful. Are you sure you have made the requested change in the cloud application?'
@@ -75,7 +75,7 @@ export class ChangeSidesheetComponent {
 
   }
 
-  public async MarkAsError(detail: OpsupportUciChangedetail): Promise<void> {
+  public async markAsError(detail: OpsupportUciChangedetail): Promise<void> {
     if (await this.confirmation.confirm({
       Title: '#LDS#Heading Mark As Failed',
       Message: '#LDS#The provisioning process will be marked as failed. Are you sure you cannot make the requested change in the cloud application?'

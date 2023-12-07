@@ -150,7 +150,8 @@ export class RunsGridComponent implements OnInit {
 
   public async getData(newState?: CollectionLoadParameters): Promise<void> {
     if (newState) {
-      this.navigationState = { ...newState, ...this.filter };
+      const filter = this.filter.filter.concat(newState.filter ?? []);
+      this.navigationState = { ...newState, filter };
     }
 
     let overlayRef: OverlayRef;

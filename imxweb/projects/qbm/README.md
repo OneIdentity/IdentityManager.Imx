@@ -1,2 +1,0 @@
-# IMX Web - QBM Library
-

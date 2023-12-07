@@ -106,7 +106,7 @@
   "optionalDependencies": {
     "imx-api-aad": "file:imx-modules/imx-api-aad.tgz",
     "imx-api-aob": "file:imx-modules/imx-api-aob.tgz",
-	  "imx-api-apc": "file:imx-modules/imx-api-apc.tgz",
+    "imx-api-apc": "file:imx-modules/imx-api-apc.tgz",
     "imx-api-att": "file:imx-modules/imx-api-att.tgz",
     "imx-api-cpl": "file:imx-modules/imx-api-cpl.tgz",
     "imx-api-dpr": "file:imx-modules/imx-api-dpr.tgz",
