@@ -4,6 +4,14 @@
 
 ## Change log
 
+### December 7, 2023
+- The branch v90 is now up to date with the 9.0 CU3 of Identity Manager.
+- The repository has been updated with fixes for the following issues. 
+  - 426872 Fixed a bug on policy violations incorrectly using standard justifications
+  - 426135 Fixed a bug on self registration of a new user configuration for new portal
+  - 415839 Security Fixes für imxweb 9.0 CU3 added
+  - 412932 Fixed a bug in parameter handling, which ignores query column settings
+
 ### April 24, 2023
 
 - The branch `v90` is now up to date with the 9.0 CU2 of Identity Manager.
