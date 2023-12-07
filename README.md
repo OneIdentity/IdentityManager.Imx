@@ -4,6 +4,11 @@
 
 ## Change log
 
+### December 7, 2023
+- The repository has been updated with the newest source code.
+- Mainly fixes for filtering issues added.
+- Fixes on the Operation Support portal added.
+
 ### October 20, 2023
 
 - The repository has been updated with the source code for the Identity Manager 9.2 release in the `v92` branch.
