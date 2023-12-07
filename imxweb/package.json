@@ -1,6 +1,6 @@
 {
   "name": "imxweb",
-  "version": "9.0.0",
+  "version": "9.0.3",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --configuration development",
@@ -41,6 +41,7 @@
     "@angular/platform-browser": "^13.3.8",
     "@angular/platform-browser-dynamic": "^13.3.8",
     "@angular/router": "^13.3.8",
+    "@babel/traverse": "^7.23.2",
     "@elemental-ui/cadence-icon": "file:imx-modules/elemental-ui_cadence-icon.tgz",
     "@elemental-ui/core": "file:imx-modules/elemental-ui_core.tgz",
     "@ngx-translate/core": "^11.0.1",
@@ -66,7 +67,7 @@
     "zone.js": "~0.11.5"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~13.3.10",
+    "@angular-devkit/build-angular": "^13.3.11",
     "@angular/cli": "^13.3.9",
     "@angular/compiler-cli": "^13.3.8",
     "@angular/language-service": "^13.3.8",
@@ -118,5 +119,8 @@
     "imx-api-tsb": "file:imx-modules/imx-api-tsb.tgz",
     "imx-api-uci": "file:imx-modules/imx-api-uci.tgz",
     "imx-qbm-dbts": "file:imx-modules/imx-qbm-dbts.tgz"
+  },
+  "overrides": {
+    "@babel/traverse": "7.23.2"
   }
 }

@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { SqlNodeView, SqlViewSettings } from './SqlNodeView';
 import { LogOp as _logOp } from 'imx-qbm-dbts';
 
@@ -40,7 +40,13 @@ export class SingleExpressionComponent {
     @Input() public last: boolean;
     @Input() public viewSettings: SqlViewSettings;
 
+    @Output() public change = new EventEmitter<any>();
+
     public LogOp = _logOp;
+
+    public emitChanges(): void {
+      this.change.emit();
+    }
 
     public IsEmpty(): boolean {
         return !this.expr.Data.PropertyId;
@@ -48,6 +54,17 @@ export class SingleExpressionComponent {
 
     public toggleLogOperator() {
         this.expr.Parent.Data.LogOperator = this.expr.Parent.Data.LogOperator === _logOp.OR ? _logOp.AND : _logOp.OR;
+        this.change.emit();
+    }
+
+    public async addExpression(): Promise<void> {
+      await this.expr.Parent.addChildNode();
+      this.emitChanges();
+    }
+
+    public removeExpression(): void {
+      this.expr.remove();
+      this.emitChanges();
     }
 
 }
