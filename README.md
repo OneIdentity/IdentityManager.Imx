@@ -4,6 +4,9 @@
 
 ## Change log
 
+### December 12, 2023
+- Added some [code samples](sdk_samples/README.md) with explanations.
+
 ### October 20, 2023
 
 - The repository has been updated with the source code for the Identity Manager 9.2 release in the `v92` branch.
