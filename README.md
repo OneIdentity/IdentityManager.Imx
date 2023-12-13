@@ -3,6 +3,8 @@
 # Identity Manager HTML5 applications
 
 ## Change log
+### December 12, 2023
+- Added some [code samples](sdk_samples/README.md) with explanations.
 
 ### December 7, 2023
 The v92 branch has been updated with fixes for the following issues.
