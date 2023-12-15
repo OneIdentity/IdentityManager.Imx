@@ -27,7 +27,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { RouteGuardService } from 'qbm';
+import { AuthenticationGuardService, LoginComponent, RouteGuardService } from 'qbm';
 import { ObjectOverviewComponent } from './object-overview/object-overview.component';
 import { JobsComponent } from './processes/jobs/jobs.component';
 import { JournalComponent } from './journal/journal.component';
@@ -51,6 +51,12 @@ import { DataChangesComponent } from './data-changes/data-changes.component';
 import { DbQueueComponent } from './db-queue/db-queue.component';
 
 const routes: Routes = [
+  {
+    path: '',
+    component: LoginComponent,
+    canActivate: [AuthenticationGuardService],
+    resolve: [RouteGuardService]
+  },
   {
     path: 'start',
     component: DashboardComponent,

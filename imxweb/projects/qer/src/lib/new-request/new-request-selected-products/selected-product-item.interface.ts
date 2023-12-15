@@ -24,7 +24,12 @@
  *
  */
 
-import { PortalItshopPatternItem, PortalItshopPatternRequestable, PortalItshopPeergroupMemberships, PortalShopServiceitems } from 'imx-api-qer';
+import {
+  PortalItshopPatternItem,
+  PortalItshopPatternRequestable,
+  PortalItshopPeergroupMemberships,
+  PortalShopServiceitems,
+} from 'imx-api-qer';
 import { TypedEntity } from 'imx-qbm-dbts';
 
 /**
@@ -35,17 +40,17 @@ export enum SelectedProductType {
   PeergroupMemebership,
   PatternItem,
   Any,
-  Undefined
+  Undefined,
 }
 
 export enum SelectedProductSource {
   AllProducts = '#LDS#Service category',
   PeerGroupProducts = '#LDS#Recommendations/peer group (products)',
   PeerGroupOrgs = '#LDS#Recommendations/peer group (organizational structures)',
-  ReferenceUserProducts = "#LDS#Reference user (products)",
-  ReferenceUserOrgs = "#LDS#Reference user (organizational structures)",
+  ReferenceUserProducts = '#LDS#Reference user (products)',
+  ReferenceUserOrgs = '#LDS#Reference user (organizational structures)',
   ProductBundles = '#LDS#Product bundle',
-  Undefined = '#LDS#Undefined'
+  Undefined = '#LDS#Undefined',
 }
 
 /**
@@ -60,23 +65,26 @@ export interface SelectedProductItem {
   /**
    * The type of the  item
    */
-  type: SelectedProductType
+  type: SelectedProductType;
 
-  source?: SelectedProductSource,
+  source?: SelectedProductSource;
 
   /**
    * The product bundle of the item.
    * Always null unless the item is a PortalItshopPatternItem
    */
-  bundle?:  PortalItshopPatternRequestable;
+  bundle?: PortalItshopPatternRequestable;
+  product?: string;
+  productSource?: string;
+  description?: string;
 }
 
 export function GetSelectedProductType(item: TypedEntity): SelectedProductType {
-  if(item instanceof PortalShopServiceitems) {
+  if (item instanceof PortalShopServiceitems) {
     return SelectedProductType.ServiceItem;
-  } else if(item instanceof PortalItshopPeergroupMemberships) {
+  } else if (item instanceof PortalItshopPeergroupMemberships) {
     return SelectedProductType.PeergroupMemebership;
-  } else if(item instanceof PortalItshopPatternItem) {
+  } else if (item instanceof PortalItshopPatternItem) {
     return SelectedProductType.PatternItem;
   } else {
     return SelectedProductType.Undefined;

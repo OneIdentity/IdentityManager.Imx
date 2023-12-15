@@ -1,34 +1,50 @@
 <h1 class="mat-headline">
   {{ '#LDS#Heading My Processes' | translate }}
 </h1>
-<mat-card *ngIf="!busyService.isBusy">
-  <table mat-table [dataSource]="userProcesses">
-    <ng-container matColumnDef="xDateInserted">
-      <th mat-header-cell *matHeaderCellDef>
-        {{ '#LDS#Created on' | translate }}
-      </th>
-      <td mat-cell *matCellDef="let userProcess">
-        {{ userProcess.XDateInserted | date }}
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="display">
-      <th mat-header-cell *matHeaderCellDef>
-        {{ '#LDS#Process' | translate }}
-      </th>
-      <td mat-cell *matCellDef="let userProcess">
-        {{ userProcess.Display }}
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="processState">
-      <th mat-header-cell *matHeaderCellDef>
-        {{ '#LDS#Status' | translate }}
-      </th>
-      <td mat-cell *matCellDef="let userProcess">
-        <eui-icon *ngIf="userProcess.ProcessState === 0" class="imx-check-icon" icon="check" aria-label="Done icon" [matTooltip]="'#LDS#Done' | translate" matTooltipPosition="right"></eui-icon>
-        <eui-icon *ngIf="userProcess.ProcessState === 1" class="imx-error-icon" icon="error" aria-label="Error icon" [matTooltip]="'#LDS#Failed' | translate" matTooltipPosition="right"></eui-icon>
-      </td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-  </table>
+<mat-card *ngIf="!busyService.isBusy" class="imx-card-fill">
+  <div class="imx-table-container">
+    <table mat-table [dataSource]="userProcesses">
+      <ng-container matColumnDef="xDateInserted">
+        <th mat-header-cell *matHeaderCellDef>
+          {{ '#LDS#Created on' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let userProcess">
+          {{ userProcess.XDateInserted | date }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="display">
+        <th mat-header-cell *matHeaderCellDef>
+          {{ '#LDS#Process' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let userProcess">
+          {{ userProcess.Display }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="processState">
+        <th mat-header-cell *matHeaderCellDef>
+          {{ '#LDS#Status' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let userProcess">
+          <eui-icon
+            *ngIf="userProcess.ProcessState === 0"
+            class="imx-check-icon"
+            icon="check"
+            aria-label="Done icon"
+            [matTooltip]="'#LDS#Done' | translate"
+            matTooltipPosition="right"
+          ></eui-icon>
+          <eui-icon
+            *ngIf="userProcess.ProcessState === 1"
+            class="imx-error-icon"
+            icon="error"
+            aria-label="Error icon"
+            [matTooltip]="'#LDS#Failed' | translate"
+            matTooltipPosition="right"
+          ></eui-icon>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
 </mat-card>

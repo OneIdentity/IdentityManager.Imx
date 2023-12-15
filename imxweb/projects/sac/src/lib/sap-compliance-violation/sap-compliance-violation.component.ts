@@ -25,9 +25,9 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { SapComplianceApiService } from '../sac-api-client.service';
+import { PortalRules, PortalRulesViolations } from 'imx-api-cpl';
 import { ByAbilityResult, ByRoleResult, PortalTargetsystemSapuser } from 'imx-api-sac';
-import { PortalRulesViolations } from 'imx-api-cpl';
+import { SapComplianceApiService } from '../sac-api-client.service';
 import { SapSelectionOptions, SapSelectionTypeEnum } from './sap-compliance-violation.model';
 
 @Component({
@@ -37,7 +37,7 @@ import { SapSelectionOptions, SapSelectionTypeEnum } from './sap-compliance-viol
 export class SapComplianceViolationComponent implements OnInit {
   public data: {
     selectedRulesViolation: PortalRulesViolations;
-    complianceRuleUid: string;
+    complianceRule: PortalRules;
   };
   public accounts: PortalTargetsystemSapuser[] = [];
   public resultByRole: ByRoleResult = { Elements: [] };
@@ -61,7 +61,7 @@ export class SapComplianceViolationComponent implements OnInit {
         UID_PersonAssociated: uidPerson,
       })
     ).Data;
-    if (this.accounts.length > 0 && !!this.data.complianceRuleUid) {
+    if (this.accounts.length > 0 && !!this.data.complianceRule?.EntityKeysData?.Keys?.[0]) {
       this.selectedAccount = this.accounts[0];
       await this.loadResult();
     }
@@ -86,14 +86,20 @@ export class SapComplianceViolationComponent implements OnInit {
         (this.isOptionSelected(this.sapSelectionTypeEnum.ABILITY) && abilityLength == 0))
     );
   }
-  public get hideChips(): boolean{
+  public get hideChips(): boolean {
     return this.resultByRole?.Elements?.length == 0 && this.resultByAbility?.Data?.length == 0;
   }
   private async loadResult(): Promise<void> {
     this.loading = true;
     const uidsapuser = this.selectedAccount.GetEntity().GetKeys()[0];
-    this.resultByAbility = await this.api.client.portal_sap_ruleanalysis_fld_get(uidsapuser, this.data.complianceRuleUid);
-    this.resultByRole = await this.api.client.portal_sap_ruleanalysis_byrole_get(uidsapuser, this.data.complianceRuleUid);
+    this.resultByAbility = await this.api.client.portal_sap_ruleanalysis_fld_get(
+      uidsapuser,
+      this.data.complianceRule?.EntityKeysData?.Keys?.[0]
+    );
+    this.resultByRole = await this.api.client.portal_sap_ruleanalysis_byrole_get(
+      uidsapuser,
+      this.data.complianceRule?.EntityKeysData?.Keys?.[0]
+    );
     this.loading = false;
   }
 }

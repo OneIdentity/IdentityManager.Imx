@@ -24,15 +24,16 @@
  *
  */
 
-import { Component, Inject, OnDestroy, OnInit, Type, ViewChild, ViewContainerRef } from '@angular/core';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { Component, Inject, OnDestroy, OnInit, Type, ViewChild } from '@angular/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 
-import { ColumnDependentReference, ExtService, IExtension } from 'qbm';
-import { RulesViolationsApproval } from '../rules-violations-approval';
-import { RulesViolationsActionService } from '../rules-violations-action/rules-violations-action.service';
 import { MatTabGroup } from '@angular/material/tabs';
+import { TranslateService } from '@ngx-translate/core';
+import { PortalRules } from 'imx-api-cpl';
+import { BaseCdr, ExtService, IExtension } from 'qbm';
 import { Subscription } from 'rxjs';
-
+import { RulesViolationsActionService } from '../rules-violations-action/rules-violations-action.service';
+import { RulesViolationsApproval } from '../rules-violations-approval';
 
 export class baseComplienceClass {
   public data: {
@@ -40,7 +41,7 @@ export class baseComplienceClass {
   };
 }
 export interface DynamicTabItem extends IExtension {
-  instance: Type<baseComplienceClass>
+  instance: Type<baseComplienceClass>;
 }
 /**
  * A sidesheet component to show some information about the selected rules violation.
@@ -48,30 +49,38 @@ export interface DynamicTabItem extends IExtension {
 @Component({
   selector: 'imx-rules-violations-details',
   templateUrl: './rules-violations-details.component.html',
-  styleUrls: ['./rules-violations-details.component.scss']
+  styleUrls: ['./rules-violations-details.component.scss'],
 })
 export class RulesViolationsDetailsComponent implements OnInit, OnDestroy {
   @ViewChild(MatTabGroup) public matTabGroup: MatTabGroup;
 
-  public cdrList: ColumnDependentReference[] = [];
+  public cdrList: BaseCdr[] = [];
   public uidPerson: string;
   public uidNonCompliance: string;
   public uidCompliance: string;
-  private subscriptions$: Subscription[] = []
+  public ruleInfoCdrList: BaseCdr[] = [];
+  private subscriptions$: Subscription[] = [];
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public data: {
-      selectedRulesViolation: RulesViolationsApproval,
-      isMControlPerViolation: boolean,
-      complianceRuleUid: string
+    @Inject(EUI_SIDESHEET_DATA)
+    public data: {
+      selectedRulesViolation: RulesViolationsApproval;
+      isMControlPerViolation: boolean;
+      complianceRule: PortalRules;
     },
     public sidesheetRef: EuiSidesheetRef,
     private readonly actionService: RulesViolationsActionService,
     private readonly extService: ExtService,
+    private translateService: TranslateService
   ) {
     this.uidPerson = data.selectedRulesViolation.GetEntity().GetColumn('UID_Person').GetValue();
     this.uidNonCompliance = data.selectedRulesViolation.GetEntity().GetColumn('UID_NonCompliance').GetValue();
     this.cdrList = data.selectedRulesViolation.propertyInfo;
+    if (this.data.complianceRule)
+      this.ruleInfoCdrList.push(
+        new BaseCdr(this.data.complianceRule.Description.Column, this.translateService.instant('#LDS#Rule description')),
+        new BaseCdr(this.data.complianceRule.RuleNumber.Column)
+      );
   }
 
   public ngOnInit(): void {
@@ -80,7 +89,7 @@ export class RulesViolationsDetailsComponent implements OnInit, OnDestroy {
         // Recalculates header
         this.matTabGroup.updatePagination();
       })
-    )
+    );
   }
 
   /**
@@ -104,7 +113,7 @@ export class RulesViolationsDetailsComponent implements OnInit, OnDestroy {
     return this.sidesheetRef.close(true);
   }
 
-  public get showDynamicTab(): boolean{
+  public get showDynamicTab(): boolean {
     return this.extService.Registry['RuleViolationsTab'] && this.extService.Registry['RuleViolationsTab'].length > 0;
   }
 

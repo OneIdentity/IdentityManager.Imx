@@ -3,9 +3,30 @@
 # Identity Manager HTML5 applications
 
 ## Change log
-
 ### December 12, 2023
 - Added some [code samples](sdk_samples/README.md) with explanations.
+
+### December 7, 2023
+The v92 branch has been updated with fixes for the following issues.
+- Add missing translation keys
+- Bug 432754: In Filter Data Sidesheet, by toggling a predefined filter, client side validation can be bypassed, which causes frontend and backend errors.
+- Bug 432757: In Filter Data Sidesheet, by editing a custom filter, multiple copies of the same filter is appended to the url growing it to huge lengths.
+-  Bug 432826: In Data Explorer, Business Roles, custom filters cannot be added or removed, instead they raise JS errors.
+- Bug 435259: Portal: The title of the PeerGroupDiscardSelectedComponent dialog is not translated.
+- Bug 433890: In DataSource Toolbar, overriding an existing saved view adds a new saved view entry to the UI.
+- Bug 436537: 9.2 - Operations Portal: bug in Pending Provisioning Process.
+- Bug 433973: Configuration key "Request configuration / Products can be requested through reference user" has no effect.
+- Bug 433974: Configuration key "Request configuration / Product bundles can be used" has no effect.
+- Bug 433925: UI fix: My processes page crops content.
+- Bug 439229: Attestation Runs page simply does not apply the custom filters to the GET request.
+- Bug 434024: Special filtering, like User Accounts Target system based narrowing, does not properly work with other filters.
+- Bug 433599: Operations Support Portal: Password Tab is empty.
+- Bug 438828: Security Fix: Update crypto-js to version 4.2.0.
+- Bug 438829: Security Fix: Update @babel/traverse to version 7.23.2.
+- Bug 440143: Grouping a data table, after additional columns were added, results in 400 Bad Request in most pages.
+- Bug 440283: Error opening sidesheet in addressbook - TypeError: Reduce of empty array with no initial value.
+- Bug 440037: OpsWeb cannot be started (endless loop).
+
 
 ### October 20, 2023
 

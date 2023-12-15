@@ -27,7 +27,6 @@
 import { CommonModule } from '@angular/common';
 import { APP_INITIALIZER, Inject, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule, Routes } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 import {
@@ -42,27 +41,17 @@ import {
   FkAdvancedPickerModule,
   LdsReplaceModule,
   QbmModule,
-  RouteGuardService,
   TileModule,
 } from 'qbm';
 
-import { ApprovalWorkFlowModule } from './approval-workflows/approval-workflows.module';
-import { DataExplorerViewModule } from './data-explorer-view/data-explorer-view.module';
-import { ApprovalsModule } from './itshopapprove/approvals.module';
-import { RecommendationSidesheetComponent } from './itshopapprove/recommendation-sidesheet/recommendation-sidesheet.component';
-import { MyResponsibilitiesViewModule } from './my-responsibilities-view/my-responsibilities-view.module';
-import { ObjectOverviewPersonComponent } from './ops/objectOverviewPerson.component';
-import { OpsModule } from './ops/ops.module';
-import { PasscodeViewerComponent } from './ops/passcodeViewer.component';
+
 import { PatternItemService } from './pattern-item-list/pattern-item.service';
 import { PatternItemsModule } from './pattern-item-list/pattern-items.module';
 import { QerService } from './qer.service';
-import { RoleMembershipsModule } from './role-management/role-memberships/role-memberships.module';
 import { ServiceItemsModule } from './service-items/service-items.module';
 import { ServiceItemsService } from './service-items/service-items.service';
 import { SettingsComponent } from './settings/settings.component';
 import { ShoppingCartValidationDetailModule } from './shopping-cart-validation-detail/shopping-cart-validation-detail.module';
-import { SourceDetectiveModule } from './sourcedetective/sourcedetective.module';
 import { TilesModule } from './tiles/tiles.module';
 import { UserModule } from './user/user.module';
 import { BusinessOwnerChartSummaryComponent } from './wport/businessowner-chartsummary/businessowner-chartsummary.component';
@@ -78,21 +67,15 @@ export function initConfig(config: QerService): () => Promise<any> {
     });
 }
 
-const routes: Routes = [
-  {
-    path: 'dashboard',
-    component: StartComponent,
-    canActivate: [RouteGuardService],
-    resolve: [RouteGuardService],
-  },
-];
-
 // @dynamic
 @NgModule({
-  declarations: [StartComponent, BusinessOwnerChartSummaryComponent, SettingsComponent],
+  declarations: [
+    BusinessOwnerChartSummaryComponent, 
+    StartComponent, 
+    SettingsComponent,
+  ],
   imports: [
     CommonModule,
-    RouterModule.forChild(routes),
     QbmModule,
     CdrModule,
     TranslateModule,
@@ -111,15 +94,9 @@ const routes: Routes = [
     DataTableModule,
     DataTilesModule,
     DataTreeModule,
-    SourceDetectiveModule,
-    RoleMembershipsModule,
     ShoppingCartValidationDetailModule,
     FkAdvancedPickerModule,
-    OpsModule,
-    DataExplorerViewModule,
-    ApprovalsModule,
   ],
-  exports: [PasscodeViewerComponent, ObjectOverviewPersonComponent, RecommendationSidesheetComponent],
   providers: [
     {
       provide: APP_INITIALIZER,

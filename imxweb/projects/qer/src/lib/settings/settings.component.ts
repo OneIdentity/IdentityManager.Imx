@@ -54,6 +54,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   private app: string;
   private readonly subscriptions: Subscription[] = [];
   private userCulture: string;
+  private defaultTheme: EuiTheme;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -68,7 +69,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
     public dialogRef: MatDialogRef<SettingsComponent>,
     private readonly session: imx_SessionService,
     private readonly personService: PersonService
-    ) { }
+    ) {
+      this.subscriptions.push(this.dialogRef.backdropClick().subscribe(() => this.resetThemeToDefault()));
+    }
 
   public async ngOnInit() {
     this.app = this.config.Config.WebAppIndex.toUpperCase();
@@ -107,6 +110,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
       this.errorHandler.handleError(error);
     }
     finally{
+      this.defaultTheme = <EuiTheme>localStorage.getItem('eui-theme');
       this.euiLoadingService.hide(overlayRef);
     }
   }
@@ -146,6 +150,14 @@ export class SettingsComponent implements OnInit, OnDestroy {
       finally{
         this.euiLoadingService.hide(overlayRef);
       }
+  }
+
+  private resetThemeToDefault() {
+    this.themeService.setTheme(this.defaultTheme);
+  }
+
+  public cancelProfileSettings() {
+    this.resetThemeToDefault();
   }
 
   public async resetProfileSettings()

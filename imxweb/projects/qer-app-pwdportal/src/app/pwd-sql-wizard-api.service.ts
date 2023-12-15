@@ -24,35 +24,25 @@
  *
  */
 
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule } from '@angular/material/dialog';
+import { Injectable } from '@angular/core';
+import { FilterProperty, CollectionLoadParameters, EntityCollectionData } from 'imx-qbm-dbts';
+import { SqlWizardApiService } from 'qbm';
 
-import { LdsReplaceModule, QbmModule } from 'qbm';
-import { PasscodeViewerComponent } from './passcodeViewer.component';
-import { ObjectOverviewPersonComponent } from './objectOverviewPerson.component';
-import { TranslateModule } from '@ngx-translate/core';
-import { PasswordModule } from '../password/password.module';
-
-
-
-@NgModule({
-  declarations: [
-    PasscodeViewerComponent,
-    ObjectOverviewPersonComponent,
-  ],
-  imports: [
-    CommonModule,
-    TranslateModule,
-    QbmModule,
-    LdsReplaceModule,
-    PasswordModule,
-    MatButtonModule,
-    MatDialogModule
-  ],
-  exports: [
-    ObjectOverviewPersonComponent,
-  ]
+@Injectable({
+  providedIn: 'root',
 })
-export class OpsModule { }
+export class PwdSqlWizardApiService extends SqlWizardApiService {
+  public implemented: boolean = false;
+
+  getFilterProperties(table: string): Promise<FilterProperty[]> {
+    return new Promise((resolve) => resolve([]));
+  }
+  
+  getCandidates(parentTable: string, options?: CollectionLoadParameters): Promise<EntityCollectionData> {
+    return new Promise((resolve) => resolve({ TotalCount: 0 }));
+  }
+
+  constructor() {
+    super();
+  }
+}

@@ -41,6 +41,16 @@
             {{ item?.stateBadge?.caption }}
           </ng-template>
         </imx-data-table-column>
+        <imx-data-table-column
+          [entityColumn]="entitySchema.Columns.RiskIndexCalculated"
+          data-imx-identifier="rules-violations-table-column-RiskIndexCalculated"
+        >
+        </imx-data-table-column>
+        <imx-data-table-column
+          [entityColumn]="entitySchema.Columns.RiskIndexReduced"
+          data-imx-identifier="rules-violations-table-column-RiskIndexReduced"
+        >
+        </imx-data-table-column>
         <imx-data-table-generic-column columnName="decision" data-imx-identifier="rules-violations-table-column-decision">
           <ng-template let-item>
             <div class="imx-decision">

@@ -1,7 +1,7 @@
 <div eui-sidesheet-content>
   <mat-card>
     <div class="imx-data">
-      <table mat-table [dataSource]="dataSource" matSort matSortActive="product" matSortDirection="asc" (matSortChange)="onSortChange($event)" class="mat-elevation-z8">
+      <table mat-table [dataSource]="dataSource" matSort matSortActive="product" matSortDirection="asc" class="mat-elevation-z8">
         <!-- Selection Checkbox Column -->
         <ng-container matColumnDef="select">
           <th mat-header-cell *matHeaderCellDef>
@@ -27,17 +27,15 @@
         <!-- Product Display Column -->
         <ng-container matColumnDef="product">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ '#LDS#Product' | translate }}</th>
-          <td mat-cell *matCellDef="let product">{{ product.item.GetEntity()?.GetDisplay() }}</td>
+          <td mat-cell *matCellDef="let product">{{ product.product }}</td>
         </ng-container>
 
         <!-- Source Column -->
-        <ng-container matColumnDef="source">
+        <ng-container matColumnDef="productSource">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ '#LDS#Source' | translate }}</th>
           <td mat-cell *matCellDef="let product">
             <div>
-              <ng-container *ngIf="product.type === 0">{{ product.item?.GetEntity()?.GetColumn('ServiceCategoryFullPath').GetDisplayValue() }}</ng-container>
-              <ng-container *ngIf="product.type === 1">{{ product.item?.GetEntity()?.GetColumn('FullPath').GetDisplayValue() }}</ng-container>
-              <ng-container *ngIf="product.type === 2">{{ product.item.UID_ShoppingCartPattern.Column.GetDisplayValue() }}</ng-container>
+              {{ product.productSource}}
             </div>
             <div class="imx-source-info">{{ product.source | translate }}</div>
           </td>
@@ -47,7 +45,7 @@
         <ng-container matColumnDef="description">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ '#LDS#Description' | translate }}</th>
           <td mat-cell *matCellDef="let product">
-            {{ product.item.GetEntity()?.GetColumn('Description')?.GetDisplayValue() }}
+            {{ product.description }}
           </td>
         </ng-container>
 

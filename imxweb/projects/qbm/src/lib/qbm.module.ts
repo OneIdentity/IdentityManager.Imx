@@ -25,7 +25,7 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { ComponentFactoryResolver, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -50,14 +50,12 @@ import { NGXLogger } from 'ngx-logger';
 
 import { HttpClientModule } from '@angular/common/http';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { RouterModule, Routes } from '@angular/router';
 import { EuiCoreModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { AboutComponent } from './about/About.component';
 import { AboutService } from './about/About.service';
 import { ApiClientAngularService } from './api-client/api-client-angular.service';
 import { AppConfigService } from './appConfig/appConfig.service';
-import { AuthenticationGuardService } from './authentication/authentication-guard.service';
 import { AutoCompleteComponent } from './auto-complete/auto-complete.component';
 import { AutoCompleteModule } from './auto-complete/auto-complete.module';
 import { GlobalErrorHandler } from './base/global-error-handler';
@@ -93,7 +91,6 @@ import { MenuModule } from './menu/menu.module';
 import { MessageDialogComponent } from './message-dialog/message-dialog.component';
 import { PluginLoaderService } from './plugins/plugin-loader.service';
 import { ImxProgressbarComponent } from './progressbar/progressbar.component';
-import { RouteGuardService } from './route-guard/route-guard.service';
 import { imx_QBM_SearchService } from './search/search.service';
 import { SearchBarComponent } from './searchbar/searchbar.component';
 import { SelectModule } from './select/select.module';
@@ -129,15 +126,6 @@ export function initApp(registry: CdrRegistryService, logger: NGXLogger): () => 
     });
 }
 
-const routes: Routes = [
-  {
-    path: '',
-    component: LoginComponent,
-    canActivate: [AuthenticationGuardService],
-    resolve: [RouteGuardService],
-  },
-];
-
 @NgModule({
   declarations: [
     TwoFactorAuthenticationComponent,
@@ -156,7 +144,6 @@ const routes: Routes = [
   ],
   imports: [
     CommonModule,
-    RouterModule.forChild(routes),
     HttpClientModule,
     TranslateModule,
     DisableControlModule,

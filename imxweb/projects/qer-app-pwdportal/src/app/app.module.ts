@@ -43,6 +43,7 @@ import {
   MastHeadModule,
   MenuModule,
   Paginator,
+  SqlWizardApiService,
   UserMessageModule,
 } from 'qbm';
 import { environment } from '../environments/environment';
@@ -50,14 +51,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AppService } from './app.service';
 import { MatPaginatorIntl } from '@angular/material/paginator';
-import {
-  PasswordModule,
-  QaLoginModule,
-  PasscodeLoginModule,
-  ProfileModule,
-  QerModule,
-} from 'qer';
+import { PasswordModule, QaLoginModule, PasscodeLoginModule, ProfileModule, QerModule } from 'qer';
 import appConfigJson from '../appconfig.json';
+import { PwdSqlWizardApiService } from './pwd-sql-wizard-api.service';
 
 export const HEADLESS_BASEHREF = '/headless';
 export function getBaseHref(): string {
@@ -115,6 +111,10 @@ export function getBaseHref(): string {
     {
       provide: APP_BASE_HREF,
       useValue: getBaseHref(),
+    },
+    {
+      provide: SqlWizardApiService,
+      useClass: PwdSqlWizardApiService,
     },
   ],
   bootstrap: [AppComponent],

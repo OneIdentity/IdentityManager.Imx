@@ -19,6 +19,6 @@
 <div mat-dialog-actions>
   <button mat-stroked-button color="warn" (click)="resetProfileSettings()"> {{ '#LDS#Reset' | translate }}</button>
   <div class="auto-space"></div>
-  <button mat-stroked-button mat-dialog-close>{{ '#LDS#Cancel' | translate }}</button>
+  <button mat-stroked-button mat-dialog-close (click)="cancelProfileSettings()">{{ '#LDS#Cancel' | translate }}</button>
   <button mat-raised-button color="primary" (click)="saveProfileSettings()"> {{ '#LDS#Save' | translate }}</button>
 </div>

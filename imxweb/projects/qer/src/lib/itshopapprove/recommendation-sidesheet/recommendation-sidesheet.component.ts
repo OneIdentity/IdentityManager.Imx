@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { RecommendationData, RecommendationDataItem, RecommendationEnum } from 'imx-api-qer';
 

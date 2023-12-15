@@ -538,9 +538,9 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
     if (!displayName) {
       return;
     }
-    const nameExists = this.settings.viewConfig.viewConfigs.some((config) => config.DisplayName === displayName);
+    const existingConfig = this.settings.viewConfig.viewConfigs.find((config) => config.DisplayName === displayName);
     if (
-      nameExists &&
+      existingConfig &&
       !(await this.confirm.confirmDelete(
         '#LDS#Heading Overwrite View',
         '#LDS#A view with the entered name already exists. Do you want to overwrite the already existing view with the new view?'
@@ -549,6 +549,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
       return;
     }
     const config: DSTViewConfig = {
+      Id: existingConfig?.Id,
       ViewId: this.settings.viewConfig.viewId,
       DisplayName: displayName,
       Filter: this.settings?.navigationState?.filter,
@@ -1239,9 +1240,13 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
       .afterClosed()
       .toPromise();
     if (filterdata) {
+      //Get all filter, that were not associaed with the tree filter
+      const otherFilter = (this.settings.navigationState.filter ?? []).filter(
+        (elem) => elem.ColumnName !== filterdata[0].GetColumn('Filter').GetValue().ColumnName
+      );
       this.currentFilterData = filterdata;
       this.currentFilterDisplayData = this.currentFilterData.map((filter) => filter.GetColumn('LongDisplay').GetValue()).join(', ');
-      this.filterTreeSelectionChanged.emit(this.currentFilterData.map((filter) => filter.GetColumn('Filter').GetValue()));
+      this.filterTreeSelectionChanged.emit(this.currentFilterData.map((filter) => filter.GetColumn('Filter').GetValue()).concat(otherFilter)); // combine the two filter again
     }
   }
 
@@ -1293,9 +1298,10 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
    * clears the tree filter and emits the filterTreeSelectionChanged event
    */
   public clearTreeFilter(): void {
+    const currentTree: FilterData = this.currentFilterData[0].GetColumn('Filter').GetValue();
     this.currentFilterData = [];
     this.currentFilterDisplayData = '';
-    this.filterTreeSelectionChanged.emit([]);
+    this.filterTreeSelectionChanged.emit(this.settings.navigationState.filter.filter(elem=>elem.ColumnName != currentTree.ColumnName));
   }
 
   /**
@@ -1355,7 +1361,10 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
 
   public canShowFilterWizard(): boolean {
     let result =
-      (this.settings?.entitySchema?.TypeName != null && this.filterService.isSqlWizardImplemented && !this.isDataSourceLocal && !this.disableFilterWizard) ||
+      (this.settings?.entitySchema?.TypeName != null &&
+        this.filterService.isSqlWizardImplemented &&
+        !this.isDataSourceLocal &&
+        !this.disableFilterWizard) ||
       this.settings?.filters?.length > 0;
     return result;
   }
@@ -1391,8 +1400,8 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
       this.settings.navigationState.filter = this.settings.navigationState.filter?.filter((x) => x.Type != FilterType.Expression);
       this.filterWizardExpression = result;
       this.settings.navigationState.filter
-        ? this.settings.navigationState.filter.push({ Expression: this.filterWizardExpression.Expression })
-        : (this.settings.navigationState.filter = [{ Expression: this.filterWizardExpression.Expression }]);
+        ? this.settings.navigationState.filter.push({ Type: FilterType.Expression, Expression: this.filterWizardExpression.Expression })
+        : (this.settings.navigationState.filter = [{ Type: FilterType.Expression, Expression: this.filterWizardExpression.Expression }]);
 
       if (result?.Expression?.Expressions.length > 0) {
         this.updateNavigateStateWithFilters();
@@ -1401,10 +1410,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
   }
 
   public removeFilterWizard(reload: boolean = true): void {
-    this.settings.navigationState.filter = this.settings.navigationState.filter?.filter((x) => {
-      // x.Type != FilterType.Expression;
-      x.Expression == null;
-    });
+    this.settings.navigationState.filter = this.settings.navigationState.filter?.filter((x) => x.Expression == null);
     this.filterWizardExpression = null;
     if (reload) {
       this.navigationStateChanged.next(this.settings.navigationState);

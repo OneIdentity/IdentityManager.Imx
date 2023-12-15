@@ -81,6 +81,7 @@ export class AttestationCaseComponent implements OnDestroy, OnInit {
   public selectedHyperviewType: string;
   public selectedHyperviewUID: string;
   public selectedOption: AttestationRelatedObject;
+  public relatedOptions: AttestationRelatedObject[] = [];
 
   private readonly subscriptions$: Subscription[] = [];
 
@@ -226,8 +227,12 @@ export class AttestationCaseComponent implements OnDestroy, OnInit {
     });
   }
 
-  public get relatedOptions(): AttestationRelatedObject[] {
-    return this.data.case.data?.RelatedObjects || [];
+  public setRelatedOptions(): void {
+    this.relatedOptions =
+      this.data.case.data?.RelatedObjects.map((relatedObject) => {
+        const objectType = DbObjectKey.FromXml(relatedObject.ObjectKey);
+        return { ObjectKey: relatedObject.ObjectKey, Display: `${relatedObject.Display} - ${objectType.TableName}` };
+      }) || [];
   }
 
   public setHyperviewObject(selectedRelatedObject: AttestationRelatedObject): void {

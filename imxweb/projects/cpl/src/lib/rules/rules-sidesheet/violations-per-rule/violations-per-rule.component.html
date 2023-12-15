@@ -24,8 +24,25 @@
         (groupDataChanged)="onGroupingChange($event)"
         data-imx-identifier="violations-per-rule-datatable"
       >
-        <imx-data-table-column data-imx-identifier="violations-per-rule-table-column-UidPerson" [entityColumn]="entitySchema?.Columns.UID_Person"> </imx-data-table-column>
-        <imx-data-table-column data-imx-identifier="violations-per-rule-table-column-state" [entityColumn]="entitySchema?.Columns.State"></imx-data-table-column>
+        <imx-data-table-column
+          data-imx-identifier="violations-per-rule-table-column-UidPerson"
+          [entityColumn]="entitySchema?.Columns.UID_Person"
+        >
+        </imx-data-table-column>
+        <imx-data-table-column
+          data-imx-identifier="violations-per-rule-table-column-state"
+          [entityColumn]="entitySchema?.Columns.State"
+        ></imx-data-table-column>
+        <imx-data-table-column
+          [entityColumn]="entitySchema.Columns.RiskIndexCalculated"
+          data-imx-identifier="violations-per-rule-table-column-RiskIndexCalculated"
+        >
+        </imx-data-table-column>
+        <imx-data-table-column
+          [entityColumn]="entitySchema.Columns.RiskIndexReduced"
+          data-imx-identifier="violations-per-rule-table-column-RiskIndexReduced"
+        >
+        </imx-data-table-column>
       </imx-data-table>
       <imx-data-source-paginator data-imx-identifier="violations-per-rule-paginator" [dst]="dst"> </imx-data-source-paginator>
     </div>

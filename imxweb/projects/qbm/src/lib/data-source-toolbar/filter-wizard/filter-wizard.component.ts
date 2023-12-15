@@ -56,6 +56,17 @@ export class FilterWizardComponent implements OnDestroy {
   private readonly subscriptions: Subscription[] = [];
   private confirmLeaveTitle = '';
   private confirmLeaveMessage = '';
+  private readonly emptyExpression = {
+    Expression: {
+      Expressions: [
+        {
+          Expressions: [],
+          LogOperator: LogOp.AND,
+        },
+      ],
+      LogOperator: LogOp.AND,
+    },
+  };
 
   constructor(
     private readonly sidesheetService: EuiSidesheetService,
@@ -71,24 +82,13 @@ export class FilterWizardComponent implements OnDestroy {
       .get('#LDS#The specified filter will not be applied. Are you sure you want to cancel filtering?')
       .subscribe((value: string) => (this.confirmLeaveMessage = value));
 
-    data?.filterExpression
-      ? (this.sqlExpression = data.filterExpression)
-      : (this.sqlExpression = {
-          Expression: {
-            Expressions: [
-              {
-                Expressions: [],
-                LogOperator: LogOp.AND,
-              },
-            ],
-            LogOperator: LogOp.AND,
-          },
-        });
+    data?.filterExpression ? (this.sqlExpression = data.filterExpression) : (this.sqlExpression = _.cloneDeep(this.emptyExpression));
 
     this.filterService.filterTabChanged(FilterTypeIdentifier.Predefined);
 
     this.lastGoodExpression = _.cloneDeep(this.sqlExpression?.Expression);
     this.sidesheetRef.closeClicked().subscribe(() => this.close());
+    this.expressionInvalid = data?.filterExpression && isExpressionInvalid(this.sqlExpression);
 
     this.subscriptions.push(
       this.filterService.filterFormStateEvent.subscribe((formState: FilterFormState) => {
@@ -122,7 +122,7 @@ export class FilterWizardComponent implements OnDestroy {
 
   public checkChanges(): void {
     this.expressionDirty = !_.isEqual(this.sqlExpression?.Expression, this.lastGoodExpression);
-    this.expressionInvalid = this.sqlExpression?.Expression?.Expressions.length === 0 || isExpressionInvalid(this.sqlExpression);
+    this.expressionInvalid = !_.isEqual(this.sqlExpression?.Expression, this.emptyExpression?.Expression) && isExpressionInvalid(this.sqlExpression);
   }
 
   public onApplyFilters(): void {
@@ -142,7 +142,7 @@ export class FilterWizardComponent implements OnDestroy {
   }
 
   public canApplyCustomFilters(): boolean {
-    return (this.expressionDirty && !this.expressionInvalid) || this.formState?.dirty;
+    return (this.expressionDirty || this.formState?.dirty) && !this.expressionInvalid;
   }
 
   public canRemoveCustomFilter(): boolean {
@@ -159,7 +159,7 @@ export class FilterWizardComponent implements OnDestroy {
   }
 
   private async close(): Promise<void> {
-    if (!this.expressionDirty) {
+    if (!this.expressionDirty && !this.formState.dirty) {
       this.sidesheetRef.close();
       return;
     }

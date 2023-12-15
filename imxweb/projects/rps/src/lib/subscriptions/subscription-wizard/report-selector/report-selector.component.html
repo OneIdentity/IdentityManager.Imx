@@ -9,15 +9,13 @@
 <mat-form-field appearance="outline">
   <mat-label>{{ '#LDS#Report' | translate }}</mat-label>
   <input value="_hidden" matInput hidden [required]="true">
-  <cdk-virtual-scroll-viewport #viewport [itemSize]="50" [minBufferPx]="controlHeigth" [maxBufferPx]="controlHeigth*2" [ngStyle]="{'height': controlHeigth +'px'}" class="imx-viewport">
-    <mat-selection-list [multiple]="false" (selectionChange)="updateSelected($event)" data-imx-identifier="report-selector-selectionList">
-      <mat-list-option *cdkVirtualFor="let candidate of candidates; index as i" [value]="candidate"
-        class="imx-candidate-option" [attr.data-imx-identifier]="'report-selector-selectionList-element-' + i">
-        <div class="imx-candidate-content">
-          <div class="imx-candidate-display">{{ candidate.GetEntity().GetDisplay() }}</div>
-          <div class="imx-candidate-longdisplay">{{ candidate.Description.Column.GetDisplayValue() }}</div>
-        </div>
-      </mat-list-option>
-    </mat-selection-list>
-  </cdk-virtual-scroll-viewport>
+  <mat-selection-list class="imx-candidate-list" [multiple]="false" [ngStyle]="{'height': controlHeigth + 'px'}" (selectionChange)="updateSelected($event)" data-imx-identifier="report-selector-selectionList">
+    <mat-list-option *ngFor="let candidate of candidates; index as i" [value]="candidate"
+      class="imx-candidate-option" [attr.data-imx-identifier]="'report-selector-selectionList-element-' + i">
+      <div class="imx-candidate-content">
+        <div class="imx-candidate-display">{{ candidate.GetEntity().GetDisplay() }}</div>
+        <div class="imx-candidate-longdisplay">{{ candidate.Description.Column.GetDisplayValue() }}</div>
+      </div>
+    </mat-list-option>
+  </mat-selection-list>
 </mat-form-field>

@@ -9,6 +9,7 @@
           {{ data.selectedRulesViolation?.stateBadge?.caption }}
         </eui-badge>
         <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"></imx-cdr-editor>
+        <imx-cdr-editor *ngFor="let cdr of ruleInfoCdrList" [cdr]="cdr"></imx-cdr-editor>
       </mat-card>
     </div>
     <div eui-sidesheet-actions color="white">

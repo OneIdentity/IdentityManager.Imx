@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSlideToggle, MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs/internal/Subscription';
@@ -45,13 +45,14 @@ import { NewRequestSelectedProductsComponent } from '../new-request-selected-pro
 import { SelectedProductItem } from '../new-request-selected-products/selected-product-item.interface';
 import { NewRequestSelectionService } from '../new-request-selection.service';
 import { NewRequestAddToCartService } from '../new-request-add-to-cart.service';
+import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
 
 @Component({
   selector: 'imx-new-request-content',
   templateUrl: './new-request-content.component.html',
   styleUrls: ['./new-request-content.component.scss'],
 })
-export class NewRequestContentComponent implements OnDestroy {
+export class NewRequestContentComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   private selectedTab: NewRequestTabModel;
 
@@ -64,49 +65,23 @@ export class NewRequestContentComponent implements OnDestroy {
   constructor(
     public readonly orchestration: NewRequestOrchestrationService,
     public readonly selectionService: NewRequestSelectionService,
-    private readonly addToCartService: NewRequestAddToCartService,
+    private readonly addToCartService: NewRequestAddToCartService,    
+    private readonly projectConfigService: ProjectConfigurationService,
     private readonly ldsReplace: LdsReplacePipe,
     private readonly router: Router,
     private readonly sidesheetService: EuiSidesheetService,
     private readonly translate: TranslateService,
   ) {
-    this.navLinks.push({
-      id: 0,
-      title: '#LDS#Heading All Products',
-      component: NewRequestProductComponent,
-      link: 'allProducts',
-      active: true,
-    });
-    this.navLinks.push({
-      id: 1,
-      title: '#LDS#Heading Recommended Products',
-      component: NewRequestPeerGroupComponent,
-      link: 'productsByPeerGroup',
-      active: false,
-    });
-    this.navLinks.push({
-      id: 2,
-      title: '#LDS#Heading Products by Reference User',
-      component: NewRequestReferenceUserComponent,
-      link: 'productsByReferenceUser',
-      active: false,
-    });
-    this.navLinks.push({
-      id: 3,
-      title: '#LDS#Heading Product Bundles',
-      component: NewRequestProductBundleComponent,
-      link: 'productBundles',
-      active: false,
-    });
-
-    this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        this.orchestration.selectedTab = this.navLinks.find((tab) => `/newrequest/${tab.link}` === this.router.url);
-        this.orchestration.selectedTab?.component === NewRequestProductComponent
-          ? (this.showCatSlider = true)
-          : (this.showCatSlider = false);
-      }
-    });
+    this.subscriptions.push(
+      this.router.events.subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          this.orchestration.selectedTab = this.navLinks.find((tab) => `/newrequest/${tab.link}` === this.router.url);
+          this.orchestration.selectedTab?.component === NewRequestProductComponent
+            ? (this.showCatSlider = true)
+            : (this.showCatSlider = false);
+        }
+      })
+    );
 
     this.subscriptions.push(
       this.orchestration.selectedCategory$.subscribe(
@@ -122,6 +97,45 @@ export class NewRequestContentComponent implements OnDestroy {
         }
       })
     );
+  }
+
+  public async ngOnInit(): Promise<void> {
+    const projectConfig = await this.projectConfigService.getConfig();
+    const canSelectFromTemplate = projectConfig.ITShopConfig.VI_ITShop_ProductSelectionFromTemplate;
+    const canSelectByRefUser = projectConfig.ITShopConfig.VI_ITShop_ProductSelectionByReferenceUser;
+
+    this.navLinks.push({
+      id: 0,
+      title: '#LDS#Heading All Products',
+      component: NewRequestProductComponent,
+      link: 'allProducts',
+      active: true,
+    });
+    if (canSelectByRefUser) {
+      this.navLinks.push({
+        id: 1,
+        title: '#LDS#Heading Recommended Products',
+        component: NewRequestPeerGroupComponent,
+        link: 'productsByPeerGroup',
+        active: false,
+      });
+      this.navLinks.push({
+        id: 2,
+        title: '#LDS#Heading Products by Reference User',
+        component: NewRequestReferenceUserComponent,
+        link: 'productsByReferenceUser',
+        active: false,
+      });
+    }
+    if (canSelectFromTemplate) {
+      this.navLinks.push({
+        id: 3,
+        title: '#LDS#Heading Product Bundles',
+        component: NewRequestProductBundleComponent,
+        link: 'productBundles',
+        active: false,
+      });
+    }    
   }
 
   public ngOnDestroy(): void {

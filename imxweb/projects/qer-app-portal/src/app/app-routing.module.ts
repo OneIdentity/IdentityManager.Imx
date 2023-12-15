@@ -27,14 +27,27 @@
 import { NgModule, InjectionToken } from '@angular/core';
 import { Routes, RouterModule, ActivatedRouteSnapshot, Router } from '@angular/router';
 
-import { LoginComponent, RouteGuardService } from 'qbm';
+import { AuthenticationGuardService, LoginComponent, RouteGuardService } from 'qbm';
 import {
-  PasswordQueryComponent
+  PasswordQueryComponent,
+  StartComponent
 } from 'qer';
 
 const externalUrlProvider = new InjectionToken('externalUrlRedirectResolver');
 
 const routes: Routes = [
+  {
+    path: '',
+    component: LoginComponent,
+    canActivate: [AuthenticationGuardService],
+    resolve: [RouteGuardService],
+  },
+  {
+    path: 'dashboard',
+    component: StartComponent,
+    canActivate: [RouteGuardService],
+    resolve: [RouteGuardService],
+  },
   {
     path: 'externalRedirect',
     // We need a component here because we cannot define the route otherwise

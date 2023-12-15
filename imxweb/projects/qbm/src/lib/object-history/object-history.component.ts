@@ -80,7 +80,7 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
     return this.timelineTo.date + ' ' + this.timelineTo.time;
   }
 
-  public lookIcons: string[] = ['attributes', 'gridsmall'];
+  public lookIcons: string[] = ['attributes', 'table'];
   public selectedLook: string = 'timeline';
   public viewModeValue: string;
   public historyData: ObjectHistoryEvent[] = [];
@@ -100,6 +100,7 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
     date: 'Invalid date',
     time: 'Invalid date'
   };
+  public momentToday = moment();
 
   private subscriptions: Subscription[] = [];
 
@@ -131,9 +132,9 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
 
   public setTimeline(): void {
     this.subscriptions.push(
-      this.timelineFromDateFormControl.valueChanges.subscribe(date => this.timelineFrom.date = moment(date).format('L')),
+      this.timelineFromDateFormControl.valueChanges.subscribe(date => this.timelineFrom.date = moment(date).format('YYYY-MM-DD')),
       this.timelineFromTimeFormControl.valueChanges.subscribe(time => this.timelineFrom.time = moment(time).format('HH:mm:ss')),
-      this.timelineToDateFormControl.valueChanges.subscribe(date => this.timelineTo.date = moment(date).format('L')),
+      this.timelineToDateFormControl.valueChanges.subscribe(date => this.timelineTo.date = moment(date).format('YYYY-MM-DD')),
       this.timelineToTimeFormControl.valueChanges.subscribe(time => this.timelineTo.time = moment(time).format('HH:mm:ss')),
     );
   }
@@ -145,6 +146,13 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
 
   public onLookSelectionChanged(event) {
     this.selectedLook = event.value;
+
+    if (this.selectedLook === 'table') {
+      this.timelineFromDateFormControl.reset();
+      this.timelineFromTimeFormControl.reset();
+      this.timelineToDateFormControl.reset();
+      this.timelineToTimeFormControl.reset();
+    }
   }
 
   public async refresh(fetchRemote: boolean): Promise<void> {
