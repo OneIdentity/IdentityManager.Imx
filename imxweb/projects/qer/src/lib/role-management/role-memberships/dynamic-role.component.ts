@@ -25,7 +25,6 @@
  */
 
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { FormArray, FormGroup } from '@angular/forms';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { PortalDynamicgroup } from 'imx-api-qer';
@@ -34,6 +33,7 @@ import { BaseCdr, ColumnDependentReference, ConfirmationService } from 'qbm';
 import { QerApiService } from '../../qer-api-client.service';
 import { RoleService } from '../role.service';
 import _ from 'lodash';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   templateUrl: './dynamic-role.component.html',
@@ -42,22 +42,25 @@ import _ from 'lodash';
 })
 export class DynamicRoleComponent implements OnInit {
   constructor(
+    formBuilder: FormBuilder,
     private readonly apiService: QerApiService,
     private readonly roleService: RoleService,
     private readonly translator: TranslateService,
     private readonly cdref: ChangeDetectorRef,
     private readonly confirmSvc: ConfirmationService,
     private readonly busyService: EuiLoadingService
-  ) {}
+  ) {
+    this.formGroup = new FormGroup({ formArray: formBuilder.array([]) });
+  }
 
   @Input() uidDynamicGroup: string;
   @Input() public isAdmin: boolean;
   @Input() public entity: IEntity;
 
-
   get formArray(): FormArray {
     return this.formGroup.get('formArray') as FormArray;
   }
+
 
   public dynamicGroup: PortalDynamicgroup;
 
@@ -71,6 +74,7 @@ export class DynamicRoleComponent implements OnInit {
   public readonly formGroup: FormGroup;
   public cdrList: ColumnDependentReference[] = [];
   public busy = true;
+
   public async ngOnInit(): Promise<void> {
     await this.loadDynamicRole();
     this.resetState();
@@ -79,9 +83,9 @@ export class DynamicRoleComponent implements OnInit {
   public resetState(): void {
     this.lastSavedExpression = _.cloneDeep(this.sqlExpression?.Expression);
     this.lastSavedCDRs = [];
-    this.cdrList.map((cdr) => {
+    this.cdrList.map(cdr => {
       this.lastSavedCDRs.push(cdr.column.GetValue());
-    });
+    })
     this.exprHasntChanged = true;
     this.cdrsHaventChanged = true;
     this.formGroup.markAsPristine();
@@ -105,6 +109,7 @@ export class DynamicRoleComponent implements OnInit {
         await this.loadDynamicRole();
       }
     } finally {
+      this.resetState();
       this.busyService.hide();
       this.roleService.autoMembershipDirty(false);
     }
@@ -161,11 +166,9 @@ export class DynamicRoleComponent implements OnInit {
   }
 
   public checkCDRs(): void {
-    this.cdrsHaventChanged = this.cdrList
-      .map((cdr, index) => {
-        return cdr.column.GetValue() === this.lastSavedCDRs[index];
-      })
-      .every((isTrue) => isTrue);
+    this.cdrsHaventChanged = this.cdrList.map((cdr, index) => {
+      return cdr.column.GetValue() === this.lastSavedCDRs[index];
+    }).every(isTrue => isTrue);
     if (!this.cdrsHaventChanged) {
       this.roleService.autoMembershipDirty(true);
     } else if (this.cdrsHaventChanged && this.exprHasntChanged) {
@@ -174,11 +177,7 @@ export class DynamicRoleComponent implements OnInit {
   }
 
   public isConditionInvalid(): boolean {
-    return (
-      this.sqlExpression?.Expression?.Expressions.length === 0 ||
-      isExpressionInvalid(this.sqlExpression) ||
-      !this.hasValuesSet(this.sqlExpression.Expression)
-    );
+    return this.sqlExpression?.Expression?.Expressions.length === 0 || isExpressionInvalid(this.sqlExpression)
   }
 
   private async loadDynamicRole(): Promise<void> {
@@ -190,13 +189,13 @@ export class DynamicRoleComponent implements OnInit {
         this.dynamicGroup = data.Data[0];
         this.sqlExpression = data.extendedData.Expressions[0];
         // Set "" to undefined so the cdr and data dirty states make sense
-        this.sqlExpression?.Expression?.Expressions?.map((exp) => {
-          if (exp.Value === '') {
+        this.sqlExpression?.Expression?.Expressions?.map(exp => {
+          if (exp.Value === "") {
             exp.Value = undefined;
           }
         });
         // Sometimes the logOp is not set. Initalize it here
-        if (!this.sqlExpression?.Expression?.LogOperator) {
+        if (this.sqlExpression?.Expression && !this.sqlExpression?.Expression?.LogOperator) {
           this.sqlExpression.Expression.LogOperator = LogOp.AND;
         }
 
