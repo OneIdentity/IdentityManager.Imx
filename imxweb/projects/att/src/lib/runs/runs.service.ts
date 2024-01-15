@@ -80,7 +80,7 @@ export class RunsService {
   }
 
   public async getGroupInfo(parameters: RunsLoadParameters): Promise<GroupInfoData> {
-    const { groupFilter, search, OrderBy, ...params } = parameters;
+    const { withProperties, groupFilter, search, OrderBy, ...params } = parameters;
     return this.attService.client.portal_attestation_run_group_get({
       ...params,
       filter: parameters.groupFilter,

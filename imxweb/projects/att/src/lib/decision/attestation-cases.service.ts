@@ -133,7 +133,7 @@ export class AttestationCasesService {
   }
 
   public getGroupInfo(parameters: { by?: string; def?: string } & CollectionLoadParameters = {}): Promise<GroupInfoData> {
-    const { OrderBy,search, ...params } = parameters;
+    const { withProperties, OrderBy, search, ...params } = parameters;
     return this.attClient.client.portal_attestation_approve_group_get({ ...params, withcount: true, Escalation: this.isChiefApproval });
   }
 

@@ -87,7 +87,7 @@ export class EntitlementEditAutoAddComponent implements OnDestroy {
     });
     let elements: EntitlementToAddData;
     try {
-      this.setExtendedData(this.sqlExpression.Expression);
+      await this.setExtendedData(this.sqlExpression.Expression);
       elements = await this.svc.showEntitlementsToMap(this.data.application.InteractiveEntityStateData);
     } finally {
       setTimeout(() => {

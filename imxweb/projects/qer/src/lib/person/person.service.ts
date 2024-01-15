@@ -78,7 +78,7 @@ export class PersonService {
   }
 
   public getGroupInfo(parameters: PersonAllLoadParameters = {}): Promise<GroupInfoData> {
-    const {OrderBy,search, ...params} = parameters;
+    const { withProperties, OrderBy, search, ...params } = parameters;
     return this.qerClient.v2Client.portal_person_all_group_get({
       ...params,
       withcount: true,

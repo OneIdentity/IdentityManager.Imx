@@ -75,7 +75,7 @@ export class ServiceCategoryComponent {
       this.treeDatabase.updateNodeItem(entity);
       if (oldParent !== entity.GetColumn('UID_AccProductGroupParent').GetValue()) {
         this.tryToMoveElement(entity, entity.GetColumn('UID_AccProductGroupParent').GetValue());
-        this.snackbar.open({ key: 'Service category {0} was moved to a new parent', parameters: [entity.GetDisplay()] });
+        this.snackbar.open({ key: '#LDS#Service category {0} was moved to a new parent', parameters: [entity.GetDisplay()] });
       }
     } else {
       await entity.DiscardChanges();
@@ -97,7 +97,7 @@ export class ServiceCategoryComponent {
     }
 
     this.dataTreeWrapper.deleteNode(entity, false);
-    this.snackbar.open({ key: 'Service category {0} was deleted', parameters: [entity.GetDisplay()] });
+    this.snackbar.open({ key: '#LDS#Service category {0} was deleted', parameters: [entity.GetDisplay()] });
   }
 
   public async addChildCategory(evt: Event, entity: IEntity): Promise<void> {
@@ -115,7 +115,7 @@ export class ServiceCategoryComponent {
       } finally {
         this.busyService.hide(overlay);
       }
-      this.snackbar.open({ key: 'Service category {0} was created', parameters: [newEntity.GetDisplay()] });
+      this.snackbar.open({ key: '#LDS#Service category {0} was created', parameters: [newEntity.GetDisplay()] });
       this.add(entity, newEntity);
     } else {
       await entity.DiscardChanges();

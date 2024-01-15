@@ -25,7 +25,7 @@
     </imx-data-source-toolbar>
 
     <div class="imx-table-container">
-      <imx-data-table [dst]="dst" mode="manual" [detailViewVisible]="false" 
+      <imx-data-table [dst]="dst" mode="manual" [detailViewVisible]="false"
       [noDataText]="'#LDS#There are no matching application entitlements.' | translate"
         data-imx-identifier="mapped-entitlements-preview-datatable">
         <imx-data-table-column [entityColumn]="entitySchema?.Columns.DisplayName"
@@ -52,7 +52,7 @@
     </div>
   </mat-card>
 </div>
-<div eui-sidesheet-actions color="white" *ngIf="data.withSave">
+<div eui-sidesheet-actions  *ngIf="data.withSave">
   <mat-slide-toggle class="justify-start" #mappedslider checked="true"
     data-imx-identifier="mapped-entitlements-preview-slider-with-mapping">
     {{'#LDS#Assign application entitlements after saving' |translate}}

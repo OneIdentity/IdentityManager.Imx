@@ -47,6 +47,11 @@ import { FilterWizardService } from '../filter-wizard.service';
 export class PredefinedFilterComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() public settings: DataSourceToolbarSettings;
 
+    /**
+   * The DataSourceToolbar's ID generated in data-source-toolbar.component.ts
+   */
+    @Input() public id: string;
+
   /**
    * List of filter names that should be hidden
    * Allows overrides to the underlying DataModelFilter defined filters
@@ -124,10 +129,11 @@ export class PredefinedFilterComponent implements OnInit, AfterViewInit, OnDestr
 
   constructor(private readonly filterService: FilterWizardService, @Inject(EUI_SIDESHEET_DATA) public data?: FilterWizardSidesheetData) {
     // this.hiddenFilters = ['namespace'];
+    this.id = data.id;
     this.settings = data.settings;
-     this.selectedFilters = data.selectedFilters;
-     this.internalSelectedFilters = Object.create(this.selectedFilters);
-     this.formState = { canClearFilters: this.selectedFilters.length > 0, dirty: false, filterIdentifier: FilterTypeIdentifier.Predefined };
+    this.selectedFilters = data.selectedFilters;
+    this.internalSelectedFilters = Object.create(this.selectedFilters);
+    this.formState = { canClearFilters: this.selectedFilters.length > 0, dirty: false, filterIdentifier: FilterTypeIdentifier.Predefined };
 
     this.subscriptions.push(
       this.filterService.applyFiltersEvent.subscribe(() => {
@@ -337,7 +343,7 @@ export class PredefinedFilterComponent implements OnInit, AfterViewInit, OnDestr
       // Do filter locally
       this.localFilter();
     } else {
-      this.filterService.updateNavigation(this.settings.navigationState, this.selectedFilters);
+      this.filterService.updateNavigation(this.id, this.settings.navigationState, this.selectedFilters);
     }
   }
 

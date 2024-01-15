@@ -71,7 +71,7 @@ export class StatisticReportButtonService implements ListReportDataProvider {
     if (!this.idStatistic) {
       throw 'setIdStatistic(...) has to be called with a valid id';
     }
-    const { OrderBy, search, ...params } = parameters;
+    const { withProperties, OrderBy, search, ...params } = parameters;
     return this.api.client.portal_statistics_data_group_get(this.idStatistic, { ...params });
   }
 }

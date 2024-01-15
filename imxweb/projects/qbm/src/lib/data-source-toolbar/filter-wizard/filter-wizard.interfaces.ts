@@ -29,6 +29,7 @@ import { DataSourceToolbarSettings } from '../data-source-toolbar-settings';
 import { SqlWizardExpression } from 'imx-qbm-dbts';
 
 export interface FilterWizardSidesheetData {
+  id: string;
   filterExpression: SqlWizardExpression;
   settings: DataSourceToolbarSettings;
   selectedFilters: DataSourceToolbarSelectedFilter[];

@@ -8,11 +8,11 @@
           <config-key-path [path]="k.DisplayPath"></config-key-path>
         </mat-option>
       </mat-select>
-    </mat-form-field>    
+    </mat-form-field>
   </mat-card>
 </div>
 
-<div eui-sidesheet-actions color="white">
+<div eui-sidesheet-actions >
   <button data-imx-identifier="admin-delete-config-submit-button" [disabled]="!selectedKey" mat-raised-button
     color="warn" (click)="submit()">{{'#LDS#Delete configuration key' | translate}}</button>
 </div>

@@ -28,7 +28,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 
-import { AppConfigService, AuthenticationService, ISessionState } from 'qbm';
+import { AppConfigService, AuthenticationService, ISessionState, SystemInfoService } from 'qbm';
 import { QerPermissionsService } from '../admin/qer-permissions.service';
 
 @Injectable({
@@ -41,8 +41,9 @@ export class DataExplorerGuardService implements CanActivate, OnDestroy {
     private readonly qerPermissionService: QerPermissionsService,
     private readonly authentication: AuthenticationService,
     private readonly appConfig: AppConfigService,
-    private readonly router: Router
-  ) { }
+    private readonly router: Router,
+    private readonly systemInfoService: SystemInfoService
+  ) {}
 
   public canActivate(): Observable<boolean> {
     return new Observable<boolean>((observer) => {
@@ -50,10 +51,28 @@ export class DataExplorerGuardService implements CanActivate, OnDestroy {
         if (sessionState.IsLoggedIn) {
           const userIsAdmin = await this.qerPermissionService.isPersonAdmin();
           const userIsAuditor = await this.qerPermissionService.isAuditor();
-          if (!userIsAdmin && !userIsAuditor) {
+          const userIsResourceAdmin = await this.qerPermissionService.isResourceAdmin();
+          const userIsRoleAdmin = await this.qerPermissionService.isRoleAdmin();
+          const userIsRoleStatistics = await this.qerPermissionService.isRoleStatistics();
+          const userIsStructStatistics = await this.qerPermissionService.isStructStatistics();
+          const userIsStructAdmin = await this.qerPermissionService.isStructAdmin();
+          const userIsTsbNameSpaceAdminBase = await this.qerPermissionService.isTsbNameSpaceAdminBase();
+          const systemInfo = await this.systemInfoService.get();
+          const isItShop = systemInfo.PreProps.includes('ITSHOP');
+          const isActive =
+            (isItShop && (userIsAdmin || userIsAuditor)) ||
+            userIsResourceAdmin ||
+            userIsAuditor ||
+            userIsRoleAdmin ||
+            userIsRoleStatistics ||
+            userIsStructStatistics ||
+            userIsStructAdmin ||
+            (isItShop && userIsTsbNameSpaceAdminBase);
+
+          if (!isActive) {
             this.router.navigate([this.appConfig.Config.routeConfig.start], { queryParams: {} });
           }
-          observer.next(userIsAdmin || userIsAuditor);
+          observer.next(isActive);
           observer.complete();
         }
       });

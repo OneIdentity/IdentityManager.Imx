@@ -30,6 +30,7 @@
         .snavigation-side-toggle {
           display: flex;
           justify-content: flex-end;
+          margin: 5px 0;
 
           .snavigation-side-toggle-header {
             margin: auto;
@@ -60,9 +61,6 @@
               -webkit-backface-visibility: hidden; // Handle the anti-aliasing from chrome on rotations
               font-size: 16px;
             }
-          }
-          imx-data-source-toolbar {
-            margin-top: 15px,
           }
         }
 

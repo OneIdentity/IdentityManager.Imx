@@ -64,6 +64,11 @@ export class InitService {
           features: ['Portal_UI_PersonManager']
       }
     });
+
+    this.extService.register('statisticButton', {
+      instance: StatisticReportButtonComponent
+    });
+    
     // FIXME Add auditor and fix report button component
     this.extService.register('identityReports', {
       instance: ReportButtonComponent,

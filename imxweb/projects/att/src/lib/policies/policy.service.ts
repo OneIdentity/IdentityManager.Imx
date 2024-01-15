@@ -178,7 +178,7 @@ export class PolicyService {
   }
 
   public async getGroupInfo(parameters: { by?: string; def?: string } & CollectionLoadParameters = {}): Promise<GroupInfoData> {
-    const { OrderBy,search, ...params } = parameters;
+    const { withProperties, OrderBy, search, ...params } = parameters;
 
     const test = await this.api.client.portal_attestation_policy_group_get({
      ...params,

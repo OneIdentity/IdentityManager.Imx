@@ -31,23 +31,28 @@ import { TranslateService } from '@ngx-translate/core';
 import { PortalPersonRolemembershipsNoncompliance } from 'imx-api-cpl';
 
 import { CollectionLoadParameters, DisplayColumns, EntitySchema, ValType } from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings, DynamicTabDataProviderDirective, ClientPropertyForTableColumns, MetadataService, SettingsService } from 'qbm';
+import {
+  DataSourceToolbarSettings,
+  DynamicTabDataProviderDirective,
+  ClientPropertyForTableColumns,
+  MetadataService,
+  SettingsService,
+} from 'qbm';
 import { IdentityRuleViolationsMitigationControlComponent } from './identity-rule-violations-mitigation-control/identity-rule-violations-mitigation-control.component';
 import { IdentityRuleViolationService } from './identity-rule-violations.service';
 
 @Component({
   templateUrl: './identity-rule-violations.component.html',
-  styleUrls: ['./identity-rule-violations.component.scss']
+  styleUrls: ['./identity-rule-violations.component.scss'],
 })
 export class IdentityRuleViolationsComponent implements OnInit {
-
   public dstSettings: DataSourceToolbarSettings;
   public readonly DisplayColumns = DisplayColumns;
   public displayedColumns: ClientPropertyForTableColumns[];
   public caption: string;
   public entitySchema: EntitySchema;
 
-  private referrer: { objectuid: string; objecttable: string; };
+  private referrer: { objectuid: string; objecttable: string };
   private navigationState: CollectionLoadParameters;
 
   constructor(
@@ -59,14 +64,15 @@ export class IdentityRuleViolationsComponent implements OnInit {
     private readonly translate: TranslateService,
     dataProvider: DynamicTabDataProviderDirective
   ) {
-
     this.referrer = dataProvider.data;
     this.entitySchema = this.roleMembershipsService.nonComplianceSchema;
 
     this.navigationState = { PageSize: this.settingService.DefaultPageSize };
     this.displayedColumns = [
+      this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
       this.entitySchema.Columns.XOrigin,
-      this.entitySchema.Columns.XDateInserted
+      this.entitySchema.Columns.XDateInserted,
+      { ColumnName: 'actions', Type: ValType.String, afterAdditionals: true, untranslatedDisplay: '#LDS#Actions' },
     ];
   }
 
@@ -82,9 +88,7 @@ export class IdentityRuleViolationsComponent implements OnInit {
     return this.getData();
   }
 
-
   public async onShowDetails(entity: PortalPersonRolemembershipsNoncompliance): Promise<void> {
-
     const uidPerson = this.referrer.objectuid;
     const con = await this.roleMembershipsService.featureConfig();
 
@@ -99,12 +103,11 @@ export class IdentityRuleViolationsComponent implements OnInit {
         : this.roleMembershipsService.portalRulesMitigatingcontrols,
       displayedColumns: con.MitigatingControlsPerViolation
         ? [
-          this.roleMembershipsService.portalPersonMitigatingcontrols.Columns.UID_MitigatingControl,
-          this.roleMembershipsService.portalPersonMitigatingcontrols.Columns.UID_PersonWantsOrg,
-          this.roleMembershipsService.portalPersonMitigatingcontrols.Columns.IsInActive
-        ]
-        : [
-          this.roleMembershipsService.portalRulesMitigatingcontrols.Columns.UID_MitigatingControl]
+            this.roleMembershipsService.portalPersonMitigatingcontrols.Columns.UID_MitigatingControl,
+            this.roleMembershipsService.portalPersonMitigatingcontrols.Columns.UID_PersonWantsOrg,
+            this.roleMembershipsService.portalPersonMitigatingcontrols.Columns.IsInActive,
+          ]
+        : [this.roleMembershipsService.portalRulesMitigatingcontrols.Columns.UID_MitigatingControl],
     };
     this.sidesheet.open(IdentityRuleViolationsMitigationControlComponent, {
       title: await this.translate.get('#LDS#Heading View Mitigating Controls').toPromise(),
@@ -132,27 +135,18 @@ export class IdentityRuleViolationsComponent implements OnInit {
 
   private async getData(): Promise<void> {
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
-
-      const dataSource = await this.roleMembershipsService.getNonCompliance(
-        this.referrer.objectuid,
-        this.navigationState);
-
-      const displayedColumns = this.displayedColumns;
-      displayedColumns.unshift(this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]);
-      displayedColumns.push({ ColumnName: 'actions', Type: ValType.String, afterAdditionals: true, untranslatedDisplay: '#LDS#Actions' });
+      const dataSource = await this.roleMembershipsService.getNonCompliance(this.referrer.objectuid, this.navigationState);
 
       this.dstSettings = {
-        displayedColumns,
+        displayedColumns: this.displayedColumns,
         dataSource,
         entitySchema: this.entitySchema,
-        navigationState: this.navigationState
+        navigationState: this.navigationState,
       };
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
   }
-
-
 }

@@ -421,7 +421,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
         }
         this.parameters = { ...this.parameters, ...newState };
         const candidateCollection = await this.selectedTable.Get(this.parameters);
-        this.candidatesTotalCount = candidateCollection.TotalCount;
+        this.candidatesTotalCount = candidateCollection?.TotalCount;
 
         this.isHierarchical = candidateCollection.Hierarchy != null;
 

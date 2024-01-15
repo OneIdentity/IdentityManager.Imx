@@ -67,7 +67,7 @@ import { NewRequestSelectionService } from '../../new-request-selection.service'
       state(
         'opened',
         style({
-          width: 'calc({{ width }}/2)',
+          width: '320px',
           visibility: 'visible',
         }),
         { params: { width: '*' } }

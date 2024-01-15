@@ -25,7 +25,7 @@
   </mat-card>
 
 </div>
-<div eui-sidesheet-actions color="white" *ngIf="hasParams">
+<div eui-sidesheet-actions  *ngIf="hasParams">
   <button data-imx-identifier="itshop-pattern-item-edit-ok-dialog" mat-raised-button color="primary" (click)="save()"
     [disabled]="!requestParamForm.dirty">
     {{ '#LDS#Save' | translate }}

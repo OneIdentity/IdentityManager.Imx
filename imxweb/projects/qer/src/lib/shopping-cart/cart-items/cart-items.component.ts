@@ -50,6 +50,7 @@ import { CartItemCloneService } from '../cart-item-edit/cart-item-clone.service'
 import { ExtendedEntityWrapper } from '../../parameter-data/extended-entity-wrapper.interface';
 import { Subject } from 'rxjs';
 import { CartItemEditParameter } from '../cart-item-edit/cart-item-edit-parameter.interface';
+import { UserModelService } from '../../user/user-model.service';
 
 @Component({
   templateUrl: './cart-items.component.html',
@@ -94,6 +95,7 @@ export class CartItemsComponent implements OnInit, OnChanges {
     private readonly translateService: TranslateService,
     private readonly sidesheetService: EuiSidesheetService,
     private readonly cartItemClone: CartItemCloneService,
+    private readonly userModelService: UserModelService,
     private readonly ldsReplace: LdsReplacePipe,
   ) {
     this.entitySchema = cartItemsService.PortalCartitemSchema;
@@ -209,7 +211,8 @@ export class CartItemsComponent implements OnInit, OnChanges {
   public async moveSelectedToCart(): Promise<void> {
     setTimeout(() => this.busyService.show());
     try {
-      await this.cartItemsService.moveToCart(this.selectedItems);
+      await this.cartItemsService.moveToCart(this.selectedItems);      
+      await this.userModelService.reloadPendingItems();
 
       this.snackBarService.open({ key: '#LDS#The selected products have been moved to your shopping cart.' });
     } finally {
@@ -221,12 +224,12 @@ export class CartItemsComponent implements OnInit, OnChanges {
   public async moveSelectedToLater(): Promise<void> {
     setTimeout(() => this.busyService.show());
     try {
-      await this.cartItemsService.moveToLater(this.selectedItems);
-
+      await this.cartItemsService.moveToLater(this.selectedItems); 
       this.snackBarService.open({ key: '#LDS#The selected products have been moved to your Saved for Later list.' });
     } finally {
       setTimeout(() => this.busyService.hide());
       this.dataChange.emit(true);
+      await this.userModelService.reloadPendingItems();
       if (this.cartItemsTable) {
         this.cartItemsTable.clearSelection();
       }
@@ -437,7 +440,8 @@ export class CartItemsComponent implements OnInit, OnChanges {
         this.snackBarService.open({ key: this.forLater ? snackBarMessageWatchList : snackBarMessageShoppingCart }, '#LDS#Close');
       } finally {
         setTimeout(() => this.busyService.hide(overlayRef));
-        this.dataChange.emit(true);
+        this.dataChange.emit(true);        
+        await this.userModelService.reloadPendingItems();
 
         this.cartItemsTable?.clearSelection();
       }

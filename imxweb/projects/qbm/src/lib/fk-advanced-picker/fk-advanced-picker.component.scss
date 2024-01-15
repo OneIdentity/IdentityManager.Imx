@@ -12,6 +12,9 @@
   flex-direction: column;
   overflow-y: auto;
   height: 100%;
+  eui-alert{
+    margin-bottom: 20px;
+  }
 
   > imx-fk-selector {
     display: flex;

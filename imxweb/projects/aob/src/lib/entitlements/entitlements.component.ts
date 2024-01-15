@@ -112,8 +112,8 @@ export class EntitlementsComponent implements OnChanges {
    */
   public readonly status = {
     getBadges: (entitlement: PortalEntitlement): DataTileBadge[] => this.entitlementsProvider.getEntitlementBadges(entitlement),
-    enabled: (entitlement: PortalEntitlement): boolean => {
-      return !entitlement.IsDynamic.value;
+    enabled: (_: PortalEntitlement): boolean => {
+      return true;
     },
   };
 
@@ -477,7 +477,7 @@ export class EntitlementsComponent implements OnChanges {
       return;
     }
 
-    this.unassignedDisabled = false;
+    this.unassignedDisabled = selection.some(elem => elem.IsDynamic.value === true);
 
     let foundPublished = false;
     let foundUnpublished = false;

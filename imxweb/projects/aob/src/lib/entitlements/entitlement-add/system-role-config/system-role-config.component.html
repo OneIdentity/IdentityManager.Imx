@@ -43,7 +43,7 @@
   </mat-card>
 </div>
 
-<div eui-sidesheet-actions color="white">
+<div eui-sidesheet-actions >
   <button *ngIf="type === 'new'" mat-raised-button color="primary" [disabled]="form.invalid || !form.dirty"
     (click)="close(true)" data-imx-identifier="system-role-config-create-new-system-role-button">
     {{'#LDS#Create new system role' | translate}}

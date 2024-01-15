@@ -99,6 +99,7 @@
       smallInput="true"
       [label]="'#LDS#Sort by column' | translate"
       [inputControl]="selectedSortControl"
+      [feedbackMessages]="sortFeedbackMessages"
       [options]="sortOptions"
       [filterFunction]="sortOptionsFilter"
       [attr.aria-label]="'#LDS#Sort by column' | translate"
@@ -299,7 +300,7 @@
 
   <div class="imx-chip-container" [ngClass]="{'imx-chip-container-grouped': !isStandaloneToolbar}">
     <mat-chip-list *ngIf="searchTerms.length" class="imx-data-source-selected-filters" data-imx-identifier="dst-mat-chip-list-search-terms">
-      <span translate>#LDS#Search by keywords</span>:
+      <span>{{'#LDS#Search by keywords' | translate}}:</span>
       <mat-chip
         [ngClass]="{'isRegex': st.selectedOption.IsRegex}"
         *ngFor="let st of searchTerms"
@@ -311,12 +312,12 @@
       </mat-chip>
     </mat-chip-list>
     <mat-chip-list
-      *ngIf="(optionset.has('filter') || optionset.has('filterTree')) && selectedFilters.length || filterWizardExpression ||  currentFilterData.length > 0"
+      *ngIf="(optionset.has('filter') || optionset.has('filterTree')) && filterWizardExpression || selectedFilters.length || currentFilterData.length"
       #chipList
       class="imx-data-source-selected-filters"
       data-imx-identifier="dst-mat-chip-list-selected-filters"
     >
-      <span *ngIf="selectedFilters.length || filterWizardExpression" translate>#LDS#Filter on</span>:
+      <span *ngIf="filterWizardExpression || selectedFilters.length || currentFilterData.length" translate>#LDS#Filter on</span>:
       <mat-chip *ngIf="filterWizardExpression" (click)="removeFilterWizard()">
         <span class="tag-name">{{ "#LDS#Custom filter" | translate }} ({{ filterWizardExpression?.Expression?.Expressions?.length}})</span>
         <eui-icon class="remove" icon="stop"> </eui-icon>
@@ -329,7 +330,7 @@
         <span class="tag-name">{{ sf.selectedOption.Display }}</span>
         <eui-icon class="remove" icon="stop" [attr.data-imx-identifier]="'dst-mat-chip-selected-filters-chip-remove-' + sf.filter.Name + '-' + sf.selectedOption.Value"> </eui-icon>
       </mat-chip>
-      <mat-chip *ngIf="currentFilterData.length > 0" (click)="clearTreeFilter()" data-imx-identifier="dst-mat-chip-filter-tree-active">
+      <mat-chip *ngIf="currentFilterData.length" (click)="clearTreeFilter()" data-imx-identifier="dst-mat-chip-filter-tree-active">
         <span class="tag-name">{{ filterType }}: {{ currentFilterDisplayData }}</span>
         <eui-icon class="remove" icon="stop" data-imx-identifier="dst-mat-chip-filter-tree-active-chip-remove"> </eui-icon>
       </mat-chip>

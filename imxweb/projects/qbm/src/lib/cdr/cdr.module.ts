@@ -102,7 +102,7 @@ import { InfoModalDialogModule } from '../info-modal-dialog/info-modal-dialog.mo
     DateRangeComponent,
     EntityColumnEditorComponent,
     EditUrlComponent,
-    CdrSidesheetComponent
+    CdrSidesheetComponent,
   ],
   imports: [
     CommonModule,
@@ -135,10 +135,7 @@ import { InfoModalDialogModule } from '../info-modal-dialog/info-modal-dialog.mo
     FkAdvancedPickerModule,
     FkHierarchicalDialogModule,
     DateModule,
-    ImageModule
-  ],
-  providers: [
-    CdrRegistryService
+    ImageModule,
   ],
   exports: [
     CdrEditorComponent,
@@ -151,7 +148,7 @@ import { InfoModalDialogModule } from '../info-modal-dialog/info-modal-dialog.mo
     EditMultiLimitedValueComponent,
     PropertyViewerComponent,
     EntityColumnEditorComponent,
-    CdrSidesheetComponent
+    CdrSidesheetComponent,
   ],
 })
 export class CdrModule {}

@@ -218,7 +218,11 @@ export class ItshopPatternComponent implements OnInit, OnDestroy {
   private async viewDetails(selectedPattern: PortalItshopPatternPrivate | PortalItshopPatternAdmin): Promise<void> {
     const isMyPattern = this.isMyPattern(selectedPattern);
     const canEditAndDelete = this.canBeEditedAndDeleted(selectedPattern);
-    const pattern = selectedPattern;
+    const pattern = isMyPattern
+      ? await this.patternService.getPrivatePattern(selectedPattern.GetEntity().GetKeys()[0])
+      : (await this.patternService.getPublicPatterns()).Data.find(
+          (pattern) => pattern.GetEntity().GetKeys()[0] === selectedPattern.GetEntity().GetKeys()[0],
+        );
 
     const title = await this.translate.get(canEditAndDelete
       ? '#LDS#Heading Edit Product Bundle'

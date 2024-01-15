@@ -33,7 +33,7 @@ import { Subject } from 'rxjs';
 import { NonComplianceDecisionInput } from 'imx-api-cpl';
 import { ValType } from 'imx-qbm-dbts';
 import { SnackBarService, EntityService, ColumnDependentReference, BaseCdr } from 'qbm';
-import { JustificationService, JustificationType } from 'qer';
+import { JustificationService, JustificationType, UserModelService } from 'qer';
 import { ApiService } from '../../api.service';
 import { RulesViolationsApproval } from '../rules-violations-approval';
 import { RulesViolationsActionComponent } from './rules-violations-action.component';
@@ -56,6 +56,7 @@ export class RulesViolationsActionService {
     private readonly busyService: EuiLoadingService,
     private readonly translate: TranslateService,
     private readonly snackBar: SnackBarService,
+    private readonly userService: UserModelService,
     private readonly entityService: EntityService
   ) { }
 
@@ -169,7 +170,8 @@ export class RulesViolationsActionService {
         for (const rulesViolation of config.data.rulesViolationsApprovals) {
           await config.apply(rulesViolation);
         }
-        success = true;
+        success = true; 
+        await this.userService.reloadPendingItems();
       } finally {
         setTimeout(() => this.busyService.hide(busyIndicator));
       }

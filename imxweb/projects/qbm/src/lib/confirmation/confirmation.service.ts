@@ -24,7 +24,7 @@
  *
  */
 
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -41,7 +41,8 @@ export class ConfirmationService {
   constructor(
     private readonly dialogService: MatDialog,
     private readonly translate: TranslateService,
-    private readonly pipe: LdsReplacePipe
+    private readonly pipe: LdsReplacePipe,
+    private readonly zone: NgZone,
   ) {}
 
   public async confirmLeaveWithUnsavedChanges(title?: string, message?: string, disableClose?: boolean): Promise<boolean> {
@@ -56,21 +57,27 @@ export class ConfirmationService {
       panelClass: 'imx-messageDialog',
       disableClose: disableClose,
     });
-    return (await dialogRef.beforeClosed().toPromise()) === MessageDialogResult.YesResult ? true : false;
+    return (await dialogRef.beforeClosed().toPromise()) === MessageDialogResult.YesResult;
   }
 
   public async confirm(data: MessageParameter): Promise<boolean> {
-    const message = data?.Message ? await this.translate.get(data.Message).toPromise() : '';
+    let message = data?.Message ? await this.translate.get(data.Message).toPromise() : '';
+    message = data.Parameter ? this.pipe.transform(message, ...data.Parameter) : message;
+    const title = data?.Title ? await this.translate.get(data.Title).toPromise() : '';
+    let dialogRef;
 
-    const dialogRef = this.dialogService.open(MessageDialogComponent, {
-      data: {
-        Title: data?.Title ? await this.translate.get(data.Title).toPromise() : '',
-        Message: data.Parameter ? this.pipe.transform(message, ...data.Parameter) : message,
-        ShowYesNo: true,
-      },
-      panelClass: 'imx-messageDialog',
+    this.zone.run(() => {
+      dialogRef = this.dialogService.open(MessageDialogComponent, {
+        data: {
+          Title: title,
+          Message: message,
+          ShowYesNo: true,
+        },
+        panelClass: 'imx-messageDialog',
+      });
     });
-    return (await dialogRef.afterClosed().toPromise()) === MessageDialogResult.YesResult ? true : false;
+
+    return (await dialogRef.afterClosed().toPromise()) === MessageDialogResult.YesResult;
   }
 
   public async confirmGeneral(data: MessageParameter): Promise<boolean> {
@@ -86,7 +93,7 @@ export class ConfirmationService {
       },
       panelClass: 'imx-messageDialog',
     });
-    return (await dialogRef.afterClosed().toPromise()) === MessageDialogResult.YesResult ? true : false;
+    return (await dialogRef.afterClosed().toPromise()) === MessageDialogResult.YesResult;
   }
 
   // Damit es bis "Pull Request 38432: 299557-imxweb-confirmdialogs-with-yes-no-buttons" funktioniert

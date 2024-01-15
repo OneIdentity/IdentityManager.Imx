@@ -79,7 +79,7 @@
           </mat-radio-button>
         </mat-radio-group>
       </mat-card-content>
-      <mat-card-actions color="white" *ngIf="queueService.CanBeReactivated()">
+      <mat-card-actions  *ngIf="queueService.CanBeReactivated()">
         <button mat-flat-button color="primary" [disabled]="mode < 0" (click)="reactivate()">
           {{ '#LDS#Apply' | translate }}
         </button>

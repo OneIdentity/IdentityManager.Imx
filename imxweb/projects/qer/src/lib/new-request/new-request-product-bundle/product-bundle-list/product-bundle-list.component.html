@@ -23,6 +23,7 @@
     [searchBoxText]="'#LDS#Search for product bundles' | translate"
     [useThemedStyle]="true"
     [busyService]="busyService"
+    (navigationStateChanged)="getData($event)"
     (search)="onSearch($event)"
   ></imx-data-source-toolbar>
   <imx-info-button [title]="'#LDS#Heading Product Bundles' | translate" [templateRef]="infoDialogContent"> </imx-info-button>

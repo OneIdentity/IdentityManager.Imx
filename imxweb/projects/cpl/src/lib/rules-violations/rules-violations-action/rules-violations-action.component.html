@@ -11,7 +11,7 @@
     </ng-container>
   </form>
 </div>
-<div eui-sidesheet-actions color="white">
+<div eui-sidesheet-actions >
   <button data-imx-identifier="rules-violations-action-button-save" mat-raised-button color="primary"
     (click)="sideSheetRef.close(true)" *ngIf="formGroup" [disabled]="formGroup.invalid">
     {{ '#LDS#Save' | translate }}

@@ -252,8 +252,6 @@ export class ShoppingCartComponent implements OnInit, AfterViewInit {
       }
 
       await this.getCartItems();
-
-      await this.userModelService.reloadPendingItems();
     } finally {
       setTimeout(() => this.busyService.hide());
     }

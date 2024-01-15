@@ -148,13 +148,12 @@ export class LoginComponent implements OnInit, OnDestroy {
   public async ngOnInit(): Promise<void> {
     const config = await this.systemInfoService.getImxConfig();
     if (config.DefaultHtmlTheme) {
-      let key = Object.keys(EuiTheme).find((x) => x.toUpperCase() == config.DefaultHtmlTheme?.toUpperCase());
-      if (key === 'AUTO' && this.detector.getHighContrastMode() > 0) {
-        this.themeService.setTheme(EuiTheme['CONTRAST']);
+      if (config.DefaultHtmlTheme === 'eui-auto-theme' && this.detector.getHighContrastMode() > 0) {
+        this.themeService.setTheme(EuiTheme.CONTRAST);
       } else if (this.title === 'Administration Portal') {
-        this.themeService.setTheme(EuiTheme['LIGHT']);
+        this.themeService.setTheme(EuiTheme.LIGHT);
       } else {
-        this.themeService.setTheme(EuiTheme[key]);
+        this.themeService.setTheme(<EuiTheme>config.DefaultHtmlTheme);
       }
     }
     if (config.CompanyLogoUrl) {

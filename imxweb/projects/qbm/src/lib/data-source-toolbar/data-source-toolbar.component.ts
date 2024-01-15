@@ -61,6 +61,7 @@ import {
   TypedEntityCollectionData,
   ValType,
 } from 'imx-qbm-dbts';
+import { v4 as uuid } from 'uuid';
 import { DataSourceToolbarFilter, DataSourceToolbarSelectedFilter } from './data-source-toolbar-filters.interface';
 import { DataSourceToolBarGroup, DataSourceToolBarGroupingCategory } from './data-source-toolbar-groups.interface';
 import { SelectionModelWrapper } from './selection-model-wrapper';
@@ -160,6 +161,9 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
     selectedSortControl: this.selectedSortControl,
     ascendingSortControl: this.ascendingSortControl,
   });
+  public sortFeedbackMessages = {
+    search: this.translate.instant('#LDS#Search'),
+  };
   public sortOptions: EuiSelectOption[] = [];
   public sortOptionsFilter = (option: EuiSelectOption, searchInputValue: string) =>
     option.display.toLowerCase().includes(searchInputValue.toLowerCase());
@@ -555,8 +559,8 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
       Filter: this.settings?.navigationState?.filter,
       GroupBy: this.settings?.groupData?.currentGrouping?.display,
       OrderBy: this.settings?.navigationState?.OrderBy,
-      AdditionalListColumns: this.columnOptions.additionalListElements.map((ele) => ele.ColumnName),
-      AdditionalTableColumns: this.columnOptions.selectedOptionals.map((column) => column.ColumnName),
+      AdditionalListColumns: this.columnOptions?.additionalListElements?.map((ele) => ele.ColumnName),
+      AdditionalTableColumns: this.columnOptions?.selectedOptionals?.map((column) => column.ColumnName),
       UseAsDefault: false,
     };
     if (this.filtersCurrentlyApplied) {
@@ -729,6 +733,11 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
   private columnSubscriptions: Subscription[] = [];
 
   /**
+   * Uniqe id for each data-source-toolbar component
+   */
+  private id: string;
+
+  /**
    * @ignore Used internally in components template.
    * Selection model that handles single and multiple selection in the data table.
    * Visually selections are represented by chekcboxes, which can be checked/unchecked.
@@ -742,13 +751,14 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
     private readonly sidesheet: EuiSidesheetService,
     private readonly injector: Injector,
     private readonly translate: TranslateService,
-    private readonly sidesheetService: EuiSidesheetService,
     private readonly confirm: ConfirmationService,
     private readonly config: AppConfigService,
     private readonly snackbar: SnackBarService,
     private readonly filterService: FilterWizardService,
     private readonly systemInfoService: SystemInfoService
   ) {
+    if (!this.id) this.id = uuid();
+
     this.subscriptions.push(
       this.selection.changed.subscribe((event: SelectionChange<TypedEntity>) => {
         if (!this.isUpdatingPreselection) {
@@ -759,6 +769,8 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
 
     this.subscriptions.push(
       this.filterService.navigationStateChanged.subscribe((event: selectedFiltersParams) => {
+        if (event.id !== this.id) return;
+
         this.selectedFilters = event.selectedFilters;
 
         if (this.selectedFilterType != FilterTypeIdentifier.Custom) {
@@ -1246,7 +1258,9 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
       );
       this.currentFilterData = filterdata;
       this.currentFilterDisplayData = this.currentFilterData.map((filter) => filter.GetColumn('LongDisplay').GetValue()).join(', ');
-      this.filterTreeSelectionChanged.emit(this.currentFilterData.map((filter) => filter.GetColumn('Filter').GetValue()).concat(otherFilter)); // combine the two filter again
+      this.filterTreeSelectionChanged.emit(
+        this.currentFilterData.map((filter) => filter.GetColumn('Filter').GetValue()).concat(otherFilter)
+      ); // combine the two filter again
     }
   }
 
@@ -1298,10 +1312,10 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
    * clears the tree filter and emits the filterTreeSelectionChanged event
    */
   public clearTreeFilter(): void {
-    const currentTree: FilterData = this.currentFilterData[0].GetColumn('Filter').GetValue();
+    const currentTree: FilterData = this.currentFilterData[0]?.GetColumn('Filter').GetValue();
     this.currentFilterData = [];
     this.currentFilterDisplayData = '';
-    this.filterTreeSelectionChanged.emit(this.settings.navigationState.filter.filter(elem=>elem.ColumnName != currentTree.ColumnName));
+    this.filterTreeSelectionChanged.emit(this.settings.navigationState.filter?.filter((elem) => elem.ColumnName != currentTree.ColumnName));
   }
 
   /**
@@ -1371,7 +1385,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
 
   public async showFilterWizard(): Promise<void> {
     const settingSave = this.storeCurrentFilterValues();
-    const sidesheetRef = this.sidesheetService.open(FilterWizardComponent, {
+    const sidesheetRef = this.sidesheet.open(FilterWizardComponent, {
       title: await this.translate.get('#LDS#Heading Filter Data').toPromise(),
       icon: 'filter',
       width: '800px',
@@ -1379,6 +1393,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
       testId: 'filter-wizard-sidesheet',
       disableClose: true,
       data: {
+        id: this.id,
         settings: this.settings,
         filterExpression: this.filterWizardExpression,
         selectedFilters: this.selectedFilters,

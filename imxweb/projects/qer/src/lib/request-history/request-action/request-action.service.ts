@@ -38,6 +38,7 @@ import { RequestActionComponent } from './request-action.component';
 import { RequestHistoryService } from '../request-history.service';
 import { JustificationService } from '../../justification/justification.service';
 import { JustificationType } from '../../justification/justification-type.enum';
+import { UserModelService } from '../../user/user-model.service';
 
 @Injectable({
   providedIn: 'root',
@@ -56,6 +57,7 @@ export class RequestActionService {
     private readonly justificationService: JustificationService,
     private readonly errorHandler: ErrorHandler,
     private readonly messageService: UserMessageService,
+    private readonly userService: UserModelService,
     private readonly ldsReplace: LdsReplacePipe
   ) {}
 
@@ -330,7 +332,8 @@ export class RequestActionService {
           text: this.ldsReplace.transform(this.translate.instant('#LDS#The following {0} products could not be added to the shopping cart: {1}'), errorRequests.length, errorText),
           type: 'error',
         });
-      }
+      }      
+      await this.userService.reloadPendingItems();
       this.applied.next();
     }
   }
@@ -366,7 +369,8 @@ export class RequestActionService {
         this.snackBar.open({
           key: config.message,
           parameters: [config.data.requests.length],
-        });
+        });        
+        await this.userService.reloadPendingItems();
         this.applied.next();
       }
     } else {

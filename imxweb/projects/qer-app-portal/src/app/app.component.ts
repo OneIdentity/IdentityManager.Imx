@@ -66,7 +66,6 @@ export class AppComponent implements OnInit, OnDestroy {
     private qerClient: QerApiService,
     private readonly themeService: EuiThemeService,
     private readonly errorHandler: ErrorHandler,
-    private readonly euiLoadingService: EuiLoadingService,
     private readonly translationProvider: ImxTranslationProviderService,
     private readonly translateService: TranslateService,
     @Inject(APP_BASE_HREF) private baseHref: string
@@ -193,20 +192,14 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private async applyProfileSettings()
   {
-    let overlayRef = this.euiLoadingService.show();
     try {
       let profileSettings: ProfileSettings = await this.qerClient.client.portal_profile_get();
       if (profileSettings?.PreferredAppThemes) {
-        let key = Object.keys(EuiTheme).find(x => x.toUpperCase() == profileSettings.PreferredAppThemes?.toUpperCase());
-        if (key)
-          this.themeService.setTheme(EuiTheme[key]);
+        this.themeService.setTheme(<EuiTheme>profileSettings.PreferredAppThemes);
       }
     }
     catch (error) {
       this.errorHandler.handleError(error);
-    }
-    finally {
-      this.euiLoadingService.hide(overlayRef);
     }
   }
 }

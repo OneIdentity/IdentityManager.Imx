@@ -62,7 +62,7 @@
               {{ '#LDS#Organizational information' | translate }}
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <imx-cdr-editor *ngFor="let cdr of cdrListOrganizational" [cdr]="cdr" (readOnlyChanged)=update(cdr,cdrListOrganizational) 
+          <imx-cdr-editor *ngFor="let cdr of cdrListOrganizational" [cdr]="cdr" (readOnlyChanged)=update(cdr,cdrListOrganizational)
             (controlCreated)="identityForm.addControl(cdr.column.ColumnName, $event)"> </imx-cdr-editor>
         </mat-expansion-panel>
         <mat-expansion-panel *ngIf="cdrListLocality.length > 0" data-imx-identifier="create-new-identity-expansion-location" >
@@ -78,7 +78,7 @@
     </form>
   </mat-card>
 </div>
-<div eui-sidesheet-actions color="white">
+<div eui-sidesheet-actions >
   <button data-imx-identifier="create-new-identity-button-save" (click)="submit()"
     [disabled]="accountIsOff || identityForm.invalid || !identityForm.dirty" mat-raised-button type="button"
     color="primary">

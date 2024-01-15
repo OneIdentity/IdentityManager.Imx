@@ -43,6 +43,7 @@ import {
   hasFeatures,
   isAuditor,
   isStatistics,
+  isTsbNameSpaceAdminBase,
 } from './qer-permissions-helper';
 
 @Injectable({
@@ -90,10 +91,13 @@ export class QerPermissionsService {
   public async isPasswordHelpdesk(): Promise<boolean> {
     return isPasswordHelpdesk((await this.userService.getFeatures()).Features);
   }
+  public async isStatistics(): Promise<boolean> {
+    return isStatistics((await this.userService.getFeatures()).Features);
+  }
   public async isAuditor(): Promise<boolean> {
     return isAuditor((await this.userService.getGroups()).map((group) => group.Name));
   }
-  public async isStatistics(): Promise<boolean> {
-    return isStatistics((await this.userService.getFeatures()).Features);
+  public async isTsbNameSpaceAdminBase(): Promise<boolean> {
+    return isTsbNameSpaceAdminBase((await this.userService.getGroups()).map((group) => group.Name));
   }
 }
