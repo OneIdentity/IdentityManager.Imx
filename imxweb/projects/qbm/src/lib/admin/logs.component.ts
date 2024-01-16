@@ -93,7 +93,7 @@ export class LogsComponent implements OnInit {
     try {
       const timeFilter: DataSourceToolbarFilter = {
         Name: 'TimeFilter',
-        Description: 'Time filter',
+        Description: '#LDS#Heading Time Filter',
         Options: [
           {
             Display: this.translator.instant('#LDS#Last hour'),

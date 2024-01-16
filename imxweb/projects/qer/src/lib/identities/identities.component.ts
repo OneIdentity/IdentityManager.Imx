@@ -99,9 +99,7 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, SideN
 
   public currentUser: string;
 
-  public readonly entitySchemaPersonReports: EntitySchema;
-  public readonly entitySchemaPerson: EntitySchema;
-  public readonly entitySchemaAdminPerson: EntitySchema;
+  public entitySchemaPersonReports: EntitySchema;
   public readonly DisplayColumns = DisplayColumns;
   public filterOptions: DataSourceToolbarFilter[] = [];
   public groupingOptions: DataModelProperty[] = [];
@@ -126,7 +124,7 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, SideN
   private get viewConfigPath(): string {
     return this.isAdmin ? 'admin/person' : 'person/reports';
   }
-  @ViewChild('dynamicReport',{static: true, read: ViewContainerRef}) dynamicReport: ViewContainerRef;
+  @ViewChild('dynamicReport', { static: true, read: ViewContainerRef }) dynamicReport: ViewContainerRef;
 
   constructor(
     public translateProvider: ImxTranslationProviderService,
@@ -145,15 +143,11 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, SideN
     private extService: ExtService
   ) {
     this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
-    this.entitySchemaPersonReports = identitiesService.personReportsSchema;
-    this.entitySchemaPerson = identitiesService.personSchema;
-    this.entitySchemaAdminPerson = identitiesService.adminPersonSchema;
     this.authorityDataDeleted$ = this.identitiesService.authorityDataDeleted.subscribe(() => this.navigate());
 
     this.sessionResponse$ = this.authService.onSessionResponse.subscribe(async (session) => {
       if (session.IsLoggedIn) {
-        this.currentUser = session.UserUid,
-        this.isManagerForPersons = await qerPermissionService.isPersonManager();
+        (this.currentUser = session.UserUid), (this.isManagerForPersons = await qerPermissionService.isPersonManager());
         this.isPersonAdmin = await qerPermissionService.isPersonAdmin();
         this.isAuditor = await qerPermissionService.isAuditor();
       }
@@ -179,22 +173,22 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, SideN
     }
   }
 
-  public getDynamicMenuItems(): void{
-    if(this.isAdmin){
+  public getDynamicMenuItems(): void {
+    if (this.isAdmin) {
       this.extensions = this.extService.Registry['identityReports'];
-    }else{
+    } else {
       this.extensions = this.extService.Registry['identityReportsManager'];
     }
   }
 
   // !!TODO - Fix mat menu dynamic report components
   // Create dynamic report components and call viewReport function
-  public async showDynamicReport(extension: IExtension): Promise<void>{
-    const dynamicReportComponent = this.dynamicReport.createComponent(extension.instance, {index: 0});
+  public async showDynamicReport(extension: IExtension): Promise<void> {
+    const dynamicReportComponent = this.dynamicReport.createComponent(extension.instance, { index: 0 });
     dynamicReportComponent.instance.referrer = this.currentUser;
     dynamicReportComponent.instance.inputData = extension.inputData;
     await dynamicReportComponent.instance.ngOnInit();
-    if(dynamicReportComponent.instance.viewReport){
+    if (dynamicReportComponent.instance.viewReport) {
       dynamicReportComponent.instance.viewReport();
     }
   }
@@ -273,7 +267,7 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, SideN
         dataSource: groupData.data,
         entitySchema: this.entitySchemaPersonReports,
         navigationState: groupData.navigationState,
-        dataModel: this.dataModel
+        dataModel: this.dataModel,
       };
     } finally {
       isBusy.endBusy();
@@ -302,6 +296,8 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, SideN
 
   private async init(): Promise<void> {
     const isBusy = this.busyService.beginBusy();
+
+    this.entitySchemaPersonReports = this.identitiesService.personReportsSchema;
     try {
       this.projectConfig = await this.configService.getConfig();
       this.displayedColumns = [
@@ -324,7 +320,6 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, SideN
       this.displayedInnerColumns = [this.entitySchemaPersonReports.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]];
 
       this.dataModel = this.isAdmin ? await this.identitiesService.getDataModelAdmin() : await this.identitiesService.getDataModelReport();
-
       this.filterOptions = this.dataModel.Filters;
       this.groupingOptions = this.getGroupableProperties(this.dataModel.Properties);
 
@@ -354,7 +349,6 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, SideN
 
   private async navigate(): Promise<void> {
     const isBusy = this.busyService.beginBusy();
-
     try {
       this.logger.debug(this, `Retrieving person list`);
       this.logger.trace('Navigation settings', this.navigationState);
@@ -363,26 +357,26 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, SideN
           groups: [
             {
               property: this.groupingOptions[0],
-              getData: async () =>
-                {
-                  return  this.identitiesService.getGroupedAllPerson('IdentityType', {
-                    PageSize: this.navigationState.PageSize,
-                    StartIndex: 0,
-                    withProperties: this.navigationState.withProperties,
-                  });
-                }
+              getData: async () => {
+                return this.identitiesService.getGroupedAllPerson('IdentityType', {
+                  PageSize: this.navigationState.PageSize,
+                  StartIndex: 0,
+                  withProperties: this.navigationState.withProperties,
+                });
+              },
             },
           ],
         };
       }
 
+      this.entitySchemaPersonReports = this.identitiesService.personReportsSchema;
       const data = this.isAdmin
         ? await this.identitiesService.getAllPersonAdmin(this.navigationState)
         : await this.identitiesService.getReportsOfManager(this.navigationState);
       const exportMethod: DataSourceToolbarExportMethod = this.isAdmin
         ? this.identitiesService.exportAdminPerson(this.navigationState)
         : this.identitiesService.exportPerson(this.navigationState);
-      exportMethod.initialColumns = this.displayedColumns.map(col => col.ColumnName);
+      exportMethod.initialColumns = this.displayedColumns.map((col) => col.ColumnName);
 
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
@@ -435,7 +429,7 @@ export class DataExplorerIdentitiesComponent implements OnInit, OnDestroy, SideN
           isAdmin: this.isAdmin,
           projectConfig: this.projectConfig,
           selectedIdentity: identity,
-          canEdit: this.isPersonAdmin || this.isManagerForPersons
+          canEdit: this.isPersonAdmin || this.isManagerForPersons,
         },
         testId: 'identities-view-identity-sidesheet',
       })

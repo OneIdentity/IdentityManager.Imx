@@ -28,7 +28,7 @@
     </mat-card>
   </ng-container>
 </div>
-<div eui-sidesheet-actions color="white">
+<div eui-sidesheet-actions >
   <button mat-raised-button color="primary" data-imx-identifier="report-sidesheet-button"
     [disabled]="controlsInvalid || data.isReadonly" (click)="save()">
     {{ (data.isNew ? '#LDS#Create' : '#LDS#Save') | translate }}

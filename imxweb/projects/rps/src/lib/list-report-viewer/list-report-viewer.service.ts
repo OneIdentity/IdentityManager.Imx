@@ -72,7 +72,7 @@ export class ListReportViewerService implements ListReportDataProvider {
     if (!this.uidReport) {
       throw 'setUidReport(...) has to be called with a valid uid';
     }
-    const { OrderBy, search, ...params } = parameters;
+    const { withProperties, OrderBy, search, ...params } = parameters;
     return this.api.client.portal_report_data_group_get(this.uidReport, { ...params });
   }
 }

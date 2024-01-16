@@ -41,7 +41,6 @@ import { PolicyViolationsComponent } from './policy-violations/policy-violations
 import { PoliciesModule } from './policies/policies.module';
 import { PolicyViolationsModule } from './policy-violations/policy-violations.module';
 import { PoliciesComponent } from './policies/policies.component';
-import { PoliciesSidesheetComponent } from './policies/policies-sidesheet/policies-sidesheet.component';
 import { PolicyAdminGuardService } from './guards/policy-admin-guard.service';
 
 const routes: Routes = [

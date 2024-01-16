@@ -46,7 +46,7 @@ import {
   ValType,
 } from 'imx-qbm-dbts';
 import { BaseCdr, DataSourceToolbarExportMethod, EntityService, SnackBarService } from 'qbm';
-import { JustificationService, JustificationType } from 'qer';
+import { JustificationService, JustificationType, UserModelService } from 'qer';
 import { ApiService } from '../api.service';
 import { PolicyViolationsActionParameters } from './policy-violations-action/policy-violations-action-parameters.interface';
 import { PolicyViolationsActionComponent } from './policy-violations-action/policy-violations-action.component';
@@ -65,6 +65,7 @@ export class PolicyViolationsService {
     private readonly entityService: EntityService,
     private readonly translate: TranslateService,
     private readonly snackBar: SnackBarService,
+    private readonly userService: UserModelService,
     private readonly sideSheet: EuiSidesheetService
   ) {}
 
@@ -112,7 +113,7 @@ export class PolicyViolationsService {
   }
 
   public getGroupInfo(parameters: { by?: string; def?: string } & CollectionLoadParameters = {}): Promise<GroupInfoData> {
-    const  { OrderBy, search, ...params }= parameters;
+    const  {withProperties, OrderBy, search, ...params }= parameters;
     return this.api.client.portal_policies_violations_group_list_get({
      ...params,
       withcount: true
@@ -259,7 +260,8 @@ export class PolicyViolationsService {
         for (const policyViolation of config.data.policyViolations) {
           await config.apply(policyViolation);
         }
-        success = true;
+        success = true;        
+        await this.userService.reloadPendingItems();
       } finally {
         setTimeout(() => this.busyService.hide(busyIndicator));
       }

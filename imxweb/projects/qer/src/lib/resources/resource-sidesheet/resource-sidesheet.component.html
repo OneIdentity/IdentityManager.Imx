@@ -8,21 +8,21 @@
               <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="resourceFromGroup.addControl(cdr.column.ColumnName, $event)"></imx-cdr-editor>
               <imx-cdr-editor *ngIf="ownerCdr" [cdr]="ownerCdr" (controlCreated)="formGroup.addControl(ownerCdr.column.ColumnName, $event)"></imx-cdr-editor>
             </form>
-          </mat-card>                
+          </mat-card>
         </div>
-        <div eui-sidesheet-actions color="white">
+        <div eui-sidesheet-actions >
           <button mat-raised-button color="primary" [disabled]="!formGroup.dirty || formGroup.invalid" data-imx-identifier="resource-sidesheet-save-button" (click)="submit()">
             {{'#LDS#Save'| translate}}
           </button>
-        </div>    
+        </div>
       </div>
-    </mat-tab>    
+    </mat-tab>
     <mat-tab label="{{'#LDS#Heading Hyperview' | translate}}">
       <ng-template matTabContent>
-        <imx-object-hyperview 
-          [objectType]="data?.entity?.TypeName" 
+        <imx-object-hyperview
+          [objectType]="data?.entity?.TypeName"
           [objectUid]="data?.entity?.GetKeys()[0]">
-      </imx-object-hyperview> 
+      </imx-object-hyperview>
       </ng-template>
     </mat-tab>
   </mat-tab-group>

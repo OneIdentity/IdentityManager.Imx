@@ -1,5 +1,8 @@
 <div eui-sidesheet-content>
   <mat-card class="imx-dialog-content">
+    <eui-alert class="helper-alert" condensed="true" [colored]="true" type="info" [dismissable]="false" *ngIf="data?.isRequired && fkSelector?.selectedCandidates?.length < 1">
+      {{ '#LDS#Please select at least one item.' | translate }}
+      </eui-alert>
     <imx-fk-selector #fkSelector [data]="data" (selectedCandidatesChanges)="onSelectedCandidatesChanges()"
       (elementSelected)="selectObject($event)" (tableselected)="updateTable($event)"></imx-fk-selector>
   </mat-card>

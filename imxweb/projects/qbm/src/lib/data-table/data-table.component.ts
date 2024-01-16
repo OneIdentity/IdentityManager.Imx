@@ -382,13 +382,14 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
           if (event && event.source) {
             this.selectionChanged.emit(event.source.selected);
           }
-
         })
       );
 
       this.subscriptions.push(
         this.dst.shownColumnsSelectionChanged.subscribe(async (value) => {
-          await this.dstHasChanged();
+          if (!!this.settings) {
+            await this.dstHasChanged();
+          }
         })
       );
 
@@ -685,12 +686,9 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
       this.displayedColumns = [];
       this.additional = this.dst == null || this.dst.additionalColumns?.length === 0 ? this.parentAdditionals : this.dst.additionalColumns;
       // filter additionals for columns, that are already set in the DataSourceToolbarSettings
-      this.additional = this.additional.filter((elem) => this.settings?.displayedColumns?.every(disp => disp.ColumnName !== elem.ColumnName));
-
-        // filter additionals for columns, that are already set in the DataSourceToolbarSettings
-        this.additional = this.additional.filter((elem) => this.settings?.displayedColumns?.every(disp => disp.ColumnName !== elem.ColumnName));
-
-
+      this.additional = this.additional.filter((elem) =>
+        this.settings?.displayedColumns?.every((disp) => disp.ColumnName !== elem.ColumnName)
+      );
       if (this.manualColumns == null && this.manualGenericColumns == null) {
         return;
       }

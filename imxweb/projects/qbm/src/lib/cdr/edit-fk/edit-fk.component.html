@@ -20,7 +20,7 @@
     [attr.data-imx-identifier]="'cdr-edit-fk-input-search-candidates-' + columnContainer?.name"
     [required]="columnContainer.isValueRequired"
   />
-  <mat-autocomplete #auto="matAutocomplete" [displayWith]="getDisplay" (optionSelected)="optionSelected($event); inputControl.blur()" (closed)="close()" (opened)="onOpened()">
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="getDisplay" (optionSelected)="optionSelected($event); inputControl.blur()"  (opened)="onOpened()">
     <cdk-virtual-scroll-viewport #viewport [itemSize]="50" minBufferPx="200" maxBufferPx="400" class="imx-viewport">
       <mat-option
         *cdkVirtualFor="let candidate of candidates; index as i"

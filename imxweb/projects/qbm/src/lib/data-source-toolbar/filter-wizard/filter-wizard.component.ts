@@ -47,7 +47,7 @@ export class FilterWizardComponent implements OnDestroy {
   public expressionDirty = false;
   public expressionInvalid = true;
   public selectedTabIndex = 0;
-  public formState: FilterFormState;
+  public formState: FilterFormState = {canClearFilters:false, dirty: false, filterIdentifier:FilterTypeIdentifier.Predefined};
   public readonly FilterTypeIdentifier: FilterTypeIdentifier;
   public readonly FTIPredefined = FilterTypeIdentifier.Predefined;
   public readonly FTICustom = FilterTypeIdentifier.Custom;
@@ -159,7 +159,7 @@ export class FilterWizardComponent implements OnDestroy {
   }
 
   private async close(): Promise<void> {
-    if (!this.expressionDirty && !this.formState.dirty) {
+    if (!this.expressionDirty && !this.formState?.dirty) {
       this.sidesheetRef.close();
       return;
     }

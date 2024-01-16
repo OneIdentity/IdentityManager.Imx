@@ -1,6 +1,6 @@
 <ng-template #viewcontainer></ng-template>
-<div class="hint-container">
-  <imx-info-button [templateRef]="infoContent" *ngIf="description" [title]="infotitle"></imx-info-button>
+<div *ngIf="description" class="hint-container">
+  <imx-info-button [templateRef]="infoContent" [title]="infotitle"></imx-info-button>
 </div>
 <ng-template #infoContent>
   <p>

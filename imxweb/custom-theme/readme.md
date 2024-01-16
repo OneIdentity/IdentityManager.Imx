@@ -20,22 +20,21 @@ The HTML5 applications support the integration of **custom themes**. Before proc
   - `Class`: the CSS class identifier which is used for theming (e.g. `eui-light-theme` in default)
   - `Urls`: a list of all relevant files for this theme (also pictures, icons or other resources which are referenced if required)
 
-``` json
+```json
 {
-    "Themes": [
-        {
-            "Name": "space-theme",
-            "Display Name": "Space Theme",
-            "Class": "space-theme",
-            "Urls": [
-                "../space-theme/custom-theme.css"
-            ]
-        }
-    ]
+  "Themes": [
+    {
+      "Name": "space-theme",
+      "DisplayName": "Space Theme",
+      "Class": "space-theme",
+      "Urls": ["../space-theme/custom-theme.css"]
+    }
+  ]
 }
 ```
+
 - Upload the .zip file and the `imx-theme-config.json` file with Software Loader like you would with an Angular plugin.
 - Restart your API server.
 - Login to Web Portal > Click on your username > Select "User Interface Settings" > Change the application's theme to your custom theme.
 
-*Note*: Multiple theme definition files are possible. Multiple themes can also be declared inside one theme `imx-theme-config.json` file, however every theme needs to be provided as single .zip file.
+_Note_: Multiple theme definition files are possible. Multiple themes can also be declared inside one theme `imx-theme-config.json` file, however every theme needs to be provided as single .zip file.

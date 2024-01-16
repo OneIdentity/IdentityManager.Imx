@@ -25,18 +25,18 @@
  */
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChartOptions } from 'billboard.js';
 import { ImxConfig, MethodSetInfo, PingResult, SystemInfo, UpdaterState, V2ApiClientMethodFactory } from 'imx-api-qbm';
+import { Observable, interval } from 'rxjs';
 import { AppConfigService } from '../appConfig/appConfig.service';
-import { ClassloggerService } from "../classlogger/classlogger.service";
+import { LineChartOptions } from '../chart-options/line-chart-options';
+import { SeriesInformation } from '../chart-options/series-information';
+import { XAxisInformation } from '../chart-options/x-axis-information';
+import { YAxisInformation } from '../chart-options/y-axis-information';
+import { ClassloggerService } from '../classlogger/classlogger.service';
+import { SystemInfoService } from '../system-info/system-info.service';
 import { ImxTranslationProviderService } from '../translation/imx-translation-provider.service';
 import { StatusService } from './status.service';
-import { ChartOptions } from 'billboard.js';
-import { interval, Observable } from "rxjs";
-import { YAxisInformation } from "../chart-options/y-axis-information";
-import { SeriesInformation } from "../chart-options/series-information";
-import { XAxisInformation } from "../chart-options/x-axis-information";
-import { LineChartOptions } from "../chart-options/line-chart-options";
-import { SystemInfoService } from '../system-info/system-info.service';
 
 export class StatusInfo {
   date?: string;
@@ -110,12 +110,13 @@ export class StatusBuffer {
   },
 })
 export class StatusComponent implements OnInit, OnDestroy {
-  constructor(private readonly appConfigService: AppConfigService,
+  constructor(
+    private readonly appConfigService: AppConfigService,
     private readonly systemInfoService: SystemInfoService,
     private readonly logger: ClassloggerService,
     private readonly translator: ImxTranslationProviderService,
-    private statusService: StatusService) {
-  }
+    private statusService: StatusService
+  ) {}
 
   pingResult: PingResult;
   apiProjects: MethodSetInfo[];
@@ -129,10 +130,10 @@ export class StatusComponent implements OnInit, OnDestroy {
   stream: EventSource;
 
   statusData: {
-    CacheHits: number,
-    CacheMisses: number,
-    OpenSessions: number,
-    TotalSessions: number
+    CacheHits: number;
+    CacheMisses: number;
+    OpenSessions: number;
+    TotalSessions: number;
   };
 
   private buffer: StatusBuffer;
@@ -140,10 +141,8 @@ export class StatusComponent implements OnInit, OnDestroy {
   public show: boolean;
 
   ngOnDestroy() {
-    if (this.stream)
-      this.stream.close();
+    if (this.stream) this.stream.close();
   }
-
 
   async ngOnInit() {
     this.Reload();
@@ -160,19 +159,18 @@ export class StatusComponent implements OnInit, OnDestroy {
 
     // set up status stream
     this.stream = new EventSource(this.appConfigService.BaseUrl + new V2ApiClientMethodFactory().admin_status_get().path, {
-      withCredentials: true
+      withCredentials: true,
     });
 
     this.stream.onopen = () => {
-      this.logger.debug(this, "Status stream has been opened");
+      this.logger.debug(this, 'Status stream has been opened');
     };
 
     this.stream.onmessage = (evt) => {
       const changeData = JSON.parse(evt.data);
     };
 
-    this.stream.onerror = (err) => {
-    };
+    this.stream.onerror = (err) => {};
   }
 
   async Reload() {
@@ -196,26 +194,30 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   private async buildOptions(chart: StatusInfo2): Promise<void> {
-    let seriesname = await this.translator.Translate("#LDS#Active sessions").toPromise();
-    const yAxis = new YAxisInformation([new SeriesInformation(seriesname,
-      chart.sessions.map((point: number) => point), 'blue'
-    )]);
-    yAxis.min = 0;
+    let seriesname = await this.translator.Translate('#LDS#Active sessions').toPromise();
+    const yAxis = new YAxisInformation([
+      new SeriesInformation(
+        seriesname,
+        chart.sessions.map((point: number) => point),
+        'blue'
+      ),
+    ]);
     yAxis.tickConfiguration = {
-      format: (l) => l.toString(), stepSize: 1
+      format: (l) => l.toString(),
     };
     const lineChartOptions = new LineChartOptions(
-      new XAxisInformation('string',
-        chart.date.map((point: string) => point), { culling: { max: 10, lines: false }, fit: false, centered: true }),
+      new XAxisInformation(
+        'string',
+        chart.date.map((point: string) => point),
+        { culling: { max: 5, lines: false }, fit: true, centered: true, autorotate: true, multiline: false }
+      ),
       yAxis
     );
     lineChartOptions.useCurvedLines = false;
-    lineChartOptions.hideLegend = true;
-    lineChartOptions.showPoints = true;
     lineChartOptions.hideLegend = false;
+    lineChartOptions.showPoints = true;
     lineChartOptions.colorArea = false;
-    lineChartOptions.canZoom = true;
-    lineChartOptions.padding = { left: 20, right: 20, unit: 'px' };
+    lineChartOptions.padding = { top: 0, bottom: 25, left: 35, right: 20, unit: 'px' };
     this.chartOptions = lineChartOptions.options;
   }
 
@@ -223,18 +225,11 @@ export class StatusComponent implements OnInit, OnDestroy {
     return new Observable((subscriber) => {
       let msg: StatusInfo = {
         sessions: this.statusService.getStatusSessionData(),
-        date:
-          new Date().getHours() +
-          ':' +
-          new Date().getMinutes() +
-          ':' +
-          new Date().getSeconds() +
-          '',
+        date: new Date().toLocaleTimeString(),
       };
       subscriber.next(msg);
     });
   }
-
 
   forceChartRefresh() {
     this.show = false;
@@ -247,7 +242,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.forceChartRefresh();
     const sessions = this.buffer.buildData();
     const dates = this.buffer.buildLabels();
-    const session: StatusInfo2 = { sessions: sessions[0], date: dates }
+    const session: StatusInfo2 = { sessions: sessions[0], date: dates };
     this.buildOptions(session);
   }
 }

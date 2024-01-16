@@ -90,7 +90,7 @@ export class RulesViolationsService {
    * Provides the GroupInfo of {@link PortalRulesViolations}.
    */
   public getGroupInfo(parameters: RulesViolationsLoadParameters = {}): Promise<GroupInfoData> {
-    const { OrderBy, search, ...params } = parameters;
+    const { withProperties, OrderBy, search, ...params } = parameters;
     return this.cplClient.client.portal_rules_violations_group_get({
       ...params,
       withcount: true,

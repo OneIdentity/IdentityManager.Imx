@@ -7,6 +7,7 @@
   [options]="['search', 'filter', 'groupBy', 'filterTree']"
   [searchBoxText]="'#LDS#Search' | translate"
   (navigationStateChanged)="onTreeNavigationStateChanged($event)"
+  (filterTreeSelectionChanged)="filterByTree($event)"
   (search)="onTreeSearch($event)"
 >
 </imx-data-source-toolbar>

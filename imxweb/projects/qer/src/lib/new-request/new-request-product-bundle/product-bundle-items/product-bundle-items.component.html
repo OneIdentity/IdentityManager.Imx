@@ -22,7 +22,7 @@
 
 <imx-data-table
   #dataTable
-  *ngIf="dst; else nonSelected"
+  *ngIf="orchestration.productBundle; else nonSelected"
   [dst]="dst"
   class="imx-patterns-table"
   [detailViewVisible]="false"

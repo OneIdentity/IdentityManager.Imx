@@ -24,12 +24,11 @@
  *
  */
 
-import { ChartOptions, GridLineOptions, ChartTypes, areaSpline, area, spline, line, zoom } from 'billboard.js';
+import { ChartOptions, ChartTypes, GridLineOptions, area, areaSpline, line, spline } from 'billboard.js';
 import { XAxisInformation } from './x-axis-information';
 import { YAxisInformation } from './y-axis-information';
 
 export class LineChartOptions {
-
   /**
    * Gets or sets the visibiliy of the points
    */
@@ -61,12 +60,12 @@ export class LineChartOptions {
    */
   public colorArea = true;
 
-  public size: {width: number, height: number};
+  public size: { width: number; height: number };
 
   /**
    * Set padding as a constant for timeseries
    */
-  public padding: { left: number, right: number, unit?: string}
+  public padding: { top?: number; bottom?: number; left: number; right: number; unit?: string };
 
   /**
    * An optional function for getting a tooltip
@@ -94,7 +93,7 @@ export class LineChartOptions {
   public get options(): ChartOptions {
     const col: any[] = [];
     col.push(this.xAxisInformation.getAxisData());
-    this.yAxisInformation.series.forEach(element => {
+    this.yAxisInformation.series.forEach((element) => {
       col.push(element.getSerie());
     });
     return {
@@ -104,29 +103,29 @@ export class LineChartOptions {
         columns: col,
         names: this.yAxisInformation.getNames(),
         type: this.getType(),
-        colors: this.yAxisInformation.getColors()
+        colors: this.yAxisInformation.getColors(),
       },
       tooltip: {
         contents: this.tooltip,
       },
       spline: { interpolation: { type: 'monotone-x' } },
-      zoom: { enabled: this.canZoom, type: 'drag'},
+      zoom: { enabled: this.canZoom, type: 'drag' },
       point: { show: this.showPoints },
       axis: {
         x: this.xAxisInformation.getAxisConfiguration(),
-        y: this.yAxisInformation.getAxisConfiguration()
+        y: this.yAxisInformation.getAxisConfiguration(),
       },
       legend: { hide: this.hideLegend, item: { onclick() {} } },
       grid: {
         y: {
           lines: this.additionalLines,
-        }
+        },
       },
-      padding: this.padding
+      padding: this.padding,
     };
   }
 
   private getType(): ChartTypes {
-    return this.colorArea ? (this.useCurvedLines ? areaSpline() : area()) : (this.useCurvedLines ? spline() : line());
+    return this.colorArea ? (this.useCurvedLines ? areaSpline() : area()) : this.useCurvedLines ? spline() : line();
   }
 }

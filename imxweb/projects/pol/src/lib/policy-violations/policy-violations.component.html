@@ -7,7 +7,7 @@
     <div class="imx-table-container">
       <imx-data-source-toolbar
         #dst
-        [options]="selectedCompanyPolicy ? ['sort', 'filter', 'settings'] : ['search', 'sort', 'filter', 'groupBy', 'settings']"
+        [options]="selectedCompanyPolicy ? ['search', 'sort', 'filter', 'settings'] : ['search', 'sort', 'filter', 'groupBy', 'settings']"
         [settings]="dstSettings"
         [busyService]="busyService"
         data-imx-identifier="policy-violations-table-dst"

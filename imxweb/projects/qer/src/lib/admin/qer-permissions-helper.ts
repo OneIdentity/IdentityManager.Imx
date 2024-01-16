@@ -67,9 +67,12 @@ export function isCancelPwO(features: string[]): boolean {
 export function isPasswordHelpdesk(features: string[]): boolean {
   return features.find((item) => item === 'Portal_UI_PasswordHelpdesk') != null;
 }
-export function isAuditor(groups: string[]): boolean {
-  return groups.find(item => item.toUpperCase() === 'VI_4_AUDITING_AUDITOR') != null;
-}
 export function isStatistics(features: string[]): boolean {
   return features.find((item) => item === 'Portal_UI_TSBStatistics') != null;
+}
+export function isAuditor(groups: string[]): boolean {
+  return groups.find((item) => item.toUpperCase() === 'VI_4_AUDITING_AUDITOR') != null;
+}
+export function isTsbNameSpaceAdminBase(groups: string[]): boolean {
+  return groups.find((item) => item.toUpperCase() === 'TSB_4_NAMESPACEADMIN_BASE') != null;
 }

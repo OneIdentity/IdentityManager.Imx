@@ -53,7 +53,7 @@
   <div eui-sidesheet-actions>
     <button mat-stroked-button data-imx-identifier="itshop-pattern-sidesheet-button-delete-pattern" color="warn"
       *ngIf="data.canEditAndDelete" (click)="delete()">
-      <eui-icon icon="delete"></eui-icon>      
+      <eui-icon icon="delete"></eui-icon>
       {{ '#LDS#Delete' | translate }}
     </button>
     <button mat-stroked-button class="justify-start"
@@ -73,7 +73,7 @@
 </ng-container>
 
 <ng-template #productsActions>
-  <div eui-sidesheet-actions color="white" *ngIf="data.canEditAndDelete">
+  <div eui-sidesheet-actions  *ngIf="data.canEditAndDelete">
     <button mat-stroked-button data-imx-identifier="itshop-pattern-sidesheet-button-delete-products" color="warn"
       class="justify-start" [disabled]="!selectedItemsCanBeDeleted()" (click)="deleteProducts()">
       <eui-icon icon="delete"></eui-icon>

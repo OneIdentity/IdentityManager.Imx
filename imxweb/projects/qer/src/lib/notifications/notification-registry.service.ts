@@ -25,7 +25,7 @@
  */
 
 import { OverlayRef } from "@angular/cdk/overlay";
-import { Injectable } from "@angular/core";
+import { Injectable, NgZone } from "@angular/core";
 import { NavigationExtras, Params, Router } from "@angular/router";
 import { EuiLoadingService } from "@elemental-ui/core";
 import { AuthenticationService, ClassloggerService, ConfirmationService } from "qbm";
@@ -36,11 +36,14 @@ type NotificationHandler = { message: string, activate: () => void };
 })
 export class NotificationRegistryService {
 
-  constructor(private readonly logger: ClassloggerService,
+  constructor(
+    private readonly logger: ClassloggerService,
     private readonly busyService: EuiLoadingService,
     private readonly confirmationService: ConfirmationService,
     private readonly authentication: AuthenticationService,
-    private readonly router: Router) {
+    private readonly router: Router,
+    private readonly zone: NgZone
+  ) {
 
     // register default notifications for QER
     this.registerRedirectNotificationHandler({
@@ -99,6 +102,9 @@ export class NotificationRegistryService {
       });
   }
 
+  /**
+   * Logs out and kills the session.
+   */
   private async logout() {
     if (await this.confirmationService.confirm({
       Title: '#LDS#Heading Log Out',
@@ -106,7 +112,11 @@ export class NotificationRegistryService {
       identifier: 'confirm-logout-'
     })) {
       let overlayRef: OverlayRef;
-      setTimeout(() => (overlayRef = this.busyService.show()));
+
+      this.zone.run(() => {
+        setTimeout(() => (overlayRef = this.busyService.show()));
+      });
+
       try {
         await this.authentication.logout();
       } finally {

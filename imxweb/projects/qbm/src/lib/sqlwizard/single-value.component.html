@@ -1,7 +1,7 @@
 <!-- Limited Values-->
 <mat-form-field appearance="outline" class="operand" *ngIf="expr.Property.LimitedValues">
   <mat-label>{{ '#LDS#Value' | translate }}</mat-label>
-  <mat-select [(ngModel)]="value" data-imx-identifier="single-value-select-limvalue" (change)="emitChanges()">
+  <mat-select [(ngModel)]="value" data-imx-identifier="single-value-select-limvalue" (selectionChange)="emitChanges()">
     <mat-option *ngFor="let lv of expr.Property.LimitedValues" [value]="lv.Value">
       {{lv.Description}}
     </mat-option>
