@@ -25,6 +25,7 @@
  */
 
 import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Subscription } from 'rxjs/internal/Subscription';
 
@@ -56,14 +57,18 @@ export class NewRequestHeaderToolbarComponent implements OnDestroy {
   public selectedCategory: PortalServicecategories;
   public showCatInfo = false;
   public searchBoxText = '#LDS#Search';
+  public initialSearch: string;
   public SelectedProductSource = SelectedProductSource;
   public selectedView: SelectedProductSource;
   public disableSearch = false;
 
+  private initialSearched = false;
+
   @ViewChild(DataSourceToolbarComponent) public dst: DataSourceToolbarComponent;
   //#endregion
 
-  constructor(public readonly orchestration: NewRequestOrchestrationService) {
+  constructor(public readonly orchestration: NewRequestOrchestrationService,
+    private activatedRoute: ActivatedRoute,) {
     this.subscriptions.push(
       this.orchestration.searchApi$.subscribe(searchApi => {
         this.searchApi = searchApi;
@@ -102,10 +107,21 @@ export class NewRequestHeaderToolbarComponent implements OnDestroy {
     }));
   }
 
+  public async ngOnInit(): Promise<void> {
+    this.initialSearch = this.activatedRoute.snapshot.queryParams['ProductSearchString'];
+  }
+
   public ngOnDestroy(): void {
     this.subscriptions.forEach((subscription: Subscription) => subscription.unsubscribe());
   }
 
+  public onSettingChanged(setting?: DataSourceToolbarSettings): void {
+    if(setting && this.initialSearch && !this.initialSearched) {
+      this.dst.keywords = this.initialSearch;
+      this.dst.searchControl.setValue(this.initialSearch);
+      this.initialSearched = true;
+    }
+  }
 
   public onNavigationChanged(newState?: CollectionLoadParameters | ServiceItemParameters): void {
     this.orchestration.navigationState = newState;
