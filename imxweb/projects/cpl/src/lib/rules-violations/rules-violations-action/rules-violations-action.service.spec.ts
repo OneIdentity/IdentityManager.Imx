@@ -31,7 +31,7 @@ import { of } from 'rxjs';
 
 import { IEntityColumn } from 'imx-qbm-dbts';
 import { SnackBarService, EntityService, BaseCdr } from 'qbm';
-import { JustificationService } from 'qer';
+import { JustificationService, UserModelService } from 'qer';
 import { RulesViolationsApproval } from '../rules-violations-approval';
 import { RulesViolationsActionService } from './rules-violations-action.service';
 import { ApiService } from '../../api.service';
@@ -108,6 +108,12 @@ describe('RulesViolationsActionService', () => {
           provide: JustificationService,
           useValue: {
             createCdr: _type => new BaseCdr(createColumn('Justification'))
+          }
+        },
+        {
+          provide: UserModelService,
+          useValue: {
+            reloadPendingItems: jasmine.createSpy('ReloadPendingItems')
           }
         },
         {

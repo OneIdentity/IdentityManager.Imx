@@ -38,6 +38,7 @@ import { RequestActionComponent } from './request-action.component';
 import { RequestHistoryService } from '../request-history.service';
 import { JustificationService } from '../../justification/justification.service';
 import { JustificationType } from '../../justification/justification-type.enum';
+import { UserModelService } from '../../user/user-model.service';
 
 @Injectable({
   providedIn: 'root'
@@ -55,7 +56,8 @@ export class RequestActionService {
     private readonly snackBar: SnackBarService,
     private readonly requestHistoryService: RequestHistoryService,
     private readonly justificationService: JustificationService,
-    private readonly errorHandler: ErrorHandler
+    private readonly userService: UserModelService,
+    private readonly errorHandler: ErrorHandler,
   ) { }
 
   public async prolongate(requests: PortalItshopRequests[]): Promise<void> {
@@ -333,6 +335,7 @@ export class RequestActionService {
         this.snackBar.open({
           key: config.message, parameters: [config.data.requests.length]
         });
+        await this.userService.reloadPendingItems();
         this.applied.next();
       }
     } else {

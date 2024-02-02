@@ -34,7 +34,7 @@ import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 
 import { IdentitiesService } from '../identities.service';
-import { FeatureConfig, PortalAdminPerson, PortalPersonReports, PortalPersonReportsInteractive, QerProjectConfig } from 'imx-api-qer';
+import { FeatureConfig, PortalAdminPerson, PortalPersonReportsInteractive, QerProjectConfig } from 'imx-api-qer';
 import {
   ColumnDependentReference,
   ClassloggerService,
@@ -81,11 +81,10 @@ export class IdentitySidesheetComponent implements OnInit, OnDestroy {
 
   constructor(
     formBuilder: FormBuilder,
-    @Inject(EUI_SIDESHEET_DATA)
-    public data: {
-      isAdmin: boolean;
-      projectConfig: QerProjectConfig;
-      selectedIdentity: PortalPersonReports | PortalAdminPerson;
+    @Inject(EUI_SIDESHEET_DATA) public data: {
+      isAdmin: boolean,
+      projectConfig: QerProjectConfig
+      selectedIdentity: PortalPersonReportsInteractive | PortalAdminPerson
     },
     public identities: IdentitiesService,
     private readonly elementalUiConfigService: ElementalUiConfigService,

@@ -1,4 +1,5 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   overflow-y: auto;
@@ -109,8 +110,10 @@ imx-data-table {
   font-size: large;
 }
 
-.mat-stroked-button {
-  align-self: flex-start;
+.eui-sidesheet-actions {
+  .mat-stroked-button {
+    align-self: flex-start;
+  }
 }
 
 .mat-toolbar {
@@ -148,5 +151,34 @@ imx-data-table {
   .imx-helper-title {
     font-size: larger;
     font-weight: 600;
+  }
+}
+
+.imx-sample-data-info {
+  text-align: center;
+  margin: 20px 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .eui-icon {
+    font-size: 100px;
+    color: $color-gray-10;
+  }
+
+  p {
+    margin: 0;
+    font-size: 18px;
+    color: $color-gray-80;
+  }
+
+  button {
+    align-self: center;
+    margin-top: 16px;
+  }
+
+  .imx-larger-text {
+    font-size: 26px;
   }
 }

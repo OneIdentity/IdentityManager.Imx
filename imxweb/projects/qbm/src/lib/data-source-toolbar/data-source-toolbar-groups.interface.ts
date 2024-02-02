@@ -24,7 +24,7 @@
  *
  */
 
-import { DataModelFilterOption, DataModelGroupInfo, GroupInfo, IClientProperty } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DataModelFilterOption, DataModelGroupInfo, GroupInfo, IClientProperty } from 'imx-qbm-dbts';
 
 export interface DataSourceToolbarGroupData {
   /**
@@ -42,7 +42,7 @@ export interface DataSourceToolbarGroupData {
    */
   currentGrouping?: {
     display: string;
-    getData: () => Promise<GroupInfo[]>;
+    getData: (params?: CollectionLoadParameters) => Promise<GroupInfo[]>;
   };
 }
 

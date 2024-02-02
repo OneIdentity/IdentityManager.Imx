@@ -144,7 +144,10 @@ li.imx-event {
   display: block;
 }
 
-div[step]{
+div[step] {
+  margin-bottom: 16px;
+}
+div[step-caption]{
   margin-bottom: 10px;
   span[caption]{
     font-weight: 600;

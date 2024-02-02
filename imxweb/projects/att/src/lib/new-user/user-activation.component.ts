@@ -106,12 +106,12 @@ export class UserActivationComponent implements OnDestroy {
         const s = await this.attApiService.client.passwordreset_activation_confirm_post({
           PassCode: this.passcode,
         });
+        this.snackbar.open({ key: '#LDS#Your account has been successfully activated.' }, '#LDS#Close');
+
+        // forward to main page
+        this.router.navigate(['']);
         return new SessionState(s);
       });
-      this.snackbar.open({ key: '#LDS#Your account has been successfully activated.' }, '#LDS#Close');
-
-      // forward to main page
-      this.router.navigate(['']);
     } finally {
       this.busyService.hide(overlayRef);
     }

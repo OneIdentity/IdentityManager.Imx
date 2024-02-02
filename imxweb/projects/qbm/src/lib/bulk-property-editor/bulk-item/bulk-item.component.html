@@ -29,7 +29,7 @@
   </form>
   <div *ngIf="!hideButtons" class="imx-action-container">
     <button mat-button (click)="skip()" data-imx-identifier="bulk-item-button-skip">{{'#LDS#Skip' | translate}}</button>
-    <button mat-raised-button color="primary" [disabled]="!formGroup.valid" (click)="save()" data-imx-identifier="bulk-item-button-save">
+    <button mat-raised-button color="primary" [disabled]="!formGroup.valid || formGroup.touched" (click)="save()" data-imx-identifier="bulk-item-button-save">
       {{ '#LDS#Apply' | translate }}
     </button>
   </div>

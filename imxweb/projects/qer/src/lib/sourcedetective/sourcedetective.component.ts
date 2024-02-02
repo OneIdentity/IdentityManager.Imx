@@ -41,8 +41,6 @@ import { ItshopRequest } from '../request-history/itshop-request';
 import { ItshopRequestData } from '../itshop/request-info/itshop-request-data';
 import { ItshopRequestService } from '../itshop/itshop-request.service';
 import { SourceDetectiveType } from './sourcedetective-type.enum';
-import { MatCardModule } from '@angular/material/card';
-import { OverlayRef } from '@angular/cdk/overlay';
 
 
 type SourceNodeEnriched = SourceNode & {
@@ -68,6 +66,7 @@ export class SourceDetectiveComponent implements OnInit, OnChanges, OnDestroy {
     public dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
     public dataReady: boolean;
+    public busy = false;
 
     @Input() public UID_Person: string;
     @Input() public TableName: string;
@@ -98,11 +97,11 @@ export class SourceDetectiveComponent implements OnInit, OnChanges, OnDestroy {
     public hasChild = (node: SourceNodeEnriched) => !!node.Children && node.Children.length > 0;
 
     public async ngOnInit(): Promise<void> {
-        const overlay = this.loader.show();
+        this.busy = true;
         try {
             this.itShopConfig = (await this.projectConfig.getConfig()).ITShopConfig;
         } finally {
-            this.loader.hide(overlay);
+            this.busy = false;
         }
         this.reload();
     }
@@ -126,6 +125,9 @@ export class SourceDetectiveComponent implements OnInit, OnChanges, OnDestroy {
             const collection = await this.apiClient.typedClient.PortalItshopRequests.Get({
                 uidpwo: uidPwo
             });
+            if (collection.Data.length < 0) {
+                throw new Error("The request was not found. You may not have sufficient permissions.");
+            }
             const pwoEntity = collection.Data[0];
 
             const requestData = new ItshopRequestData({ ...collection.extendedData, index: 0 });
@@ -177,13 +179,13 @@ export class SourceDetectiveComponent implements OnInit, OnChanges, OnDestroy {
     private async reload(): Promise<void> {
         if (this.UID && this.TableName && this.UID_Person) {
             this.dataReady = false;
-            const overlay = this.loader.show();
+            this.busy = true;
 
             try {
                 const data = await this.apiClient.client.portal_detective_get(this.UID_Person, this.TableName, this.UID);
                 this.dataSource.data = await this.Enrich(data);
             } finally {
-                this.loader.hide(overlay);
+                this.busy = false;
                 this.dataReady = true;
             }
         }

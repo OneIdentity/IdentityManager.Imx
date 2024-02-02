@@ -26,7 +26,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { EntityWriteDataColumn, ParameterData } from 'imx-qbm-dbts';
+import { EntityWriteDataColumn, IFkCandidateProvider, ParameterData } from 'imx-qbm-dbts';
 import { FkProviderItem, WriteExtTypedEntity } from 'imx-qbm-dbts';
 import { ParameterDataWrapper } from '../../parameter-data/parameter-data-wrapper.interface';
 import { ParameterCategoryColumn } from '../../parameter-data/parameter-category-column.interface';
@@ -35,27 +35,30 @@ import { ParameterDataService } from '../../parameter-data/parameter-data.servic
 type CategoryParameterWrite = { [id: string]: EntityWriteDataColumn[][] };
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RequestParametersService {
-  constructor(private readonly parameterDataService: ParameterDataService) { }
+  constructor(private readonly parameterDataService: ParameterDataService) {}
 
   public createInteractiveParameterCategoryColumns(
     parameterDataWrapper: ParameterDataWrapper,
-    getFkProviderItems: (parameter: ParameterData) => FkProviderItem[],
-    typedEntity: WriteExtTypedEntity<CategoryParameterWrite>
+    getFkProviderItems: (parameter: ParameterData) => IFkCandidateProvider,
+    typedEntity: WriteExtTypedEntity<CategoryParameterWrite>,
+    callbackOnChange?: () => void
   ): ParameterCategoryColumn[] {
     if (parameterDataWrapper?.Parameters == null) {
       return undefined;
     }
 
-    const parameterCategories = this.parameterDataService.createParameterCategories(parameterDataWrapper)
-      .sort(category => this.showStructureParameterFirst(category.name));
+    const parameterCategories = this.parameterDataService
+      .createParameterCategories(parameterDataWrapper)
+      .sort((category) => this.showStructureParameterFirst(category.name));
 
     return this.parameterDataService.createInteractiveParameterCategoryColumns(
       parameterCategories,
       getFkProviderItems,
-      typedEntity
+      typedEntity,
+      callbackOnChange
     );
   }
 

@@ -31,7 +31,7 @@ import { EuiLoadingService } from '@elemental-ui/core';
 import { PortalRulesViolations } from 'imx-api-cpl';
 import { configureTestSuite } from 'ng-bullet';
 
-import { ClassloggerService, SettingsService, SystemInfoService } from 'qbm';
+import { ClassloggerService, SystemInfoService } from 'qbm';
 import { ApiService } from '../api.service';
 
 import { RulesViolationsService } from './rules-violations.service';
@@ -75,12 +75,6 @@ describe('RulesViolationsService', () => {
         {
           provide: EuiLoadingService,
           useValue: testHelper.euiLoadingServiceStub
-        },
-        {
-          provide: SettingsService,
-          useValue:{
-            PageSizeForAllElements: 30
-          }
         },
         { 
           provide: SystemInfoService,

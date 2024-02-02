@@ -28,6 +28,7 @@ import { Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
+import { Subscription, Subject } from 'rxjs';
 
 import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
 import { EntityColumnContainer } from '../entity-column-container';
@@ -39,7 +40,6 @@ import { ForeignKeySelection } from '../../fk-advanced-picker/./foreign-key-sele
 import { LdsReplacePipe } from '../../lds-replace/lds-replace.pipe';
 import { MultiValueService } from '../../multi-value/multi-value.service';
 import { FkHierarchicalDialogComponent } from '../../fk-hierarchical-dialog/fk-hierarchical-dialog.component';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'imx-edit-fk-multi',
@@ -47,6 +47,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./edit-fk-multi.component.scss']
 })
 export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
+  public readonly updateRequested = new Subject<void>();
   public readonly control = new FormControl();
 
   public readonly columnContainer = new EntityColumnContainer<string>();
@@ -81,8 +82,8 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
   public async ngOnInit(): Promise<void> {
     this.loading = true;
     try {
-      const candidateCollection = await this.columnContainer.fkRelations[0].Get({ PageSize: 5 });
-      this.isHierarchical = candidateCollection.Hierarchy != null;
+      const candidateCollection = await this.columnContainer.fkRelations[0]?.Get({ PageSize: -1 });
+      this.isHierarchical = candidateCollection?.Hierarchy != null;
     } finally {
       this.loading = false;
     }
@@ -107,26 +108,72 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
         this.control.setValidators(control => control.value == null || control.value.length === 0 ? { required: true } : null);
       }
 
-      this.subscribers.push(this.columnContainer.subscribe(async () => {
-        if(this.isWriting) {return;}
-        if (this.currentValueStruct.DataValue !== this.columnContainer.value) {
-          this.logger.trace(this, `Control (${this.columnContainer.name}) set to new value:`,
-            this.columnContainer.value, this.control.value);
-          this.currentValueStruct = {
-            DataValue: this.columnContainer.value,
-            DisplayValue: this.columnContainer.displayValue
-          };
-          this.control.setValue(
-            await this.multiValueToDisplay(this.currentValueStruct),
-            { emitEvent: false }
-          );
-        }
-        this.valueHasChanged.emit({value: this.currentValueStruct});
-      }));
+      if (cdref.minlengthSubject) {
+        this.subscribers.push(
+          cdref.minlengthSubject.subscribe((elem) => {
+            this.setValidators();
+          })
+        );
+      }
+
+      this.subscribers.push(
+        this.columnContainer.subscribe(async () => {
+          if (this.isWriting) {
+            return;
+          }
+          if (this.currentValueStruct.DataValue !== this.columnContainer.value) {
+            this.logger.trace(
+              this,
+              `Control (${this.columnContainer.name}) set to new value:`,
+              this.columnContainer.value,
+              this.control.value
+            );
+            this.currentValueStruct = {
+              DataValue: this.columnContainer.value,
+              DisplayValue: this.columnContainer.displayValue,
+            };
+            this.control.setValue(await this.multiValueToDisplay(this.currentValueStruct), { emitEvent: false });
+          }
+          this.valueHasChanged.emit({ value: this.currentValueStruct });
+        })
+      );
+
+      this.subscribers.push(
+        this.updateRequested.subscribe(() => {
+          setTimeout(async () => {
+            this.loading = true;
+            try {
+              this.currentValueStruct = {
+                DataValue: this.columnContainer.value,
+                DisplayValue: this.columnContainer.displayValue,
+              };
+              const candidateCollection = await this.columnContainer.fkRelations[0]?.Get({ PageSize: -1 });
+              this.isHierarchical = candidateCollection?.Hierarchy != null;
+              this.setValidators();
+              this.control.setValue(await this.multiValueToDisplay(this.currentValueStruct), { emitEvent: false });
+              this.valueHasChanged.emit({ value: this.currentValueStruct });
+            } finally {
+              this.loading = false;
+            }
+          });
+        })
+      );
       this.logger.trace(this, 'Control initialized');
     } else {
       this.logger.error(this, 'The Column Dependent Reference is undefined');
     }
+  }
+
+  /**
+   * Sets Validators.required, if the control is mandatory, else it's set to null.
+   * @ignore used internally
+   */
+  private setValidators():void{
+      if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
+        this.control.setValidators((control) => (control.value == null || control.value.length === 0 ? { required: true } : null));
+      } else {
+        this.control.setValidators(null);
+      }
   }
 
   /**

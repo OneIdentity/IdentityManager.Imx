@@ -16,8 +16,17 @@
 }
 
 .imx-data-table-grouped {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
   .spaced-left {
     margin-left: 5px;
+  }
+
+  imx-data-table{
+    overflow-y: unset;
   }
 
   td.mat-cell {
@@ -30,6 +39,15 @@
         margin-bottom: 15px;
       }
     }
+  }
+
+  .imx-data-table-grouped-content {
+    flex: 1 1 auto;
+    overflow: auto;
+  }
+
+  .datatable-table-groupedby-more-button {
+    padding-left: 24px;
   }
 }
 

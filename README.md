@@ -3,6 +3,29 @@
 # Identity Manager HTML5 applications
 
 ## Change log
+### February 2, 2024
+- 433272 Backport dynamic parameter change functionality
+- 416558 Data Explorer: Assignment analysis of shops cannot be displayed
+- 427942 The UI offers too many reports for selection for a subscription
+- 433649 Web Portal: Start attestation: Can't select objects to be attested if attestation policy uses sample data
+- 442731 Web Portal: Application Governance: Cannot change publish state of automatically assigned entitlements
+- 444244 Angular displays incomplete list of current approvers (sibling steps of the current decision level are ignored)
+- 443439 Requesting several memberships at the same time results in multiple shopping carts
+- 428177 HTML5 Angular WebPortal: API Documentation page, when clicking on the methods probably all result in the error: Could not render ue, see the console
+- 437358 Security Fix: Update @babel/traverse to version 7.23.2
+- 440281 Error opening sidesheet in addressbook - TypeError: Reduce of empty array with no initial value
+- 417655 Portal: Search in DataTables waits for all requests and show the results of the last ended request
+- 431112 UI Web Bug: Group by Attestation policy
+- 438835 Security Fix: Update crypto-js to version 4.2.0
+- 438764 npm audit & update package versions
+- 442101 WebDesigner WebPortal: press enter when the pointer is in the filter-popup of a grid column with a list of checkboxes for limited values leads to an error
+- 441693 Tiles no longer update the number of open items
+- 439667 Inactive identities listed in "My Direct Reports" start page tile but not if you follow the "VIEW" link of that tile
+- 443277 In DataSource Toolbar, for grouped results, changing the column order results in seemingly arbitrary column ordering
+- 443261 Parameter filter tree does not work
+- 441693 Tiles no longer update the number of open items
+- 441048 Github issue: billboard semvar has a breaking change
+- 417916 New Request Page, ServiceCategoryListComponent, checkbox's and application's state are not in sync
 
 ### September 1, 2023
 

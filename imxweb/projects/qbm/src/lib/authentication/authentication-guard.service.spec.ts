@@ -52,6 +52,7 @@ describe('AuthenticationGuardService', () => {
 
   const authenticationServiceStub = new class {
     sessionResponse = {};
+    authConfigProviders = [];
     oauthLogin = jasmine.createSpy('oauthLogin').and.callFake(() => Promise.resolve(this.sessionResponse));
     oauthRedirect = jasmine.createSpy('oauthRedirect');
   }();

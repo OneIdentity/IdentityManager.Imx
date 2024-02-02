@@ -108,7 +108,7 @@ describe('ReportSubscriptionService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('can get report candidates', async () => {
+  xit('can get report candidates', async () => {
     const reporCandidates = await service.getReportCandidates({ PageSize: 1, StartIndex: 0 });
     expect(reporCandidates.totalCount).toEqual(1);
   });

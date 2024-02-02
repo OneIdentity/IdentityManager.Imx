@@ -104,7 +104,7 @@ export class AppComponent {
   }
 
   private async initTitles(): Promise<void> {
-    this.overviewTitle = await this.translate.get('#LDS#Heading Overview').toPromise();    
+    this.overviewTitle = await this.translate.get('#LDS#Heading Web Applications Overview').toPromise();    
     this.adminPortalTitle = await this.translate.get('#LDS#Heading Administration Portal').toPromise();
   }
 

@@ -25,7 +25,9 @@ data-imx-identifier="role-select-identities-dst"
     </ng-template>
 </imx-data-table-column>
 </imx-data-table>
-<imx-data-source-paginator data-imx-identifier="role-select-identities-paginator" [dst]="dst"></imx-data-source-paginator>
+<imx-data-source-paginator *ngIf="!dstSettings?.groupData?.currentGrouping" 
+  data-imx-identifier="role-select-identities-paginator" [dst]="dst">
+</imx-data-source-paginator>
 <div class="imx-button-bar">
   <p class="imx-selected-items">
     <span>

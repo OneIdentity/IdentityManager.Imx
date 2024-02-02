@@ -143,7 +143,7 @@
       <span>{{ '#LDS#Reset view' | translate }}</span>
     </button>
     <!-- ToDo Later-->
-    <!-- 
+    <!--
     <button mat-menu-item>
       <span>{{ '#LDS#Save current view' | translate }}</span>
     </button>
@@ -156,9 +156,13 @@
     </button> -->
   </mat-menu>
 
-  <mat-chip-list *ngIf="optionset.has('filter') || optionset.has('filterTree')" #chipList class="imx-data-source-selected-filters"
-    data-imx-identifier="dst-mat-chip-list-selected-filters">
-    <span *ngIf="selectedFilters.length" translate>#LDS#Filtering on:</span>
+  <mat-chip-list
+    *ngIf="(optionset.has('filter') || optionset.has('filterTree')) && (selectedFilters.length || currentFilterData.length)"
+    #chipList
+    class="imx-data-source-selected-filters"
+    data-imx-identifier="dst-mat-chip-list-selected-filters"
+  >
+    <span *ngIf="selectedFilters.length || currentFilterData.length" translate>#LDS#Filtering on:</span>
     <mat-chip *ngFor="let sf of selectedFilters"
       (click)="removeSelectedFilter(sf.filter, true, sf.selectedOption.Value, sf)"
       [attr.data-imx-identifier]="'dst-mat-chip-selected-filters-chip-'+ sf.filter.Name +'-' + sf.selectedOption.Value">
@@ -167,10 +171,9 @@
         [attr.data-imx-identifier]="'dst-mat-chip-selected-filters-chip-remove-'+ sf.filter.Name +'-' + sf.selectedOption.Value">
       </eui-icon>
     </mat-chip>
-    <mat-chip *ngIf="currentFilterData.length > 0" (click)="clearTreeFilter()" data-imx-identifier="dst-mat-chip-filter-tree-active">
-      <span class="tag-name">{{ '#LDS#Filter by {0}' |translate |ldsReplace:filterType }}</span>
-      <eui-icon class="remove" icon="stop" data-imx-identifier="dst-mat-chip-filter-tree-active-chip-remove">
-      </eui-icon>
+    <mat-chip *ngIf="currentFilterData.length" (click)="clearTreeFilter()" data-imx-identifier="dst-mat-chip-filter-tree-active">
+      <span class="tag-name">{{ filterType }}: {{ currentFilterDisplayData }}</span>
+      <eui-icon class="remove" icon="stop" data-imx-identifier="dst-mat-chip-filter-tree-active-chip-remove"></eui-icon>
     </mat-chip>
   </mat-chip-list>
 

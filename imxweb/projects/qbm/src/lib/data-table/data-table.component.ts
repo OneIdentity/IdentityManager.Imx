@@ -279,6 +279,18 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
 
   /**
    * @ignore Used internally.
+   * Returns true if more groupings could be loaded.
+   */
+  public showLoadMoreGroupingsButton: boolean;
+
+  /**
+   * @ignore Used internally.
+   * Stores the last page size for the non grouping mode.
+   */
+  private tmpPageSize: number;
+
+  /**
+   * @ignore Used internally.
    * Definitions of internally used mat columns.
    */
   private columnDefs: MatColumnDef[];
@@ -354,6 +366,11 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
         if (this.dst.dataSourceHasChanged) {
           this.settings = value;
           await this.dstHasChanged();
+        }
+        if (this.dst.groupByHasCleared) {
+          // revert pageSize setting
+          this.dst.settings.navigationState.PageSize = this.tmpPageSize;
+          this.dst.groupByHasCleared = false;
         }
       }));
 
@@ -516,7 +533,30 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
       }
     }
   }
+  /**
+   * @ignore Used internally in components template.
+   * Triggers that more groupings are loaded.
+   */
+  public async loadMoreGroupings(): Promise<void> {
 
+    const currentGrouping = this.settings?.groupData?.currentGrouping;
+    if (currentGrouping) {
+      let busyIndicator: OverlayRef;
+      setTimeout(() => busyIndicator = this.busyService.show());
+
+      const startIndex = this.groupedDataSource.data.length;
+      if (startIndex > 0) {
+        try {
+          const newGroupings = await currentGrouping.getData({StartIndex: startIndex});
+          this.showLoadMoreGroupingsButton = newGroupings.length == 20;
+          this.groupedDataSource.data = this.groupedDataSource.data.concat(newGroupings);
+        } finally {
+          setTimeout(() => this.busyService.hide(busyIndicator));
+        }
+      }      
+    }
+  }
+  
   /**
    * @ignore Used internally in components template
    * Manages selections within groups
@@ -590,7 +630,14 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
       setTimeout(() => busyIndicator = this.busyService.show());
 
       try {
-        this.groupedDataSource = new MatTableDataSource<GroupInfo>(await currentGrouping.getData());
+        // for groupBy use a fix pageSize of 20, because the user cannot change this 
+        this.tmpPageSize = this.dst.settings.navigationState.PageSize;
+        this.dst.settings.navigationState.PageSize = 20;
+        
+        const groupInfos = await currentGrouping.getData();
+        this.groupedDataSource = new MatTableDataSource<GroupInfo>(groupInfos);
+        this.showLoadMoreGroupingsButton = this.groupedDataSource.data.length == 20;
+        this.groupedDataSource.data.length
       } finally {
         setTimeout(() => this.busyService.hide(busyIndicator));
       }

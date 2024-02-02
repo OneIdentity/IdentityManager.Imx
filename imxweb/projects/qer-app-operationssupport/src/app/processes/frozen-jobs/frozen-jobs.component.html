@@ -25,7 +25,8 @@
       </ng-template>
     </imx-data-table-generic-column>
   </imx-data-table>
-  <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+  <imx-data-source-paginator *ngIf="!dstSettings?.groupData?.currentGrouping" [dst]="dst">    
+  </imx-data-source-paginator>
 </div>
 <div class="imx-button-bar">
   <mat-menu #ActionMenu="matMenu" yPosition="below">

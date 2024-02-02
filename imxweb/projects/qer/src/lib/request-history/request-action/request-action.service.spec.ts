@@ -43,6 +43,7 @@ import { RequestHistoryService } from '../request-history.service';
 import { QerApiService } from '../../qer-api-client.service';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
 import { JustificationService } from '../../justification/justification.service';
+import { UserModelService } from '../../user/user-model.service';
 
 describe('RequestActionService', () => {
   let service: RequestActionService;
@@ -165,6 +166,12 @@ describe('RequestActionService', () => {
         {
           provide: RequestHistoryService,
           useValue: testHelper.requestHistoryService
+        },        
+        {
+          provide: UserModelService,
+          useValue: {
+            reloadPendingItems: jasmine.createSpy('ReloadPendingItems')
+          }
         },
         {
           provide: EuiSidesheetService,

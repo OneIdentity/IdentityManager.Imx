@@ -25,13 +25,14 @@
  */
 import { OnDestroy, Component, EventEmitter, ErrorHandler } from '@angular/core';
 import { AbstractControl, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 
 import { CdrEditor, ValueHasChangedEventArg } from './cdr-editor.interface';
 import { ColumnDependentReference } from './column-dependent-reference.interface';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 import { EntityColumnContainer } from './entity-column-container';
 import { ServerError } from '../base/server-error';
+import { ValType } from 'imx-qbm-dbts';
 
 @Component({ template: '' })
 export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
@@ -43,6 +44,8 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
   public readonly columnContainer = new EntityColumnContainer<T>();
 
   public readonly valueHasChanged = new EventEmitter<ValueHasChangedEventArg>();
+
+  public readonly updateRequested = new Subject<void>();
 
   public isBusy = false;
   public lastError: ServerError;
@@ -77,6 +80,14 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
 
       this.subscribers.push(this.control.valueChanges.subscribe(async (value) => this.writeValue(value)));
 
+      if (cdref.minlengthSubject) {
+        this.subscribers.push(
+          cdref.minlengthSubject.subscribe((elem) => {
+            this.setControlValue();
+          })
+        );
+      }
+
       // bind to entity change event
       this.subscribers.push(
         this.columnContainer.subscribe(() => {
@@ -97,6 +108,19 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
         })
       );
 
+      this.subscribers.push(
+        this.updateRequested.subscribe(() => {
+          setTimeout(() => {
+            try {
+              this.setControlValue();
+              this.control.updateValueAndValidity({ onlySelf: true, emitEvent: false });
+            } finally {
+            }
+            this.valueHasChanged.emit({ value: this.control.value });
+          });
+        })
+      );
+
       this.logger.trace(this, 'Control initialized');
     } else {
       this.logger.error(this, 'The Column Dependent Reference is undefined');
@@ -105,9 +129,15 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
 
   private setControlValue(): void {
     this.control.setValue(this.columnContainer.value, { emitEvent: false });
-    if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
+    if (
+      this.columnContainer.isValueRequired &&
+      this.columnContainer.canEdit &&
+      this.columnContainer.type !== ValType.Bool // because bool is always valid
+    ) {
       this.logger.debug(this, `A value for column "${this.columnContainer.name}" is required`);
       this.control.setValidators(Validators.required);
+    } else {
+      this.control.setValidators(null);
     }
   }
 

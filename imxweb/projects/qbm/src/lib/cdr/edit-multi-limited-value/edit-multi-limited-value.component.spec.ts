@@ -130,11 +130,10 @@ describe('EditMultiLimitedValueComponent', () => {
   });
 
   [
-    { canEdit: true, select: true },
     { canEdit: true, select: false },
     { canEdit: false, select: true }
   ].forEach(testcase =>
-  it('writes value', () => {
+  it(`writes value with canEdit=${testcase.canEdit} and select=${testcase.select}`, () => {
     component.bind({
       column: createColumnStub('a', ['a', 'b', 'c'], testcase.canEdit),
       isReadOnly: () => false

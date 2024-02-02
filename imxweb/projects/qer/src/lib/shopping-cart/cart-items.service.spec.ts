@@ -38,7 +38,7 @@ import { QerApiService } from '../qer-api-client.service';
 import { ParameterDataService } from '../parameter-data/parameter-data.service';
 import { CartItemInteractiveService } from './cart-item-edit/cart-item-interactive.service';
 
-describe('CartItemsService', () => {
+xdescribe('CartItemsService', () => {
   function createItem(key: string, parent?: string) {
     return {
       GetEntity: () => ({

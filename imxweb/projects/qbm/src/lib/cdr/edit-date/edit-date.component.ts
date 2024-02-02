@@ -26,7 +26,7 @@
 
 import { Component, ErrorHandler, EventEmitter, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
 import moment from 'moment-timezone';
@@ -42,7 +42,7 @@ import { DateFormat } from 'imx-qbm-dbts';
 @Component({
   selector: 'imx-edit-date',
   templateUrl: './edit-date.component.html',
-  styleUrls: ['./edit-date.component.scss']
+  styleUrls: ['./edit-date.component.scss'],
 })
 export class EditDateComponent implements CdrEditor, OnDestroy {
   public readonly control = new FormControl(undefined, { updateOn: 'blur' });
@@ -51,26 +51,24 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
 
   public readonly valueHasChanged = new EventEmitter<ValueHasChangedEventArg>();
 
+  public readonly updateRequested = new Subject<void>();
+
   public isBusy = false;
 
   private readonly subscribers: Subscription[] = [];
   private isWriting = false;
 
-
   public get withTime(): boolean {
     // try to get the date format detail from metadata; defaulting to DateTime.
     const dateFormat = this.columnContainer.metaData?.GetDateFormat() ?? DateFormat.DateTime;
 
-    return (dateFormat === DateFormat.DateTime) || (dateFormat === DateFormat.UtcDateTime);
+    return dateFormat === DateFormat.DateTime || dateFormat === DateFormat.UtcDateTime;
   }
 
-  public constructor(
-    private readonly errorHandler: ErrorHandler,
-    private logger: ClassloggerService,
-  ) { }
+  public constructor(private readonly errorHandler: ErrorHandler, private logger: ClassloggerService) {}
 
   public ngOnDestroy(): void {
-    this.subscribers.forEach(s => s.unsubscribe());
+    this.subscribers.forEach((s) => s.unsubscribe());
   }
 
   /**
@@ -83,22 +81,54 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
 
       this.resetControlValue();
 
-      this.subscribers.push(this.control.valueChanges.subscribe(async value =>
-        this.writeValue(this.control.value)
-      ));
+      if (cdref.minlengthSubject) {
+        this.subscribers.push(
+          cdref.minlengthSubject.subscribe(() => {
+            this.resetControlValue();
+          })
+        );
+      }
+
+      this.subscribers.push(this.control.valueChanges.subscribe(async () => this.writeValue(this.control.value)));
 
       // bind to entity change event
-      this.subscribers.push(this.columnContainer.subscribe(() => {
-        if (!this.isWriting) {
-          this.logger.trace(this, 'Control set to new value');
-          this.resetControlValue();
-          this.valueHasChanged.emit({value: this.control.value});
-        }
-      }));
+      this.subscribers.push(
+        this.columnContainer.subscribe(() => {
+          if (!this.isWriting) {
+            this.logger.trace(this, 'Control set to new value');
+            this.resetControlValue();
+            this.valueHasChanged.emit({ value: this.control.value });
+          }
+        })
+      );
 
-      if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
-        this.control.addValidators((control) => (control.value == undefined || control.value.length === 0 ? { required: true } : null));
-      }
+      this.setValidators();
+
+      this.subscribers.push(
+        this.updateRequested.subscribe(() => {
+          setTimeout(() => {
+            try {
+              this.setValidators();
+              this.control.updateValueAndValidity({ onlySelf: true, emitEvent: false });
+              this.resetControlValue();
+            } finally {
+            }
+            this.valueHasChanged.emit({ value: this.control.value });
+          });
+        })
+      );
+    }
+  }
+
+  /**
+   * Sets Validators.required, if the control is mandatory, else it's set to null.
+   * @ignore used internally
+   */
+  private setValidators() {
+    if (this.columnContainer.isValueRequired && this.columnContainer.canEdit) {
+      this.control.addValidators((control) => (control.value == undefined || control.value.length === 0 ? { required: true } : null));
+    } else {
+      this.control.setValidators(null);
     }
   }
 
@@ -109,7 +139,7 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
 
   private updateControlValue(value: Moment): void {
     if (this.control.value !== value) {
-      this.control.setValue(value, {emitEvent: false});
+      this.control.setValue(value, { emitEvent: false });
     }
   }
 
@@ -145,9 +175,6 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
       this.resetControlValue();
     }
 
-    this.valueHasChanged.emit({value: this.columnContainer.value, forceEmit: true});
+    this.valueHasChanged.emit({ value: this.columnContainer.value, forceEmit: true });
   }
-
 }
-
-

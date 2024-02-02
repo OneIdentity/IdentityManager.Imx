@@ -1,0 +1,3 @@
+3a676090b 2023-11-08 Merged PR 60702: Web Portal: Start attestation: Can't select objects to be attested if attestation policy uses sample data
+229ea05c7 2023-10-30 Merged PR 60351: Bug 330805: Es werden zu viele Berichte für ein Berichtsabonnement zur Auswahl gestellt
+532f06e15 2023-10-20 Merge remote-tracking branch 'origin/v91' into change/v91/433649-cherry-pick

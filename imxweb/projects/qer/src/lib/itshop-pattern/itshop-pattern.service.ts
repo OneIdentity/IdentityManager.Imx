@@ -35,10 +35,9 @@ import { ClassloggerService, SnackBarService } from 'qbm';
 import { QerApiService } from '../qer-api-client.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ItshopPatternService {
-
   private busyIndicator: OverlayRef;
   private busyIndicatorCounter = 0;
 
@@ -47,7 +46,8 @@ export class ItshopPatternService {
     private readonly logger: ClassloggerService,
     private readonly busyService: EuiLoadingService,
     private readonly errorHandler: ErrorHandler,
-    private readonly snackBar: SnackBarService) { }
+    private readonly snackBar: SnackBarService
+  ) {}
 
   public get itshopPatternAdminSchema(): EntitySchema {
     return this.qerClient.typedClient.PortalItshopPatternAdmin.GetSchema();
@@ -61,14 +61,14 @@ export class ItshopPatternService {
     return this.qerClient.typedClient.PortalItshopPatternItem.GetSchema();
   }
 
-
   /**
    * Retrieves all private itshop patterns of a person.
    *
    * @returns A list of {@link PortalItshopPatternPrivate} entities.
    */
-  public async getPrivatePatterns(navigationState?: CollectionLoadParameters):
-    Promise<ExtendedTypedEntityCollection<PortalItshopPatternPrivate, unknown>> {
+  public async getPrivatePatterns(
+    navigationState?: CollectionLoadParameters
+  ): Promise<ExtendedTypedEntityCollection<PortalItshopPatternPrivate, unknown>> {
     this.logger.debug(this, `Retrieving private itshop patterns`);
     this.logger.trace('Navigation state', navigationState);
     return this.qerClient.typedClient.PortalItshopPatternPrivate.Get(navigationState);
@@ -99,8 +99,9 @@ export class ItshopPatternService {
    *
    * @returns A list of {@link PortalItshopPatternAdmin} entities.
    */
-  public async getPatternItems(navigationState?: CollectionLoadParameters):
-    Promise<ExtendedTypedEntityCollection<PortalItshopPatternItem, unknown>> {
+  public async getPatternItems(
+    navigationState?: CollectionLoadParameters
+  ): Promise<ExtendedTypedEntityCollection<PortalItshopPatternItem, unknown>> {
     this.logger.debug(this, `Retrieving public itshop patterns`);
     this.logger.trace('Navigation state', navigationState);
     return this.qerClient.typedClient.PortalItshopPatternItem.Get(navigationState);
@@ -111,8 +112,9 @@ export class ItshopPatternService {
    *
    * @returns A list of {@link PortalItshopPatternAdmin} entities.
    */
-  public async getPublicPatterns(navigationState?: CollectionLoadParameters):
-    Promise<ExtendedTypedEntityCollection<PortalItshopPatternAdmin, unknown>> {
+  public async getPublicPatterns(
+    navigationState?: CollectionLoadParameters
+  ): Promise<ExtendedTypedEntityCollection<PortalItshopPatternAdmin, unknown>> {
     this.logger.debug(this, `Retrieving public itshop patterns`);
     this.logger.trace('Navigation state', navigationState);
     return this.qerClient.typedClient.PortalItshopPatternAdmin.Get(navigationState);
@@ -152,9 +154,10 @@ export class ItshopPatternService {
       }
 
       if (deleteCount > 0) {
-        const message = deleteCount > 1
-          ? '#LDS#The selected request templates have been successfully deleted.'
-          : '#LDS#The request template has been successfully deleted.';
+        const message =
+          deleteCount > 1
+            ? '#LDS#The selected request templates have been successfully deleted.'
+            : '#LDS#The request template has been successfully deleted.';
         this.snackBar.open({ key: message });
       }
     } finally {
@@ -219,13 +222,12 @@ export class ItshopPatternService {
         }
       }
       const message = shouldBePublic
-        ? (commitCount === 1
+        ? commitCount === 1
           ? '#LDS#The request template has been shared successfully. The request template is now available for all users.'
-          : '#LDS#The request templates have been shared successfully. {0} request templates are now available for all users.')
-        : (commitCount === 1
-          ? '#LDS#Sharing of the request template has been successfully undone. The request template is now only available for yourself.'
-          : '#LDS#Sharing of the request templates has been successfully undone. {0} request templates are now only available for yourself.'
-        );
+          : '#LDS#The request templates have been shared successfully. {0} request templates are now available for all users.'
+        : commitCount === 1
+        ? '#LDS#Sharing of the request template has been successfully undone. The request template is now only available for yourself.'
+        : '#LDS#Sharing of the request templates has been successfully undone. {0} request templates are now only available for yourself.';
       this.snackBar.open({ key: message, parameters: [commitCount] });
     } finally {
       this.handleCloseLoader();
@@ -235,7 +237,7 @@ export class ItshopPatternService {
 
   public handleOpenLoader(): void {
     if (this.busyIndicatorCounter === 0) {
-      setTimeout(() => this.busyIndicator = this.busyService.show());
+      setTimeout(() => (this.busyIndicator = this.busyService.show()));
     }
     this.busyIndicatorCounter++;
   }

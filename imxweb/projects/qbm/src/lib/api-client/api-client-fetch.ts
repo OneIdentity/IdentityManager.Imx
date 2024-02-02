@@ -24,24 +24,31 @@
  *
  */
 
+import { ErrorHandler } from '@angular/core';
 import { MethodDefinition, MethodDescriptor, ApiClient } from 'imx-qbm-dbts';
 import { ServerExceptionError } from '../base/server-exception-error';
 import { ServerError } from '../base/server-error';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 import { TranslateService } from '@ngx-translate/core';
+import { isDevMode } from '@angular/core';
 
 export class ApiClientFetch implements ApiClient {
     constructor(
+        private readonly errorHandler: ErrorHandler,
         private readonly baseUrl: string = '',
         private readonly logger: ClassloggerService,
         private readonly translation: TranslateService,
         private readonly http: { fetch(input: RequestInfo, init?: RequestInit): Promise<Response> } = window) {
     }
 
-    public async processRequest<T>(methodDescriptor: MethodDescriptor<T>): Promise<T> {
+    public async processRequest<T>(methodDescriptor: MethodDescriptor<T>,
+         opts: { signal?: AbortSignal } = {}): Promise<T> {
         const method = new MethodDefinition(methodDescriptor);
         const headers = new Headers(method.headers);
 
+         if (isDevMode()) {
+           headers.set('X-FORWARDED-PROTO', 'https');
+         }
         this.addXsrfProtectionHeader<T>(headers, method);
 
         var response: Response;
@@ -50,10 +57,17 @@ export class ApiClientFetch implements ApiClient {
                 method: method.httpMethod,
                 credentials: method.credentials,
                 headers: headers,
+                signal: opts?.signal,
                 body: method.body
             });
         } catch (e) {
-            throw new ServerError(await this.GetUnexpectedErrorText());
+            if (opts?.signal?.aborted) {
+              this.logger.info(this, 'Request was aborted', opts.signal);
+              return;
+            }
+            this.errorHandler.handleError(new ServerError(await this.GetUnexpectedErrorText()));
+       
+            return null;
         }
 
         if (response) {
@@ -85,7 +99,9 @@ export class ApiClientFetch implements ApiClient {
             throw new ServerExceptionError(await response.json());
         }
 
-        throw new ServerError(await this.GetUnexpectedErrorText());
+        this.errorHandler.handleError(new ServerError(await this.GetUnexpectedErrorText()));
+           
+        return null;
     }
 
     private append(input: string, statusText: string): string {

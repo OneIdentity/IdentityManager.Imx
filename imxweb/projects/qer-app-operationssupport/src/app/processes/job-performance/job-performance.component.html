@@ -32,7 +32,8 @@
       </ng-template>
     </imx-data-table-column>
   </imx-data-table>
-  <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+  <imx-data-source-paginator *ngIf="!dstSettings?.groupData?.currentGrouping" [dst]="dst">
+  </imx-data-source-paginator>
 </div>
 
 <ng-template #customToolbarTemplate>

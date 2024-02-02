@@ -37,7 +37,7 @@ import {
   ClassloggerService,
   DataTableComponent,
   ConfirmationService,
-  ClientPropertyForTableColumns
+  ClientPropertyForTableColumns,
 } from 'qbm';
 import { DisplayColumns, EntitySchema, IClientProperty, TypedEntity, ValType } from 'imx-qbm-dbts';
 import { CartItemEditComponent } from '../cart-item-edit/cart-item-edit.component';
@@ -46,11 +46,15 @@ import { ShoppingCart } from '../shopping-cart';
 import { CartItemCheckStatus } from './cart-item-check-status.enum';
 import { CartItemValidationOverviewComponent } from '../cart-item-validation-overview/cart-item-validation-overview.component';
 import { CartItemCloneService } from '../cart-item-edit/cart-item-clone.service';
+import { ExtendedEntityWrapper } from '../../parameter-data/extended-entity-wrapper.interface';
+import { Subject } from 'rxjs';
+import { CartItemEditParameter } from '../cart-item-edit/cart-item-edit-parameter.interface';
+import { UserModelService } from '../../user/user-model.service';
 
 @Component({
   templateUrl: './cart-items.component.html',
   styleUrls: ['./cart-items.component.scss'],
-  selector: 'imx-cart-items'
+  selector: 'imx-cart-items',
 })
 export class CartItemsComponent implements OnInit, OnChanges {
   public CartItemCheckStatus = CartItemCheckStatus;
@@ -62,10 +66,12 @@ export class CartItemsComponent implements OnInit, OnChanges {
 
   public readonly itemStatus = {
     enabled: (cartItem: PortalCartitem): boolean => {
-      return cartItem.UID_ShoppingCartItemParent.value == null ||
+      return (
+        cartItem.UID_ShoppingCartItemParent.value == null ||
         cartItem.UID_ShoppingCartItemParent.value.length === 0 ||
-        cartItem.IsOptionalChild.value;
-    }
+        cartItem.IsOptionalChild.value
+      );
+    },
   };
 
   @Input() public shoppingCart: ShoppingCart;
@@ -89,7 +95,8 @@ export class CartItemsComponent implements OnInit, OnChanges {
     private readonly snackBarService: SnackBarService,
     private readonly translateService: TranslateService,
     private readonly sidesheetService: EuiSidesheetService,
-    private readonly cartItemClone: CartItemCloneService
+    private readonly userModelService: UserModelService,
+    private readonly cartItemClone: CartItemCloneService,
   ) {
     this.entitySchema = cartItemsService.PortalCartitemSchema;
     this.displayedColumns = [
@@ -98,9 +105,8 @@ export class CartItemsComponent implements OnInit, OnChanges {
       {
         ColumnName: 'removeItemButton',
         Type: ValType.String,
-        afterAdditionals: true
-      }
-
+        afterAdditionals: true,
+      },
     ];
   }
 
@@ -119,11 +125,11 @@ export class CartItemsComponent implements OnInit, OnChanges {
         this.dstSettings = {
           dataSource: {
             totalCount: this.shoppingCart.totalCount,
-            Data: this.shoppingCart.getItemsSorted()
+            Data: this.shoppingCart.getItemsSorted(),
           },
           entitySchema: this.entitySchema,
           navigationState: {},
-          displayedColumns: this.displayedColumns
+          displayedColumns: this.displayedColumns,
         };
       } else {
         this.dstSettings = undefined;
@@ -132,46 +138,54 @@ export class CartItemsComponent implements OnInit, OnChanges {
   }
 
   public async editCartItem(portalCartitem: PortalCartitem): Promise<void> {
-    const entityWrapper = await this.cartItemsService.getInteractiveCartitem(
-      portalCartitem.GetEntity().GetKeys().join('')
-    );
+    this.busyService.show();
 
-    const cartItem = entityWrapper.typedEntity;
-
+    let itemEditParameter: CartItemEditParameter;
+    let entityWrapper: ExtendedEntityWrapper<PortalCartitemInteractive>;
     let reloadItems = false;
+    try {
+      const observable = new Subject<any>();
+      entityWrapper = await this.cartItemsService.getInteractiveCartitem(portalCartitem.GetEntity().GetKeys().join(''), () => {
+        observable.next();
+      });
 
-    const title = await this.translateService.get(
-      `${cartItem.GetEntity().GetDisplay()} - ${cartItem.UID_PersonOrdered.Column.GetDisplayValue()}`
-    ).toPromise();
+      const cartItem = entityWrapper.typedEntity;
 
-    const sidesheetRef = this.sidesheetService.open(
-      CartItemEditComponent,
-      {
-        title,
-        width: '700px',
-        headerColour: 'iris-blue',
-        data: {
-          entityWrapper,
-          cloneItem: this.itemCanBeCloned(cartItem) ?
-            () => {
+      itemEditParameter = {
+        entityWrapper,
+        updated: observable,
+        cloneItem: this.itemCanBeCloned(cartItem)
+          ? async () => {
               reloadItems = true;
               this.logger.trace(this, 'shopping cart must be reloaded');
               this.cartItemClone.cloneItemForPersons({
                 personOrderedFkRelations: cartItem.UID_PersonOrdered.GetMetadata().GetFkRelations(),
                 accProduct: {
                   DataValue: cartItem.UID_AccProduct.value,
-                  DisplayValue: cartItem.UID_AccProduct.Column.GetDisplayValue()
+                  DisplayValue: cartItem.UID_AccProduct.Column.GetDisplayValue(),
                 },
                 uidITShopOrg: cartItem.UID_ITShopOrg.value,
-                display: cartItem.GetEntity().GetDisplay()
+                display: cartItem.GetEntity().GetDisplay(),
               });
             }
-            : undefined
-        }
-      });
+          : undefined,
+      };
+    } finally {
+      this.busyService.hide();
+    }
 
+    const title = await this.translateService
+      .get(`${portalCartitem.GetEntity().GetDisplay()} - ${portalCartitem.UID_PersonOrdered.Column.GetDisplayValue()}`)
+      .toPromise();
 
-    sidesheetRef.afterClosed().subscribe(async doSave => {
+    const sidesheetRef = this.sidesheetService.open(CartItemEditComponent, {
+      title,
+      width: '700px',
+      testId: 'cart-item-edit-sidesheet',
+      data: itemEditParameter,
+    });
+
+    sidesheetRef.afterClosed().subscribe(async (doSave) => {
       if (doSave) {
         setTimeout(() => this.busyService.show());
         try {
@@ -198,7 +212,8 @@ export class CartItemsComponent implements OnInit, OnChanges {
   public async moveSelectedToCart(): Promise<void> {
     setTimeout(() => this.busyService.show());
     try {
-      await this.cartItemsService.moveToCart(this.selectedItems);
+      await this.cartItemsService.moveToCart(this.selectedItems);      
+      await this.userModelService.reloadPendingItems();
 
       this.snackBarService.open({ key: '#LDS#The selected products have been moved to your shopping cart.' });
     } finally {
@@ -210,12 +225,12 @@ export class CartItemsComponent implements OnInit, OnChanges {
   public async moveSelectedToLater(): Promise<void> {
     setTimeout(() => this.busyService.show());
     try {
-      await this.cartItemsService.moveToLater(this.selectedItems);
-
+      await this.cartItemsService.moveToLater(this.selectedItems); 
       this.snackBarService.open({ key: '#LDS#The selected products have been moved to your Saved for Later list.' });
     } finally {
       setTimeout(() => this.busyService.hide());
       this.dataChange.emit(true);
+      await this.userModelService.reloadPendingItems();
       if (this.cartItemsTable) {
         this.cartItemsTable.clearSelection();
       }
@@ -230,7 +245,6 @@ export class CartItemsComponent implements OnInit, OnChanges {
     this.removeRequests(this.selectedItems, false);
   }
 
-
   public HasSelectedItems(): boolean {
     return this.selectedItems != null && this.selectedItems.length > 0;
   }
@@ -239,19 +253,17 @@ export class CartItemsComponent implements OnInit, OnChanges {
     const cartItem: PortalCartitem = event.item;
     event.selectableRows.push(
       cartItem.UID_ShoppingCartItemParent.value == null ||
-      cartItem.UID_ShoppingCartItemParent.value.length === 0 ||
-      cartItem.IsOptionalChild.value
+        cartItem.UID_ShoppingCartItemParent.value.length === 0 ||
+        cartItem.IsOptionalChild.value
     );
   }
 
   public haveSelectedItems(): boolean {
-    return this.selectedItems != null &&
-      this.selectedItems.length > 0;
+    return this.selectedItems != null && this.selectedItems.length > 0;
   }
 
   public itemsCanBeMoved(allowOptional: boolean = false): boolean {
-    return this.haveSelectedItems() &&
-      this.selectedItems.every(item => this.itemCanBeMoved(item, allowOptional));
+    return this.haveSelectedItems() && this.selectedItems.every((item) => this.itemCanBeMoved(item, allowOptional));
   }
 
   public itemsCanBeDeleted(): boolean {
@@ -276,34 +288,37 @@ export class CartItemsComponent implements OnInit, OnChanges {
       return;
     }
 
-    this.sidesheetService.open(
-      CartItemValidationOverviewComponent,
-      {
-        title: await this.translateService.get('#LDS#Heading View Validation Results').toPromise(),
-        width: '750px',
-        headerColour: 'iris-blue',
-        data: {
-          checkResult: this.shoppingCart.getCartItemCheckResult(cartItem),
-          personOrderedDisplay: cartItem.UID_PersonOrdered.Column.GetDisplayValue(),
-          cartItemDisplay: cartItem.GetEntity().GetDisplay()
-        }
-      });
+    this.sidesheetService.open(CartItemValidationOverviewComponent, {
+      title: await this.translateService.get('#LDS#Heading View Validation Results').toPromise(),
+      width: '750px',
+      headerColour: 'iris-blue',
+      data: {
+        checkResult: this.shoppingCart.getCartItemCheckResult(cartItem),
+        personOrderedDisplay: cartItem.UID_PersonOrdered.Column.GetDisplayValue(),
+        cartItemDisplay: cartItem.GetEntity().GetDisplay(),
+      },
+    });
   }
 
   public setValidationOverviewButtonColor(cartItem: PortalCartitem): string {
     switch (cartItem.CheckResult.value) {
-      case CartItemCheckStatus.error: return 'warn';
-      case CartItemCheckStatus.warning: return 'accent';
-      default: return '';
+      case CartItemCheckStatus.error:
+        return 'warn';
+      case CartItemCheckStatus.warning:
+        return 'accent';
+      default:
+        return '';
     }
   }
 
   private itemCanBeCloned(cartitem: PortalCartitemInteractive): boolean {
-    return !this.forLater &&
+    return (
+      !this.forLater &&
       cartitem.CanCopy.value &&
       (cartitem.UID_ShoppingCartItemParent.value == null || cartitem.UID_ShoppingCartItemParent.value.length === 0) &&
       (cartitem.Assignment.value == null || cartitem.Assignment.value.length === 0) &&
-      (cartitem.UID_PersonWantsOrg.value == null || cartitem.UID_PersonWantsOrg.value.length === 0);
+      (cartitem.UID_PersonWantsOrg.value == null || cartitem.UID_PersonWantsOrg.value.length === 0)
+    );
   }
 
   private itemCanBeMoved(cartItem: PortalCartitem, allowOptional: boolean = false, traversed: string[] = []): boolean {
@@ -313,7 +328,7 @@ export class CartItemsComponent implements OnInit, OnChanges {
       return false;
     }
 
-    if (traversed.find(itemUid => itemUid === uid)) {
+    if (traversed.find((itemUid) => itemUid === uid)) {
       return false;
     }
 
@@ -325,7 +340,7 @@ export class CartItemsComponent implements OnInit, OnChanges {
       return this.itemCanBeMoved(parent, allowOptional, traversed);
     }
 
-    return this.selectedItems.find(item => item.GetEntity().GetKeys()[0] === uid) != null;
+    return this.selectedItems.find((item) => item.GetEntity().GetKeys()[0] === uid) != null;
   }
 
   private getNextSelectedAncestor(cartItem: PortalCartitem): PortalCartitem {
@@ -335,7 +350,7 @@ export class CartItemsComponent implements OnInit, OnChanges {
       return null;
     }
 
-    if (this.selectedItems.find(item => item.GetEntity().GetKeys()[0] === parent.GetEntity().GetKeys()[0])) {
+    if (this.selectedItems.find((item) => item.GetEntity().GetKeys()[0] === parent.GetEntity().GetKeys()[0])) {
       return parent;
     }
 
@@ -343,45 +358,47 @@ export class CartItemsComponent implements OnInit, OnChanges {
   }
 
   private async removeRequests(cartItems: PortalCartitem[], singleSelect: boolean): Promise<void> {
+    const dialogTitleShoppingCart = singleSelect
+      ? '#LDS#Heading Remove Product From Cart'
+      : '#LDS#Heading Remove Selected Products From Cart';
 
-    const dialogTitleShoppingCart = singleSelect ?
-      '#LDS#Heading Remove Product From Cart' :
-      '#LDS#Heading Remove Selected Products From Cart';
+    const dialogTitleWatchList = singleSelect
+      ? '#LDS#Heading Remove Product From Saved For Later List'
+      : '#LDS#Heading Remove Selected Products From Saved For Later List';
 
-    const dialogTitleWatchList = singleSelect ?
-      '#LDS#Heading Remove Product From Saved For Later List' :
-      '#LDS#Heading Remove Selected Products From Saved For Later List';
+    const askForConfirmationShoppingCart = singleSelect
+      ? '#LDS#Are you sure you want to remove the product from your shopping cart?'
+      : '#LDS#Are you sure you want to remove the selected products from your shopping cart?';
 
-    const askForConfirmationShoppingCart = singleSelect ?
-      '#LDS#Are you sure you want to remove the product from your shopping cart?' :
-      '#LDS#Are you sure you want to remove the selected products from your shopping cart?';
+    const askForConfirmationWatchList = singleSelect
+      ? '#LDS#Are you sure you want to remove the product from your Saved for Later list?'
+      : '#LDS#Are you sure you want to remove the selected products from your Saved for Later list?';
 
-    const askForConfirmationWatchList = singleSelect ?
-      '#LDS#Are you sure you want to remove the product from your Saved for Later list?' :
-      '#LDS#Are you sure you want to remove the selected products from your Saved for Later list?';
+    const snackBarMessageShoppingCart = singleSelect
+      ? '#LDS#The product has been successfully removed from your shopping cart.'
+      : '#LDS#The selected products have been successfully removed from your shopping cart.';
 
-    const snackBarMessageShoppingCart = singleSelect ?
-      '#LDS#The product has been successfully removed from your shopping cart.' :
-      '#LDS#The selected products have been successfully removed from your shopping cart.';
+    const snackBarMessageWatchList = singleSelect
+      ? '#LDS#The product has been successfully removed from your Saved for Later list.'
+      : '#LDS#The selected products have been successfully removed from your Saved for Later list.';
 
-    const snackBarMessageWatchList = singleSelect ?
-      '#LDS#The product has been successfully removed from your Saved for Later list.' :
-      '#LDS#The selected products have been successfully removed from your Saved for Later list.';
-
-    if (await this.confirmationService.confirm({
-      Title: this.forLater ? dialogTitleWatchList : dialogTitleShoppingCart,
-      Message: this.forLater ? askForConfirmationWatchList : askForConfirmationShoppingCart,
-      identifier: this.forLater ? 'cartitems-watchlist-delete' : 'cartitems-shoppingcart-delete'
-    })) {
+    if (
+      await this.confirmationService.confirm({
+        Title: this.forLater ? dialogTitleWatchList : dialogTitleShoppingCart,
+        Message: this.forLater ? askForConfirmationWatchList : askForConfirmationShoppingCart,
+        identifier: this.forLater ? 'cartitems-watchlist-delete' : 'cartitems-shoppingcart-delete',
+      })
+    ) {
       let overlayRef: OverlayRef;
-      setTimeout(() => overlayRef = this.busyService.show());
+      setTimeout(() => (overlayRef = this.busyService.show()));
       try {
-        await this.cartItemsService.removeItems(cartItems.filter(item => this.getNextSelectedAncestor(item) == null));
+        await this.cartItemsService.removeItems(cartItems.filter((item) => this.getNextSelectedAncestor(item) == null));
         this.logger.debug(this, 'selected items are removed from list');
         this.snackBarService.open({ key: this.forLater ? snackBarMessageWatchList : snackBarMessageShoppingCart }, '#LDS#Close');
       } finally {
         setTimeout(() => this.busyService.hide(overlayRef));
-        this.dataChange.emit(true);
+        this.dataChange.emit(true);        
+        await this.userModelService.reloadPendingItems();
 
         this.cartItemsTable?.clearSelection();
       }

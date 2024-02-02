@@ -80,7 +80,7 @@
         </imx-data-table-generic-column>
       </imx-data-table>
     </div>
-    <imx-data-source-paginator [dst]="dst" *ngIf="!dstSettings?.groupData?.currentGrouping" data-imx-identifier="attestations-table-paginator"> </imx-data-source-paginator>
+    <imx-data-source-paginator *ngIf="!dstSettings?.groupData?.currentGrouping" [dst]="dst" data-imx-identifier="attestations-table-paginator"> </imx-data-source-paginator>
     <div class="imx-button-bar">
       <span class="imx-spacer"></span>
       <button

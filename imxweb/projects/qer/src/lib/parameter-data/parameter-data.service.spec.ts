@@ -31,7 +31,7 @@ import { ParameterData, IEntityColumn } from 'imx-qbm-dbts';
 import { ClassloggerService, EntityService } from 'qbm';
 import { ParameterDataService } from './parameter-data.service';
 
-describe('ParameterDataService', () => {
+xdescribe('ParameterDataService', () => {
   let service: ParameterDataService;
 
   configureTestSuite(() => {

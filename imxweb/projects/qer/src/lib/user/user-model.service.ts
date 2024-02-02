@@ -30,22 +30,36 @@ import { Subject } from 'rxjs';
 import { PortalPersonReports, UserConfig, UserGroupInfo } from 'imx-api-qer';
 import { PendingItemsType } from './pending-items-type.interface';
 import { QerApiService } from '../qer-api-client.service';
+import { CacheService, CachedPromise } from 'qbm';
+
 
 @Injectable()
 export class UserModelService {
+  private pendingItems: CachedPromise<PendingItemsType>;
+  private userConfig: CachedPromise<UserConfig>;
+
   public onPendingItemsChange = new Subject<PendingItemsType>();
 
-  constructor(private qerClient: QerApiService) { }
-
-  public async getUserConfig(): Promise<UserConfig> {
-    return this.qerClient.client.portal_person_config_get();
+  constructor(private qerClient: QerApiService, private readonly cache: CacheService) {
   }
 
-  public async getPendingItems(): Promise<PendingItemsType> {
-    return this.qerClient.client.portal_pendingitems_get();
+  public async getUserConfig(): Promise<UserConfig> {
+    if (this.userConfig == null) {
+      this.userConfig = this.cache.buildCache(() => this.qerClient.client.portal_person_config_get());
+    }
+
+    return this.userConfig.get();
+  }
+
+  public getPendingItems(): Promise<PendingItemsType> {
+    if (this.pendingItems == null) {
+      this.pendingItems = this.cache.buildCache(() => this.qerClient.client.portal_pendingitems_get());
+    }
+    return this.pendingItems.get();
   }
 
   public async reloadPendingItems(): Promise<void> {
+    this.pendingItems = undefined;
     const pendingItems = await this.getPendingItems();
     this.onPendingItemsChange.next(pendingItems);
   }

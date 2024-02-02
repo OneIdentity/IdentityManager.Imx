@@ -183,7 +183,7 @@ export class JobsGridviewComponent implements OnInit {
     let overlayRef: OverlayRef;
     setTimeout(() => overlayRef = this.busyService.show());
     try {
-      const queuedJobs = await this.jobService.Get(navigationState);
+      const queuedJobs = await this.jobService.Get(this.navigationState);
 
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
