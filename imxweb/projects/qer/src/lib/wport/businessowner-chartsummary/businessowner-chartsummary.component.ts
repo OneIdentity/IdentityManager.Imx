@@ -150,7 +150,7 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
     this.router.navigate(['resp', ownerShip.TableName]);
   }
 
-  private async getData(): Promise<void> {    
+  private async getData(): Promise<void> {
     this.viewReady = false;
     await this.loadIndirectOrDirectReports();
     if (this.allReportsCount > 0 ) {
@@ -166,7 +166,8 @@ export class BusinessOwnerChartSummaryComponent implements OnInit {
       if (await this.qerPermissions.isPersonManager()) {
         this.reports = (await this.qerClient.typedClient.PortalPersonReports.Get({
           OnlyDirect: true, // direct reports only
-          PageSize: 10000
+          PageSize: 10000,
+          isinactive: '0'
         })).Data;
       }
     } finally {

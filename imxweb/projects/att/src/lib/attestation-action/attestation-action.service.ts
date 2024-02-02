@@ -31,9 +31,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 
 import { PortalAttestationApprove } from 'imx-api-att';
-import { IEntityColumn, ValType } from 'imx-qbm-dbts';
+import { ValType } from 'imx-qbm-dbts';
 import { SnackBarService, EntityService, ColumnDependentReference, BaseCdr, ExtService } from 'qbm';
-import { JustificationService, JustificationType, PersonService, ProjectConfigurationService } from 'qer';
+import { JustificationService, JustificationType, PersonService, ProjectConfigurationService, UserModelService } from 'qer';
 import { AttestationCasesService } from '../decision/attestation-cases.service';
 import { AttestationActionComponent } from './attestation-action.component';
 import { AttestationCase } from '../decision/attestation-case';
@@ -58,7 +58,8 @@ export class AttestationActionService {
     private readonly snackBar: SnackBarService,
     private readonly entityService: EntityService,
     private readonly person: PersonService,
-    private readonly workflow: AttestationWorkflowService,
+    private readonly workflow: AttestationWorkflowService,    
+    private readonly userService: UserModelService,
     private readonly extService: ExtService
   ) { }
 
@@ -334,6 +335,7 @@ export class AttestationActionService {
           await config.apply(attestationCase);
         }
         success = true;
+        await this.userService.reloadPendingItems();
       } finally {
         setTimeout(() => this.busyService.hide(busyIndicator));
       }

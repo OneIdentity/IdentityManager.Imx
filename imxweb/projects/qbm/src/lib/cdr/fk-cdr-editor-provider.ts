@@ -24,37 +24,33 @@
  *
  */
 
-import { ViewContainerRef, ComponentRef, ComponentFactoryResolver } from '@angular/core';
+import { ViewContainerRef, ComponentRef, Type } from '@angular/core';
 
 import { CdrEditorProvider } from './cdr-editor-provider.interface';
 import { ColumnDependentReference } from './column-dependent-reference.interface';
 import { CdrEditor } from './cdr-editor.interface';
 import { EditFkComponent } from './edit-fk/edit-fk.component';
 import { EditFkMultiComponent } from './edit-fk/edit-fk-multi.component';
-import { ViewPropertyDefaultComponent } from './view-property-default/view-property-default.component';
 
 export class FkCdrEditorProvider implements CdrEditorProvider {
-
-  constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
+  constructor() {}
 
   public createEditor(parent: ViewContainerRef, cdref: ColumnDependentReference): ComponentRef<CdrEditor> {
     if (this.hasFkRelations(cdref)) {
-      const isReadonly = cdref.isReadOnly() || !cdref.column.GetMetadata().CanEdit();
-      if (isReadonly) {
-        return this.createBound(ViewPropertyDefaultComponent, parent, cdref);
-      } else {
-        return cdref.column.GetMetadata().IsMultiValue() ?
-          this.createBound(EditFkMultiComponent, parent, cdref) :
-          this.createBound(EditFkComponent, parent, cdref);
-      }
+      return cdref.column.GetMetadata().IsMultiValue()
+        ? this.createBound(EditFkMultiComponent, parent, cdref)
+        : this.createBound(EditFkComponent, parent, cdref);
     }
 
     return null;
   }
 
-  private createBound<T extends CdrEditor>(tCtor: new (...args: any[]) => T, parent: ViewContainerRef, cdref: ColumnDependentReference)
-    : ComponentRef<CdrEditor> {
-    const result = parent.createComponent(this.componentFactoryResolver.resolveComponentFactory(tCtor));
+  private createBound<T extends CdrEditor>(
+    type:  Type<T>,
+    parent: ViewContainerRef,
+    cdref: ColumnDependentReference
+  ): ComponentRef<CdrEditor> {
+    const result = parent.createComponent(type);
     result.instance.bind(cdref);
     return result;
   }

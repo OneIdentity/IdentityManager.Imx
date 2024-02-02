@@ -24,49 +24,60 @@
  *
  */
 
+import { EventEmitter } from '@angular/core';
+
 import { PortalSubscriptionInteractive } from 'imx-api-rps';
-import { FkProviderItem, IClientProperty, IEntityColumn, ParameterData } from 'imx-qbm-dbts';
+import { FkProviderItem, IClientProperty, IEntityColumn, IFkCandidateProvider, ParameterData } from 'imx-qbm-dbts';
 import { BaseCdr, ColumnDependentReference } from 'qbm';
 import { ParameterDataService } from 'qer';
+import { ReportParameterWrapper } from './report-parameter-wrapper';
 
 export class ReportSubscription {
+  public readonly columnsWithParameterReload = ['UID_RPSReport'];
+  public reportEntityWrapper: ReportParameterWrapper;
 
-  public readonly columnsWithParameterReload = ["UID_RPSReport"];
+  public readonly hasParameter: boolean;
 
   private parameterColumns: IEntityColumn[] = [];
 
+  public startWriteData = new EventEmitter<string>();
+  public endWriteData = new EventEmitter<void>();
+
   constructor(
     public subscription: PortalSubscriptionInteractive,
-    private getFkProviderItem: (cartItem: PortalSubscriptionInteractive, parameter: ParameterData) => FkProviderItem[],
-    private readonly parameterDataService: ParameterDataService,
-  ) { }
+    private getFkProviderItem: (cartItem: PortalSubscriptionInteractive, parameter: ParameterData) => IFkCandidateProvider,
+    private readonly parameterDataService: ParameterDataService
+  ) {}
 
   public getCdrs(properties: IClientProperty[]): ColumnDependentReference[] {
     if (this.subscription == null) {
       return [];
     }
 
-    const columns = properties.length === 0 ? [
-      this.subscription.Ident_RPSSubscription.Column,
-      this.subscription.UID_RPSReport.Column,
-      this.subscription.UID_DialogSchedule.Column,
-      this.subscription.ExportFormat.Column,
-      this.subscription.AddtlSubscribers.Column
-    ]
-      : properties.map(prop => this.subscription.GetEntity().GetColumn(prop.ColumnName));
+    const columns =
+      properties.length === 0
+        ? [
+            this.subscription.Ident_RPSSubscription.Column,
+            this.subscription.UID_RPSReport.Column,
+            this.subscription.UID_DialogSchedule.Column,
+            this.subscription.ExportFormat.Column,
+            this.subscription.AddtlSubscribers.Column,
+          ]
+        : properties.map((prop) => this.subscription.GetEntity().GetColumn(prop.ColumnName));
 
-    return columns.map(col => new BaseCdr(col));
+    return columns.map((col) => new BaseCdr(col));
   }
 
   public getParameterCdr(): ColumnDependentReference[] {
-
-    this.parameterColumns = this.subscription == null || this.subscription.extendedDataRead.length <= 0 ? []
-      : this.parameterDataService.createInteractiveParameterColumns(
-        this.subscription.extendedDataRead[0],
-        parameterData => this.getFkProviderItem(this.subscription, parameterData),
-        this.subscription
-      );
-    return this.parameterColumns.map(col => new BaseCdr(col));
+    this.parameterColumns =
+      this.subscription == null || this.subscription.extendedDataRead.length <= 0
+        ? []
+        : this.parameterDataService.createInteractiveParameterColumns(
+            this.subscription.extendedDataRead[0],
+            (parameterData) => this.getFkProviderItem(this.subscription, parameterData),
+            this.subscription
+          );
+    return this.parameterColumns.map((col) => new BaseCdr(col));
   }
 
   public getDisplayableColums(): IEntityColumn[] {
@@ -75,15 +86,13 @@ export class ReportSubscription {
       this.subscription.UID_RPSReport.Column,
       this.subscription.UID_DialogSchedule.Column,
       this.subscription.ExportFormat.Column,
-      this.subscription.AddtlSubscribers.Column
+      this.subscription.AddtlSubscribers.Column,
     ].concat(this.parameterColumns == null ? [] : this.parameterColumns);
   }
 
   public async submit(): Promise<void> {
     if (this.parameterColumns) {
-      this.subscription.extendedData = [
-        this.parameterColumns.map(col => ({ Name: col.ColumnName, Value: col.GetValue() }))
-      ];
+      this.subscription.extendedData = [this.parameterColumns.map((col) => ({ Name: col.ColumnName, Value: col.GetValue() }))];
     }
 
     return this.subscription.GetEntity().Commit(false);

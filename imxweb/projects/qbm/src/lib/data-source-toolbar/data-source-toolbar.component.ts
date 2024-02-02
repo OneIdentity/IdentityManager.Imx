@@ -303,6 +303,11 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
   public dataSourceHasChanged = true;
 
   /**
+   * Indicates if the groupBy has cleared.
+   */
+  public groupByHasCleared = false;
+
+  /**
    * This is the mat table datasource.
    */
   public internalDataSource: MatTableDataSource<TypedEntity> = new MatTableDataSource<TypedEntity>([]);
@@ -342,6 +347,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
    * The currently selected filter data
    */
   public currentFilterData: IEntity[] = [];
+  public currentFilterDisplayData: string = '';
 
   /**
    * @ignore Used internally.
@@ -745,6 +751,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
       .toPromise();
     if (filterdata) {
       this.currentFilterData = filterdata;
+      this.currentFilterDisplayData = this.currentFilterData.map((filter) => filter.GetColumn('LongDisplay').GetValue()).join(', ');
       this.filterTreeSelectionChanged.emit(this.currentFilterData.map((filter) => filter.GetColumn('Filter').GetValue()));
     }
   }
@@ -770,6 +777,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
    */
   public clearTreeFilter(): void {
     this.currentFilterData = [];
+    this.currentFilterDisplayData = '';
     this.filterTreeSelectionChanged.emit([]);
   }
 
@@ -803,6 +811,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
    */
   public clearGroupedBy(): void {
     this.settings.groupData.currentGrouping = undefined;
+    this.groupByHasCleared = true;
     this.settingsChanged.emit(this.settings);
   }
 
@@ -810,11 +819,11 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
    * @ignore Used internally in components template.
    * Used to convert the groupBy column api value into a display friendly format
    */
-  public getGroupColumnDisplay(group: DataSourceToolBarGroup): string {   
+  public getGroupColumnDisplay(group: DataSourceToolBarGroup): string {
     return group.property.Display ?? this.entitySchema.Columns[group.property.Property.ColumnName]?.Display ?? group.property.Property.Display;
   }
 
-  
+
 
   /**
    * @ignore Used internally

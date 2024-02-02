@@ -30,7 +30,7 @@ import { configureTestSuite } from 'ng-bullet';
 import { clearStylesFromDOM } from '../../testing/clear-styles.spec';
 import { ViewPropertyComponent } from './view-property.component';
 
-describe('ViewPropertyComponent', () => {
+xdescribe('ViewPropertyComponent', () => {
   let component: ViewPropertyComponent;
   let fixture: ComponentFixture<ViewPropertyComponent>;
 

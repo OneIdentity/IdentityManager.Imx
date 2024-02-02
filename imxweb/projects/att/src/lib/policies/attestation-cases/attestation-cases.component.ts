@@ -93,6 +93,10 @@ export class AttestationCasesComponent implements OnInit {
     return this.navigate();
   }
 
+  public get hasSampleData(): boolean {
+    return this.data.uidPickCategory != null && this.data.uidPickCategory !== '';
+  }
+
   public async onNavigationStateChanged(newState: CollectionLoadParameters): Promise<void> {
     this.navigationState = newState;
     await this.navigate();

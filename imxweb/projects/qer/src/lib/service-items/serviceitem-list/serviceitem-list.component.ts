@@ -271,6 +271,7 @@ export class ServiceitemListComponent implements AfterViewInit, OnChanges, OnDes
 
   public async onRemoveChip(): Promise<void> {
     this.selectedServiceCategory = null;
+    this.includeChildCategories = false;
     this.categoryRemoved.emit(this.selectedServiceCategory);
     await this.getData();
   }

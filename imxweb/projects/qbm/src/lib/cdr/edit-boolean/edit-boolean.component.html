@@ -1,4 +1,12 @@
-<mat-checkbox [imxDisableControl]="!columnContainer?.canEdit" [formControl]="control" [attr.data-imx-identifier]="'cdr-edit-boolean-checkbox-' + columnContainer?.name">
+<mat-checkbox *ngIf="columnContainer?.canEdit; else isReadonly" [formControl]="control" [attr.data-imx-identifier]="'cdr-edit-boolean-checkbox-' + columnContainer?.name">
   <span>{{ columnContainer?.display | translate }}</span>
 </mat-checkbox>
 <mat-spinner class="imx-checkbox-spinner" diameter="16" *ngIf="isBusy"></mat-spinner>
+
+<ng-template #isReadonly>
+  <imx-view-property
+    [columnContainer]="columnContainer"
+    defaultValue="#LDS#Not set"
+  >
+  </imx-view-property>
+</ng-template>

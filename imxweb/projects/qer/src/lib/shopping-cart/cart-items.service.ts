@@ -45,7 +45,6 @@ import { CartItemInteractiveService } from './cart-item-edit/cart-item-interacti
 
 @Injectable()
 export class CartItemsService {
-
   public get PortalCartitemSchema(): EntitySchema {
     return this.qerClient.typedClient.PortalCartitem.GetSchema();
   }
@@ -104,16 +103,16 @@ export class CartItemsService {
       let parentCartUid: string;
       if (requestable?.UidAccProductParent) {
         // Get parent cart ID from known cart items
-        parentCartUid =  await this.getFromExistingCartItems(addedItems[0].UID_ShoppingCartOrder.value, requestable);
+        parentCartUid = await this.getFromExistingCartItems(addedItems[0].UID_ShoppingCartOrder.value, requestable);
       }
       const cartItemCollection = await this.createAndPost(requestable, parentCartUid);
 
       addedItems.push(cartItemCollection.Data[0]);
       // TODO: this call does not work yet. await cartItem.GetEntity().Commit(true);
-        this.parameterDataService.hasParameters({
-          Parameters: cartItemCollection.extendedData?.Parameters,
-          index: 0,
-        })
+      this.parameterDataService.hasParameters({
+        Parameters: cartItemCollection.extendedData?.Parameters,
+        index: 0,
+      })
         ? cartitemReferences.push(this.getKey(cartItemCollection.Data[0]))
         : cartItemsWithoutParams.push(cartItemCollection.Data[0]);
     }
@@ -128,23 +127,22 @@ export class CartItemsService {
     const allItems = (await this.getItemsForCart(cartUid)).Data;
 
     // Find all already ordered items with this UID + Person, get their parent cart uid
-    const dupItemsParents = allItems.filter(item =>
-      item.UID_AccProduct.value + item.UID_PersonOrdered.value === requestable.UidAccProduct + requestable.UidPerson
-    ).map(item => item.UID_ShoppingCartItemParent.value);
+    const dupItemsParents = allItems
+      .filter((item) => item.UID_AccProduct.value + item.UID_PersonOrdered.value === requestable.UidAccProduct + requestable.UidPerson)
+      .map((item) => item.UID_ShoppingCartItemParent.value);
 
     // Find all items with the correct ParentUID + Person
-    const parentItems = allItems.filter(item =>
-      item.UID_AccProduct.value + item.UID_PersonOrdered.value === requestable.UidAccProductParent + requestable.UidPerson
+    const parentItems = allItems.filter(
+      (item) => item.UID_AccProduct.value + item.UID_PersonOrdered.value === requestable.UidAccProductParent + requestable.UidPerson
     );
     // Here we try assuming the mandatory item is there
-    let parentItem = parentItems.find(item => !dupItemsParents.includes(this.getKey(item)));
+    let parentItem = parentItems.find((item) => !dupItemsParents.includes(this.getKey(item)));
     if (parentItem) {
       return this.getKey(parentItem);
     }
     // Mandatory item isn't there, no well-defined fall back. Report error move on
     this.errorHandler.handleError('There is a missing mandatory item, cannot link optional item to parent. Ordering with no parent.');
   }
-
 
   public async removeItems(cartItems: PortalCartitem[], filter?: (cartItem: PortalCartitem) => boolean): Promise<void> {
     await Promise.all(
@@ -183,9 +181,12 @@ export class CartItemsService {
   public async save(cartItemExtended: ExtendedEntityWrapper<TypedEntity>): Promise<void> {
     return this.cartItemInteractive.commitExtendedEntity(cartItemExtended);
   }
-
-  public async getInteractiveCartitem(entityReference: string): Promise<ExtendedEntityWrapper<PortalCartitemInteractive>> {
-    return this.cartItemInteractive.getExtendedEntity(entityReference);
+  
+  public async getInteractiveCartitem(
+    entityReference?: string,
+    callbackOnChange?: () => void
+  ): Promise<ExtendedEntityWrapper<PortalCartitemInteractive>> {
+    return this.cartItemInteractive.getExtendedEntity(entityReference, callbackOnChange);
   }
 
   public getAssignmentText(cartItem: PortalCartitem): string {

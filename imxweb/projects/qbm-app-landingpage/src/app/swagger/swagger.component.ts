@@ -52,8 +52,9 @@ export class SwaggerComponent implements AfterViewInit {
       requestInterceptor: (req) => {  const token = this.getCookie("XSRF-TOKEN");
         if (token) {
           req.headers['X-XSRF-TOKEN'] = token; 
-          }
         }
+        return req;
+      }
     });
   }
 

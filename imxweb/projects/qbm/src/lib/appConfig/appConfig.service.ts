@@ -25,7 +25,7 @@
  */
 
 import { HttpClient } from '@angular/common/http';
-import { Injectable, Injector } from '@angular/core';
+import { ErrorHandler, Injectable, Injector } from '@angular/core';
 import { Subject } from 'rxjs';
 
 import { AppConfig } from './appconfig.interface';
@@ -57,6 +57,7 @@ export class AppConfigService {
   constructor(
     private readonly httpClient: HttpClient,
     private readonly logger: ClassloggerService,
+    private readonly errorHandler: ErrorHandler,
     private readonly injector: Injector
   ) { }
 
@@ -87,7 +88,7 @@ export class AppConfigService {
 
     // avoid cyclic dependency
     const translation = this.injector.get(TranslateService);
-    this._apiClient = new ApiClientFetch(this.baseUrl, this.logger, translation);
+    this._apiClient = new ApiClientFetch(this.errorHandler, this.baseUrl, this.logger, translation);
     this._v2client = new V2Client(this._apiClient);
   }
 

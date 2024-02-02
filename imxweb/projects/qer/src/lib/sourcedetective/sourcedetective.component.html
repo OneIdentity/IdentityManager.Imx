@@ -1,3 +1,5 @@
+<mat-spinner *ngIf="busy"></mat-spinner>
+
 <ng-container *ngIf="dataReady">
     <eui-alert class="helper-alert" type="info" condensed="true" [colored]="true">
         <span *ngIf="dataSource.data.length > 1">

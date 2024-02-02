@@ -39,7 +39,8 @@
         [entityColumn]="dstWrapper.propertyDisplay">
       </imx-data-table-column>
     </imx-data-table>
-    <imx-data-source-paginator data-imx-identifier="pick-category-select-identities-paginator" [dst]="dst">
+    <imx-data-source-paginator *ngIf="!dstSettings?.groupData?.currentGrouping" 
+      data-imx-identifier="pick-category-select-identities-paginator" [dst]="dst">
     </imx-data-source-paginator>
   </ng-container>
 </ng-template>

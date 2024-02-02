@@ -24,11 +24,13 @@
  *
  */
 
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 
 import { IEntityColumn } from 'imx-qbm-dbts';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
+import { CdrEditorComponent } from '../cdr-editor/cdr-editor.component';
+
 
 @Component({
   selector: 'imx-entity-column-editor',
@@ -43,14 +45,20 @@ export class EntityColumnEditorComponent implements OnChanges {
 
   @Output() public controlCreated = new EventEmitter<{ name: string; control: AbstractControl; }>();
 
+  @ViewChild(CdrEditorComponent) editor: CdrEditorComponent;
+
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes['column'] || changes['readonly']) {
       this.cdr = this.column ?
         {
           column: this.column,
-          isReadOnly: () => this.readonly || !this.column.GetMetadata().CanEdit()
+          isReadOnly: () => this.readonly || !this.column.GetMetadata().CanEdit(),
         }
         : undefined;
     }
+  }
+
+  public update(): void {
+    this.editor?.update();
   }
 }

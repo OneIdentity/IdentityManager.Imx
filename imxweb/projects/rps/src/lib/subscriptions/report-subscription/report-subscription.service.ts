@@ -27,91 +27,94 @@
 import { Injectable } from '@angular/core';
 
 import { PortalReports, PortalSubscriptionInteractive } from 'imx-api-rps';
-import { CollectionLoadParameters, EntitySchema, FkProviderItem, ParameterData, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import {
+  CollectionLoadParameters,
+  EntitySchema,
+  FkProviderItem,
+  ParameterData,
+  TypedEntityBuilder,
+  ExtendedTypedEntityCollection,
+  IFkCandidateProvider,
+} from 'imx-qbm-dbts';
 import { ParameterDataService } from 'qer';
 import { RpsApiService } from '../../rps-api-client.service';
 import { ReportSubscription } from './report-subscription';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ReportSubscriptionService {
-
-  constructor(
-    private readonly api: RpsApiService,
-    private readonly parameterDataService: ParameterDataService) { }
+  constructor(private readonly api: RpsApiService, private readonly parameterDataService: ParameterDataService) {}
 
   public get PortalSubscriptionInteractiveSchema(): EntitySchema {
     return this.api.typedClient.PortalSubscriptionInteractive.GetSchema();
   }
 
-  public getReportCandidates(parameter: CollectionLoadParameters)
-    : Promise<TypedEntityCollectionData<PortalReports>> {
-    return this.api.typedClient.PortalReports.Get(parameter);
+  public async getReportCandidates(parameter: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<PortalReports, unknown>> {
+    const candidates = await this.api.client.portal_subscription_interactive_UID_RPSReport_candidates_get(parameter);
+    const reportBuilder = new TypedEntityBuilder(PortalReports);
+    return reportBuilder.buildReadWriteEntities(candidates, this.api.typedClient.PortalReports.GetSchema());
   }
 
   public buildRpsSubscription(subscription: PortalSubscriptionInteractive): ReportSubscription {
-    return new ReportSubscription(subscription,
-      (entity, data) => this.getFkProviderItems(entity, data),
-      this.parameterDataService);
+    return new ReportSubscription(subscription, (entity, data) => this.getFkProvider(entity, data), this.parameterDataService);
   }
 
   public async createNewSubscription(uidReport: string): Promise<ReportSubscription> {
-
     const subscription = await this.api.typedClient.PortalSubscriptionInteractive.Get();
     await subscription.Data[0].UID_RPSReport.Column.PutValue(uidReport);
     await subscription.Data[0].Ident_RPSSubscription.Column.PutValue(subscription.Data[0].UID_RPSReport.Column.GetDisplayValue());
     const allowedFormats = subscription.Data[0].ExportFormat.Column.GetMetadata().GetLimitedValues();
-    if (allowedFormats && allowedFormats.filter(f => f.Value == 'PDF').length > 0) {
+    if (allowedFormats && allowedFormats.filter((f) => f.Value == 'PDF').length > 0) {
       await subscription.Data[0].ExportFormat.Column.PutValue('PDF');
     }
 
     return this.buildRpsSubscription(subscription.Data[0]);
   }
 
-  private getFkProviderItems(subscription: PortalSubscriptionInteractive, parameterData: ParameterData): FkProviderItem[] {
-    if (parameterData.Property.FkRelation) {
-      return [
-        this.getFkProviderItem(subscription, parameterData.Property.ColumnName, parameterData.Property.FkRelation.ParentTableName)
-      ];
-    }
+  private getFkProvider(subscription: PortalSubscriptionInteractive, parameterData: ParameterData): IFkCandidateProvider {
+    var api = this.api;
+    return new class implements IFkCandidateProvider {
+      getProviderItem(_columnName, fkTableName) {
+        if (parameterData.Property.FkRelation) {
+          return this.getFkProviderItem(subscription, parameterData.Property.ColumnName, parameterData.Property.FkRelation.ParentTableName);
+        }
 
-    if (parameterData.Property.ValidReferencedTables) {
-      return parameterData.Property.ValidReferencedTables.map(parentTableRef =>
-        this.getFkProviderItem(subscription, parameterData.Property.ColumnName, parentTableRef.TableName)
-      );
-    }
+        if (parameterData.Property.ValidReferencedTables) {
+          const t = parameterData.Property.ValidReferencedTables.map((parentTableRef) =>
+            this.getFkProviderItem(subscription, parameterData.Property.ColumnName, parentTableRef.TableName)
+          ).filter(t => t.fkTableName == fkTableName);
+          if (t.length == 1)
+            return t[0];
+          return null;
+        }
+      }
 
-    // no candidates
-    return [];
-  }
 
-  private getFkProviderItem(subscription: PortalSubscriptionInteractive, columnName: string, fkTableName: string): FkProviderItem {
-    return {
-      columnName,
-      fkTableName,
-      parameterNames: [
-        'OrderBy',
-        'StartIndex',
-        'PageSize',
-        'filter',
-        'withProperties',
-        'search'
-      ],
-      load: async (__entity, parameters?) => {
-        return this.api.client.portal_subscription_interactive_parameter_candidates_post(
+      private getFkProviderItem(subscription: PortalSubscriptionInteractive, columnName: string, fkTableName: string): FkProviderItem {
+        return {
           columnName,
           fkTableName,
-          subscription.InteractiveEntityWriteData,
-          parameters
-        );
-      },
-      getDataModel: async () => ({}),
-      getFilterTree: async (__entity, parentkey) => {
-        return this.api.client.portal_subscription_interactive_parameter_candidates_filtertree_post(
-          columnName, fkTableName, subscription.InteractiveEntityWriteData, { parentkey }
-        );
+          parameterNames: ['OrderBy', 'StartIndex', 'PageSize', 'filter', 'withProperties', 'search'],
+          load: async (__entity, parameters?) => {
+            return api.client.portal_subscription_interactive_parameter_candidates_post(
+              columnName,
+              fkTableName,
+              subscription.InteractiveEntityWriteData,
+              parameters
+            );
+          },
+          getDataModel: async () => ({}),
+          getFilterTree: async (__entity, parentkey) => {
+            return api.client.portal_subscription_interactive_parameter_candidates_filtertree_post(
+              columnName,
+              fkTableName,
+              subscription.InteractiveEntityWriteData,
+              { parentkey }
+            );
+          },
+        };
       }
-    };
+    }
   }
 }

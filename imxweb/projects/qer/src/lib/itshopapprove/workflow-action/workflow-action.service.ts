@@ -43,6 +43,7 @@ import { JustificationType } from '../../justification/justification-type.enum';
 import { WorkflowActionEditWrapper } from './workflow-action-edit-wrapper.interface';
 import { WorkflowActionParameters } from './workflow-action-parameters.interface';
 import { TermsOfUseAcceptComponent } from '../../terms-of-use/terms-of-use-accept.component';
+import { UserModelService } from '../../user/user-model.service';
 
 @Injectable({
   providedIn: 'root'
@@ -63,8 +64,9 @@ export class WorkflowActionService {
     private readonly projectConfig: ProjectConfigurationService,
     private readonly approvalsService: ApprovalsService,
     private readonly justificationService: JustificationService,
+    private readonly userService: UserModelService,
     private readonly extService: ExtService,
-  ) { }
+  ) {}
 
   public async directDecisions(requests: Approval[], userUid: string): Promise<void> {
     const actionParameters = {
@@ -451,6 +453,7 @@ export class WorkflowActionService {
           key: config.message, parameters: [config.data.requests.length,
           config.data.actionParameters.uidPerson ? config.data.actionParameters.uidPerson.column.GetDisplayValue() : '']
         });
+        await this.userService.reloadPendingItems();
         this.applied.next();
       }
     } else {

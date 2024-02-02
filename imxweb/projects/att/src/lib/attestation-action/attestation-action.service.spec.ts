@@ -32,7 +32,7 @@ import { of } from 'rxjs';
 import { AttestationActionService } from './attestation-action.service';
 import { SnackBarService, EntityService, BaseCdr, ExtService } from 'qbm';
 import { AttestationCasesService } from '../decision/attestation-cases.service';
-import { JustificationService, PersonService, ProjectConfigurationService } from 'qer';
+import { JustificationService, PersonService, ProjectConfigurationService, UserModelService } from 'qer';
 import { IEntityColumn } from 'imx-qbm-dbts';
 import { AttestationCase } from '../decision/attestation-case';
 import { AttestationWorkflowService } from './attestation-workflow.service';
@@ -120,6 +120,12 @@ describe('AttestationActionService', () => {
           provide: JustificationService,
           useValue: {
             createCdr: _type => new BaseCdr(createColumn('Justification'))
+          }
+        },        
+        {
+          provide: UserModelService,
+          useValue: {
+            reloadPendingItems: jasmine.createSpy('ReloadPendingItems')
           }
         },
         {

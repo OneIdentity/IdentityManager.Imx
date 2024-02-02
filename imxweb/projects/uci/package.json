@@ -1,6 +1,6 @@
 {
   "name": "uci",
-  "version": "9.0.0",
+  "version": "9.1.2",
   "private": true,
   "bundledDependencies": [
     "imx-api-uci"

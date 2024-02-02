@@ -165,7 +165,7 @@ export class IdentityRoleMembershipsService {
           type: 'CU'
         }
       ),
-      withAnalysis: true
+      withAnalysis: false
     });
   }
 }

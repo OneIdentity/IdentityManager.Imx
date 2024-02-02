@@ -80,6 +80,7 @@ export class AuthenticationGuardService implements CanActivate {
       }
 
       if (this.message == null &&
+        this.authentication.authConfigProviders.length == 0 &&
         sessionState &&
         sessionState.configurationProviders &&
         sessionState.configurationProviders.length === 1) {

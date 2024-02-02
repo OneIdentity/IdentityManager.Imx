@@ -29,7 +29,9 @@
       </ng-template>
     </imx-data-table-generic-column>
   </imx-data-table>
-  <imx-data-source-paginator data-imx-identifier="roles-overview-paginator" [dst]="dst"></imx-data-source-paginator>
+  <imx-data-source-paginator *ngIf="!dstSettings?.groupData?.currentGrouping"
+    data-imx-identifier="roles-overview-paginator" [dst]="dst">
+  </imx-data-source-paginator>
 </ng-container>
 
 <mat-card *ngIf="useTree" class="imx-data-tree-container">

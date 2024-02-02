@@ -34,7 +34,7 @@ import { PortalPoliciesViolationsApprove } from 'imx-api-pol';
 import { DecisionInput } from 'imx-api-qer';
 import { CollectionLoadParameters, DataModel, EntitySchema, GroupInfo, TypedEntityCollectionData, ValType } from 'imx-qbm-dbts';
 import { BaseCdr, EntityService, SnackBarService } from 'qbm';
-import { JustificationService, JustificationType, ParameterDataService } from 'qer';
+import { JustificationService, JustificationType, UserModelService } from 'qer';
 import { ApiService } from '../api.service';
 import { PolicyViolationsActionParameters } from './policy-violations-action/policy-violations-action-parameters.interface';
 import { PolicyViolationsActionComponent } from './policy-violations-action/policy-violations-action.component';
@@ -54,6 +54,7 @@ export class PolicyViolationsService {
     private readonly entityService: EntityService,
     private readonly translate: TranslateService,
     private readonly snackBar: SnackBarService,
+    private readonly userService: UserModelService,
     private readonly sideSheet: EuiSidesheetService
   ) { }
 
@@ -200,7 +201,8 @@ export class PolicyViolationsService {
         for (const policyViolation of config.data.policyViolations) {
           await config.apply(policyViolation);
         }
-        success = true;
+        success = true;        
+        await this.userService.reloadPendingItems();
       } finally {
         setTimeout(() => this.busyService.hide(busyIndicator));
       }

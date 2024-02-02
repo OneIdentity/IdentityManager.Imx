@@ -52,7 +52,7 @@ export class ArcGovernanceCommonTestData {
         start: 'dashboard'
       }
     },
-    apiClient: new ApiClientFetch('', <any>{ debug: () => { } }, <any>{}),
+    apiClient: new ApiClientFetch(<any>{}, '', <any>{ debug: () => { } }, <any>{}),
     client: {
       imx_multilanguage_getcaptions_get: () => Promise.resolve({}),
       imx_multilanguage_translations_get: () => Promise.resolve({})

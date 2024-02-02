@@ -27,8 +27,8 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
-import { PortalDynamicgroup } from 'imx-api-qer';
-import { SqlWizardExpression, WriteExtTypedEntity, SqlExpression, isExpressionInvalid, LogOp } from 'imx-qbm-dbts';
+import { PortalDynamicgroupInteractive } from 'imx-api-qer';
+import { SqlWizardExpression, IEntity, WriteExtTypedEntity, SqlExpression, isExpressionInvalid, LogOp } from 'imx-qbm-dbts';
 import { BaseCdr, ColumnDependentReference, ConfirmationService } from 'qbm';
 import { QerApiService } from '../../qer-api-client.service';
 import { RoleService } from '../role.service';
@@ -61,7 +61,7 @@ export class DynamicRoleComponent implements OnInit {
     return this.formGroup.get('formArray') as FormArray;
   }
 
-  public dynamicGroup: PortalDynamicgroup;
+  dynamicGroup: PortalDynamicgroupInteractive;
 
   public sqlExpression: SqlWizardExpression;
   public lastSavedExpression: SqlExpression;

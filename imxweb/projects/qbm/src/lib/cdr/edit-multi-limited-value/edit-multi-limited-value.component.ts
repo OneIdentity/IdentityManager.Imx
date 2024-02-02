@@ -26,7 +26,8 @@
 
 import { Component, EventEmitter, OnDestroy } from '@angular/core';
 import { FormArray, FormControl } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 
 import { LimitedValueData } from 'imx-qbm-dbts';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
@@ -44,12 +45,12 @@ import { MultiValueService } from '../../multi-value/multi-value.service';
   styleUrls: ['./edit-multi-limited-value.component.scss']
 })
 export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
+  public readonly updateRequested = new Subject<void>();
 
   // TODO: Check Upgrade
   public control = new FormArray([]);
 
   public readonly columnContainer = new EntityColumnContainer<string>();
-
   public readonly valueHasChanged = new EventEmitter<ValueHasChangedEventArg>();
 
   private readonly subscriptions: Subscription[] = [];
@@ -72,16 +73,45 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
     if (cdref && cdref.column) {
       this.columnContainer.init(cdref);
       this.initValues();
-      this.subscriptions.push(this.control.valueChanges.subscribe(async values =>
-        this.writeValue(values)
-      ));
-      this.subscriptions.push(this.columnContainer.subscribe(() => {
-        if (this.isWriting) { return; }
-        if (this.control.value !== this.columnContainer.value) {
-          this.initValues();
-        }
-        this.valueHasChanged.emit({value: this.columnContainer.value});
-      }));
+      this.subscriptions.push(
+        this.control.valueChanges
+        .pipe(
+          tap(() => this.control.markAsTouched()),
+          debounceTime(1400),
+          distinctUntilChanged(),
+        )
+        .subscribe(
+          async (values) => this.writeValue(values)
+        )       
+      );
+      this.subscriptions.push(
+        this.columnContainer.subscribe(() => {
+          if (this.isWriting) {
+            return;
+          }
+          if (this.control.value !== this.columnContainer.value) {
+            this.initValues();
+          }
+
+          if (cdref.minlengthSubject) {
+            this.subscriptions.push(
+              cdref.minlengthSubject.subscribe(() => {
+                this.initValues();
+              })
+            );
+          }
+
+          this.subscriptions.push(
+            this.updateRequested.subscribe(() =>
+              setTimeout(() => {
+                this.initValues();
+                this.control.updateValueAndValidity({ onlySelf: true, emitEvent: false });
+              })
+            )
+          );
+          this.valueHasChanged.emit({ value: this.columnContainer.value });
+        })
+      );
       this.logger.trace(this, 'Control initialized');
     } else {
       this.logger.error(this, 'The Column Dependent Reference is undefined');
@@ -114,7 +144,7 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
 
     const value = this.multiValueProvider.getMultiValue(this.getSelectedNames(values));
 
-    if (this.columnContainer.value === value) {
+    if (this.columnContainer.value === value || (!this.columnContainer.value && value === '')) {
       return;
     }
 
@@ -123,11 +153,14 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
     try {
       this.logger.debug(this, 'writeValue - updateCdrValue...');
       this.isWriting = true;
+      this.control.disable();
       await this.columnContainer.updateValue(value);
     } catch (e) {
       this.logger.error(this, e);
     } finally {
       this.isWriting = false;
+      this.control.enable();
+      this.control.markAsUntouched();
       if (this.control.value !== this.columnContainer.value) {
         const selectedValues = this.multiValueProvider.getValues(this.columnContainer.value);
         this.control.controls.forEach((checkBox, index) =>

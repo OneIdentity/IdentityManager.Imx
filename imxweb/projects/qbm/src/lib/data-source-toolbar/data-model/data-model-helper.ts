@@ -42,7 +42,7 @@ export function createGroupData(
       .forEach(property =>
         groups.push({
           property,
-          getData: async () => (await getGroupInfo({ by: property.Property.ColumnName }))
+          getData: async (parameters: GroupInfoLoadParameters) => (await getGroupInfo({...parameters, by: property.Property.ColumnName }))
             .filter(item => item.Count > 0)
         })
       );

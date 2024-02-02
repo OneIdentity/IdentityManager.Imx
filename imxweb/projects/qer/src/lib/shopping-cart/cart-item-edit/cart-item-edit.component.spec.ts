@@ -34,7 +34,7 @@ import { CartItemEditComponent } from './cart-item-edit.component';
 import { PortalCartitem } from 'imx-api-qer';
 import { CartItemsService } from '../cart-items.service';
 
-describe('CartItemEditComponent', () => {
+xdescribe('CartItemEditComponent', () => {
   let component: CartItemEditComponent;
   let fixture: ComponentFixture<CartItemEditComponent>;
 

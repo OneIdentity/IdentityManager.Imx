@@ -32,7 +32,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ComplianceFeatureConfig, PortalRulesViolations } from 'imx-api-cpl';
 import { CollectionLoadParameters, DataModel, EntitySchema, ExtendedTypedEntityCollection, FilterData, GroupInfo } from 'imx-qbm-dbts';
 
-import { ClassloggerService, SettingsService, SystemInfoService } from 'qbm';
+import { ClassloggerService, SystemInfoService } from 'qbm';
 import { ApiService } from '../api.service';
 import { RulesViolationsApproval } from './rules-violations-approval';
 import { RulesViolationsLoadParameters } from './rules-violations-load-parameters.interface';
@@ -53,7 +53,6 @@ export class RulesViolationsService {
     private readonly busyService: EuiLoadingService,
     private readonly translate: TranslateService,
     private readonly systemInfoService: SystemInfoService,
-    private readonly settingsService: SettingsService
   ) {}
 
   public async featureConfig(): Promise<ComplianceFeatureConfig> {
@@ -81,7 +80,6 @@ export class RulesViolationsService {
   public async getGroupInfo(parameters: RulesViolationsLoadParameters = {}): Promise<GroupInfo[]> {
     return this.cplClient.client.portal_rules_violations_group_get({
       ...parameters,
-      PageSize: this.settingsService.PageSizeForAllElements,
       withcount: true,
       approvable: true,
     });

@@ -105,14 +105,15 @@ import { ClassloggerService } from './classlogger/classlogger.service';
 import { AuthenticationGuardService } from './authentication/authentication-guard.service';
 import { JobQueueOverviewModule } from './jobqueue-overview/jobqueue-overview.module';
 import { PluginLoaderService } from './plugins/plugin-loader.service';
+import { CacheService } from './cache/cache.service';
 import { HttpClientModule } from '@angular/common/http';
 
-export function initApp(registry: CdrRegistryService, resolver: ComponentFactoryResolver, logger: NGXLogger): () => Promise<any> {
+export function initApp(registry: CdrRegistryService, logger: NGXLogger): () => Promise<any> {
   logger.debug('init qbm');
   return () =>
     new Promise<any>(async (resolve: any) => {
-      registry.register(new DefaultCdrEditorProvider(resolver));
-      registry.register(new FkCdrEditorProvider(resolver));
+      registry.register(new DefaultCdrEditorProvider());
+      registry.register(new FkCdrEditorProvider());
       resolve();
     });
 }
@@ -203,6 +204,7 @@ const routes: Routes = [
     TwoFactorAuthenticationService,
     ApiClientAngularService,
     TableImageService,
+    CacheService,
     PluginLoaderService
   ],
   exports: [
@@ -229,7 +231,7 @@ export class QbmModule {
     resolver: ComponentFactoryResolver,
     logger: ClassloggerService) {
       logger.info(this, '▶️ QbmModule loaded');
-      registry.register(new DefaultCdrEditorProvider(resolver));
-      registry.register(new FkCdrEditorProvider(resolver));
+      registry.register(new DefaultCdrEditorProvider());
+      registry.register(new FkCdrEditorProvider());
   }
  }

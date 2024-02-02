@@ -42,6 +42,7 @@ import { QerApiService } from '../../qer-api-client.service';
 import { JustificationService } from '../../justification/justification.service';
 import { JustificationType } from '../../justification/justification-type.enum';
 import { _MatSlideToggleRequiredValidatorModule } from '@angular/material/slide-toggle';
+import { UserModelService } from '../../user/user-model.service';
 
 describe('WorkflowActionService', () => {
   let service: WorkflowActionService;
@@ -194,6 +195,12 @@ describe('WorkflowActionService', () => {
           provide: SnackBarService,
           useValue: {
             open: jasmine.createSpy('open')
+          }
+        },
+        {
+          provide: UserModelService,
+          useValue: {
+            reloadPendingItems: jasmine.createSpy('ReloadPendingItems')
           }
         },
         {

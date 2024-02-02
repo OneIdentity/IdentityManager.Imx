@@ -37,15 +37,17 @@ import { ClientPropertyForTableColumns } from '../client-property-for-table-colu
   styleUrls: ['./additional-infos.component.scss']
 })
 export class AdditionalInfosComponent implements OnInit {
-
   public possibleProperties: IClientProperty[];
-  public optionals: ClientPropertyForTableColumns[];
 
   public infoText = '#LDS#Please choose the columns you like to add.';
   public infoTextLong = '#LDS#New columns will be added to your table. You can change the sort order via drag and drop using the hatched handle.';
 
-  public get result(): any {
+  public get result(): { all: IClientProperty[]; optionals: IClientProperty[] } {
     return { all: this.data.preselectedProperties, optionals: this.optionals };
+  }
+
+  public get optionals(): ClientPropertyForTableColumns[] {
+    return this.data.preselectedProperties.filter((elem) => this.isRemoveable(elem));
   }
 
   constructor(
@@ -64,8 +66,6 @@ export class AdditionalInfosComponent implements OnInit {
     this.possibleProperties = this.data.additionalPropertyNames.map(elem => elem)
       .concat(this.data.displayedColumns)
       .sort((elem1, elem2) => AdditionalInfosComponent.compareNames(elem1, elem2));
-
-    this.optionals = this.data.preselectedProperties.filter(elem => this.isRemoveable(elem));
   }
 
   public drop(event: CdkDragDrop<string[]>): void {

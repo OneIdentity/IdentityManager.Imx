@@ -39,6 +39,7 @@ import { QbmModule, LdsReplaceModule, ParameterizedTextModule } from 'qbm';
 import { SourceDetectiveComponent } from './sourcedetective.component';
 import { SourceDetectiveSidesheetComponent } from './sourcedetective-sidesheet.component';
 import { RequestHistoryModule } from '../request-history/request-history.module';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -54,6 +55,7 @@ import { RequestHistoryModule } from '../request-history/request-history.module'
     FormsModule,
     LdsReplaceModule,
     MatIconModule,
+    MatProgressSpinnerModule,
     MatTooltipModule,
     MatTreeModule,
     TranslateModule,

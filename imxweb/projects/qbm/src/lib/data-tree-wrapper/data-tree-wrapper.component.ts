@@ -26,7 +26,7 @@
 
 import { Component, ContentChild, EventEmitter, Input, OnChanges, Output, TemplateRef, ViewChild } from '@angular/core';
 
-import { CollectionLoadParameters, EntitySchema, FilterTreeData, IEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, EntitySchema, FilterData, FilterTreeData, IEntity } from 'imx-qbm-dbts';
 import { FilterTreeParameter } from '../data-source-toolbar/data-model/filter-tree-parameter';
 import { DataSourceToolbarFilter } from '../data-source-toolbar/data-source-toolbar-filters.interface';
 import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
@@ -81,6 +81,12 @@ export class DataTreeWrapperComponent implements OnChanges {
       this.dstSettings.navigationState = this.navigationStateTree;
     }
 
+    this.database.reloadData();
+    this.treeControl?.reload();
+  }
+
+  public filterByTree(filters: FilterData[]): void {
+    this.navigationStateTree.filter = filters;
     this.database.reloadData();
     this.treeControl?.reload();
   }

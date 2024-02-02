@@ -77,6 +77,7 @@ export { PasswordQueryComponent } from './lib/password/password-query.component'
 export { PasswordModule } from './lib/password/password.module';
 export { OwnerControlComponent } from './lib/owner-control/owner-control.component';
 export { OwnerControlModule } from './lib/owner-control/owner-control.module';
+export { ParameterContainer } from './lib/parameter-data/parameter-container';
 export { PendingItemsType } from './lib/user/pending-items-type.interface';
 export { ProjectConfigurationModule } from './lib/project-configuration/project-configuration.module';
 export { ProjectConfigurationService } from './lib/project-configuration/project-configuration.service';

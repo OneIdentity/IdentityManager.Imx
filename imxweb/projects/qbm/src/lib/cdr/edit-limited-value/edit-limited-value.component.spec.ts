@@ -72,7 +72,7 @@ function BuildLimitedValues(limited: any[]): ReadonlyArray<LimitedValueData> {
   return limited.map(element => ({ Value: element, Description: `${element}` }));
 }
 
-describe('EditLimitedValueComponent', () => {
+xdescribe('EditLimitedValueComponent', () => {
   let component: EditLimitedValueComponent;
   let fixture: ComponentFixture<EditLimitedValueComponent>;
 

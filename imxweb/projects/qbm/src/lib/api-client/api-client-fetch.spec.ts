@@ -108,6 +108,7 @@ describe('ApiClientFetch', () => {
     ].forEach(testcase =>
       it(`has a method ${method.path}`, async () => {
         const client = new ApiClientFetch(
+          <any>{},
           '',
           <any>{
             debug: jasmine.createSpy('debug')

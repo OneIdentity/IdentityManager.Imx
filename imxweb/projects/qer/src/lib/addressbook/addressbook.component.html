@@ -13,4 +13,6 @@
     [groupData]="groupData" (groupDataChanged)="onGroupingChange($event)" data-imx-identifier="addressbook-table">
   </imx-data-table>
 </div>
-<imx-data-source-paginator data-imx-identifier="addressbook-paginator" [dst]="dst"></imx-data-source-paginator>
+<imx-data-source-paginator *ngIf="!dstSettings?.groupData?.currentGrouping" 
+  data-imx-identifier="addressbook-paginator" [dst]="dst">
+</imx-data-source-paginator>

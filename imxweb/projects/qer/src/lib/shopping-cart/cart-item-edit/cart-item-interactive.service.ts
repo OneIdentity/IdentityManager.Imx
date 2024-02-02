@@ -25,9 +25,9 @@
  */
 
 import { Injectable } from '@angular/core';
-import { PortalCartitemInteractive } from 'imx-api-qer';
+import { CartItemDataRead, PortalCartitemInteractive } from 'imx-api-qer';
 
-import { TypedEntity } from 'imx-qbm-dbts';
+import { ExtendedTypedEntityCollection, TypedEntity } from 'imx-qbm-dbts';
 import { ExtendedEntityWrapper } from '../../parameter-data/extended-entity-wrapper.interface';
 import { QerApiService } from '../../qer-api-client.service';
 import { CartItemFkService } from './cart-item-fk.service';
@@ -43,8 +43,13 @@ export class CartItemInteractiveService {
     private readonly requestParametersService: RequestParametersService,
   ) { }
 
-  public async getExtendedEntity(entityReference: string): Promise<ExtendedEntityWrapper<PortalCartitemInteractive>> {
-    const collection = await this.qerClient.typedClient.PortalCartitemInteractive.Get_byid(entityReference);
+  public async getExtendedEntity(entityReference?: string, callbackOnChange?: () => void): Promise<ExtendedEntityWrapper<PortalCartitemInteractive>> {
+    let collection: ExtendedTypedEntityCollection<PortalCartitemInteractive, CartItemDataRead>;
+    if(!!entityReference){
+      collection = await this.qerClient.typedClient.PortalCartitemInteractive.Get_byid(entityReference);
+    }else{
+      collection = await this.qerClient.typedClient.PortalCartitemInteractive.Get();
+    }
 
     const index = 0;
 
@@ -58,7 +63,8 @@ export class CartItemInteractiveService {
           index
         },
         parameter => this.fkService.getFkProviderItemsInteractive(typedEntity, parameter),
-        typedEntity
+        typedEntity,
+        callbackOnChange
       )
     };
   }

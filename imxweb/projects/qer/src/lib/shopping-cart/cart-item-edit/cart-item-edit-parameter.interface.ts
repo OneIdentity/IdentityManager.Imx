@@ -26,8 +26,10 @@
 
 import { PortalCartitemInteractive } from 'imx-api-qer';
 import { ExtendedEntityWrapper } from '../../parameter-data/extended-entity-wrapper.interface';
+import { Observable } from 'rxjs';
 
 export interface CartItemEditParameter {
     entityWrapper: ExtendedEntityWrapper<PortalCartitemInteractive>;
     cloneItem?: () => Promise<void>;
+    updated: Observable<any>;
 }

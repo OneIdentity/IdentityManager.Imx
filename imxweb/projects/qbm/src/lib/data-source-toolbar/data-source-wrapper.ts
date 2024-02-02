@@ -102,7 +102,7 @@ export class DataSourceWrapper<TEntity extends TypedEntity = TypedEntity, TExten
         ...parameters,
         ...this.getGroupingFilterOptionParameters(dataModelWrapper.groupingFilterOptions),
         ...{
-          StartIndex: 0,
+          StartIndex: parameters?.StartIndex ?? 0,
           PageSize: this.parameters?.PageSize
         },
       }),

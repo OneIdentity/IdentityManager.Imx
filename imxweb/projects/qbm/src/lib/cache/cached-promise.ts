@@ -24,44 +24,32 @@
  *
  */
 
+export class CachedPromise<T>
+{
+    constructor(private readonly promiseFactory: () => Promise<T>,
+        private readonly unsubscribeFunc?: () => void) { }
 
-import { IEntityColumn } from 'imx-qbm-dbts';
-import { Subject } from 'rxjs';
+    private promise: Promise<T>;
 
-/**
- * Defines a column dependent reference.
- */
-export interface ColumnDependentReference {
-  /**
-   * The column of the entity.
-   */
-  column: IEntityColumn;
+    /** Returns the (possibly cached) promise. */
+    public get(): Promise<T> {
+        if (!this.promise)
+            this.promise = this.promiseFactory();
 
-  /**
-   * Custom display - if it is set it will be used instead of column.GetMetadata().GetDisplay()
-   */
-  display?: string;
+        // retry the next time
+        this.promise.catch(_ => { this.promise = null; });
+        return this.promise;
+    }
 
-  /**
-   * Custom MinLength - is evaluated in addition to column.GetMetadata().GetMinLength()
-   */
-  minLength?: number;
+    /** Flushes this cache. */
+    public reset() {
+        this.promise = null;
+    }
 
-  minlengthSubject?: Subject<number>;
-
-  /**
-   * Optional hint
-   */
-  hint?: string;
-
-  /**
-   * Returns whether the column should be only displayed (true)
-   * or also allow editing (false).
-   */
-  isReadOnly(): boolean;
-
-  /**
-   * Optional title
-   */
-  title?: string;
+    /** Unsubscribes from events that flush this cache. */
+    unsubscribe() {
+        if (this.unsubscribeFunc) {
+            this.unsubscribeFunc();
+        }
+    }
 }

@@ -55,11 +55,11 @@ Nevertheless within the CDR module there are two plugins that supply some genera
 
 If you want to make use of these two provider services you have to register them at the CdrRegistryService, e.g. during your app's initialization like this:
 ```typescript
-export function initApp(registry: CdrRegistryService, resolver: ComponentFactoryResolver) {
+export function initApp(registry: CdrRegistryService) {
   return () =>
     new Promise<any>(async (resolve: any) => {
-      registry.register(new DefaultCdrEditorProvider(resolver));
-      registry.register(new FkCdrEditorProvider(resolver));
+      registry.register(new DefaultCdrEditorProvider());
+      registry.register(new FkCdrEditorProvider());
       resolve();
     });
 }
