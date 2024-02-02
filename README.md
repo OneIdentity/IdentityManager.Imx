@@ -4,7 +4,7 @@
 
 ## Change log
 ### February 2, 2024
-- Backport dynamic parameter change functionality
+- 433272 Backport dynamic parameter change functionality
 - 416558 Data Explorer: Assignment analysis of shops cannot be displayed
 - 427942 The UI offers too many reports for selection for a subscription
 - 433649 Web Portal: Start attestation: Can't select objects to be attested if attestation policy uses sample data
