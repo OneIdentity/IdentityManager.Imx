@@ -24,9 +24,10 @@
  *
  */
 
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, Input } from "@angular/core";
 import { CacheData } from "imx-api-qbm";
 import { AppConfigService } from "../appConfig/appConfig.service";
+import { SideNavigationComponent } from "../side-navigation-view/side-navigation-view-interfaces";
 
 type T = CacheData & { key: string };
 
@@ -35,7 +36,8 @@ type T = CacheData & { key: string };
   styleUrls: ['./shared.scss'],
   selector: 'imx-cache'
 })
-export class CacheComponent implements OnInit {
+export class CacheComponent implements OnInit, SideNavigationComponent {
+  @Input() public isAdmin: boolean;
 
   constructor(private readonly appConfigService: AppConfigService) { }
 

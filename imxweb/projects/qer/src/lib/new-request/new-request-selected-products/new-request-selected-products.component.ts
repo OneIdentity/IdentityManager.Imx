@@ -27,11 +27,11 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { MatSort, Sort } from '@angular/material/sort';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { EUI_SIDESHEET_DATA, EuiSidesheetRef, EuiSidesheetService } from '@elemental-ui/core';
-import { SelectedProductItem, SelectedProductSource, SelectedProductType } from './selected-product-item.interface';
 import { SelectedProductItemColDef } from './selected-product-item-col-def.interface';
+import { SelectedProductItem, SelectedProductSource, SelectedProductType } from './selected-product-item.interface';
 
 export interface SelectedSidesheetData {
   candidates: SelectedProductItem[];
@@ -63,7 +63,10 @@ export class NewRequestSelectedProductsComponent implements OnInit {
     this.sidesheetRef.closeClicked().subscribe(() => this.sidesheetService.close(false));
   }
 
-  public ngOnInit(): void {}
+  public ngOnInit(): void {
+    this.dataSource.sortingDataAccessor = (data, sortHeaderId) =>
+      typeof data[sortHeaderId] === 'string' ? data[sortHeaderId].toLocaleLowerCase() : data[sortHeaderId];
+  }
 
   @ViewChild(MatSort) sort: MatSort;
 

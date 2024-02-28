@@ -24,9 +24,10 @@
  *
  */
 
-import { AfterViewInit, Component, DebugElement } from '@angular/core';
+import { AfterViewInit, Component, DebugElement, Input } from '@angular/core';
 import { AppConfigService } from '../../appConfig/appConfig.service';
 import { Globals } from 'imx-qbm-dbts';
+import { SideNavigationComponent } from '../../side-navigation-view/side-navigation-view-interfaces';
 
 declare const SwaggerUIBundle: any;
 
@@ -35,7 +36,9 @@ declare const SwaggerUIBundle: any;
   templateUrl: './swagger.component.html',
   styleUrls: ['./swagger.component.scss'],
 })
-export class SwaggerComponent implements AfterViewInit {
+export class SwaggerComponent implements AfterViewInit, SideNavigationComponent {
+  @Input() public isAdmin: boolean;
+
   public readonly version = Globals.Version;
 
   constructor(public readonly appConfigService: AppConfigService) {}

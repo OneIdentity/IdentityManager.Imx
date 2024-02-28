@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, Input, EventEmitter } from '@angular/core';
+import { Component, Input, EventEmitter, Output } from '@angular/core';
 
 import { ShapeData, ShapeListEntry } from 'imx-api-qbm';
 import { ShapeClickArgs } from './hyperview-types';
@@ -33,26 +33,29 @@ import { ShapeClickArgs } from './hyperview-types';
  * A shape component that lists all {@link ShapeListEntry|elements}.
  */
 @Component({
-    selector: 'imx-hyperview-listshape',
-    templateUrl: './listshape.component.html',
-    styleUrls: ['./listshape.component.scss']
+  selector: 'imx-hyperview-listshape',
+  templateUrl: './listshape.component.html',
+  styleUrls: ['./listshape.component.scss'],
 })
 export class ListShapeComponent {
+  @Input() public shape: ShapeData;
+  @Input() public selected: EventEmitter<ShapeClickArgs> = new EventEmitter();
+  @Output() public changeShapeSize = new EventEmitter<void>();
 
-    @Input() public shape: ShapeData;
-
-    @Input() public selected: EventEmitter<ShapeClickArgs> = new EventEmitter();
-
-    public isLinkEnabled() {
-        return this.selected.observers.length > 0;
+  public isLinkEnabled() {
+    return this.selected.observers.length > 0;
+  }
+  /**
+   * Emit selection event for this {@link ShapeListEntry|element}.
+   * @param elem the element the user clicked
+   */
+  public click(elem: ShapeListEntry): void {
+    if (this.selected.observers.length > 0) {
+      this.selected.emit({ objectKey: elem.ObjectKey, caption: this.shape.Caption });
     }
-    /**
-     * Emit selection event for this {@link ShapeListEntry|element}.
-     * @param elem the element the user clicked
-     */
-    public click(elem: ShapeListEntry): void {
-        if (this.selected.observers.length > 0) {
-            this.selected.emit({ objectKey: elem.ObjectKey });
-        }
-    }
+  }
+
+  public onChangeContentSize(): void {
+    this.changeShapeSize.emit();
+  }
 }

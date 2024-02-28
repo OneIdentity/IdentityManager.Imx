@@ -6,7 +6,7 @@
         tabindex="0" (keydown.enter)="goHome()" (click)="goHome()">
 
       <h1 class="imx-masthead-app-name" data-imx-identifier="masthead-button-goHome"
-        tabindex="0" (keydown.enter)="goHome()" (click)="goHome()">
+        tabindex="0" [ngStyle]="{'cursor': isAppOverview ? 'default' : 'pointer'}" (keydown.enter)="goHome()" (click)="goHome()">
         {{ productName }} {{ appConfig?.Config?.Title }}
       </h1>
       <span class="imx-masthead-space"></span>

@@ -38,7 +38,7 @@ import {
   SideNavigationComponent,
   DataSourceToolbarViewConfig,
   DataSourceToolbarExportMethod,
-  HELP_CONTEXTUAL
+  HELP_CONTEXTUAL,
 } from 'qbm';
 import { ViewConfigService } from 'qer';
 import { CollectionLoadParameters, IClientProperty, DisplayColumns, DbObjectKey, EntitySchema, DataModel, FilterData } from 'imx-qbm-dbts';
@@ -51,7 +51,6 @@ import { AccountSidesheetComponent } from './account-sidesheet/account-sidesheet
 import { AccountSidesheetData, GetAccountsOptionalParameters } from './accounts.models';
 import { AccountsService } from './accounts.service';
 import { TargetSystemReportComponent } from './target-system-report/target-system-report.component';
-
 
 @Component({
   selector: 'imx-data-explorer-accounts',
@@ -122,7 +121,7 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, SideNav
       this.dataModel = await this.accountsService.getDataModel();
       this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModel, this.viewConfigPath);
     } finally {
-     isBusy.endBusy();
+      isBusy.endBusy();
     }
     if (this.applyIssuesFilter && !this.issuesFilterMode) {
       const orphanedFilter = this.filterOptions.find((f) => {
@@ -213,6 +212,7 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, SideNav
 
   public async filterByTree(filters: FilterData[]): Promise<void> {
     this.navigationState.filter = filters;
+    this.navigationState.StartIndex = 0;
     return this.navigate();
   }
 
@@ -240,7 +240,7 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, SideNav
 
       const data = await this.accountsService.getAccounts(getParams);
       const exportMethod: DataSourceToolbarExportMethod = this.accountsService.exportAccounts(this.navigationState);
-      exportMethod.initialColumns = this.displayedColumns.map(col => col.ColumnName);
+      exportMethod.initialColumns = this.displayedColumns.map((col) => col.ColumnName);
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
         dataSource: data,
@@ -265,7 +265,7 @@ export class DataExplorerAccountsComponent implements OnInit, OnDestroy, SideNav
       this.tableName = data.tableName;
       this.logger.debug(this, `Head at ${data.Data.length + this.navigationState.StartIndex} of ${data.totalCount} item(s)`);
     } finally {
-       isBusy.endBusy();
+      isBusy.endBusy();
     }
   }
 

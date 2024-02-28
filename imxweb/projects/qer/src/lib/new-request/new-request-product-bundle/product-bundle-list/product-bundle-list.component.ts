@@ -134,8 +134,6 @@ export class ProductBundleListComponent implements AfterViewInit, AfterContentIn
   public selectedProductCandidates: SelectedProductItem[];
   public isLoading = false;
   public width = '600px';
-  public ldsInfoDialogText =
-    '#LDS#You can use your own (private) product bundles that are shared with all users (public) for making faster product requests. This helps simplify proper provisioning for a particular job or function. For example, a bundle may contain all the products a new identity needs to get started. If you use a bundle for a request, you are not obliged to request all the products included in the bundle. You only have to select the products you want from the bundle.';
   public readonly busyService = new BusyService();
   //#endregion
 
@@ -208,12 +206,12 @@ export class ProductBundleListComponent implements AfterViewInit, AfterContentIn
     if (keywords === '') {
       this.searchEnabled = false;
     }
-    const navigationState: CollectionLoadParameters = {
-      PageSize: this.navigationState.PageSize,
+    this.navigationState = {
+      ...this.navigationState,
       StartIndex: 0,
       search: keywords,
     };
-    return this.getData(navigationState);
+    return this.getData();
   }
 
   public onHighlightedEntityChanged(selectedBundle: PortalItshopPatternRequestable): void {

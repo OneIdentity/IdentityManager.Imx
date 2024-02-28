@@ -1,8 +1,12 @@
-<mat-card class="imx-card-container imx-bundle-container">
-  <imx-product-bundle-list>
-  </imx-product-bundle-list>
-</mat-card>
-<mat-card class="imx-card-container">
-  <imx-product-bundle-items>
-  </imx-product-bundle-items>
-</mat-card>
+<div class="imx-product-bundle-toolbar">
+  <span class="imx-info-button-caption" translate>#LDS#Information about this tab:</span>
+  <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
+</div>
+<div class="imx-product-bundle-container">
+  <mat-card class="imx-card-container imx-bundle-container">
+    <imx-product-bundle-list> </imx-product-bundle-list>
+  </mat-card>
+  <mat-card class="imx-card-container">
+    <imx-product-bundle-items> </imx-product-bundle-items>
+  </mat-card>
+</div>

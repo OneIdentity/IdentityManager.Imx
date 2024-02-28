@@ -24,23 +24,37 @@
  *
  */
 
-import { Injectable } from '@angular/core';
+import { FilterData, IEntity } from 'imx-qbm-dbts';
 
-import { UserModelService } from 'qer';
-import { isQERPolicyAdmin, isQERPolicyOwner } from './permissions-helper';
+/**
+ * Provides information for the selection of a filter tree.
+ * It is used to unify the information, that is provided by the tree and a loaded configuration
+ */
+export interface FilterTreeSelectionArg {
+  /**
+   * The text, that is displayed on chips.
+   */
+  display: string;
+  /**
+   * The real filter information.
+   */
+  filter: FilterData;
 
-@Injectable({
-  providedIn: 'root'
-})
-export class PermissionsService {
-  constructor(private readonly userService: UserModelService) { }
+  /**
+   * An optional entity, that is used for data
+   */
+  entity?: IEntity;
+}
 
+/**
+ * Provides an implementation of FilterTreeSelectionArg, that only needs an entity.
+ */
+export class FilterTreeDialogResultArg implements FilterTreeSelectionArg {
+  public display: string;
+  public filter: FilterData;
 
-  public async isQERPolicyAdmin(): Promise<boolean> {
-    return isQERPolicyAdmin((await this.userService.getFeatures()).Features);
-  }
-
-  public async isQERPolicyOwner(): Promise<boolean> {
-    return isQERPolicyOwner((await this.userService.getFeatures()).Features);
+  constructor(public readonly entity: IEntity) {
+    this.display = entity.GetColumn('LongDisplay').GetValue();
+    this.filter = entity.GetColumn('Filter').GetValue();
   }
 }

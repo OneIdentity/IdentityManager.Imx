@@ -24,7 +24,7 @@
  *
  */
 
-import { Component } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ConfigSettingType, MethodSetInfo } from 'imx-api-qbm';
@@ -36,13 +36,16 @@ import { ConfigSection, KeyData } from './config-section';
 import { ConfigService } from './config.service';
 import { ConvertConfigSidesheetComponent } from './convert-config-sidesheet.component';
 import { DeleteConfigSidesheetComponent } from './delete-config-sidesheet.component';
+import { SideNavigationComponent } from '../side-navigation-view/side-navigation-view-interfaces';
 
 @Component({
   templateUrl: './config.component.html',
   styleUrls: ['./config.component.scss'],
   selector: 'imx-config',
 })
-export class ConfigComponent {
+export class ConfigComponent implements OnInit, SideNavigationComponent {
+  @Input() public isAdmin: boolean;
+
   constructor(
     private readonly appConfigSvc: AppConfigService,
     public readonly configSvc: ConfigService,

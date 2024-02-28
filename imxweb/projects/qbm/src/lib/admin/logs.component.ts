@@ -25,7 +25,7 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, ViewChild, OnInit } from '@angular/core';
+import { Component, ViewChild, OnInit, Input } from '@angular/core';
 import { EuiDownloadOptions, EuiLoadingService, EuiSidesheetConfig, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ApiLogEntry, LogFileInfo, V2ApiClientMethodFactory } from 'imx-api-qbm';
@@ -42,13 +42,16 @@ import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-to
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import moment from 'moment-timezone';
 import { DataSourceToolbarFilter } from '../data-source-toolbar/data-source-toolbar-filters.interface';
+import { SideNavigationComponent } from '../side-navigation-view/side-navigation-view-interfaces';
 
 @Component({
   selector: 'imx-logs',
   templateUrl: './logs.component.html',
   styleUrls: ['./logs.component.scss'],
 })
-export class LogsComponent implements OnInit {
+export class LogsComponent implements OnInit, SideNavigationComponent {
+  @Input() public isAdmin: boolean;
+
   private stream: EventSource;
   private currentTab: number = 0;
 
@@ -93,7 +96,7 @@ export class LogsComponent implements OnInit {
     try {
       const timeFilter: DataSourceToolbarFilter = {
         Name: 'TimeFilter',
-        Description: '#LDS#Heading Time Filter',
+        Description: this.translator.instant('#LDS#Time'),
         Options: [
           {
             Display: this.translator.instant('#LDS#Last hour'),

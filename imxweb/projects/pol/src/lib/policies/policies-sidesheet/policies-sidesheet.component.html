@@ -38,12 +38,11 @@
       </div>
     </ng-template>
   </mat-tab>
-  <mat-tab label="{{'#LDS#Heading Hyperview' | translate}}">
+  <mat-tab label="{{ '#LDS#Heading Hyperview' | translate }}">
     <ng-template matTabContent>
-      <imx-object-hyperview
-        [objectType]="data?.selectedPolicy?.GetEntity()?.TypeName"
-        [objectUid]="data?.selectedPolicy?.GetEntity()?.GetKeys()[0]">
-      </imx-object-hyperview>
+      <div eui-sidesheet-content>
+        <imx-object-hyperview [objectType]="data?.selectedPolicy?.GetEntity()?.TypeName" [objectUid]="data?.selectedPolicy?.GetEntity()?.GetKeys()[0]"> </imx-object-hyperview>
+      </div>
     </ng-template>
   </mat-tab>
 </mat-tab-group>

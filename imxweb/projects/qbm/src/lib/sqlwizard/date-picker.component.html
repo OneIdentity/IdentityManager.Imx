@@ -1,29 +1,34 @@
-<mat-radio-group [(ngModel)]="relative" (change)="emitChanges()">
-  <mat-radio-button [value]="true">{{'#LDS#Relative' | translate}}</mat-radio-button>
-  <mat-radio-button [value]="false" >{{'#LDS#Absolute' | translate}}</mat-radio-button>
-</mat-radio-group>
-<div class="relative-date">
-  <ng-container *ngIf="relative">
-    <!-- relative date -->
-    <mat-form-field class="date-diff-value" appearance="outline">
-      <mat-label>{{ '#LDS#Number' | translate }}</mat-label>
-      <input matInput type="number" min="1" [(ngModel)]="diffValue.Difference" [disabled]="!relative" (change)="emitChanges()">
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="operand">
-      <mat-label>{{ '#LDS#Time unit' | translate }}</mat-label>
-      <mat-select [(ngModel)]="diffUnit" [disabled]="!relative" (selectionChange)="emitChanges()">
-        <mat-option *ngFor="let opt of diffUnits" [value]="opt.Value">
-          {{opt.DisplayMl | translate}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-  </ng-container>
+<form [formGroup]="form">
+  <mat-radio-group formControlName="relative" (change)="emitChanges()">
+    <mat-radio-button [value]="true">{{ '#LDS#Relative' | translate }}</mat-radio-button>
+    <mat-radio-button [value]="false">{{ '#LDS#Absolute' | translate }}</mat-radio-button>
+  </mat-radio-group>
+  <div class="relative-date">
+    <ng-container *ngIf="isRelative">
+      <!-- relative date -->
+      <mat-form-field class="date-diff-value" appearance="outline">
+        <mat-label>{{ '#LDS#Number' | translate }}</mat-label>
+        <input matInput type="number" min="1" formControlName="difference" (change)="emitChanges()" (keyup)="emitChanges()" required="true" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="operand">
+        <mat-label>{{ '#LDS#Time unit' | translate }}</mat-label>
+        <mat-select formControlName="timeUnit" (selectionChange)="emitChanges()" required="true">
+          <mat-option *ngFor="let opt of diffUnits" [value]="opt.Value">
+            {{ opt.DisplayMl | translate }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-error *ngIf="!!form?.errors?.datepickerError && (form.controls.difference.touched || form.controls.timeUnit.touched)">{{
+        '#LDS#The value you entered is not a valid date.' | translate
+      }}</mat-error>
+    </ng-container>
+  </div>
   <!-- absolute date -->
-  <mat-form-field appearance="outline" *ngIf="!relative">
+  <mat-form-field appearance="outline" *ngIf="!isRelative">
     <mat-label>{{ '#LDS#Date' | translate }}</mat-label>
-    <input matInput [matDatepicker]="picker" [(ngModel)]="expr.Data.Value" [disabled]="relative" (dateChange)="onAbsoluteChange($event)">
+    <input matInput [matDatepicker]="picker" formControlName="datepicker" (dateChange)="emitChanges()"  (keyup)="emitChanges()"/>
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
-    <mat-error *ngIf="absoluteError">{{'#LDS#The value you entered is not a valid date.' | translate}}</mat-error>
+    <mat-error *ngIf="form.controls.datepicker.invalid">{{ '#LDS#The value you entered is not a valid date.' | translate }}</mat-error>
   </mat-form-field>
-</div>
+</form>

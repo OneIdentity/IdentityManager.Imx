@@ -1,4 +1,4 @@
-<imx-hyperview-shape [shape]="shape">
+<imx-hyperview-shape [shape]="shape" (changeContentSize)="onChangeContentSize()">
     <ul ShapeContent>
         <li *ngFor="let elem of shape.Elements">
             <a *ngIf="isLinkEnabled()" (click)="click(elem)">{{ elem.DisplayValue }}</a>

@@ -33,7 +33,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { OverlayRef } from '@angular/cdk/overlay';
 import moment from 'moment';
 
-import { HistoryOperation } from 'imx-api-qbm';
+import { ChangeType as ChangeTypeEnum, HistoryOperation } from 'imx-api-qbm';
 import { DataChangesSidesheetComponent } from './data-changes-sidesheet/data-changes-sidesheet.component';
 import { DataChangesService } from './data-changes.service';
 
@@ -73,14 +73,16 @@ const searchFormValidator: ValidatorFn = (searchForm: UntypedFormGroup) => {
   styleUrls: ['./data-changes.component.scss'],
 })
 export class DataChangesComponent implements OnInit {
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
+  public paginatorConfigurations = {
+    size: 20,
+    sizeOptions: [20, 50, 100],
+    showFirstLastButtons: false,
+  };
+  public dataSource: MatTableDataSource<HistoryOperation>;
   public columns: Column[];
-  public selectedSearchType: string;
-  public changeTypes: ChangeType[];
-  public badgeColor = {
-    Insert: 'green',
-    Update: 'orange',
-    Delete: 'red',
-  }
+  public displayedColumns: string[];
 
   public searchForm = new UntypedFormGroup(
     {
@@ -89,19 +91,20 @@ export class DataChangesComponent implements OnInit {
       backFromDateFormControl: new UntypedFormControl('', [Validators.required]),
       changeTypeFormControl: new UntypedFormControl('', [Validators.required]),
     },
-    { validators: searchFormValidator }
+    { validators: searchFormValidator },
   );
+  public selectedSearchType: string;
 
-  public dataSource: MatTableDataSource<HistoryOperation>;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-
-  public paginatorConfigurations = {
-    size: 20,
-    sizeOptions: [20, 50, 100],
-    showFirstLastButtons: false,
+  public changeTypes: ChangeType[];
+  public badgeColor = {
+    Insert: 'green',
+    Update: 'orange',
+    Delete: 'red',
   };
 
-  public displayedColumns: string[];
+  public get changeTypeEnum(): typeof ChangeTypeEnum {
+    return ChangeTypeEnum;
+  }
 
   public get isEnabledUsername(): boolean {
     return this.searchForm.get('usernameFormControl').enabled;
@@ -236,7 +239,7 @@ export class DataChangesComponent implements OnInit {
     if (row.Columns && row.Columns.length > 0) {
       let changeType = this.dataChangesService.changeTypeString(row.ChangeType);
       let title = this.translateService.instant('#LDS#Heading View Operation Details') + ' (' + changeType + ')';
-      let headerColour = this.badgeColor[changeType];
+      let headerColour = this.badgeColor[ChangeTypeEnum[row.ChangeType]];
 
       this.sidesheet.open(DataChangesSidesheetComponent,
         {

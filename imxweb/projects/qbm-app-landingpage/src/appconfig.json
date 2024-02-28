@@ -6,6 +6,6 @@
   },
   "routeConfig": {
     "login": "login",
-    "start": "dashboard"
+    "start": "admin"
   }
 }

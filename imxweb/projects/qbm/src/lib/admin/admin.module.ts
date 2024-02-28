@@ -66,6 +66,7 @@ import { PluginsComponent } from './plugins.component';
 import { InfoModalDialogModule } from './../info-modal-dialog/info-modal-dialog.module';
 import { SqlWizardApiService } from '../sqlwizard/sqlwizard-api.service';
 import { QbmSqlWizardService } from '../base/qbm-sqlwizard.service';
+import { SideNavigationViewModule } from '../side-navigation-view/side-navigation-view.module';
 
 @NgModule({
   imports: [
@@ -91,6 +92,7 @@ import { QbmSqlWizardService } from '../base/qbm-sqlwizard.service';
     DateModule,
     ScrollingModule,
     InfoModalDialogModule,
+    SideNavigationViewModule,
   ],
   providers: [
     ConfigService,

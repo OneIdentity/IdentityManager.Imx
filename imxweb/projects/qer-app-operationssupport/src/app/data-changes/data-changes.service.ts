@@ -33,9 +33,9 @@ import { ChangeType } from './data-changes.component';
 @Injectable()
 export class DataChangesService {
   public changeTypes: ChangeType[] = [
-    { name: 'Insert', title: this.translateService.instant('#LDS#Event Insert'), value: 1 },
-    { name: 'Update', title: this.translateService.instant('#LDS#Event Update'), value: 2 },
-    { name: 'Delete', title: this.translateService.instant('#LDS#Event Delete'), value: 4 },
+    { name: 'Insert', title: this.translateService.instant('#LDS#Event Insert'), value: 0 },
+    { name: 'Update', title: this.translateService.instant('#LDS#Event Update'), value: 1 },
+    { name: 'Delete', title: this.translateService.instant('#LDS#Event Delete'), value: 2 },
   ];
 
   constructor(
@@ -55,15 +55,15 @@ export class DataChangesService {
     switch (changeType) {
       case ChangeTypeEnum.Insert:
         return this.changeTypes.find((obj) => {
-          return obj.value === 1;
+          return obj.value === 0;
         })?.title;
       case ChangeTypeEnum.Update:
         return this.changeTypes.find((obj) => {
-          return obj.value === 2;
+          return obj.value === 1;
         })?.title;
       case ChangeTypeEnum.Delete:
         return this.changeTypes.find((obj) => {
-          return obj.value === 4;
+          return obj.value === 2;
         })?.title;
     }
   }

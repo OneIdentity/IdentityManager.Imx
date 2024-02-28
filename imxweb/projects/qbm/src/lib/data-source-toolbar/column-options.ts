@@ -136,11 +136,12 @@ export class ColumnOptions {
   }
 
   public getPropertiesForNavigation(): string[] {
-    const additional = this.additionalColumns;
-    return this.shownClientProperties.filter(elem =>
-      this.displayedColumns.findIndex(disp => disp.ColumnName === elem.ColumnName) === -1 &&
-      additional.findIndex(disp => disp.ColumnName === elem.ColumnName) === -1
-    ).map(elem => elem.ColumnName);
+    return this.shownClientProperties
+      .filter(
+        (elem) =>
+          this.displayedColumns.findIndex((disp) => disp.ColumnName === elem.ColumnName) === -1
+      )
+      .map((elem) => elem.ColumnName);
   }
 
   /**
@@ -163,6 +164,7 @@ export class ColumnOptions {
           entitySchema: this.entitySchema,
           displayedColumns,
           additionalPropertyNames: this.optionalColumns,
+          additionalColumns: this.additionalColumns,
           preselectedProperties: [...this.shownClientProperties]
         },
         panelClass: 'imx-toolbar-dialog'

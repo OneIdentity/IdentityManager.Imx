@@ -57,7 +57,7 @@ import {
   SideNavigationComponent,
   SnackBarService,
   DataSourceToolbarViewConfig,
-  HelpContextualValues
+  HelpContextualValues,
 } from 'qbm';
 import { SourceDetectiveSidesheetComponent, SourceDetectiveSidesheetData, SourceDetectiveType, ViewConfigService } from 'qer';
 import { Subscription } from 'rxjs';
@@ -83,7 +83,7 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, SideNavig
   @Input() public isAdmin: boolean;
   @Input() public uidPerson = '';
   @Input() public usedInSidesheet = false;
-  @Input() public contextId: HelpContextualValues; ó
+  @Input() public contextId: HelpContextualValues;
 
   @ViewChild('dataTable', { static: false }) public dataTable: DataTableComponent<PortalTargetsystemUnsGroup>;
   /**
@@ -236,7 +236,6 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, SideNavig
     const isBusy = this.busyService.beginBusy();
 
     try {
-
       const objKey = DbObjectKey.FromXml(group.XObjectKey.value);
 
       const uidAccProduct = group.UID_AccProduct.value;
@@ -249,7 +248,7 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, SideNavig
         isAdmin: this.isAdmin,
       };
     } finally {
-       isBusy.endBusy();
+      isBusy.endBusy();
     }
 
     this.viewGroup(data);
@@ -269,6 +268,7 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, SideNavig
 
   public async filterByTree(filters: FilterData[]): Promise<void> {
     this.navigationState.filter = filters;
+    this.navigationState.StartIndex = 0;
     return this.navigate();
   }
 
@@ -386,10 +386,11 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, SideNavig
           ? await this.groupsService.getGroups(getParams)
           : await this.groupsService.getGroupsResp(getParams);
 
-      const exportMethod = this.isAdmin || this.unsAccountIdFilter
-        ? this.groupsService.exportGroups(getParams)
-        : this.groupsService.exportGroupsResp(getParams);
-      exportMethod.initialColumns = this.displayedColumns.map(col => col.ColumnName);
+      const exportMethod =
+        this.isAdmin || this.unsAccountIdFilter
+          ? this.groupsService.exportGroups(getParams)
+          : this.groupsService.exportGroupsResp(getParams);
+      exportMethod.initialColumns = this.displayedColumns.map((col) => col.ColumnName);
 
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
@@ -410,7 +411,7 @@ export class DataExplorerGroupsComponent implements OnInit, OnDestroy, SideNavig
         },
         dataModel: this.dataModel,
         viewConfig: this.viewConfig,
-        exportMethod
+        exportMethod,
       };
       this.logger.debug(this, `Head at ${data.Data.length + this.navigationState.StartIndex} of ${data.totalCount} item(s)`);
     } finally {

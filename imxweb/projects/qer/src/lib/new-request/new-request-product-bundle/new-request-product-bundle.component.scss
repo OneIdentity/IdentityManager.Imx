@@ -2,16 +2,28 @@
 @import '../new-request-global.scss';
 
 @include Layout-Styles;
-
 :host {
   height: 100%;
   display: flex;
-  column-gap: 24px;
-  overflow: hidden;
+  flex-direction: column;
+  .imx-product-bundle-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    .imx-info-button-caption {
+      @include imx-text();
+    }
+  }
+  .imx-product-bundle-container {
+    height: 100%;
+    display: flex;
+    column-gap: 24px;
+    overflow: hidden;
 
-  .imx-bundle-container {
-    min-width: 600px;
-    max-width: 600px;
-    padding: 0;
+    .imx-bundle-container {
+      min-width: 600px;
+      max-width: 600px;
+      padding: 0;
+    }
   }
 }

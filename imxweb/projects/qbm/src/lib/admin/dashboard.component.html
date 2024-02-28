@@ -1,63 +1,6 @@
-<div class="snavigation">
-  <mat-sidenav-container>
-    <mat-sidenav mode="side" opened>
-      <div class="snavigation-side">
-        <div class="snavigation-side-content">
-          <div class="snavigation-item" (click)="selectPage('')" [ngClass]="{ 'snavigation-item--selected': selectedPage === '' }">
-            {{ '#LDS#Overview' | translate }}
-          </div>
-
-          <!-- for later
-                    <div class="snavigation-item" (click)="selectPage('perf')"
-                        [ngClass]="{'snavigation-item--selected': selectedPage === 'perf'}">
-                        <span>Performance</span>
-                    </div>
-                    -->
-
-          <div class="snavigation-item" (click)="selectPage('config')" [ngClass]="{ 'snavigation-item--selected': selectedPage === 'config' }">
-            {{ '#LDS#Configuration' | translate }}
-          </div>
-
-          <div class="snavigation-item" (click)="selectPage('packages')" [ngClass]="{ 'snavigation-item--selected': selectedPage === 'packages' }">
-            {{ '#LDS#Packages' | translate }}
-          </div>
-
-          <div class="snavigation-item" (click)="selectPage('plugins')" [ngClass]="{ 'snavigation-item--selected': selectedPage === 'plugins' }">
-            {{ '#LDS#Plugins' | translate }}
-          </div>
-
-          <div class="snavigation-item" (click)="selectPage('caches')" [ngClass]="{ 'snavigation-item--selected': selectedPage === 'caches' }">
-            {{ '#LDS#Caches' | translate }}
-          </div>
-
-          <div class="snavigation-item" (click)="selectPage('logs')" [ngClass]="{ 'snavigation-item--selected': selectedPage === 'logs' }">
-            {{ '#LDS#Logs' | translate }}
-          </div>
-
-          <div class="snavigation-item" (click)="selectPage('swagger')" [ngClass]="{ 'snavigation-item--selected': selectedPage === 'swagger' }" *ngIf="documentationUiEnabled">
-            {{ '#LDS#API documentation' | translate }}
-          </div>
-        </div>
-      </div>
-    </mat-sidenav>
-    <mat-sidenav-content>
-      <imx-status *ngIf="selectedPage === ''"> </imx-status>
-
-      <imx-config *ngIf="selectedPage === 'config'"></imx-config>
-
-      <imx-packages *ngIf="selectedPage === 'packages'"></imx-packages>
-
-      <imx-plugins *ngIf="selectedPage === 'plugins'"></imx-plugins>
-
-      <imx-cache *ngIf="selectedPage === 'caches'"></imx-cache>
-
-      <imx-swagger *ngIf="selectedPage === 'swagger'"></imx-swagger>
-
-      <imx-logs *ngIf="selectedPage === 'logs'"></imx-logs>
-
-      <!-- for later
-            <imx-performance *ngIf="selectedPage === 'perf'"></imx-performance>
-            -->
-    </mat-sidenav-content>
-  </mat-sidenav-container>
-</div>
+<imx-side-navigation-view
+  [baseUrl]="baseUrl"
+  [isAdmin]="isAdmin"
+  [componentName]="componentName"
+  [navItems]="navItems"
+></imx-side-navigation-view>

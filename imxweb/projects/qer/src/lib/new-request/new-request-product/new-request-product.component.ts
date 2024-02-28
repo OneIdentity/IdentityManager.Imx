@@ -28,16 +28,22 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { PortalServicecategories, PortalShopServiceitems } from 'imx-api-qer';
 import { CollectionLoadParameters, DisplayColumns, IClientProperty, IWriteValue, MultiValue } from 'imx-qbm-dbts';
-import { Busy, BusyService, DynamicDataSource, DynamicDataApiControls, DataSourceToolbarSettings, DataSourceToolbarComponent, ClassloggerService } from 'qbm';
+import {
+  Busy,
+  BusyService,
+  DynamicDataSource,
+  DynamicDataApiControls,
+  DataSourceToolbarSettings,
+  DataSourceToolbarComponent,
+  ClassloggerService,
+} from 'qbm';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { NewRequestOrchestrationService } from '../new-request-orchestration.service';
 import { NewRequestCategoryApiService } from './new-request-category-api.service';
 import { NewRequestProductApiService } from './new-request-product-api.service';
 import { ServiceItemParameters } from './service-item-parameters';
 import { from } from 'rxjs';
-import {
-  SelectedProductSource,
-} from '../new-request-selected-products/selected-product-item.interface';
+import { SelectedProductSource } from '../new-request-selected-products/selected-product-item.interface';
 import { ProductDetailsService } from './product-details-sidesheet/product-details.service';
 import { NewRequestSelectionService } from '../new-request-selection.service';
 import { CurrentProductSource } from '../current-product-source';
@@ -84,7 +90,9 @@ export class NewRequestProductComponent implements OnInit, OnDestroy {
     setup: async () => {
       // We only expect a single root node
       const userParams = {
-        UID_Person: this.orchestration.recipients ? MultiValue.FromString(this.orchestration.recipients.value).GetValues().join(',') : undefined,
+        UID_Person: this.orchestration.recipients
+          ? MultiValue.FromString(this.orchestration.recipients.value).GetValues().join(',')
+          : undefined,
         ParentKey: '',
       };
       const servicecategories = await this.categoryApi.get(userParams);
@@ -126,8 +134,11 @@ export class NewRequestProductComponent implements OnInit, OnDestroy {
         return [];
       }
       leaf.isLoading = true;
-      const userParams = {
-        UID_Person: this.orchestration.recipients ? MultiValue.FromString(this.orchestration.recipients.value).GetValues().join(',') : undefined,
+      const userParams: CollectionLoadParameters = {
+        UID_Person: this.orchestration.recipients
+          ? MultiValue.FromString(this.orchestration.recipients.value).GetValues().join(',')
+          : undefined,
+        PageSize: 1000,
       };
       if (!leaf.entity) {
         return [];
@@ -147,7 +158,9 @@ export class NewRequestProductComponent implements OnInit, OnDestroy {
     loadMore: async (root) => {
       // Get children count from root
       const userParams = {
-        UID_Person: this.orchestration.recipients ? MultiValue.FromString(this.orchestration.recipients.value).GetValues().join(',') : undefined,
+        UID_Person: this.orchestration.recipients
+          ? MultiValue.FromString(this.orchestration.recipients.value).GetValues().join(',')
+          : undefined,
         ParentKey: '',
       };
       const data = await this.categoryApi.get({ StartIndex: root.children.length, ...userParams });
@@ -164,7 +177,9 @@ export class NewRequestProductComponent implements OnInit, OnDestroy {
     },
     search: async (params: CollectionLoadParameters) => {
       const userParams = {
-        UID_Person: this.orchestration.recipients ? MultiValue.FromString(this.orchestration.recipients.value).GetValues().join(',') : undefined,
+        UID_Person: this.orchestration.recipients
+          ? MultiValue.FromString(this.orchestration.recipients.value).GetValues().join(',')
+          : undefined,
       };
       const response = await this.categoryApi.get({ ParentKey: '', ...params, ...userParams });
       const searchNodes = response.Data.map((datum) => {
@@ -178,9 +193,9 @@ export class NewRequestProductComponent implements OnInit, OnDestroy {
       const rootNode: NewRequestCategoryNode = {
         isSelected: true,
         level: 0,
-        children: searchNodes
-      }
-      return { searchNodes, totalCount: response.totalCount, rootNode};
+        children: searchNodes,
+      };
+      return { searchNodes, totalCount: response.totalCount, rootNode };
     },
     changeSelection: (data: NewRequestCategoryNode[], selectedNode: NewRequestCategoryNode) => {
       // Reset all other selections and set this one if its keys match
@@ -230,29 +245,31 @@ export class NewRequestProductComponent implements OnInit, OnDestroy {
     ];
 
     //#region Subscriptions
-    this.subscriptions.push(this.orchestration.currentProductSource$.subscribe((source: CurrentProductSource) => {
-      if (source?.view === SelectedProductSource.AllProducts) {
-        this.dst = source.dst;
-        this.dst.busyService = this.busyService;
-        this.dst.clearSearch();
-        this.orchestration.dstSettingsAllProducts = this.dstSettings;
+    this.subscriptions.push(
+      this.orchestration.currentProductSource$.subscribe((source: CurrentProductSource) => {
+        if (source?.view === SelectedProductSource.AllProducts) {
+          this.dst = source.dst;
+          this.dst.busyService = this.busyService;
+          this.dst.clearSearch();
+          this.orchestration.dstSettingsAllProducts = this.dstSettings;
 
-        this.subscriptions.push(
-          this.dst.searchResults$.subscribe((data) => {
-            if (data) {
-              this.dstSettings = {
-                dataSource: data,
-                displayedColumns: this.displayedProductColumns,
-                entitySchema: this.productApi.entitySchema,
-                navigationState: this.productNavigationState,
-              };
-              this.orchestration.dstSettingsAllProducts = this.dstSettings;
-            }
-            this.busy.endBusy(true);
-          })
-        );
-      }
-    }));
+          this.subscriptions.push(
+            this.dst.searchResults$.subscribe((data) => {
+              if (data) {
+                this.dstSettings = {
+                  dataSource: data,
+                  displayedColumns: this.displayedProductColumns,
+                  entitySchema: this.productApi.entitySchema,
+                  navigationState: this.productNavigationState,
+                };
+                this.orchestration.dstSettingsAllProducts = this.dstSettings;
+              }
+              this.busy.endBusy(true);
+            })
+          );
+        }
+      })
+    );
 
     this.subscriptions.push(
       this.orchestration.navigationState$.subscribe(async (navigation: CollectionLoadParameters | ServiceItemParameters) => {
@@ -271,9 +288,11 @@ export class NewRequestProductComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.subscriptions.push(this.selectionService.selectedProducts$.subscribe(() => {
-      this.orchestration.preselectBySource(SelectedProductSource.AllProducts, this.dst);
-    }));
+    this.subscriptions.push(
+      this.selectionService.selectedProducts$.subscribe(() => {
+        this.orchestration.preselectBySource(SelectedProductSource.AllProducts, this.dst);
+      })
+    );
 
     this.subscriptions.push(this.selectionService.selectedProductsCleared$.subscribe(() => this.dst?.clearSelection()));
 
@@ -284,12 +303,13 @@ export class NewRequestProductComponent implements OnInit, OnDestroy {
     this.productNavigationState = { StartIndex: 0 };
     this.orchestration.selectedCategory = null;
     this.updateDisplayedColumns(this.displayedProductColumns);
-    this.subscriptions.push(this.orchestration.recipients$.subscribe(async (recipients: IWriteValue<string>) => {
-      this.recipients = recipients;
-      // if the recipients changes, update the service categories
-      await this.dynamicDataSource.setup(true);
-    }));
-
+    this.subscriptions.push(
+      this.orchestration.recipients$.subscribe(async (recipients: IWriteValue<string>) => {
+        this.recipients = recipients;
+        // if the recipients changes, update the service categories
+        await this.dynamicDataSource.setup(true);
+      })
+    );
   }
 
   public ngOnDestroy(): void {
@@ -366,7 +386,9 @@ export class NewRequestProductComponent implements OnInit, OnDestroy {
   private getCollectionLoadParameter(): CollectionLoadParameters | ServiceItemParameters {
     let parameters: CollectionLoadParameters | ServiceItemParameters = {
       ...this.productNavigationState,
-      UID_Person: this.orchestration.recipients ? MultiValue.FromString(this.orchestration.recipients.value).GetValues().join(',') : undefined,
+      UID_Person: this.orchestration.recipients
+        ? MultiValue.FromString(this.orchestration.recipients.value).GetValues().join(',')
+        : undefined,
     };
 
     if (this.accProductGroup) {

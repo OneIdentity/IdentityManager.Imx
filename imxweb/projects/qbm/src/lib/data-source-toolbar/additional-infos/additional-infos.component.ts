@@ -58,6 +58,7 @@ export class AdditionalInfosComponent implements OnInit {
       displayedColumns: ClientPropertyForTableColumns[],
       additionalPropertyNames: ClientPropertyForTableColumns[],
       preselectedProperties: ClientPropertyForTableColumns[],
+      additionalColumns: ClientPropertyForTableColumns[]
       type: 'list' | 'columns'
     },
     public dialogRef: MatDialogRef<AdditionalInfosComponent>) {
@@ -101,7 +102,10 @@ export class AdditionalInfosComponent implements OnInit {
   }
 
   public isRemoveable(property: IClientProperty): boolean {
-    return this.data.displayedColumns.find(elem => elem.ColumnName === property.ColumnName) == null;
+    return (
+      this.data.displayedColumns.find((elem) => elem.ColumnName === property.ColumnName) == null &&
+      this.data.additionalColumns.find((elem) => elem.ColumnName === property.ColumnName) == null
+    );
   }
 
   private static compareNames(column1: IClientProperty, column2: IClientProperty): number {

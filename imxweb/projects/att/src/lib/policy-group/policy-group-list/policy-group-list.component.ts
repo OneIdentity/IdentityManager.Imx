@@ -145,6 +145,7 @@ export class PolicyGroupListComponent {
       groupedData.data = await this.policyGroupService.get(groupedData.navigationState);
       groupedData.settings = {
         displayedColumns: this.dstSettings.displayedColumns,
+        dataModel: this.dstSettings.dataModel,
         dataSource: groupedData.data,
         entitySchema: this.dstSettings.entitySchema,
         navigationState: groupedData.navigationState

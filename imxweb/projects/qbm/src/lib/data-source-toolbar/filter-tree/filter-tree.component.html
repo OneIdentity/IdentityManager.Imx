@@ -1,14 +1,14 @@
 <h2 mat-dialog-title>{{'#LDS#Narrow the selection further down by: {0}' | translate |ldsReplace:data.type}}</h2>
 <mat-dialog-content class="imx-dialog-content">
   <imx-data-tree [withSelectedNodeHighlight]="true" data-imx-identifier="filter-tree-data-tree" #tree [hideSelection]="true" *ngIf="database" (checkedNodesChanged)="onCheckedNodesChanged()"
-   [selectedEntities]="currentlySelectedFilter" [withMultiSelect]="data?.filterTreeParameter?.multiSelect" [database]="database" (nodeSelected)="onNodeSelected($event)">
+   [selectedEntities]="currentlySelectedFilterEntities" [withMultiSelect]="data?.filterTreeParameter?.multiSelect" [database]="database" (nodeSelected)="onNodeSelected($event)">
   </imx-data-tree>
 </mat-dialog-content>
 
 <mat-dialog-actions *ngIf="data?.filterTreeParameter?.multiSelect || currentlySelectedFilter?.length > 0">
   <div class="imx-current-filter" *ngIf="!data?.filterTreeParameter?.multiSelect && currentlySelectedFilter?.length > 0">
     <span>{{'#LDS#Selected item' |translate}}:</span>
-    <span>{{currentlySelectedFilter[0].GetColumn('LongDisplay').GetValue()}}</span>
+    <span>{{currentlySelectedFilter[0].display}}</span>
   </div>
 
   <button data-imx-identifier="filter-tree-selected-filter-button" [disabled]="currentlySelectedFilter?.length < 1" mat-button color="primary"
@@ -30,9 +30,9 @@
 
 <mat-menu #selectedElements class="imx-selected-items-menu">
   <mat-list>
-    <mat-list-item class="imx-list-item" *ngFor="let filterElement of currentlySelectedFilter" [attr.data-imx-identifier]="'filter-tree-selected-item' + filterElement.GetKeys()[0]">
+    <mat-list-item class="imx-list-item" *ngFor="let filterElement of currentlySelectedFilter" [attr.data-imx-identifier]="'filter-tree-selected-item' + filterElement.entity?.GetKeys()[0]">
       <div class="imx-selected-item-element">
-        {{filterElement.GetColumn('LongDisplay').GetValue()}}
+        {{filterElement.display}}
       </div>
     </mat-list-item>
   </mat-list>

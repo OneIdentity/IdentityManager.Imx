@@ -37,7 +37,10 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class HelpContextualService {
   private helpContextId: HelpContextualValues;
-  constructor(private appConfigService: AppConfigService, private translateService: TranslateService) {}
+  constructor(
+    private appConfigService: AppConfigService,
+    private translateService: TranslateService,
+  ) {}
 
   /**
    * The call returns the selected contextual help item.
@@ -47,14 +50,13 @@ export class HelpContextualService {
   public async getHelpContext(contextId: HelpContextualValues): Promise<ContextualHelpItem> {
     const lang = this.translateService.currentLang;
     let contextItem: ContextualHelpItem;
-    try{
+    try {
       contextItem = await this.appConfigService.client.imx_help_context_get(contextId, lang);
-    }catch (error){
-      contextItem = await this.appConfigService.client.imx_help_context_get(HELP_CONTEXTUAL.Default, lang)
+    } catch (error) {
+      contextItem = await this.appConfigService.client.imx_help_context_get(HELP_CONTEXTUAL.Default, lang);
     }
     return contextItem;
   }
-
 
   /**
    * The call returns documentation path with the base URL.
@@ -69,7 +71,7 @@ export class HelpContextualService {
    * The call sets the stored help context ID.
    * @param {HelpContextualValues}
    */
-  public setHelpContextId(contextId: HelpContextualValues): void{
+  public setHelpContextId(contextId: HelpContextualValues): void {
     this.helpContextId = contextId;
   }
 
@@ -77,7 +79,7 @@ export class HelpContextualService {
    * The call returns the stored help context ID.
    * @returns {HelpContextualValues}
    */
-  public GetHelpContextId(): HelpContextualValues{
+  public GetHelpContextId(): HelpContextualValues {
     return this.helpContextId;
   }
 }
@@ -91,6 +93,9 @@ export const HELP_CONTEXTUAL = {
   Default: 'default',
   StatisticsPage: 'statistics-page',
   NewRequest: 'new-request',
+  NewRequestRecommendedProduct: 'new-request-recommended-product',
+  NewRequestReferenceUser: 'new-request-reference-user',
+  NewRequestProductBundle: 'new-request-product-bundle',
   ShoppingCart: 'shopping-cart',
   ShoppingCartEmpty: 'shopping-cart-empty',
   ShoppingCartForLater: 'shopping-cart-for-later',

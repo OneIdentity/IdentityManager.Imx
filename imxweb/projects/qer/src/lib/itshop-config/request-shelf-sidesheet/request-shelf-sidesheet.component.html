@@ -1,7 +1,7 @@
 <mat-tab-group>
-  <mat-tab >
+  <mat-tab>
     <ng-template mat-tab-label>
-      <span>{{'#LDS#Heading Details' | translate}}</span>
+      <span>{{ '#LDS#Heading Details' | translate }}</span>
     </ng-template>
     <div eui-sidesheet-content [ngClass]="!data.isNew ? 'eui-sidesheet-content--no-padding-top' : ''">
       <imx-help-contextual [contextId]="detailsContextIds" *ngIf="!data.isNew" [title]="'#LDS#Information about this tab:'"></imx-help-contextual>
@@ -26,9 +26,9 @@
     </mat-card>
   </mat-tab>
 
-  <mat-tab *ngIf="!data?.isNew" >
+  <mat-tab *ngIf="!data?.isNew">
     <ng-template mat-tab-label>
-      <span>{{'#LDS#Heading Products' | translate}}</span>
+      <span>{{ '#LDS#Heading Products' | translate }}</span>
     </ng-template>
     <imx-request-shelf-entitlements
       [shopDisplay]="data?.requestConfig?.GetEntity().GetDisplay()"
@@ -38,7 +38,9 @@
   </mat-tab>
   <mat-tab *ngIf="!data?.isNew" label="{{ '#LDS#Heading Hyperview' | translate }}">
     <ng-template matTabContent>
-      <imx-object-hyperview [objectType]="data?.requestConfig?.GetEntity()?.TypeName" [objectUid]="data?.requestConfig?.GetEntity()?.GetKeys()[0]"> </imx-object-hyperview>
+      <div eui-sidesheet-content>
+        <imx-object-hyperview [objectType]="data?.requestConfig?.GetEntity()?.TypeName" [objectUid]="data?.requestConfig?.GetEntity()?.GetKeys()[0]"> </imx-object-hyperview>
+      </div>
     </ng-template>
   </mat-tab>
 </mat-tab-group>

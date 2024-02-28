@@ -29,7 +29,7 @@ import { Router, Route } from '@angular/router';
 import { NotificationRegistryService } from 'qer';
 
 import { ExtService, MenuItem, MenuService } from 'qbm';
-import { isQERPolicyAdmin } from './admin/permissions-helper';
+import { isQERPolicyAdmin, isQERPolicyOwner } from './admin/permissions-helper';
 import { DashboardPluginComponent } from './dashboard-plugin/dashboard-plugin.component';
 
 @Injectable({ providedIn: 'root' })
@@ -66,7 +66,7 @@ export class InitService {
 
   private setupMenu(): void {
     this.menuService.addMenuFactories((preProps: string[], features: string[]) => {
-      if (!preProps.includes('COMPLIANCE') || !isQERPolicyAdmin(features)) {
+      if (!preProps.includes('COMPLIANCE') || (!isQERPolicyAdmin(features) && !isQERPolicyOwner(features))) {
         return null;
       }
 

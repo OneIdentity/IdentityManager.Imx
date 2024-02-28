@@ -56,17 +56,17 @@
         <imx-service-items-edit-form #serviceItemsEditForm *ngIf="groupServiceItem" [serviceItem]="groupServiceItem" (formControlCreated)="this.siFormArray.push($event)">
         </imx-service-items-edit-form>
       </div>
-      <div eui-sidesheet-actions >
-          <button
-            mat-flat-button
-            color="primary"
-            data-imx-identifier="group-sidesheet-button-save-groupserviceitem"
-            (click)="saveGroupServiceItem()"
-            [disabled]="!serviceItemFormGroup.dirty || serviceItemFormGroup.invalid"
-          >
-            <span translate>#LDS#Save</span>
-          </button>
-        </div>
+      <div eui-sidesheet-actions>
+        <button
+          mat-flat-button
+          color="primary"
+          data-imx-identifier="group-sidesheet-button-save-groupserviceitem"
+          (click)="saveGroupServiceItem()"
+          [disabled]="!serviceItemFormGroup.dirty || serviceItemFormGroup.invalid"
+        >
+          <span translate>#LDS#Save</span>
+        </button>
+      </div>
     </div>
   </mat-tab>
 
@@ -88,7 +88,7 @@
             [disabled]="groupMembers.selectedItemsCount === 0 || !canDeleteSelected()"
             data-imx-identifier="group-sidesheet-button-delete-groupmembers"
           >
-              <eui-icon icon="delete"></eui-icon>
+            <eui-icon icon="delete"></eui-icon>
             <span translate>#LDS#Remove</span>
           </button>
           <button
@@ -126,12 +126,11 @@
     </ng-template>
   </mat-tab>
 
-  <mat-tab label="{{'#LDS#Heading Hyperview' | translate}}">
+  <mat-tab label="{{ '#LDS#Heading Hyperview' | translate }}">
     <ng-template matTabContent>
-      <imx-object-hyperview
-        [objectType]="sidesheetData?.group?.GetEntity()?.TypeName"
-        [objectUid]="sidesheetData?.group.GetEntity()?.GetKeys()[0]">
-      </imx-object-hyperview>
+      <div eui-sidesheet-content class="imx-hyperview-sidesheet">
+        <imx-object-hyperview [objectType]="sidesheetData?.group?.GetEntity()?.TypeName" [objectUid]="sidesheetData?.group.GetEntity()?.GetKeys()[0]"> </imx-object-hyperview>
+      </div>
     </ng-template>
   </mat-tab>
 

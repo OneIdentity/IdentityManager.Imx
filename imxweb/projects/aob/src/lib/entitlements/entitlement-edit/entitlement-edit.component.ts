@@ -31,8 +31,9 @@ import { EuiLoadingService } from '@elemental-ui/core';
 
 import { PortalEntitlement, PortalEntitlementServiceitem } from 'imx-api-aob';
 import { CdrFactoryService, ClassloggerService, ColumnDependentReference } from 'qbm';
-import { TypedEntity } from 'imx-qbm-dbts';
+import { DbObjectKey, TypedEntity } from 'imx-qbm-dbts';
 import { ServiceItemTagsService } from 'qer';
+import { Router } from '@angular/router';
 
 /**
  * A component that provides a form for viewing and editing entitlements/roles.
@@ -61,6 +62,7 @@ export class EntitlementEditComponent implements OnChanges, OnInit {
   constructor(
     private readonly tagProvider: ServiceItemTagsService,
     private readonly logger: ClassloggerService,
+    private readonly router: Router,
     private readonly errorHandler: ErrorHandler,
     private readonly cdrFactoryService: CdrFactoryService,
     private readonly busyService: EuiLoadingService
@@ -170,5 +172,15 @@ export class EntitlementEditComponent implements OnChanges, OnInit {
       add: this.productTagsSelected.filter(elem => this.productTagsInitial.indexOf(elem) < 0),
       remove: this.productTagsInitial.filter(elem => this.productTagsSelected.indexOf(elem) < 0)
     };
+  }
+
+  public get isEditableEntitlement() {
+    // TODO: only if IsOwnerOrAdmin is set
+    return DbObjectKey.FromXml(this.entitlement.ObjectKeyElement.value).TableName == "ESet";
+  }
+
+  public manageEntitlement() {
+    this.saved.emit(false);
+    this.router.navigate(['/myresponsibilities/ESet']);
   }
 }

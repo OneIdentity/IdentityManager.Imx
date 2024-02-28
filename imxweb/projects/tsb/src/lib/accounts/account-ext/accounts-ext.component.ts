@@ -87,7 +87,7 @@ export class AccountsExtComponent implements OnInit {
   private async getData(): Promise<void> {
     const isBusy = this.busyService.beginBusy();
     try {
-      const groupsPerIdentity = await this.accountsService.getAccounts(this.referrer.objectuid);
+      const groupsPerIdentity = await this.accountsService.getAccounts(this.referrer.objectuid, this.navigationState);
       this.dstSettings = {
         displayedColumns: this.displayColumns,
         dataSource: groupsPerIdentity,

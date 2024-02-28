@@ -1,27 +1,70 @@
 <div #container class="imx-hyperview" [style.font-size]="fontSize" data-role="hyperview" data-imx-identifier="hyperview" imxZoomPan (onViewChanged)="onViewChanged()">
   <div #root class="imx-hyperview-container">
     <ol #elements class="imx-hyperview-shapes" data-imx-identifier="hyperview-shapes">
-      <li *ngFor="let shape of shapes" [attr.imx-layout]="shape.LayoutType || 'BottomRight'" #shapeList
-        class="imx-hyperviewshape hyperviewelement" [attr.data-imx-identifier]="shape.Identifier"
-        [style.background-color]="GetShapeEffectiveColor(shape)">
+      <li
+        *ngFor="let shape of shapes"
+        [attr.imx-layout]="shape.LayoutType || 'BottomRight'"
+        #shapeList
+        class="imx-hyperviewshape hyperviewelement"
+        [attr.data-imx-identifier]="shape.Identifier"
+        [style.background-color]="GetShapeEffectiveColor(shape)"
+      >
         <ng-container [ngSwitch]="GetShapeType(shape)">
-          <imx-hyperview-listshape [shape]="shape" [selected]="selected" *ngSwitchCase="ShapeType.ListShape">
-          </imx-hyperview-listshape>
-          <imx-hyperview-propertyshape [shape]="shape" [selected]="selected" *ngSwitchCase="ShapeType.PropertyShape">
-          </imx-hyperview-propertyshape>
-          <imx-hyperview-simpleshape [shape]="shape"
-            *ngSwitchCase="ShapeType.SimpleShape"></imx-hyperview-simpleshape>
+          <imx-hyperview-listshape [shape]="shape" [selected]="selected" *ngSwitchCase="ShapeType.ListShape"> </imx-hyperview-listshape>
+          <imx-hyperview-propertyshape [shape]="shape" [selected]="selected" *ngSwitchCase="ShapeType.PropertyShape"> </imx-hyperview-propertyshape>
+          <imx-hyperview-simpleshape [shape]="shape" *ngSwitchCase="ShapeType.SimpleShape"></imx-hyperview-simpleshape>
         </ng-container>
       </li>
       <ng-content></ng-content>
     </ol>
     <svg *ngIf="connectors" class="imx-hyperview-connectors" xmlns="http://www.w3.org/2000/svg">
-      <path *ngFor="let connector of connectors" class="connector" display="inline" [attr.d]="connector.data">
-      </path>
+      <path *ngFor="let connector of connectors" class="connector" display="inline" [attr.d]="connector.data"></path>
     </svg>
   </div>
 </div>
-<button mat-stroked-button *ngIf="showResetButton && viewChanged" (click)="onReset()">
-  <eui-icon icon="zoomout" size="small" [attr.data-imx-identifier]="'hyperview-reset-button'"></eui-icon>
-  {{'#LDS#Fit to screen' | translate}}
-</button>
+<div class="imx-hyperview-toolbar">
+  <div class="imx-hyperview-navigation">
+    <button
+      type="button"
+      mat-button
+      class="mat-icon-button"
+      (click)="onNavigationChanged(navigationEnum.First)"
+      [disabled]="!navigation.first"
+      *ngIf="navigation?.navigation"
+      [attr.aria-label]="'#LDS#First page' | translate"
+    >
+      <eui-icon icon="jump-first"></eui-icon>
+    </button>
+    <button
+      type="button"
+      mat-button
+      class="mat-icon-button"
+      (click)="onNavigationChanged(navigationEnum.Back)"
+      [disabled]="!navigation.back"
+      *ngIf="navigation?.navigation"
+      [attr.aria-label]="'#LDS#Previous page' | translate"
+    >
+      <eui-icon icon="chevronleft"></eui-icon>
+    </button>
+    <button
+      type="button"
+      mat-button
+      class="mat-icon-button"
+      (click)="onNavigationChanged(navigationEnum.Forward)"
+      [disabled]="!navigation.forward"
+      *ngIf="navigation?.navigation"
+      [attr.aria-label]="'#LDS#Next page' | translate"
+    >
+      <eui-icon icon="chevronright"></eui-icon>
+    </button>
+  </div>
+  <div class="imx-hyperview-caption" *ngIf="selectedHyperviewCaption" [matTooltip]="selectedHyperviewCaption">
+    {{ selectedHyperviewCaption }}
+  </div>
+  <div class="imx-hyperview-actions">
+    <button mat-stroked-button *ngIf="showResetButton && viewChanged" (click)="onReset()">
+      <eui-icon icon="zoomout" size="small" [attr.data-imx-identifier]="'hyperview-reset-button'"></eui-icon>
+      {{ '#LDS#Fit to screen' | translate }}
+    </button>
+  </div>
+</div>

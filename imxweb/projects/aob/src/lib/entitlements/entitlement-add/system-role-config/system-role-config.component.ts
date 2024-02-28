@@ -58,7 +58,7 @@ export class SystemRoleConfigComponent implements AfterViewInit, OnDestroy {
 
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) private data: string,
+    @Inject(EUI_SIDESHEET_DATA) public readonly data: { uid: string, createOnly: boolean },
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly busyService: EuiLoadingService,
     private readonly addToExistingProvider: SystemRoleConfigService,
@@ -130,11 +130,13 @@ export class SystemRoleConfigComponent implements AfterViewInit, OnDestroy {
     let overlayRef: OverlayRef;
     setTimeout(() => overlayRef = this.busyService.show());
     try {
-      this.candidates = (await this.addToExistingProvider.getExistingRoles(this.data, newState))
+      this.candidates = (await this.addToExistingProvider.getExistingRoles(this.data.uid, newState))
         .Data;
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
   }
+
+  public LdsAddOrCreate = '#LDS#Here you can merge the application entitlements into a new system role or add the application entitlements to an existing system role. The system role will then be assigned to the application as an application entitlement.';
 
 }

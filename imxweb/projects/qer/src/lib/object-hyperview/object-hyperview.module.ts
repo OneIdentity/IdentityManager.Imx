@@ -33,20 +33,11 @@ import { EuiCoreModule } from '@elemental-ui/core';
 import { HyperViewModule } from 'qbm';
 
 import { ObjectHyperviewComponent } from './object-hyperview.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  declarations: [    
-    ObjectHyperviewComponent
-  ],
-  exports: [
-    ObjectHyperviewComponent
-  ],
-  imports: [
-    CommonModule,    
-    EuiCoreModule,
-    HyperViewModule,
-    MatCardModule,
-    MatProgressSpinnerModule
-  ],
+  declarations: [ObjectHyperviewComponent],
+  exports: [ObjectHyperviewComponent],
+  imports: [CommonModule, EuiCoreModule, HyperViewModule, MatCardModule, MatProgressSpinnerModule, TranslateModule],
 })
-export class ObjectHyperviewModule { }
+export class ObjectHyperviewModule {}

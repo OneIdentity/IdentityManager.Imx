@@ -27,60 +27,74 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 
-import { DisplayColumns, EntitySchema, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DisplayColumns, EntitySchema, TypedEntityCollectionData } from 'imx-qbm-dbts';
 import { DataSourceToolbarSettings } from 'qbm';
 import { EntitlementToAddTyped } from '../entitlement-to-add-typed';
 
 @Component({
   templateUrl: './mapped-entitlements-preview.component.html',
-  styleUrls: ['./mapped-entitlements-preview.component.scss']
+  styleUrls: ['./mapped-entitlements-preview.component.scss'],
 })
 export class MappedEntitlementsPreviewComponent implements OnInit {
-
   public settings: DataSourceToolbarSettings;
   public readonly DisplayColumns = DisplayColumns;
   public entitySchema: EntitySchema;
+  public navigationState: CollectionLoadParameters = {StartIndex:0, PageSize:20};
 
-  public alertText = '#LDS#Here you can get an overview of application entitlements that will be added to this application by the conditions. Application entitlements that are already assigned to an application will be skipped.';
-  public speedupText = '#LDS#In addition, you can specify whether the application entitlements should be assigned immediately after the conditions are saved. However, you can also have the application entitlements added later.'
+  public alertText =
+    '#LDS#Here you can get an overview of application entitlements that will be added to this application by the conditions. Application entitlements that are already assigned to an application will be skipped.';
+  public speedupText =
+    '#LDS#In addition, you can specify whether the application entitlements should be assigned immediately after the conditions are saved. However, you can also have the application entitlements added later.';
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public data: {
-      withSave: boolean,
-      entitlementToAdd: TypedEntityCollectionData<EntitlementToAddTyped>
+    @Inject(EUI_SIDESHEET_DATA)
+    public data: {
+      withSave: boolean;
+      entitlementToAdd: TypedEntityCollectionData<EntitlementToAddTyped>;
     },
-    private readonly sidesheetRef: EuiSidesheetRef,
-  ) { }
+    private readonly sidesheetRef: EuiSidesheetRef
+  ) {}
 
   public apply(map: boolean): void {
     this.sidesheetRef.close({ save: true, map });
   }
 
   public getCount(type: '' | 'add' | 'assigned' | 'conflicted'): number {
-
     switch (type) {
-      case 'conflicted': return this.data.entitlementToAdd.Data.filter(elem => elem.IsAssignedToOther.value).length;
-      case 'add': return this.data.entitlementToAdd.Data.filter(elem => !elem.IsAssignedToMe.value && !elem.IsAssignedToOther.value).length;
-      case 'assigned': return this.data.entitlementToAdd.Data.filter(elem => elem.IsAssignedToMe.value).length;
+      case 'conflicted':
+        return this.data.entitlementToAdd.Data.filter((elem) => elem.IsAssignedToOther.value).length;
+      case 'add':
+        return this.data.entitlementToAdd.Data.filter((elem) => !elem.IsAssignedToMe.value && !elem.IsAssignedToOther.value).length;
+      case 'assigned':
+        return this.data.entitlementToAdd.Data.filter((elem) => elem.IsAssignedToMe.value).length;
     }
 
     return this.data.entitlementToAdd.totalCount;
   }
 
-  public async ngOnInit(): Promise<void> {
+  public navigate(source: CollectionLoadParameters): void {
     this.entitySchema = EntitlementToAddTyped.GetEntitySchema();
-
-    const displayedColumns = [
-      this.entitySchema.Columns.DisplayName,
-      this.entitySchema.Columns.IsAssignedToMe,
-      this.entitySchema.Columns.UID_AOBApplicationConflicted
-    ];
-
+    this.navigationState = { ...this.navigationState, ...source };
+   
+    const data = this.data.entitlementToAdd.Data.slice(this.navigationState.StartIndex, this.navigationState.StartIndex + this.navigationState.PageSize);
+     const displayedColumns = [
+       this.entitySchema.Columns.DisplayName,
+       this.entitySchema.Columns.IsAssignedToMe,
+       this.entitySchema.Columns.UID_AOBApplicationConflicted,
+     ];
     this.settings = {
-      dataSource: this.data.entitlementToAdd,
+      displayedColumns: displayedColumns,
+      dataSource: {
+        Data: data,
+        totalCount: this.data.entitlementToAdd.totalCount,
+      },
       entitySchema: this.entitySchema,
-      displayedColumns,
-      navigationState: {}
+      navigationState: this.navigationState,
     };
+  }
+
+  public async ngOnInit(): Promise<void> {
+
+   this.navigate({});
   }
 }

@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { ChartOptions } from 'billboard.js';
 import { ImxConfig, MethodSetInfo, PingResult, SystemInfo, UpdaterState, V2ApiClientMethodFactory } from 'imx-api-qbm';
 import { Observable, interval } from 'rxjs';
@@ -37,6 +37,7 @@ import { ClassloggerService } from '../classlogger/classlogger.service';
 import { SystemInfoService } from '../system-info/system-info.service';
 import { ImxTranslationProviderService } from '../translation/imx-translation-provider.service';
 import { StatusService } from './status.service';
+import { SideNavigationComponent } from '../side-navigation-view/side-navigation-view-interfaces';
 
 export class StatusInfo {
   date?: string;
@@ -109,7 +110,9 @@ export class StatusBuffer {
     '[class.loading]': '!dataReady',
   },
 })
-export class StatusComponent implements OnInit, OnDestroy {
+export class StatusComponent implements OnInit, OnDestroy, SideNavigationComponent {
+  @Input() public isAdmin: boolean;
+
   constructor(
     private readonly appConfigService: AppConfigService,
     private readonly systemInfoService: SystemInfoService,

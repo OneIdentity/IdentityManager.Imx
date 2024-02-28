@@ -41,7 +41,8 @@ export class PolicyAdminGuardService implements CanActivate {
   ) { }
 
   public async canActivate(): Promise<boolean> {
-    const canApprovePolicyViolation = await this.permissionService.isQERPolicyAdmin();
+    const canApprovePolicyViolation = await this.permissionService.isQERPolicyAdmin()
+      || await this.permissionService.isQERPolicyOwner();
     if (!canApprovePolicyViolation) {
       this.router.navigate([this.appConfig.Config.routeConfig.start], { queryParams: {} });
       return false;

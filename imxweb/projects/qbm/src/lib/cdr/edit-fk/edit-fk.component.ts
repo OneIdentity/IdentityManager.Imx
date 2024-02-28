@@ -175,7 +175,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
       }
     } else if (this.parameters.search || this.parameters.filter || this.control.value == null) {
       // If we don't have a chosen value, then we have residual values, reset them and update
-      await this.updateCandidates({ search: undefined, filter: undefined }, false);
+      await this.updateCandidates({ search: undefined, filter: undefined, StartIndex: 0 }, false);
     }
 
     if (this.viewport) {

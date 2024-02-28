@@ -1,4 +1,3 @@
-
 <mat-tab-group>
   <mat-tab [label]="'#LDS#Heading Main Data' | translate">
     <ng-template matTabContent>
@@ -40,15 +39,16 @@
     <ng-template matTabContent>
       <div eui-sidesheet-content class="governance-sidesheet__tab-content">
         <div class="governance-sidesheet__tab-content-body">
-            <imx-data-explorer-groups [usedInSidesheet]="true" [unsAccountIdFilter]="sidesheetData.unsAccountId" [uidPerson]="sidesheetData.uidPerson" sidesheetWidth="55%"> </imx-data-explorer-groups>
+          <imx-data-explorer-groups [usedInSidesheet]="true" [unsAccountIdFilter]="sidesheetData.unsAccountId" [uidPerson]="sidesheetData.uidPerson" sidesheetWidth="55%">
+          </imx-data-explorer-groups>
         </div>
       </div>
     </ng-template>
   </mat-tab>
 
-  <mat-tab label="{{'#LDS#Heading Hyperview' | translate}}">
+  <mat-tab label="{{ '#LDS#Heading Hyperview' | translate }}">
     <ng-template matTabContent>
-      <div eui-sidesheet-content>
+      <div eui-sidesheet-content class="imx-hyperview-sidesheet">
         <imx-object-hyperview objectType="UNSAccount" [objectUid]="sidesheetData.unsAccountId"></imx-object-hyperview>
       </div>
     </ng-template>

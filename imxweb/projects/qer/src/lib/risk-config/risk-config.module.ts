@@ -88,7 +88,7 @@ export class RiskConfigModule {
 
         const items: MenuItem[] = [];
 
-        if (isRuleAdmin(features)) {
+        if (isRuleAdmin(features) && preProps.includes('RISKINDEX')) {
           items.push(
             {
               id: 'QER_Setup_RiskConfig',

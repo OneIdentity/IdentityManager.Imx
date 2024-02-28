@@ -24,14 +24,37 @@
  *
  */
 
-import { Component, ViewChild, ElementRef, Input, ChangeDetectorRef, EventEmitter, Renderer2, AfterViewInit, OnDestroy, AfterViewChecked, QueryList, ViewChildren } from '@angular/core';
+import {
+  Component,
+  ViewChild,
+  ElementRef,
+  Input,
+  ChangeDetectorRef,
+  EventEmitter,
+  Renderer2,
+  AfterViewInit,
+  OnDestroy,
+  AfterViewChecked,
+  QueryList,
+  ViewChildren,
+  Output,
+} from '@angular/core';
 
 import { Connectors } from './connectors';
 import { Connector } from './connector';
 import { HyperviewLayoutHierarchical } from './hyperview-layout-hierarchical';
 import { HyperviewLayoutVertical } from './hyperview-layout-vertical';
 import { HyperviewLayoutHorizontal } from './hyperview-layout-horizontal';
-import { HyperViewLayout, HvSettings, HvElement, ShapeClickArgs, toPixelString, LayoutResult } from './hyperview-types';
+import {
+  HyperViewLayout,
+  HvSettings,
+  HvElement,
+  ShapeClickArgs,
+  toPixelString,
+  LayoutResult,
+  HyperViewNavigation,
+  HyperViewNavigationEnum,
+} from './hyperview-types';
 import { ShapeData } from 'imx-api-qbm';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 import { Subscription } from 'rxjs';
@@ -56,6 +79,7 @@ export class HyperviewComponent implements AfterViewInit, OnDestroy, AfterViewCh
   @Input() public selected: EventEmitter<ShapeClickArgs> = new EventEmitter();
   @Input() public layout: 'Hierarchical' | 'Vertical' | 'Horizontal';
   @Input() public showResetButton = true;
+  @Input() public navigation: HyperViewNavigation;
   @Input() set shapes(value: ShapeData[]) {
     this._shapes = value;
     if (value?.length > 0) {
@@ -65,6 +89,10 @@ export class HyperviewComponent implements AfterViewInit, OnDestroy, AfterViewCh
   get shapes(): ShapeData[] {
     return this._shapes;
   }
+  /**
+   * Emit the {@link HyperViewNavigationEnum|type} to the parent component when navigation changed.
+   */
+  @Output() public navigationChanged = new EventEmitter<HyperViewNavigationEnum>();
   @ViewChild('elements', { static: true }) public elRef: ElementRef<HTMLElement>;
   @ViewChild('root', { static: true }) public rootElem: ElementRef<HTMLElement>;
   @ViewChild('container', { static: true }) public containerElem: ElementRef<HTMLElement>;
@@ -76,6 +104,7 @@ export class HyperviewComponent implements AfterViewInit, OnDestroy, AfterViewCh
   public toPixelString = toPixelString;
   public ShapeType = ShapeType;
   public viewChanged = false;
+  public navigationEnum = HyperViewNavigationEnum;
   private settings: HvSettings;
   private middleCenterShape: HvElement;
   private middleCenterPosition = 'MiddleCenter';
@@ -86,28 +115,30 @@ export class HyperviewComponent implements AfterViewInit, OnDestroy, AfterViewCh
   /**
    * Creates a new hyperview component.
    */
-  constructor(private changeDetectorRef: ChangeDetectorRef, private logger: ClassloggerService, private renderer: Renderer2) { }
+  constructor(private changeDetectorRef: ChangeDetectorRef, private logger: ClassloggerService, private renderer: Renderer2) {}
 
   ngAfterViewInit(): void {
     this.setupLayout();
 
     // register for element resize
     const observer = new ResizeObserver(() => {
-      this.logger.trace(this, "resize event detected, marking layout as dirty");
+      this.logger.trace(this, 'resize event detected, marking layout as dirty');
       this.layoutDirty = true;
     });
     const elem = this.containerElem.nativeElement;
     observer.observe(elem);
     this.subscriptions$.push(new Subscription(() => observer.unobserve(elem)));
 
-    this.subscriptions$.push(this.shapeList.changes.subscribe(() => {
-      this.logger.trace(this, "shape list changed, marking layout as dirty");
-      this.layoutDirty = true;
-    }));
+    this.subscriptions$.push(
+      this.shapeList.changes.subscribe(() => {
+        this.logger.trace(this, 'shape list changed, marking layout as dirty');
+        this.layoutDirty = true;
+      })
+    );
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions$.forEach(sub => sub.unsubscribe());
+    this.subscriptions$.forEach((sub) => sub.unsubscribe());
   }
 
   private layoutDirty = false;
@@ -156,8 +187,9 @@ export class HyperviewComponent implements AfterViewInit, OnDestroy, AfterViewCh
 
     const layouter = this.buildLayouter();
     const layoutResult = layouter.layout();
-    this.connectors = new Connectors(layouter.getConnectorProvider().getConnectors(this.settings))
-      .connectorList.filter(connector => !connector.isHidden);
+    this.connectors = new Connectors(layouter.getConnectorProvider().getConnectors(this.settings)).connectorList.filter(
+      (connector) => !connector.isHidden
+    );
     this.scrollToMiddleCenterShape(layoutResult);
     this.changeDetectorRef.detectChanges();
   }
@@ -176,6 +208,20 @@ export class HyperviewComponent implements AfterViewInit, OnDestroy, AfterViewCh
   // Change viewChanged state if zoom or drag emitted from zoom-pan.directive
   public onViewChanged(): void {
     this.viewChanged = true;
+  }
+
+  public onNavigationChanged(navigation: HyperViewNavigationEnum): void {
+    this.navigationChanged.emit(navigation);
+  }
+
+  // Rebuild the layout if a shape size is changed.
+  public onChangeShapeSize(): void {
+    this.setupLayout();
+  }
+
+  public get selectedHyperviewCaption(): string {
+    const centerObj = this.shapes.filter((shape) => shape.LayoutType === 'MiddleCenter')?.[0];
+    return !!centerObj?.HeaderText ? `${centerObj.HeaderText}: ${centerObj.Caption}` : centerObj?.Caption;
   }
 
   private scrollToMiddleCenterShape(layoutResult: LayoutResult) {
@@ -244,7 +290,7 @@ export class HyperviewComponent implements AfterViewInit, OnDestroy, AfterViewCh
   private buildSettings(): HvSettings {
     return {
       enforceVerticalLayout: false,
-      elements: this.getElements()
+      elements: this.getElements(),
     };
   }
 }

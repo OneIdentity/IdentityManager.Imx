@@ -75,11 +75,11 @@
           </button>
       </mat-menu>
         <button mat-raised-button color="primary" data-imx-identifier="shoppingcart-submit-button"
-            (click)="submitShoppingCart()" [disabled]="shoppingCart.totalCount === 0 || shoppingCart.hasErrors">
+            (click)="submitShoppingCart()" [disabled]="shoppingCart.totalCount === 0 || shoppingCart.hasErrors || selectedItems?.length > 0">
             {{ '#LDS#Submit' | translate }}
         </button>
         <mat-menu data-imx-identifier="shoppingcart-actions-menu" #actionsMenu="matMenu">
-            <button *ngIf="shoppingCart.totalCount > 0" data-imx-identifier="shoppingcart-check-cart-button"
+            <button *ngIf="shoppingCart.totalCount > 0" data-imx-identifier="shoppingcart-check-cart-button" [disabled]="selectedItems?.length > 0"
               title="{{ '#LDS#Checks your request for possible errors' | translate }}" mat-menu-item (click)="validate()">
               {{ '#LDS#Check shopping cart' | translate }}
             </button>

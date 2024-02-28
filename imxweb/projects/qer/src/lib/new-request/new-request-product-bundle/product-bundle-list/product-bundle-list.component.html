@@ -26,7 +26,6 @@
     (navigationStateChanged)="getData($event)"
     (search)="onSearch($event)"
   ></imx-data-source-toolbar>
-  <imx-info-button [title]="'#LDS#Heading Product Bundles' | translate" [templateRef]="infoDialogContent"> </imx-info-button>
 </div>
 <mat-card class="imx-table-container">
   <imx-data-table
@@ -61,10 +60,3 @@
   </imx-data-table>
 </mat-card>
 <imx-data-source-paginator [dst]="dst" [showFirstLastButtons]="true"></imx-data-source-paginator>
-
-<!-- Template for the info dialog -->
-<ng-template #infoDialogContent>
-  <p>
-    {{ ldsInfoDialogText | translate }}
-  </p>
-</ng-template>

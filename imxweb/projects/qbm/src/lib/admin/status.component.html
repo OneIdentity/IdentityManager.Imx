@@ -5,13 +5,13 @@
 <h2 class="mat-headline">{{ '#LDS#Overview' | translate }}</h2>
 <div class="content-container" [ngClass]="{ loading: !dataReady }">
   <mat-spinner *ngIf="!dataReady" [attr.aria-label]="'#LDS#Loading...' | translate"></mat-spinner>
-  <mat-card class="imx-billboard-card">
-    <mat-card-header>
-        <mat-card-title>{{'#LDS#Sessions' | translate}} </mat-card-title>
-    </mat-card-header>
-      <eui-billboard [options]="chartOptions"></eui-billboard>
-  </mat-card>
   <ng-container *ngIf="dataReady">
+    <mat-card class="imx-billboard-card">
+      <mat-card-header>
+          <mat-card-title>{{'#LDS#Sessions' | translate}} </mat-card-title>
+      </mat-card-header>
+        <eui-billboard [options]="chartOptions"></eui-billboard>
+    </mat-card>
     <table class="status-table mat-table" data-imx-identifier="admin-status-table">
       <tbody>
         <tr>

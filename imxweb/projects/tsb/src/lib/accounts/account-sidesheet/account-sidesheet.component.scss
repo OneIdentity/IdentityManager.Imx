@@ -3,7 +3,7 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 
-.eui-sidesheet-content {
+.eui-sidesheet-content:not(.imx-hyperview-sidesheet){
   padding: 0;
 
   ::ng-deep .mat-tab-body-content {

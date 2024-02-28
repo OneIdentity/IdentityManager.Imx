@@ -38,7 +38,7 @@ import { ObjectHistoryParameters, ObjectHistoryService } from './object-history.
 import { DateAdapter } from '@angular/material/core';
 import moment from 'moment-timezone';
 import { Subscription } from 'rxjs';
-import { TimelineDateTimeFilter } from '../timeline/timeline';
+import { ExtendedObjectHistoryEvent, TimelineDateTimeFilter } from '../timeline/timeline';
 
 class ViewMode {
   public value: string;
@@ -84,6 +84,7 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
   public selectedLook: string = 'timeline';
   public viewModeValue: string;
   public historyData: ObjectHistoryEvent[] = [];
+  public filteredHistoryData: ObjectHistoryEvent[] | ExtendedObjectHistoryEvent[] = [];
   public stateOverviewItems: IStateOverviewItem[] = [];
   public historyComparisonData: HistoryComparisonData[] = [];
   public viewModes: ViewMode[] = [];
@@ -94,11 +95,11 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
   public timelineToTimeFormControl = new UntypedFormControl();
   public timelineFrom: TimelineDateTimeFilter = {
     date: 'Invalid date',
-    time: 'Invalid date'
+    time: 'Invalid date',
   };
   public timelineTo: TimelineDateTimeFilter = {
     date: 'Invalid date',
-    time: 'Invalid date'
+    time: 'Invalid date',
   };
   public momentToday = moment();
 
@@ -125,6 +126,10 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
     await this.refresh(true);
   }
 
+  public ngOnDestroy(): void {
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
+
   public setLocale(locale: string): void {
     moment.locale(locale);
     this.dateAdapter.setLocale(locale);
@@ -132,27 +137,38 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
 
   public setTimeline(): void {
     this.subscriptions.push(
-      this.timelineFromDateFormControl.valueChanges.subscribe(date => this.timelineFrom.date = moment(date).format('YYYY-MM-DD')),
-      this.timelineFromTimeFormControl.valueChanges.subscribe(time => this.timelineFrom.time = moment(time).format('HH:mm:ss')),
-      this.timelineToDateFormControl.valueChanges.subscribe(date => this.timelineTo.date = moment(date).format('YYYY-MM-DD')),
-      this.timelineToTimeFormControl.valueChanges.subscribe(time => this.timelineTo.time = moment(time).format('HH:mm:ss')),
+      this.timelineFromDateFormControl.valueChanges.subscribe((date) => {
+        this.timelineFrom.date = moment(date).format('YYYY-MM-DD');
+        this.getFilteredHistoryData();
+      }),
+      this.timelineFromTimeFormControl.valueChanges.subscribe((time) => {
+        this.timelineFrom.time = moment(time).format('HH:mm:ss');
+        this.getFilteredHistoryData();
+      }),
+      this.timelineToDateFormControl.valueChanges.subscribe((date) => {
+        this.timelineTo.date = moment(date).format('YYYY-MM-DD');
+        this.getFilteredHistoryData();
+      }),
+      this.timelineToTimeFormControl.valueChanges.subscribe((time) => {
+        this.timelineTo.time = moment(time).format('HH:mm:ss');
+        this.getFilteredHistoryData();
+      })
     );
+  }
+
+  private getFilteredHistoryData() {
+    if (this.historyData && this.viewModeValue === this.viewModeGrid)
+      this.filteredHistoryData = this.filterByTime(this.historyData);
   }
 
   public async onViewModeChange(): Promise<void> {
     this.selectedLook = this.viewModeValue === this.viewModeGrid ? 'timeline' : 'table';
+    this.resetTimelineForm();
     await this.refresh(false);
   }
 
   public onLookSelectionChanged(event) {
     this.selectedLook = event.value;
-
-    if (this.selectedLook === 'table') {
-      this.timelineFromDateFormControl.reset();
-      this.timelineFromTimeFormControl.reset();
-      this.timelineToDateFormControl.reset();
-      this.timelineToTimeFormControl.reset();
-    }
   }
 
   public async refresh(fetchRemote: boolean): Promise<void> {
@@ -172,7 +188,7 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
           table,
           uid,
         };
-        this.historyData = (await this.historyService.get(parameters, fetchRemote));
+        this.filteredHistoryData = this.historyData = await this.historyService.get(parameters, fetchRemote);
       } else if (this.viewModeValue === this.viewModeStateOverview) {
         const stateOverviewItems = await this.historyService.getStateOverviewItems(table, uid);
         if (stateOverviewItems) {
@@ -203,7 +219,33 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
     this.viewModes.push(viewMode);
   }
 
-  public ngOnDestroy(): void {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  private resetTimelineForm(): void {
+    this.timelineFromDateFormControl.reset();
+    this.timelineFromTimeFormControl.reset();
+    this.timelineToDateFormControl.reset();
+    this.timelineToTimeFormControl.reset();
+  }
+
+  /**
+   * Handles from and to filtering and loads the result after filtering
+   */
+  private filterByTime(data: ObjectHistoryEvent[]): ObjectHistoryEvent[] | ExtendedObjectHistoryEvent[] {
+    if (this.timelineFromString === 'Invalid date' && this.timelineToString === 'Invalid date') {
+      return data;
+    }
+
+    const isFromValid = this.timelineFromString !== 'Invalid date';
+    const isToValid = this.timelineToString !== 'Invalid date';
+
+    return data.filter((elem) => {
+      const momentElemTime = moment(elem.ChangeTime);
+      const fromValidation = momentElemTime.isAfter(moment(this.timelineFromString), 'second');
+      const toValidation = momentElemTime.isBefore(moment(this.timelineToString), 'second');
+
+      if (isFromValid && !isToValid) return fromValidation;
+      if (!isFromValid && isToValid) return toValidation;
+
+      return fromValidation && toValidation;
+    });
   }
 }

@@ -472,7 +472,11 @@ export class RoleService {
     return dataModel?.getModel(undefined, isAdmin);
   }
 
-  public canCreate(tableName: string, isAdmin: boolean): boolean {
+  public canCreate(tableName: string, isAdmin: boolean, userCanCreateAeRole: boolean): boolean {
+    if (tableName === this.AERoleTag && !userCanCreateAeRole) { // special case, that the user can't create application roles at all
+      return false;
+    } 
+
     return isAdmin ? this.targetMap.get(tableName)?.adminCanCreate : this.targetMap.get(tableName).respCanCreate;
   }
 

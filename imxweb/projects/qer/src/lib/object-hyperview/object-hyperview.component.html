@@ -2,7 +2,13 @@
   <div class="imx-tab-content-body" [class.condensed]="condensed">
     <mat-card class="imx-hyperview-card">
       <mat-spinner *ngIf="loadinghyperview"></mat-spinner>
-      <imx-hyperview *ngIf="!loadinghyperview" [selected]="selected" [shapes]="hyperviewShapes"></imx-hyperview>
+      <imx-hyperview
+        *ngIf="!loadinghyperview"
+        [selected]="selected"
+        [shapes]="hyperviewShapes"
+        [navigation]="navigation"
+        (navigationChanged)="onNavigationChanged($event)"
+      ></imx-hyperview>
     </mat-card>
   </div>
 </div>

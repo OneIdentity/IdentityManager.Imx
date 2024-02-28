@@ -28,3 +28,6 @@ export function isQERPolicyAdmin(features: string[]): boolean {
   return features.find(item => item === 'Portal_UI_QERPolicyAdmin') != null;
 }
 
+export function isQERPolicyOwner(features: string[]): boolean {
+  return features.find(item => item === 'Portal_UI_QERPolicyOwner') != null;
+}

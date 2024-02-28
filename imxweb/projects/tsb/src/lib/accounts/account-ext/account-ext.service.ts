@@ -26,7 +26,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { PortalPersonAccounts } from 'imx-api-tsb';
+import { PortalPersonAccounts, portal_person_accounts_get_args } from 'imx-api-tsb';
 import { EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
 import { TsbApiService } from '../../tsb-api-client.service';
 
@@ -39,8 +39,8 @@ export class AccountsExtService {
     return this.apiService.typedClient.PortalPersonAccounts.GetSchema();
   }
 
-  public getAccounts(uid: string): Promise<ExtendedTypedEntityCollection<PortalPersonAccounts, unknown>> {
-    return this.apiService.typedClient.PortalPersonAccounts.Get(uid);
+  public getAccounts(uid: string, parameters?: portal_person_accounts_get_args): Promise<ExtendedTypedEntityCollection<PortalPersonAccounts, unknown>> {
+    return this.apiService.typedClient.PortalPersonAccounts.Get(uid, parameters);
   }
 
 }

@@ -174,6 +174,7 @@ export class PolicyListComponent implements OnInit {
       groupedData.data = await this.policyService.getPolicies(groupedData.navigationState);
       groupedData.settings = {
         displayedColumns: this.dstSettings.displayedColumns,
+        dataModel: this.dstSettings.dataModel,
         dataSource: groupedData.data,
         entitySchema: this.dstSettings.entitySchema,
         navigationState: groupedData.navigationState,

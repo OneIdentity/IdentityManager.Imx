@@ -1,14 +1,14 @@
 <section [class.imx-hyperview-deleted]="shape.IsDeleted">
-    <imx-hyperview-shape [shape]="shape">
-        <div class="LayoutpPropItems" ShapeContent (click)="click()">
-            <div *ngFor="let property of shape.Properties" [ngClass]="{ 'endsSection': property.EndsSection, 'LayoutpPropRow': true }">
-                <div class="imx-layoutpanel-cell LayoutpPropCol LayoutpPropCol0" [matTooltip]="property.Description" matTooltipPosition="left">
-                    {{ property.Property }}
-                </div>
-                <div class="imx-layoutpanel-cell LayoutpPropCol LayoutpPropCol1">
-                    {{ GetPropertyDisplayValue(property.Value) }}
-                </div>
-            </div>
+  <imx-hyperview-shape [shape]="shape" [navigate]="true" [selected]="selected">
+    <div class="LayoutpPropItems" ShapeContent>
+      <div *ngFor="let property of shape.Properties" [ngClass]="{ endsSection: property.EndsSection, LayoutpPropRow: true }">
+        <div class="imx-layoutpanel-cell LayoutpPropCol LayoutpPropCol0" [matTooltip]="property.Description" matTooltipPosition="left">
+          {{ property.Property }}
         </div>
-    </imx-hyperview-shape>
-  </section>
+        <div class="imx-layoutpanel-cell LayoutpPropCol LayoutpPropCol1">
+          {{ GetPropertyDisplayValue(property.Value) }}
+        </div>
+      </div>
+    </div>
+  </imx-hyperview-shape>
+</section>

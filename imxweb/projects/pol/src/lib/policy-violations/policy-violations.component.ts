@@ -195,6 +195,7 @@ export class PolicyViolationsComponent implements OnInit {
       groupedData.data = await this.policyViolationsService.get(this.approveOnly, groupedData.navigationState);
       groupedData.settings = {
         displayedColumns: this.dstSettings.displayedColumns,
+        dataModel: this.dstSettings.dataModel,
         dataSource: groupedData.data,
         entitySchema: this.dstSettings.entitySchema,
         navigationState: groupedData.navigationState,

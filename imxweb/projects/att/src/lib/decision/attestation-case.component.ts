@@ -133,6 +133,7 @@ export class AttestationCaseComponent implements OnDestroy, OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
+    this.setRelatedOptions();
     const overlay = this.busyService.show();
     try {
       this.complianceTabTitle = await this.translate.get('#LDS#Heading Rule Violations').toPromise();
