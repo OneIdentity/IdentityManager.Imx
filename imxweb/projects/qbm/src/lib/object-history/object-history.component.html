@@ -28,12 +28,7 @@
       </button>
     </ng-container>
     <ng-container *ngIf="viewModeValue === viewModeStateComparison">
-      <eui-date-picker
-        [dateControl]="compareDateFormControl"
-        appearance="legacy"
-        [allowTextInput]="false"
-        [useClearIcon]="true"
-      ></eui-date-picker>
+      <eui-date-picker [dateControl]="compareDateFormControl" appearance="legacy" [allowTextInput]="false" [useClearIcon]="true" [max]="momentToday"></eui-date-picker>
       <button
         mat-icon-button
         color="primary"
@@ -44,14 +39,14 @@
         <eui-icon icon="info"></eui-icon>
       </button>
     </ng-container>
-    <ng-container *ngIf="selectedLook === 'timeline'">
+    <ng-container *ngIf="viewModeValue === viewModeGrid">
       <div class="imx-timeline-from">
-        <span>{{'#LDS#From' | translate}}: </span>
+        <span>{{ '#LDS#From' | translate }}: </span>
         <eui-date-picker
           class="small"
           [dateControl]="timelineFromDateFormControl"
           [useClearIcon]="true"
-          [max]="this.timelineTo.date !== 'Invalid date' ? this.timelineTo.date : momentToday"
+          [max]="timelineTo.date !== 'Invalid date' ? timelineTo.date : momentToday"
         ></eui-date-picker>
         <eui-time-picker
           [timeControl]="timelineFromTimeFormControl"
@@ -62,17 +57,13 @@
         ></eui-time-picker>
       </div>
       <div class="imx-timeline-to">
-        <span class="timeline-to-text" translate>{{'#LDS#To' | translate}}: </span>
-        <eui-date-picker
-          [dateControl]="timelineToDateFormControl"
-          [useClearIcon]="true"
-          [max]="momentToday"
-        ></eui-date-picker>
+        <span class="timeline-to-text" translate>{{ '#LDS#To' | translate }}: </span>
+        <eui-date-picker [dateControl]="timelineToDateFormControl" [useClearIcon]="true" [max]="momentToday"></eui-date-picker>
         <eui-time-picker
           [timeControl]="timelineToTimeFormControl"
           [allowTextInput]="true"
           [minuteResolution]="5"
-          [disabled]="timelineTo.date  === 'Invalid date'"
+          [disabled]="timelineTo.date === 'Invalid date'"
           size="s"
         ></eui-time-picker>
       </div>
@@ -84,26 +75,22 @@
         [value]="look"
         [checked]="look === selectedLook"
         matTooltipPosition="above"
-        [matTooltip]="(look === 'timeline' ? '#LDS#Show as timeline' : '#LDS#Show as table') | translate"
-        [attr.aria-label]="(look === 'timeline' ? '#LDS#Show as timeline' : '#LDS#Show as table') | translate"
-        [attr.data-imx-identifier]="'dst-togglegroup-looks-button-' + look">
+        [matTooltip]="(look === 'timeline' ? '#LDS#Switch to timeline view' : '#LDS#Switch to table view') | translate"
+        [attr.aria-label]="(look === 'timeline' ? '#LDS#Switch to timeline view' : '#LDS#Switch to table view') | translate"
+        [attr.data-imx-identifier]="'dst-togglegroup-looks-button-' + look"
+      >
         <eui-icon [size]="look === 'timeline' ? '24px' : '32px'" [icon]="lookIcons[index]"></eui-icon>
       </mat-button-toggle>
     </mat-button-toggle-group>
   </div>
 </div>
 <ng-container *ngIf="selectedLook === 'table'">
-  <div class="imx-viewmode-content" *ngIf="viewModeValue === viewModeGrid">
-    <imx-object-history-gridview [historyData]="historyData"></imx-object-history-gridview>
-  </div>
-  <div class="imx-viewmode-content" *ngIf="viewModeValue === viewModeStateOverview">
-    <imx-object-history-state-overview [stateOverviewItems]="stateOverviewItems"></imx-object-history-state-overview>
-  </div>
-  <div class="imx-viewmode-content" *ngIf="viewModeValue === viewModeStateComparison">
-    <imx-object-history-state-comparison [historyComparisonData]="historyComparisonData"></imx-object-history-state-comparison>
+  <div class="imx-viewmode-content" [ngSwitch]="viewModeValue">
+    <imx-object-history-gridview *ngSwitchCase="viewModeGrid" [historyData]="filteredHistoryData"></imx-object-history-gridview>
+    <imx-object-history-state-overview *ngSwitchCase="viewModeStateOverview" [stateOverviewItems]="stateOverviewItems"></imx-object-history-state-overview>
+    <imx-object-history-state-comparison *ngSwitchCase="viewModeStateComparison" [historyComparisonData]="historyComparisonData"></imx-object-history-state-comparison>
   </div>
 </ng-container>
 <div class="imx-viewmode-content" *ngIf="selectedLook === 'timeline'">
-  <imx-timeline [data]="historyData" [from]="timelineFromString" [to]="timelineToString"></imx-timeline>
+  <imx-timeline [data]="filteredHistoryData"></imx-timeline>
 </div>
-

@@ -244,7 +244,7 @@
     >
       <span>{{ '#LDS#Saved views' | translate }}</span>
     </button>
-    <button mat-menu-item (click)="resetView()" data-imx-identifier="dst-menu-button-reset-view">
+    <button mat-menu-item (click)="resetViewAndTree()" data-imx-identifier="dst-menu-button-reset-view">
       <span>{{ '#LDS#Reset view' | translate }}</span>
     </button>
   </mat-menu>
@@ -331,7 +331,7 @@
         <eui-icon class="remove" icon="stop" [attr.data-imx-identifier]="'dst-mat-chip-selected-filters-chip-remove-' + sf.filter.Name + '-' + sf.selectedOption.Value"> </eui-icon>
       </mat-chip>
       <mat-chip *ngIf="currentFilterData.length" (click)="clearTreeFilter()" data-imx-identifier="dst-mat-chip-filter-tree-active">
-        <span class="tag-name">{{ filterType }}: {{ currentFilterDisplayData }}</span>
+        <span class="tag-name">{{ filterType }}: {{ currentFilterData[0].display }}</span>
         <eui-icon class="remove" icon="stop" data-imx-identifier="dst-mat-chip-filter-tree-active-chip-remove"> </eui-icon>
       </mat-chip>
     </mat-chip-list>

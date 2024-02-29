@@ -144,7 +144,7 @@ export { DataTreeWrapperModule } from './lib/data-tree-wrapper/data-tree-wrapper
 export { SearchResultAction } from './lib/data-tree/data-tree-search-results/search-result-action.interface';
 export { DataTreeComponent } from './lib/data-tree/data-tree.component';
 export { DataTreeModule } from './lib/data-tree/data-tree.module';
-export { TreeNodeInfo} from './lib/data-tree/tree-node';
+export { TreeNodeInfo } from './lib/data-tree/tree-node';
 export { DateModule } from './lib/date/date.module';
 export { DateComponent } from './lib/date/date/date.component';
 export { LocalizedDatePipe } from './lib/date/localized-date.pipe';
@@ -310,7 +310,8 @@ export { UserMessageModule } from './lib/user-message/user-message.module';
 export { UserMessageService } from './lib/user-message/user-message.service';
 export { HelpContextualModule } from './lib/help-contextual/help-contextual.module';
 export { HelpContextualComponent } from './lib/help-contextual/help-contextual.component';
-export { HelpContextualService, HELP_CONTEXTUAL, HelpContextualValues} from './lib/help-contextual/help-contextual.service';
+export { HelpContextualService, HELP_CONTEXTUAL, HelpContextualValues } from './lib/help-contextual/help-contextual.service';
+export { HyperViewNavigation, HyperViewNavigationEnum } from './lib/hyperview/hyperview-types';
 export { SelectedElementsModule } from './lib/selected-elements/selected-elements.module';
 export { SelectedElementsComponent } from './lib/selected-elements/selected-elements.component';
 export { FilterTreeComponent } from './lib/data-source-toolbar/filter-tree/filter-tree.component';

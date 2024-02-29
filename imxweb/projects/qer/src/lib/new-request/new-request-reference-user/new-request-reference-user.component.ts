@@ -24,7 +24,7 @@
  *
  */
 
-import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
 import { MatChipList, MatChipListChange } from '@angular/material/chips';
 import { NavigationEnd, Router } from '@angular/router';
 import { EuiSidesheetService } from '@elemental-ui/core';
@@ -35,16 +35,16 @@ import { Subscription } from 'rxjs/internal/Subscription';
 import { PortalItshopPeergroupMemberships, PortalShopServiceitems } from 'imx-api-qer';
 import { CollectionLoadParameters, DisplayColumns, IClientProperty, IWriteValue, MultiValue, ValueStruct } from 'imx-qbm-dbts';
 
-import { Busy, BusyService, DataSourceToolbarComponent, DataSourceToolbarSettings, FkAdvancedPickerComponent } from 'qbm';
+import { Busy, BusyService, DataSourceToolbarComponent, DataSourceToolbarSettings, FkAdvancedPickerComponent, HELP_CONTEXTUAL } from 'qbm';
 import { ItshopService } from '../../itshop/itshop.service';
 import { QerApiService } from '../../qer-api-client.service';
+import { CurrentProductSource } from '../current-product-source';
 import { NewRequestOrchestrationService } from '../new-request-orchestration.service';
 import { NewRequestProductApiService } from '../new-request-product/new-request-product-api.service';
+import { ProductDetailsService } from '../new-request-product/product-details-sidesheet/product-details.service';
 import { ServiceItemParameters } from '../new-request-product/service-item-parameters';
 import { SelectedProductSource } from '../new-request-selected-products/selected-product-item.interface';
-import { ProductDetailsService } from '../new-request-product/product-details-sidesheet/product-details.service';
 import { NewRequestSelectionService } from '../new-request-selection.service';
-import { CurrentProductSource } from '../current-product-source';
 
 @Component({
   selector: 'imx-new-request-reference-user',
@@ -73,8 +73,9 @@ export class NewRequestReferenceUserComponent implements AfterViewInit, OnDestro
   public displayedMembershipColumns: IClientProperty[];
   public recipients: IWriteValue<string>;
   public readonly busyService = new BusyService();
-  public SelectedProductSource: SelectedProductSource;
+  public SelectedProductSource = SelectedProductSource;
   public selectedSource: SelectedProductSource;
+  public contextId = HELP_CONTEXTUAL.NewRequestReferenceUser;
   //#endregion
 
   constructor(

@@ -15,23 +15,8 @@
       flex-grow: 1;
     }
 
-    .imx-info-button-caption { 
-      @include imx-text();
-    }
-  }
-}
-
-// Theming
-:host {
-  .imx-info-button-caption {
-    color: $color-gray-60;
-  }
-}
-
-.eui-dark-theme {
-  :host {
     .imx-info-button-caption {
-      color: $color-gray-20;
+      @include imx-text();
     }
   }
 }

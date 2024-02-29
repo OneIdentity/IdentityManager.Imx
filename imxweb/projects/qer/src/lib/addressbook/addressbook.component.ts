@@ -104,6 +104,8 @@ export class AddressbookComponent implements OnInit {
     try {
       const groupData = this.groupData[groupKey];
       groupData.settings = await this.dstWrapper.getGroupDstSettings(groupData.navigationState);
+      groupData.settings.dataModel = this.dstSettings.dataModel;
+      groupData.settings.entitySchema = this.dstSettings.entitySchema;
       groupData.data = groupData.settings.dataSource;
     } finally {
       isBusy.endBusy();

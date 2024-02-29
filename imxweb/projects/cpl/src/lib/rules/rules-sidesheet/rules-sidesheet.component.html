@@ -18,10 +18,7 @@
   <mat-tab *ngIf="data" [label]="'#LDS#Heading Rule Violations' | translate">
     <ng-template matTabContent>
       <div class="imx-mat-tab-container">
-        <imx-violations-per-rule
-          [uidRule]="data.selectedRule.GetEntity().GetKeys()[0]"
-          [isMControlPerViolation]="data.isMControlPerViolation">
-        </imx-violations-per-rule>
+        <imx-violations-per-rule [uidRule]="data.selectedRule.GetEntity().GetKeys()[0]" [isMControlPerViolation]="data.isMControlPerViolation"> </imx-violations-per-rule>
       </div>
     </ng-template>
   </mat-tab>
@@ -39,12 +36,11 @@
     ></ng-template>
   </mat-tab>
 
-  <mat-tab label="{{'#LDS#Heading Hyperview' | translate}}">
+  <mat-tab label="{{ '#LDS#Heading Hyperview' | translate }}">
     <ng-template matTabContent>
-      <imx-object-hyperview
-        [objectType]="data?.selectedRule?.GetEntity()?.TypeName"
-        [objectUid]="data?.selectedRule?.GetEntity()?.GetKeys()[0]">
-      </imx-object-hyperview>
+      <div eui-sidesheet-content>
+        <imx-object-hyperview [objectType]="data?.selectedRule?.GetEntity()?.TypeName" [objectUid]="data?.selectedRule?.GetEntity()?.GetKeys()[0]"> </imx-object-hyperview>
+      </div>
     </ng-template>
   </mat-tab>
 </mat-tab-group>

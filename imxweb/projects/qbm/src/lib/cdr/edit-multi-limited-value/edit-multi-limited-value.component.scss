@@ -18,9 +18,18 @@
   flex-flow: column;
 }
 
-
 .imx-red-checkbox {
   ::ng-deep .mat-checkbox-frame {
     border-color: $phoenix-red;
+  }
+}
+
+.imx-suffix-container {
+  display: flex;
+  margin-bottom: 5px;
+
+  > *:not(:last-child) {
+    margin-right: 5px;
+    margin-top: 0;
   }
 }

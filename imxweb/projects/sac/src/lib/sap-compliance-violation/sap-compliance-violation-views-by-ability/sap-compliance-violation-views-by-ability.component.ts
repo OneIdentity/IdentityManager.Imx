@@ -98,6 +98,7 @@ export class SapComplianceViolationViewsByAbilityComponent {
     groupedData.data = this.getFilteredData(filter[0]);
     groupedData.settings = {
       displayedColumns: this.dstSettings.displayedColumns,
+      dataModel: this.dstSettings.dataModel,
       dataSource: {
         Data: groupedData.data,
         totalCount: groupedData.data.length,

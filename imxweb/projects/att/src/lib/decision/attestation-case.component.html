@@ -64,7 +64,7 @@
       </div>
     </div>
   </mat-tab>
-  <mat-tab label="{{'#LDS#Heading Hyperview' | translate}}" *ngIf="this.relatedOptions?.length > 1">
+  <mat-tab label="{{ '#LDS#Heading Hyperview' | translate }}" *ngIf="this.relatedOptions?.length > 0">
     <ng-template matTabContent>
       <div eui-sidesheet-content class="imx-attestation-case-hyperview">
         <mat-form-field appearance="outline">
@@ -75,17 +75,20 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
-        <imx-object-hyperview *ngIf="!!selectedOption"
-          [objectType]="selectedHyperviewType"
-          [objectUid]="selectedHyperviewUID">
-        </imx-object-hyperview>
+        <imx-object-hyperview *ngIf="!!selectedOption" [objectType]="selectedHyperviewType" [objectUid]="selectedHyperviewUID"> </imx-object-hyperview>
       </div>
     </ng-template>
   </mat-tab>
 </mat-tab-group>
 <div eui-sidesheet-actions>
   <ng-container *ngIf="!data.isInquiry">
-    <button class="imx-justify-right" *ngIf="case?.UID_Person?.value && case?.ObjectKeyBase?.value" mat-stroked-button data-imx-identifier="attestation-case-button-assignment-analysis" (click)="viewSource()">
+    <button
+      class="imx-justify-right"
+      *ngIf="case?.UID_Person?.value && case?.ObjectKeyBase?.value"
+      mat-stroked-button
+      data-imx-identifier="attestation-case-button-assignment-analysis"
+      (click)="viewSource()"
+    >
       {{ '#LDS#View assignment analysis' | translate }}
     </button>
 
@@ -178,7 +181,6 @@
       >
         {{ '#LDS#Cancel reservation' | translate }}
       </button>
-
     </mat-menu>
     <button mat-flat-button color="warn" data-imx-identifier="attestation-case-button-deny" (click)="attestationAction.deny([case])">
       <mat-icon>not_interested</mat-icon>

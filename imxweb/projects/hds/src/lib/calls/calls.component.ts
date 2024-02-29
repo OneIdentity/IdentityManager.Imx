@@ -65,7 +65,7 @@ export class CallsComponent implements OnInit {
     private replacePipe: LdsReplacePipe,
     private readonly helpContextualService: HelpContextualService
   ) {
-    this.collectionLoadParameters = { PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 };
+    this.collectionLoadParameters = { PageSize: this.settingsService.DefaultPageSize, StartIndex: 0, OrderBy: 'XDateInserted desc' };
     this.entitySchema = this.hdsApiService.typedClient.PortalCalls.GetSchema();
   }
 

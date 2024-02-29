@@ -24,10 +24,11 @@
  *
  */
 
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, Input } from "@angular/core";
 import { PackageInfo } from "imx-api-qbm";
 import { AppConfigService } from "../appConfig/appConfig.service";
 import { imx_SessionService } from "../session/imx-session.service";
+import { SideNavigationComponent } from "../side-navigation-view/side-navigation-view-interfaces";
 
 type ExtendedPackageInfo = PackageInfo & { App?: string };
 
@@ -36,7 +37,8 @@ type ExtendedPackageInfo = PackageInfo & { App?: string };
   selector: 'imx-packages',
   styleUrls: ['./packages.component.scss']
 })
-export class PackagesComponent implements OnInit {
+export class PackagesComponent implements OnInit, SideNavigationComponent {
+  @Input() public isAdmin: boolean;
 
   constructor(private readonly session: imx_SessionService,
     private readonly appConfigService: AppConfigService) {
@@ -63,7 +65,7 @@ export class PackagesComponent implements OnInit {
     }
   }
 
-  public getAppHref(packageInfo: PackageInfo) {    
+  public getAppHref(packageInfo: PackageInfo) {
     return this.appConfigService.BaseUrl + '/html/' + packageInfo.Name;
   }
 }

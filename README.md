@@ -3,6 +3,49 @@
 # Identity Manager HTML5 applications
 
 ## Change log
+### February 28, 2024
+The v92 branch has been updated with fixes for the following issues.
+
+- Bug 447702: Web Portal: Filtering: Canceling the definition a filter does not reset filters (reappearing)
+- Bug 447018: In Data Explorer System Entitlements, the defaultness of a table column can be changed by loading a view
+- Bug 444890: Portal: Selected products on New Request page are not reloaded when user changes
+- Bug 434023: Filtering user accounts by target system, when loaded a saved view, causes UI issues
+- Bug 446516: User dependent column cache in filter wizard does not update when user changes
+- Bug 446585: My responsibilities / System entitlements: Child system entitlements: Odd/empty target system information
+- Bug 445251: Clicking while load spinner is visible prevents result sidesheet to remain open
+- Bug 445482: Risk index functions are visible when RISKINDEX condition is off
+- Bug 444322: Address book: Added column disappears in grouping
+- Bug 444321: Attestation runs - Run numbers column loses values when grouping
+- Bug 442287: Attestation runs - Run numbers column from saved view shows zero values
+- Bug 444543: Additional manager has no permission to access 'Create application role' side sheet
+- Bug 444268: Portal: Selected products when selecting products by reference user disappear
+- Bug 418493: List of current approvers is incomplete as sibling steps of the current decision level are ignored
+- Bug 425801: The shopping cart does not suggest that a partial check or partial submit is possible
+- Bug 445856: Github: CDR required logic was inverted
+- Bug 446295: Github issue 112: Unable to save the changes to a dynamic business role after adding another condition
+- Bug 446190: Data Explorer / History sidesheet tab: switching from "Timeline" to "Table" view resets the date filter
+- Bug 444602: Github: Filtering not working on account-sidesheet
+- Bug 445927: Administration Portal: On smaller screens the menu is not visible
+- Bug 445169: Operations Support Portal: Operation history: Type of operation not shown when language is German
+- Bug 442577: Column picker for view configuration shows wrong columns
+- Bug 420941: Web application overview: Clicking the title opens the Administration Portal
+- Bug 446290: Portal: System entitlement ownership: Drop-down list does not load all entries
+- Bug 447700: Portal: New request: Tabs are not using context-sensitive help
+- Bug 447417: In Filter Data sidesheet, custom filters for properties, which have datatype double, allow non-numerical values
+- Bug 446996: Only 20 child categories of a service category are displayed on the New Request page
+- Bug 443469: In Filter Data sidesheet, existing custom filters can be mutated , even if the user cancels the sidesheet
+- Bug 446342: Web Portal: Hyperviews: Clicking some tiles only reloads the currently displayed hyperview and breaks navigation history
+- Bug 446263: Product bundle selection: Text search overrides Custom filters instead of narrowing down its results
+- Bug 446162: Data Explorer: Missing date restriction in Status comparison view
+- Bug 446188: Data Explorer: Switching history view from "Events" to "Status overview" and back produces date filter that does not match the events shown
+- Bug 446167: Hyperview navigation from object shape does not work
+- 440883: Portal: Pending attestations: Hyperviews: Add object types to list
+- 438294: Portal allows navigation in Hyperviews
+- Bug 432848: New Request: within the view of selected products, sorting was not correctly implemented
+- Bug 443469: In Filter Data sidesheet, existing custom filters can be mutated in sneaky ways, even if the user cancels the sidesheet
+- Bug 441058: Portal: Select page index is not reset when the filter changes
+
+
 ### January 16, 2024
 The v92 branch has been updated with fixes for the following issues.
 - Bug 441844: In Filter Data sidesheet, within Custom Filters, picking a different limited value does not cause the form to be submittable

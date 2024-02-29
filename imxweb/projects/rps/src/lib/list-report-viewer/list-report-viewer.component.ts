@@ -110,6 +110,7 @@ export class ListReportViewerComponent implements OnInit {
       groupedData.data = await this.dataService.get(navigationState);
       groupedData.settings = {
         displayedColumns: this.dstSettings.displayedColumns,
+        dataModel: this.dstSettings.dataModel,
         dataSource: groupedData.data,
         entitySchema: this.dstSettings.entitySchema,
         navigationState,

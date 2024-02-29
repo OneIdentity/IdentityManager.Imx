@@ -36,17 +36,12 @@ import { EntityColumnData } from 'imx-qbm-dbts';
 @Component({
   selector: 'imx-hyperview-propertyshape',
   templateUrl: './propertyshape.component.html',
-  styleUrls: ['./propertyshape.component.scss']
+  styleUrls: ['./propertyshape.component.scss'],
 })
 export class PropertyShapeComponent {
-
   @Input() public shape: ShapeData;
 
   @Input() public selected: EventEmitter<ShapeClickArgs> = new EventEmitter();
-
-  public click(): void {
-    this.selected.emit({ objectKey: this.shape.ObjectKey });
-  }
 
   public GetPropertyDisplayValue(property: EntityColumnData): string {
     return property.DisplayValue != null ? property.DisplayValue : property.Value;

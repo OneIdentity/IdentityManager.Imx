@@ -26,7 +26,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { PortalPersonGroupmemberships } from 'imx-api-tsb';
+import { PortalPersonGroupmemberships, portal_person_groupmemberships_get_args } from 'imx-api-tsb';
 import { EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
 import { TsbApiService } from '../../tsb-api-client.service';
 
@@ -38,7 +38,7 @@ export class GroupMembershipsExtService {
     return this.apiService.typedClient.PortalPersonGroupmemberships.GetSchema();
   }
 
-  public getGroupMemberships(uid: string): Promise<ExtendedTypedEntityCollection<PortalPersonGroupmemberships, unknown>> {
-    return this.apiService.typedClient.PortalPersonGroupmemberships.Get(uid);
+  public getGroupMemberships(uid: string, parameters: portal_person_groupmemberships_get_args): Promise<ExtendedTypedEntityCollection<PortalPersonGroupmemberships, unknown>> {
+    return this.apiService.typedClient.PortalPersonGroupmemberships.Get(uid, parameters);
   }
 }

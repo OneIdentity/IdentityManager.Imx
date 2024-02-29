@@ -8,8 +8,7 @@
     </mat-chip>
   </mat-chip-list>
   <span class="imx-info-button-caption" translate>#LDS#Information about this tab:</span>
-  <imx-info-button [title]="'#LDS#Heading Products by Reference User' | translate" [templateRef]="infoDialogContent">
-  </imx-info-button>
+  <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
 </div>
 
 <mat-card class="imx-card-container">
@@ -21,7 +20,7 @@
     [noDataText]="noDataText"
     mode="manual"
     fallbackIcon="DefaultTypeNameImage"
-    (selectionChanged)="onProductSelectionChanged($event)"
+    (selectionChanged)="onProductSelectionChanged($event, SelectedProductSource.ReferenceUserProducts)"
     (highlightedEntityChanged)="onRowSelected($event)"
     [showSelectedItemsMenu]="false"
   >
@@ -76,50 +75,38 @@
     </imx-data-table-column>
   </imx-data-table>
   <imx-data-table
-  *ngIf="selectedChipIndex == 1 && membershipDst"
-  [dst]="membershipDst"
-  [detailViewVisible]="false"
-  [selectable]="true"
-  [noDataText]="noDataText"
-  mode="manual"
-  fallbackIcon="DefaultTypeNameImage"
-  (selectionChanged)="onProductSelectionChanged($event)"
-  [showSelectedItemsMenu]="false"
+    *ngIf="selectedChipIndex == 1 && membershipDst"
+    [dst]="membershipDst"
+    [detailViewVisible]="false"
+    [selectable]="true"
+    [noDataText]="noDataText"
+    mode="manual"
+    fallbackIcon="DefaultTypeNameImage"
+    (selectionChanged)="onProductSelectionChanged($event, SelectedProductSource.ReferenceUserOrgs)"
+    [showSelectedItemsMenu]="false"
   >
-  <imx-data-table-column [entityColumn]="membershipApi.PortalItshopPeergroupMembershipsSchema?.Columns[DisplayColumns?.DISPLAY_PROPERTYNAME]">
-    <ng-template let-prod>
-      <div>
-        <span class="imx-request-col-display">{{ prod.GetEntity()?.GetDisplay() }} </span>
-      </div>
-    </ng-template>
-  </imx-data-table-column>
-  <imx-data-table-column [entityColumn]="membershipApi.PortalItshopPeergroupMembershipsSchema?.Columns['FullPath']">
-    <ng-template let-prod>
-      <div class="imx-request-col-text">
-        {{ prod.FullPath?.Column?.GetDisplayValue() }}
-      </div>
-    </ng-template>
-  </imx-data-table-column>
-  <imx-data-table-column [entityColumn]="membershipApi.PortalItshopPeergroupMembershipsSchema?.Columns['Description']">
-    <ng-template let-prod>
-      <div class="imx-request-col-text">
-        {{ prod.Description?.Column?.GetDisplayValue() }}
-      </div>
-    </ng-template>
-  </imx-data-table-column>
-
-</imx-data-table>
-<imx-data-source-paginator *ngIf="selectedChipIndex == 0 && productDst" [dst]="productDst"></imx-data-source-paginator>
-<imx-data-source-paginator *ngIf="selectedChipIndex == 1 && membershipDst" [dst]="membershipDst"></imx-data-source-paginator>
+    <imx-data-table-column [entityColumn]="membershipApi.PortalItshopPeergroupMembershipsSchema?.Columns[DisplayColumns?.DISPLAY_PROPERTYNAME]">
+      <ng-template let-prod>
+        <div>
+          <span class="imx-request-col-display">{{ prod.GetEntity()?.GetDisplay() }} </span>
+        </div>
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="membershipApi.PortalItshopPeergroupMembershipsSchema?.Columns['FullPath']">
+      <ng-template let-prod>
+        <div class="imx-request-col-text">
+          {{ prod.FullPath?.Column?.GetDisplayValue() }}
+        </div>
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="membershipApi.PortalItshopPeergroupMembershipsSchema?.Columns['Description']">
+      <ng-template let-prod>
+        <div class="imx-request-col-text">
+          {{ prod.Description?.Column?.GetDisplayValue() }}
+        </div>
+      </ng-template>
+    </imx-data-table-column>
+  </imx-data-table>
+  <imx-data-source-paginator *ngIf="selectedChipIndex == 0 && productDst" [dst]="productDst"></imx-data-source-paginator>
+  <imx-data-source-paginator *ngIf="selectedChipIndex == 1 && membershipDst" [dst]="membershipDst"></imx-data-source-paginator>
 </mat-card>
-
-<!-- Template for the info dialog -->
-<ng-template #infoDialogContent>
-  <p class="no-top">
-    {{'#LDS#The following products and organizational structures are assigned to {0}. You can request products that this identity already owns.' | translate | ldsReplace: orchestration.referenceUser?.DisplayValue}}
-  </p>
-  <p translate>
-    #LDS#Select the products and/or organizational structures you also want to request for the selected recipient.
-  </p>
-  <!-- TODO: This needs to link to the help page when that page exists  -->
-</ng-template>

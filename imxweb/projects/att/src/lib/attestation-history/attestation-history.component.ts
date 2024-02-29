@@ -213,6 +213,7 @@ export class AttestationHistoryComponent implements OnInit, OnDestroy {
       groupedData.data = await this.historyService.getAttestations(navigationState);
       groupedData.settings = {
         displayedColumns: this.dstSettings.displayedColumns,
+        dataModel: this.dstSettings.dataModel,
         dataSource: groupedData.data,
         entitySchema: this.dstSettings.entitySchema,
         navigationState: groupedData.navigationState,

@@ -25,20 +25,18 @@
  */
 
 import { Component } from '@angular/core';
+import { HELP_CONTEXTUAL } from 'qbm';
 import { NewRequestOrchestrationService } from '../new-request-orchestration.service';
 import { SelectedProductSource } from '../new-request-selected-products/selected-product-item.interface';
 
 @Component({
   selector: 'imx-new-request-product-bundle',
   templateUrl: './new-request-product-bundle.component.html',
-  styleUrls: ['./new-request-product-bundle.component.scss']
+  styleUrls: ['./new-request-product-bundle.component.scss'],
 })
 export class NewRequestProductBundleComponent {
-
-  constructor(
-    public readonly orchestration: NewRequestOrchestrationService,
-  ) {
+  public contextId = HELP_CONTEXTUAL.NewRequestProductBundle;
+  constructor(public readonly orchestration: NewRequestOrchestrationService) {
     this.orchestration.selectedView = SelectedProductSource.ProductBundles;
   }
-
 }

@@ -53,6 +53,7 @@ export class CdrEditorComponent implements OnChanges {
   @Output() public controlCreated = new EventEmitter<AbstractControl>();
   @Output() public readonly valueChange = new EventEmitter<any>();
   @Output() public readonly readOnlyChanged = new EventEmitter<boolean>();
+  @Output() public readonly pendingChanged = new EventEmitter<boolean>();
 
   @ViewChild('viewcontainer', { read: ViewContainerRef, static: true }) private viewContainerRef: ViewContainerRef;
 
@@ -81,6 +82,11 @@ export class CdrEditorComponent implements OnChanges {
               this.isReadonly = this.cdr.isReadOnly();
               this.readOnlyChanged.emit(this.isReadonly);
             }
+          });
+        }
+        if (ref.instance.pendingChanged) {
+          ref.instance.pendingChanged.subscribe((value) => {
+            this.pendingChanged.emit(value);
           });
         }
         this.controlCreated.emit(ref.instance.control);

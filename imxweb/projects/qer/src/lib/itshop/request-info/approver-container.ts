@@ -91,15 +91,17 @@ export class ApproverContainer {
         ? this.approverFuture?.filter(
             (workflowData, index, newArray) =>
               workflowData.Columns.UID_QERWorkingStep.Value === uid &&
-              newArray.findIndex((checkData) => checkData.Columns.UID_PersonHead.Value === workflowData.Columns.UID_PersonHead.Value) === index
+              newArray.findIndex((checkData) => checkData.Columns.UID_PersonHead.Value === workflowData.Columns.UID_PersonHead.Value) ===
+                index
           )
         : this.approverNow?.filter(
             (workflowData, index, newArray) =>
               workflowData.Columns.UID_QERWorkingStep.Value === uid &&
-              newArray.findIndex((checkData) => checkData.Columns.UID_PersonHead.Value === workflowData.Columns.UID_PersonHead.Value) === index
+              newArray.findIndex((checkData) => checkData.Columns.UID_PersonHead.Value === workflowData.Columns.UID_PersonHead.Value) ===
+                index
           );
 
-      this.logger.trace(this, `analysing ${(future ? 'future': 'current')} step ${uid} (${display}):`, approver);
+      this.logger.trace(this, `analysing ${future ? 'future' : 'current'} step ${uid} (${display}):`, approver);
 
       if (approver?.length > 0) {
         ret.push({ display: display, data: approver });
@@ -119,16 +121,16 @@ export class ApproverContainer {
     this.logger?.trace(this, 'working steps with order', orderedWorkingSteps);
 
     if (canSeeCurrent) {
-      const currentStep = orderedWorkingSteps.find((step) => step.order === 1);
-      this.logger?.trace(this, 'current step', currentStep);
+      const currentSteps = orderedWorkingSteps.filter((step) => step.order === 1);
+      this.logger?.trace(this, 'current steps', currentSteps);
 
       this.approverNow =
-        this.request == null || this.request.pwoData == null || this.request.pwoData.WorkflowData == null || currentStep == null
+        this.request == null || this.request.pwoData == null || this.request.pwoData.WorkflowData == null || currentSteps.length === 0
           ? []
           : this.request.pwoData.WorkflowData.Entities.filter(
               (data) =>
                 data.Columns.UID_PersonHead.Value &&
-                data.Columns.UID_QERWorkingStep.Value === currentStep.uidWorkingStep &&
+                currentSteps.some((step) => data.Columns.UID_QERWorkingStep.Value === step.uidWorkingStep) &&
                 this.request.approvers.includes(data.Columns.UID_PersonHead.Value)
             ).sort((data1, data2) => data1.Columns.UID_PersonHead.DisplayValue.localeCompare(data2.Columns.UID_PersonHead.DisplayValue));
       this.logger?.trace(this, 'personWantsOrg should be approved by', this.approverNow);
@@ -164,21 +166,27 @@ export class ApproverContainer {
     );
     this.logger?.trace(this, `calculate steps for method ${workingMethod}`, stepsForWorkingMethod);
 
-    const startStep = stepsForWorkingMethod.find((elem) => elem.Columns.LevelNumber.Value === currentLevel);
-    this.logger?.trace(this, 'starting with step', startStep);
+    const startSteps = stepsForWorkingMethod.filter(
+      (n, i, arr) => arr.findIndex((elem) => elem.Keys[0] === n.Keys[0] && elem.Columns.LevelNumber.Value === currentLevel) === i
+    );
 
-    if (startStep == null) {
+    this.logger?.trace(this, 'starting with step', startSteps);
+
+    if (startSteps.length === 0) {
       this.logger?.debug(this, 'no steps to approve');
       return [];
     }
 
-    orderedSteps.push({
-      uidWorkingStep: startStep.Keys[0],
-      decisionLevel: currentLevel,
-      positiveSteps: startStep.Columns.PositiveSteps.Value,
-      order: 1,
-    });
-    this.logger?.debug(this, 'first working step is added');
+    orderedSteps.push(
+      ...startSteps.map((elem) => ({
+        uidWorkingStep: elem.Keys[0],
+        decisionLevel: currentLevel,
+        positiveSteps: elem.Columns.PositiveSteps.Value,
+        order: 1,
+      }))
+    );
+
+    this.logger?.debug(this, 'first working steps are added');
 
     let goOn = true;
     while (goOn) {
@@ -208,7 +216,6 @@ export class ApproverContainer {
         this.logger?.trace(this, 'new step list', orderedSteps);
       }
     }
-
     return orderedSteps;
   }
 

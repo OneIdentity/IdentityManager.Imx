@@ -78,7 +78,7 @@ export class RulesViolationsDetailsComponent implements OnInit, OnDestroy {
     this.cdrList = data.selectedRulesViolation.propertyInfo;
     if (this.data.complianceRule)
       this.ruleInfoCdrList.push(
-        new BaseCdr(this.data.complianceRule.Description.Column, this.translateService.instant('#LDS#Rule description')),
+        new BaseCdr(this.data.complianceRule.Description.Column, this.translateService.instant('#LDS#Description')),
         new BaseCdr(this.data.complianceRule.RuleNumber.Column)
       );
   }

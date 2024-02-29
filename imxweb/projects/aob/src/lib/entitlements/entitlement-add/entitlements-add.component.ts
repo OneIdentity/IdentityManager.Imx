@@ -128,6 +128,28 @@ export class EntitlementsAddComponent implements OnInit {
     this.sidesheetRef.close({ selection: this.selections });
   }
 
+  public async onCreateRole(): Promise<void> {
+    const entitlementSystemRoleInput: EntitlementSystemRoleInput
+      = await this.sidesheet.open(SystemRoleConfigComponent, {
+        // TODO: make LDS Heading
+        title: await this.translateService.get('#LDS#Create new system role').toPromise(),
+        padding: '0px',
+        width: 'max(500px, 50%)',
+        testId: 'create-role-sidesheet',
+        data: { uid: this.data.uidApplication, createOnly: true }
+      }).afterClosed().toPromise();
+
+    if (!entitlementSystemRoleInput) {
+      this.logger.debug(this, 'role dialog canceled');
+      return;
+    }
+
+    entitlementSystemRoleInput.UidApplication = this.data.uidApplication;
+    entitlementSystemRoleInput.ObjectKeyEntitlements = [];
+
+    this.sidesheetRef.close({ role: entitlementSystemRoleInput });
+  }
+
   public async onAddToRole(): Promise<void> {
     const entitlementSystemRoleInput: EntitlementSystemRoleInput
       = await this.sidesheet.open(SystemRoleConfigComponent, {
@@ -135,7 +157,7 @@ export class EntitlementsAddComponent implements OnInit {
         padding: '0px',
         width: 'max(500px, 50%)',
         testId: 'add-to-existing-role-sidesheet',
-        data: this.data.uidApplication
+        data: { uid: this.data.uidApplication, createOnly: false }
       }).afterClosed().toPromise();
 
     if (!entitlementSystemRoleInput) {

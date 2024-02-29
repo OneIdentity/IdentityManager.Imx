@@ -125,6 +125,14 @@ export class MastHeadComponent implements OnDestroy {
     return this.sessionState?.IsLoggedIn;
   }
 
+  public get isAppOverview(): boolean {
+    return this.appConfig?.Config?.WebAppIndex === 'admin' && this.router.url === '/';
+  }
+
+  public get isAppAdminPortal(): boolean {
+    return this.appConfig?.Config?.WebAppIndex === 'admin' && this.router.url === '/dashboard';
+  }
+
   public sessionState: ISessionState;
   public logoUrl: string;
   public productName: string;
@@ -184,7 +192,7 @@ export class MastHeadComponent implements OnDestroy {
    * For navigating home, you know.
    */
   public goHome(): void {
-    this.router.navigate([this.appConfig.Config.routeConfig.start], { queryParams: {} });
+    if (!this.isAppOverview) this.router.navigate([this.appConfig.Config.routeConfig.start], { queryParams: {} });
   }
 
   /**

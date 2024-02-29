@@ -89,6 +89,7 @@ export class DataSourceWrapper<TEntity extends TypedEntity = TypedEntity, TExten
   public async getGroupDstSettings(parameters: CollectionLoadParameters, requestOpts?: ApiRequestOptions): Promise<DataSourceToolbarSettings> {
     return {
       displayedColumns: this.displayedColumns,
+      dataModel: this.dataModel,
       dataSource: await this.getData(parameters, requestOpts),
       entitySchema: this.entitySchema,
       navigationState: parameters

@@ -19,6 +19,7 @@
 .imx-shape-header-info {
   overflow: hidden;
   margin-right: 30px;
+  width:100%;
 }
 
 .imx-hyperview-shape-content {
@@ -34,6 +35,9 @@
   font-weight: bold;
   font-size: 14px;
   text-align: left;
+  &--link{
+    cursor: pointer;
+  }
 }
 
 .imx-hyperview-header {
@@ -45,7 +49,11 @@
   font-weight: 400;
 }
 
-// theming
+// Theming
+
+.imx-hyperview-caption--link:hover, .imx-hyperview-caption--link:focus {
+  background-color: rgba($color: $color-gray-100, $alpha: 0.2);
+}
 
 .imx-hyperview-caption,
 .imx-hyperview-header {

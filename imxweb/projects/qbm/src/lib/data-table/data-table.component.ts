@@ -682,7 +682,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
       this.columnDefs.forEach((colDef) => this.table.removeColumnDef(colDef));
     }
 
-    if ((this.dst.dataSourceChanged || this.dst.shownColumnsSelectionChanged) && this.mode === 'manual') {
+    if ((this.dst.dataSourceChanged || this.dst.shownColumnsSelectionChanged) ) {
       this.displayedColumns = [];
       this.additional = this.dst == null || this.dst.additionalColumns?.length === 0 ? this.parentAdditionals : this.dst.additionalColumns;
       // filter additionals for columns, that are already set in the DataSourceToolbarSettings

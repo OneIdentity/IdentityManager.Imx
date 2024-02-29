@@ -28,14 +28,87 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ConfigService } from './config.service';
 
 import { AppConfigService } from '../appConfig/appConfig.service';
+import { Subscription } from 'rxjs';
+import { StatusComponent } from './status.component';
+import { ConfigComponent } from './config.component';
+import { PackagesComponent } from './packages.component';
+import { CacheComponent } from './cache.component';
+import { LogsComponent } from './logs.component';
+import { SwaggerComponent } from './swagger/swagger.component';
+import { SideNavigationExtension } from '../side-navigation-view/side-navigation-view-interfaces';
 
 @Component({
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  constructor(private readonly appConfigService: AppConfigService, private readonly configService: ConfigService) {}
+  public isAdmin = true;
+  public baseUrl = 'admin';
+  public componentName = 'admin';
+  public navItems: SideNavigationExtension[] = [
+    {
+      instance: StatusComponent,
+      data: {
+        TableName: 'Overview',
+        Count: 0,
+      },
+      sortOrder: 1,
+      name: 'overview',
+      caption: '#LDS#Overview',
+    },
+    {
+      instance: ConfigComponent,
+      data: {
+        TableName: 'Configuration',
+        Count: 0,
+      },
+      sortOrder: 2,
+      name: 'config',
+      caption: '#LDS#Configuration',
+    },
+    {
+      instance: PackagesComponent,
+      data: {
+        TableName: 'Packages',
+        Count: 0,
+      },
+      sortOrder: 3,
+      name: 'packages',
+      caption: '#LDS#Packages',
+    },
+    {
+      instance: CacheComponent,
+      data: {
+        TableName: 'Caches',
+        Count: 0,
+      },
+      sortOrder: 4,
+      name: 'caches',
+      caption: '#LDS#Caches',
+    },
+    {
+      instance: LogsComponent,
+      data: {
+        TableName: 'Logs',
+        Count: 0,
+      },
+      sortOrder: 5,
+      name: 'logs',
+      caption: '#LDS#Logs',
+    },
+    {
+      instance: SwaggerComponent,
+      data: {
+        TableName: 'API documentation',
+        Count: 0,
+      },
+      sortOrder: 6,
+      name: 'documentation',
+      caption: '#LDS#API documentation',
+    },
+  ];
 
+  subscriptions: Subscription[] = [];
   src: EventSource;
 
   statusData: {
@@ -45,27 +118,28 @@ export class DashboardComponent implements OnInit, OnDestroy {
     TotalSessions: number;
   };
 
-  selectedPage: string = '';
-
   documentationUiEnabled: boolean = true;
 
-  selectPage(page: string) {
-    this.selectedPage = page;
-  }
+  constructor(
+    private readonly appConfigService: AppConfigService,
+    private readonly configService: ConfigService
+  ) {}
 
   async ngOnInit() {
     this.loadDocumentationUi();
-    this.configService.submitChanges?.subscribe(() => {
-      this.loadDocumentationUi();
-    })
+    this.subscriptions.push(this.configService.submitChanges?.subscribe(() => this.loadDocumentationUi()));
+  }
+
+  /**
+   * Checks if the user has permission to use the API documentation
+   */
+  private async loadDocumentationUi(): Promise<void>{
+    let state = await this.appConfigService.client.admin_apiconfigsingle_get('imx', 'ServerLevelConfig/ApiDocumentation');
+    this.documentationUiEnabled = state == 'SwaggerUi';
   }
 
   ngOnDestroy() {
     if (this.src) this.src.close();
-  }
-
-  private async loadDocumentationUi(): Promise<void>{
-    let state = await this.appConfigService.client.admin_apiconfigsingle_get('imx', 'ServerLevelConfig/ApiDocumentation');
-    this.documentationUiEnabled = state == 'SwaggerUi';
+    if (this.subscriptions.length) this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 }

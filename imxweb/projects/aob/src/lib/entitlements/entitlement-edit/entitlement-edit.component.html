@@ -16,6 +16,8 @@
   </mat-card>
 </div>
 <div eui-sidesheet-actions>
+  <button mat-raised-button data-imx-identifier="entitlement-edit-details-button" *ngIf="isEditableEntitlement"
+    type="button" (click)="manageEntitlement()" color="primary">{{ '#LDS#Edit' | translate }}</button>
   <button mat-raised-button data-imx-identifier="entitlement-edit-button-save"
     [disabled]="!form.dirty" type="button" (click)="save()" color="primary">{{ '#LDS#Save' | translate }}</button>
 </div>

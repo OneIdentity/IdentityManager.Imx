@@ -47,7 +47,7 @@ export class FilterWizardComponent implements OnDestroy {
   public expressionDirty = false;
   public expressionInvalid = true;
   public selectedTabIndex = 0;
-  public formState: FilterFormState = {canClearFilters:false, dirty: false, filterIdentifier:FilterTypeIdentifier.Predefined};
+  public formState: FilterFormState = { canClearFilters: false, dirty: false, filterIdentifier: FilterTypeIdentifier.Predefined };
   public readonly FilterTypeIdentifier: FilterTypeIdentifier;
   public readonly FTIPredefined = FilterTypeIdentifier.Predefined;
   public readonly FTICustom = FilterTypeIdentifier.Custom;
@@ -122,7 +122,8 @@ export class FilterWizardComponent implements OnDestroy {
 
   public checkChanges(): void {
     this.expressionDirty = !_.isEqual(this.sqlExpression?.Expression, this.lastGoodExpression);
-    this.expressionInvalid = !_.isEqual(this.sqlExpression?.Expression, this.emptyExpression?.Expression) && isExpressionInvalid(this.sqlExpression);
+    this.expressionInvalid =
+      !_.isEqual(this.sqlExpression?.Expression, this.emptyExpression?.Expression) && isExpressionInvalid(this.sqlExpression);
   }
 
   public onApplyFilters(): void {
@@ -165,9 +166,7 @@ export class FilterWizardComponent implements OnDestroy {
     }
 
     if (await this.confirm.confirmLeaveWithUnsavedChanges(this.confirmLeaveTitle, this.confirmLeaveMessage)) {
-      if (this.expressionInvalid) {
-        this.sqlExpression.Expression = this.lastGoodExpression;
-      }
+      this.sqlExpression.Expression = this.lastGoodExpression;
       this.sidesheetRef.close();
     }
   }

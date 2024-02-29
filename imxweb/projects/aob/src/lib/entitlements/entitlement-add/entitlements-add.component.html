@@ -59,6 +59,11 @@
     <span>{{'#LDS#Selected application entitlements' | translate }}</span>
   </p>
   <button *ngIf="isSystemRolesEnabled"
+    mat-raised-button (click)="onCreateRole()"
+    data-imx-identifier="imx-entitlements-create-role-button">
+    {{ '#LDS#Create new system role' | translate }}
+  </button>
+  <button *ngIf="isSystemRolesEnabled"
     mat-raised-button (click)="onAddToRole()" [disabled]="!selections || selections?.length === 0"
     data-imx-identifier="imx-entitlements-add-to-role-button">
     {{ '#LDS#Merge into system role' | translate }}

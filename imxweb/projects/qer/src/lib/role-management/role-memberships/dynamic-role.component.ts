@@ -225,7 +225,7 @@ export class DynamicRoleComponent implements OnInit {
   }
 
   private hasValuesSet(sqlExpression: SqlExpression, checkCurrent: boolean = false): boolean {
-    const current = !checkCurrent || (sqlExpression.Value != null && Object.keys(sqlExpression.Value).length > 0);
+    const current = !checkCurrent || (sqlExpression.Value != null && (Object.keys(sqlExpression.Value).length > 0 || typeof sqlExpression.Value === 'boolean'));
 
     if (sqlExpression.Expressions?.length > 0) {
       return current && sqlExpression.Expressions.every((elem) => this.hasValuesSet(elem, true));

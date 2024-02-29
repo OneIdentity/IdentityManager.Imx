@@ -106,7 +106,7 @@
   color: $corbin_orange;
 }
 
-.eui-sidesheet-content {
+.eui-sidesheet-content:not(.imx-hyperview-sidesheet) {
   padding: 0;
 
   ::ng-deep .mat-tab-body-content {

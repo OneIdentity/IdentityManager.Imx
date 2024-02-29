@@ -63,6 +63,9 @@ function getLocalDataForPage<T>(allData: T[], state: { page: number, pageSize: n
   styleUrls: ['./object-history-gridview.component.scss']
 })
 export class ObjectHistoryGridviewComponent implements OnInit, OnChanges {
+  @Input() public historyData: ObjectHistoryEvent[];
+  @ViewChild(MatPaginator) private paginator: MatPaginator;
+
   public get columns(): string[] {
     return this.columnDefs.map(c => c.id);
   }
@@ -77,17 +80,14 @@ export class ObjectHistoryGridviewComponent implements OnInit, OnChanges {
     hidden: false
   };
 
-  @Input() public historyData: ObjectHistoryEvent[];
-
   private displayChangeTypePropertyChange = 'PropertyChange';
   private stateCached: { page: number, pageSize: number, skip: number };
   private parameters: ObjectHistoryParameters;
-  @ViewChild(MatPaginator) private paginator: MatPaginator;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private translationProvider: TranslateService,
-    settings: SettingsService
+    settings: SettingsService,
   ) {
     this.paginatorConfig.size = settings.DefaultPageSize;
   }

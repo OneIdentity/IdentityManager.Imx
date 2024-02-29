@@ -61,6 +61,7 @@ export class BulkItemComponent implements OnInit {
 
   public readonly formGroup = new UntypedFormGroup({});
 
+  public formGroupIsPending = false;
   private diffData: EntityWriteDataSingle;
   private readonly icons: { [key: number]: BulkItemIcon } = {};
   @ViewChildren(CdrEditorComponent) private cdrEditors: QueryList<CdrEditorComponent>;
@@ -112,6 +113,10 @@ export class BulkItemComponent implements OnInit {
 
   public closed(): void {
     this.validate();
+  }
+
+  public onPendingChanged(value: boolean) {
+    this.formGroupIsPending = value;    
   }
 
   public onValueChanged(): void {

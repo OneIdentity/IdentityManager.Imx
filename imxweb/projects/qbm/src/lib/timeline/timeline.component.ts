@@ -27,6 +27,7 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { TimelineEventsGroupedByDate, ExtendedObjectHistoryEvent } from './timeline';
 import moment from 'moment-timezone';
+import { ObjectHistoryService } from '../object-history/object-history.service';
 
 @Component({
   selector: 'imx-timeline',
@@ -34,12 +35,7 @@ import moment from 'moment-timezone';
   styleUrls: ['./timeline.component.scss']
 })
 export class TimelineComponent implements OnInit, OnChanges {
-
   @Input() public data: ExtendedObjectHistoryEvent[];
-  /**from input can be in the following form: 'Invalid data', '2000-01-01', '2000-01-01 00:00:00' */
-  @Input() public from: string;
-  /**to input can be in the following form: 'Invalid data', '2000-01-01', '2000-01-01 00:00:00' */
-  @Input() public to: string;
 
   public eventsGroupedByDate: TimelineEventsGroupedByDate[] = [];
 
@@ -49,25 +45,23 @@ export class TimelineComponent implements OnInit, OnChanges {
    * Inits table
    */
   ngOnInit(): void {
-    this.loadEvents(this.data);
+    this.loadEvents();
   }
 
   /**
    * Filtering and reloading based on the paramater
-   * @param changes SimpleChanges event what detects when the input data is changing
    */
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.data) this.loadEvents(this.data);
-    if (changes.from || changes.to) this.filterByTime();
+  ngOnChanges(): void {
+    this.loadEvents();
   }
 
   /**
    * Loads all input data and creates eventsGroupedByDate
    */
-  public loadEvents(data: ExtendedObjectHistoryEvent[]): void {
+  public loadEvents(): void {
     this.eventsGroupedByDate = [];
 
-    data.forEach((elem) => {
+    this.data.forEach((elem) => {
       const date = moment(elem.ChangeTime).format("L");
 
       elem.Time = moment(elem.ChangeTime).format("HH:mm:ss");
@@ -83,33 +77,4 @@ export class TimelineComponent implements OnInit, OnChanges {
       }
     });
   }
-
-  /**
-   * Handles from and to filtering and loads the result after filtering
-   */
-  public filterByTime(): void {
-    let results = [];
-
-    if (this.from === 'Invalid date' && this.to === 'Invalid date') {
-      this.loadEvents(this.data);
-      return;
-    }
-
-    const isFromValid = this.from !== 'Invalid date';
-    const isToValid = this.to !== 'Invalid date';
-
-    results = this.data.filter((elem) => {
-      const momentElemTime = moment(elem.ChangeTime);
-      const fromValidation = momentElemTime.isAfter(moment(this.from), 'minute');
-      const toValidation = momentElemTime.isBefore(moment(this.to), 'minute');
-
-      if (isFromValid && !isToValid) return fromValidation;
-      if (!isFromValid && isToValid) return toValidation;
-
-      return fromValidation && toValidation;
-    });
-
-    this.loadEvents(results);
-  }
-
 }

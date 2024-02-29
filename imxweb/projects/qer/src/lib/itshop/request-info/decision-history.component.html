@@ -52,8 +52,17 @@
           </mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          <div *ngFor="let pnow of approverNow[0].data" class="imx-approver">
-            {{ pnow.Columns.UID_PersonHead.DisplayValue }}
+          <div *ngFor="let approvalStep of approverNow">
+            <div step>
+              <div step-caption>
+                <span caption translate>#LDS#Approval step</span>
+                <span class="imx-spacing"> - </span>
+                <span>{{ approvalStep.display }}</span>
+              </div>
+              <div approver *ngFor="let pnow of approvalStep.data" class="imx-approver">
+                {{ pnow.Columns.UID_PersonHead.DisplayValue }}
+              </div>
+            </div>
           </div>
         </mat-card-content>
       </mat-card>
@@ -72,12 +81,14 @@
         <mat-card-content>
           <div *ngFor="let approvalStep of approverFuture">
             <div step>
-              <span caption translate>#LDS#Approval step</span>
-              <span class="imx-spacing"> - </span>
-              <span>{{ approvalStep.display }}</span>
-            </div>
-            <div approver *ngFor="let pnext of approvalStep.data" class="imx-approver">
-              {{ pnext.Columns.UID_PersonHead.DisplayValue }}
+              <div step-caption>
+                <span caption translate>#LDS#Approval step</span>
+                <span class="imx-spacing"> - </span>
+                <span>{{ approvalStep.display }}</span>
+              </div>
+              <div approver *ngFor="let pnext of approvalStep.data" class="imx-approver">
+                {{ pnext.Columns.UID_PersonHead.DisplayValue }}
+              </div>
             </div>
           </div>
         </mat-card-content>

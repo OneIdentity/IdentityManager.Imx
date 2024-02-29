@@ -6,6 +6,9 @@
             {{ item.Description }}
         </mat-checkbox>
     </div>
+    <div matSuffix class="imx-suffix-container">
+      <mat-spinner diameter="30" *ngIf="isWriting"></mat-spinner>
+    </div>
 </mat-form-field>
 <mat-error class="imx-error-margin mat-form-field-subscript-wrapper" *ngIf="control.errors?.['required']">
     {{ '#LDS#This field is mandatory.' | translate }}

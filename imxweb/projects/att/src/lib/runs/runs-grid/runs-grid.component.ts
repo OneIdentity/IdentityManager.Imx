@@ -236,6 +236,7 @@ export class RunsGridComponent implements OnInit {
       groupedData.data = await this.attService.typedClient.PortalAttestationRun.Get(groupedData.navigationState);
       groupedData.settings = {
         displayedColumns: this.dstSettings.displayedColumns,
+        dataModel: this.dstSettings.dataModel,
         dataSource: groupedData.data,
         entitySchema: this.dstSettings.entitySchema,
         navigationState: groupedData.navigationState

@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, HostListener, Input, OnDestroy, ViewChild, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, Input, OnDestroy, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ClassloggerService } from '../classlogger/classlogger.service';
@@ -65,7 +65,7 @@ export class SideNavigationViewComponent implements OnDestroy {
 
   protected routerEvents$: Subscription;
 
-  constructor(private readonly logger: ClassloggerService, private readonly router: Router, private readonly route: ActivatedRoute) {
+  constructor(private readonly logger: ClassloggerService, private readonly router: Router, private readonly route: ActivatedRoute, private cdref: ChangeDetectorRef) {
     this.routerEvents$ = this.router.events.subscribe(async (val) => {
       if (this.navItems.length > 0 && val instanceof NavigationEnd) {
         this.handleRouteParam();
@@ -148,6 +148,7 @@ export class SideNavigationViewComponent implements OnDestroy {
       this.logger.debug(this, `${this.componentName}: there is no component registered for page ${this.selectedPage}`);
       return;
     }
+    this.cdref.detectChanges();
     this.sideNavContentRef.clear();
     const selectedPageItem = selectedItem;
     const component = this.sideNavContentRef.createComponent(selectedPageItem.instance);

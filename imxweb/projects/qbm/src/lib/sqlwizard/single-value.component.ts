@@ -149,6 +149,8 @@ export class SingleValueComponent implements OnInit, OnDestroy {
       FkRelation: this._fkRelation,
     };
 
+    if (this.expr.Property.Type === ValType.Bool) this.value = false;
+
     const column = this.entityService.createLocalEntityColumn(property, [this._fkProviderItem], {
       Value: this.value,
       DisplayValue: this.displayValue,

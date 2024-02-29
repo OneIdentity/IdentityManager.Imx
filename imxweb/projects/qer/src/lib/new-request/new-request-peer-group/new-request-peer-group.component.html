@@ -8,7 +8,7 @@
     </mat-chip>
   </mat-chip-list>
   <span class="imx-info-button-caption" translate>#LDS#Information about this tab:</span>
-  <imx-info-button [title]="'#LDS#Heading Recommended Products' | translate" [templateRef]="infoDialogContent"> </imx-info-button>
+  <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
 </div>
 
 <mat-card class="imx-card-container">
@@ -67,7 +67,7 @@
         <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, ['PERSONHASOBJECT', 'PERSONHASASSIGNMENTORDER', 'ASSIGNED'])" class="imx-request-col-status">
           <eui-icon
             icon="approvals"
-            [matTooltip]="'#LDS#This product has already been assigned to {0}.' | translate | ldsReplace : orchestration.recipients.Column?.GetDisplayValue()"
+            [matTooltip]="'#LDS#This product has already been assigned to {0}.' | translate | ldsReplace: orchestration.recipients.Column?.GetDisplayValue()"
           ></eui-icon>
         </div>
         <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, 'ORDER')" class="imx-request-col-status">
@@ -120,10 +120,3 @@
     </imx-data-table-column>
   </imx-data-table>
 </mat-card>
-
-<!-- Template for the info dialog -->
-<ng-template #infoDialogContent>
-  <p class="no-top"> {{ '#LDS#Here you can see and request products and organizational structures other identities of the peer group of {0} requested.' | translate | ldsReplace : orchestration.recipients.Column?.GetDisplayValue() }} </p>
-  <p translate>#LDS#A peer group contains all the identities that have the same manager or the same primary or secondary department as the request recipient.</p>
-  <!-- TODO: This needs to link to the help page when that page exists  -->
-</ng-template>

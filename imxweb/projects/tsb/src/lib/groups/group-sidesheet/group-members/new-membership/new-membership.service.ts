@@ -34,22 +34,21 @@ import { IForeignKeyInfo, TypedEntity, ValueStruct } from 'imx-qbm-dbts';
 import { ShelfService, QerApiService, UserModelService } from 'qer';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NewMembershipService {
-
   constructor(
     private readonly itShop: ShelfService,
     private readonly qerClient: QerApiService,
     private readonly busyService: EuiLoadingService,
     private readonly userService: UserModelService
-  ) { }
+  ) {}
 
   public async requestMembership(members: ValueStruct<string>[], product: PortalTargetsystemUnsGroupServiceitem): Promise<boolean> {
-    const items = this.getServiceItemsForPersons(product, members);
+    let items = this.getServiceItemsForPersons(product, members);
     await this.itShop.setShops(items);
 
-    if (items.every(elem => elem.UidITShopOrg == null || elem.UidITShopOrg === '')) {
+    if (items.every((elem) => elem.UidITShopOrg == null || elem.UidITShopOrg === '')) {
       return false;
     }
 
@@ -57,15 +56,15 @@ export class NewMembershipService {
     setTimeout(() => (busyIndicator = this.busyService.show()));
 
     try {
-      await Promise.all( items.filter(elem => elem.UidITShopOrg != null && elem.UidITShopOrg !== '').map(item => {
+      items = items.filter((elem) => elem.UidITShopOrg != null && elem.UidITShopOrg !== '');
+
+      for (const item of items) {
         const entity = this.qerClient.typedClient.PortalCartitem.createEntity();
         entity.UID_ITShopOrg.value = item.UidITShopOrg;
         entity.UID_PersonOrdered.value = item.UidPerson;
-        return this.qerClient.typedClient.PortalCartitem.Post(entity);
-      }));
-      
+        await this.qerClient.typedClient.PortalCartitem.Post(entity);
+      }
       await this.userService.reloadPendingItems();
-
     } finally {
       setTimeout(() => {
         this.busyService.hide(busyIndicator);
@@ -79,19 +78,20 @@ export class NewMembershipService {
   }
 
   public async unsubscribeMembership(item: TypedEntity): Promise<void> {
-    await this.qerClient.client.portal_itshop_unsubscribe_post({UidPwo: [item.GetEntity().GetColumn('UID_PersonWantsOrg').GetValue()]});
+    await this.qerClient.client.portal_itshop_unsubscribe_post({ UidPwo: [item.GetEntity().GetColumn('UID_PersonWantsOrg').GetValue()] });
   }
 
   private getServiceItemsForPersons(
     serviceItem: PortalTargetsystemUnsGroupServiceitem,
-    recipients: ValueStruct<string>[],
+    recipients: ValueStruct<string>[]
   ): RequestableProductForPerson[] {
-    return recipients.map(recipient => ({
-      UidPerson: recipient.DataValue,
-      UidAccProduct: serviceItem.GetEntity().GetKeys()[0],
-      Display: serviceItem.GetEntity().GetDisplay(),
-      DisplayRecipient: recipient.DisplayValue
-    })
-    ).reduce((a, b) => a.concat(b), []);
+    return recipients
+      .map((recipient) => ({
+        UidPerson: recipient.DataValue,
+        UidAccProduct: serviceItem.GetEntity().GetKeys()[0],
+        Display: serviceItem.GetEntity().GetDisplay(),
+        DisplayRecipient: recipient.DisplayValue,
+      }))
+      .reduce((a, b) => a.concat(b), []);
   }
 }

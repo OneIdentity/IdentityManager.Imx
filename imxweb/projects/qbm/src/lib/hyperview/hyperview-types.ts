@@ -63,6 +63,7 @@ export interface HvCell {
  */
 export interface ShapeClickArgs {
   objectKey: string;
+  caption: string;
 }
 
 /**
@@ -83,4 +84,23 @@ export interface LayoutResult {
 export interface HvSettings {
   enforceVerticalLayout: boolean;
   elements: HvElement[];
+}
+
+/**
+ * Defines the hyperview navigation type.
+ */
+export enum HyperViewNavigationEnum {
+  First,
+  Back,
+  Forward,
+}
+
+/**
+ * Defines the hyperview navigation input params.
+ */
+export interface HyperViewNavigation {
+  first: boolean;
+  back: boolean;
+  forward: boolean;
+  navigation: boolean;
 }

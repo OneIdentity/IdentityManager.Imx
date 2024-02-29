@@ -16,6 +16,7 @@
     <imx-cdr-editor *ngFor="let cdr of bulkItem?.properties; let i = index"
       [cdr]="cdr"
       (valueChange)="onValueChanged()"
+      (pendingChanged)="onPendingChanged($event)"
       (controlCreated)="addControl(cdr.column.ColumnName + '_' + i, $event)"
       [attr.data-imx-identifier]="'bulk-item' + cdr.column.ColumnName  + '_' + i">
     </imx-cdr-editor>
@@ -29,7 +30,7 @@
   </form>
   <div *ngIf="!hideButtons" class="imx-action-container">
     <button mat-button (click)="skip()" data-imx-identifier="bulk-item-button-skip">{{'#LDS#Skip' | translate}}</button>
-    <button mat-raised-button color="primary" [disabled]="!formGroup.valid" (click)="save()" data-imx-identifier="bulk-item-button-save">
+    <button mat-raised-button color="primary" [disabled]="!formGroup.valid || formGroupIsPending" (click)="save()" data-imx-identifier="bulk-item-button-save">
       {{ '#LDS#Apply' | translate }}
     </button>
   </div>

@@ -10,19 +10,20 @@
             </form>
           </mat-card>
         </div>
-        <div eui-sidesheet-actions >
+        <div eui-sidesheet-actions>
           <button mat-raised-button color="primary" [disabled]="!formGroup.dirty || formGroup.invalid" data-imx-identifier="resource-sidesheet-save-button" (click)="submit()">
-            {{'#LDS#Save'| translate}}
+            {{ '#LDS#Save' | translate }}
           </button>
         </div>
       </div>
     </mat-tab>
-    <mat-tab label="{{'#LDS#Heading Hyperview' | translate}}">
+    <mat-tab label="{{ '#LDS#Heading Hyperview' | translate }}">
       <ng-template matTabContent>
-        <imx-object-hyperview
-          [objectType]="data?.entity?.TypeName"
-          [objectUid]="data?.entity?.GetKeys()[0]">
-      </imx-object-hyperview>
+        <div class="imx-tab-content">
+          <div class="imx-tab-content-body">
+            <imx-object-hyperview [objectType]="data?.entity?.TypeName" [objectUid]="data?.entity?.GetKeys()[0]"> </imx-object-hyperview>
+          </div>
+        </div>
       </ng-template>
     </mat-tab>
   </mat-tab-group>

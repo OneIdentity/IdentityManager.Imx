@@ -3,20 +3,18 @@
   <mat-label>{{ '#LDS#Value' | translate }}</mat-label>
   <mat-select [(ngModel)]="value" data-imx-identifier="single-value-select-limvalue" (selectionChange)="emitChanges()">
     <mat-option *ngFor="let lv of expr.Property.LimitedValues" [value]="lv.Value">
-      {{lv.Description}}
+      {{ lv.Description }}
     </mat-option>
   </mat-select>
 </mat-form-field>
 
 <ng-container *ngIf="expr.Property.SelectionTables">
-  <imx-cdr-editor [cdr]="cdr" class="auto-flex" (valueChange)="emitChanges()">
-  </imx-cdr-editor>
+  <imx-cdr-editor [cdr]="cdr" class="auto-flex" (valueChange)="emitChanges()"> </imx-cdr-editor>
 </ng-container>
 
 <ng-container [ngSwitch]="expr.Property.Type" *ngIf="!expr.Property.LimitedValues && !expr.Property.SelectionTables">
   <div *ngSwitchCase="ValType.Bool" class="operand">
-    <mat-slide-toggle data-imx-identifier="single-value-toggle" [(ngModel)]="value" (change)="emitChanges()">{{ '#LDS#Property is activated' | translate }}
-    </mat-slide-toggle>
+    <mat-slide-toggle data-imx-identifier="single-value-toggle" [(ngModel)]="value" (change)="emitChanges()">{{ '#LDS#Property is activated' | translate }} </mat-slide-toggle>
   </div>
   <div *ngSwitchCase="ValType.Date" class="operand">
     <imx-sqlwizard-datepicker [expr]="expr" (change)="emitChanges()"></imx-sqlwizard-datepicker>
@@ -24,14 +22,19 @@
   <div *ngSwitchCase="ValType.Int" class="operand">
     <mat-form-field appearance="outline">
       <mat-label>{{ '#LDS#Value' | translate }}</mat-label>
-      <input matInput type="number" [(ngModel)]="value" (change)="emitChanges()">
+      <input matInput type="number" [(ngModel)]="value" (change)="emitChanges()" />
+    </mat-form-field>
+  </div>
+  <div *ngSwitchCase="ValType.Double" class="operand">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ '#LDS#Value' | translate }}</mat-label>
+      <input matInput type="number" [(ngModel)]="value" (change)="emitChanges()" />
     </mat-form-field>
   </div>
   <div *ngSwitchDefault class="operand">
-
     <mat-form-field class="flex-grow" appearance="outline">
       <mat-label>{{ '#LDS#Value' | translate }}</mat-label>
-      <input matInput type="text" [(ngModel)]="value" data-imx-identifier="single-value-input-value" (change)="emitChanges()">
+      <input matInput type="text" [(ngModel)]="value" data-imx-identifier="single-value-input-value" (change)="emitChanges()" />
     </mat-form-field>
   </div>
 </ng-container>

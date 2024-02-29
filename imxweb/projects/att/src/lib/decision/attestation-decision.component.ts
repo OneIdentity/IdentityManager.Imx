@@ -346,6 +346,7 @@ export class AttestationDecisionComponent implements OnInit, OnDestroy {
       groupedData.data = await this.attestationCases.get(navigationState);
       groupedData.settings = {
         displayedColumns: this.dstSettings.displayedColumns,
+        dataModel: this.dstSettings.dataModel,
         dataSource: groupedData.data,
         entitySchema: this.dstSettings.entitySchema,
         navigationState,

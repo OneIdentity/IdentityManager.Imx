@@ -332,7 +332,7 @@ export class RequestActionService {
           text: this.ldsReplace.transform(this.translate.instant('#LDS#The following {0} products could not be added to the shopping cart: {1}'), errorRequests.length, errorText),
           type: 'error',
         });
-      }      
+      }
       await this.userService.reloadPendingItems();
       this.applied.next();
     }
@@ -369,7 +369,7 @@ export class RequestActionService {
         this.snackBar.open({
           key: config.message,
           parameters: [config.data.requests.length],
-        });        
+        });
         await this.userService.reloadPendingItems();
         this.applied.next();
       }
@@ -383,7 +383,7 @@ export class RequestActionService {
       ColumnName: 'ReasonHead',
       Type: ValType.Text,
       IsMultiLine: true,
-      MinLen: required ? 0 : 1,
+      MinLen: required ? 1 : 0,
     });
 
     return new BaseCdr(column, display);

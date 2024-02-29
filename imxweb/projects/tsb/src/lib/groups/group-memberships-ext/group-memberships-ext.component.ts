@@ -118,7 +118,7 @@ export class GroupMembershipsExtComponent implements OnInit {
   private async getData(): Promise<void> {
    const isBusy = this.busyService.beginBusy();
     try {
-      const groupsPerIdentity = await this.groupService.getGroupMemberships(this.referrer.objectuid);
+      const groupsPerIdentity = await this.groupService.getGroupMemberships(this.referrer.objectuid, this.navigationState);
       this.dstSettings = {
         displayedColumns: this.displayedColumnsWithDisplay,
         dataSource: groupsPerIdentity,

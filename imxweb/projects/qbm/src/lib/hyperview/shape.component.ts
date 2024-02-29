@@ -24,11 +24,12 @@
  *
  */
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit } from '@angular/core';
 
 import { ShapeData } from 'imx-api-qbm';
 import { ModelCssService } from '../model-css/model-css.service';
 import { TableImageService } from '../table-image/table-image.service';
+import { ShapeClickArgs } from './hyperview-types';
 
 /**
  * The general shape component for an object.
@@ -36,22 +37,33 @@ import { TableImageService } from '../table-image/table-image.service';
 @Component({
   selector: 'imx-hyperview-shape',
   templateUrl: './shape.component.html',
-  styleUrls: ['./shape.component.scss']
+  styleUrls: ['./shape.component.scss'],
 })
 export class ShapeComponent implements OnInit {
   @Input() public shape: ShapeData;
+  @Input() public navigate = false;
+  @Input() public selected: EventEmitter<ShapeClickArgs> = new EventEmitter();
   public imageClass: string;
 
-  constructor(private readonly imageService: TableImageService, private readonly modelCssService: ModelCssService) { }
+  constructor(private readonly imageService: TableImageService, private readonly modelCssService: ModelCssService) {}
 
   public ngOnInit(): void {
-
     this.modelCssService.loadModelCss();
 
     this.imageClass = this.shape.ImageUid ? this.imageService.getCss(this.shape.ImageUid, true) : this.imageService.getDefaultCss(true);
   }
 
+  public click(): void {
+    if (this.navigate && !this.isShapeLayoutMiddle) {
+      this.selected?.emit({ objectKey: this.shape.ObjectKey, caption: this.shape.Caption });
+    }
+  }
+
   public get ObjectCount(): number {
-    return (this.shape && this.shape.Elements) ? this.shape.Elements.length : -1;
+    return this.shape && this.shape.Elements ? this.shape.Elements.length : -1;
+  }
+
+  public get isShapeLayoutMiddle(): boolean {
+    return this.shape?.LayoutType === 'MiddleCenter';
   }
 }

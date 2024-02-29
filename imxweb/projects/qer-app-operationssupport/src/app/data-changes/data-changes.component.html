@@ -54,10 +54,10 @@
           {{ column.value(row) }}
         </ng-container>
         <ng-container *ngIf="column.name === 'ChangeType'">
-          <ng-container [ngSwitch]="column.value(row)">
-            <eui-badge size="medium" [color]="badgeColor.Insert" *ngSwitchCase="'Insert'">{{ column.value(row) }}</eui-badge>
-            <eui-badge size="medium" [color]="badgeColor.Update" *ngSwitchCase="'Update'">{{ column.value(row) }}</eui-badge>
-            <eui-badge size="medium" [color]="badgeColor.Delete" *ngSwitchCase="'Delete'">{{ column.value(row) }}</eui-badge>
+          <ng-container [ngSwitch]="row.ChangeType">
+            <eui-badge size="medium" [color]="badgeColor.Insert" *ngSwitchCase="changeTypeEnum.Insert">{{ column.value(row) }}</eui-badge>
+            <eui-badge size="medium" [color]="badgeColor.Update" *ngSwitchCase="changeTypeEnum.Update">{{ column.value(row) }}</eui-badge>
+            <eui-badge size="medium" [color]="badgeColor.Delete" *ngSwitchCase="changeTypeEnum.Delete">{{ column.value(row) }}</eui-badge>
           </ng-container>
         </ng-container>
       </td>

@@ -27,7 +27,10 @@
 import { IClientProperty, IEntity } from 'imx-qbm-dbts';
 
 export function buildAdditionalElementsString(entity: IEntity, additionals: IClientProperty[], separator: string = '; '): string {
-  return additionals == null ? '' : additionals
-    .map(elem => `${elem?.Display || elem?.ColumnName}: ${entity.GetColumn(elem?.ColumnName)?.GetDisplayValue() || '-'}`)
-    .join(separator);
+  return additionals == null
+    ? ''
+    : additionals
+        .filter((elem) => entity.GetColumn(elem?.ColumnName)?.GetDisplayValue() !== '')
+        .map((elem) => `${elem?.Display || elem?.ColumnName}: ${entity.GetColumn(elem?.ColumnName)?.GetDisplayValue()}`)
+        .join(separator);
 }

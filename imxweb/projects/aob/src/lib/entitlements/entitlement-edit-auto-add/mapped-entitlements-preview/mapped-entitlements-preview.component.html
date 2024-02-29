@@ -21,11 +21,11 @@
         <span>{{getCount('conflicted')}}</span>
       </div>
     </div>
-    <imx-data-source-toolbar #dst [settings]="settings" [options]="[]">
+    <imx-data-source-toolbar #dst [settings]="settings" (navigationStateChanged)="navigate($event)" [options]="[]"> 
     </imx-data-source-toolbar>
 
     <div class="imx-table-container">
-      <imx-data-table [dst]="dst" mode="manual" [detailViewVisible]="false"
+      <imx-data-table [dst]="dst" mode="manual" [detailViewVisible]="false" 
       [noDataText]="'#LDS#There are no matching application entitlements.' | translate"
         data-imx-identifier="mapped-entitlements-preview-datatable">
         <imx-data-table-column [entityColumn]="entitySchema?.Columns.DisplayName"
@@ -49,6 +49,8 @@
           columnLabel="{{'#LDS#Already assigned to following application' | translate }}">
         </imx-data-table-column>
       </imx-data-table>
+    <imx-data-source-paginator [dst]="dst" data-imx-identifier="mapped-entitlements-preview-paginator"> </imx-data-source-paginator>
+
     </div>
   </mat-card>
 </div>
