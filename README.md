@@ -6,15 +6,15 @@
 ### March 11, 2024
 The v92 branch has been updated with fixes for the following issues.
 
-- Bug 447996: In DataSource Toolbar, opening a view which has custom filters, adds custom filters to the GET, but not the UI
-- Bug 447997: In DataSource Toolbar, Reset view removes custom filters from GET, but not from the UI
-- Bug 447702: Web Portal: Filtering: Canceling defining a filter does not reset filters (reappearing)
-- 446439: Portal should support pre-selections by URL parameter
-- 442023: Add configuration to globally enable HyperView navigation
-- Bug 446435: Attestation case details: Object picker in hyperview tab should show display names instead of raw database table names in the
-- Bug 448406: Web Portal: A maximum of 20 Entitlements are visible on product request details page
-- Bug 446478: Tiles no longer update the number of Products in Shopping Cart
-- Bug 447474: Cannot change masthead color by theming
+447996: In DataSource Toolbar, opening a view which has custom filters, adds custom filters to the GET, but not the UI
+447997: In DataSource Toolbar, Reset view removes custom filters from GET, but not from the UI
+447702: Filtering: Canceling defining a filter does not reset filters (reappearing)
+446439: Portal should support pre-selections by URL parameter
+442023: Add configuration to globally enable HyperView navigation
+446435: Attestation case details: Object picker in hyperview tab shows user-friendly display names
+448406: Not all entitlements were visible in the product request details for a role
+446478: The number of pending requests and shopping cart items were not being updated correctly.
+447474: Fixed masthead color when applying a custom theme
 
 ### February 28, 2024
 The v92 branch has been updated with fixes for the following issues.
