@@ -33,7 +33,7 @@ import { ProductEntitlementApiService } from './product-entitlement-api.service'
 @Component({
   selector: 'imx-product-entitlements',
   templateUrl: './product-entitlements.component.html',
-  styleUrls: ['./product-entitlements.component.scss']
+  styleUrls: ['./product-entitlements.component.scss'],
 })
 export class ProductEntitlementsComponent implements OnInit {
   @Input() public uidAccProduct: string;
@@ -46,10 +46,7 @@ export class ProductEntitlementsComponent implements OnInit {
   public entitlementTypes: Map<string, string>;
   private displayColumns: ClientPropertyForTableColumns[];
 
-  constructor(
-    private readonly entitlementApi: ProductEntitlementApiService,
-    private readonly metadata: MetadataService,
-  ) {
+  constructor(private readonly entitlementApi: ProductEntitlementApiService, private readonly metadata: MetadataService) {
     this.entitySchema = entitlementApi.productEntitlementSchema;
     this.displayColumns = this.displayColumns = [
       {
@@ -57,12 +54,12 @@ export class ProductEntitlementsComponent implements OnInit {
         ColumnName: 'entitlementDisplay',
         Display: this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME].Display,
       },
-      this.entitySchema.Columns.TargetEntitlement
+      this.entitySchema.Columns.TargetEntitlement,
     ];
-   }
+  }
 
   public ngOnInit(): void {
-    setTimeout(async () => await this.navigate())
+    setTimeout(async () => await this.navigate());
   }
 
   public async navigate(parameter?: CollectionLoadParameters): Promise<void> {
@@ -72,14 +69,19 @@ export class ProductEntitlementsComponent implements OnInit {
 
       this.entitlementTypes = new Map();
 
-      dataSource.Data.forEach(async item => {
+      dataSource.Data.forEach(async (item) => {
         this.entitlementTypes.set(item.GetEntity().GetKeys().toString(), await this.getTypeDescription(item));
       });
 
       this.dstSettings = {
         dataSource,
         entitySchema: this.entitySchema,
-        navigationState: parameter,
+        navigationState: parameter
+          ? parameter
+          : {
+              StartIndex: 0,
+              PageSize: 20,
+            },
         displayedColumns: this.displayColumns,
       };
     } finally {
@@ -92,5 +94,4 @@ export class ProductEntitlementsComponent implements OnInit {
     const metadata = await this.metadata.GetTableMetadata(objKey.TableName);
     return metadata.DisplaySingular;
   }
-
 }

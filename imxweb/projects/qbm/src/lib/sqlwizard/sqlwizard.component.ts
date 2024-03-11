@@ -36,8 +36,8 @@ import { MatButtonToggleChange } from '@angular/material/button-toggle';
   selector: 'imx-sqlwizard',
 })
 export class SqlWizardComponent implements OnInit, OnChanges, AfterViewInit {
-  public readonly andConditionLabel = '#LDS#ALL';
-  public readonly orConditionLabel = '#LDS#ANY';
+  public readonly andConditionLabel = '#LDS#Condition_And';
+  public readonly orConditionLabel = '#LDS#Condition_Or';
 
   public LogOp = _logOp;
   public viewSettings: SqlViewSettings;

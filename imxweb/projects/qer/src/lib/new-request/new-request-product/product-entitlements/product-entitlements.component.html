@@ -1,9 +1,9 @@
 <imx-data-source-toolbar #dst data-imx-identifier="product-entitlements-dst" [settings]="dstSettings"
-[searchBoxText]="'#LDS#Search' | translate" (navigationStateChanged)="navigate($event)" [options]="[]">
+[options]="[]" [isDataSourceLocal]="true">
 </imx-data-source-toolbar>
 <imx-data-table #dataTable data-imx-identifier="product-entitlements-table" [dst]="dst" detailViewVisible="false"
 [noDataText]="'#LDS#There are currently no entitlements assigned.'|translate" mode="manual" [selectable]="false"
-[showSelectionInfo]="false">
+[showSelectionInfo]="false" >
 <imx-data-table-generic-column columnName="entitlementDisplay"
   [columnLabel]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME].Display">
   <ng-template let-item>
@@ -16,3 +16,4 @@
   </ng-template>
 </imx-data-table-column>
 </imx-data-table>
+<imx-data-source-paginator data-imx-identifier="product-entitlements-paginator" [dst]="dst"></imx-data-source-paginator>

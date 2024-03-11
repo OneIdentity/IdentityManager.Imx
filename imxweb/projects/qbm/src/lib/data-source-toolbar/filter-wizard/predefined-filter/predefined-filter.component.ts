@@ -25,8 +25,6 @@
  */
 
 import { AfterViewInit, Component, EventEmitter, Inject, Input, NgZone, OnDestroy, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-import { MatCardContent } from '@angular/material/card';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { MatSelectChange } from '@angular/material/select';
 import { MatTableDataSource } from '@angular/material/table';
@@ -38,7 +36,7 @@ import { DataSourceToolbarSettings } from '../../data-source-toolbar-settings';
 import { DSTViewConfig } from '../../data-source-toolbar-view-config.interface';
 import { FilterFormState, FilterTypeIdentifier, FilterWizardSidesheetData } from '../filter-wizard.interfaces';
 import { FilterWizardService } from '../filter-wizard.service';
-
+import * as _ from 'lodash';
 @Component({
   selector: 'imx-predefined-filter',
   templateUrl: './predefined-filter.component.html',
@@ -103,6 +101,8 @@ export class PredefinedFilterComponent implements OnInit, AfterViewInit, OnDestr
   public hiddenFilterSet: Set<string> = new Set([]);
   public filterOptionLengthThreshold = 5;
 
+  public filters: DataSourceToolbarFilter[] = [];
+
   /**
    * This is the mat table datasource.
    */
@@ -130,8 +130,9 @@ export class PredefinedFilterComponent implements OnInit, AfterViewInit, OnDestr
   constructor(private readonly filterService: FilterWizardService, @Inject(EUI_SIDESHEET_DATA) public data?: FilterWizardSidesheetData) {
     // this.hiddenFilters = ['namespace'];
     this.id = data.id;
-    this.settings = data.settings;
+    this.settings = Object.create(data.settings);
     this.selectedFilters = data.selectedFilters;
+    this.filters = _.cloneDeep(data.settings.filters);
     this.internalSelectedFilters = Object.create(this.selectedFilters);
     this.formState = { canClearFilters: this.selectedFilters.length > 0, dirty: false, filterIdentifier: FilterTypeIdentifier.Predefined };
 
@@ -241,7 +242,7 @@ export class PredefinedFilterComponent implements OnInit, AfterViewInit, OnDestr
    * @returns the filter with the selected option
    */
   public getSelectedFilterFromName(filterName: string, value: string): DataSourceToolbarSelectedFilter {
-    const filter = this.settings.filters?.find((filter) => filter.Name === filterName);
+    const filter = this.filters?.find((filter) => filter.Name === filterName);
     if (filter) {
       filter.CurrentValue = value;
       const selectedOption = this.findFilterOptionFromValue(value, filter);
@@ -286,7 +287,7 @@ export class PredefinedFilterComponent implements OnInit, AfterViewInit, OnDestr
    * Clears all selected filter values and updates and emits the new navigationState
    */
   private clearFilters(emit = true): void {
-    this.settings.filters?.forEach((filter) => (filter.CurrentValue = undefined));
+    this.filters?.forEach((filter) => (filter.CurrentValue = undefined));
     const containsCustomFilters = this.selectedFiltersContainsCustomFilters();
     if (containsCustomFilters) {
       this.customSelectedFilterRemoved.emit();
@@ -321,15 +322,17 @@ export class PredefinedFilterComponent implements OnInit, AfterViewInit, OnDestr
    */
   private updateNavigateStateWithFilters(emit = true): void {
     this.selectedFilters = Object.create(this.internalSelectedFilters);
-    this.settings.filters?.forEach((filter) => {
+    this.filters?.forEach((filter) => {
       if (filter.CurrentValue) {
         this.settings.navigationState[filter.Name] = filter.CurrentValue;
+        this.settings.filters.find(elem=>elem.Name === filter.Name).CurrentValue = filter.CurrentValue;
         if (filter?.Column) {
           // This is a local filter and we must filter over this column
           this.localFilterState.filterColumns[filter.Column] = filter.CurrentValue;
         }
       } else {
         delete this.settings.navigationState[filter.Name];
+        delete this.settings.filters.find((elem) => elem.Name === filter.Name).CurrentValue;
         if (filter?.Column) {
           delete this.localFilterState.filterColumns[filter.Column];
         }

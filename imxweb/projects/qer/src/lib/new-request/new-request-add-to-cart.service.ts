@@ -50,6 +50,7 @@ import { SelectedProductSource } from './new-request-selected-products/selected-
 import { NewRequestOrchestrationService } from './new-request-orchestration.service';
 import { NewRequestSelectionService } from './new-request-selection.service';
 import { RecipientsWrapper } from '../product-selection/recipients-wrapper';
+import { UserModelService } from '../user/user-model.service';
 
 // TODO: not used anymore - can be removed
 @Injectable({
@@ -74,6 +75,7 @@ export class NewRequestAddToCartService {
     private readonly snackbar: SnackBarService,
     private readonly sidesheetService: EuiSidesheetService,
     private readonly translate: TranslateService,
+    private readonly userModelService: UserModelService,
   ) {}
 
   public async addItemsToCart(): Promise<void> {
@@ -108,6 +110,7 @@ export class NewRequestAddToCartService {
         parameters: [this.savedItems],
       });
     }
+    await this.userModelService.reloadPendingItems();
 
     this.selectionService.clearProducts();
   }

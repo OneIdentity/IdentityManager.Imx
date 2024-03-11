@@ -1,4 +1,4 @@
-<ng-container *ngFor="let filter of settings?.filters">
+<ng-container *ngFor="let filter of filters">
   <mat-card class="mat-elevation-z2" *ngIf="!hiddenFilterSet.has(filter.Name)">
     <mat-card-content>
       <h1 *ngIf="filter.Options.length > 1" class="imx-filter-title">{{ filter.Description || filter.Name }}</h1>

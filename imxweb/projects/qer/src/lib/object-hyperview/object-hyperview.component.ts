@@ -32,6 +32,7 @@ import { ObjectHyperviewService } from './object-hyperview.service';
 import { Subscription } from 'rxjs';
 import { ObjectHyperview } from './object-hyperview-interface';
 import { DbObjectKey } from 'imx-qbm-dbts';
+import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
 
 @Component({
   selector: 'imx-object-hyperview',
@@ -76,7 +77,10 @@ export class ObjectHyperviewComponent implements OnInit, OnChanges, OnDestroy {
   private navigationSubscriptions: Subscription;
   private hyperviewStates: ObjectHyperview[] = [];
 
-  constructor(private readonly objectHyperviewService: ObjectHyperviewService) {}
+  constructor(
+    private readonly objectHyperviewService: ObjectHyperviewService,
+    private readonly configService: ProjectConfigurationService
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!(changes.objectUid?.isFirstChange() || changes.hyperviewName?.isFirstChange()) && (changes.hyperviewName || changes.objectUid)) {
@@ -95,17 +99,20 @@ export class ObjectHyperviewComponent implements OnInit, OnChanges, OnDestroy {
 
   public async ngOnInit(): Promise<void> {
     //If the user has navigation permission subscribe to the selected event emitter and set hyperviewStates to initial state.
-    this.navigation.navigation = true;
-    this.navigationSubscriptions = this.selected.subscribe((shape) => {
-      const hyperviewObject = DbObjectKey.FromXml(shape.objectKey);
-      this.addHyperviewObject(hyperviewObject.TableName, hyperviewObject.Keys[0], this.selectedHyperviewIndex + 1);
-    });
-    this.hyperviewStates = [{ type: this.objectType, uid: this.objectUid, selected: true }];
+    const projectConfig = await this.configService.getConfig();
+    if (!projectConfig.DisableHyperViewNavigation) {
+      this.navigation.navigation = true;
+      this.navigationSubscriptions = this.selected.subscribe((shape) => {
+        const hyperviewObject = DbObjectKey.FromXml(shape.objectKey);
+        this.addHyperviewObject(hyperviewObject.TableName, hyperviewObject.Keys[0], this.selectedHyperviewIndex + 1);
+      });
+      this.hyperviewStates = [{ type: this.objectType, uid: this.objectUid, selected: true }];
+    }
     await this.reload();
   }
 
   public ngOnDestroy(): void {
-    this.navigationSubscriptions.unsubscribe();
+    this.navigationSubscriptions?.unsubscribe();
   }
 
   public onNavigationChanged($event: HyperViewNavigationEnum) {

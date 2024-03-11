@@ -38,6 +38,7 @@ import {
   BaseReadonlyCdr,
   ClassloggerService,
   ColumnDependentReference,
+  MetadataService,
   SnackBarService,
   SystemInfoService,
 } from 'qbm';
@@ -107,6 +108,7 @@ export class AttestationCaseComponent implements OnDestroy, OnInit {
     private readonly busyService: EuiLoadingService,
     private readonly systemInfoService: SystemInfoService,
     private readonly logger: ClassloggerService,
+    private readonly metadataService: MetadataService,
     authentication: AuthenticationService
   ) {
     this.case = data.case;
@@ -228,12 +230,20 @@ export class AttestationCaseComponent implements OnDestroy, OnInit {
     });
   }
 
-  public setRelatedOptions(): void {
+  public async setRelatedOptions(): Promise<void> {
     this.relatedOptions =
-      this.data.case.data?.RelatedObjects.map((relatedObject) => {
-        const objectType = DbObjectKey.FromXml(relatedObject.ObjectKey);
-        return { ObjectKey: relatedObject.ObjectKey, Display: `${relatedObject.Display} - ${objectType.TableName}` };
-      }) || [];
+      (await Promise.all(
+        this.data.case.data?.RelatedObjects.map(async (relatedObject) => {
+          const objectType = DbObjectKey.FromXml(relatedObject.ObjectKey);
+          if (!this.metadataService.tables[objectType.TableName]) {
+            await this.metadataService.update([objectType.TableName]);
+          }
+          return {
+            ObjectKey: relatedObject.ObjectKey,
+            Display: `${relatedObject.Display} - ${this.metadataService.tables[objectType.TableName].DisplaySingular}`,
+          };
+        })
+      )) || [];
   }
 
   public setHyperviewObject(selectedRelatedObject: AttestationRelatedObject): void {
