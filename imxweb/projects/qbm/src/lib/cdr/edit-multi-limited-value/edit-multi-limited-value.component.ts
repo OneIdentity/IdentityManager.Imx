@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, EventEmitter, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, OnDestroy } from '@angular/core';
 import { FormArray, FormControl } from '@angular/forms';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
@@ -52,12 +52,14 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
 
   public readonly columnContainer = new EntityColumnContainer<string>();
   public readonly valueHasChanged = new EventEmitter<ValueHasChangedEventArg>();
+  public readonly pendingChanged = new EventEmitter<boolean>();
 
   private readonly subscriptions: Subscription[] = [];
   private isWriting = false;
 
   constructor(
     private readonly logger: ClassloggerService,
+    private readonly changeDetectorRef: ChangeDetectorRef,
     private readonly multiValueProvider: MultiValueService
   ) { }
 
@@ -76,20 +78,20 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
       this.subscriptions.push(
         this.control.valueChanges
         .pipe(
-          tap(() => this.control.markAsTouched()),
+          tap(() => this.pendingChanged.emit(true)),
           debounceTime(1400),
           distinctUntilChanged(),
         )
         .subscribe(
-          async (values) => this.writeValue(values)
-        )       
+          async (values) => await this.writeValue(values)
+        )
       );
       this.subscriptions.push(
         this.columnContainer.subscribe(() => {
           if (this.isWriting) {
             return;
           }
-          if (this.control.value !== this.columnContainer.value) {
+          if (this.getSelectedNamesMultiValue(this.control.value) !== this.columnContainer.value) {
             this.initValues();
           }
 
@@ -119,8 +121,10 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
   }
 
   public initValues(): void {
+    if (this.control.controls?.length > 0) {
+      return;
+    }
     const selectedValues = this.multiValueProvider.getValues(this.columnContainer.value);
-    this.control = new FormArray([]);
     this.columnContainer.limitedValuesContainer.values.forEach(limitedValueData =>
       this.control.push(new FormControl(this.isSelected(limitedValueData, selectedValues)))
     );
@@ -145,6 +149,7 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
     const value = this.multiValueProvider.getMultiValue(this.getSelectedNames(values));
 
     if (this.columnContainer.value === value || (!this.columnContainer.value && value === '')) {
+      this.pendingChanged.emit(false);
       return;
     }
 
@@ -153,15 +158,17 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
     try {
       this.logger.debug(this, 'writeValue - updateCdrValue...');
       this.isWriting = true;
-      this.control.disable();
+      this.control.disable({ emitEvent: false });
+      this.changeDetectorRef.detectChanges();
       await this.columnContainer.updateValue(value);
     } catch (e) {
       this.logger.error(this, e);
     } finally {
       this.isWriting = false;
-      this.control.enable();
-      this.control.markAsUntouched();
-      if (this.control.value !== this.columnContainer.value) {
+      this.control.enable({ emitEvent: false });
+      this.pendingChanged.emit(false);
+      this.changeDetectorRef.detectChanges();
+      if (this.getSelectedNamesMultiValue(this.control.value) !== this.columnContainer.value) {
         const selectedValues = this.multiValueProvider.getValues(this.columnContainer.value);
         this.control.controls.forEach((checkBox, index) =>
           checkBox.setValue(
@@ -173,14 +180,23 @@ export class EditMultiLimitedValueComponent implements CdrEditor, OnDestroy {
     }
   }
 
+  
   /**
-   * Gets the names of the selected values
+   * Gets the MultiValue of the selected values.
+   * @param values The array of booleans provided by the checkboxes
+   */
+  private getSelectedNamesMultiValue(values: boolean[]): string {
+    return this.multiValueProvider.getMultiValue(this.getSelectedNames(values));
+  }
+
+  /**
+   * Gets the names of the selected values.
    * @param values The array of booleans provided by the checkboxes
    */
   private getSelectedNames(values: boolean[]): string[] {
     const selectedValues: string[] = [];
     values.forEach((value, index) => {
-      if (value) { selectedValues.push(this.columnContainer.limitedValuesContainer.values[index].Value); }
+      if (value) { selectedValues.push(this.columnContainer.limitedValuesContainer.values[index]?.Value); }
     });
     return selectedValues;
   }

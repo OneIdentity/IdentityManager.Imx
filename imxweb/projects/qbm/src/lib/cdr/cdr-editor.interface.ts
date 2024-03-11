@@ -60,6 +60,11 @@ export interface CdrEditor {
     valueHasChanged?: EventEmitter<ValueHasChangedEventArg>;
 
     /**
+     * An event, that is emmited, if the value of the cdr is pending.
+     */
+    pendingChanged?: EventEmitter<boolean>;
+
+    /**
      * Binds a column dependent reference to the editor.
      *
      * @param cdref The column dependent reference.

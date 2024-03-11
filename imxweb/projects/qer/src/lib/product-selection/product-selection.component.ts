@@ -193,12 +193,12 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
 
     // TODO activatedRoute parameters may change, must subscribe to changes
 
-    this.uidaccproduct = this.activatedRoute.snapshot.paramMap.get('UID_AccProduct');
+    this.uidaccproduct = this.activatedRoute.snapshot.queryParams.UID_AccProduct;
     if (this.uidaccproduct) {
       // TODO load all according to this.categoryModel.SelectedCategory
     }
 
-    this.searchString = this.activatedRoute.snapshot.paramMap.get('ProductSearchString');
+    this.searchString = this.activatedRoute.snapshot.queryParams.ProductSearchString;
 
     if (this.searchString) {
       /* user can pass product search string by URL parameter -> load the data with this search string
@@ -726,7 +726,8 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
         parameters: [possibleItems - savedItems, possibleItems],
       });
     }
-    if (savedItems > 0) {
+    if (savedItems > 0) {      
+      await this.userModelSvc.reloadPendingItems();
       this.router.navigate(['shoppingcart']);
     } else {
       this.onDeselectAll();
