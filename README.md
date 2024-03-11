@@ -5,10 +5,9 @@
 ## Change log
 
 ### March 11, 2024
-- Bug 440206: HTML5 Web: When a request will be added to the cart, sometimes only the first of several previously selected permitted values of a request parameter will be copied into the shopping cart and sometimes not a single one.
-- Bug 446476: BUG Tiles no longer update the number of My Pending Requests and Products in Shopping Cart
-- 441990: Enhance hotfix delivery to support Angular packages with static dependencies
-- Bug 440741: Portal: Fixed ProductSearchString for product selection not working
+- 440206: When a request is added to the cart, request properties were sometimes not correctly applied to the shopping cart item.
+- 446476: The number of pending requests and shopping cart items were not being updated correctly.
+- 40741: Portal: Fixed support for ProductSearchString URL parameter for product selection.
 
 ### February 2, 2024
 - 433272 Backport dynamic parameter change functionality
