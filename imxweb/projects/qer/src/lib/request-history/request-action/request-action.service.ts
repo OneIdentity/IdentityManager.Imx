@@ -327,7 +327,8 @@ export class RequestActionService {
         success = true;
       } catch (error) {
         this.errorHandler.handleError(error);
-      } finally {
+      } finally {     
+        await this.userService.reloadPendingItems();
         setTimeout(() => this.busyService.hide(busyIndicator));
       }
 
