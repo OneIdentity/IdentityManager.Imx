@@ -480,16 +480,8 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
       this.addSearchFilter(filter);
     });
 
-    const tree = config?.Filter?.find((elem) => elem.ColumnName === this.columnForTree);
-    if (tree) {
-      const display = this.filterTreeItems.Elements.find((elem) => elem.Filter.Value1 === tree.Value1)?.Display;
-      this.currentFilterData = [{ display, filter: tree }];
-      if (this.settings.navigationState.filter) {
-        this.settings.navigationState.filter.push(tree);
-      } else {
-        this.settings.navigationState.filter = [tree];
-      }
-    }
+    this.addTreeFilterFromConfig(config);
+    this.addCustomFilterFromConfig(config);
 
     if (config?.GroupBy) {
       this.applyGroupBy(config);
@@ -1277,7 +1269,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
     if (filterdata) {
       //Get all filter, that were not associaed with the tree filter
       const otherFilter = (this.settings.navigationState.filter ?? []).filter(
-        (elem) => elem.ColumnName !== filterdata[0].filter.ColumnName
+        (elem) => elem.ColumnName !== filterdata[0].filter.ColumnName,
       );
       this.currentFilterData = filterdata;
       this.filterTreeSelectionChanged.emit(this.currentFilterData.map((filter) => filter.filter).concat(otherFilter)); // combine the two filter again
@@ -1334,6 +1326,8 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
     if (this.filtersCurrentlyApplied) {
       this.clearFilters(false);
     }
+
+    this.filterWizardExpression = null;
     if (emit) {
       this.navigationStateChanged.emit(this.settings.navigationState);
     }
@@ -1348,7 +1342,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
     this.currentFilterData = [];
     if (emit) {
       this.filterTreeSelectionChanged.emit(
-        this.settings.navigationState.filter?.filter((elem) => elem.ColumnName != currentTree.ColumnName)
+        this.settings.navigationState.filter?.filter((elem) => elem.ColumnName != currentTree.ColumnName),
       );
     }
   }
@@ -1602,6 +1596,43 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
 
   /**
    * @ignore Used internally
+   * Checks, if there is a tree filter defined in the config.
+   * If a tree filter is defined, it initializes the currentFilterData object and adds the parameter to the navigation.
+   * @param config the configuration, that should be loaded.
+   */
+  private addTreeFilterFromConfig(config: DSTViewConfig): void {
+    const tree = config?.Filter?.find((elem) => elem.ColumnName === this.columnForTree);
+    if (tree) {
+      const display = this.filterTreeItems.Elements.find((elem) => elem.Filter.Value1 === tree.Value1)?.Display;
+      this.currentFilterData = [{ display, filter: tree }];
+      if (this.settings.navigationState.filter) {
+        this.settings.navigationState.filter.push(tree);
+      } else {
+        this.settings.navigationState.filter = [tree];
+      }
+    }
+  }
+
+  /**
+   * @ignore Used internally
+   * Checks, if there is a custom filter defined in the config.
+   * If a custom filter is defined, it initializes the filterWizardExpression object and adds the parameter to the navigation.
+   * @param config the configuration, that should be loaded.
+   */
+  private addCustomFilterFromConfig(config: DSTViewConfig): void {
+    const expression = config?.Filter?.find((elem) => elem.Expression != null);
+    if (expression) {
+      this.filterWizardExpression = { Expression: expression.Expression };
+      if (this.settings.navigationState.filter) {
+        this.settings.navigationState.filter.push(expression);
+      } else {
+        this.settings.navigationState.filter = [expression];
+      }
+    }
+  }
+
+  /**
+   * @ignore Used internally
    * Sets any initial values for the supplied filters and makes a call to update the navigation state
    *
    * Also marks the 'isInitialLoad' property to false to ensure this only happens on the initial load
@@ -1720,6 +1751,7 @@ export class DataSourceToolbarComponent implements OnChanges, OnInit, OnDestroy 
     if (
       this.isEnterDisabled ||
       filter?.ColumnName === this.columnForTree ||
+      filter?.Expression != null ||
       (!filter && (!this.searchControl.value || (!!this.searchControl.value && this.searchControl.value?.length === 0)))
     ) {
       // Here we return early if there is nothing to search over

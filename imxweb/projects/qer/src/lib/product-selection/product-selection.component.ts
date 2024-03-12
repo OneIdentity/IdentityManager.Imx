@@ -722,7 +722,8 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
         parameters: [possibleItems - savedItems, possibleItems],
       });
     }
-    if (savedItems > 0) {
+    if (savedItems > 0) {      
+      await this.userModelSvc.reloadPendingItems();
       this.router.navigate(['shoppingcart']);
     } else {
       this.onDeselectAll();

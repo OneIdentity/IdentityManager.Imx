@@ -2,6 +2,7 @@ $theme_font_family: 'Source Sans Pro, "Helvetica Neue", sans-serif' !default;
 
 @use 'sass:math';
 @use '@angular/material' as mat;
+@use '@elemental-ui/core/src/styles/theming/theme' as theme;
 
 @import '@elemental-ui/core/src/styles/functions/to_number';
 
@@ -38,6 +39,4 @@ $theme: mat.define-light-theme(
   )
 );
 
-.custom-theme {
-  @include mat.all-component-themes($theme);
-}
+@include theme.theme('custom-theme', $theme);

@@ -1,91 +1,105 @@
-<ng-container *ngIf="serviceCategoriesTotalCount > 0 || serviceCategoriesTotalCount === -1; else noAccessToServiceCategory">
-  <imx-sidenav-tree
-    [dynamicDataSource]="dynamicDataSource"
-    [treeControl]="categoryTreeControl"
-    [hasChild]="hasChild"
-    [isLoading]="isLoading"
-    [headerText]="'#LDS#Heading Service Categories' | translate"
-    [nodeContent]="categoryNodeContent"
-    [expandWidth]="'600px'"
-    [sideNavExpanded]="categorySideNavExpanded"
-    [manageExpandedExternally]="true"
-    (sideNavExpandedChange)="categoryObserveExpanded($event)"
-    (selectedNode)="categorySelectedNode($event)"
-  ></imx-sidenav-tree>
-</ng-container>
-<ng-template #categoryNodeContent let-node let-selected="selected">
-  <div class="imx-tree-root" [ngClass]="{'imx-tree-root--selected': selected}">
-    <img class="image-category" *ngIf="node?.entity?.ImageRef?.value?.length > 0; else noImage" [src]="productDetailsService.getProductImage(node.entity)" />
-    <ng-template #noImage>
-      <eui-icon icon="folder" class="colored-icon"></eui-icon>
-    </ng-template>
-    &nbsp;&nbsp;
-    <span *ngIf="node.entity">
-      {{ node.entity.GetEntity().GetDisplay() }}
-    </span>
-    <span *ngIf="!node.entity">
-      {{'#LDS#Root category (all products)' | translate}}
-    </span>
-  </div>
-</ng-template>
-<mat-card class="imx-card-container" *ngIf="serviceCategoriesTotalCount > 0" [ngClass]="{'imx-card-container-wide': !categorySideNavExpanded}">
-  <imx-data-table
-    *ngIf="dst"
-    [dst]="dst"
-    [detailViewVisible]="false"
-    [selectable]="true"
-    [noDataText]="noDataText"
-    mode="manual"
-    fallbackIcon="DefaultTypeNameImage"
-    (selectionChanged)="onSelectionChanged($event)"
-    (highlightedEntityChanged)="onRowSelected($event)"
-    [showSelectedItemsMenu]="false"
-  >
-    <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" columnLabel="{{ '#LDS#Product' | translate }}">
-      <ng-template let-prod>
-        <div class="imx-request-col-image">
-          <img *ngIf="productDetailsService.getProductImage(prod); else noImage" [src]="productDetailsService.getProductImage(prod)" />
-          <ng-template #noImage>
-            <eui-icon icon="application" class="larger-icon colored-icon"></eui-icon>
-          </ng-template>
-          &nbsp;&nbsp;
-          <span class="imx-request-col-display"  [matTooltip]="prod.GetEntity()?.GetDisplay()">{{ prod.GetEntity()?.GetDisplay() }} </span>
-        </div>
+<div class="imx-chip-container" *ngIf="resetSidenav && (selectedServiceItemUID || selectedServiceCategoryUID)">
+  <mat-chip-list>
+    <span translate>#LDS#Filter on</span>:
+    <mat-chip (click)="onResetTree()">
+      <span class="chip-label">{{ '#LDS#URL' | translate }}</span>
+      <eui-icon class="remove" icon="stop"> </eui-icon>
+    </mat-chip>
+  </mat-chip-list>
+</div>
+<div class="imx-new-request-container">
+  <ng-container *ngIf="serviceCategoriesTotalCount > 0 || serviceCategoriesTotalCount === -1 || resetSidenav; else noAccessToServiceCategory">
+    <imx-sidenav-tree
+      [dynamicDataSource]="dynamicDataSource"
+      [treeControl]="categoryTreeControl"
+      [hasChild]="hasChild"
+      [isLoading]="isLoading"
+      [headerText]="'#LDS#Heading Service Categories' | translate"
+      [nodeContent]="categoryNodeContent"
+      [expandWidth]="'600px'"
+      [sideNavExpanded]="categorySideNavExpanded"
+      [manageExpandedExternally]="true"
+      (sideNavExpandedChange)="categoryObserveExpanded($event)"
+      (selectedNode)="categorySelectedNode($event)"
+    ></imx-sidenav-tree>
+  </ng-container>
+  <ng-template #categoryNodeContent let-node let-selected="selected">
+    <div class="imx-tree-root" [ngClass]="{ 'imx-tree-root--selected': selected }">
+      <img class="image-category" *ngIf="node?.entity?.ImageRef?.value?.length > 0; else noImage" [src]="productDetailsService.getProductImage(node.entity)" />
+      <ng-template #noImage>
+        <eui-icon icon="folder" class="colored-icon"></eui-icon>
       </ng-template>
-    </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns['ServiceCategoryFullPath']">
-      <ng-template let-prod>
-        <div class="imx-request-col-text" [matTooltip]="prod.ServiceCategoryFullPath?.Column.GetDisplayValue()">
-          {{ prod.ServiceCategoryFullPath?.Column.GetDisplayValue() }}
-        </div>
-      </ng-template>
-    </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns['Description']">
-      <ng-template let-prod>
-        <div class="imx-request-col-text imx-request-col-text-long" [matTooltip]="prod.GetEntity().GetColumn('Description').GetDisplayValue()">
-          {{ prod.GetEntity().GetColumn('Description').GetDisplayValue() }}
-        </div>
-      </ng-template>
-    </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns['OrderableStatus']" columnLabel="{{ '#LDS#Status' | translate }}" align="center">
-      <ng-template let-prod>
-        <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, ['PERSONHASOBJECT', 'PERSONHASASSIGNMENTORDER', 'ASSIGNED'])" class="imx-request-col-status">
-          <eui-icon icon="approvals" [matTooltip]="'#LDS#This product has already been assigned to {0}.' | translate | ldsReplace: recipients.Column.GetDisplayValue()"></eui-icon>
-        </div>
-        <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, 'ORDER')" class="imx-request-col-status">
-          <eui-icon icon="request" [matTooltip]="'#LDS#This product has already been requested.' | translate"></eui-icon>
-        </div>
-        <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, 'NOTORDERABLE')" class="imx-request-col-status">
-          <eui-icon icon="error" [matTooltip]="'#LDS#This product cannot currently be requested.' | translate"></eui-icon>
-        </div>
-        <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, 'CART')" class="imx-request-col-status">
-          <eui-icon icon="cart" [matTooltip]="'#LDS#This product is already in your shopping cart.' | translate"></eui-icon>
-        </div>
-      </ng-template>
-    </imx-data-table-column>
-  </imx-data-table>
-  <imx-data-source-paginator *ngIf="dst" [dst]="dst"></imx-data-source-paginator>
-</mat-card>
+      &nbsp;&nbsp;
+      <span *ngIf="node.entity">
+        {{ node.entity.GetEntity().GetDisplay() }}
+      </span>
+      <span *ngIf="!node.entity">
+        {{ '#LDS#Root category (all products)' | translate }}
+      </span>
+    </div>
+  </ng-template>
+  <mat-card class="imx-card-container" *ngIf="serviceCategoriesTotalCount > 0 || resetSidenav" [ngClass]="{ 'imx-card-container-wide': !categorySideNavExpanded }">
+    <imx-data-table
+      *ngIf="dst"
+      [dst]="dst"
+      [detailViewVisible]="false"
+      [selectable]="true"
+      [noDataText]="noDataText"
+      mode="manual"
+      fallbackIcon="DefaultTypeNameImage"
+      (selectionChanged)="onSelectionChanged($event)"
+      (highlightedEntityChanged)="onRowSelected($event)"
+      [showSelectedItemsMenu]="false"
+    >
+      <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" columnLabel="{{ '#LDS#Product' | translate }}">
+        <ng-template let-prod>
+          <div class="imx-request-col-image">
+            <img *ngIf="productDetailsService.getProductImage(prod); else noImage" [src]="productDetailsService.getProductImage(prod)" />
+            <ng-template #noImage>
+              <eui-icon icon="application" class="larger-icon colored-icon"></eui-icon>
+            </ng-template>
+            &nbsp;&nbsp;
+            <span class="imx-request-col-display" [matTooltip]="prod.GetEntity()?.GetDisplay()">{{ prod.GetEntity()?.GetDisplay() }} </span>
+          </div>
+        </ng-template>
+      </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns['ServiceCategoryFullPath']">
+        <ng-template let-prod>
+          <div class="imx-request-col-text" [matTooltip]="prod.ServiceCategoryFullPath?.Column.GetDisplayValue()">
+            {{ prod.ServiceCategoryFullPath?.Column.GetDisplayValue() }}
+          </div>
+        </ng-template>
+      </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns['Description']">
+        <ng-template let-prod>
+          <div class="imx-request-col-text imx-request-col-text-long" [matTooltip]="prod.GetEntity().GetColumn('Description').GetDisplayValue()">
+            {{ prod.GetEntity().GetColumn('Description').GetDisplayValue() }}
+          </div>
+        </ng-template>
+      </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns['OrderableStatus']" columnLabel="{{ '#LDS#Status' | translate }}" align="center">
+        <ng-template let-prod>
+          <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, ['PERSONHASOBJECT', 'PERSONHASASSIGNMENTORDER', 'ASSIGNED'])" class="imx-request-col-status">
+            <eui-icon
+              icon="approvals"
+              [matTooltip]="'#LDS#This product has already been assigned to {0}.' | translate | ldsReplace : recipients.Column.GetDisplayValue()"
+            ></eui-icon>
+          </div>
+          <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, 'ORDER')" class="imx-request-col-status">
+            <eui-icon icon="request" [matTooltip]="'#LDS#This product has already been requested.' | translate"></eui-icon>
+          </div>
+          <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, 'NOTORDERABLE')" class="imx-request-col-status">
+            <eui-icon icon="error" [matTooltip]="'#LDS#This product cannot currently be requested.' | translate"></eui-icon>
+          </div>
+          <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, 'CART')" class="imx-request-col-status">
+            <eui-icon icon="cart" [matTooltip]="'#LDS#This product is already in your shopping cart.' | translate"></eui-icon>
+          </div>
+        </ng-template>
+      </imx-data-table-column>
+    </imx-data-table>
+    <imx-data-source-paginator *ngIf="dst" [dst]="dst"></imx-data-source-paginator>
+  </mat-card>
+</div>
 
 <!-- Template if the new request page is not accessible for the current recipient -->
 <ng-template #noAccessToServiceCategory>

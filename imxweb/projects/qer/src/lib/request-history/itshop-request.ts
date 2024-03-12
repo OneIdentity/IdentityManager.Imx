@@ -58,7 +58,9 @@ export class ItshopRequest extends PortalItshopRequests implements RequestParame
 
     const isAffectedEmployee = this.UID_PersonInserted.value === userUid || this.UID_PersonOrdered.value === userUid;
 
-    this.canProlongate = this.UiOrderState.value === 'Assigned' && isAffectedEmployee;
+    // If the user can unsubscribe, we consider that the user can also renew
+    this.canProlongate = this.UiOrderState.value === 'Assigned' && this.UnsubscribeRequestAllowed.value;
+    
     this.canCopyItems = this.UID_PersonInserted.value === userUid && this.CanCopy.value; 
     if (pwoData) {
       this.pwoData = pwoData;
