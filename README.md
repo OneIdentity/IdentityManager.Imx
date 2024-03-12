@@ -7,7 +7,7 @@
 ### March 11, 2024
 - 440206: When a request is added to the cart, request properties were sometimes not correctly applied to the shopping cart item.
 - 446476: The number of pending requests and shopping cart items were not being updated correctly.
-- 40741: Portal: Fixed support for ProductSearchString URL parameter for product selection.
+- 440741: Portal: Fixed support for ProductSearchString URL parameter for product selection.
 
 ### February 2, 2024
 - 433272 Backport dynamic parameter change functionality
