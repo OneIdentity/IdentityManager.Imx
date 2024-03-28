@@ -257,6 +257,21 @@ We plan to push updates for each minor and major product release, allowing devel
 - [Theming guide](./imxweb/custom-theme/readme.md)
 - [CDR guide](./imxweb/projects/qbm/src/lib/cdr/Readme.md)
 
+## Documentation
+The portal is documented using compodoc 1.1.10. 
+
+There are two ways to install the documentation locally. The result will be stored in _\imxweb\documentation\<projectname>_.
+
+### 1. The native way
+1. Install the compodoc package globally using `npm install -g @compodoc/compodoc`.
+2. Navigate to the folder you like to compile (_\imxweb\projects\qer_ e.g.).
+3. Run `compodoc -p tsconfig.lib.json` for a library or `compodoc -p tsconfig.app.json` for an application.
+
+### 2. The npm way
+This only works for qbm, qer and the portals (Web Portal, Operation Support Portal and the Landing Page)
+1. Navigate to _imxweb_.
+2. run `npm run doc:<projectname>`
+
 ## Contributing
 
 We welcome and appreciate contributions. Here's how you can open a pull request to submit code changes.
