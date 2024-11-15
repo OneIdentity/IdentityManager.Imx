@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,18 +27,17 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { NotificationRegistryService } from './notification-registry.service';
 import { TranslateService } from '@ngx-translate/core';
-import { V2ApiClientMethodFactory } from 'imx-api-qer';
+import { V2ApiClientMethodFactory } from '@imx-modules/imx-api-qer';
 import { ClassloggerService, AppConfigService } from 'qbm';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationStreamService implements OnDestroy {
-
-  constructor(private logger: ClassloggerService,
+  constructor(
+    private logger: ClassloggerService,
     private appConfigService: AppConfigService,
     private translateService: TranslateService,
     private readonly notificationRegistry: NotificationRegistryService,
-  ) {
-  }
+  ) {}
 
   private stream: EventSource;
 
@@ -57,12 +56,14 @@ export class NotificationStreamService implements OnDestroy {
       let data = JSON.parse(evt.data);
       const notificationHandler = this.notificationRegistry.get(data.Id);
       if (notificationHandler) {
-        this.translateService.get(notificationHandler.message).toPromise().then(
-          translatedMessage => {
+        this.translateService
+          .get(notificationHandler.message)
+          .toPromise()
+          .then((translatedMessage) => {
             var notification = new Notification(translatedMessage);
             notification.onclick = (event) => {
               notificationHandler.activate();
-            }
+            };
           });
       }
     };
@@ -73,8 +74,6 @@ export class NotificationStreamService implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.stream)
-      this.stream.close();
+    if (this.stream) this.stream.close();
   }
-
 }

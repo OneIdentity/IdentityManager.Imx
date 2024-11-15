@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,29 +24,28 @@
  *
  */
 
-import { Component, OnInit } from "@angular/core";
-import { EuiLoadingService, EuiSidesheetRef } from "@elemental-ui/core";
-import { SnackBarService } from "../snackbar/snack-bar.service";
-import { KeyData } from "./config-section";
-import { ConfigService } from "./config.service";
+import { Component, OnInit } from '@angular/core';
+import { EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
+import { SnackBarService } from '../snackbar/snack-bar.service';
+import { KeyData } from './config-section';
+import { ConfigService } from './config.service';
 
 @Component({
   templateUrl: './delete-config-sidesheet.component.html',
-  styleUrls: ['./add-config-sidesheet.component.scss']
+  styleUrls: ['./add-config-sidesheet.component.scss'],
 })
 export class DeleteConfigSidesheetComponent implements OnInit {
-
-  constructor(private readonly configSvc: ConfigService,
+  constructor(
+    private readonly configSvc: ConfigService,
     private readonly sideSheetRef: EuiSidesheetRef,
     private readonly busySvc: EuiLoadingService,
-    private readonly snackbar: SnackBarService
-  ) { }
+    private readonly snackbar: SnackBarService,
+  ) {}
 
   keyData: KeyData[];
   selectedKey: KeyData;
 
   ngOnInit(): void {
-
     this.keyData = this.configSvc.deletableKeys;
   }
 
@@ -57,7 +56,7 @@ export class DeleteConfigSidesheetComponent implements OnInit {
     try {
       await this.configSvc.deleteKey(this.selectedKey.Path);
       await this.configSvc.load();
-      const key = "#LDS#The configuration key has been successfully deleted.";
+      const key = '#LDS#The configuration key has been successfully deleted.';
       this.snackbar.open({ key });
     } finally {
       this.busySvc.hide(overlay);

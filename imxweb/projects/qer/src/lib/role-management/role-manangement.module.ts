@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,23 +33,23 @@ import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
 import {
+  BusyIndicatorModule,
   CdrModule,
   ClassloggerService,
   DataSourceToolbarModule,
   DataTableModule,
   DataTreeWrapperModule,
+  DataViewModule,
   DateModule,
   DynamicTabsModule,
   FkAdvancedPickerModule,
+  HELP_CONTEXTUAL,
+  HelpContextualModule,
   LdsReplaceModule,
   MenuService,
   ObjectHistoryModule,
   RouteGuardService,
   SelectedElementsModule,
-  SqlWizardApiService,
-  BusyIndicatorModule,
-  HelpContextualModule,
-  HELP_CONTEXTUAL,
   UserMessageModule,
 } from 'qbm';
 
@@ -60,15 +60,15 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ProjectConfig } from '@imx-modules/imx-api-qbm';
 import { isAuditor, isRoleAdmin, isRoleStatistics, isStructAdmin, isStructStatistics } from '../admin/qer-permissions-helper';
 import { DataExplorerRegistryService } from '../data-explorer-view/data-explorer-registry.service';
 import { MyResponsibilitiesRegistryService } from '../my-responsibilities-view/my-responsibilities-registry.service';
-import { CompareItemComponent } from './compare/compare-item.component';
-import { CompareComponent } from './compare/compare.component';
-import { DynamicRoleSqlWizardService } from './dynamicrole-sqlwizard.service';
-import { NewRoleComponent } from './new-role/new-role.component';
 import { ObjectHyperviewModule } from '../object-hyperview/object-hyperview.module';
 import { StatisticsModule } from '../statistics/statistics.module';
+import { CompareItemComponent } from './compare/compare-item.component';
+import { CompareComponent } from './compare/compare.component';
+import { NewRoleComponent } from './new-role/new-role.component';
 import { RestoreComponent } from './restore/restore.component';
 import { RoleDetailComponent } from './role-detail/role-detail.component';
 import { EntitlementSelectorComponent } from './role-entitlements/entitlement-selector.component';
@@ -76,11 +76,15 @@ import { RoleEntitlementsComponent } from './role-entitlements/role-entitlements
 import { RoleRecommendationsComponent } from './role-entitlements/role-recommendations/role-recommendations.component';
 import { RoleMainDataComponent } from './role-main-data/role-main-data.component';
 import { RoleMembershipsModule } from './role-memberships/role-memberships.module';
-import { RoleManagementAERoleTag, RoleManagementDepartmentTag, RoleManagementLocalityTag, RoleManagementProfitCenterTag, RoleService } from './role.service';
+import {
+  RoleManagementAERoleTag,
+  RoleManagementDepartmentTag,
+  RoleManagementLocalityTag,
+  RoleManagementProfitCenterTag,
+} from './role.service';
 import { RolesOverviewComponent } from './roles-overview/roles-overview.component';
 import { RollbackComponent } from './rollback/rollback.component';
 import { SplitComponent } from './split/split.component';
-import { ProjectConfig } from 'imx-api-qbm';
 
 const routes: Routes = [
   {
@@ -137,12 +141,7 @@ const routes: Routes = [
     BusyIndicatorModule,
     HelpContextualModule,
     UserMessageModule,
-  ],
-  providers: [
-    {
-      provide: SqlWizardApiService,
-      useClass: DynamicRoleSqlWizardService,
-    },
+    DataViewModule,
   ],
   exports: [RolesOverviewComponent, RoleDetailComponent],
 })
@@ -152,7 +151,7 @@ export class RoleManangementModule {
     private readonly menuService: MenuService,
     private readonly dataExplorerRegistryService: DataExplorerRegistryService,
     private readonly logger: ClassloggerService,
-    private readonly myResponsibilitiesRegistryService: MyResponsibilitiesRegistryService
+    private readonly myResponsibilitiesRegistryService: MyResponsibilitiesRegistryService,
   ) {
     this.logger.info(this, '▶︝ RoleManagement-Module loaded');
 
@@ -170,24 +169,53 @@ export class RoleManangementModule {
 
   private setupDataExplorer(): void {
     this.dataExplorerRegistryService.registerFactory(
-      (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
-        if (!isRoleAdmin(features) && !isRoleStatistics(features) && !isStructStatistics(features) && !isStructAdmin(features) && !isAuditor(groups)) {
+      (preProps: string[], features: string[], projectConfig?: ProjectConfig, groups?: string[]) => {
+        if (
+          !isRoleAdmin(features) &&
+          !isRoleStatistics(features) &&
+          !isStructStatistics(features) &&
+          !isStructAdmin(features) &&
+          !isAuditor(groups ?? [])
+        ) {
           return;
         }
+        const contextId: string = HELP_CONTEXTUAL.DataExplorerDepartment;
         return {
           instance: RolesOverviewComponent,
           data: {
             TableName: 'Department',
             Count: 0,
           },
-          contextId: HELP_CONTEXTUAL.DataExplorerDepartment,
+          contextId,
           sortOrder: 4,
           name: 'department',
           caption: '#LDS#Departments',
         };
       },
       (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
-        if (!isRoleAdmin(features) && !isRoleStatistics(features) && !isStructStatistics(features) && !isStructAdmin(features) && !isAuditor(groups)) {
+        if (!isAuditor(groups)) {
+          return;
+        }
+        return {
+          instance: RolesOverviewComponent,
+          data: {
+            TableName: 'AERole',
+            Count: 0,
+          },
+          contextId: HELP_CONTEXTUAL.DataExplorerAERole,
+          sortOrder: 7,
+          name: 'aerole',
+          caption: '#LDS#Application roles',
+        };
+      },
+      (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
+        if (
+          !isRoleAdmin(features) &&
+          !isRoleStatistics(features) &&
+          !isStructStatistics(features) &&
+          !isStructAdmin(features) &&
+          !isAuditor(groups)
+        ) {
           return;
         }
         return {
@@ -203,7 +231,13 @@ export class RoleManangementModule {
         };
       },
       (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
-        if (!isRoleAdmin(features) && !isRoleStatistics(features) && !isStructStatistics(features) && !isStructAdmin(features) && !isAuditor(groups)) {
+        if (
+          !isRoleAdmin(features) &&
+          !isRoleStatistics(features) &&
+          !isStructStatistics(features) &&
+          !isStructAdmin(features) &&
+          !isAuditor(groups)
+        ) {
           return;
         }
         return {
@@ -217,7 +251,7 @@ export class RoleManangementModule {
           name: 'profitcenter',
           caption: '#LDS#Cost centers',
         };
-      }
+      },
     );
   }
 
@@ -225,8 +259,14 @@ export class RoleManangementModule {
   private setupMenu(): void {
     this.menuService.addMenuFactories((preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
       // must also work if ITSHOP is disabled!
-      if (!isRoleAdmin(features) && !isRoleStatistics(features) && !isStructStatistics(features) && !isStructAdmin(features) && !isAuditor(groups)) {
-        return null;
+      if (
+        !isRoleAdmin(features) &&
+        !isRoleStatistics(features) &&
+        !isStructStatistics(features) &&
+        !isStructAdmin(features) &&
+        !isAuditor(groups)
+      ) {
+        return;
       }
       const menu = {
         id: 'ROOT_Data',
@@ -255,7 +295,7 @@ export class RoleManangementModule {
           TableName: RoleManagementAERoleTag,
           Count: 0,
         },
-        contextId: HELP_CONTEXTUAL.MyResponsibilitiesAERole
+        contextId: HELP_CONTEXTUAL.MyResponsibilitiesAERole,
       }),
       (preProps: string[], features: string[]) => ({
         instance: RolesOverviewComponent,
@@ -266,7 +306,7 @@ export class RoleManangementModule {
           TableName: RoleManagementDepartmentTag,
           Count: 0,
         },
-        contextId: HELP_CONTEXTUAL.MyResponsibilitiesDepartment
+        contextId: HELP_CONTEXTUAL.MyResponsibilitiesDepartment,
       }),
       (preProps: string[], features: string[]) => ({
         instance: RolesOverviewComponent,
@@ -277,7 +317,7 @@ export class RoleManangementModule {
           TableName: RoleManagementLocalityTag,
           Count: 0,
         },
-        contextId: HELP_CONTEXTUAL.MyResponsibilitiesLocality
+        contextId: HELP_CONTEXTUAL.MyResponsibilitiesLocality,
       }),
       (preProps: string[], features: string[]) => ({
         instance: RolesOverviewComponent,
@@ -288,8 +328,8 @@ export class RoleManangementModule {
           TableName: RoleManagementProfitCenterTag,
           Count: 0,
         },
-        contextId: HELP_CONTEXTUAL.MyResponsibilitiesProfitCenter
-      })
+        contextId: HELP_CONTEXTUAL.MyResponsibilitiesProfitCenter,
+      }),
     );
   }
 }

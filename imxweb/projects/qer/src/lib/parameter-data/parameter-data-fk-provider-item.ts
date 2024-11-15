@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,14 @@
  *
  */
 
-import { CollectionLoadParameters, DataModel, EntityCollectionData, FilterTreeData, FkProviderItem, IEntity } from 'imx-qbm-dbts';
+import {
+  CollectionLoadParameters,
+  DataModel,
+  EntityCollectionData,
+  FilterTreeData,
+  FkProviderItem,
+  IEntity,
+} from '@imx-modules/imx-qbm-dbts';
 import { ParameterDataLoadParameters } from './parameter-data-load-parameters.interface';
 
 export class ParameterDataFkProviderItem implements FkProviderItem {
@@ -34,19 +41,14 @@ export class ParameterDataFkProviderItem implements FkProviderItem {
     private readonly entity: IEntity,
     private readonly getCandidates: (loadParameters: ParameterDataLoadParameters) => Promise<EntityCollectionData>,
     private readonly getFillterTree: (loadParameters: ParameterDataLoadParameters) => Promise<FilterTreeData>,
-    public readonly parameterNames: string[] = [
-      'OrderBy',
-      'StartIndex',
-      'PageSize',
-      'filter',
-      'search'
-    ]
-  ) { }
+    public readonly parameterNames: string[] = ['OrderBy', 'StartIndex', 'PageSize', 'filter', 'search'],
+  ) {}
 
   public async load(__: IEntity, parameters: CollectionLoadParameters): Promise<EntityCollectionData> {
-    return this.getCandidates(
-      { ...parameters, ...{ columnName: this.columnName, fkTableName: this.fkTableName, diffData: this.entity.GetDiffData() } }
-    );
+    return this.getCandidates({
+      ...parameters,
+      ...{ columnName: this.columnName, fkTableName: this.fkTableName, diffData: this.entity.GetDiffData() },
+    });
   }
   public async getDataModel(entity: IEntity): Promise<DataModel> {
     return {};
@@ -57,7 +59,7 @@ export class ParameterDataFkProviderItem implements FkProviderItem {
       columnName: this.columnName,
       fkTableName: this.fkTableName,
       ParentKey: parentKey,
-      diffData: this.entity.GetDiffData()
+      diffData: this.entity.GetDiffData(),
     });
   }
 }

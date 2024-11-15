@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,18 +28,17 @@ import { Component, Inject, ViewChild } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 
-import { PortalTargetsystemUnsGroupServiceitem } from 'imx-api-tsb';
-import { IEntityColumn } from 'imx-qbm-dbts';
+import { PortalTargetsystemUnsGroupServiceitem } from '@imx-modules/imx-api-tsb';
+import { IEntityColumn } from '@imx-modules/imx-qbm-dbts';
 import { BaseCdr } from 'qbm';
 import { OwnerControlComponent } from 'qer';
 import { ProductOwnerSidesheetService } from './product-owner-sidesheet.service';
 
 @Component({
   templateUrl: './product-owner-sidesheet.component.html',
-  styleUrls: ['./product-owner-sidesheet.component.scss']
+  styleUrls: ['./product-owner-sidesheet.component.scss'],
 })
 export class ProductOwnerSidesheetComponent {
-
   public productOwnerCdr: BaseCdr;
 
   public column: IEntityColumn;
@@ -50,7 +49,7 @@ export class ProductOwnerSidesheetComponent {
   constructor(
     private readonly sidesheetRef: EuiSidesheetRef,
     ownerService: ProductOwnerSidesheetService,
-    @Inject(EUI_SIDESHEET_DATA) sidesheetData: PortalTargetsystemUnsGroupServiceitem
+    @Inject(EUI_SIDESHEET_DATA) sidesheetData: PortalTargetsystemUnsGroupServiceitem,
   ) {
     this.column = ownerService.buildOrgRulerColumn(sidesheetData.GetEntity());
   }
@@ -64,5 +63,4 @@ export class ProductOwnerSidesheetComponent {
   public returnProductOwner(): void {
     this.sidesheetRef.close({ uidPerson: this.ownercontrol.uidPersonSelected, uidRole: this.ownercontrol.uidRoleSelected });
   }
-
 }

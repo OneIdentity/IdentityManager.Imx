@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,20 +24,17 @@
  *
  */
 
-import { CommonModule } from "@angular/common";
-import { NgModule } from "@angular/core";
-import { MatCardModule } from "@angular/material/card";
-import { EuiCoreModule, EuiMaterialModule } from "@elemental-ui/core";
-import { TranslateModule } from "@ngx-translate/core";
-import { CdrModule, DataSourceToolbarModule, DataTableModule, QbmModule } from "qbm";
-import { ChangeSidesheetComponent } from "./change-sidesheet.component";
-import { ChangeViewComponent } from "./change-view.component";
+import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { MatCardModule } from '@angular/material/card';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
+import { CdrModule, DataSourceToolbarModule, DataTableModule, QbmModule } from 'qbm';
+import { ChangeSidesheetComponent } from './change-sidesheet.component';
+import { ChangeViewComponent } from './change-view.component';
 
 @NgModule({
-  declarations: [
-    ChangeViewComponent,
-    ChangeSidesheetComponent
-  ],
+  declarations: [ChangeViewComponent, ChangeSidesheetComponent],
   imports: [
     CommonModule,
     EuiCoreModule,
@@ -47,9 +44,7 @@ import { ChangeViewComponent } from "./change-view.component";
     MatCardModule,
     CdrModule,
     QbmModule,
-    TranslateModule
-  ]
+    TranslateModule,
+  ],
 })
-export class ChangeViewModule {
-
-}
+export class ChangeViewModule {}

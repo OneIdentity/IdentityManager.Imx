@@ -1,35 +1,41 @@
 <div class="imx-content-header">
-  <h1 class="mat-headline">
-    {{'#LDS#Heading Web Applications' | translate}}
-  </h1>
+  <h2 class="mat-headline-5">
+    {{ '#LDS#Heading Web Applications' | translate }}
+  </h2>
 </div>
 <div class="imx-table-container">
-  <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings" (search)="onSearch($event)" [options]="['search', 'filter', 'groupBy']"
-    (navigationStateChanged)="getData($event)">
+  <imx-data-source-toolbar
+    [alwaysVisible]="true"
+    #dst
+    [settings]="dstSettings"
+    (search)="onSearch($event)"
+    [options]="['search', 'filter', 'groupBy']"
+    (navigationStateChanged)="getData($event)"
+  >
     <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
   </imx-data-source-toolbar>
-  <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual">
-    <imx-data-table-column [entityColumn]="entitySchemaWebApplications?.Columns.BaseURL">
+  <imx-data-table [dst]="dst" [detailViewVisible]="false" mode="manual">
+    <imx-data-table-column [entityColumn]="entitySchemaWebApplications.Columns.BaseURL">
       <ng-template let-data>
         {{ data.BaseURL.Column.GetDisplayValue() }}
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaWebApplications?.Columns.UID_DialogProduct">
+    <imx-data-table-column [entityColumn]="entitySchemaWebApplications.Columns.UID_DialogProduct">
       <ng-template let-data>
         {{ data.UID_DialogProduct.Column.GetDisplayValue() }}
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaWebApplications?.Columns.IsDebug">
+    <imx-data-table-column [entityColumn]="entitySchemaWebApplications.Columns.IsDebug">
       <ng-template let-data>
         {{ data.IsDebug.Column.GetDisplayValue() }}
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaWebApplications?.Columns.IsPrivate">
+    <imx-data-table-column [entityColumn]="entitySchemaWebApplications.Columns.IsPrivate">
       <ng-template let-data>
         {{ data.IsPrivate.Column.GetDisplayValue() }}
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaWebApplications?.Columns.AutoUpdateLevel">
+    <imx-data-table-column [entityColumn]="entitySchemaWebApplications.Columns.AutoUpdateLevel">
       <ng-template let-data>
         {{ data.AutoUpdateLevel.Column.GetDisplayValue() }}
       </ng-template>
@@ -39,7 +45,7 @@
 </div>
 
 <ng-template #customToolbarTemplate>
-  <button mat-stroked-button color="primary" class="imx-refresh-button" (click)="refresh()">
+  <button mat-stroked-button color="primary" class="imx-button-icon" (click)="refresh()">
     <eui-icon icon="sync"></eui-icon>
     <span>{{ '#LDS#Refresh' | translate }}</span>
   </button>

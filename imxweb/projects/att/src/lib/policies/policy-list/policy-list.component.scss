@@ -1,29 +1,10 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
-@import '../../../../../../shared/scss/common-table.scss';
+
 :host {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   height: inherit;
-
-  ::ng-deep imx-data-table .mat-header-row .mat-header-cell {
-    font-weight: 600;
-    font-size: 14px;
-    padding: 0 10px;
-  }
-
-  ::ng-deep imx-data-table .mat-row .mat-cell {
-    padding: 0 10px;
-  }
-
-  ::ng-deep eui-sidesheet .eui-sidesheet__content {
-    display: flex;
-    flex-direction: column;
-  }
-
-  imx-data-table {
-    flex-grow: 2;
-  }
 
   div[subtitle-long] {
     font-size: smaller;
@@ -36,14 +17,7 @@
   .imx-separate-menu-item {
     border-top: 1px solid $color-gray-20;
   }
-
-  .imx-table-container {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    height: inherit;
-    flex: 1 1 auto;
-  }
+ 
 
   .imx-policy-footer {
     display: flex;
@@ -54,48 +28,8 @@
     min-height: 50px;
   }
 
-  .mat-raised-button {
-    align-self: flex-end;
-  }
-
-  .mat-toolbar {
-    background-color: inherit;
-    margin-left: 25px;
-    margin-right: 0;
-    margin-bottom: 40px;
-    padding-right: 0;
-  }
-
-  .mat-toolbar > button {
-    margin-left: 5px;
-  }
-
-  .mat-toolbar > mat-button {
-    color: $color-gray-100;
-  }
-
   .imx-toolbar-spacer {
     flex: 1 1 auto;
-  }
-
-  .mat-slide-toggle {
-    font-size: 16px;
-  }
-
-  .button-row {
-    @include imx-button-bar();
-  }
-
-  .imx-button-column {
-    @include imx-button-column-right();
-  }
-
-  .imx-content-card {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    margin: 3px;
-    overflow: hidden;
   }
 }
 
@@ -104,18 +38,10 @@
   flex-direction: row;
   align-items: center;
   margin-right: 16px;
-
-  .mat-progress-spinner {
-    overflow: visible;
-  }
 }
 
 .eui-dark-theme {
   :host {
-    .mat-toolbar > mat-button {
-      color: $color-gray-10;
-    }
-
     div[subtitle-long] {
       color: $color-gray-60;
     }
@@ -124,9 +50,6 @@
 
 .eui-contrast-theme {
   :host {
-    .mat-toolbar > mat-button {
-      color: $color-gray-0;
-    }
     div[subtitle-long] {
       color: $color-gray-80;
     }

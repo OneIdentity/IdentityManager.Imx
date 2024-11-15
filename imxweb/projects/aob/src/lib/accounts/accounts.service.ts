@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,28 +26,28 @@
 
 import { Injectable } from '@angular/core';
 
-import { ClassloggerService, ApiClientService } from 'qbm';
+import { PortalApplication, PortalApplicationusesaccount } from '@imx-modules/imx-api-aob';
 import {
   CollectionLoadParameters,
-  FilterType,
   CompareOperator,
-  IForeignKeyInfo,
-  TypedEntityBuilder,
   DbObjectKey,
-  TypedEntity,
   EntityCollectionData,
-  ExtendedTypedEntityCollection
-} from 'imx-qbm-dbts';
-import { PortalApplication, PortalApplicationusesaccount } from 'imx-api-aob';
-import { AobAccountContainer } from './aob-account-container';
+  ExtendedTypedEntityCollection,
+  FilterType,
+  IForeignKeyInfo,
+  TypedEntity,
+  TypedEntityBuilder,
+} from '@imx-modules/imx-qbm-dbts';
+import { ApiClientService, ClassloggerService } from 'qbm';
 import { AobApiService } from '../aob-api-client.service';
+import { AobAccountContainer } from './aob-account-container';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AccountsService {
   public get display(): string {
-    return this.aobClient.typedClient.PortalApplicationusesaccount.GetSchema().Display;
+    return this.aobClient.typedClient.PortalApplicationusesaccount.GetSchema().Display || '';
   }
 
   private readonly builder = new TypedEntityBuilder(AobAccountContainer);
@@ -57,25 +57,26 @@ export class AccountsService {
   constructor(
     private readonly aobClient: AobApiService,
     private readonly logger: ClassloggerService,
-    private readonly apiProvider: ApiClientService
-  ) { }
+    private readonly apiProvider: ApiClientService,
+  ) {}
 
   public async updateApplicationUsesAccounts(
     application: PortalApplication,
-    changeSet: { add: TypedEntity[], remove: TypedEntity[] }
+    changeSet: { add: TypedEntity[]; remove: TypedEntity[] },
   ): Promise<boolean> {
     const assignResult = await this.assign(application, changeSet.add);
     return assignResult && this.unassign(application, changeSet.remove);
   }
 
   public getCandidateTables(): ReadonlyArray<IForeignKeyInfo> {
-    return this.aobClient.typedClient.PortalApplicationusesaccountNew.createEntity()
-      .ObjectKeyAccount.GetMetadata().GetFkRelations();
+    return this.aobClient.typedClient.PortalApplicationusesaccountNew.createEntity().ObjectKeyAccount.GetMetadata().GetFkRelations();
   }
 
   public async getSelectedAccountLength(uidApplication: string): Promise<number> {
-    return (await this.apiProvider.request(() =>
-      this.aobClient.typedClient.PortalApplicationusesaccount.Get(uidApplication, { PageSize: -1 }))).totalCount;
+    return (
+      (await this.apiProvider.request(() => this.aobClient.typedClient.PortalApplicationusesaccount.Get(uidApplication, { PageSize: -1 })))
+        ?.totalCount || 0
+    );
   }
 
   public async getAssigned(application: string, parameters: CollectionLoadParameters = {}): Promise<TypedEntity[]> {
@@ -84,56 +85,60 @@ export class AccountsService {
     this.logger.debug(this, 'getting assigned accounts...');
 
     const appUsesAccountCollection = await this.apiProvider.request(() =>
-      this.aobClient.typedClient.PortalApplicationusesaccount.Get(application, parameters));
+      this.aobClient.typedClient.PortalApplicationusesaccount.Get(application, parameters),
+    );
 
     return this.accountsWithTableInfo(appUsesAccountCollection, parameters);
   }
 
-  public async getFirstAndCount(uidApplication: string): Promise<{ first: TypedEntity, count: number }> {
+  public async getFirstAndCount(uidApplication: string): Promise<{ first: TypedEntity | undefined; count: number }> {
     const elements = await this.apiProvider.request(() =>
-      this.aobClient.typedClient.PortalApplicationusesaccount.Get(uidApplication, { PageSize: 1 }));
+      this.aobClient.typedClient.PortalApplicationusesaccount.Get(uidApplication, { PageSize: 1 }),
+    );
 
-    const accounts = await this.accountsWithTableInfo(elements, { PageSize: 1 });
+    let accounts: AobAccountContainer[] = [];
+    if (!!elements) {
+      accounts = await this.accountsWithTableInfo(elements, { PageSize: 1 });
+    }
 
     return {
       first: accounts.length === 0 ? undefined : accounts[0],
-      count: elements.totalCount
+      count: elements?.totalCount || 0,
     };
   }
 
-  private async accountsWithTableInfo(appUsesAccountCollection: ExtendedTypedEntityCollection<PortalApplicationusesaccount, unknown>,
-    parameters: CollectionLoadParameters): Promise<TypedEntity[]> {
-
-    const accountsAssigned = [];
+  private async accountsWithTableInfo(
+    appUsesAccountCollection: ExtendedTypedEntityCollection<PortalApplicationusesaccount, unknown> | undefined,
+    parameters: CollectionLoadParameters,
+  ): Promise<AobAccountContainer[]> {
+    const accountsAssigned: AobAccountContainer[] = [];
     const tables = this.getCandidateTables();
 
-    if (appUsesAccountCollection && appUsesAccountCollection.Data && tables) {
+    if (!!appUsesAccountCollection && appUsesAccountCollection.Data && tables) {
       for (const appUsesAccount of appUsesAccountCollection.Data) {
         const tableName = DbObjectKey.FromXml(appUsesAccount.ObjectKeyAccount.value).TableName;
-        const table = tables.find(fkr => fkr.TableName === tableName);
+        const table = tables.find((fkr) => fkr.TableName === tableName);
 
         if (table) {
-          const accountCollection = await table.Get(
-            {
-              ...parameters,
-              ...{
-                filter: [
-                  {
-                    ColumnName: table.ColumnName,
-                    Type: FilterType.Compare,
-                    CompareOp: CompareOperator.Like,
-                    Value1: `%${appUsesAccount.ObjectKeyAccount.value}%`
-                  }
-                ],
-                search: undefined
-              }
-            }
-          );
+          const accountCollection = await table.Get({
+            ...parameters,
+            ...{
+              filter: [
+                {
+                  ColumnName: table.ColumnName,
+                  Type: FilterType.Compare,
+                  CompareOp: CompareOperator.Like,
+                  Value1: `%${appUsesAccount.ObjectKeyAccount.value}%`,
+                },
+              ],
+              search: undefined,
+            },
+          });
 
-          if (accountCollection?.Entities?.length > 0) {
+          if (!!accountCollection?.Entities?.length) {
             const entity = this.builder.buildReadWriteEntity({
               entitySchema: AobAccountContainer.GetEntitySchema(),
-              entityData: accountCollection.Entities[0]
+              entityData: accountCollection.Entities?.[0],
             });
             this.appUsesAccounts[entity.GetEntity().GetKeys().join()] = appUsesAccount;
             accountsAssigned.push(entity);
@@ -166,7 +171,7 @@ export class AccountsService {
         this.logger.debug(this, 'unassigning account from application...');
         await this.aobClient.client.portal_applicationusesaccount_delete(
           application.UID_AOBApplication.value,
-          this.appUsesAccounts[account.GetEntity().GetKeys().join()].UID_AOBAppUsesAccount.value
+          this.appUsesAccounts[account.GetEntity().GetKeys().join()].UID_AOBAppUsesAccount.value,
         );
         count++;
       }
@@ -177,25 +182,23 @@ export class AccountsService {
   private async searchCandidates(
     table: IForeignKeyInfo,
     keyword: string,
-    parameters: CollectionLoadParameters = {}
+    parameters: CollectionLoadParameters = {},
   ): Promise<EntityCollectionData> {
     this.logger.debug(this, 'searching accounts...');
 
-    return table.Get(
-      {
-        ...parameters,
-        ...{
-          filter: [
-            {
-              ColumnName: table.ColumnName,
-              Type: FilterType.Compare,
-              CompareOp: CompareOperator.Like,
-              Value1: `%${keyword}%`
-            }
-          ],
-          search: undefined
-        }
-      }
-    );
+    return table.Get({
+      ...parameters,
+      ...{
+        filter: [
+          {
+            ColumnName: table.ColumnName,
+            Type: FilterType.Compare,
+            CompareOp: CompareOperator.Like,
+            Value1: `%${keyword}%`,
+          },
+        ],
+        search: undefined,
+      },
+    });
   }
 }

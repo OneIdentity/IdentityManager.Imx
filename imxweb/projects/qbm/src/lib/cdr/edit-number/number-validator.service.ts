@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { ValueConstraint } from 'imx-qbm-dbts';
+import { ValueConstraint } from '@imx-modules/imx-qbm-dbts';
 import { NumberError } from './number-error.interface';
 
 /**
@@ -48,7 +48,7 @@ export class NumberValidatorService {
    * @param range The {@link ValueConstraint}, that determines the bounds.
    * @returns
    */
-  public validate(value: any, range: ValueConstraint): NumberError | null {
+  public validate(value: any, range: ValueConstraint | undefined): NumberError | null {
     if (value == null) {
       return null;
     }

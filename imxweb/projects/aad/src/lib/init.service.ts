@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,47 +28,49 @@ import { Injectable } from '@angular/core';
 
 import { ExtService, TabItem } from 'qbm';
 import { LicenceOverviewButtonComponent } from './aad-extension/licence-overview-button/licence-overview-button.component';
-import { AadGroupSubscriptionsComponent } from './azure-ad/aad-group/aad-group-subscriptions.component';
-import { AadGroupDeniedPlansComponent } from './azure-ad/aad-group/aad-group-denied-plans.component';
-import { AadUserSubscriptionsComponent } from './azure-ad/aad-user/aad-user-subscriptions.component';
-import { AadUserDeniedPlansComponent } from './azure-ad/aad-user/aad-user-denied-plans.component';
 import { AadPermissionsService } from './admin/aad-permissions.service';
+import { AadGroupDeniedPlansComponent } from './azure-ad/aad-group/aad-group-denied-plans.component';
+import { AadGroupSubscriptionsComponent } from './azure-ad/aad-group/aad-group-subscriptions.component';
+import { AadUserDeniedPlansComponent } from './azure-ad/aad-user/aad-user-denied-plans.component';
+import { AadUserSubscriptionsComponent } from './azure-ad/aad-user/aad-user-subscriptions.component';
 
 @Injectable({ providedIn: 'root' })
 export class InitService {
   constructor(
     private readonly extService: ExtService,
-    private permission: AadPermissionsService
-  ) {
-  }
+    private permission: AadPermissionsService,
+  ) {}
 
   public onInit(): void {
     this.extService.register('buttonBarExtensionComponent', { instance: LicenceOverviewButtonComponent });
     this.extService.register('groupSidesheet', {
-      instance: AadGroupSubscriptionsComponent, inputData: {
+      instance: AadGroupSubscriptionsComponent,
+      inputData: {
         id: 'subscriptions',
         label: '#LDS#Heading Azure Active Directory Subscriptions',
-        checkVisibility: async ref => this.isAadAccount(ref) && (this.permission.canReadInAzure())
+        checkVisibility: async (ref) => this.isAadAccount(ref) && this.permission.canReadInAzure(),
       },
-      sortOrder: 10
+      sortOrder: 10,
     } as TabItem);
 
     this.extService.register('groupSidesheet', {
-      instance: AadGroupDeniedPlansComponent, inputData: {
+      instance: AadGroupDeniedPlansComponent,
+      inputData: {
         id: 'deniedPlans',
         label: '#LDS#Heading Disabled Azure Active Directory Service Plans',
-        checkVisibility: async ref => this.isAadAccount(ref) && (this.permission.canReadInAzure())
+        checkVisibility: async (ref) => this.isAadAccount(ref) && this.permission.canReadInAzure(),
       },
-      sortOrder: 20
+      sortOrder: 20,
     } as TabItem);
 
     this.extService.register('accountSidesheet', {
-      instance: AadUserSubscriptionsComponent, inputData: {
+      instance: AadUserSubscriptionsComponent,
+      inputData: {
         id: 'subscriptions',
         label: '#LDS#Heading Azure Active Directory Subscriptions',
-        checkVisibility: async ref => this.isAadAccount(ref) && (this.permission.canReadInAzure())
+        checkVisibility: async (ref) => this.isAadUser(ref) && this.permission.canReadInAzure(),
       },
-      sortOrder: 10
+      sortOrder: 10,
     } as TabItem);
 
     this.extService.register('accountSidesheet', {
@@ -76,17 +78,20 @@ export class InitService {
       inputData: {
         id: 'deniedPlans',
         label: '#LDS#Heading Disabled Azure Active Directory Service Plans',
-        checkVisibility: async ref => this.isAadAccount(ref) && (this.permission.canReadInAzure())
+        checkVisibility: async (ref) => this.isAadUser(ref) && this.permission.canReadInAzure(),
       },
-      sortOrder: 20
+      sortOrder: 20,
     } as TabItem);
   }
-
 
   private isAadAccount(referrer: any): boolean {
     let isAad = false;
     isAad = referrer ? referrer.objecttable === 'AADGroup' : false;
     return isAad;
   }
-
+  private isAadUser(referrer: any): boolean {
+    let isAad = false;
+    isAad = referrer ? referrer.objecttable === 'AADUser' : false;
+    return isAad;
+  }
 }

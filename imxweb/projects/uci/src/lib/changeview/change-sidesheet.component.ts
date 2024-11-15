@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,10 +26,10 @@
 
 import { Component, Inject } from '@angular/core';
 
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 
-import { ManualChangeOperation, ManualChangeOperationData, OpsupportUciChangedetail } from 'imx-api-uci';
-import { ExtendedTypedEntityCollection, IEntityColumn, LocalEntityColumn } from 'imx-qbm-dbts';
+import { ManualChangeOperation, ManualChangeOperationData, OpsupportUciChangedetail } from '@imx-modules/imx-api-uci';
+import { ExtendedTypedEntityCollection, IEntityColumn, LocalEntityColumn } from '@imx-modules/imx-qbm-dbts';
 import { ConfirmationService } from 'qbm';
 
 import { UciApiService } from '../uci-api-client.service';
@@ -46,17 +46,16 @@ export class ChangeSidesheetComponent {
   constructor(
     @Inject(EUI_SIDESHEET_DATA) change: ExtendedTypedEntityCollection<OpsupportUciChangedetail, ManualChangeOperationData>,
     private readonly uciApi: UciApiService,
-    private readonly sidesheetRef: EuiSidesheetRef,    
-    private readonly confirmation: ConfirmationService
-    ) {
-
+    private readonly sidesheetRef: EuiSidesheetRef,
+    private readonly confirmation: ConfirmationService,
+  ) {
     this.changeDetail = change.Data;
-    this.manualChangeData = change.extendedData.Operations;
+    this.manualChangeData = change?.extendedData?.Operations ?? [];
 
     // build entity columns from extended data
     this.changeProperties = this.manualChangeData.map((d) => {
       return d.map((c) => {
-        const prop = new LocalEntityColumn(c.Property, null, null, {
+        const prop = new LocalEntityColumn(c.Property!, undefined, undefined, {
           Value: c.DiffValue,
         });
 
@@ -66,22 +65,27 @@ export class ChangeSidesheetComponent {
   }
 
   public async markAsDone(detail: OpsupportUciChangedetail): Promise<void> {
-    if (await this.confirmation.confirm({
-      Title: '#LDS#Heading Mark As Successful',
-      Message: '#LDS#The provisioning process will be marked as successful. Are you sure you have made the requested change in the cloud application?'
-    })) {
+    if (
+      await this.confirmation.confirm({
+        Title: '#LDS#Heading Mark As Successful',
+        Message:
+          '#LDS#The provisioning process will be marked as successful. Are you sure you have made the requested change in the cloud application?',
+      })
+    ) {
       await this.save(detail, true);
-    };
-
+    }
   }
 
   public async markAsError(detail: OpsupportUciChangedetail): Promise<void> {
-    if (await this.confirmation.confirm({
-      Title: '#LDS#Heading Mark As Failed',
-      Message: '#LDS#The provisioning process will be marked as failed. Are you sure you cannot make the requested change in the cloud application?'
-    })) {
+    if (
+      await this.confirmation.confirm({
+        Title: '#LDS#Heading Mark As Failed',
+        Message:
+          '#LDS#The provisioning process will be marked as failed. Are you sure you cannot make the requested change in the cloud application?',
+      })
+    ) {
       await this.save(detail, false);
-    };
+    }
   }
 
   public canMarkAsDone(detail: OpsupportUciChangedetail): boolean {

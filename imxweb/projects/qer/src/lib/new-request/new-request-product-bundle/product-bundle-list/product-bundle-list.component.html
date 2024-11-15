@@ -5,8 +5,7 @@
   <button
     [@fadeIcon]="searchState"
     data-imx-identifier="prodct-bundle-list-button-search"
-    mat-button
-    class="mat-icon-button"
+    mat-icon-button
     color="primary"
     (click)="enableSearch()"
     [matTooltip]="'#LDS#Searches for product bundles' | translate"
@@ -33,13 +32,14 @@
     [detailViewVisible]="false"
     [selectable]="false"
     mode="manual"
+    class="imx-hidden-header"
     (highlightedEntityChanged)="onHighlightedEntityChanged($event)"
     (selectionChanged)="onSelectionChanged($event)"
     data-imx-identifier="new-request-product-bundle-list-datatable"
     [showSelectedItemsMenu]="false"
   >
     <imx-data-table-column
-      [entityColumn]="entitySchema?.Columns.Ident_ShoppingCartPattern"
+      [entityColumn]="entitySchema?.Columns?.Ident_ShoppingCartPattern"
       columnLabel="{{ '#LDS#Product bundle' | translate }}"
       data-imx-identifier="new-request-product-bundle-list-datacolumn-ident"
     >

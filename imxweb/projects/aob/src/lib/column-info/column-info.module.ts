@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -49,8 +49,8 @@ import { ApplicationPropertyModule } from '../application-property/application-p
     ReactiveFormsModule,
     MatButtonModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
   ],
-  exports: [ColumnInfoComponent]
+  exports: [ColumnInfoComponent],
 })
-export class ColumnInfoModule { }
+export class ColumnInfoModule {}

@@ -1,12 +1,12 @@
 <div class="imx-peers-toolbar">
-  <mat-chip-list selectable>
-    <mat-chip (click)="onChipClicked(0)">
+  <mat-chip-listbox>
+    <mat-chip-option (click)="onChipClicked(0)" selected>
       <span translate>#LDS#Products</span>
-    </mat-chip>
-    <mat-chip (click)="onChipClicked(1)">
+    </mat-chip-option>
+    <mat-chip-option (click)="onChipClicked(1)">
       <span translate>#LDS#Organizational structures</span>
-    </mat-chip>
-  </mat-chip-list>
+    </mat-chip-option>
+  </mat-chip-listbox>
   <span class="imx-info-button-caption" translate>#LDS#Information about this tab:</span>
   <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
 </div>
@@ -24,12 +24,15 @@
     (highlightedEntityChanged)="onRowSelected($event)"
     [showSelectedItemsMenu]="false"
   >
-    <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns[DisplayColumns?.DISPLAY_PROPERTYNAME]" columnLabel="{{ '#LDS#Product' | translate }}">
+    <imx-data-table-column
+      [entityColumn]="productApi.entitySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]"
+      columnLabel="{{ '#LDS#Product' | translate }}"
+    >
       <ng-template let-prod>
         <div class="imx-request-col-image">
           <img *ngIf="productDetailsService.getProductImage(prod); else noImage" [src]="productDetailsService.getProductImage(prod)" />
           <ng-template #noImage>
-            <eui-icon icon="application" class="larger-icon colored-icon"></eui-icon>
+            <eui-icon class="imx-icon-info" icon="application" size="32px"></eui-icon>
           </ng-template>
           &nbsp;&nbsp;
           <span class="imx-request-col-display">{{ prod.GetEntity()?.GetDisplay() }} </span>
@@ -37,7 +40,7 @@
       </ng-template>
     </imx-data-table-column>
     <imx-data-table-column
-      [entityColumn]="productApi.entitySchema?.Columns['CountInPeerGroup']"
+      [entityColumn]="productApi.entitySchema?.Columns?.['CountInPeerGroup']"
       [columnLabel]="productApi.entitySchema?.Columns?.CountInPeerGroup?.Display + ' (' + peerGroupSize + ')'"
     >
       <ng-template let-prod>
@@ -48,36 +51,51 @@
         </div>
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns['ServiceCategoryFullPath']">
+    <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns?.['ServiceCategoryFullPath']">
       <ng-template let-prod>
         <div class="imx-request-col-text">
           {{ prod.ServiceCategoryFullPath?.Column?.GetDisplayValue() }}
         </div>
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns['Description']">
+    <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns?.['Description']">
       <ng-template let-prod>
         <div class="imx-request-col-text">
           {{ prod.GetEntity()?.columns?.Description?.GetDisplayValue() }}
         </div>
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="productApi.entitySchema?.Columns['OrderableStatus']" columnLabel="{{ '#LDS#Status' | translate }}" align="center">
+    <imx-data-table-column
+      [entityColumn]="productApi.entitySchema?.Columns?.['OrderableStatus']"
+      columnLabel="{{ '#LDS#Status' | translate }}"
+      align="center"
+    >
       <ng-template let-prod>
-        <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, ['PERSONHASOBJECT', 'PERSONHASASSIGNMENTORDER', 'ASSIGNED'])" class="imx-request-col-status">
-          <eui-icon
-            icon="approvals"
-            [matTooltip]="'#LDS#This product has already been assigned to {0}.' | translate | ldsReplace: orchestration.recipients.Column?.GetDisplayValue()"
-          ></eui-icon>
-        </div>
-        <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, 'ORDER')" class="imx-request-col-status">
-          <eui-icon icon="request" [matTooltip]="'#LDS#This product has already been requested.' | translate"></eui-icon>
-        </div>
-        <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, 'NOTORDERABLE')" class="imx-request-col-status">
-          <eui-icon icon="error" [matTooltip]="'#LDS#This product cannot currently be requested.' | translate"></eui-icon>
-        </div>
-        <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, 'CART')" class="imx-request-col-status">
-          <eui-icon icon="cart" [matTooltip]="'#LDS#This product is already in your shopping cart.' | translate"></eui-icon>
+        <div class="imx-request-col">
+          <div
+            *ngIf="
+              productDetailsService.valueContains(prod.OrderableStatus?.value, ['PERSONHASOBJECT', 'PERSONHASASSIGNMENTORDER', 'ASSIGNED'])
+            "
+            class="imx-request-col-status"
+          >
+            <eui-icon
+              icon="approvals"
+              [matTooltip]="
+                '#LDS#This product has already been assigned to {0}.'
+                  | translate
+                  | ldsReplace: orchestration.recipients.Column?.GetDisplayValue()
+              "
+            ></eui-icon>
+          </div>
+          <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, 'ORDER')" class="imx-request-col-status">
+            <eui-icon icon="request" [matTooltip]="'#LDS#This product has already been requested.' | translate"></eui-icon>
+          </div>
+          <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, 'NOTORDERABLE')" class="imx-request-col-status">
+            <eui-icon icon="error" [matTooltip]="'#LDS#This product cannot currently be requested.' | translate"></eui-icon>
+          </div>
+          <div *ngIf="productDetailsService.valueContains(prod.OrderableStatus?.value, 'CART')" class="imx-request-col-status">
+            <eui-icon icon="cart" [matTooltip]="'#LDS#This product is already in your shopping cart.' | translate"></eui-icon>
+          </div>
         </div>
       </ng-template>
     </imx-data-table-column>
@@ -93,7 +111,9 @@
     (selectionChanged)="onSelectionChanged($event, SelectedProductSource.PeerGroupOrgs)"
     [showSelectedItemsMenu]="false"
   >
-    <imx-data-table-column [entityColumn]="membershipApi.PortalItshopPeergroupMembershipsSchema?.Columns[DisplayColumns?.DISPLAY_PROPERTYNAME]">
+    <imx-data-table-column
+      [entityColumn]="membershipApi.PortalItshopPeergroupMembershipsSchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]"
+    >
       <ng-template let-prod>
         <div>
           <span class="imx-request-col-display">{{ prod.GetEntity()?.GetDisplay() }} </span>
@@ -101,17 +121,17 @@
       </ng-template>
     </imx-data-table-column>
     <imx-data-table-column
-      [entityColumn]="membershipApi.PortalItshopPeergroupMembershipsSchema?.Columns['CountInPeerGroup']"
+      [entityColumn]="membershipApi.PortalItshopPeergroupMembershipsSchema?.Columns?.['CountInPeerGroup']"
       [columnLabel]="membershipApi.PortalItshopPeergroupMembershipsSchema?.Columns?.CountInPeerGroup?.Display + ' (' + peerGroupSize + ')'"
     ></imx-data-table-column>
-    <imx-data-table-column [entityColumn]="membershipApi.PortalItshopPeergroupMembershipsSchema?.Columns['FullPath']">
+    <imx-data-table-column [entityColumn]="membershipApi.PortalItshopPeergroupMembershipsSchema?.Columns?.['FullPath']">
       <ng-template let-prod>
         <div class="imx-request-col-text">
           {{ prod.FullPath?.Column?.GetDisplayValue() }}
         </div>
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="membershipApi.PortalItshopPeergroupMembershipsSchema?.Columns['Description']">
+    <imx-data-table-column [entityColumn]="membershipApi.PortalItshopPeergroupMembershipsSchema?.Columns?.['Description']">
       <ng-template let-prod>
         <div class="imx-request-col-text">
           {{ prod.Description?.Column?.GetDisplayValue() }}

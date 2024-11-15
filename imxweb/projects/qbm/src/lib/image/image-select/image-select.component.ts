@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { AbstractControl, FormControl } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 
 import { Base64ImageService } from '../../images/base64-image.service';
 import { ValueWrapper } from '../../value-wrapper/value-wrapper';
@@ -33,11 +33,11 @@ import { ValueWrapper } from '../../value-wrapper/value-wrapper';
 @Component({
   selector: 'imx-image-select',
   templateUrl: './image-select.component.html',
-  styleUrls: ['./image-select.component.scss']
+  styleUrls: ['./image-select.component.scss'],
 })
 export class ImageSelectComponent {
   // TODO: Check Upgrade
-  @Input() public control: AbstractControl;
+  @Input() public control: FormControl<any>;
   @Input() public valueWrapper: ValueWrapper;
   @Input() public fileFormatHint: string;
   @Input() public hideRemoveButton: boolean;
@@ -46,5 +46,5 @@ export class ImageSelectComponent {
   @Output() public change = new EventEmitter();
   @Output() public remove = new EventEmitter();
 
-  constructor(public readonly imageProvider: Base64ImageService) { }
+  constructor(public readonly imageProvider: Base64ImageService) {}
 }

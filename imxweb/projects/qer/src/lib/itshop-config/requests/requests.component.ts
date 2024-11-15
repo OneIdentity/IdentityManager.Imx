@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,19 +28,24 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PortalShopConfigStructure } from 'imx-api-qer';
-import { CollectionLoadParameters, IClientProperty, DisplayColumns, EntitySchema } from 'imx-qbm-dbts';
+import { PortalShopConfigStructure } from '@imx-modules/imx-api-qer';
 import {
-  DataSourceToolbarSettings,
-  DataSourceToolbarFilter,
-  ClassloggerService,
-  StorageService,
-  HELPER_ALERT_KEY_PREFIX,
-  SettingsService,
+  CollectionLoadParameters,
+  DisplayColumns,
+  EntitySchema,
+  IClientProperty,
+  TypedEntityCollectionData,
+} from '@imx-modules/imx-qbm-dbts';
+import {
   BusyService,
+  calculateSidesheetWidth,
+  DataViewInitParameters,
+  DataViewSource,
+  HELP_CONTEXTUAL,
   HelpContextualComponent,
   HelpContextualService,
-  HELP_CONTEXTUAL
+  HELPER_ALERT_KEY_PREFIX,
+  StorageService,
 } from 'qbm';
 import { RequestConfigSidesheetComponent } from '../request-config-sidesheet/request-config-sidesheet.component';
 import { RequestsService } from '../requests.service';
@@ -51,6 +56,7 @@ const helperAlertKey = `${HELPER_ALERT_KEY_PREFIX}_requestShop`;
   selector: 'imx-requests',
   templateUrl: './requests.component.html',
   styleUrls: ['./requests.component.scss'],
+  providers: [DataViewSource],
 })
 export class RequestsComponent implements OnInit, OnDestroy {
   public get showHelperAlert(): boolean {
@@ -59,9 +65,6 @@ export class RequestsComponent implements OnInit, OnDestroy {
 
   public readonly entitySchemaShopStructure: EntitySchema;
   public readonly DisplayColumns = DisplayColumns;
-  public dstSettings: DataSourceToolbarSettings;
-  public navigationState: CollectionLoadParameters;
-  public filterOptions: DataSourceToolbarFilter[] = [];
 
   public busyService = new BusyService();
 
@@ -69,14 +72,12 @@ export class RequestsComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly sidesheet: EuiSidesheetService,
-    private readonly logger: ClassloggerService,
     private readonly translate: TranslateService,
     private readonly storageService: StorageService,
     public readonly requestsService: RequestsService,
-    private readonly settingsService: SettingsService,
-    private readonly helpContextualService: HelpContextualService
+    private readonly helpContextualService: HelpContextualService,
+    public dataSource: DataViewSource<PortalShopConfigStructure>,
   ) {
-    this.navigationState = { PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchemaShopStructure = requestsService.shopStructureSchema;
   }
 
@@ -85,7 +86,7 @@ export class RequestsComponent implements OnInit, OnDestroy {
       this.entitySchemaShopStructure.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
       this.entitySchemaShopStructure.Columns.UID_OrgAttestator,
     ];
-    await this.navigate();
+    await this.initDataTable();
   }
 
   public ngOnDestroy(): void {
@@ -96,39 +97,15 @@ export class RequestsComponent implements OnInit, OnDestroy {
     this.storageService.storeHelperAlertDismissal(helperAlertKey);
   }
 
-  public async onSearch(keywords: string): Promise<void> {
-    this.logger.debug(this, `Searching for: ${keywords}`);
-    this.navigationState.StartIndex = 0;
-    this.navigationState.search = keywords;
-    await this.navigate();
-  }
-
-  public onRequestShopSelected(requestConfig: PortalShopConfigStructure): void {
-    this.logger.debug(this, `Selected shop changed`);
-    this.logger.trace(`New shop selected`, requestConfig);
-    this.viewRequestShop(requestConfig);
-  }
-
   public async createRequestConfig(): Promise<void> {
     const newRequestConfig = this.requestsService.createRequestConfigEntity();
     newRequestConfig.ITShopInfo.value = 'SH';
     this.viewRequestShop(newRequestConfig, true);
   }
 
-  /**
-   * Occurs when the navigation state has changed - e.g. users clicks on the next page button.
-   *
-   */
-  public async onNavigationStateChanged(newState?: CollectionLoadParameters): Promise<void> {
-    if (newState) {
-      this.navigationState = newState;
-    }
-    await this.navigate();
-  }
-
   private async viewRequestShop(requestConfig: PortalShopConfigStructure, isNew: boolean = false): Promise<void> {
     const key = isNew ? this.requestsService.LdsHeadingCreateShop : this.requestsService.LdsHeadingEditShop;
-    if(isNew){
+    if (isNew) {
       this.helpContextualService.setHelpContextId(HELP_CONTEXTUAL.ConfigurationRequestsCreate);
     }
     const result = await this.sidesheet
@@ -137,38 +114,32 @@ export class RequestsComponent implements OnInit, OnDestroy {
         subTitle: isNew ? '' : requestConfig.GetEntity().GetDisplay(),
         padding: '0px',
         disableClose: true,
-        width: 'max(60%,600px)',
+        width: calculateSidesheetWidth(),
         testId: isNew ? 'requests-config-create-shop-sidesheet' : 'requests-config-edit-shop-sidesheet',
         data: {
           requestConfig,
           isNew,
         },
-        headerComponent: isNew ? HelpContextualComponent : undefined
+        headerComponent: isNew ? HelpContextualComponent : undefined,
       })
       .afterClosed()
       .toPromise();
     // After the sidesheet closes, reload the current data to refresh any changes that might have been made
     if (result) {
-      this.navigate();
+      this.dataSource.updateState();
     }
   }
 
-  private async navigate(): Promise<void> {
-    const isBusy = this.busyService.beginBusy();
-    const getParams: any = this.navigationState;
-
-    try {
-      const data = await this.requestsService.getShopStructures(getParams, '');
-      this.dstSettings = {
-        displayedColumns: this.displayedColumns,
-        dataSource: data,
-        entitySchema: this.entitySchemaShopStructure,
-        navigationState: this.navigationState,
-        filters: this.filterOptions,
-      };
-      this.logger.debug(this, `Head at ${data.Data.length + this.navigationState.StartIndex} of ${data.totalCount} item(s)`);
-    } finally {
-      isBusy?.endBusy();
-    }
+  private initDataTable(): void {
+    const dataViewInitParameters: DataViewInitParameters<PortalShopConfigStructure> = {
+      execute: (params: CollectionLoadParameters, signal: AbortSignal): Promise<TypedEntityCollectionData<PortalShopConfigStructure>> =>
+        this.requestsService.getShopStructures(params, '', signal),
+      schema: this.entitySchemaShopStructure,
+      columnsToDisplay: this.displayedColumns,
+      highlightEntity: (entity: PortalShopConfigStructure) => {
+        this.viewRequestShop(entity);
+      },
+    };
+    this.dataSource.init(dataViewInitParameters);
   }
 }

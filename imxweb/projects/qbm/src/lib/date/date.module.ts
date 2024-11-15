@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,11 +30,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatMomentDateModule, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
 
 import { A11yModule } from '@angular/cdk/a11y';
-import { OverlayModule} from '@angular/cdk/overlay';
+import { OverlayModule } from '@angular/cdk/overlay';
 
 import { MatButtonModule } from '@angular/material/button';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
+import { MatDateSelectionModel, MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -52,18 +52,8 @@ import { ShortDatePipe } from './short-date.pipe';
 import { LocalizedDatePipe } from './localized-date.pipe';
 
 @NgModule({
-  declarations: [
-    ShortDatePipe,
-    LocalizedDatePipe,
-    DateComponent,
-    CalendarComponent,
-    TimePickerComponent
-  ],
-  exports: [
-    DateComponent,
-    ShortDatePipe,
-    LocalizedDatePipe
-  ],
+  declarations: [ShortDatePipe, LocalizedDatePipe, DateComponent, CalendarComponent, TimePickerComponent],
+  exports: [DateComponent, ShortDatePipe, LocalizedDatePipe],
   imports: [
     A11yModule,
     CommonModule,
@@ -79,11 +69,13 @@ import { LocalizedDatePipe } from './localized-date.pipe';
     MatProgressSpinnerModule,
     OverlayModule,
     ReactiveFormsModule,
-    TranslateModule
+    TranslateModule,
+    MatNativeDateModule,
+    MatDatepickerModule,
   ],
   providers: [
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
     { provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS },
-  ]
+  ],
 })
-export class DateModule { }
+export class DateModule {}

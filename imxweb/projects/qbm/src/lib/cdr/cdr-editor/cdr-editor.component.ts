@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,13 +24,13 @@
  *
  */
 
-import { Component, Input, ViewChild, ViewContainerRef, OnChanges, SimpleChanges, EventEmitter, Output, ElementRef } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 
-import { ColumnDependentReference } from '../column-dependent-reference.interface';
-import { CdrRegistryService } from '../cdr-registry.service';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
 import { CdrEditor } from '../cdr-editor.interface';
+import { CdrRegistryService } from '../cdr-registry.service';
+import { ColumnDependentReference } from '../column-dependent-reference.interface';
 
 /**
  * This component provides an {@link CdrEditor|editor} for a {@link ColumnDependentReference|column dependent reference}.
@@ -42,11 +42,11 @@ import { CdrEditor } from '../cdr-editor.interface';
  * In the *.ts file:
  * cdrForColumns: ColumnDependentReferences;
  * formGroup: FormGroup<{cdrArray: FormArray}>;
- * In the *.html file: * 
+ * In the *.html file: *
  * -->
  * <form [formGroup]="formGroup">
- *    <imx-cdr-editor *ngFor="let cdr of cdrForColumns" 
- *        cdr="cdr" 
+ *    <imx-cdr-editor *ngFor="let cdr of cdrForColumns"
+ *        cdr="cdr"
  *        (controlCreated)="formGroup.controls.cdrArray.push($event)"
  *        (valueChange)="doSomethingIfValueChanges"
  *        (readOnlyChanged)="doSomethingIfReadOnlyChanges"
@@ -60,11 +60,16 @@ import { CdrEditor } from '../cdr-editor.interface';
   styleUrls: ['./cdr-editor.component.scss'],
 })
 export class CdrEditorComponent implements OnChanges {
-  public editor: CdrEditor;
+  public editor: CdrEditor | undefined;
   /**
    * The column dependent reference for which the editor should be provided.
    */
   @Input() public cdr: ColumnDependentReference;
+
+  /**
+   * Determines, if the control should only be validated after the value has been changed
+   */
+  @Input() public validateOnlyOnChange: boolean;
 
   /**
    * This is emitted, after the control is created properly.
@@ -92,7 +97,11 @@ export class CdrEditorComponent implements OnChanges {
   // stores if the cdr is readonly, because otherwise you're unable to check if the value has changed.
   private isReadonly: boolean;
 
-  constructor(private registry: CdrRegistryService, private logger: ClassloggerService, private readonly elementRef: ElementRef) {}
+  constructor(
+    private registry: CdrRegistryService,
+    private logger: ClassloggerService,
+    private readonly elementRef: ElementRef,
+  ) {}
 
   /**
    * Updates the component, if the cdr input is set to a new value.
@@ -106,7 +115,7 @@ export class CdrEditorComponent implements OnChanges {
       try {
         const ref = this.registry.createEditor(this.viewContainerRef, this.cdr);
         this.isReadonly = this.cdr.isReadOnly();
-        if (ref.instance.valueHasChanged) {
+        if (ref?.instance.valueHasChanged) {
           ref.instance.valueHasChanged.subscribe((value) => {
             if (value?.forceEmit === true) {
               this.valueChange.emit(value.value);
@@ -122,14 +131,17 @@ export class CdrEditorComponent implements OnChanges {
             }
           });
         }
-        if (ref.instance.pendingChanged) {
+        if (ref?.instance.pendingChanged) {
           ref.instance.pendingChanged.subscribe((value) => {
             this.pendingChanged.emit(value);
           });
         }
-        this.controlCreated.emit(ref.instance.control);
+        this.controlCreated.emit(ref?.instance.control);
         this.elementRef.nativeElement.setAttribute('data-imx-identifier', `cdr-editor-${this.cdr.column.ColumnName}`);
-        this.editor = ref.instance;
+        this.editor = ref?.instance;
+        if (this.editor) {
+          this.editor.validateOnlyOnChange = this.validateOnlyOnChange;
+        }
       } catch (e) {
         this.logger.error(this, 'Failed to create editor for column dependent reference.', e);
       }

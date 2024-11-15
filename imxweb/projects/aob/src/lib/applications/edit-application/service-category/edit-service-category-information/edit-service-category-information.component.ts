@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,11 +25,11 @@
  */
 
 import { Component, Inject, OnInit } from '@angular/core';
+import { FormArray, FormGroup } from '@angular/forms';
 import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
-import { IEntity } from 'imx-qbm-dbts';
+import { IEntity } from '@imx-modules/imx-qbm-dbts';
 import { BaseCdr, CdrFactoryService, ColumnDependentReference, ConfirmationService } from 'qbm';
 import { ServiceCategoryService } from '../service-category.service';
-import { FormArray, FormGroup } from '@angular/forms';
 
 interface ServiceItemForm {
   cdrArray: FormArray;
@@ -40,7 +40,7 @@ interface ServiceItemForm {
   styleUrls: ['./edit-service-category-information.component.scss'],
 })
 export class EditServiceCategoryInformationComponent implements OnInit {
-  public cdrList: ColumnDependentReference[];
+  public cdrList: (ColumnDependentReference | undefined)[];
 
   public readonly formGroup: FormGroup<ServiceItemForm>;
 
@@ -53,10 +53,10 @@ export class EditServiceCategoryInformationComponent implements OnInit {
     private readonly confirm: ConfirmationService,
     private readonly ref: EuiSidesheetRef,
     private readonly cdrFactoryService: CdrFactoryService,
-    @Inject(EUI_SIDESHEET_DATA) public data: { serviceCategory: IEntity; isNew: boolean }
+    @Inject(EUI_SIDESHEET_DATA) public data: { serviceCategory: IEntity; isNew: boolean },
   ) {
-    this.formGroup = new FormGroup({
-      cdrArray: new FormArray([]),
+    this.formGroup = new FormGroup<ServiceItemForm>({
+      cdrArray: new FormArray<any>([]),
     });
 
     this.ref.closeClicked().subscribe(async () => {
@@ -75,11 +75,11 @@ export class EditServiceCategoryInformationComponent implements OnInit {
       schema.Columns.UID_PWODecisionMethod,
       schema.Columns.UID_OrgAttestator,
       schema.Columns.JPegPhoto,
-    ].map(elem=> elem.ColumnName);
+    ].map((elem) => elem.ColumnName || '');
 
     this.cdrList = this.cdrFactoryService.buildCdrFromColumnList(this.data.serviceCategory, columnNames);
 
-    if (!this.data.isNew) {
+    if (!this.data.isNew && schema.Columns.UID_AccProductGroupParent.ColumnName) {
       this.cdrList.push(new BaseCdr(this.data.serviceCategory.GetColumn(schema.Columns.UID_AccProductGroupParent.ColumnName)));
     }
   }

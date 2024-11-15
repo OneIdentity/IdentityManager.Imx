@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,34 +24,44 @@
  *
  */
 
-import { RoleAssignmentData } from "imx-api-qer";
-import { CollectionLoadParameters, CompareOperator, ExtendedTypedEntityCollection, FilterType, IEntity, TypedEntity } from "imx-qbm-dbts";
-import { DynamicMethodService, GenericTypedEntity, ImxTranslationProviderService } from "qbm";
-import { IRoleEntitlements } from "qer";
-import { RmsApiService } from "./rms-api-client.service";
+import { RoleAssignmentData } from '@imx-modules/imx-api-qer';
+import {
+  CollectionLoadParameters,
+  CompareOperator,
+  ExtendedTypedEntityCollection,
+  FilterType,
+  IEntity,
+  TypedEntity,
+} from '@imx-modules/imx-qbm-dbts';
+import { ImxTranslationProviderService } from 'qbm';
+import { IRoleEntitlements } from 'qer';
+import { RmsApiService } from './rms-api-client.service';
 
 export class EsetEntitlements implements IRoleEntitlements {
+  public entitlementFkName = 'Entitlement'; // column name in ESetHasEntitlement
+
   constructor(
     private readonly api: RmsApiService,
-    private readonly dynamicMethodSvc: DynamicMethodService,
-    protected readonly translator: ImxTranslationProviderService
+    protected readonly translator: ImxTranslationProviderService,
   ) {}
 
   public async getCollection(
     id: string,
     navigationState?: CollectionLoadParameters,
-    objectKeyForFiltering?: string
+    objectKeyForFiltering?: string,
   ): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
-    return await this.api.typedClient.PortalRolesConfigEntitlementsEset.Get(id, {
+    return this.api.typedClient.PortalRolesConfigEntitlementsEset.Get(id, {
       ...navigationState,
-      filter: objectKeyForFiltering ? [
-        {
-          ColumnName: 'Entitlement',
-          CompareOp: CompareOperator.Equal,
-          Type: FilterType.Compare,
-          Value1: objectKeyForFiltering,
-        },
-      ] : undefined,
+      filter: objectKeyForFiltering
+        ? [
+            {
+              ColumnName: 'Entitlement',
+              CompareOp: CompareOperator.Equal,
+              Type: FilterType.Compare,
+              Value1: objectKeyForFiltering,
+            },
+          ]
+        : undefined,
     });
   }
 
@@ -59,26 +69,13 @@ export class EsetEntitlements implements IRoleEntitlements {
     return this.api.client.portal_roles_config_classes_ESet_get();
   }
 
-  public getEntitlementFkName() {
-    return 'Entitlement'; // column name in ESetHasEntitlement
-  }
-
   async delete(roleId: string, entity: IEntity): Promise<void> {
     const esethasentl = entity.GetKeys()[0];
     await this.api.client.portal_roles_config_entitlements_ESet_delete(roleId, esethasentl);
   }
 
-  public createEntitlementAssignmentEntity(role: IEntity, entlType: RoleAssignmentData): IEntity {
+  public createEntitlementAssignmentEntity(role: IEntity): IEntity {
     const uidESet = role.GetKeys()[0];
-    const entityColl = this.dynamicMethodSvc.createEntity(
-      this.api.apiClient,
-      {
-        path: '/portal/roles/config/entitlements/ESet/' + uidESet,
-        type: GenericTypedEntity,
-        schemaPath: 'portal/roles/config/entitlements/ESet/{' + entlType.RoleFk + '}',
-      },
-      { Columns: { UID_ESet: { Value: uidESet } } }
-    );
-    return entityColl.Data[0].GetEntity();
+    return this.api.typedClient.PortalRolesConfigEntitlementsEset.createEntity({ Columns: { UID_ESet: { Value: uidESet } } }).GetEntity();
   }
 }

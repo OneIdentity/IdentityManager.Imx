@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,45 +25,43 @@
  */
 
 import { Injectable } from '@angular/core';
-import { CollectionLoadParameters, EntitySchema, TypedEntityCollectionData } from 'imx-qbm-dbts';
-import { PortalShopCategories } from 'imx-api-qer';
+import { PortalShopCategories } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, EntitySchema, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { QerApiService } from '../qer-api-client.service';
 
 @Injectable()
 export class ProductSelectionService {
-    constructor(
-        private readonly qerClient: QerApiService
-    ) { }
+  constructor(private readonly qerClient: QerApiService) {}
 
-    public getServiceCategoryDisplaySingular(): string {
-        const schema = this.qerClient.typedClient.PortalShopCategories.GetSchema();
-        return schema.DisplaySingular;
+  public getServiceCategoryDisplaySingular(): string {
+    const schema = this.qerClient.typedClient.PortalShopCategories.GetSchema();
+    return schema.DisplaySingular || '';
+  }
+
+  public get entitySchemaShopCategories(): EntitySchema {
+    return this.qerClient.typedClient.PortalShopCategories.GetSchema();
+  }
+
+  public getServiceCategories(
+    navigationState: CollectionLoadParameters & {
+      UID_Person?: string;
+      UID_AccProductGroupParent?: string;
+      IncludeChildCategories?: boolean;
+    },
+  ): Promise<TypedEntityCollectionData<PortalShopCategories>> {
+    const opts: CollectionLoadParameters = {
+      StartIndex: navigationState.StartIndex,
+      OrderBy: navigationState.OrderBy,
+      PageSize: navigationState.PageSize,
+      filter: navigationState.filter,
+      search: navigationState.search,
+      UID_Person: navigationState.UID_Person,
+    };
+
+    if (!navigationState.search || navigationState.search === '') {
+      opts.ParentKey = navigationState.UID_AccProductGroupParent ? navigationState.UID_AccProductGroupParent : ''; // empty string: first level
     }
 
-    public get entitySchemaShopCategories(): EntitySchema {
-        return this.qerClient.typedClient.PortalShopCategories.GetSchema();
-    }
-
-    public getServiceCategories(navigationState: CollectionLoadParameters & {
-        UID_Person?: string;
-        UID_AccProductGroupParent?: string;
-        IncludeChildCategories?: boolean;
-    }): Promise<TypedEntityCollectionData<PortalShopCategories>> {
-        const opts: CollectionLoadParameters = {
-            StartIndex: navigationState.StartIndex,
-            OrderBy: navigationState.OrderBy,
-            PageSize: navigationState.PageSize,
-            filter: navigationState.filter,
-            search: navigationState.search,
-            UID_Person: navigationState.UID_Person,
-        };
-
-        if (!navigationState.search || navigationState.search === '') {
-            opts.ParentKey = navigationState.UID_AccProductGroupParent
-            ? navigationState.UID_AccProductGroupParent
-            : "" // empty string: first level
-          }
-        
-        return this.qerClient.typedClient.PortalShopCategories.Get(opts);
-    }
+    return this.qerClient.typedClient.PortalShopCategories.Get(opts);
+  }
 }

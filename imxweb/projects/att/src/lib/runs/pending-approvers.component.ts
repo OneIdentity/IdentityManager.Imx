@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,44 +27,48 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ApiService } from '../api.service';
 
-import { PortalAttestationRunApprovers } from 'imx-api-att';
-import { TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { PortalAttestationRunApprovers } from '@imx-modules/imx-api-att';
+import { EntitySchema, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 
-import { DataSourceToolbarSettings } from 'qbm';
+import { DataViewInitParameters, DataViewSource } from 'qbm';
 
 @Component({
   selector: 'imx-attestation-run-approvers',
   templateUrl: './pending-approvers.component.html',
-  styleUrls: ['./pending-approvers.component.scss']
+  styleUrls: ['./pending-approvers.component.scss'],
+  providers: [DataViewSource],
 })
 export class PendingApproversComponent implements OnChanges {
-  public dstSettings: DataSourceToolbarSettings;
-
   public selected: PortalAttestationRunApprovers[] = [];
-
+  public entitySchema: EntitySchema;
   public showHelper = true;
 
   @Input() public dataSource: TypedEntityCollectionData<PortalAttestationRunApprovers>;
 
   @Output() public readonly sendReminder = new EventEmitter<PortalAttestationRunApprovers[]>();
 
-  constructor(private readonly attApiService: ApiService) {
+  constructor(
+    private readonly attApiService: ApiService,
+    public dataViewSource: DataViewSource<PortalAttestationRunApprovers>,
+  ) {
+    this.entitySchema = this.attApiService.typedClient.PortalAttestationRunApprovers.GetSchema();
   }
 
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
     if (changes.dataSource && this.dataSource) {
-      const entitySchema = this.attApiService.typedClient.PortalAttestationRunApprovers.GetSchema();
-
-      this.dstSettings = {
-        displayedColumns: [
-          entitySchema.Columns.UID_PersonHead,
-          entitySchema.Columns.PendingCases,
-          entitySchema.Columns.ClosedCases
+      console.log(this.dataSource);
+      const dataViewInitParameters: DataViewInitParameters<PortalAttestationRunApprovers> = {
+        execute: () => Promise.resolve(this.dataSource),
+        schema: this.entitySchema,
+        columnsToDisplay: [
+          this.entitySchema.Columns.UID_PersonHead,
+          this.entitySchema.Columns.PendingCases,
+          this.entitySchema.Columns.ClosedCases,
         ],
-        dataSource: this.dataSource,
-        entitySchema,
-        navigationState: {}
+        localSource: true,
+        selectionChange: (selection: PortalAttestationRunApprovers[]) => this.onSelectionChanged(selection),
       };
+      this.dataViewSource.init(dataViewInitParameters);
     }
   }
 
@@ -75,4 +79,7 @@ export class PendingApproversComponent implements OnChanges {
   public onHelperDismissed(): void {
     this.showHelper = false;
   }
+
+  public LdsKeyAttestorOverview =
+    '#LDS#Here you can get an overview of attestors who still have to approve attestation cases in the selected attestation run. Additionally, you can select attestors and send them reminders.';
 }

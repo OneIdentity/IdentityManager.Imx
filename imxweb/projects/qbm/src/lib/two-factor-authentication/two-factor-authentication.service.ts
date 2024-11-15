@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,9 +28,11 @@ import { Injectable, Type } from '@angular/core';
 
 @Injectable()
 export class TwoFactorAuthenticationService {
-  public get Registry(): { [id: string]: Type<any>; } { return this.registry; }
+  public get Registry(): { [id: string]: Type<any> } {
+    return this.registry;
+  }
 
-  private registry: { [id: string]: Type<any>; } = {};
+  private registry: { [id: string]: Type<any> } = {};
 
   public register(key: string, svc: Type<any>): void {
     this.registry[key] = svc;

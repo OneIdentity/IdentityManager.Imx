@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,7 +30,7 @@ import { IssueItem } from './service-issues.models';
 @Component({
   selector: 'imx-service-issue',
   templateUrl: './service-issue.component.html',
-  styleUrls: ['./service-issue.component.scss', '../system-status/system-status.component.scss', '../issue-tiles.scss']
+  styleUrls: ['./service-issue.component.scss', '../system-status/system-status.component.scss', '../issue-tiles.scss'],
 })
 export class ServiceIssueComponent {
   @Input() public issueItem: IssueItem;

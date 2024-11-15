@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,20 +24,19 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
-import { ViewConfigData } from 'imx-api-qer';
+import { ViewConfigData } from '@imx-modules/imx-api-qer';
 
-import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, XOrigin } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import {
   AuthenticationService,
-  buildAdditionalElementsString,
   DataSourceToolbarSettings,
   DataSourceToolbarViewConfig,
   ISessionState,
-  SnackBarService
+  SnackBarService,
+  buildAdditionalElementsString,
 } from 'qbm';
 import { UserModelService } from '../../user/user-model.service';
 import { ViewConfigService } from '../../view-config/view-config.service';
@@ -52,7 +51,7 @@ import { NotRequestableMembershipsComponent } from './not-requestable-membership
   styleUrls: ['./memberships-choose-identities.component.scss', '../sidesheet.scss'],
 })
 export class MembershipsChooseIdentitiesComponent implements OnInit {
-  public dstSettings: DataSourceToolbarSettings;
+  public dstSettings: DataSourceToolbarSettings | undefined;
   public navigationState: CollectionLoadParameters = {};
   public entitySchema: EntitySchema;
   public DisplayColumns = DisplayColumns;
@@ -63,7 +62,7 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
   private dataModel: DataModel;
   private viewConfig: DataSourceToolbarViewConfig;
   private viewConfigPath = 'attestation/approve';
-  private candidatesEntitySchema: EntitySchema;
+  private candidatesEntitySchema: EntitySchema | undefined;
 
   constructor(
     private readonly sidesheetRef: EuiSidesheetRef,
@@ -75,7 +74,7 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
     private readonly userService: UserModelService,
     private readonly busyService: EuiLoadingService,
     private readonly authentication: AuthenticationService,
-    private readonly dialogService: MatDialog
+    private readonly dialogService: MatDialog,
   ) {
     this.entitySchema = this.identityService.getSchema();
     this.displayColumns = [this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]];
@@ -83,16 +82,18 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyService.show()));
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
 
     try {
-      this.dataModel = await this.roleService.getCandidatesDataModel(this.dataManagementService.entityInteractive.GetEntity().GetKeys()[0]);
+      this.dataModel = await this.roleService.getCandidatesDataModel(
+        this.dataManagementService.entityInteractive?.GetEntity()?.GetKeys()?.[0],
+      );
       this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModel, this.viewConfigPath);
-      this.candidatesEntitySchema = this.roleService.getMembershipEntitySchema('candidates');
-    }
-    finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.candidatesEntitySchema = this.roleService.getMembershipEntitySchema();
+    } finally {
+      this.busyService.hide();
     }
     await this.navigate();
   }
@@ -119,32 +120,36 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
       return;
     }
 
-    const entity = this.dataManagementService.entityInteractive.GetEntity()
+    const entity = this.dataManagementService.entityInteractive?.GetEntity();
     this.busyService.show();
     try {
-      const notRequestableMemberships = await this.identityService.addMemberships(
-        this.roleService.ownershipInfo.TableName,
-        this.selection,
-        entity.GetColumn('XObjectKey').GetValue()
-      );
+      const notRequestableMemberships =
+        this.roleService.ownershipInfo.TableName == null
+          ? []
+          : await this.identityService.addMemberships(
+              this.roleService.ownershipInfo.TableName,
+              this.selection,
+              entity?.GetColumn('XObjectKey').GetValue(),
+            );
 
       if (notRequestableMemberships.length > 0) {
         const dialogRef = this.dialogService.open(NotRequestableMembershipsComponent, {
           data: {
             notRequestableMemberships,
             entitySchema: this.entitySchema,
-            membershipName: entity.GetDisplay()
-          }
+            membershipName: entity?.GetDisplay(),
+          },
         });
 
         await dialogRef.beforeClosed().toPromise();
       }
 
-      if (notRequestableMemberships.length < this.selection.length) { // there is at least one membership added
+      if (notRequestableMemberships.length < this.selection.length) {
+        // there is at least one membership added
         await this.userService.reloadPendingItems();
         this.snackbar.open({
           key: '#LDS#The membership for "{0}" has been successfully added to the shopping cart.',
-          parameters: [entity.GetDisplay()],
+          parameters: [entity?.GetDisplay()],
         });
       }
       this.sidesheetRef.close();
@@ -156,13 +161,17 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
   public async updateConfig(config: ViewConfigData): Promise<void> {
     await this.viewConfigService.putViewConfig(config);
     this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
-    this.dstSettings.viewConfig = this.viewConfig;
+    if (this.dstSettings) {
+      this.dstSettings.viewConfig = this.viewConfig;
+    }
   }
 
   public async deleteConfigById(id: string): Promise<void> {
     await this.viewConfigService.deleteViewConfig(id);
     this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
-    this.dstSettings.viewConfig = this.viewConfig;
+    if (this.dstSettings) {
+      this.dstSettings.viewConfig = this.viewConfig;
+    }
   }
 
   public getSubtitle(entity: any, properties: IClientProperty[]): string {
@@ -173,22 +182,21 @@ export class MembershipsChooseIdentitiesComponent implements OnInit {
     this.busyService.show();
 
     try {
-      this.dstSettings = {
-        dataSource: await this.roleService.getCandidates(
-          this.dataManagementService.entityInteractive.GetEntity().GetKeys().join(','),
-          {
-            ...this.navigationState,
-            // exclude candidate identities that already have an assignment request (XOrigin.Ordered)
-            xorigin: XOrigin.Ordered
-          }
-        ),
-        entitySchema: this.candidatesEntitySchema,
-        navigationState: this.navigationState,
-        displayedColumns: this.displayColumns,
-        filters: this.dataModel.Filters,
-        dataModel: this.dataModel,
-        viewConfig: this.viewConfig
-      };
+      this.dstSettings =
+        this.candidatesEntitySchema == null
+          ? undefined
+          : {
+              dataSource: await this.roleService.getCandidates(
+                this.dataManagementService.entityInteractive?.GetEntity().GetKeys().join(','),
+                this.navigationState,
+              ),
+              entitySchema: this.candidatesEntitySchema,
+              navigationState: this.navigationState,
+              displayedColumns: this.displayColumns,
+              filters: this.dataModel.Filters,
+              dataModel: this.dataModel,
+              viewConfig: this.viewConfig,
+            };
     } finally {
       this.busyService.hide();
     }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,14 +26,14 @@
 
 import { ErrorHandler } from '@angular/core';
 
-import { EntityValue, EntityData, CollectionLoadParameters, EntityCollectionData } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, EntityCollectionData, EntityData, EntityValue } from '@imx-modules/imx-qbm-dbts';
 
 export class FkContainer {
   public property: EntityValue<string>;
-  public candidateCollection: EntityCollectionData;
-  public value: EntityData;
+  public candidateCollection: EntityCollectionData | undefined;
+  public value: EntityData | null;
 
-  constructor(private getProperty: () => EntityValue<string>) { }
+  constructor(private getProperty: () => EntityValue<string>) {}
 
   public async init(errorHandler: ErrorHandler, parameters?: CollectionLoadParameters): Promise<void> {
     this.property = this.getProperty();
@@ -42,13 +42,13 @@ export class FkContainer {
 
     if (this.property.value) {
       if (this.candidateCollection) {
-        this.value = this.candidateCollection.Entities.find(candidate => this.getEntityKey(candidate) === this.property.value);
+        this.value = this.candidateCollection.Entities?.find((candidate) => this.getEntityKey(candidate) === this.property.value) ?? null;
       }
 
       if (this.value == null) {
         this.value = {
           Display: this.property.Column.GetDisplayValue(),
-          Keys: [this.property.value]
+          Keys: [this.property.value],
         };
       }
     } else {
@@ -57,17 +57,18 @@ export class FkContainer {
   }
 
   public setKey(value: EntityData): void {
-    this.property.value = this.getEntityKey(value);
+    this.property.value = this.getEntityKey(value) ?? '';
   }
 
-  protected getEntityKey(data: EntityData): string {
+  protected getEntityKey(data: EntityData): string | undefined {
     return data && data.Keys && data.Keys.length > 0 ? data.Keys[0] : undefined;
   }
 
   private async getCandidateCollection<TValue>(
     property: EntityValue<TValue>,
     errorHandler: ErrorHandler,
-    parameters?: CollectionLoadParameters): Promise<EntityCollectionData> {
+    parameters?: CollectionLoadParameters,
+  ): Promise<EntityCollectionData | undefined> {
     const fkRelations = property.GetMetadata().GetFkRelations();
 
     if (fkRelations) {

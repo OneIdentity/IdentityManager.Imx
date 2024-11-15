@@ -1,0 +1,35 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+
+  > * {
+    margin-right: 10px;
+  }
+}
+
+input {
+  flex: 1;
+}
+
+.imx-spacer {
+  height: 30px;
+}
+
+.mat-mdc-button {
+  min-width: initial;
+}
+
+.mat-mdc-error {
+  margin-top: 5px;
+  font-size: small;
+}
+
+.imx-suffix-container {
+  display: flex;
+
+  > *:not(:last-child) {
+    margin-right: 5px;
+    margin-top: 0;
+  }
+}

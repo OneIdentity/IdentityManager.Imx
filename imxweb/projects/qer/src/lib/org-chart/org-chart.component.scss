@@ -1,92 +1,65 @@
-@import 'variables.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/variables';
 
-ol
-{
+ol {
   list-style-type: none;
 }
 
-li
-{
+li {
   margin: 0 0 1em 0;
 }
 
-/* Horizontal margin from one level to the next */
-$LevelMargin: 15px;
-
-$PeersMargin: $Imx_Identity_PhotoSize + $LevelMargin;
-
-.peers
-{
-  margin-left: $PeersMargin;
+.peers {
+  margin-left: $IMX_OrgChart_PeersMargin;
 }
 
-$ReportsMargin: (2 * $Imx_Identity_PhotoSize) + (2 * $LevelMargin);
-
-.reports
-{
-  margin-left: $ReportsMargin;
+.reports {
+  margin-left: $IMX_OrgChart_ReportsMargin;
 }
 
-.border-outside
-{
+.border-outside {
   position: relative;
 }
 
-eui-alert {
-  display: block;
-  margin-bottom: 1em;
-}
-
-$HalfPhotoSize: calc($Imx-Identity-PhotoSize / 2);
-
 /* connector from manager to current identity */
-.border-container
-{
+.border-container {
   position: absolute;
   top: 0;
   bottom: 20px;
-  left: $HalfPhotoSize;
-  width: $Imx_OrgChart_Width;
+  left: $IMX_OrgChart_HalfPhotoSize;
+  width: $IMX_OrgChart_Width;
   border-style: dotted;
-  border-width: 0 0 $Imx_OrgChart_BorderWidth $Imx_OrgChart_BorderWidth;
+  border-width: 0 0 $IMX_OrgChart_BorderWidth $IMX_OrgChart_BorderWidth;
   border-color: gray;
 }
-
-$BorderContainerReportsLeft: $PeersMargin + $HalfPhotoSize;
 
 /* connector from current identity to its first report */
-.border-container-reports
-{
+.border-container-reports {
   position: absolute;
   top: -20px;
-  left: $BorderContainerReportsLeft;
-  width: $Imx_OrgChart_Width;
-  height: $Imx_Identity_PhotoSize;
+  left: $IMX_OrgChart_BorderContainerReportsLeft;
+  width: $IMX_OrgChart_Width;
+  height: $IMX_Identity_PhotoSize;
   border-style: dotted;
-  border-width: 0 0 $Imx_OrgChart_BorderWidth $Imx_OrgChart_BorderWidth;
+  border-width: 0 0 $IMX_OrgChart_BorderWidth $IMX_OrgChart_BorderWidth;
   border-color: gray;
 }
 
-$ConnectorReportsLeft: $ReportsMargin + $HalfPhotoSize;
-
 /* connector from one report to the next */
-.connector-reports
-{
+.connector-reports {
   position: absolute;
   top: 0;
-  left: $ConnectorReportsLeft;
+  left: $IMX_OrgChart_ConnectorReportsLeft;
   width: 10px;
   bottom: 0;
   border-style: dotted;
-  border-width: 0 0 0 $Imx_OrgChart_BorderWidth;
+  border-width: 0 0 0 $IMX_OrgChart_BorderWidth;
   border-color: gray;
 }
 
 .eui-dark-theme {
   :host {
-    .border-container
-    {
+    .border-container {
       border-color: $color-gray-5;
     }
 
@@ -102,8 +75,7 @@ $ConnectorReportsLeft: $ReportsMargin + $HalfPhotoSize;
 
 .eui-contrast-theme {
   :host {
-    .border-container
-    {
+    .border-container {
       border-color: $color-gray-0;
     }
 

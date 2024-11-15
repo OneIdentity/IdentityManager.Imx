@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,13 +25,13 @@
  */
 
 import { EntitlementFilter } from './entitlement-filter';
-import { PortalEntitlement } from 'imx-api-aob';
-import { DbVal } from 'imx-qbm-dbts';
+import { PortalEntitlement } from '@imx-modules/imx-api-aob';
+import { DbVal } from '@imx-modules/imx-qbm-dbts';
 
 describe('EntitlementFilter', () => {
   const entitlementNotPublished = {
     IsInActive: { value: true },
-    ActivationDate: { value: null }
+    ActivationDate: { value: null },
   };
 
   const dateLaterThanMinDate = DbVal.MinDate;
@@ -39,19 +39,15 @@ describe('EntitlementFilter', () => {
 
   const entitlementWillPublish = {
     IsInActive: { value: true },
-    ActivationDate: { value: dateLaterThanMinDate }
+    ActivationDate: { value: dateLaterThanMinDate },
   };
 
   const entitlementPublished = {
     IsInActive: { value: false },
-    ActivationDate: { value: null }
+    ActivationDate: { value: null },
   };
 
-  const mockEntitlementData = [
-    entitlementNotPublished,
-    entitlementWillPublish,
-    entitlementPublished
-  ];
+  const mockEntitlementData = [entitlementNotPublished, entitlementWillPublish, entitlementPublished];
 
   it('notPublished', () => {
     const filter = new EntitlementFilter();

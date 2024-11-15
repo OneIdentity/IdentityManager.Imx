@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,11 +29,13 @@ import { Injectable } from '@angular/core';
 export const HELPER_ALERT_KEY_PREFIX = 'helperAlertDismissed';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StorageService {
-  public get lastUrl(): string { return localStorage.getItem(this.lastUrlKey); }
-  public set lastUrl(value: string) {
+  public get lastUrl(): string {
+    return localStorage.getItem(this.lastUrlKey) ?? '';
+  }
+  public set lastUrl(value: string | undefined) {
     if (value) {
       localStorage.setItem(this.lastUrlKey, value);
     } else {
@@ -67,6 +69,6 @@ export class StorageService {
   }
 
   public removeKeys(...params: string[]): void {
-    params.forEach(key => sessionStorage.removeItem(key));
+    params.forEach((key) => sessionStorage.removeItem(key));
   }
 }

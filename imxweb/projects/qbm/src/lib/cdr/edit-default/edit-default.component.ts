@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,7 +38,7 @@ import { EditorBase } from '../editor-base';
 @Component({
   selector: 'imx-edit-default',
   templateUrl: './edit-default.component.html',
-  styleUrls: ['./edit-default.component.scss']
+  styleUrls: ['./edit-default.component.scss'],
 })
 export class EditDefaultComponent extends EditorBase {
   public readonly control = new UntypedFormControl(undefined, { updateOn: 'blur' });

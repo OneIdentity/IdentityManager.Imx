@@ -1,0 +1,136 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
+
+:host {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .eui-sidesheet-actions {
+    @include eui-sidesheet-actions__mixin_01($padding: 16px 20px);
+  }
+
+  .control-container {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+  }
+
+  .imx-mitigating-control {
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &.bordered {
+      border-bottom: 1px solid $color-gray-50;
+    }
+
+    eui-select {
+      flex: 1 1 auto;
+    }
+
+    &-properties {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin-right: 15px;
+      gap: 15px;
+    }
+
+    &-content {
+      flex: 1 1 auto;
+      margin: 3px;
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+
+      .content {
+        overflow: auto;
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
+      }
+    }
+
+    .imx-delete-button {
+      margin-top: 15px;
+      align-self: flex-start;
+    }
+  }
+
+  .imx-no-mitigating-controls {
+    flex: 1 1 auto;
+    margin: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .imx-no-results {
+    text-align: center;
+    margin: 20px 0;
+    justify-self: center;
+
+    p {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    button {
+      margin-top: 10px;
+    }
+  }
+}
+
+// Theming
+:host {
+  .imx-no-results {
+    p {
+      color: $color-gray-50;
+    }
+  }
+
+  .imx-no-mitigating-controls {
+    color: $color-gray-50;
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-no-results {
+      p {
+        color: $color-gray-10;
+      }
+    }
+    .imx-no-mitigating-controls {
+      color: $color-gray-10;
+    }
+
+    .imx-mitigating-control {
+      .bordered {
+        border-bottom: 1px solid $color-gray-10;
+      }
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .imx-data-no-results {
+      p {
+        color: $color-gray-0;
+      }
+    }
+    .imx-no-mitigating-controls {
+      color: $color-gray-0;
+    }
+
+    .imx-mitigating-control {
+      .bordered {
+        border-bottom: 1px solid $color-gray-0;
+      }
+    }
+  }
+}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,14 +24,15 @@
  *
  */
 
-import { Component, Input, OnInit } from '@angular/core';
-import { ImxTranslationProviderService, MetadataService } from 'qbm';
-import { RiskObject } from 'imx-api-qer';
-import { DbObjectKey } from 'imx-qbm-dbts';
-import { QerApiService } from '../qer-api-client.service';
 import { NestedTreeControl } from '@angular/cdk/tree';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { EuiLoadingService } from '@elemental-ui/core';
+import { RiskObject } from '@imx-modules/imx-api-qer';
+import { DbObjectKey } from '@imx-modules/imx-qbm-dbts';
+import { TranslateService } from '@ngx-translate/core';
+import { MetadataService } from 'qbm';
+import { QerApiService } from '../qer-api-client.service';
 
 type RiskObjectEnriched = RiskObject & {
   Children: RiskObjectEnriched[];
@@ -58,19 +59,19 @@ export class RiskAnalysisComponent implements OnInit {
   private textMax: string;
 
   constructor(
-    private translator: ImxTranslationProviderService,
+    private readonly translateService: TranslateService,
     private readonly qerApiService: QerApiService,
     private readonly busyService: EuiLoadingService,
-    private metadata: MetadataService
+    private metadata: MetadataService,
   ) {}
 
   public isFromAttribute(x: RiskObject): boolean {
-    return ['INC', 'DEC'].includes(x.TypeOfCalculation);
+    return ['INC', 'DEC'].includes(x.TypeOfCalculation || '');
   }
 
   public async ngOnInit(): Promise<void> {
-		this.busy = true;
-		const overlay = this.busyService.show();
+    this.busy = true;
+    const overlay = this.busyService.show();
     try {
       const key = DbObjectKey.FromXml(this.objectKey);
 
@@ -82,50 +83,50 @@ export class RiskAnalysisComponent implements OnInit {
       this.riskObject = await Promise.all(
         serverRiskObjects.map(async (x) => {
           return await this.enrich(x);
-        })
+        }),
       );
 
       this.description =
-        0 < this.riskObject.filter((r) => ['MX1', 'AV1'].includes(r.TypeOfCalculation)).length
+        0 < this.riskObject.filter((r) => ['MX1', 'AV1'].includes(r.TypeOfCalculation || '')).length
           ? // new calculation rules MX1/AV1
-            (await this.translator
-              .Translate('#LDS#The following properties and assignments contribute to the calculated risk index.')
+            (await this.translateService
+              .get('#LDS#Here you can see all properties and assignments that contribute to the calculated risk index.')
               .toPromise()) +
             ' ' +
-            (await this.translator
-              .Translate(
-                '#LDS#The calculated risk index is the sum of all attribute-based values and the maximum of all assignment-base values.'
+            (await this.translateService
+              .get(
+                '#LDS#The calculated risk index is the sum of all attribute-based values and the maximum of all assignment-based values.',
               )
               .toPromise())
           : // legacy
-            await this.translator
-              .Translate('#LDS#The following properties and assignments contribute to the calculated risk index.')
+            await this.translateService
+              .get('#LDS#Here you can see all properties and assignments that contribute to the calculated risk index.')
               .toPromise();
 
-      this.textAvg = await this.translator.Translate('#LDS#Average').toPromise();
-      this.textMax = await this.translator.Translate('#LDS#Maximum').toPromise();
+      this.textAvg = await this.translateService.get('#LDS#Average').toPromise();
+      this.textMax = await this.translateService.get('#LDS#Maximum').toPromise();
 
       this.dataSource.data = this.riskObject;
     } finally {
       this.busyService.hide(overlay);
-			this.busy = false;
+      this.busy = false;
     }
   }
 
   public displayTypeOfCalculation(cRiskIndex: RiskObject): string {
-    return ['AV1', 'AVG'].includes(cRiskIndex.TypeOfCalculation)
+    return ['AV1', 'AVG'].includes(cRiskIndex.TypeOfCalculation || '')
       ? this.textAvg
-      : ['MX1', 'MAX'].includes(cRiskIndex.TypeOfCalculation)
-      ? this.textMax
-      : '';
+      : ['MX1', 'MAX'].includes(cRiskIndex.TypeOfCalculation || '')
+        ? this.textMax
+        : '';
   }
 
-  public  displayWeight(r: RiskObject): string {
+  public displayWeight(r: RiskObject): string {
     return this.isIncOrDec(r) ? '' : r.Weight.toFixed(4);
   }
 
   public isIncOrDec(r: RiskObject): boolean {
-    return ['INC', 'DEC'].includes(r.TypeOfCalculation);
+    return ['INC', 'DEC'].includes(r.TypeOfCalculation || '');
   }
 
   /** Contains the top-level risk objects */
@@ -135,12 +136,12 @@ export class RiskAnalysisComponent implements OnInit {
   public getResultRisk(): number {
     const topLevel = this.riskObject;
     const v1 = topLevel
-      .filter((x) => !['MX1', 'AV1'].includes(x.TypeOfCalculation))
+      .filter((x) => !['MX1', 'AV1'].includes(x.TypeOfCalculation || ''))
       .map((x) => x.SourceValue * x.Weight)
       .reduce((x, y) => x + y, 0);
 
     const v2 = topLevel
-      .filter((x) => ['MX1', 'AV1'].includes(x.TypeOfCalculation))
+      .filter((x) => ['MX1', 'AV1'].includes(x.TypeOfCalculation || ''))
       .map((x) => x.SourceValue * x.Weight)
       .reduce((x, y) => (x > y ? x : y), 0);
 
@@ -150,9 +151,10 @@ export class RiskAnalysisComponent implements OnInit {
     return unbound;
   }
 
-  public getRiskObjectTop(): RiskObject {
+  public getRiskObjectTop(): RiskObject | undefined {
     // which value is the maximum of all MX1/AV1 values?
-    const objects = this.riskObject.filter((m) => ['MX1', 'AV1'].includes(m.TypeOfCalculation))
+    const objects = this.riskObject
+      .filter((m) => ['MX1', 'AV1'].includes(m.TypeOfCalculation || ''))
       .sort((a, b) => {
         return a.SourceValue * a.Weight - b.SourceValue * b.Weight;
       })
@@ -161,21 +163,21 @@ export class RiskAnalysisComponent implements OnInit {
     if (objects.length > 0) {
       return objects[0];
     }
-    return null;
+    return undefined;
   }
 
   public getDisplayValue1(riskObject: RiskObject): string {
-    if (['INC', 'MAX', 'AVG'].includes(riskObject.TypeOfCalculation)) {
+    if (['INC', 'MAX', 'AVG'].includes(riskObject.TypeOfCalculation || '')) {
       return (1 * riskObject.SourceValue).toFixed(4);
     }
-    if (riskObject.TypeOfCalculation == 'DEC') {
+    if (riskObject.TypeOfCalculation === 'DEC') {
       return (riskObject.Weight * (0 - riskObject.SourceValue)).toFixed(4);
     }
     return riskObject.SourceValue.toFixed(4);
   }
 
   public isShowChildSourceDisplay(child: RiskObject) {
-    return ['MX1', 'AV1', 'MAX', 'AVG'].includes(child.TypeOfCalculation) && !child.ObjectKeySource;
+    return ['MX1', 'AV1', 'MAX', 'AVG'].includes(child.TypeOfCalculation || '') && !child.ObjectKeySource;
   }
 
   public getRiskCalcFormula(node: RiskObject) {
@@ -186,15 +188,14 @@ export class RiskAnalysisComponent implements OnInit {
     const tableNameSource = x.ObjectKeySource ? DbObjectKey.FromXml(x.ObjectKeySource).TableName : '';
     const displayType = parent
       ? !x.ObjectKeySource
-        ? (await this.metadata.GetTableMetadata(DbObjectKey.FromXml(x.ObjectKeyTarget).TableName)).DisplaySingular
-        : (await this.metadata.GetTableMetadata(tableNameSource)).DisplaySingular
+        ? (await this.metadata.GetTableMetadata(DbObjectKey.FromXml(x.ObjectKeyTarget || '').TableName))?.DisplaySingular || ''
+        : (await this.metadata.GetTableMetadata(tableNameSource))?.DisplaySingular || ''
       : !x.ObjectKeySource
-      ? await this.translator.Translate('#LDS#Property').toPromise()
-      : await this.translator.Translate('#LDS#Assignment').toPromise();
+        ? await this.translateService.get('#LDS#Property').toPromise()
+        : await this.translateService.get('#LDS#Assignment').toPromise();
 
-    var children: RiskObjectEnriched[];
+    var children: RiskObjectEnriched[] = [];
     if (x.Children) {
-      children = [];
       for (var c of x.Children) children.push(await this.enrich(c));
     }
 

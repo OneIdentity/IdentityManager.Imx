@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,18 +29,17 @@ import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PortalShopConfigStructure } from 'imx-api-qer';
-import { CollectionLoadParameters, IClientProperty, DisplayColumns, EntitySchema } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import {
-  DataSourceToolbarSettings,
-  DataSourceToolbarFilter,
-  ClassloggerService,
-  HELPER_ALERT_KEY_PREFIX,
-  SettingsService,
   BusyService,
+  ClassloggerService,
+  DataSourceToolbarFilter,
+  DataSourceToolbarSettings,
+  HELP_CONTEXTUAL,
   HelpContextualComponent,
   HelpContextualService,
-  HELP_CONTEXTUAL
+  SettingsService,
+  calculateSidesheetWidth,
 } from 'qbm';
 import { RequestsService } from '../requests.service';
 import { CREATE_SHELF_TOKEN } from './request-shelf-token';
@@ -59,7 +58,7 @@ export class RequestShelvesComponent implements OnInit {
   public dstSettings: DataSourceToolbarSettings;
   public navigationState: CollectionLoadParameters;
   public filterOptions: DataSourceToolbarFilter[] = [];
-  public busyService= new BusyService();
+  public busyService = new BusyService();
   public shelvesContextIds = HELP_CONTEXTUAL.ConfigurationRequestsShelves;
 
   private displayedColumns: IClientProperty[] = [];
@@ -71,7 +70,7 @@ export class RequestShelvesComponent implements OnInit {
     private readonly translate: TranslateService,
     public readonly requestsService: RequestsService,
     private readonly settingsService: SettingsService,
-    private readonly helpContextualService: HelpContextualService
+    private readonly helpContextualService: HelpContextualService,
   ) {
     this.navigationState = { PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchemaShopStructure = requestsService.shopStructureSchema;
@@ -93,7 +92,7 @@ export class RequestShelvesComponent implements OnInit {
     await this.navigate();
   }
 
-  public async onRequestShelfChanged(requestConfig: PortalShopConfigStructure): Promise<void> {
+  public async onRequestShelfChanged(requestConfig: TypedEntity): Promise<void> {
     this.logger.debug(this, `Selected request shelf changed`);
     this.logger.trace(`New request shelf selected`, requestConfig);
     this.viewRequestShelf(requestConfig);
@@ -117,9 +116,9 @@ export class RequestShelvesComponent implements OnInit {
     this.viewRequestShelf(newRequestShelf, true);
   }
 
-  private async viewRequestShelf(requestConfig: PortalShopConfigStructure, isNew: boolean = false): Promise<void> {
+  private async viewRequestShelf(requestConfig: TypedEntity, isNew: boolean = false): Promise<void> {
     const header = await this.translate.get(isNew ? '#LDS#Heading Create Shelf' : '#LDS#Heading Edit Shelf').toPromise();
-    if(isNew){
+    if (isNew) {
       this.helpContextualService.setHelpContextId(HELP_CONTEXTUAL.ConfigurationRequestsShelvesCreate);
     }
     const result = await this.sideSheet
@@ -128,13 +127,13 @@ export class RequestShelvesComponent implements OnInit {
         subTitle: isNew ? '' : requestConfig.GetEntity().GetDisplay(),
         padding: '0px',
         disableClose: true,
-        width: '55%',
+        width: calculateSidesheetWidth(),
         testId: isNew ? 'request-shelves-create-shelf-sidesheet' : 'request-shelves-edit-shelf-sidesheet',
         data: {
           requestConfig,
           isNew,
         },
-        headerComponent: isNew ? HelpContextualComponent : undefined
+        headerComponent: isNew ? HelpContextualComponent : undefined,
       })
       .afterClosed()
       .toPromise();
@@ -160,7 +159,7 @@ export class RequestShelvesComponent implements OnInit {
         navigationState: this.navigationState,
         filters: this.filterOptions,
       };
-      this.logger.debug(this, `Head at ${data.Data.length + this.navigationState.StartIndex} of ${data.totalCount} item(s)`);
+      this.logger.debug(this, `Head at ${data.Data.length + (this.navigationState?.StartIndex || 0)} of ${data.totalCount} item(s)`);
     } finally {
       isBusy.endBusy();
     }

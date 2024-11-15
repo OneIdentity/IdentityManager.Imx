@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,26 +25,29 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, OnInit, OnDestroy, ErrorHandler } from '@angular/core';
-import { Router, RouterEvent, NavigationStart, NavigationEnd, NavigationError, NavigationCancel, EventType } from '@angular/router';
+import { Component, ErrorHandler, OnDestroy, OnInit } from '@angular/core';
+import { Event, EventType, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterEvent } from '@angular/router';
 import { EuiLoadingService, EuiTheme, EuiThemeService, EuiTopNavigationItem } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
+import { MatDialog } from '@angular/material/dialog';
+import { FeatureConfig, ProfileSettings } from '@imx-modules/imx-api-qer';
 import {
-  MenuItem,
   AuthenticationService,
+  ClassloggerService,
+  ConfirmationService,
   ISessionState,
-  MenuService,
-  SettingsService,
-  imx_SessionService,
-  SplashService,
   ImxTranslationProviderService,
+  MenuService,
+  Message,
+  SettingsService,
+  SplashService,
+  UserMessageService,
+  imx_SessionService,
 } from 'qbm';
 import { FeatureConfigService, OpSupportUserService, QerApiService, SettingsComponent } from 'qer';
-import { FeatureConfig, ProfileSettings } from 'imx-api-qer';
+
 import { isOutstandingManager } from './permissions/permissions-helper';
-import { MatDialog } from '@angular/material/dialog';
-import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'imx-root',
@@ -55,12 +58,13 @@ export class AppComponent implements OnInit, OnDestroy {
   public menuItems: EuiTopNavigationItem[];
   public isLoggedIn = false;
   public hideMenu = false;
-  public hideUserMessage = false;
   public showPageContent = true;
+  public message: Message | undefined;
   private routerStatus: EventType;
   private readonly subscriptions: Subscription[] = [];
 
   constructor(
+    private readonly logger: ClassloggerService,
     private readonly authentication: AuthenticationService,
     private readonly busyService: EuiLoadingService,
     private readonly router: Router,
@@ -75,7 +79,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly themeService: EuiThemeService,
     private readonly errorHandler: ErrorHandler,
     private readonly translationProvider: ImxTranslationProviderService,
-    private readonly translateService: TranslateService
+    private readonly confirmationService: ConfirmationService,
+    private readonly userMessageService: UserMessageService,
   ) {
     this.subscriptions.push(
       this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
@@ -88,15 +93,20 @@ export class AppComponent implements OnInit, OnDestroy {
           }
         }
 
-        this.isLoggedIn = sessionState.IsLoggedIn;
+        this.isLoggedIn = sessionState.IsLoggedIn ?? false;
         if (this.isLoggedIn) {
-          const isUseProfileLangChecked = (await this.qerClient.v2Client.opsupport_profile_get()).UseProfileLanguage ?? false;
-          // Set session culture if isUseProfileLangChecked is true, set browser culture otherwise
+          const isUseProfileLangChecked = (await this.qerClient.client.opsupport_profile_get()).UseProfileLanguage ?? false;
+          // Set session culture if isUseProfileLangChecked is true
           if (isUseProfileLangChecked) {
-            await this.translationProvider.init(sessionState.culture, sessionState.cultureFormat);
-          } else {
-            const browserCulture = this.translateService.getBrowserCultureLang();
-            await this.translationProvider.init(browserCulture);
+            // Use culture if available, if not fetch
+            const culture = sessionState.culture
+              ? sessionState.culture
+              : (await this.qerClient.client.opsupport_profile_person_get())?.ProfileLanguage;
+            // If culture is found, use it, otherwise fallback to the app default
+            if (culture) {
+              this.logger.debug(this, `ProfileLangChecked is true, culture available: Setting ${culture} as profile language`);
+              await this.translationProvider.reinit(culture, sessionState.cultureFormat ?? culture, this.router);
+            }
           }
 
           // Close the splash screen that opened in app service initialisation
@@ -110,19 +120,30 @@ export class AppComponent implements OnInit, OnDestroy {
           const groupInfo = await userModelService.getGroups();
           this.menuItems = await this.menuService.getMenuItems(
             [],
-            groupInfo.map((group) => group.Name),
-            true
+            groupInfo.filter((group) => !!group.Name).map((group) => group.Name) as string[],
+            true,
           );
 
-          this.applyProfileSettings();
+          await this.applyProfileSettings();
         }
-      })
+      }),
     );
 
     this.subscriptions.push(
       this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
-        this.isLoggedIn = sessionState.IsLoggedIn;
-      })
+        this.isLoggedIn = sessionState.IsLoggedIn ?? false;
+      }),
+    );
+
+    this.subscriptions.push(
+      this.userMessageService.subject.subscribe((message) => {
+        this.message = message;
+        if (!!this.message && this.message.type === 'error' && !this.message.target) {
+          this.confirmationService.showErrorMessage({
+            Message: this.message?.text,
+          });
+        }
+      }),
     );
 
     this.setupRouter();
@@ -143,17 +164,15 @@ export class AppComponent implements OnInit, OnDestroy {
   private setupRouter(): void {
     let overlayRef: OverlayRef;
 
-    this.router.events.subscribe((event: RouterEvent) => {
+    this.router.events.subscribe((event: Event & RouterEvent) => {
       if (event instanceof NavigationStart) {
         this.routerStatus = event.type;
-        this.hideUserMessage = true;
         if (this.isLoggedIn && event.url === '/') {
           // show the splash screen, when the user logs out!
           this.splash.init({ applicationName: 'Operations Support Web Portal' });
         }
       }
       if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
-        this.hideUserMessage = false;
         this.routerStatus = event.type;
         this.hideMenu = event.url === '/';
         this.showPageContent = true;
@@ -181,7 +200,7 @@ export class AppComponent implements OnInit, OnDestroy {
       },
       (__: string[], groups: string[]) => {
         if (!groups.includes('QER_4_OperationsSupport')) {
-          return null;
+          return undefined;
         }
 
         const menu = {
@@ -220,7 +239,7 @@ export class AppComponent implements OnInit, OnDestroy {
       },
       (__: string[], groups: string[]) => {
         if (!groups.includes('QER_4_OperationsSupport')) {
-          return null;
+          return undefined;
         }
 
         const menu = {
@@ -239,7 +258,7 @@ export class AppComponent implements OnInit, OnDestroy {
       },
       (__: string[], groups: string[]) => {
         if (!groups.includes('QER_4_OperationsSupport')) {
-          return null;
+          return undefined;
         }
         const menu = {
           id: 'OpsWeb_ROOT_Synchronization',
@@ -274,7 +293,7 @@ export class AppComponent implements OnInit, OnDestroy {
       },
       (__: string[], groups: string[]) => {
         if (!groups.includes('QER_4_OperationsSupport')) {
-          return null;
+          return undefined;
         }
         const menu = {
           id: 'OpsWeb_ROOT_System',
@@ -307,10 +326,10 @@ export class AppComponent implements OnInit, OnDestroy {
           });
         }
         return menu;
-      }
+      },
     );
 
-    return null;
+    return undefined;
   }
 
   private async applyProfileSettings() {

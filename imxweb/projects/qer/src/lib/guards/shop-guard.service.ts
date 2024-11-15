@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 
 import { AppConfigService, AuthenticationService, ISessionState } from 'qbm';
@@ -34,15 +34,15 @@ import { QerPermissionsService } from '../admin/qer-permissions.service';
 @Injectable({
   providedIn: 'root',
 })
-export class ShopGuardService implements CanActivate, OnDestroy {
+export class ShopGuardService implements OnDestroy {
   private onSessionResponse: Subscription;
 
   constructor(
     private readonly qerPermissionService: QerPermissionsService,
     private readonly authentication: AuthenticationService,
     private readonly appConfig: AppConfigService,
-    private readonly router: Router
-  ) { }
+    private readonly router: Router,
+  ) {}
 
   public canActivate(): Observable<boolean> {
     return new Observable<boolean>((observer) => {
@@ -51,7 +51,7 @@ export class ShopGuardService implements CanActivate, OnDestroy {
           const userIsShopStatistics = await this.qerPermissionService.isShopStatistics();
           const userIsShopAdmin = await this.qerPermissionService.isShopAdmin();
           if (!userIsShopStatistics && !userIsShopAdmin) {
-            this.router.navigate([this.appConfig.Config.routeConfig.start], { queryParams: {} });
+            this.router.navigate([this.appConfig.Config?.routeConfig?.start], { queryParams: {} });
           }
           observer.next(userIsShopStatistics || userIsShopAdmin);
           observer.complete();

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,15 +26,15 @@
 
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { EuiSelectComponent, EuiSelectOption } from '@elemental-ui/core';
-import { PortalTargetsystemUnsSystem } from 'imx-api-tsb';
-import { IEntity } from 'imx-qbm-dbts';
+import { PortalTargetsystemUnsSystem } from '@imx-modules/imx-api-tsb';
+import { IEntity } from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarComponent, DataSourceToolbarSelectedFilter } from 'qbm';
 import { ContainerTreeDatabaseWrapper } from '../container-list/container-tree-database-wrapper';
 import { DeHelperService } from '../de-helper.service';
 
 export enum DataExplorerFilterTypes {
   TargetSystem = 'targetsystem',
-  Container = 'container'
+  Container = 'container',
 }
 
 @Component({
@@ -43,7 +43,6 @@ export enum DataExplorerFilterTypes {
   styleUrls: ['./data-explorer-filters.component.scss'],
 })
 export class DataExplorerFiltersComponent implements OnInit {
-
   public targetSystemOptions: EuiSelectOption[] = [];
   public selectedTargetSystemUid: string;
   public dstTargetSystemFilterRef: DataSourceToolbarSelectedFilter;
@@ -66,12 +65,12 @@ export class DataExplorerFiltersComponent implements OnInit {
 
   private skipSelectionEmitMode = false;
 
-  constructor(private readonly dataHelper: DeHelperService) { }
+  constructor(private readonly dataHelper: DeHelperService) {}
 
   public get selectedTreeNodeFilterDisplay(): string {
     let display = '';
     if (this.selectedContainerUid) {
-      display = `Container: ${this.dstContainerFilterRef.selectedOption.Display}`;
+      display = `Container: ${this.dstContainerFilterRef.selectedOption?.Display}`;
     }
     return display;
   }
@@ -119,7 +118,9 @@ export class DataExplorerFiltersComponent implements OnInit {
     }
   }
 
-  public targetSystemSelected(selected: EuiSelectOption): void {
+  public targetSystemSelected(chosen: EuiSelectOption | EuiSelectOption[]): void {
+    const selected = Array.isArray(chosen) ? chosen[0] : chosen;
+
     this.selectedTargetSystemUid = selected.value;
     this.updateDataSyncStateForTs(selected);
     if (this.treeDbWrapper) {
@@ -134,7 +135,7 @@ export class DataExplorerFiltersComponent implements OnInit {
         this.dstTargetSystemFilterRef = {
           selectedOption: { Value: selected.value, Display: selected.display },
           filter: { Name: DataExplorerFilterTypes.TargetSystem },
-          isCustom: true
+          isCustom: true,
         };
         this.dst.selectedFilters.push(this.dstTargetSystemFilterRef);
       }
@@ -205,10 +206,12 @@ export class DataExplorerFiltersComponent implements OnInit {
     const selectedValue: string = entity.GetKeys()[0];
     // Set the selected value on the search control as well
     this.containerSelect.writeValue(selectedValue);
-    this.setSelectedContainer({value: selectedValue, display: entity.GetDisplay()});
+    this.setSelectedContainer({ value: selectedValue, display: entity.GetDisplay() });
   }
 
-  public setSelectedContainer(selected: EuiSelectOption): void {
+  public setSelectedContainer(chosen: EuiSelectOption | EuiSelectOption[]): void {
+    const selected = Array.isArray(chosen) ? chosen[0] : chosen;
+
     this.selectedContainerUid = selected.value;
 
     if (this.dst) {
@@ -216,9 +219,9 @@ export class DataExplorerFiltersComponent implements OnInit {
       this.clearDstSelectedFilter(this.dstContainerFilterRef);
       if (selected.value && selected.value.length > 0) {
         this.dstContainerFilterRef = {
-          selectedOption: { Value: selected.value, Display: selected.display},
+          selectedOption: { Value: selected.value, Display: selected.display },
           filter: { Name: DataExplorerFilterTypes.Container },
-          isCustom: true
+          isCustom: true,
         };
         this.dst.selectedFilters.push(this.dstContainerFilterRef);
       }
@@ -236,8 +239,8 @@ export class DataExplorerFiltersComponent implements OnInit {
     this.containerSearchMode = !this.containerSearchMode;
     if (this.containerSearchMode) {
       if (this.treeDbWrapper?.entityTreeDatabase?.topLevelEntities) {
-        this.containerSelectOptions = this.treeDbWrapper.entityTreeDatabase.topLevelEntities.map(d =>
-          this.convertEntityToEuiSelectOption(d)
+        this.containerSelectOptions = this.treeDbWrapper.entityTreeDatabase.topLevelEntities.map((d) =>
+          this.convertEntityToEuiSelectOption(d),
         );
       } else {
         this.getContainers();
@@ -257,15 +260,15 @@ export class DataExplorerFiltersComponent implements OnInit {
       if (!sf) {
         // If no singular filter is supplied, then all have been cleared
         this.clearAllSelectedFilters();
-      } else if (sf.filter.Name === DataExplorerFilterTypes.TargetSystem) {
+      } else if (sf.filter?.Name === DataExplorerFilterTypes.TargetSystem) {
         this.clearTargetSystemFilterSelection(true);
-      } else if (sf.filter.Name === DataExplorerFilterTypes.Container) {
+      } else if (sf.filter?.Name === DataExplorerFilterTypes.Container) {
         this.clearContainerFilterSelection(true);
       }
     });
   }
 
-  private updateDataSyncStateForTs(selectedOption?: EuiSelectOption): void {
+  private updateDataSyncStateForTs(selectedOption: EuiSelectOption): void {
     this.selectedTsOption = selectedOption;
     this.tsIssueMode = '';
     if (this.showTsSyncStatus) {
@@ -278,22 +281,19 @@ export class DataExplorerFiltersComponent implements OnInit {
   }
 
   private clearDstSelectedFilter(selectedFilterRef: DataSourceToolbarSelectedFilter): void {
-    if (this.dst && selectedFilterRef) {
+    if (this.dst && selectedFilterRef && selectedFilterRef.selectedOption?.Value) {
       // Remove the 'isCustom' property to avoid an event being triggered in dst code
       selectedFilterRef.isCustom = undefined;
       // Then make call to remove selected filter
-      this.dst.removeSelectedFilter(
-        selectedFilterRef.filter,
-        false,
-        selectedFilterRef.selectedOption.Value,
-        selectedFilterRef
-      );
+      this.dst.removeSelectedFilter(selectedFilterRef.filter, false, selectedFilterRef.selectedOption.Value, selectedFilterRef);
     }
   }
 
   private async getTargetSystemOptions(search?: string): Promise<void> {
     const data = await this.dataHelper.getAuthorityData(search, true);
-    this.setupTsSelectOptions(data.authorities);
+    if (data.authorities) {
+      this.setupTsSelectOptions(data.authorities);
+    }
   }
 
   private async getContainers(search?: string): Promise<void> {
@@ -301,11 +301,11 @@ export class DataExplorerFiltersComponent implements OnInit {
     navState.search = search ? search : undefined;
     navState.system = this.selectedTargetSystemUid ? this.selectedTargetSystemUid : undefined;
     const data = await this.dataHelper.getContainers(navState);
-    this.containerSelectOptions = data?.Data.map(d => this.convertEntityToEuiSelectOption(d.GetEntity()));
+    this.containerSelectOptions = data?.Data.map((d) => this.convertEntityToEuiSelectOption(d.GetEntity()));
   }
 
   private setupTsSelectOptions(targetSystems: PortalTargetsystemUnsSystem[]): void {
-    this.targetSystemOptions = targetSystems.map(d => this.convertTsToEuiSelectOption(d));
+    this.targetSystemOptions = targetSystems.map((d) => this.convertTsToEuiSelectOption(d));
   }
 
   private convertTsToEuiSelectOption(tEntity: PortalTargetsystemUnsSystem): EuiSelectOption {
@@ -318,5 +318,4 @@ export class DataExplorerFiltersComponent implements OnInit {
   private convertEntityToEuiSelectOption(entity: IEntity): EuiSelectOption {
     return { display: entity.GetDisplay(), value: entity.GetKeys()[0] };
   }
-
 }

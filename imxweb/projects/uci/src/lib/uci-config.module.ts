@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,20 +38,13 @@ const routes: Routes = [
     path: 'provisioning',
     component: ChangeViewComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
-  }
+    resolve: [RouteGuardService],
+  },
 ];
 
 @NgModule({
-  declarations: [
-
-  ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    ChangeViewModule,
-    TranslateModule
-  ]
+  declarations: [],
+  imports: [CommonModule, RouterModule.forChild(routes), ChangeViewModule, TranslateModule],
 })
 export class UciConfigModule {
   constructor(private readonly initializer: InitService) {

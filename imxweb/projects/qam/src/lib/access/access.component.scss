@@ -1,0 +1,21 @@
+@import 'base/mixins';
+
+:host {
+  @include flex-column-container-fill();
+}
+
+.imx-card-content.hidden {
+  display: none;
+}
+
+.imx-busy {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.imx-card-content {
+  @include flex-column-container-fill();
+}

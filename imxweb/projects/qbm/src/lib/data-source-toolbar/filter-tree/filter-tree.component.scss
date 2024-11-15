@@ -1,29 +1,20 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
 
 :host {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  overflow: hidden;
+  @include flex-column-container-fill;
   height: 100%;
 
-  ::ng-deep .mat-list-base {
-    .mat-list-item.imx-list-item {
-      height: auto;
-    }
-  }
-
-  ::ng-deep .mat-menu-panel {
+  ::ng-deep .mat-mdc-menu-panel {
     padding: 10px;
     max-width: 500px;
   }
 }
 
 .imx-dialog-content {
+  @include flex-column-container();
   flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
 }
 
 .imx-filtertree-buttons {
@@ -38,7 +29,6 @@
   }
 }
 
-
 .imx-badge {
   background-color: $white;
 }
@@ -50,7 +40,7 @@
 .imx-selected-item-element {
   margin: 5px 0;
 }
-.mat-dialog-actions{
+.mat-mdc-dialog-actions {
   padding-bottom: 16px;
 }
 

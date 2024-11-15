@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -61,7 +61,10 @@ import { MatSortModule } from '@angular/material/sort';
   ],
 })
 export class SacConfigModule {
-  constructor(private readonly initservice: InitService, private readonly logger: ClassloggerService) {
+  constructor(
+    private readonly initservice: InitService,
+    private readonly logger: ClassloggerService,
+  ) {
     this.logger.info(this, '🔥 SAC loaded');
     this.initservice.onInit();
     this.logger.info(this, '▶️ SAC initialized');

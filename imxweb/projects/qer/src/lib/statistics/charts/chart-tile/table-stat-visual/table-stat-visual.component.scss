@@ -1,0 +1,20 @@
+table {
+  text-align: left;
+  table-layout: fixed;
+}
+
+// height is 150
+.mat-header-row {
+  height: 30px;
+}
+
+.mat-row {
+  height: 20px;
+}
+
+.mat-column-key {
+  width: 85%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}

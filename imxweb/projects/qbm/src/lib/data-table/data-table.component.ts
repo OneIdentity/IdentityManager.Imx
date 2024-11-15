@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,37 +27,36 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { SelectionChange } from '@angular/cdk/collections';
 import {
-  Component,
-  ViewChild,
-  Input,
-  Output,
-  OnChanges,
-  SimpleChanges,
-  EventEmitter,
-  ContentChildren,
-  QueryList,
-  OnDestroy,
   AfterViewInit,
-  OnInit,
   ChangeDetectorRef,
+  Component,
+  ContentChildren,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  QueryList,
+  SimpleChanges,
+  ViewChild,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatTable, MatColumnDef, MatTableDataSource } from '@angular/material/table';
+import { MatColumnDef, MatTable, MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
 
-import { TypedEntity, IClientProperty, EntitySchema, CollectionLoadParameters, GroupInfo, GroupInfoData } from 'imx-qbm-dbts';
+import { EuiLoadingService } from '@elemental-ui/core';
+import { CollectionLoadParameters, EntitySchema, GroupInfo, GroupInfoData, IClientProperty, TypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { debounce } from 'lodash';
+import { ColumnOptions } from '../data-source-toolbar/column-options';
+import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
+import { DataSourceToolbarComponent } from '../data-source-toolbar/data-source-toolbar.component';
 import { ImxTranslationProviderService } from '../translation/imx-translation-provider.service';
 import { DataTableColumnComponent } from './data-table-column.component';
 import { DataTableGenericColumnComponent } from './data-table-generic-column.component';
-import { DataSourceToolbarComponent } from '../data-source-toolbar/data-source-toolbar.component';
-import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
 import { DataTableGroupedData } from './data-table-groups.interface';
 import { RowHighlight } from './data-table-row-highlight.interface';
 import { GroupPaginatorInformation } from './group-paginator/group-paginator.component';
-import { EuiLoadingService } from '@elemental-ui/core';
-import { OverlayRef } from '@angular/cdk/overlay';
-import { debounce } from 'lodash';
-import { ColumnOptions } from '../data-source-toolbar/column-options';
 
 /**
  * A data table component with a detail view specialized on typed entities.
@@ -103,7 +102,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
    * Represents the typed entity that is selected when the users clicks on a row.
    * Not to be confused with the 'selection' property.
    */
-  public highlightedEntity: TypedEntity;
+  public highlightedEntity: TypedEntity | null;
 
   /**
    * @ignore Used internally in components template.
@@ -322,7 +321,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
     public translateProvider: ImxTranslationProviderService,
     public dialog: MatDialog,
     private readonly busyService: EuiLoadingService,
-    private readonly changeDetectorRef: ChangeDetectorRef
+    private readonly changeDetectorRef: ChangeDetectorRef,
   ) {}
 
   public get isGroupingApplied(): boolean {
@@ -375,7 +374,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
             this.settings = value;
             await this.dstHasChanged();
           }
-        })
+        }),
       );
 
       this.subscriptions.push(
@@ -383,7 +382,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
           if (event && event.source) {
             this.selectionChanged.emit(event.source.selected);
           }
-        })
+        }),
       );
 
       this.subscriptions.push(
@@ -391,7 +390,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
           if (!!this.settings) {
             await this.dstHasChanged();
           }
-        })
+        }),
       );
 
       if (this.dst.busyService) {
@@ -399,7 +398,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
           this.dst.busyService.busyStateChanged.subscribe((busy: boolean) => {
             this.isLoading = busy;
             this.changeDetectorRef.detectChanges();
-          })
+          }),
         );
       }
       this.isLoading = this.dst?.busyService?.isBusy ?? false;
@@ -450,10 +449,10 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
    * Gets the display values of displayed columns
    */
   public getNamesOfDisplayedColumns(): string[] {
-    let displayedColumnNames = [];
+    let displayedColumnNames: string[] = [];
 
     if (this.displayedColumns && this.displayedColumns.length > 0) {
-      displayedColumnNames = this.displayedColumns.map((item) => item.ColumnName);
+      displayedColumnNames = this.displayedColumns.map((item) => item.ColumnName ?? '');
     }
 
     if (this.selectable) {
@@ -475,12 +474,12 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
     // Prevent emission for certain cases
     if (event) {
       // Make sure we aren't selecting text
-      if (event.view.getSelection().type === 'Range') {
+      if (event.view?.getSelection()?.type === 'Range') {
         return;
       }
 
       // Prevent button clicks from propogating as row clicks, Walk up node chain until we hit table looking if we are a button
-      let target = event.target as HTMLElement;
+      let target: HTMLElement | null = event.target as HTMLElement;
       while (target) {
         if (target.tagName === 'BUTTON') {
           return;
@@ -509,7 +508,10 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
    * Gets the display value for a specific column.
    */
   public getDisplayValue(entity: TypedEntity, column: IClientProperty): string {
-    return entity.GetEntity().GetColumn(column.ColumnName).GetDisplayValue();
+    return entity
+      .GetEntity()
+      .GetColumn(column.ColumnName ?? '')
+      .GetDisplayValue();
   }
 
   /**
@@ -542,8 +544,11 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
    * Emits an event to allow data to be retrieved from calling code if no data is present
    */
   public onGroupExpanded(group: GroupInfo): void {
-    if (group && group.Count > 0) {
-      const groupingDisplay = group.Display[0].Display;
+    if (group && (group.Count ?? 0) > 0) {
+      const groupingDisplay = group.Display?.[0].Display;
+      if (!groupingDisplay) {
+        return;
+      }
       if (!this.groupData[groupingDisplay]) {
         this.groupData[groupingDisplay] = {
           data: undefined,
@@ -578,6 +583,10 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
   public selectionInGroupChanged(items: TypedEntity[], groupKey: string): void {
     const groupingData = this.groupData[groupKey];
 
+    if (!groupingData) {
+      return;
+    }
+
     setTimeout(() => {
       if (groupingData.selected) {
         groupingData.selected.forEach((selectedItem) => {
@@ -590,7 +599,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
       groupingData.selected = [];
 
       items.forEach((item) => {
-        groupingData.selected.push(item);
+        groupingData.selected?.push(item);
         this.checked(item);
       });
     });
@@ -623,8 +632,9 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
    * updated the navigation state for the current grouping and loads its content
    */
   private async updateGroupingState(currentGrouping: any, newState?: CollectionLoadParameters): Promise<void> {
-    let busyIndicator: OverlayRef;
-    setTimeout(() => (busyIndicator = this.busyService.show()));
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
 
     try {
       if (newState) {
@@ -638,7 +648,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
 
       this.groupedDataSource = new MatTableDataSource<GroupInfo>(this.groupPaginatorInformation.currentData.Groups);
     } finally {
-      setTimeout(() => this.busyService.hide(busyIndicator));
+      this.busyService.hide();
     }
   }
 
@@ -651,10 +661,13 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
     if (this.settings && this.settings.entitySchema) {
       this.entitySchema = this.settings.entitySchema;
       //update schema with additionals
-      this.parentAdditionals.concat(this.additional).forEach((element) => {
+      (this.parentAdditionals ?? []).concat(this.additional).forEach((element) => {
         const key = ColumnOptions.findKey(element.ColumnName, this.entitySchema);
-        (this.entitySchema.Columns[key] as any) = element;
+        if (key) {
+          (this.entitySchema.Columns[key] as any) = element;
+        }
       });
+      this.settings.dataSource?.Data.forEach((elem) => elem.GetEntity().ApplySchema(this.entitySchema));
       this.manualColumns?.forEach((item: DataTableColumnComponent<any>) => {
         item.entitySchema = this.entitySchema;
       });
@@ -692,10 +705,11 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
 
     if (this.dst.dataSourceChanged || this.dst.shownColumnsSelectionChanged) {
       this.displayedColumns = [];
-      this.additional = this.dst == null || this.dst.additionalColumns?.length === 0 ? this.parentAdditionals : this.dst.additionalColumns;
+      this.additional =
+        (this.dst == null || this.dst.additionalColumns?.length === 0 ? this.parentAdditionals : this.dst.additionalColumns) ?? [];
       // filter additionals for columns, that are already set in the DataSourceToolbarSettings
       this.additional = this.additional.filter((elem) =>
-        this.settings?.displayedColumns?.every((disp) => disp.ColumnName !== elem.ColumnName)
+        this.settings?.displayedColumns?.every((disp) => disp.ColumnName !== elem.ColumnName),
       );
       if (this.manualColumns == null && this.manualGenericColumns == null) {
         return;
@@ -767,8 +781,11 @@ export class DataTableComponent<T> implements OnInit, OnChanges, AfterViewInit, 
         }
 
         if (grouping.isExpanded || skipNavigationChange) {
-          const preservedGroupingFilter = grouping.navigationState.filter;
+          const preservedGroupingFilter = grouping?.navigationState?.filter;
           grouping.navigationState = JSON.parse(JSON.stringify(this.settings.navigationState));
+          if (!grouping.navigationState) {
+            grouping.navigationState = {};
+          }
           grouping.navigationState.filter = preservedGroupingFilter;
           grouping.navigationState.StartIndex = 0;
           grouping.navigationState.withProperties = this.settings.navigationState.withProperties;

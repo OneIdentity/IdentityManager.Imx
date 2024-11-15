@@ -4,25 +4,28 @@
       <h4 mat-card-title>
         {{ '#LDS#Heading Requested Operation' | translate }}
         <ng-container *ngIf="changeDetail.length > 1">({{ idx + 1 }}/{{ changeDetail.length }})</ng-container>
-        <eui-badge class="state-badge" *ngIf="cdetail.IsProcessed.value == 1" color="green">{{ '#LDS#Successful' | translate }}</eui-badge>
-        <eui-badge class="state-badge" *ngIf="cdetail.IsProcessed.value == 0" color="orange">{{ '#LDS#Pending' | translate }}</eui-badge>
-        <eui-badge class="state-badge" *ngIf="cdetail.IsProcessed.value == 2" color="red">{{ '#LDS#Failed' | translate }}</eui-badge>
+        <eui-badge *ngIf="cdetail.IsProcessed.value == 1" color="green">{{ '#LDS#Successful' | translate }}</eui-badge>
+        <eui-badge *ngIf="cdetail.IsProcessed.value == 0" color="orange">{{ '#LDS#Pending' | translate }}</eui-badge>
+        <eui-badge *ngIf="cdetail.IsProcessed.value == 2" color="red">{{ '#LDS#Failed' | translate }}</eui-badge>
       </h4>
 
-      <eui-alert *ngIf="canMarkAsDone(cdetail)" class="imx-helper-alert" type="info" [condensed]="true" [colored]="true">
+      <eui-alert *ngIf="canMarkAsDone(cdetail)" type="info" [condensed]="true" [colored]="true">
         <ng-container *ngIf="cdetail.Operation.value == 'I'">
           {{
-            '#LDS#Here you can see the details of the provisioning process. Additionally, you can change the status of the provisioning process if creating the object in the cloud application was successful or failed.' | translate
+            '#LDS#Here you can see the details of the provisioning process. Additionally, you can change the status of the provisioning process if creating the object in the cloud application was successful or failed.'
+              | translate
           }}
         </ng-container>
         <ng-container *ngIf="cdetail.Operation.value == 'D'">
           {{
-            '#LDS#Here you can see the details of the provisioning process. Additionally, you can change the status of the provisioning process if deleting the object in the cloud application was successful or failed.' | translate
+            '#LDS#Here you can see the details of the provisioning process. Additionally, you can change the status of the provisioning process if deleting the object in the cloud application was successful or failed.'
+              | translate
           }}
         </ng-container>
         <ng-container *ngIf="cdetail.Operation.value == 'U'">
           {{
-            '#LDS#Here you can see the details of the provisioning process. Additionally, you can change the status of the provisioning process if changing the object in the cloud application was successful or failed.' | translate
+            '#LDS#Here you can see the details of the provisioning process. Additionally, you can change the status of the provisioning process if changing the object in the cloud application was successful or failed.'
+              | translate
           }}
         </ng-container>
       </eui-alert>
@@ -31,9 +34,13 @@
 
       <imx-property-viewer [properties]="changeProperties[idx]"></imx-property-viewer>
 
-      <div class="button-bar" *ngIf="canMarkAsDone(cdetail)">
-        <button data-imx-identifier="imx-changeview-markdone" mat-raised-button color="primary" (click)="markAsDone(cdetail)">{{ '#LDS#Mark as successful' | translate }}</button>
-        <button data-imx-identifier="imx-changeview-markerror" mat-raised-button color="warn" (click)="markAsError(cdetail)">{{ '#LDS#Mark as failed' | translate }}</button>
+      <div class="imx-button-bar-transparent" *ngIf="canMarkAsDone(cdetail)">
+        <button data-imx-identifier="imx-changeview-markdone" mat-flat-button color="primary" (click)="markAsDone(cdetail)">
+          {{ '#LDS#Mark as successful' | translate }}
+        </button>
+        <button data-imx-identifier="imx-changeview-markerror" mat-flat-button color="warn" (click)="markAsError(cdetail)">
+          {{ '#LDS#Mark as failed' | translate }}
+        </button>
       </div>
     </mat-card>
   </div>

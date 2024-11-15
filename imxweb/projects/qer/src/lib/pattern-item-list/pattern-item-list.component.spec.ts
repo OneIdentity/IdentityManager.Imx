@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { PortalItshopPatternRequestable } from 'imx-api-qer';
+import { PortalItshopPatternRequestable } from '@imx-modules/imx-api-qer';
 import { MockBuilder, MockedComponentFixture, MockRender } from 'ng-mocks';
 import { clearStylesFromDOM } from 'qbm';
 

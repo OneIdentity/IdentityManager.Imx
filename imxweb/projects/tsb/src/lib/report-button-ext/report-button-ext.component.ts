@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,19 +24,18 @@
  *
  */
 
-import { Component, Injector, OnInit } from '@angular/core';
-import { EuiDownloadDirective, EuiDownloadOptions } from '@elemental-ui/core';
+import { Component, ElementRef, Injector, OnInit } from '@angular/core';
+import { EuiDownloadDirective, EuiDownloadOptions, EuiDownloadService } from '@elemental-ui/core';
 
-import { ElementalUiConfigService } from 'qbm';
-import { QerPermissionsService } from 'qer';
-import { AccountsReportsService } from '../accounts/accounts-reports.service';
-import { HttpClient } from '@angular/common/http';
 import { Overlay } from '@angular/cdk/overlay';
+import { HttpClient } from '@angular/common/http';
+import { ElementalUiConfigService } from 'qbm';
+import { AccountsReportsService } from '../accounts/accounts-reports.service';
 
 @Component({
   selector: 'imx-report-button-ext',
   templateUrl: './report-button-ext.component.html',
-  styleUrls: ['./report-button-ext.component.scss']
+  styleUrls: ['./report-button-ext.component.scss'],
 })
 export class ReportButtonExtComponent implements OnInit {
   public downloadOptions: EuiDownloadOptions;
@@ -50,20 +49,26 @@ export class ReportButtonExtComponent implements OnInit {
     private readonly http: HttpClient,
     private readonly injector: Injector,
     private readonly overlay: Overlay,
-
-  ) { }
+    private readonly downloadService: EuiDownloadService,
+  ) {}
 
   public async ngOnInit(): Promise<void> {
     const url = this.service.accountsOwnedByManagedReport(30, this.referrer);
 
     this.downloadOptions = {
       ...this.elementalUiConfigService.Config.downloadOptions,
-      url
+      url,
     };
   }
 
-  public viewReport():void{
-    const directive = new EuiDownloadDirective(null, this.http, this.overlay, this.injector);
+  public viewReport(): void {
+    const directive = new EuiDownloadDirective(
+      new ElementRef('') /* no element */,
+      this.http,
+      this.overlay,
+      this.injector,
+      this.downloadService,
+    );
     directive.downloadOptions = {
       ...this.downloadOptions,
       disableElement: false,

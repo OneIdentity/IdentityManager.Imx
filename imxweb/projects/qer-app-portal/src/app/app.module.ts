@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatPaginatorIntl } from '@angular/material/paginator';
@@ -44,7 +44,6 @@ import {
   ImxTranslateLoader,
   LdsReplacePipe,
   MastHeadModule,
-  MenuModule,
   ObjectHistoryApiService,
   ObjectHistoryModule,
   Paginator,
@@ -52,38 +51,40 @@ import {
 } from 'qbm';
 import {
   AddressbookModule,
+  ApprovalWorkFlowModule,
   ApprovalsModule,
   ArchivedRequestsModule,
+  DataExplorerViewModule,
   DelegationModule,
   IdentitiesModule,
   ItshopPatternModule,
+  MyResponsibilitiesViewModule,
   NewRequestModule,
   ObjectHyperviewService,
   ProductSelectionModule,
   ProfileModule,
   QerModule,
   QpmIntegrationModule,
+  QueueStatusComponent,
   RelatedApplicationsModule,
   RequestConfigModule,
   RequestHistoryModule,
   ResourcesModule,
   RiskConfigModule,
   RoleManangementModule,
+  RoleMembershipsModule,
   ServiceCategoriesModule,
   ServiceItemsEditModule,
   ShoppingCartModule,
-  StatisticsModule,
-  ViewDevicesModule,
-  MyResponsibilitiesViewModule,
-  ApprovalWorkFlowModule,
-  DataExplorerViewModule,
-  UserProcessModule,
   SourceDetectiveModule,
-  RoleMembershipsModule,
-  TeamResponsibilitiesModule
+  StatisticsModule,
+  TeamResponsibilitiesModule,
+  UserProcessModule,
+  ViewDevicesModule,
 } from 'qer';
 
 import { APP_BASE_HREF } from '@angular/common';
+import { RECAPTCHA_V3_SITE_KEY } from 'ng-recaptcha-2';
 import appConfigJson from '../appconfig.json';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
@@ -98,6 +99,7 @@ export function getBaseHref(): string {
 }
 @NgModule({
   declarations: [AppComponent],
+  bootstrap: [AppComponent],
   imports: [
     AppRoutingModule,
     AuthenticationModule,
@@ -105,14 +107,12 @@ export function getBaseHref(): string {
     BrowserModule,
     EuiCoreModule,
     EuiMaterialModule,
-    HttpClientModule,
     IdentitiesModule,
     ResourcesModule,
     LoggerModule.forRoot({ level: NgxLoggerLevel.DEBUG, serverLogLevel: NgxLoggerLevel.OFF }),
     MatDialogModule,
     MatTabsModule,
     MastHeadModule,
-    MenuModule,
     AddressbookModule,
     QerModule,
     ProfileModule,
@@ -148,11 +148,13 @@ export function getBaseHref(): string {
     ViewDevicesModule,
     MyResponsibilitiesViewModule,
     ApprovalWorkFlowModule,
+    UserProcessModule,
+    TeamResponsibilitiesModule,
     DataExplorerViewModule,
-    UserProcessModule,    
+    UserProcessModule,
     SourceDetectiveModule,
     RoleMembershipsModule,
-    TeamResponsibilitiesModule
+    QueueStatusComponent,
   ],
   providers: [
     { provide: 'environment', useValue: environment },
@@ -173,7 +175,7 @@ export function getBaseHref(): string {
     },
     {
       provide: ObjectHyperviewService,
-      useClass: PortalHyperviewService
+      useClass: PortalHyperviewService,
     },
     {
       provide: MatPaginatorIntl,
@@ -185,7 +187,14 @@ export function getBaseHref(): string {
       useValue: getBaseHref(),
     },
     CdrRegistryService,
+    {
+      provide: RECAPTCHA_V3_SITE_KEY,
+      useFactory: (config: AppService) => {
+        return config.recaptchaSiteKeyV3;
+      },
+      deps: [AppService],
+    },
+    provideHttpClient(withInterceptorsFromDi()),
   ],
-  bootstrap: [AppComponent],
 })
 export class AppModule {}

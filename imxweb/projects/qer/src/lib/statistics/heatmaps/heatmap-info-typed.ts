@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { DisplayPattern, EntitySchema, IClientProperty, IReadValue, TypedEntity, ValType } from 'imx-qbm-dbts';
+import { DisplayPattern, EntitySchema, IClientProperty, IReadValue, TypedEntity, ValType } from '@imx-modules/imx-qbm-dbts';
 
 export class HeatmapInfoTyped extends TypedEntity {
   public readonly ErrorThreshold: IReadValue<number> = this.GetEntityValue('ErrorThreshold');

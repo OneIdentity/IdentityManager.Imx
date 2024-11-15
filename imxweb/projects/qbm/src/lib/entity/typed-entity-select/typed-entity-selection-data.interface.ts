@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,17 +24,17 @@
  *
  */
 
-import { CollectionLoadParameters, IForeignKeyInfo, TypedEntity, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, IForeignKeyInfo, TypedEntity, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { ValueWrapper } from '../../value-wrapper/value-wrapper';
 
-export interface TypedEntitySelectionData {
+export interface TypedEntitySelectionData<T extends TypedEntity = TypedEntity> {
   valueWrapper: ValueWrapper<string>;
   title?: string;
   getInitialDisplay: () => Promise<string>;
-  getSelected: () => Promise<TypedEntity[]>;
-  getTyped?: (parameters: CollectionLoadParameters) => Promise<TypedEntityCollectionData<TypedEntity>>;
+  getSelected: () => Promise<T[]>;
+  getTyped?: (parameters: CollectionLoadParameters) => Promise<TypedEntityCollectionData<T> | undefined>;
   dynamicFkRelation?: {
     tables: ReadonlyArray<IForeignKeyInfo>;
-    getSelectedTableName: (selected: TypedEntity[]) => string;
+    getSelectedTableName: (selected: T[]) => string;
   };
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,41 +26,25 @@
 
 import { BehaviorSubject } from 'rxjs';
 
-import { ParmData, PolicyFilterData, PolicyFilterElement } from 'imx-api-att';
-import { SelectecObjectsInfo } from '../selected-objects/selected-objects-info.interface';
+import { ParmData, PolicyFilterData, PolicyFilterElement } from '@imx-modules/imx-api-att';
 import { FilterElementColumnService } from '../editors/filter-element-column.service';
 import { FilterElementModel } from '../editors/filter-element-model';
+import { SelectecObjectsInfo } from '../selected-objects/selected-objects-info.interface';
 
 export class FilterModel {
-  public totalSelectedObjectsSubject: BehaviorSubject<SelectecObjectsInfo> = new BehaviorSubject<SelectecObjectsInfo>(undefined);
-  public policyFilterData: PolicyFilterData;
+  public totalSelectedObjectsSubject: BehaviorSubject<SelectecObjectsInfo | undefined> = new BehaviorSubject<
+    SelectecObjectsInfo | undefined
+  >(undefined);
+  public policyFilterData: PolicyFilterData | undefined;
   public parameterConfig: ParmData[] = [];
   public uidAttestationObject: string;
 
   constructor(
     public readonly columnFactory: FilterElementColumnService,
-    public readonly isEnabledSubject: BehaviorSubject<boolean>,
-    public readonly attestationObjectSubject: BehaviorSubject<string>) {
-    isEnabledSubject.subscribe(elem => {
-      if (!elem && this.policyFilterData && this.policyFilterData.Filter.Elements.length > 0) {
-        this.policyFilterData = {
-          IsReadOnly: this.policyFilterData ? this.policyFilterData.IsReadOnly : true,
-          Filter: { Elements: [], ConcatenationType: 'OR' },
-          InfoDisplay: []
-        };
-      }
-      if (elem && this.policyFilterData == null) {
-        this.policyFilterData = {
-          IsReadOnly: this.policyFilterData ? this.policyFilterData.IsReadOnly : true,
-          Filter: { Elements: [], ConcatenationType: 'OR' },
-          InfoDisplay: []
-        };
-      }
-      this.totalSelectedObjectsSubject.next(undefined);
-    });
-    attestationObjectSubject.subscribe(elem => {
+    public readonly attestationObjectSubject: BehaviorSubject<string>,
+  ) {
+    attestationObjectSubject.subscribe((elem) => {
       this.uidAttestationObject = elem;
-
     });
   }
 
@@ -74,45 +58,50 @@ export class FilterModel {
 
   public addCondition(): FilterElementModel {
     const newCondition = this.buildPolicyModel({}, []);
-    this.policyFilterData.Filter.Elements.push(newCondition.filterElement);
-    this.policyFilterData.InfoDisplay.push(['']);
+    this.policyFilterData?.Filter?.Elements?.push(newCondition.filterElement);
+    this.policyFilterData?.InfoDisplay?.push(['']);
     return newCondition;
   }
 
   public deleteCondition(index: number): void {
-    this.policyFilterData.Filter.Elements.splice(index, 1);
-    this.policyFilterData.InfoDisplay.splice(index, 1);
+    this.policyFilterData?.Filter?.Elements?.splice(index, 1);
+    this.policyFilterData?.InfoDisplay?.splice(index, 1);
   }
 
   public filterHasChanged(filterElements: FilterElementModel[], type: string): void {
-    this.totalSelectedObjectsSubject.next(this.filtersAreValid(filterElements) ?
-      {
-        policyFilter: {
-          Elements: filterElements.map(filter => filter.filterElement),
-          ConcatenationType: type
-        },
-        uidPickCategory: '',
-        uidAttestationObject: this.uidAttestationObject
-      }
-      : undefined);
+    this.totalSelectedObjectsSubject.next(
+      this.filtersAreValid(filterElements)
+        ? {
+            policyFilter: {
+              Elements: filterElements.map((filter) => filter.filterElement),
+              ConcatenationType: type,
+            },
+            uidPickCategory: '',
+            uidAttestationObject: this.uidAttestationObject,
+          }
+        : undefined,
+    );
   }
 
   public updateConcatination(concat: string): void {
-    this.policyFilterData.Filter.ConcatenationType = concat;
+    if (this.policyFilterData?.Filter) {
+      this.policyFilterData.Filter.ConcatenationType = concat;
+    }
   }
 
   public buildPolicyModel(filterElement: PolicyFilterElement, displays?: string[]): FilterElementModel {
-    const model = new FilterElementModel(this.parameterConfig,
-      displays,
+    const model = new FilterElementModel(
+      this.parameterConfig,
+      displays || [],
       filterElement,
       this.uidAttestationObject,
-      this.columnFactory
+      this.columnFactory,
     );
 
     return model;
   }
 
   private filtersAreValid(filterElements: FilterElementModel[]): boolean {
-    return filterElements.filter(elem => elem.filterErrors() == null).length === filterElements.length;
+    return filterElements.filter((elem) => elem.filterErrors() == null).length === filterElements.length;
   }
 }

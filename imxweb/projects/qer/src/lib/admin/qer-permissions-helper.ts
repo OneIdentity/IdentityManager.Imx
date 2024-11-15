@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -64,15 +64,12 @@ export function isStructStatistics(features: string[]): boolean {
 export function isCancelPwO(features: string[]): boolean {
   return features.find((item) => item === 'QER_CancelPwO') != null;
 }
-export function isPasswordHelpdesk(features: string[]): boolean {
-  return features.find((item) => item === 'Portal_UI_PasswordHelpdesk') != null;
-}
 export function isStatistics(features: string[]): boolean {
   return features.find((item) => item === 'Portal_UI_TSBStatistics') != null;
 }
+export function isHyperviewNavigation(features: string[]): boolean {
+  return features.find((item) => item === 'Portal_HyperView_Navigation') != null;
+}
 export function isAuditor(groups: string[]): boolean {
   return groups.find((item) => item.toUpperCase() === 'VI_4_AUDITING_AUDITOR') != null;
-}
-export function isTsbNameSpaceAdminBase(groups: string[]): boolean {
-  return groups.find((item) => item.toUpperCase() === 'TSB_4_NAMESPACEADMIN_BASE') != null;
 }

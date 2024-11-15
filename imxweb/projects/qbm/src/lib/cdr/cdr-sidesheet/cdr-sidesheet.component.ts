@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,21 +25,20 @@
  */
 
 import { Component, Inject } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { AbstractControl, UntypedFormGroup } from '@angular/forms';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 
 import { CdrSidesheetConfig } from './cdr-sidesheet-config';
 
 /**
  * Provides a side sheet, that displays a form with {@link CdrEditor | cdr editors}.
- * 
+ *
  * Writeable properties can be edited.
  */
 @Component({
-  templateUrl: './cdr-sidesheet.component.html'
+  templateUrl: './cdr-sidesheet.component.html',
 })
 export class CdrSidesheetComponent {
-
   /**
    * The form, that stores the editors.
    */
@@ -52,7 +51,7 @@ export class CdrSidesheetComponent {
    */
   constructor(
     @Inject(EUI_SIDESHEET_DATA) public readonly config: CdrSidesheetConfig,
-    public readonly sidesheetRef: EuiSidesheetRef
+    public readonly sidesheetRef: EuiSidesheetRef,
   ) {}
 
   /**
@@ -60,7 +59,7 @@ export class CdrSidesheetComponent {
    * @param name The name of the control.
    * @param control The form control that should be added.
    */
-  public addFormControl(name: string, control: UntypedFormControl): void {
+  public addFormControl(name: string, control: AbstractControl): void {
     this.cdrFormGroup.addControl(name, control);
   }
 }

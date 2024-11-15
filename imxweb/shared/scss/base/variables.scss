@@ -1,0 +1,54 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import '@elemental-ui/core/src/styles/_palette.scss';
+
+$IMX_Color_White: $color-gray-0;
+$IMX_Color_Black: $color-gray-100;
+
+$IMX_Color_Light_Info: $color-blue-60;
+$IMX_Color_Light_New: $color-green-60;
+$IMX_Color_Light_Warning: $color-orange-60;
+$IMX_Color_Light_Error: $color-red-60;
+
+$IMX_Color_Dark_Info: $color-blue-40;
+$IMX_Color_Dark_New: $color-green-40;
+$IMX_Color_Dark_Warning: $color-orange-40;
+$IMX_Color_Dark_Error: $color-red-40;
+
+$IMX_Color_Contrast_Info: $color-blue-40;
+$IMX_Color_Contrast_New: $color-green-40;
+$IMX_Color_Contrast_Warning: $color-orange-40;
+$IMX_Color_Contrast_Error: $color-red-40;
+
+$Path_Material_Icons_Font: '~node_modules/@elemental-ui/core/assets/MaterialIcons';
+$Path_Cadence_Font: '~node_modules/@elemental-ui/core/assets/Cadence';
+$Path_Source_Sans_Pro_Font: '~node_modules/@elemental-ui/core/assets/Source_Sans_Pro';
+
+$IMX_Mediaquery_Smartphone: 'all and (max-width: 760px)';
+$IMX_Mediaquery_SmallDesktops: 'all and (min-width: 761px) and (max-width: 1024px)';
+$IMX_Base_FontFamily: 'Source Sans Pro', 'Trebuchet MS', sans-serif;
+$IMX_White_2: #e9e9e9;
+$IMX_Ellipse_Gray: rgba(204, 204, 204, 0.5);
+$IMX_Checkbox: rgb(130, 213, 237);
+$IMX_Material_Gray: rgba(#000, 0.38);
+$IMX_Material_Gray_Hover: rgba(#2f3233, 0.87);
+$IMX_Material_LightGray: rgba(#fff, 0.38);
+$IMX_Material_LightGray_Hover: rgba(#fff, 0.87);
+$IMX_Login_Controls_Margin: 0.7em;
+$IMX_Login_Input_Width: calc(40vw + 2px);
+$IMX_Identity_PhotoSize: 45px;
+$IMX_OrgChart_HalfPhotoSize: calc($IMX_Identity_PhotoSize / 2);
+$IMX_OrgChart_BorderWidth: 2px;
+$IMX_OrgChart_Width: 100px;
+/* Horizontal margin from one level to the next */
+$IMX_OrgChart_LevelMargin: 15px;
+$IMX_OrgChart_PeersMargin: $IMX_Identity_PhotoSize + $IMX_OrgChart_LevelMargin;
+$IMX_OrgChart_ReportsMargin: (2 * $IMX_Identity_PhotoSize) + (2 * $IMX_OrgChart_LevelMargin);
+$IMX_OrgChart_BorderContainerReportsLeft: $IMX_OrgChart_PeersMargin + $IMX_OrgChart_HalfPhotoSize;
+$IMX_OrgChart_ConnectorReportsLeft: $IMX_OrgChart_ReportsMargin + $IMX_OrgChart_HalfPhotoSize;
+$IMX_MessageDialog_MaxWidth: 750px;
+$IMX_PropCell_MinHeight: 1.6em;
+$IMX_PropertyLabel_Width: 220px;
+$IMX_Tile_Width: 395px;
+$IMX_Application_Details_Component_Height: calc(100vh - 180px);
+$IMX_SearchBar_Width: 535px;
+$IMX_SearchBar_Height: 45px;

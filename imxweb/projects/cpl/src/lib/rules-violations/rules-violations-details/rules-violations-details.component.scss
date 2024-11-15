@@ -1,49 +1,16 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
-  .mat-tab-group, ::ng-deep .mat-tab-body-wrapper {
-    height: 100%;
-  }
-
-  ::ng-deep .mat-tab-body-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-
-  .imx-mat-tab-container {
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
-  }
-
-  .eui-sidesheet-content {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .eui-badge ::ng-deep .eui-badge-content {
-    font-size: 12px;
-    line-height: 12px;
-    margin-bottom: 20px;
-  }
 
   .imx-state-caption {
     font-size: 12px;
     padding-bottom: 5px;
   }
 
-  .eui-sidesheet-actions {
-    button:not(:last-of-type) {
-      margin-right: 10px;
-    }
-  }
-
   .imx-dirty-indicator {
     margin-left: 5px;
   }
-  imx-ext{
+  imx-ext {
     height: 100%;
   }
 }
@@ -56,25 +23,5 @@
 
   .imx-state-caption {
     color: $color-gray-40;
-  }
-
-  ::ng-deep .mat-tab-labels {
-    background-color: $color-gray-0;
-  }
-}
-
-.eui-dark-theme {
-  :host {
-    ::ng-deep .mat-tab-labels {
-      background-color: $color-gray-70;
-    }
-  }
-}
-
-.eui-contrast-theme {
-  :host {
-    ::ng-deep .mat-tab-labels {
-      background-color: $color-gray-100;
-    }
   }
 }

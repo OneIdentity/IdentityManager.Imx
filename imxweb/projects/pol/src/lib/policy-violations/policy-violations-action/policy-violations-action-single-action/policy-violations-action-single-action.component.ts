@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { AbstractControl, UntypedFormGroup } from '@angular/forms';
 
-import { ColumnDependentReference } from 'qbm';
 import { PolicyViolation } from '../../policy-violation';
 import { PolicyViolationsAction } from '../policy-violations-action.interface';
 
@@ -41,10 +40,9 @@ import { PolicyViolationsAction } from '../policy-violations-action.interface';
 @Component({
   selector: 'imx-policy-violations-action-single-action',
   templateUrl: './policy-violations-action-single-action.component.html',
-  styleUrls: ['./policy-violations-action-single-action.component.scss']
+  styleUrls: ['./policy-violations-action-single-action.component.scss'],
 })
 export class PolicyViolationsActionSingleActionComponent implements OnInit {
-
   /**
    * @ignore since this is only an internal component.
    *
@@ -85,8 +83,6 @@ export class PolicyViolationsActionSingleActionComponent implements OnInit {
    */
   public onFormControlCreated(name: string, control: AbstractControl): void {
     // use setTimeout to make addControl asynchronous in order to avoid "NG0100: Expression has changed after it was checked"
-    setTimeout(() =>
-      this.formGroup.addControl(name, control)
-    );
+    setTimeout(() => this.formGroup.addControl(name, control));
   }
 }

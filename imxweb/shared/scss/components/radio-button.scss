@@ -1,0 +1,61 @@
+/* Elemental UI */
+
+/* Angular Material */
+
+.mat-mdc-radio-group {
+  display: flex;
+  gap: 25px;
+  min-height: 30px;
+}
+
+.mat-mdc-radio-button {
+  display: block;
+  margin-right: 5px;
+  .mdc-form-field{
+    align-items: center !important;
+  }
+  .mdc-label {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    .imx-radio-label-strong{
+      font-weight: 600;
+    }
+  }
+}
+
+/* Imx */
+
+.imx-filter-radio-group {
+  display: block;
+}
+
+.imx-radio-group-flex-column {
+  flex-direction: column;
+  margin-bottom: 15px;
+  gap: 15px;
+}
+
+.imx-filter-radio-button.mat-mdc-radio-button {
+  display: block;
+
+  label.mat-mdc-radio-label {
+    white-space: normal;
+  }
+}
+
+.imx-fk-table-radio {
+  > *:not(:last-child) {
+    margin-right: 30px;
+  }
+}
+
+/* Dark theme */
+
+/* High-contrast theme */
+
+.eui-contrast-theme {
+  ::ng-deep .mat-mdc-radio-outer-circle {
+    border-color: $color-gray-100;
+  }
+}

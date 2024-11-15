@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,21 +24,30 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { RouterModule, Routes } from '@angular/router';
 import { EuiCoreModule } from '@elemental-ui/core';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { DataSourceToolbarModule, DataTableModule, CdrModule, RouteGuardService, HELP_CONTEXTUAL, HelpContextualModule } from 'qbm';
+import {
+  CdrModule,
+  DataSourceToolbarModule,
+  DataTableModule,
+  DataViewModule,
+  HELP_CONTEXTUAL,
+  HelpContextualModule,
+  RouteGuardService,
+} from 'qbm';
 
-import { AddressbookComponent } from './addressbook.component';
-import { AddressbookDetailComponent } from './addressbook-detail/addressbook-detail.component';
+import { MatTableModule } from '@angular/material/table';
 import { OrgChartModule } from '../org-chart/org-chart.module';
+import { AddressbookDetailComponent } from './addressbook-detail/addressbook-detail.component';
+import { AddressbookComponent } from './addressbook.component';
 
 const routes: Routes = [
   {
@@ -46,9 +55,9 @@ const routes: Routes = [
     component: AddressbookComponent,
     canActivate: [RouteGuardService],
     resolve: [RouteGuardService],
-    data:{
-      contextId: HELP_CONTEXTUAL.Addressbook
-    }
+    data: {
+      contextId: HELP_CONTEXTUAL.Addressbook,
+    },
   },
 ];
 
@@ -69,6 +78,8 @@ const routes: Routes = [
     OrgChartModule,
     ReactiveFormsModule,
     HelpContextualModule,
+    DataViewModule,
+    MatTableModule,
   ],
   exports: [AddressbookComponent],
 })

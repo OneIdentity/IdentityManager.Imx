@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 mat-card {
@@ -40,9 +40,9 @@ mat-card {
   .issueIconLine {
     position: relative;
     width: 88px;
-    height:156px;
+    height: 156px;
     font-size: 72px;
-    line-height:156px;
+    line-height: 156px;
     float: left;
     background-color: $asher-gray;
     color: $black-3;
@@ -64,8 +64,7 @@ mat-card {
       color: $color-gray-5;
     }
 
-    eui-icon
-    {
+    eui-icon {
       color: $color-gray-2;
       background-color: $color-gray-60;
     }
@@ -82,8 +81,7 @@ mat-card {
       color: $color-gray-0;
     }
 
-    eui-icon
-    {
+    eui-icon {
       color: $color-gray-0;
       background-color: $color-gray-80;
     }

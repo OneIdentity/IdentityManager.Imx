@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,10 @@
  *
  */
 
-import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 
-import { MultiValue, ValueStruct } from 'imx-qbm-dbts';
-import { ColumnDependentReference, BaseCdr, ClassloggerService, MetadataService } from 'qbm';
+import { MultiValue, ValueStruct } from '@imx-modules/imx-qbm-dbts';
+import { BaseCdr, ClassloggerService, ColumnDependentReference, MetadataService } from 'qbm';
 import { FilterChangedArgument } from './filter-changed-argument.interface';
 import { FilterElementModel } from './filter-element-model';
 
@@ -56,7 +56,7 @@ export class EditGenericComponent implements OnChanges {
       await this.metaData.updateNonExisting([this.filterElementModel.getTableName()]);
       this.cdr = new BaseCdr(
         this.filterElementModel.columnForFilter,
-        this.metaData.tables[this.filterElementModel.getTableName()].Columns[this.filterElementModel.getColumnName()].Display,
+        this.metaData.tables[this.filterElementModel.getTableName()]?.Columns?.[this.filterElementModel.getColumnName()].Display,
       );
     }
   }

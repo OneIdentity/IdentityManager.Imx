@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,8 +27,8 @@
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { PortalPickcategory, PortalPickcategoryItems } from 'imx-api-qer';
-import { IEntity } from 'imx-qbm-dbts';
+import { PortalPickcategory, PortalPickcategoryItems } from '@imx-modules/imx-api-qer';
+import { IEntity } from '@imx-modules/imx-qbm-dbts';
 
 import { ClassloggerService, SnackBarService } from 'qbm';
 import { QerApiService } from 'qer';
@@ -41,7 +41,7 @@ describe('PickCategoryService', () => {
 
   const euiLoadingServiceStub = {
     hide: jasmine.createSpy('hide'),
-    show: jasmine.createSpy('show')
+    show: jasmine.createSpy('show'),
   };
 
   beforeEach(() => {
@@ -51,18 +51,18 @@ describe('PickCategoryService', () => {
           provide: ClassloggerService,
           useValue: {
             debug: jasmine.createSpy('debug').and.callThrough(),
-            trace: jasmine.createSpy('trace').and.callThrough()
-          }
+            trace: jasmine.createSpy('trace').and.callThrough(),
+          },
         },
         {
           provide: EuiLoadingService,
-          useValue: euiLoadingServiceStub
+          useValue: euiLoadingServiceStub,
         },
         {
           provide: SnackBarService,
           useValue: {
-            open: jasmine.createSpy('open')
-          }
+            open: jasmine.createSpy('open'),
+          },
         },
         {
           provide: QerApiService,
@@ -73,30 +73,32 @@ describe('PickCategoryService', () => {
                 Post: jasmine.createSpy('Post').and.returnValue(Promise.resolve({ Data: [{}] })),
                 GetSchema: () => ({ Columns: [] }),
                 createEntity: jasmine.createSpy('createEntity').and.returnValue({
-                  GetEntity: () => ({
-                    Commit: commitSpy
-                  }) as unknown as IEntity,
-                  ObjectKeyDelegated: { Value: '' }
-                } as unknown as PortalPickcategory)
+                  GetEntity: () =>
+                    ({
+                      Commit: commitSpy,
+                    }) as unknown as IEntity,
+                  ObjectKeyDelegated: { Value: '' },
+                } as unknown as PortalPickcategory),
               },
               PortalPickcategoryItems: {
                 Get: jasmine.createSpy('Get').and.stub(),
-                Post: jasmine.createSpy('Post').and.returnValue(Promise.resolve({ Data: [{}]})),
+                Post: jasmine.createSpy('Post').and.returnValue(Promise.resolve({ Data: [{}] })),
                 GetSchema: () => ({ Columns: [] }),
                 createEntity: jasmine.createSpy('createEntity').and.returnValue({
-                  GetEntity: () => ({
-                    Commit: commitSpy
-                  }) as unknown as IEntity,
-                  ObjectKeyDelegated: { Value: '' }
-                } as unknown as PortalPickcategoryItems)
-              }
+                  GetEntity: () =>
+                    ({
+                      Commit: commitSpy,
+                    }) as unknown as IEntity,
+                  ObjectKeyDelegated: { Value: '' },
+                } as unknown as PortalPickcategoryItems),
+              },
             },
             client: {
-              portal_hyperview_get: jasmine.createSpy('portal_hyperview_get').and.callFake(() => Promise.resolve([1, 2, 3]))
+              portal_hyperview_get: jasmine.createSpy('portal_hyperview_get').and.callFake(() => Promise.resolve([1, 2, 3])),
             },
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
     service = TestBed.inject(PickCategoryService);
   });

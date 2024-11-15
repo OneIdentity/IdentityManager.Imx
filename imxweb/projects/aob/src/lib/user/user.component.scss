@@ -29,14 +29,14 @@
   flex: 1 1 auto;
   overflow: hidden;
 
-  >span {
+  > span {
     font-weight: 600;
     font-size: 12px;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  >span:last-child {
+  > span:last-child {
     font-size: 10px;
     color: $black-b;
   }
@@ -50,11 +50,11 @@
   }
 
   .imx-user-properties {
-    >span {
+    > span {
       font-size: 16px;
     }
 
-    >span:last-child {
+    > span:last-child {
       font-size: 12px;
     }
   }
@@ -66,14 +66,14 @@
     background-color: $corbin-pastel;
   }
 
-  .imx-user-properties>span {
+  .imx-user-properties > span {
     font-size: 12px;
   }
 }
 
 .imx-user.large.noUser {
   .imx-user-properties {
-    >span {
+    > span {
       font-size: 14px;
     }
   }
@@ -86,7 +86,7 @@
       background-color: $color-gray-60;
     }
     .imx-user-properties {
-      >span:last-child {
+      > span:last-child {
         color: $color-gray-60;
       }
     }
@@ -100,7 +100,7 @@
       background-color: $color-gray-80;
     }
     .imx-user-properties {
-      >span:last-child {
+      > span:last-child {
         color: $color-gray-80;
       }
     }

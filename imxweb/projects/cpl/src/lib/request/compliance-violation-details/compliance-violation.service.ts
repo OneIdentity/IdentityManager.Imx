@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,21 +25,20 @@
  */
 
 import { Injectable } from '@angular/core';
-import { ComplianceViolation } from 'imx-api-cpl';
+import { ComplianceViolation } from '@imx-modules/imx-api-cpl';
 import { ApiService } from '../../api.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ComplianceViolationService {
-
-  constructor(private api: ApiService) { }
+  constructor(private api: ApiService) {}
 
   public async getRequestViolations(pwoId: string): Promise<ComplianceViolation[]> {
     return await this.api.client.portal_itshop_requests_compliance_get(pwoId);
   }
 
-  public async getMitigatingControlsPerViolation(): Promise<boolean>{
+  public async getMitigatingControlsPerViolation(): Promise<boolean> {
     return (await this.api.client.portal_compliance_config_get()).MitigatingControlsPerViolation;
   }
 }

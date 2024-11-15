@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,9 +26,17 @@
 
 import { Component, Inject, OnInit } from '@angular/core';
 import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 
-import { BaseCdr, ClassloggerService, ColumnDependentReference, ConfirmationService, HELPER_ALERT_KEY_PREFIX, StorageService, HELP_CONTEXTUAL } from 'qbm';
+import {
+  BaseCdr,
+  ClassloggerService,
+  ColumnDependentReference,
+  ConfirmationService,
+  HELP_CONTEXTUAL,
+  HELPER_ALERT_KEY_PREFIX,
+  StorageService,
+} from 'qbm';
 import { RequestConfigSidesheetData } from '../request-config-sidesheet/request-config-sidesheet.component';
 import { EntitlementCountUpdateData } from '../request-shelf-entitlements/request-shelf-entitlements.component';
 import { ACTION_DISMISS, RequestsService } from '../requests.service';
@@ -54,7 +62,7 @@ export class RequestShelfSidesheetComponent implements OnInit {
     private readonly logger: ClassloggerService,
     private readonly storageService: StorageService,
     private readonly sidesheetRef: EuiSidesheetRef,
-    confirm: ConfirmationService
+    confirm: ConfirmationService,
   ) {
     this.detailsFormGroup = new UntypedFormGroup({ formArray: formBuilder.array([]) });
     sidesheetRef.closeClicked().subscribe(async () => {
@@ -67,7 +75,7 @@ export class RequestShelfSidesheetComponent implements OnInit {
 
   get selectedShelfId(): string {
     const keys = this.data?.requestConfig?.GetEntity()?.GetKeys();
-    return keys?.length ? keys[0] : undefined;
+    return !!keys?.length ? keys[0] : '';
   }
 
   get shelfHasEntitlements(): boolean {

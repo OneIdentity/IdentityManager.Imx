@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,38 +30,39 @@ import { CollectionViewer, SelectionChange } from '@angular/cdk/collections';
 import { TreeDatabase } from './tree-database';
 import { TreeNode } from './tree-node';
 import { TreeDatasource } from './tree-datasource';
-import { CollectionLoadParameters, IEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, IEntity } from '@imx-modules/imx-qbm-dbts';
 
 describe('TreeDatabase', () => {
-  const createEntity = (key, parent?) => ({
-    GetColumn: __ => ({ GetDisplayValue: () => '' }),
-    GetDisplay: () => '',
-    GetKeys: () => [key],
-    parent
-  } as IEntity & { parent?: string; });
+  const createEntity = (key, parent?) =>
+    ({
+      GetColumn: (__) => ({ GetDisplayValue: () => '' }),
+      GetDisplay: () => '',
+      GetKeys: () => [key],
+      parent,
+    }) as IEntity & { parent?: string };
 
   let treeControl: FlatTreeControl<TreeNode>;
   let dummyEntity: IEntity;
 
   beforeEach(() => {
     treeControl = new FlatTreeControl<TreeNode>(
-      node => node.level,
-      node => node.item.GetColumn('HasChildren').GetValue()
+      (node) => node.level,
+      (node) => node.item.GetColumn('HasChildren').GetValue(),
     );
 
     dummyEntity = createEntity('dummy');
   });
 
   it('should disconnect all subscriptions', () => {
-    const treeDatasource = new TreeDatasource(treeControl, new class extends TreeDatabase {}());
+    const treeDatasource = new TreeDatasource(treeControl, new (class extends TreeDatabase {})());
 
     treeDatasource.connect({ viewChange: {} } as CollectionViewer);
 
-    expect(treeDatasource['subscriptions'].length > 0 && treeDatasource['subscriptions'].every(s => s.closed)).toBeFalsy();
+    expect(treeDatasource['subscriptions'].length > 0 && treeDatasource['subscriptions'].every((s) => s.closed)).toBeFalsy();
 
     treeDatasource.disconnect();
 
-    expect(treeDatasource['subscriptions'].length > 0 && treeDatasource['subscriptions'].every(s => s.closed)).toBeTruthy();
+    expect(treeDatasource['subscriptions'].length > 0 && treeDatasource['subscriptions'].every((s) => s.closed)).toBeTruthy();
   });
 
   describe('toggle node', () => {
@@ -74,38 +75,27 @@ describe('TreeDatabase', () => {
     let treeDatabase: TreeDatabase;
 
     beforeEach(() => {
-      treeDatabase = new class extends TreeDatabase {
+      treeDatabase = new (class extends TreeDatabase {
         private readonly justSomeParentEntity = createEntity('keyParent1');
         private readonly justSomeEntity = createEntity('keyOfSomeEntity');
-  
+
         constructor() {
           super();
-  
-          this['rootData'] = [
-            this.justSomeParentEntity,
-            entityUnderTest,
-            this.justSomeEntity
-          ];
-          this['rootNodes'] = [
-            toNode(this.justSomeParentEntity),
-            nodeUnderTest,
-            toNode(this.justSomeEntity)
-          ];
+
+          this['rootData'] = [this.justSomeParentEntity, entityUnderTest, this.justSomeEntity];
+          this['rootNodes'] = [toNode(this.justSomeParentEntity), nodeUnderTest, toNode(this.justSomeEntity)];
         }
-  
+
         readonly getChildren = jasmine.createSpy('getChildren').and.callFake((node, __) => ({
-          nodes: this.children.filter(child => child.parent === node.name).map(child => toNode(child, 1))
+          nodes: this.children.filter((child) => child.parent === node.name).map((child) => toNode(child, 1)),
         }));
-  
-        private readonly children = [
-          child,
-          createEntity('keyAnotherChild', this.justSomeParentEntity.GetKeys().join())
-        ];
-      }();
+
+        private readonly children = [child, createEntity('keyAnotherChild', this.justSomeParentEntity.GetKeys().join())];
+      })();
     });
 
     it('expands', async () => {
-      // Arrange  
+      // Arrange
       const expectedNumOfNodesAfterExpand = 4;
 
       const treeDatasource = new TreeDatasource(treeControl, treeDatabase);
@@ -117,7 +107,7 @@ describe('TreeDatabase', () => {
       // Check
       expect(treeDatabase.getChildren).toHaveBeenCalled();
 
-      const childNode = treeDatasource.data.find(d => d.name === child.GetKeys().join());
+      const childNode = treeDatasource.data.find((d) => d.name === child.GetKeys().join());
 
       expect(childNode.isLoading).toEqual(false);
 
@@ -135,7 +125,7 @@ describe('TreeDatabase', () => {
 
       const index = treeDatasource.data.indexOf(nodeUnderTest);
       treeDatasource.data.splice(index + 1, 0, childNode); // fake expand
-  
+
       // Act
       await treeDatasource.handleTreeControl({ removed: [nodeUnderTest] } as SelectionChange<TreeNode>);
 
@@ -148,30 +138,30 @@ describe('TreeDatabase', () => {
     });
   });
 
-  for(const testcase of [
+  for (const testcase of [
     {
       description: 'add node',
       change: {
         added: [
           new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0, true),
-          new TreeNode(dummyEntity, 'uid-parent2', 'uid-parent2', 0, true)
-        ]
+          new TreeNode(dummyEntity, 'uid-parent2', 'uid-parent2', 0, true),
+        ],
       },
-      expectGetChildren: 2
+      expectGetChildren: 2,
     },
     {
       description: 'remove node',
       change: {
-        removed: [new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0, true)]
+        removed: [new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0, true)],
       },
-      expectGetChildren: 0
+      expectGetChildren: 0,
     },
   ]) {
     it(`can handle the tree control (${testcase.description})`, async () => {
       // Arrange
-      const treeDatabase = new class extends TreeDatabase {
+      const treeDatabase = new (class extends TreeDatabase {
         readonly getChildren = jasmine.createSpy('getChildren');
-      }();
+      })();
 
       const treeDatasource = new TreeDatasource(treeControl, treeDatabase);
 
@@ -187,25 +177,65 @@ describe('TreeDatabase', () => {
   }
 
   for (const testcase of [
-    { desciption: 'for root', entities:[dummyEntity], node: new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0), ParentKey: '', startIndex: 0, hasmore: true, expectedLenght: 2 },
-    { desciption: 'for children', entities:[dummyEntity], node: new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0), ParentKey: 'uid-parent1', startIndex: 0, hasmore: true, expectedLenght: 2 },
-    { desciption: 'for root', entities:[dummyEntity], node: new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0), ParentKey: '', startIndex: 0, hasmore: false, expectedLenght: 1 },
-    { desciption: 'for children', entities:[dummyEntity], node: new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0), ParentKey: 'uid-parent1', startIndex: 0, hasmore: false, expectedLenght: 1 },
-    { desciption: 'without nodes', entities:[], node: new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0), ParentKey: 'uid-parent1', startIndex: 0, hasmore: false, expectedLenght: 0 }
+    {
+      desciption: 'for root',
+      entities: [dummyEntity],
+      node: new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0),
+      ParentKey: '',
+      startIndex: 0,
+      hasmore: true,
+      expectedLenght: 2,
+    },
+    {
+      desciption: 'for children',
+      entities: [dummyEntity],
+      node: new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0),
+      ParentKey: 'uid-parent1',
+      startIndex: 0,
+      hasmore: true,
+      expectedLenght: 2,
+    },
+    {
+      desciption: 'for root',
+      entities: [dummyEntity],
+      node: new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0),
+      ParentKey: '',
+      startIndex: 0,
+      hasmore: false,
+      expectedLenght: 1,
+    },
+    {
+      desciption: 'for children',
+      entities: [dummyEntity],
+      node: new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0),
+      ParentKey: 'uid-parent1',
+      startIndex: 0,
+      hasmore: false,
+      expectedLenght: 1,
+    },
+    {
+      desciption: 'without nodes',
+      entities: [],
+      node: new TreeNode(dummyEntity, 'uid-parent1', 'uid-parent1', 0),
+      ParentKey: 'uid-parent1',
+      startIndex: 0,
+      hasmore: false,
+      expectedLenght: 0,
+    },
   ]) {
     it(`can load more (${testcase.desciption})`, async () => {
       //Arrange
-      const treeDatabase = new class extends TreeDatabase {
+      const treeDatabase = new (class extends TreeDatabase {
         getData(showLoading: boolean, parameters: CollectionLoadParameters = {}): Promise<any> {
           return Promise.resolve({
             entities: testcase.entities,
             canLoadMore: testcase.hasmore,
-            totalCount: 999
+            totalCount: 999,
           });
         }
 
-        readonly createSortedNodes = (entities, __) => entities.map(ent => new TreeNode(ent, '', ''));
-      }();
+        readonly createSortedNodes = (entities, __) => entities.map((ent) => new TreeNode(ent, '', ''));
+      })();
 
       const source = new TreeDatasource(treeControl, treeDatabase);
 
@@ -215,6 +245,6 @@ describe('TreeDatabase', () => {
       // check
 
       expect(source.data.length).toEqual(testcase.expectedLenght);
-    })
+    });
   }
 });

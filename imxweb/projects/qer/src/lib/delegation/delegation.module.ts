@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,33 +27,47 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatStepperModule, } from '@angular/material/stepper';
 import { MatButtonModule } from '@angular/material/button';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatListModule } from '@angular/material/list';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { RouterModule, Routes } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
-import { EuiCoreModule } from '@elemental-ui/core';
+import { MatListModule } from '@angular/material/list';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatStepperModule } from '@angular/material/stepper';
+import { RouterModule, Routes } from '@angular/router';
+import { EuiCoreModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
 
-import { DataTableModule, RouteGuardService, ClassloggerService, CdrModule, LdsReplaceModule, MenuService, MenuItem, HELP_CONTEXTUAL, HelpContextualModule, BusyIndicatorModule, SelectedElementsModule } from 'qbm';
-import { DelegationComponent } from './delegation.component';
-import { DelegationService } from './delegation.service';
+import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatCardModule } from '@angular/material/card';
+import { ProjectConfig, QerProjectConfig } from '@imx-modules/imx-api-qer';
+import {
+  BusyIndicatorModule,
+  CdrModule,
+  ClassloggerService,
+  DataTableModule,
+  HELP_CONTEXTUAL,
+  HelpContextualModule,
+  LdsReplaceModule,
+  MenuItem,
+  MenuService,
+  RouteGuardService,
+  SelectedElementsModule,
+} from 'qbm';
+import { DelegationGuardService } from './delegation-guard.service';
+import { DelegationComponent } from './delegation.component';
+import { DelegationService } from './delegation.service';
 
 const routes: Routes = [
   {
     path: 'delegation',
     component: DelegationComponent,
-    canActivate: [RouteGuardService],
+    canActivate: [RouteGuardService, DelegationGuardService],
     resolve: [RouteGuardService],
-    data:{
-      contextId: HELP_CONTEXTUAL.Delegation
-    }
-  }
+    data: {
+      contextId: HELP_CONTEXTUAL.Delegation,
+    },
+  },
 ];
 
 @NgModule({
@@ -79,49 +93,46 @@ const routes: Routes = [
     SelectedElementsModule,
     HelpContextualModule,
     BusyIndicatorModule,
-    SelectedElementsModule
+    SelectedElementsModule,
   ],
-  declarations: [
-    DelegationComponent
-  ],
-  providers: [DelegationService]
+  declarations: [DelegationComponent],
+  providers: [DelegationService],
 })
 export class DelegationModule {
   constructor(
     private readonly menuService: MenuService,
-    logger: ClassloggerService
+    logger: ClassloggerService,
   ) {
     logger.info(this, '▶️ DelegationModule loaded');
     this.setupMenu();
   }
 
   private setupMenu(): void {
-    this.menuService.addMenuFactories(
-      (preProps: string[], features: string[]) => {
+    this.menuService.addMenuFactories((preProps: string[], features: string[], projectConfig: QerProjectConfig & ProjectConfig) => {
+      const items: MenuItem[] = [];
 
-        const items: MenuItem[] = [];
+      if (
+        preProps.includes('ITSHOP') &&
+        preProps.includes('DELEGATION') &&
+        (projectConfig.EnableNewDelegationIndividual || projectConfig.EnableNewDelegationSubstitute)
+      ) {
+        items.push({
+          id: 'QER_Responsibilities_Delegation',
+          route: 'delegation',
+          title: '#LDS#Menu Entry Delegation',
+          sorting: '30-10',
+        });
+      }
 
-        if (preProps.includes('ITSHOP') && preProps.includes('DELEGATION')) {
-          items.push(
-            {
-              id: 'QER_Responsibilities_Delegation',
-              route: 'delegation',
-              title: '#LDS#Menu Entry Delegation',
-              sorting: '30-10',
-            },
-          );
-        }
-
-        if (items.length === 0) {
-          return null;
-        }
-        return {
-          id: 'ROOT_Responsibilities',
-          title: '#LDS#Responsibilities',
-          sorting: '30',
-          items
-        };
-      },
-    );
+      if (items.length === 0) {
+        return;
+      }
+      return {
+        id: 'ROOT_Responsibilities',
+        title: '#LDS#Responsibilities',
+        sorting: '30',
+        items,
+      };
+    });
   }
 }

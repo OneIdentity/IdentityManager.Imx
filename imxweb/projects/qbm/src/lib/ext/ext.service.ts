@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,10 +30,11 @@ import { IExtension } from './extension';
 
 @Injectable()
 export class ExtService {
+  public get Registry(): { [id: string]: IExtension[] } {
+    return this.registry;
+  }
 
-  public get Registry(): { [id: string]: IExtension[]; } { return this.registry; }
-
-  private registry: { [id: string]: IExtension[]; } = {};
+  private registry: { [id: string]: IExtension[] } = {};
 
   public register(key: string, obj: IExtension): void {
     if (!this.registry[key]) {
@@ -45,22 +46,22 @@ export class ExtService {
   public async getFittingComponents<T extends IExtension>(key: string, filter: (ext: T) => Promise<boolean>): Promise<T[]> {
     const ret: T[] = [];
     const ext = this.registry[key];
-    if (!ext) { return []; }
+    if (!ext) {
+      return [];
+    }
     for (const part of ext) {
       const t = part as T;
-      if (t && await filter(t)) {
+      if (t && (await filter(t))) {
         ret.push(t);
       }
     }
     return ret;
   }
-  public async getFittingComponent<T extends IExtension>(key: string): Promise<T> {
+  public async getFittingComponent<T extends IExtension>(key: string): Promise<T | undefined> {
     if (this.registry[key]) {
       return this.registry[key][0] as T;
     } else {
-      return null;
+      return undefined;
     }
   }
-
 }
-

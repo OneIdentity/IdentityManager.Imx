@@ -1,21 +1,30 @@
-<div eui-sidesheet-content>
-  <mat-card class="imx-sidesheet-content">
-    <imx-data-source-toolbar #dst [settings]="dstSettings"
-      [options]="['search', 'filter']" (navigationStateChanged)="navigate($event)"
-      (search)="search($event)" data-imx-identifier="typed-entity-candidates-dst">
+<div class="imx-sidesheet-content__overflow">
+  <mat-card class="imx-sidesheet-content__overflow">
+    <imx-data-source-toolbar
+      #dst
+      [settings]="dstSettings"
+      [options]="['search', 'filter']"
+      (navigationStateChanged)="navigate($event)"
+      (search)="search($event)"
+      data-imx-identifier="typed-entity-candidates-dst"
+    >
     </imx-data-source-toolbar>
     <div class="imx-table-container">
-      <imx-data-table [dst]="dst" mode="manual" [detailViewVisible]="false" [selectable]="false"
-        data-imx-identifier="typed-entity-candidates-datatable">
-        <imx-data-table-column [entityColumn]="entitySchemaCandidates?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" columnLabel="">
+      <imx-data-table
+        [dst]="dst"
+        mode="manual"
+        [detailViewVisible]="false"
+        [selectable]="false"
+        data-imx-identifier="typed-entity-candidates-datatable"
+      >
+        <imx-data-table-column [entityColumn]="entitySchemaCandidates?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]" columnLabel="">
           <ng-template let-item>
             <div>{{ item.GetEntity().GetDisplay() }}</div>
-            <div *ngIf="(this.data.tables && this.data.tables.length > 1)" subtitle>{{ getTable(item) }}</div>
+            <div *ngIf="this.data.tables && this.data.tables.length > 1" subtitle>{{ getTable(item) }}</div>
           </ng-template>
         </imx-data-table-column>
       </imx-data-table>
     </div>
-    <imx-data-source-paginator [dst]="dst" data-imx-identifier="typed-entity-candidates-paginator">
-    </imx-data-source-paginator>
+    <imx-data-source-paginator [dst]="dst" data-imx-identifier="typed-entity-candidates-paginator"> </imx-data-source-paginator>
   </mat-card>
 </div>

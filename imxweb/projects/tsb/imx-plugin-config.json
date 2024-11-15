@@ -1,8 +1,8 @@
 {
   "qer-app-portal": [
-      {
-          "Container": "tsb",
-          "Name": "TsbConfigModule"
-      }
+    {
+      "Container": "tsb",
+      "Name": "TsbConfigModule"
+    }
   ]
 }

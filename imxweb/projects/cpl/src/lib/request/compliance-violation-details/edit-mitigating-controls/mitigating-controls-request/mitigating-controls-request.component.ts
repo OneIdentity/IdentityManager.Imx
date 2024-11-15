@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,13 +25,13 @@
  */
 
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { FormControl, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { EuiLoadingService, EuiSelectOption, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
 import { ConfirmationService, EntityService, SettingsService, SnackBarService } from 'qbm';
+import { PersonMitigatingControls } from './../../../../rules-violations/mitigating-controls-person/person-mitigating-controls';
 import { ExtendedDeferredOperationsData } from './extended-deferred-operations-data';
-import { MitigatingControlData } from './mitigating-control-data.interface';
 import { MitigatingControlsRequestService } from './mitigating-controls-request.service';
 import { RequestMitigatingControlFilterPipe } from './request-mitigating-control-filter.pipe';
 import { RequestMitigatingControls } from './request-mitigating-controls';
@@ -55,8 +55,8 @@ export class MitigatingControlsRequestComponent implements OnInit {
   public formGroup: UntypedFormGroup;
   public options: EuiSelectOption[] = [];
 
-  public mControls: MitigatingControlData[] = [];
-  public mControlsToDelete: MitigatingControlData[] = [];
+  public mControls: (RequestMitigatingControls | ExtendedDeferredOperationsData)[] = [];
+  public mControlsToDelete: RequestMitigatingControls[] = [];
 
   public mitigatingCaption: string;
   public headertext: string;
@@ -69,9 +69,9 @@ export class MitigatingControlsRequestComponent implements OnInit {
     private snackbarService: SnackBarService,
     private settingService: SettingsService,
     private confirmationService: ConfirmationService,
-    private entityService: EntityService
+    private entityService: EntityService,
   ) {
-    this.mitigatingCaption = mControlService.mitigationSchema.Columns.UID_MitigatingControl.Display;
+    this.mitigatingCaption = mControlService.mitigationSchema.Columns.UID_MitigatingControl.Display || '';
     this.formGroup = new UntypedFormGroup({ formArray: formBuilder.array([]) });
   }
 
@@ -79,7 +79,7 @@ export class MitigatingControlsRequestComponent implements OnInit {
     return this.formGroup.get('formArray') as UntypedFormArray;
   }
 
-  public hasItems(filter: 'active' | 'inactive' | 'deferred'):boolean {
+  public hasItems(filter: 'active' | 'inactive' | 'deferred'): boolean {
     return RequestMitigatingControlFilterPipe.getItems(this.mControls, filter)?.length > 0;
   }
 
@@ -117,11 +117,9 @@ export class MitigatingControlsRequestComponent implements OnInit {
         if (!this.isDirty || (await this.confirmationService.confirmLeaveWithUnsavedChanges())) {
           this.sidesheetRef.close();
         }
-      })
+      }),
     );
-    this.headertext = !this.readOnly
-      ? '#LDS#Heading Mitigating Controls Can Be Assigned Individually'
-      : '#LDS#Heading Mitigating Controls';
+    this.headertext = !this.readOnly ? '#LDS#Heading Mitigating Controls Can Be Assigned Individually' : '#LDS#Heading Mitigating Controls';
     await this.loadMitigatingControls();
   }
 
@@ -142,8 +140,10 @@ export class MitigatingControlsRequestComponent implements OnInit {
     }
   }
 
-  public onControlDeleted( mControl: RequestMitigatingControls){
-    this.mControlsToDelete.push(mControl);
+  public onControlDeleted(mControl: RequestMitigatingControls | PersonMitigatingControls) {
+    if (!(mControl instanceof PersonMitigatingControls)) {
+      this.mControlsToDelete.push(mControl);
+    }
   }
 
   public getMControlId(mControl: RequestMitigatingControls): string {
@@ -158,11 +158,10 @@ export class MitigatingControlsRequestComponent implements OnInit {
 
     mControl.formControl.setValidators([
       Validators.required,
-      (control: FormControl<string | undefined>) => (this.isDuplicate(control) ? { duplicated: true } : null),
+      (control: AbstractControl) => (this.isDuplicate(control) ? { duplicated: true } : null),
     ]);
     this.formGroup.markAsDirty();
   }
-
 
   public async onSave(): Promise<void> {
     const overlay = this.busyService.show();
@@ -189,9 +188,9 @@ export class MitigatingControlsRequestComponent implements OnInit {
           this.uidPerson,
           this.uidNonCompliance,
           this.uidPersonWantsOrg,
-          ctrl.uidMitigatingControl
+          ctrl.uidMitigatingControl,
         );
-      } else {
+      } else if (ctrl.data) {
         await this.mControlService.postControl(this.uidPerson, this.uidNonCompliance, ctrl.data);
       }
     }
@@ -221,7 +220,7 @@ export class MitigatingControlsRequestComponent implements OnInit {
       const data = await this.mControlService.getControls(this.uidPerson, this.uidNonCompliance);
       this.mControls = data.Data.map((elem) => new RequestMitigatingControls(false, elem));
       this.mControls.push(
-        ...data.extendedData.MitigatingControls.map((elem) => new ExtendedDeferredOperationsData(elem, this.entityService))
+        ...(data.extendedData?.MitigatingControls?.map((elem) => new ExtendedDeferredOperationsData(elem, this.entityService)) || []),
       );
 
       if (!this.readOnly) {
@@ -233,7 +232,7 @@ export class MitigatingControlsRequestComponent implements OnInit {
     }
   }
 
-  private isDuplicate(actrl: FormControl<string | undefined>): boolean {
+  private isDuplicate(actrl: AbstractControl): boolean {
     const test = this.mControls.findIndex((ctrl) => ctrl.formControl != actrl && ctrl?.uidMitigatingControl === actrl.value) !== -1;
     return test;
   }
@@ -245,8 +244,9 @@ export class MitigatingControlsRequestComponent implements OnInit {
       {},
       {
         PageSize: this.settingService.PageSizeForAllElements,
-      }
+      },
     );
-    this.options = optionCandidates.Entities.map((elem) => ({ display: elem.Display, value: elem.Keys[0] }));
+    this.options =
+      optionCandidates.Entities?.map((elem): EuiSelectOption => ({ display: elem.Display || '', value: elem.Keys?.[0] })) || [];
   }
 }

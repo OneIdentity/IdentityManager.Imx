@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,32 +26,27 @@
 
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { RequestableProductForPerson } from 'imx-api-qer';
+import { RequestableProductForPerson } from '@imx-modules/imx-api-qer';
 
 @Component({
   selector: 'imx-non-requestable-items',
   templateUrl: './non-requestable-items.component.html',
-  styleUrls: ['./non-requestable-items.component.scss']
+  styleUrls: ['./non-requestable-items.component.scss'],
 })
 export class NonRequestableItemsComponent {
-
   public get columnNames(): string[] {
-    return this.displayedColumns.map(c => c.name);
+    return this.displayedColumns.map((c) => c.name);
   }
 
   public readonly displayedColumns = [
     { name: 'Display', title: '#LDS#Product' },
-    { name: 'DisplayRecipient', title: '#LDS#Recipient' }
+    { name: 'DisplayRecipient', title: '#LDS#Recipient' },
   ];
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public readonly data: {
-      nonRequestableProductsForPersons: RequestableProductForPerson[]
-    }
-  ) { }
-
-
-
-
-
+    @Inject(MAT_DIALOG_DATA)
+    public readonly data: {
+      nonRequestableProductsForPersons: RequestableProductForPerson[];
+    },
+  ) {}
 }

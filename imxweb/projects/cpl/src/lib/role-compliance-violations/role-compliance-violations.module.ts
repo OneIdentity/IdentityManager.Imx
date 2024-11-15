@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,14 +35,6 @@ import { RoleComplianceViolationsComponent } from './role-compliance-violations.
 
 @NgModule({
   declarations: [RoleComplianceViolationsComponent],
-  imports: [
-    CommonModule,
-    EuiCoreModule,
-    DataSourceToolbarModule,
-    DataTableModule,
-    MatCardModule,
-    TranslateModule,
-    LdsReplaceModule
-  ]
+  imports: [CommonModule, EuiCoreModule, DataSourceToolbarModule, DataTableModule, MatCardModule, TranslateModule, LdsReplaceModule],
 })
-export class RoleComplianceViolationsModule { }
+export class RoleComplianceViolationsModule {}

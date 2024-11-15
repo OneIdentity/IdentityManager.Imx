@@ -1,19 +1,18 @@
 <div class="heading-wrapper">
-  <h1 class="mat-headline">
+  <h2 class="mat-headline-5">
     <span>{{ '#LDS#Heading Service Categories' | translate }}</span>
     <imx-help-contextual></imx-help-contextual>
-  </h1>
+  </h2>
 
-  <eui-alert class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true">
+  <eui-alert class="imx-alert-end-50" type="info" [condensed]="true" [colored]="true" [dismissable]="true">
     <span *ngIf="config?.hasAccproductparamcategoryCandidates; else withoutAccproductparamcategoryCandidates" translate>
-      #LDS#The approval policy and request property specified for a service category is inherited by all associated service items and all child service categories where this is not
-      specified.
+      {{ LdsKey1 }}
     </span>
     <span class="imx-image-info" *ngIf="config?.itshopConfig?.InheritCategoryImagesToItems" translate>
-      #LDS#The image specified for a service category is inherited by all associated service items where this is not specified.
+      {{ LdsKey2 }}
     </span>
     <span class="imx-image-info" *ngIf="config?.itshopConfig?.InheritCategoryImagesToCategories" translate>
-      #LDS#The image specified for a service category is inherited by all child service categories where this is not specified.
+      {{ LdsKey3 }}
     </span>
   </eui-alert>
 </div>
@@ -30,8 +29,8 @@
   </imx-data-tree-wrapper>
 </mat-card>
 
-<div class="imx-button-bar">
-  <button mat-raised-button color="primary" (click)="addServiceCategory()" data-imx-identifier="service-categories-button-create-new">
+<div class="imx-button-bar-transparent">
+  <button mat-flat-button color="primary" (click)="addServiceCategory()" data-imx-identifier="service-categories-button-create-new">
     <eui-icon icon="add"></eui-icon>
     <span translate>#LDS#Create service category</span>
   </button>
@@ -39,7 +38,5 @@
 
 <!-- Template for non existing -->
 <ng-template #withoutAccproductparamcategoryCandidates>
-  <span translate>
-    #LDS#The approval policy specified for a service category is inherited by all associated service items and all child service categories where this is not specified.
-  </span>
+  <span translate>{{ LdsKey4 }}</span>
 </ng-template>

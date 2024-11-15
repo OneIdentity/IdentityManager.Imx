@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,17 +24,26 @@
  *
  */
 
-import { Injectable, ErrorHandler } from '@angular/core';
+import { ErrorHandler, Injectable, inject } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { FilterData, ExtendedTypedEntityCollection, CompareOperator, FilterType, EntitySchema, TypedEntity } from 'imx-qbm-dbts';
-import { CartCheckResult, CheckMode, PortalCartitem, RequestableProductForPerson, CartItemDataRead } from 'imx-api-qer';
+import { CartCheckResult, CartItemDataRead, CheckMode, PortalCartitem, RequestableProductForPerson } from '@imx-modules/imx-api-qer';
+import {
+  CompareOperator,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  FilterData,
+  FilterType,
+  TypedEntity,
+} from '@imx-modules/imx-qbm-dbts';
 import { BulkItemStatus, ClassloggerService } from 'qbm';
-import { QerApiService } from '../qer-api-client.service';
-import { ItemEditService } from '../product-selection/service-item-edit/item-edit.service';
-import { ParameterDataService } from '../parameter-data/parameter-data.service';
 import { ExtendedEntityWrapper } from '../parameter-data/extended-entity-wrapper.interface';
+import { ParameterDataService } from '../parameter-data/parameter-data.service';
+import { ItemEditService } from '../product-selection/service-item-edit/item-edit.service';
+import { QerApiService } from '../qer-api-client.service';
 import { CartItemInteractiveService } from './cart-item-edit/cart-item-interactive.service';
+import { CartItemsExtensionService } from './cart-items-extension.service';
+import { CartItemsCounter, ICartItemsExtensionService } from './cart-items.model';
 import { RequestableProduct } from './requestable-product.interface';
 
 @Injectable()
@@ -42,15 +51,24 @@ export class CartItemsService {
   public get PortalCartitemSchema(): EntitySchema {
     return this.qerClient.typedClient.PortalCartitem.GetSchema();
   }
+
+  private cartItemsExtensionService: ICartItemsExtensionService;
+
   constructor(
     private readonly qerClient: QerApiService,
     private readonly logger: ClassloggerService,
     private readonly errorHandler: ErrorHandler,
+    cartItemsExtensionService: CartItemsExtensionService,
     private readonly busyIndicator: EuiLoadingService,
     private readonly itemEditService: ItemEditService,
     private readonly parameterDataService: ParameterDataService,
-    private readonly cartItemInteractive: CartItemInteractiveService
-  ) {}
+    private readonly cartItemInteractive: CartItemInteractiveService,
+  ) {
+    const extService = cartItemsExtensionService.get('AccessRequestService');
+    if (extService) {
+      this.cartItemsExtensionService = inject(extService);
+    }
+  }
 
   public async getItemsForCart(uidShoppingCart?: string): Promise<ExtendedTypedEntityCollection<PortalCartitem, CartItemDataRead>> {
     return this.get([
@@ -76,32 +94,72 @@ export class CartItemsService {
 
   public async createAndPost(
     requestableServiceItemForPerson: RequestableProduct,
-    parentCartUid: string
+    parentCartUid: string | undefined,
   ): Promise<ExtendedTypedEntityCollection<PortalCartitem, CartItemDataRead>> {
     const cartItem = this.qerClient.typedClient.PortalCartitem.createEntity();
-    cartItem.UID_PersonOrdered.value = requestableServiceItemForPerson.UidPerson;
-    cartItem.UID_ITShopOrg.value = requestableServiceItemForPerson.UidITShopOrg;
-    if (requestableServiceItemForPerson?.UidPatternItem?.length > 0) {
+    if (cartItem != null) {
+      cartItem.UID_PersonOrdered.value = requestableServiceItemForPerson.UidPerson || '';
+      cartItem.UID_ITShopOrg.value = requestableServiceItemForPerson.UidITShopOrg || '';
+    }
+    if (!!requestableServiceItemForPerson?.UidPatternItem?.length) {
       cartItem.UID_PatternItem.value = requestableServiceItemForPerson.UidPatternItem;
     }
-    if (parentCartUid) {
+    if (parentCartUid != null) {
       cartItem.UID_ShoppingCartItemParent.value = parentCartUid;
     }
     cartItem.reload = true;
-    return this.qerClient.typedClient.PortalCartitem.Post(cartItem);
+    const portalCartItem = await this.qerClient.typedClient.PortalCartitem.Post(cartItem);
+    if (this.cartItemsExtensionService) {
+      const key = this.getKey(portalCartItem.Data[0]);
+      let extendedEntity = await this.getInteractiveCartitem(key);
+      extendedEntity = await this.cartItemsExtensionService.OnAfterCreateCartItem(requestableServiceItemForPerson, extendedEntity);
+      await this.save(extendedEntity);
+    }
+    return portalCartItem;
   }
 
-  public async addItems(requestableServiceItemsForPersons: RequestableProduct[]): Promise<number> {
+  public async addItems(requestableServiceItemsForPersons: RequestableProduct[]): Promise<CartItemsCounter> {
     const addedItems: PortalCartitem[] = [];
     const cartitemReferences: string[] = [];
     const cartItemsWithoutParams: PortalCartitem[] = [];
 
-    for await (const requestable of requestableServiceItemsForPersons) {
-      let parentCartUid: string;
-      if (requestable?.UidAccProductParent) {
-        // Get parent cart ID from known cart items
-        parentCartUid = await this.getFromExistingCartItems(addedItems[0].UID_ShoppingCartOrder.value, requestable);
+    let requestableProducts: RequestableProduct[] = [];
+    if (this.cartItemsExtensionService) {
+      requestableProducts = await this.cartItemsExtensionService.OnBeforeCreateCartItems(requestableServiceItemsForPersons);
+    } else {
+      requestableProducts = requestableServiceItemsForPersons;
+    }
+
+    // Sort requestables so that children come after parents
+    const parentUids = requestableProducts.map((requestable) => requestable.UidAccProductParent);
+    const indices = Array.from(parentUids.keys());
+    // Logic is to sort all undefined parent uids to front, these are the parents and we want to order them first
+    indices.sort((a, b) => {
+      if (!parentUids[a]) {
+        return -1;
       }
+      if (!parentUids[b]) {
+        return 1;
+      }
+      return parentUids[b].localeCompare(parentUids[a]);
+    });
+
+    for await (const index of indices) {
+      const requestable = requestableProducts[index];
+      let parentCartUid: string | undefined;
+      if (requestable?.UidAccProductParent) {
+        // Look for the parent cart uid from added items first
+        const parent = addedItems.find(
+          (item) => item.UID_AccProduct.value == requestable.UidAccProductParent && item.UID_PersonOrdered.value == requestable.UidPerson,
+        );
+        if (parent) {
+          parentCartUid = this.getKey(parent);
+        } else {
+          // Get parent cart ID from known cart items
+          parentCartUid = await this.getFromExistingCartItems(addedItems[0].UID_ShoppingCartOrder.value, requestable);
+        }
+      }
+
       const cartItemCollection = await this.createAndPost(requestable, parentCartUid);
 
       addedItems.push(cartItemCollection.Data[0]);
@@ -116,26 +174,22 @@ export class CartItemsService {
 
     return cartitemReferences.length > 0
       ? await this.editItems(cartitemReferences, cartItemsWithoutParams)
-      : requestableServiceItemsForPersons.length;
+      : {
+          possibleItems: requestableProducts.length,
+          savedItems: requestableProducts.length,
+        };
   }
 
-  public async getFromExistingCartItems(cartUid: string, requestable: RequestableProductForPerson): Promise<string> {
+  public async getFromExistingCartItems(cartUid: string, requestable: RequestableProductForPerson): Promise<string | undefined> {
     // Get all cart items to see what is there, unfortunately we have to check each time due to mandatory items appearing
     const allItems = (await this.getItemsForCart(cartUid)).Data;
 
-    // Find all already ordered items with this UID + Person, get their parent cart uid
-    const dupItemsParents = allItems
-      .filter((item) => item.UID_AccProduct.value + item.UID_PersonOrdered.value === requestable.UidAccProduct + requestable.UidPerson)
-      .map((item) => item.UID_ShoppingCartItemParent.value);
-
-    // Find all items with the correct ParentUID + Person
-    const parentItems = allItems.filter(
-      (item) => item.UID_AccProduct.value + item.UID_PersonOrdered.value === requestable.UidAccProductParent + requestable.UidPerson
+    const parent = allItems.find(
+      (item) => item.UID_AccProduct.value == requestable.UidAccProductParent && item.UID_PersonOrdered.value == requestable.UidPerson,
     );
-    // Here we try assuming the mandatory item is there
-    let parentItem = parentItems.find((item) => !dupItemsParents.includes(this.getKey(item)));
-    if (parentItem) {
-      return this.getKey(parentItem);
+
+    if (parent) {
+      return this.getKey(parent);
     }
     // Mandatory item isn't there, no well-defined fall back. Report error move on
     this.errorHandler.handleError('There is a missing mandatory item, cannot link optional item to parent. Ordering with no parent.');
@@ -153,7 +207,7 @@ export class CartItemsService {
             this.logger.trace(this, 'cart item not removed:', cartItem);
           }
         }
-      })
+      }),
     );
   }
 
@@ -187,7 +241,7 @@ export class CartItemsService {
 
   public async getInteractiveCartitem(
     entityReference?: string,
-    callbackOnChange?: () => void
+    callbackOnChange?: () => void,
   ): Promise<ExtendedEntityWrapper<PortalCartitem>> {
     return this.cartItemInteractive.getExtendedEntity(entityReference, callbackOnChange);
   }
@@ -217,30 +271,34 @@ export class CartItemsService {
             this.logger.trace(this, 'cart item not moved to cart=' + toCart, cartItem);
           }
         }
-      })
+      }),
     );
   }
 
-  private async editItems(entityReferences: string[], cartItemsWithoutParams: PortalCartitem[]): Promise<number> {
+  private async editItems(entityReferences: string[], cartItemsWithoutParams: PortalCartitem[]): Promise<CartItemsCounter> {
     let result = entityReferences.length + cartItemsWithoutParams.length;
     const cartItems = await Promise.all(entityReferences.map((entityReference) => this.getInteractiveCartitem(entityReference)));
 
-    setTimeout(() => this.busyIndicator.hide());
+    this.busyIndicator.hide();
 
     const results = await this.itemEditService.openEditor(cartItems);
 
     try {
-      setTimeout(() => this.busyIndicator.show());
+      if (this.busyIndicator.overlayRefs.length === 0) {
+        this.busyIndicator.show();
+      }
       for (const item of results.bulkItems) {
         try {
           const found = cartItems.find((x) => x.typedEntity.GetEntity().GetKeys()[0] === item.entity.GetEntity().GetKeys()[0]);
-          if (item.status === BulkItemStatus.saved && results.submit) {
-            await this.save(found);
-            this.logger.debug(this, `${found.typedEntity.GetEntity().GetDisplay()} saved`);
-          } else {
-            await this.removeItems([found.typedEntity]);
-            result = result - 1;
-            this.logger.debug(this, `${found.typedEntity.GetEntity().GetDisplay()} removed`);
+          if (found != null) {
+            if (item.status === BulkItemStatus.saved && results.submit) {
+              await this.save(found);
+              this.logger.debug(this, `${found.typedEntity.GetEntity().GetDisplay()} saved`);
+            } else {
+              await this.removeItems([found.typedEntity]);
+              result = result - 1;
+              this.logger.debug(this, `${found.typedEntity.GetEntity().GetDisplay()} removed`);
+            }
           }
         } catch (e) {
           this.logger.error(this, e.message);
@@ -250,15 +308,18 @@ export class CartItemsService {
       if (!results.submit) {
         this.logger.debug(
           this,
-          `The user aborts this "add to cart"-action. So we have to delete all cartitems without params from shopping cart too.`
+          `The user aborts this "add to cart"-action. So we have to delete all cartitems without params from shopping cart too.`,
         );
         await this.removeItems(cartItemsWithoutParams);
         result = result - cartItemsWithoutParams.length;
       }
     } finally {
-      setTimeout(() => this.busyIndicator.hide());
+      this.busyIndicator.hide();
     }
 
-    return result;
+    return {
+      savedItems: result,
+      possibleItems: entityReferences.length + cartItemsWithoutParams.length,
+    };
   }
 }

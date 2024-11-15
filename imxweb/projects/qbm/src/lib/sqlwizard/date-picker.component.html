@@ -8,7 +8,15 @@
       <!-- relative date -->
       <mat-form-field class="date-diff-value" appearance="outline">
         <mat-label>{{ '#LDS#Number' | translate }}</mat-label>
-        <input matInput type="number" min="1" formControlName="difference" (change)="emitChanges()" (keyup)="emitChanges()" required="true" />
+        <input
+          matInput
+          type="number"
+          min="1"
+          formControlName="difference"
+          (change)="emitChanges()"
+          (keyup)="emitChanges()"
+          required="true"
+        />
       </mat-form-field>
       <mat-form-field appearance="outline" class="operand">
         <mat-label>{{ '#LDS#Time unit' | translate }}</mat-label>
@@ -19,14 +27,14 @@
         </mat-select>
       </mat-form-field>
       <mat-error *ngIf="!!form?.errors?.datepickerError && (form.controls.difference.touched || form.controls.timeUnit.touched)">{{
-        '#LDS#The value you entered is not a valid date.' | translate
+        '#LDS#The value you specified is not valid.' | translate
       }}</mat-error>
     </ng-container>
   </div>
   <!-- absolute date -->
   <mat-form-field appearance="outline" *ngIf="!isRelative">
     <mat-label>{{ '#LDS#Date' | translate }}</mat-label>
-    <input matInput [matDatepicker]="picker" formControlName="datepicker" (dateChange)="emitChanges()"  (keyup)="emitChanges()"/>
+    <input matInput [matDatepicker]="picker" formControlName="datepicker" (dateChange)="emitChanges()" (keyup)="emitChanges()" />
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
     <mat-error *ngIf="form.controls.datepicker.invalid">{{ '#LDS#The value you entered is not a valid date.' | translate }}</mat-error>

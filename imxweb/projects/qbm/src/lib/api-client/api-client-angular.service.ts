@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,12 +24,12 @@
  *
  */
 
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
-import { Injectable, Inject, InjectionToken } from '@angular/core';
-import { HttpClient, HttpResponse, HttpHeaders } from '@angular/common/http';
 
-import { MethodDescriptor, MethodDefinition } from 'imx-qbm-dbts';
+import { MethodDefinition, MethodDescriptor } from '@imx-modules/imx-qbm-dbts';
 
 export const BASE_URL = new InjectionToken<string>('BASE_URL');
 
@@ -38,9 +38,12 @@ export const BASE_URL = new InjectionToken<string>('BASE_URL');
  */
 @Injectable()
 export class ApiClientAngularService {
-  constructor(private http: HttpClient, @Inject(BASE_URL) private baseUrl: string = '') {}
+  constructor(
+    private http: HttpClient,
+    @Inject(BASE_URL) private baseUrl: string = '',
+  ) {}
 
-  public processRequest<T>(methodDescriptor: MethodDescriptor<T>): Observable<T> {
+  public processRequest<T>(methodDescriptor: MethodDescriptor<T>): Observable<T | null> {
     const method = new MethodDefinition(methodDescriptor);
 
     return this.http
@@ -49,7 +52,7 @@ export class ApiClientAngularService {
         observe: method.observe,
         responseType: method.responseType,
         headers: new HttpHeaders(method.headers),
-        body: method.body
+        body: method.body,
       })
       .pipe(mergeMap((response: HttpResponse<T>) => of(response.body)));
   }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,9 +24,11 @@
  *
  */
 
-import { NgModule } from '@angular/core';
+import { OverlayModule } from '@angular/cdk/overlay';
+import { PortalModule } from '@angular/cdk/portal';
 import { CommonModule } from '@angular/common';
-import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
@@ -35,53 +37,50 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatTabsModule } from '@angular/material/tabs';
-import { TranslateModule } from '@ngx-translate/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { OverlayModule } from '@angular/cdk/overlay';
 import { RouterModule } from '@angular/router';
-import { PortalModule } from '@angular/cdk/portal';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
 
+import { MatTooltipModule } from '@angular/material/tooltip';
+import {
+  BusyIndicatorModule,
+  CdrModule,
+  ClassloggerModule,
+  DataSourceToolbarModule,
+  DataTableModule,
+  DataTilesModule,
+  DataTreeModule,
+  DataTreeWrapperModule,
+  DataViewModule,
+  DateModule,
+  EntityModule,
+  FkAdvancedPickerModule,
+  HelpContextualModule,
+  ImageModule,
+  InfoModalDialogModule,
+  LdsReplaceModule,
+  QbmModule,
+} from 'qbm';
+import { ObjectHyperviewModule } from 'qer';
+import { ApplicationPropertyModule } from '../application-property/application-property.module';
+import { ColumnInfoModule } from '../column-info/column-info.module';
+import { EntitlementsModule } from '../entitlements/entitlements.module';
+import { KpiModule } from '../kpi/kpi.module';
+import { AobUserModule } from '../user/user.module';
+import { ApplicationCreateComponent } from './application-create/application-create.component';
 import { ApplicationDetailComponent } from './application-detail.component';
 import { ApplicationDetailsComponent } from './application-details/application-details.component';
-import { ApplicationHyperviewModule } from './application-hyperview/application-hyperview.module';
+import { ApplicationImageSelectComponent } from './application-image-select/application-image-select.component';
+import { ImageSelectorDialogComponent } from './application-image-select/image-selector-dialog/image-selector-dialog.component';
 import { ApplicationNavigationComponent } from './application-navigation/application-navigation.component';
 import { ApplicationsComponent } from './applications.component';
 import { ApplicationsService } from './applications.service';
-import { ColumnInfoModule } from '../column-info/column-info.module';
-import { EditApplicationComponent } from './edit-application/edit-application.component';
-import { EntitlementsModule } from '../entitlements/entitlements.module';
-import { KpiModule } from '../kpi/kpi.module';
-import {
-  ClassloggerModule,
-  DataSourceToolbarModule,
-  DataTilesModule,
-  QbmModule,
-  SelectModule,
-  LdsReplaceModule,
-  FkAdvancedPickerModule,
-  EntityModule,
-  ImageModule,
-  CdrModule,
-  DataTableModule,
-  DateModule,
-  InfoModalDialogModule,
-  HelpContextualModule,
-  BusyIndicatorModule,
-  DataTreeModule,
-  DataTreeWrapperModule
-} from 'qbm';
-import { AobUserModule } from '../user/user.module';
-import { ApplicationPropertyModule } from '../application-property/application-property.module';
-import { ApplicationCreateComponent } from './application-create/application-create.component';
-import { ApplicationImageSelectComponent } from './application-image-select/application-image-select.component';
-import { ImageSelectorDialogComponent } from './application-image-select/image-selector-dialog/image-selector-dialog.component';
 import { AuthenticationRootComponent } from './edit-application/authentication-root/authentication-root.component';
+import { EditApplicationComponent } from './edit-application/edit-application.component';
+import { EditServiceCategoryInformationComponent } from './edit-application/service-category/edit-service-category-information/edit-service-category-information.component';
+import { ServiceCategoryComponent } from './edit-application/service-category/service-category.component';
 import { IdentitiesComponent } from './identities/identities.component';
 import { IdentityDetailComponent } from './identities/identity-detail/identity-detail.component';
-import { ServiceCategoryComponent } from './edit-application/service-category/service-category.component';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { EditServiceCategoryInformationComponent } from './edit-application/service-category/edit-service-category-information/edit-service-category-information.component';
 
 @NgModule({
   declarations: [
@@ -97,11 +96,10 @@ import { EditServiceCategoryInformationComponent } from './edit-application/serv
     IdentitiesComponent,
     IdentityDetailComponent,
     ServiceCategoryComponent,
-    EditServiceCategoryInformationComponent
+    EditServiceCategoryInformationComponent,
   ],
   imports: [
     CommonModule,
-    ApplicationHyperviewModule,
     ApplicationPropertyModule,
     ClassloggerModule,
     ColumnInfoModule,
@@ -118,8 +116,6 @@ import { EditServiceCategoryInformationComponent } from './edit-application/serv
     MatDividerModule,
     MatIconModule,
     MatInputModule,
-    MatTabsModule,
-    SelectModule,
     MatDialogModule,
     MatTooltipModule,
     QbmModule,
@@ -142,12 +138,10 @@ import { EditServiceCategoryInformationComponent } from './edit-application/serv
     InfoModalDialogModule,
     HelpContextualModule,
     BusyIndicatorModule,
+    ObjectHyperviewModule,
+    DataViewModule,
   ],
-  providers: [
-    ApplicationsService
-  ],
-  exports: [
-    ApplicationsComponent,
-  ],
+  providers: [ApplicationsService],
+  exports: [ApplicationsComponent],
 })
-export class ApplicationsModule { }
+export class ApplicationsModule {}

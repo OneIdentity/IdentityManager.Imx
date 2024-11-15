@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,69 +27,56 @@
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
-import { PortalPickcategory, PortalPickcategoryItems } from 'imx-api-qer';
-import { DisplayColumns } from 'imx-qbm-dbts';
+import { PortalPersonAll, PortalPickcategory, PortalPickcategoryItems } from '@imx-modules/imx-api-qer';
+import { DisplayColumns, EntitySchema, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 
-import {
-  BaseCdr,
-  ColumnDependentReference,
-  ConfirmationService,
-  DataSourceToolbarSettings,
-  DataSourceWrapper,
-} from 'qbm';
+import { BaseCdr, ColumnDependentReference, ConfirmationService, DataViewInitParameters, DataViewSource } from 'qbm';
+import { IdentitiesService } from 'qer';
 import { PickCategorySelectIdentitiesComponent } from '../pick-category-select-identities/pick-category-select-identities.component';
 import { PickCategoryService } from '../pick-category.service';
 
 @Component({
   selector: 'imx-pick-category-create',
   templateUrl: './pick-category-create.component.html',
-  styleUrls: ['./pick-category-create.component.scss']
+  styleUrls: ['./pick-category-create.component.scss'],
+  providers: [DataViewSource],
 })
 export class PickCategoryCreateComponent implements OnInit, OnDestroy {
-
   public readonly displayNameForm = new UntypedFormGroup({});
-
-  public readonly dstWrapper: DataSourceWrapper<PortalPickcategoryItems>;
-  public dstSettings: DataSourceToolbarSettings;
-
+  public readonly DisplayColumns = DisplayColumns;
   public selectedItems: PortalPickcategoryItems[] = [];
-
   public displayNameCdr: ColumnDependentReference;
   public displayNameReadonlyCdr: ColumnDependentReference;
-  
+  public entitySchema: EntitySchema;
+
   private readonly subscriptions: Subscription[] = [];
 
   @ViewChild(PickCategorySelectIdentitiesComponent) public selectIndentities: PickCategorySelectIdentitiesComponent;
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public data: {
-      pickCategory: PortalPickcategory
+    @Inject(EUI_SIDESHEET_DATA)
+    public data: {
+      pickCategory: PortalPickcategory;
     },
     private readonly sidesheetRef: EuiSidesheetRef,
-    readonly pickCategoryService: PickCategoryService,    
-    confirmation: ConfirmationService
+    readonly pickCategoryService: PickCategoryService,
+    confirmation: ConfirmationService,
+    private readonly identityService: IdentitiesService,
+    public dataSource: DataViewSource<PortalPersonAll>,
   ) {
-    const entitySchema = pickCategoryService.pickcategoryItemsSchema;
+    this.entitySchema = this.identityService.personAllSchema;
+    this.subscriptions.push(
+      sidesheetRef.closeClicked().subscribe(async () => {
+        if (!this.displayNameForm.pristine && !(await confirmation.confirmLeaveWithUnsavedChanges())) {
+          return;
+        }
 
-    this.dstWrapper = new DataSourceWrapper(
-      () => Promise.resolve({
-        totalCount: this.selectIndentities.selection?.length,
-        Data: this.selectIndentities.selection
+        sidesheetRef.close(false);
       }),
-      [entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]],
-      entitySchema
     );
-
-    this.subscriptions.push(sidesheetRef.closeClicked().subscribe(async () => {
-      if (!this.displayNameForm.pristine && !(await confirmation.confirmLeaveWithUnsavedChanges())) {
-        return;
-      }
-
-      sidesheetRef.close(false);
-    }));
   }
 
   public async ngOnInit(): Promise<void> {
@@ -99,7 +86,7 @@ export class PickCategoryCreateComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   public async stepChange(change: StepperSelectionEvent): Promise<void> {
@@ -117,11 +104,18 @@ export class PickCategoryCreateComponent implements OnInit, OnDestroy {
     this.sidesheetRef.close({
       create: true,
       pickCategory: this.data.pickCategory,
-      pickedItems: this.selectIndentities?.selection
+      pickedItems: this.selectIndentities?.selection,
     });
   }
 
   private async getData(): Promise<void> {
-    this.dstSettings = await this.dstWrapper.getDstSettings();
+    const dataViewInitParameters: DataViewInitParameters<PortalPersonAll> = {
+      execute: (): Promise<TypedEntityCollectionData<PortalPersonAll>> =>
+        Promise.resolve({ Data: this.selectIndentities.selection, totalCount: this.selectIndentities.selection.length }),
+      schema: this.entitySchema,
+      columnsToDisplay: [this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]],
+      localSource: true,
+    };
+    this.dataSource.init(dataViewInitParameters);
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,6 +28,7 @@ import { Component, Inject } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 
+import { Approval } from '../approval';
 import { WorkflowActionEdit } from './workflow-action-edit.interface';
 
 /**
@@ -51,13 +52,17 @@ import { WorkflowActionEdit } from './workflow-action-edit.interface';
 @Component({
   selector: 'imx-workflow-action',
   templateUrl: './workflow-action.component.html',
-  styleUrls: ['./workflow-action.component.scss']
+  styleUrls: ['./workflow-action.component.scss'],
 })
 export class WorkflowActionComponent {
   /**
    * The form group to which the created form controls will be added.
    */
   public readonly formGroup = new UntypedFormGroup({});
+
+  public get approval(): Approval {
+    return this.data.requests[0] as Approval;
+  }
 
   /**
    * Creates a new WorkflowActionComponent
@@ -66,11 +71,10 @@ export class WorkflowActionComponent {
    */
   constructor(
     @Inject(EUI_SIDESHEET_DATA) public readonly data: WorkflowActionEdit,
-    public readonly sideSheetRef: EuiSidesheetRef
+    public readonly sideSheetRef: EuiSidesheetRef,
   ) {
-
     if (this.data.customValidation) {
-      this.formGroup.setValidators(_ => this.data.customValidation.validate() ? null : ({ required: true }));
+      this.formGroup.setValidators((_) => (this.data.customValidation?.validate() ? null : { required: true }));
     }
   }
 }

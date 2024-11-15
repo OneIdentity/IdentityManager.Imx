@@ -1,0 +1,34 @@
+@switch (status) {
+  @case (stateOptions.Waiting) {
+    <eui-badge
+      color="gray"
+      [matTooltip]="'#LDS#This object is queued for processing. You cannot edit it until processing is complete.' | translate"
+      matTooltipShowDelay="1000"
+      >{{ '#LDS#Queued' | translate }}</eui-badge
+    >
+  }
+  @case (stateOptions.Processing) {
+    <eui-badge
+      color="gray"
+      [matTooltip]="'#LDS#This object is being processed. You cannot edit it until processing is complete.' | translate"
+      matTooltipShowDelay="1000"
+      >{{ '#LDS#Processing' | translate }}</eui-badge
+    >
+  }
+  @case (stateOptions.Success) {
+    <eui-badge
+      color="green"
+      [matTooltip]="'#LDS#This object finished processing. You can edit it after a data refresh.' | translate"
+      matTooltipShowDelay="1000"
+      >{{ '#LDS#Success' | translate }}</eui-badge
+    >
+  }
+  @case (stateOptions.Failed) {
+    <eui-badge
+      color="red"
+      [matTooltip]="'#LDS#This object has failed processing. You can retry the processing from the background processes.' | translate"
+      matTooltipShowDelay="1000"
+      >{{ '#LDS#Failed' | translate }}</eui-badge
+    >
+  }
+}

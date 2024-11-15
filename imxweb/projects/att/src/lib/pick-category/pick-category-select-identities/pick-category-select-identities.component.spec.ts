@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,10 +26,10 @@
 
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { PortalPersonAll } from 'imx-api-qer';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
+import { PortalPersonAll } from '@imx-modules/imx-api-qer';
 
-import { MetadataService } from 'qbm';
+import { ClassloggerService, ConfirmationService, MessageDialogService, MetadataService, SqlWizardApiService } from 'qbm';
 import { IdentitiesService } from 'qer';
 import { PickCategoryService } from '../pick-category.service';
 import { PickCategorySelectIdentitiesComponent } from './pick-category-select-identities.component';
@@ -51,17 +51,13 @@ describe('PickCategorySelectIdentitiesComponent', () => {
 
   const metadataServiceStub = {
     tables: {},
-    update: jasmine.createSpy('update')
+    update: jasmine.createSpy('update'),
   };
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        PickCategorySelectIdentitiesComponent
-      ],
-      schemas: [
-        CUSTOM_ELEMENTS_SCHEMA
-      ],
+      declarations: [PickCategorySelectIdentitiesComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
           provide: EUI_SIDESHEET_DATA,
@@ -69,40 +65,41 @@ describe('PickCategorySelectIdentitiesComponent', () => {
         },
         {
           provide: EuiSidesheetRef,
-          useValue: {}
+          useValue: {},
         },
         {
           provide: MetadataService,
-          useValue: metadataServiceStub
+          useValue: metadataServiceStub,
         },
         {
           provide: PickCategoryService,
           useValue: {
             handleOpenLoader: jasmine.createSpy('handleOpenLoader').and.callThrough(),
-            handleCloseLoader: jasmine.createSpy('handleCloseLoader').and.callThrough()
-          }
+            handleCloseLoader: jasmine.createSpy('handleCloseLoader').and.callThrough(),
+          },
         },
         {
           provide: IdentitiesService,
           useValue: {
             personAllSchema: PortalPersonAll.GetEntitySchema(),
-            getAllPerson: jasmine.createSpy('getAllPerson').and.returnValue(Promise.resolve(
-              { totalCount: 100, Data: ['1', '2', '3'] }              
-            )),
-          }
+            getAllPerson: jasmine.createSpy('getAllPerson').and.returnValue(Promise.resolve({ totalCount: 100, Data: ['1', '2', '3'] })),
+          },
         },
-      ]
-    })
-  .compileComponents();
+        { provide: ClassloggerService, useValue: { debug: () => {} } },
+        { provide: MessageDialogService, useValue: {} },
+        { provide: ConfirmationService, useValue: {} },
+        { provide: SqlWizardApiService, useValue: {} },
+      ],
+    }).compileComponents();
   }));
 
-beforeEach(() => {
-  fixture = TestBed.createComponent(PickCategorySelectIdentitiesComponent);
-  component = fixture.componentInstance;
-  fixture.detectChanges();
-});
+  beforeEach(() => {
+    fixture = TestBed.createComponent(PickCategorySelectIdentitiesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-it('should create', () => {
-  expect(component).toBeTruthy();
-});
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 });

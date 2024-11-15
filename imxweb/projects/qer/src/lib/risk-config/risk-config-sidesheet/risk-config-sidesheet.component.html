@@ -1,17 +1,17 @@
 <div eui-sidesheet-content class="imx-risk-config-sidesheet">
   <mat-card>
     <form [formGroup]="formGroup">
-      <div *ngIf="cdrList?.length > 0" class="imx-property-container">
+      <div *ngIf="!!cdrList?.length" class="imx-property-container">
         <imx-cdr-editor
           *ngFor="let cdr of cdrList"
           [cdr]="cdr"
-          (controlCreated)="formGroup.addControl(cdr.column.ColumnName, $event)"
-          [attr.data-imx-identifier]="'risk-functions-edit-form-cdr-' + cdr.column.ColumName"
+          (controlCreated)="formGroup.addControl(cdr?.column?.ColumnName ?? '', $event)"
+          [attr.data-imx-identifier]="'risk-functions-edit-form-cdr-' + cdr.column.ColumnName"
         >
         </imx-cdr-editor>
       </div>
     </form>
-    <ng-container *ngIf="getRiskIndexDataSource().length > 0">
+    <ng-container *ngIf="!!getRiskIndexDataSource().length">
       <div>{{ '#LDS#For the calculation of the risk index, the risk of the following objects is taken into account:' | translate }}</div>
       <ul>
         <li *ngFor="let riskIndex of getRiskIndexDataSource()">{{ riskIndex.Display }}</li>
@@ -20,7 +20,13 @@
   </mat-card>
 </div>
 <div eui-sidesheet-actions>
-  <button mat-raised-button color="primary" data-imx-identifier="risk-config-sidesheet-button-save" (click)="saveChanges()" [disabled]="formGroup.pristine || formGroup.invalid">
+  <button
+    mat-flat-button
+    color="primary"
+    data-imx-identifier="risk-config-sidesheet-button-save"
+    (click)="saveChanges()"
+    [disabled]="formGroup.pristine || formGroup.invalid"
+  >
     {{ '#LDS#Save' | translate }}
   </button>
 </div>

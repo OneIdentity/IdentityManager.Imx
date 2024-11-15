@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 :host {
   display: flex;
@@ -13,14 +13,14 @@
   }
 }
 
-h1 {
+h2 {
   margin: 0;
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
-.imx-top-container{
+.imx-top-container {
   display: grid;
   grid-template-columns: auto auto 1fr 20px;
   grid-template-rows: 60px auto auto;
@@ -33,22 +33,6 @@ h1 {
     max-width: max(500px, 50%);
     justify-self: end;
     z-index: 10;
-  }
-}
-
-.mat-tab-group {
-  overflow: hidden;
-  flex: 1 1 auto;
-
-  ::ng-deep .mat-tab-body-wrapper {
-    flex: 1 1 auto;
-  }
-
-  .imx-tab-body-content {
-    padding-top: 10px;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
   }
 }
 
@@ -70,12 +54,12 @@ h1 {
   justify-self: end;
   overflow: hidden;
 
-  .mat-card-content {
+  .mat-mdc-card-content {
     margin-bottom: 0px;
     height: 60px;
   }
 
-  .mat-card-actions {
+  .mat-mdc-card-actions {
     padding-top: 2px;
   }
 }
@@ -88,12 +72,12 @@ h1 {
   height: 160px;
   overflow: hidden;
 
-  .mat-card-content {
+  .mat-mdc-card-content {
     margin-bottom: 0px;
     height: 60px;
   }
 
-  .mat-card-actions {
+  .mat-mdc-card-actions {
     padding-top: 2px;
   }
 }
@@ -119,12 +103,11 @@ h1 {
   width: 250px;
 }
 
-.imx-info-icon {
+.imx-icon-info {
   grid-column-start: 5;
   grid-column-end: 5;
   grid-row-start: 1;
   grid-row-end: 1;
-  color: $iris-blue;
 }
 
 .imx-actions-button {
@@ -140,16 +123,12 @@ h1 {
   grid-row-end: 3;
 }
 
-.mat-radio-button {
-  margin-right: 20px;
-}
-
 .imx-search-headline {
   display: flex;
   align-items: baseline;
   margin-bottom: 10px;
 
-  h1 {
+  h2 {
     margin-right: 10px;
   }
 }
@@ -161,8 +140,7 @@ h1 {
   button {
     margin-left: 10px;
     align-self: center;
-
-    ::ng-deep .mat-button-wrapper {
+    ::ng-deep .mdc-button__label {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -173,15 +151,6 @@ h1 {
   .imx-menu-spacer {
     flex-grow: 1;
   }
-}
-
-.imx-alert-button {
-  align-self: flex-end;
-}
-
-.imx-flex-alert {
-  display: flex;
-  flex-direction: column;
 }
 
 @media only screen and (max-width: 1024px) {

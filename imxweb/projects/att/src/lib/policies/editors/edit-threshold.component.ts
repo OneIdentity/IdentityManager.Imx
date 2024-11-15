@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,10 +35,9 @@ import { FilterElementModel } from './filter-element-model';
 @Component({
   templateUrl: './edit-threshold.component.html',
   selector: 'imx-edit-threshold',
-  styleUrls: ['./edit-threshold.component.scss']
+  styleUrls: ['./edit-threshold.component.scss'],
 })
 export class EditThresholdComponent implements OnInit, OnDestroy {
-
   public readonly riskIndexForm: UntypedFormGroup;
   public readonly lowerControl: UntypedFormControl;
   public readonly upperControl: UntypedFormControl;
@@ -56,7 +55,7 @@ export class EditThresholdComponent implements OnInit, OnDestroy {
     this.upperControl = new UntypedFormControl(undefined, { updateOn: 'blur', validators: [Validators.min(0), Validators.max(1)] });
     this.riskIndexForm = new UntypedFormGroup({
       lowerBounds: this.lowerControl,
-      upperBounds: this.upperControl
+      upperBounds: this.upperControl,
     });
   }
 
@@ -68,9 +67,12 @@ export class EditThresholdComponent implements OnInit, OnDestroy {
       this.valueChanged.emit({
         ParameterValue: this.lowerControl.value?.toLocaleString('en-us'),
         ParameterValue2: this.upperControl.value?.toLocaleString('en-us'),
-        displays: [(this.lowerControl.value * 100).toLocaleString(this.translateService.currentLang)
-          + ' - ' + (this.upperControl.value * 100).toLocaleString(this.translateService.currentLang)]
-      })
+        displays: [
+          (this.lowerControl.value * 100).toLocaleString(this.translateService.currentLang) +
+            ' - ' +
+            (this.upperControl.value * 100).toLocaleString(this.translateService.currentLang),
+        ],
+      }),
     );
   }
 

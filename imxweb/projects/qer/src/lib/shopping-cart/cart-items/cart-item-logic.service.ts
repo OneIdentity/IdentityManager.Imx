@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,15 +32,15 @@ import { CartItemLogic } from './cart-item-logic.interface';
 /** This service provides logic and display components for specific types of cart items. */
 @Injectable()
 export class CartItemLogicService {
-    private registry: { [id: string]: Type<CartItemLogic>; } = {};
+  private registry: { [id: string]: Type<CartItemLogic> } = {};
 
-    /** Returns the type of component to use for the specified key, or the default component. */
-    public getType(key: string): Type<CartItemLogic> {
-        return this.registry[key] || DefaultCartItemDisplayComponent;
-    }
+  /** Returns the type of component to use for the specified key, or the default component. */
+  public getType(key: string): Type<CartItemLogic> {
+    return this.registry[key] || DefaultCartItemDisplayComponent;
+  }
 
-    /** Registers a new type */
-    public register(key: string, svc: Type<CartItemLogic>): void {
-        this.registry[key] = svc;
-    }
+  /** Registers a new type */
+  public register(key: string, svc: Type<CartItemLogic>): void {
+    this.registry[key] = svc;
+  }
 }

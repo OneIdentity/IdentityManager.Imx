@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,13 +29,10 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { InitService } from './init.service';
 
-const routes: Routes = [
-];
+const routes: Routes = [];
 
 @NgModule({
-  imports: [
-    RouterModule.forChild(routes)
-  ]
+  imports: [RouterModule.forChild(routes)],
 })
 export class RmsConfigModule {
   constructor(private readonly initializer: InitService) {

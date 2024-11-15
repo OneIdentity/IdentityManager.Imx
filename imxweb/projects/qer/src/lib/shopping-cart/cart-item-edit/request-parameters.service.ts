@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,38 +26,38 @@
 
 import { Injectable } from '@angular/core';
 
-import { EntityWriteDataColumn, ParameterData } from 'imx-qbm-dbts';
-import { IFkCandidateProvider, ReadWriteExtTypedEntity } from 'imx-qbm-dbts';
-import { ParameterDataWrapper } from '../../parameter-data/parameter-data-wrapper.interface';
+import { EntityWriteDataColumn, IFkCandidateProvider, ParameterData, ReadWriteExtTypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { ParameterCategoryColumn } from '../../parameter-data/parameter-category-column.interface';
+import { ParameterDataWrapper } from '../../parameter-data/parameter-data-wrapper.interface';
 import { ParameterDataService } from '../../parameter-data/parameter-data.service';
 
 type CategoryParameterWrite = { [id: string]: EntityWriteDataColumn[][] };
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RequestParametersService {
-  constructor(private readonly parameterDataService: ParameterDataService) { }
+  constructor(private readonly parameterDataService: ParameterDataService) {}
 
   public createInteractiveParameterCategoryColumns(
     parameterDataWrapper: ParameterDataWrapper,
     getFkProvider: (parameter: ParameterData) => IFkCandidateProvider,
-    typedEntity: ReadWriteExtTypedEntity<{ Parameters?: { [key: string]: ParameterData[][]; } }, CategoryParameterWrite>,
-    callbackOnChange?: () => void
-  ): ParameterCategoryColumn[] {
+    typedEntity: ReadWriteExtTypedEntity<{ Parameters?: { [key: string]: ParameterData[][] } }, CategoryParameterWrite>,
+    callbackOnChange?: () => void,
+  ): ParameterCategoryColumn[] | undefined {
     if (parameterDataWrapper?.Parameters == null) {
       return undefined;
     }
 
-    const parameterCategories = this.parameterDataService.createParameterCategories(parameterDataWrapper)
-      .sort(category => this.showStructureParameterFirst(category.name));
+    const parameterCategories = this.parameterDataService
+      .createParameterCategories(parameterDataWrapper)
+      .sort((category) => this.showStructureParameterFirst(category.name));
 
     return this.parameterDataService.createInteractiveParameterCategoryColumns(
       parameterCategories,
       getFkProvider,
       typedEntity,
-      callbackOnChange
+      callbackOnChange,
     );
   }
 

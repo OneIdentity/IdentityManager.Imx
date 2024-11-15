@@ -81,7 +81,7 @@ Here is an extract of the file.
 > Code
 
 ``` ts
-import { ProjectConfig } from 'imx-api-qbm';
+import { ProjectConfig } from '@imx-modules/imx-api-qbm';
 import { NavigationCommandsMenuItem } from './navigation-commands-menu-item.interface';
 
 /** Represents a single menu item. */

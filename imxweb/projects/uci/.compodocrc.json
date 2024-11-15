@@ -1,6 +1,6 @@
 {
   "name": "IMX Web - UCI Library",
-  "output": "../../documentation/v92/uci",
+  "output": "../../documentation/v93/uci",
   "theme": "material",
   "assetsFolder": "../../compodoc/assets",
   "customLogo": "../../compodoc/assets/images/oneidentity-logo.png",

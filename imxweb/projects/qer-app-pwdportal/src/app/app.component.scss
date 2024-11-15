@@ -6,9 +6,21 @@
 }
 
 .pageContent {
-  margin: 20px 30px;
+  margin: 24px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   height: inherit;
+  ::ng-deep {
+    imx-icon-tile {
+      imx-tile {
+        .mat-mdc-card {
+          height: 150px;
+          .mat-mdc-card-subtitle {
+            overflow: hidden;
+          }
+        }
+      }
+    }
+  }
 }

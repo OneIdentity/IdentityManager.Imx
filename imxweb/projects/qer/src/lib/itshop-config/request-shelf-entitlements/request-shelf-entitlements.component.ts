@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,20 +28,26 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PortalRolesEntitlements } from 'imx-api-qer';
-import { CollectionLoadParameters, DbObjectKey, DisplayColumns, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
+import { PortalRolesEntitlements } from '@imx-modules/imx-api-qer';
 import {
-  DataSourceToolbarSettings,
-  DataSourceToolbarFilter,
-  ClassloggerService,
-  DataTableComponent,
-  StorageService,
-  HELPER_ALERT_KEY_PREFIX,
-  SettingsService,
-  MetadataService,
-  DynamicMethodService,
+  CollectionLoadParameters,
+  DbObjectKey,
+  DisplayColumns,
+  EntitySchema,
+  IClientProperty,
+  TypedEntity,
+} from '@imx-modules/imx-qbm-dbts';
+import {
   BusyService,
+  ClassloggerService,
+  DataSourceToolbarFilter,
+  DataSourceToolbarSettings,
+  DataTableComponent,
+  DynamicMethodService,
   HELP_CONTEXTUAL,
+  MetadataService,
+  SettingsService,
+  calculateSidesheetWidth,
 } from 'qbm';
 import { QerApiService } from '../../qer-api-client.service';
 import { RequestsEntitySelectorComponent } from '../requests-selector/requests-entity-selector.component';
@@ -66,7 +72,7 @@ export class RequestShelfEntitlementsComponent implements OnInit {
   public dstSettings: DataSourceToolbarSettings;
   public navigationState: CollectionLoadParameters;
   public filterOptions: DataSourceToolbarFilter[] = [];
-  public selectedEntitlements: PortalRolesEntitlements[] = [];
+  public selectedEntitlements: TypedEntity[] = [];
   public productContextIds = HELP_CONTEXTUAL.ConfigurationRequestsShelvesProduct;
 
   private displayedColumns: IClientProperty[];
@@ -87,7 +93,7 @@ export class RequestShelfEntitlementsComponent implements OnInit {
     private readonly metadata: MetadataService,
     private readonly sidesheet: EuiSidesheetService,
     private readonly translate: TranslateService,
-    private readonly dynamicMethodService: DynamicMethodService
+    private readonly dynamicMethodService: DynamicMethodService,
   ) {
     this.navigationState = { PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchema = qerApiService.typedClient.PortalRolesEntitlements.GetSchema();
@@ -96,10 +102,6 @@ export class RequestShelfEntitlementsComponent implements OnInit {
       this.entitySchema.Columns.XOrigin,
       this.entitySchema.Columns.XDateInserted,
     ];
-  }
-
-  get isMobile(): boolean {
-    return document.body.offsetWidth <= 768;
   }
 
   public async ngOnInit(): Promise<void> {
@@ -113,7 +115,7 @@ export class RequestShelfEntitlementsComponent implements OnInit {
     await this.navigate();
   }
 
-  public onEntitlementSelected(selected: PortalRolesEntitlements[]): void {
+  public onEntitlementSelected(selected: TypedEntity[]): void {
     this.logger.debug(this, `Selected entitlements changed`);
     this.logger.trace(`New entitlement selections`, selected);
     this.selectedEntitlements = selected;
@@ -135,7 +137,7 @@ export class RequestShelfEntitlementsComponent implements OnInit {
       title: await this.translate.get('#LDS#Heading Add Products').toPromise(),
       subTitle: this.shopDisplay,
       padding: '0px',
-      width: 'max(55%,550px)',
+      width: calculateSidesheetWidth(),
       testId: 'request-shelf-entitlements-add-products',
       data: {
         shelfId: this.shelfId,
@@ -151,16 +153,16 @@ export class RequestShelfEntitlementsComponent implements OnInit {
   public async removeEntitlements(): Promise<void> {
     const isBusy = this.busyService.beginBusy();
     try {
-      const promises = [];
+      const promises: Promise<any>[] = [];
       // TODO what if only some succeed?
-      this.selectedEntitlements.forEach((ent) => {
+      this.selectedEntitlements.forEach((ent: PortalRolesEntitlements) => {
         const entitlementKey = DbObjectKey.FromXml(ent.ObjectKeyElement.value);
         promises.push(
           this.dynamicMethodService.delete(
             this.qerApiService.apiClient,
             '/portal/shop/config/entitlements/' + this.shelfId + '/' + entitlementKey.TableName + '/' + entitlementKey.Keys[0],
-            {}
-          )
+            {},
+          ),
         );
       });
       await Promise.all(promises);
@@ -177,7 +179,7 @@ export class RequestShelfEntitlementsComponent implements OnInit {
   private async processEntitlementSelections(values: string[]): Promise<void> {
     const isBusy = this.busyService.beginBusy();
     try {
-      await this.requestsService.selectedEntitlementType.addEntitlementSelections(this.shelfId, values);
+      await this.requestsService.selectedEntitlementType?.addEntitlementSelections(this.shelfId, values);
       this.requestsService.openSnackbar('#LDS#The products have been successfully added.', ACTION_DISMISS);
       await this.navigate();
     } finally {
@@ -207,7 +209,7 @@ export class RequestShelfEntitlementsComponent implements OnInit {
         navigationState: this.navigationState,
         filters: this.filterOptions,
       };
-      this.logger.debug(this, `Head at ${data.Data.length + this.navigationState.StartIndex} of ${data.totalCount} item(s)`);
+      this.logger.debug(this, `Head at ${data.Data.length + (this.navigationState?.StartIndex || 0)} of ${data.totalCount} item(s)`);
 
       data.Data.forEach(async (item: PortalRolesEntitlements) => {
         const objKey = DbObjectKey.FromXml(item.ObjectKeyElement.value);
@@ -215,10 +217,10 @@ export class RequestShelfEntitlementsComponent implements OnInit {
         var display: string;
         if (!this.entitlementTypes.has(objKey.TableName)) {
           const metadata = await this.metadata.GetTableMetadata(objKey.TableName);
-          this.entitlementTypes.set(uid, metadata.DisplaySingular);
-          display = metadata.DisplaySingular;
+          this.entitlementTypes.set(uid, metadata?.DisplaySingular || '');
+          display = metadata?.DisplaySingular || '';
         } else {
-          display = this.entitlementTypes.get(objKey.TableName);
+          display = this.entitlementTypes.get(objKey.TableName) || '';
         }
 
         this.entitlementTypes.set(uid, display);

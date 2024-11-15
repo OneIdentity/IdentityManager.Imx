@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,17 +25,16 @@
  */
 
 import { Injectable } from '@angular/core';
-import { ChartData } from 'imx-api-qer';
-import { TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { ChartData } from '@imx-modules/imx-api-qer';
+import { TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { ChartDataTyped } from '../chart-data-typed';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ChartTableService {
-
   public getDataSource(chartData: ChartData[]): TypedEntityCollectionData<ChartDataTyped> {
-    const entities = chartData.map(datum => ChartDataTyped.buildEntityData(datum)).reduce((a, b) => a.concat(b), []);
+    const entities = chartData.map((datum) => ChartDataTyped.buildEntityData(datum)).reduce((a, b) => a.concat(b), []);
 
     return ChartDataTyped.buildEntities(entities);
   }

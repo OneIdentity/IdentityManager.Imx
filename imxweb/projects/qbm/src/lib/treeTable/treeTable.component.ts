@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,7 +36,7 @@ import {
   ContentChild,
   TemplateRef,
   ElementRef,
-  OnDestroy
+  OnDestroy,
 } from '@angular/core';
 import { MatTable, MatColumnDef } from '@angular/material/table';
 import { Subscription } from 'rxjs';
@@ -50,11 +50,11 @@ import { ImxExpandableItem } from './imx-data-source';
   templateUrl: './treeTable.component.html',
   styles: [
     `
-      .customWidthClass {
-        flex: 0 0 50px;
-      }
-    `
-  ]
+              .customWidthClass {
+                flex: 0 0 50px;
+              }
+            `,
+  ],
 })
 
 /*
@@ -68,7 +68,6 @@ import { ImxExpandableItem } from './imx-data-source';
        | child 1 2     value
 */
 export class ImxTreeTableComponent<T> implements AfterContentInit, OnDestroy {
-
   get columnsToDisplay(): string[] {
     return this.columnsToDisplayInternal;
   }
@@ -107,7 +106,7 @@ export class ImxTreeTableComponent<T> implements AfterContentInit, OnDestroy {
 
   public isExpansionDetailRow = (i: number, ob: ImxExpandableItem<T>) => {
     return ob.isRoot && this.rootType !== 'ColumnTemplate';
-  }
+  };
 
   public async ngAfterContentInit(): Promise<void> {
     if (!this.dataSource.hasChildrenProvider) {
@@ -127,23 +126,27 @@ export class ImxTreeTableComponent<T> implements AfterContentInit, OnDestroy {
 
       this.columnsToDisplayInternal.push(simpleColumn.field);
 
-      this.subscriptions.push(simpleColumn.itemExpanded.subscribe({
-        next: (event: ImxExpandableItem<T>) => {
-          this.handleExpandEvent(event, true);
-        }
-      }));
+      this.subscriptions.push(
+        simpleColumn.itemExpanded.subscribe({
+          next: (event: ImxExpandableItem<T>) => {
+            this.handleExpandEvent(event, true);
+          },
+        }),
+      );
 
-      this.subscriptions.push(simpleColumn.itemCollapsed.subscribe({
-        next: (event: ImxExpandableItem<T>) => {
-          this.handleExpandEvent(event, false);
-        }
-      }));
+      this.subscriptions.push(
+        simpleColumn.itemCollapsed.subscribe({
+          next: (event: ImxExpandableItem<T>) => {
+            this.handleExpandEvent(event, false);
+          },
+        }),
+      );
       this.table.addColumnDef(simpleColumn.columnDef);
     });
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   public handleExpandEvent(data: ImxExpandableItem<T>, expand: boolean): void {

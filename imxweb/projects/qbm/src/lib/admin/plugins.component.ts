@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { LoadedPlugin } from 'imx-api-qbm';
+import { LoadedPlugin } from '@imx-modules/imx-api-qbm';
 import { AppConfigService } from '../appConfig/appConfig.service';
 import { SideNavigationComponent } from '../side-navigation-view/side-navigation-view-interfaces';
 

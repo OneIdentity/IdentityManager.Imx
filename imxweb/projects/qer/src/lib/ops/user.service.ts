@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,22 +25,37 @@
  */
 
 import { Injectable } from '@angular/core';
-import { UserGroupInfo } from 'imx-api-qbm';
-import { CachedPromise } from 'imx-qbm-dbts';
-import { imx_SessionService, CacheService } from 'qbm';
+import { UserGroupInfo } from '@imx-modules/imx-api-qbm';
+import { UserFeatureInfo } from '@imx-modules/imx-api-qer';
+import { CachedPromise } from '@imx-modules/imx-qbm-dbts';
+import { CacheService, imx_SessionService } from 'qbm';
 
+/**
+ * A service that provides user specific data of the Operations Support Web Portal api project.
+ */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class OpSupportUserService {
-
   constructor(session: imx_SessionService, cacheService: CacheService) {
     this.cachedUserGroups = cacheService.buildCache(() => session.Client.opsupport_usergroups_get());
+    this.cachedFeatures = cacheService.buildCache(() => session.Client.opsupport_features_get());
   }
 
   private cachedUserGroups: CachedPromise<UserGroupInfo[]>;
+  private cachedFeatures: CachedPromise<UserFeatureInfo>;
 
+  /**
+   * Get all {@link UserGroupInfo[]|user groups} of the Operations Support Web Portal api project.
+   */
   public getGroups(): Promise<UserGroupInfo[]> {
     return this.cachedUserGroups.get();
+  }
+
+  /**
+   * Get all {@link UserFeatureInfo|features} of the Operations Support Web Portal api project.
+   */
+  public getFeatures(): Promise<UserFeatureInfo> {
+    return this.cachedFeatures.get();
   }
 }

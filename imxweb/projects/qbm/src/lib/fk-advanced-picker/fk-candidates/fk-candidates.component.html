@@ -6,7 +6,7 @@
   [preSelection]="data?.preselectedEntities"
   [alwaysVisible]="showToolbar"
   [busyService]="busyService"
-  [options]="['search', 'filterTree']"
+  [options]="['search', 'filter']"
   (search)="search($event)"
   data-imx-identifier="fk-candidates-dst"
 >
@@ -21,10 +21,10 @@
     [showSelectedItemsMenu]="showSelectedItemsMenu"
     data-imx-identifier="fk-candidates-datatable"
   >
-    <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+    <imx-data-table-column *ngIf="entitySchema" [entityColumn]="entitySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]">
       <ng-template let-item>
         <div>{{ item.GetEntity().GetDisplay() }}</div>
-        <div *ngIf="showLongdisplay" subtitle>{{ item.GetEntity().GetDisplayLong() }}</div>
+        <div *ngIf="showLongDisplay" subtitle>{{ item.GetEntity().GetDisplayLong() }}</div>
       </ng-template>
     </imx-data-table-column>
     <imx-data-table-generic-column *ngIf="!data.isMultiValue" columnName="Actions" columnLabel="{{ '#LDS#Actions' | translate }}">

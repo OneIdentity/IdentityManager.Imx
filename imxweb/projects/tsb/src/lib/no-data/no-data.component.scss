@@ -1,4 +1,4 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 .data-explorer-sync-status {
   height: 100%;
@@ -14,12 +14,11 @@
   }
 
   .eui-icon {
-    font-size: 150px;
-    color: $black-9;
+    color: $color-gray-40;
     margin-bottom: 30px;
   }
 
-  h1 {
+  h2 {
     font-size: 32px;
     font-weight: 400;
   }
@@ -28,6 +27,6 @@
     font-size: 18px;
     margin-top: 10px;
     margin-bottom: 75px;
-    color: $black-9;
+    color: $color-gray-40;
   }
 }

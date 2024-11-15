@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,17 +24,17 @@
  *
  */
 
-import { Component } from "@angular/core";
-import { EuiSidesheetRef } from "@elemental-ui/core";
-import { ConfigService } from "./config.service";
+import { Component } from '@angular/core';
+import { EuiSidesheetRef } from '@elemental-ui/core';
+import { ConfigService } from './config.service';
 
 @Component({
   templateUrl: './convert-config-sidesheet.component.html',
-  styleUrls: ['./convert-config-sidesheet.component.scss']
+  styleUrls: ['./convert-config-sidesheet.component.scss'],
 })
 export class ConvertConfigSidesheetComponent {
-
-  constructor(private readonly configSvc: ConfigService,
+  constructor(
+    private readonly configSvc: ConfigService,
     private readonly sideSheetRef: EuiSidesheetRef,
   ) {
     this.customizationsToConvert = this.configSvc.getLocalCustomizations();
@@ -42,12 +42,13 @@ export class ConvertConfigSidesheetComponent {
 
   public isGlobal: boolean = false;
 
-  public customizationsToConvert: string[][];
+  public customizationsToConvert: (string | undefined)[][];
 
   public submit() {
     this.configSvc.convert();
     this.sideSheetRef.close();
   }
 
-  public LdsInfoText = '#LDS#You can globally apply the following configuration changes that are currently used locally. The changes are stored in the global configuration file and distributed to all API Servers.';
+  public LdsInfoText =
+    '#LDS#You can globally apply the following configuration changes that are currently used locally. The changes are stored in the global configuration file and distributed to all API Servers.';
 }

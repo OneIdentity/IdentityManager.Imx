@@ -1,0 +1,221 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "qer-app-operationssupport",
+  "sourceRoot": "projects/qer-app-operationssupport/src",
+  "projectType": "application",
+  "prefix": "imx",
+  "generators": {
+    "@schematics/angular:component": {
+      "style": "scss"
+    }
+  },
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:browser",
+      "options": {
+        "aot": true,
+        "allowedCommonJsDependencies": [
+          "lodash",
+          "highlight.js",
+          "file-saver",
+          "billboard.js",
+          "moment-timezone",
+          "core-js/fn/map",
+          "core-js/fn/set",
+          "core-js/fn/weak-map",
+          "core-js/fn/array/from",
+          "core-js/fn/object/assign",
+          "core-js/es/array/from",
+          "core-js/es/object/assign",
+          "core-js/es/map",
+          "core-js/es/set",
+          "core-js/es/weak-map",
+          "lodash.debounce",
+          "lodash.clamp",
+          "moment",
+          "@elemental-ui/cadence-icon/codepoints"
+        ],
+        "outputPath": "dist/qer-app-operationssupport",
+        "index": "projects/qer-app-operationssupport/src/index.html",
+        "main": "projects/qer-app-operationssupport/src/main.ts",
+        "polyfills": ["projects/qer-app-operationssupport/src/polyfills.ts"],
+        "tsConfig": "projects/qer-app-operationssupport/tsconfig.app.json",
+        "assets": [
+          "projects/qer-app-operationssupport/src/assets",
+          "projects/qer-app-operationssupport/src/appconfig.json",
+          {
+            "glob": "**/*",
+            "input": "./shared/assets/",
+            "output": "./assets"
+          },
+          {
+            "glob": "**/*",
+            "input": "./node_modules/@elemental-ui/core/assets",
+            "output": "./assets"
+          }
+        ],
+        "styles": [
+          "shared/scss/styles.scss",
+          "projects/qer-app-operationssupport/src/styles.scss",
+          "projects/qbm/src/lib/styles/imx-page-title.scss"
+        ],
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "./shared/scss",
+            "./node_modules",
+            "./node_modules/@elemental-ui/cadence-icon",
+            "./node_modules/@elemental-ui/core"
+          ]
+        }
+      },
+      "configurations": {
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "projects/qer-app-operationssupport/src/environments/environment.ts",
+              "with": "projects/qer-app-operationssupport/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "aot": true,
+          "extractLicenses": true,
+          "vendorChunk": false,
+          "buildOptimizer": true,
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "20mb",
+              "maximumError": "40mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "6kb"
+            }
+          ]
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        },
+        "remote-dev": {
+          "fileReplacements": [
+            {
+              "replace": "projects/qer-app-operationssupport/src/environments/environment.ts",
+              "with": "../imxweb_envs/qer-app-operationssupport/environments/environment.remote-dev.ts"
+            }
+          ],
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        },
+        "remote-qs": {
+          "fileReplacements": [
+            {
+              "replace": "projects/qer-app-operationssupport/src/environments/environment.ts",
+              "with": "../imxweb_envs/qer-app-operationssupport/environments/environment.remote-qs.ts"
+            }
+          ],
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        },
+        "es5": {
+          "tsConfig": "./projects/qer-app-operationssupport/tsconfig-es5.app.json"
+        }
+      },
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": ["^build", "prebuild"]
+    },
+    "prebuild": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["node prebuild.js qer-app-operationssupport"]
+      },
+      "dependsOn": [
+        {
+          "projects": ["dpr", "uci"],
+          "target": "build"
+        }
+      ],
+      "cache": false
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "options": {
+        "browserTarget": "qer-app-operationssupport:build",
+        "disableHostCheck": true
+      },
+      "configurations": {
+        "production": {
+          "browserTarget": "qer-app-operationssupport:build:production"
+        },
+        "development": {
+          "browserTarget": "qer-app-operationssupport:build:development"
+        },
+        "remote-dev": {
+          "browserTarget": "qer-app-operationssupport:build:remote-dev"
+        },
+        "remote-qs": {
+          "browserTarget": "qer-app-operationssupport:build:remote-dev"
+        },
+        "es5": {
+          "browserTarget": "qer-app-operationssupport:build:es5"
+        }
+      }
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "qer-app-operationssupport:build"
+      }
+    },
+    "test": {
+      "executor": "@angular-devkit/build-angular:karma",
+      "options": {
+        "main": "projects/qer-app-operationssupport/src/test.ts",
+        "polyfills": "projects/qer-app-operationssupport/src/polyfills.ts",
+        "tsConfig": "projects/qer-app-operationssupport/tsconfig.spec.json",
+        "karmaConfig": "projects/qer-app-operationssupport/karma.conf.js",
+        "styles": ["projects/qer-app-operationssupport/src/styles.scss", "shared/scss/styles.scss"],
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "./shared/assets",
+            "./shared/scss",
+            "./node_modules",
+            "./node_modules/@elemental-ui/cadence-icon",
+            "./node_modules/@elemental-ui/core"
+          ]
+        },
+        "assets": [
+          "projects/qer-app-operationssupport/src/assets",
+          "projects/qer-app-operationssupport/src/appconfig.json",
+          {
+            "glob": "**/*",
+            "input": "./shared/assets/",
+            "output": "./assets"
+          }
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@angular-devkit/build-angular:tslint",
+      "options": {
+        "tsConfig": ["projects/qer-app-operationssupport/tsconfig.app.json", "projects/qer-app-operationssupport/tsconfig.spec.json"],
+        "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+      }
+    }
+  }
+}

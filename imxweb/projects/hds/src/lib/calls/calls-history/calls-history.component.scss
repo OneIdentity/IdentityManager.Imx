@@ -1,8 +1,6 @@
-.helper-alert {
-    display: flex;
-    margin-bottom: 20px;
+@import 'base/mixins';
 
-    span {
-      display: block;
-    }
-  }
+
+:host {
+@include flex-column-container-fill();
+}

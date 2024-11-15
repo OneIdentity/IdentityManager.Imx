@@ -1,0 +1,27 @@
+<ng-container *ngIf="dug.IsSecurityInformationIndexed.value" data-testid="security-deviation-notification">
+  <eui-alert class="helper-alert" type="info" [condensed]="true" [colored]="true" [dismissable]="false">
+    {{ LdsAccessDeviation | translate }}
+    <ng-container *ngIf="dug.IsSecurityInheritanceBlocked.value">{{ LdsInheritanceBlocked | translate }}</ng-container>
+  </eui-alert>
+
+  <ng-container *ngIf="!dug.IsSecurityInheritanceBlocked.value">
+    {{ LdsAdditionalRights | translate }}
+  </ng-container>
+
+  <imx-dge-access-comparison [dug]="dug"></imx-dge-access-comparison>
+</ng-container>
+
+<!-- organisational view -->
+<h2 class="imx-margin-vertical-10">{{ LdsViewTitle | translate }}</h2>
+<mat-card class="imx-chart-container imx-margin-5">
+  <div class="imx-wrapped-chart-container">
+    <mat-card *ngFor="let chart of charts">
+      <mat-card-title>
+        {{ chart?.title }}
+      </mat-card-title>
+      <mat-card-content>
+        <eui-billboard [options]="chart?.data"></eui-billboard>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</mat-card>

@@ -1,13 +1,32 @@
-<div eui-sidesheet-content>
-<mat-card class="imx-content-card">
-  <imx-sqlwizard *ngIf="!sqlExpression?.IsUnsupported" [tableName]="'UNSGroup'"  (change)="checkChanges()" [apiService]="svc" [expression]="sqlExpression?.Expression" [allowEmptyExpression]="true">
-  </imx-sqlwizard>
-</mat-card>
+<div eui-sidesheet-content class="imx-sidesheet-content__overflow">
+  <mat-card>
+    <imx-sqlwizard
+      *ngIf="!sqlExpression?.IsUnsupported"
+      [tableName]="'UNSGroup'"
+      (change)="checkChanges()"
+      [apiService]="svc"
+      [expression]="sqlExpression?.Expression"
+    >
+    </imx-sqlwizard>
+  </mat-card>
 </div>
-<div eui-sidesheet-actions >
-  <button class="justify-start" mat-stroked-button data-imx-identifier="entitlement-edit-auto-add-button-test-condition" (click)="showResults(false)">
-    {{'#LDS#Test automatic assignment' |translate}}
+<div eui-sidesheet-actions>
+  <button
+    [disabled]="controlsInvalid"
+    class="justify-start"
+    mat-stroked-button
+    data-imx-identifier="entitlement-edit-auto-add-button-test-condition"
+    (click)="showResults(false)"
+  >
+    {{ '#LDS#Test automatic assignment' | translate }}
   </button>
-  <button [disabled]="controlsInvalid" mat-raised-button color="primary" (click)="showResults(true)" data-imx-identifier="entitlement-edit-auto-add-button-save-condition">
-    {{'#LDS#Save automatic assignment' |translate}}</button>
+  <button
+    [disabled]="controlsInvalid"
+    mat-flat-button
+    color="primary"
+    (click)="showResults(true)"
+    data-imx-identifier="entitlement-edit-auto-add-button-save-condition"
+  >
+    {{ '#LDS#Save automatic assignment' | translate }}
+  </button>
 </div>

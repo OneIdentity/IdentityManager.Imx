@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,11 +33,13 @@ import { IssueItem } from './service-issues.models';
 @Component({
   selector: 'imx-service-issues',
   templateUrl: './service-issues.component.html',
-  styleUrls: ['./service-issues.component.scss', '../issue-tiles.scss']
+  styleUrls: ['./service-issues.component.scss', '../issue-tiles.scss'],
 })
 export class ServiceIssuesComponent implements OnInit, OnDestroy {
-
-  constructor( public service: ServiceIssuesService, private appConfigService: AppConfigService) {}
+  constructor(
+    public service: ServiceIssuesService,
+    private appConfigService: AppConfigService,
+  ) {}
 
   public ngOnInit(): void {
     this.service.subscribe(this.appConfigService.Config.NotificationUpdateInterval);

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,50 +24,33 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DataChangesComponent } from './data-changes.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatButtonModule } from '@angular/material/button';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatSelectModule } from '@angular/material/select';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatTableModule } from '@angular/material/table';
-import {MatPaginatorModule} from '@angular/material/paginator';
-import { DataChangesService } from './data-changes.service';
-import { DataChangesSidesheetComponent } from './data-changes-sidesheet/data-changes-sidesheet.component';
-import {MatListModule} from '@angular/material/list';
-import {MatExpansionModule} from '@angular/material/expansion';
-import {MatCardModule} from '@angular/material/card';
+import { MatListModule } from '@angular/material/list';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
+import { TranslateModule } from '@ngx-translate/core';
+import { DataChangesSidesheetComponent } from './data-changes-sidesheet/data-changes-sidesheet.component';
+import { DataChangesComponent } from './data-changes.component';
+import { DataChangesService } from './data-changes.service';
 
-import {MomentDateAdapter} from '@angular/material-moment-adapter';
- import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
-import { CdrModule } from 'qbm';
 import { EuiCoreModule } from '@elemental-ui/core';
-
-export const EUI_DATE_FORMATS = {
-  parse: {
-    dateInput: ['LL', 'L'],
-  },
-  display: {
-    dateInput: 'LL',
-    monthYearLabel: 'MMM YYYY',
-    dateA11yLabel: 'LL',
-    monthYearA11yLabel: 'MMMM YYYY',
-  },
-};
+import { BusyIndicatorModule, CdrModule, EuiDateProviders } from 'qbm';
 
 @NgModule({
-  declarations: [
-    DataChangesComponent,
-    DataChangesSidesheetComponent
-  ],
+  declarations: [DataChangesComponent, DataChangesSidesheetComponent],
   imports: [
     CommonModule,
     TranslateModule,
@@ -88,12 +71,9 @@ export const EUI_DATE_FORMATS = {
     MatExpansionModule,
     MatCardModule,
     MatProgressSpinnerModule,
-    CdrModule
+    BusyIndicatorModule,
+    CdrModule,
   ],
-  providers: [
-    DataChangesService,
-    {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
-    {provide: MAT_DATE_FORMATS, useValue: EUI_DATE_FORMATS}
-  ],
+  providers: [DataChangesService, ...EuiDateProviders],
 })
-export class DataChangesModule { }
+export class DataChangesModule {}

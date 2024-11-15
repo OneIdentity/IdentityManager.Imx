@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,8 +27,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
-import { TranslateService } from '@ngx-translate/core';
-import { OwnershipInformation, ViewConfigData } from 'imx-api-qer';
+import { OwnershipInformation, RoleExtendedDataWrite, ViewConfigData } from '@imx-modules/imx-api-qer';
 import {
   CollectionLoadParameters,
   DataModel,
@@ -37,24 +36,33 @@ import {
   IClientProperty,
   IEntity,
   TypedEntity,
+  TypedEntityCollectionData,
   ValType,
-} from 'imx-qbm-dbts';
+  WriteExtTypedEntity,
+} from '@imx-modules/imx-qbm-dbts';
+import { TranslateService } from '@ngx-translate/core';
 import {
   AppConfigService,
   BusyService,
   CdrFactoryService,
   ClassloggerService,
+  DataSourceToolbarExportMethod,
   DataSourceToolbarFilter,
   DataSourceToolbarSettings,
+  DataSourceToolbarViewConfig,
+  DataViewInitParameters,
+  DataViewSource,
+  ErrorService,
+  HelpContextualValues,
   MetadataService,
   SettingsService,
   SideNavigationComponent,
-  DataSourceToolbarViewConfig,
-  DataSourceToolbarExportMethod,
-  ErrorService,
-  HelpContextualValues,
+  calculateSidesheetWidth,
 } from 'qbm';
+import { Subscription } from 'rxjs';
 import { QerPermissionsService } from '../../admin/qer-permissions.service';
+import { UserModelService } from '../../user/user-model.service';
+import { ViewConfigService } from '../../view-config/view-config.service';
 import { DataManagementService } from '../data-management.service';
 import { NewRoleComponent } from '../new-role/new-role.component';
 import { IRoleRestoreHandler } from '../restore/restore-handler';
@@ -62,22 +70,20 @@ import { RestoreComponent } from '../restore/restore.component';
 import { RoleDetailComponent } from '../role-detail/role-detail.component';
 import { RoleService } from '../role.service';
 import { TreeDatabaseAdaptorService } from './tree-database-adaptor.service';
-import { ViewConfigService } from '../../view-config/view-config.service';
-import { Subscription } from 'rxjs';
-import { UserModelService } from '../../user/user-model.service';
 
 @Component({
   selector: 'imx-roles-overview',
   templateUrl: './roles-overview.component.html',
   styleUrls: ['./roles-overview.component.scss'],
+  providers: [DataViewSource],
 })
 export class RolesOverviewComponent implements OnInit, OnDestroy, SideNavigationComponent {
   @Input() public data: OwnershipInformation;
   @Input() public contextId: HelpContextualValues;
-  public dstSettings: DataSourceToolbarSettings;
+  public dstSettings: DataSourceToolbarSettings | undefined;
   public navigationState: CollectionLoadParameters = {};
   public ownershipInfo: OwnershipInformation;
-  public entitySchema: EntitySchema;
+  public entitySchema: EntitySchema | undefined;
   public DisplayColumns = DisplayColumns;
   public displayColumns: IClientProperty[];
   public isAdmin = false;
@@ -93,7 +99,7 @@ export class RolesOverviewComponent implements OnInit, OnDestroy, SideNavigation
 
   private isStructureAdmin: boolean;
   private dataModel: DataModel;
-  private exportMethod: DataSourceToolbarExportMethod;
+  private exportMethod: DataSourceToolbarExportMethod | undefined;
   private subscription: Subscription;
   private canCreateAeRole: boolean;
 
@@ -115,6 +121,7 @@ export class RolesOverviewComponent implements OnInit, OnDestroy, SideNavigation
     private readonly permission: QerPermissionsService,
     private readonly errorService: ErrorService,
     private readonly userModelService: UserModelService,
+    public dataSource: DataViewSource,
   ) {}
 
   public ngOnDestroy(): void {
@@ -127,12 +134,14 @@ export class RolesOverviewComponent implements OnInit, OnDestroy, SideNavigation
     this.canCreateAeRole = (await this.userModelService.getUserConfig()).CanCreateAERole;
 
     try {
-      await this.metadataProvider.updateNonExisting([this.ownershipInfo.TableName]);
+      if (this.ownershipInfo.TableName != null) {
+        await this.metadataProvider.updateNonExisting([this.ownershipInfo.TableName]);
+      }
       this.isStructureAdmin = await this.permission.isStructAdmin();
     } catch (error) {
       this.navigateToStartPage(error);
     }
-    const table = this.metadataProvider.tables[this.ownershipInfo.TableName];
+    const table = this.ownershipInfo.TableName == null ? undefined : this.metadataProvider.tables[this.ownershipInfo.TableName];
     if (!table) {
       this.logger.debug(this, `RolesOverview: Table ${this.ownershipInfo.TableName} does not exists.`);
       this.navigateToStartPage();
@@ -152,13 +161,13 @@ export class RolesOverviewComponent implements OnInit, OnDestroy, SideNavigation
     this.isAdmin = this.route.snapshot?.url[0]?.path === 'admin';
     this.roleService.isAdmin = this.isAdmin;
 
-    this.viewConfigPath = (this.isAdmin ? 'admin/role/' : 'role/') + this.ownershipInfo.TableName.toLowerCase();
+    this.viewConfigPath = (this.isAdmin ? 'admin/role/' : 'role/') + this.ownershipInfo.TableName?.toLowerCase();
     const isBusy = this.busyService.beginBusy();
     this.hasHierarchy = (await this.roleService.getEntitiesForTree(this.ownershipInfo.TableName, { PageSize: -1 }))?.Hierarchy != null;
     this.useTree = this.isAdmin && this.hasHierarchy;
     this.canCreate =
       ((this.isAdmin && this.isStructureAdmin) || !this.isAdmin) &&
-      this.roleService.canCreate(this.ownershipInfo.TableName, this.isAdmin, this.canCreateAeRole);
+      (await this.roleService.canCreate(this.ownershipInfo.TableName, this.isAdmin, this.canCreateAeRole));
 
     this.navigationState = this.useTree
       ? {
@@ -167,7 +176,7 @@ export class RolesOverviewComponent implements OnInit, OnDestroy, SideNavigation
         }
       : {};
     this.entitySchema = this.roleService.getRoleEntitySchema(this.ownershipInfo.TableName);
-    this.displayColumns = [this.entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]];
+    this.displayColumns = this.entitySchema == null ? [] : [this.entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]];
     if (this.hasHierarchy && this.canCreate) {
       this.displayColumns.push({ ColumnName: 'actions', Type: ValType.String });
     }
@@ -175,7 +184,7 @@ export class RolesOverviewComponent implements OnInit, OnDestroy, SideNavigation
     try {
       this.dataModel = await this.roleService.getDataModel(this.ownershipInfo.TableName, this.isAdmin);
       this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModel, this.viewConfigPath);
-      this.filterOptions = this.dataModel?.Filters;
+      this.filterOptions = this.dataModel?.Filters || [];
     } finally {
       isBusy.endBusy();
     }
@@ -189,13 +198,6 @@ export class RolesOverviewComponent implements OnInit, OnDestroy, SideNavigation
     await this.navigate();
   }
 
-  public async onSearch(keywords: string): Promise<void> {
-    this.logger.debug(this, `Searching for: ${keywords}`);
-    this.navigationState.StartIndex = 0;
-    this.navigationState.search = keywords;
-    await this.navigate();
-  }
-
   public async showDetails(item: TypedEntity): Promise<void> {
     await this.openDetails(item.GetEntity());
   }
@@ -204,18 +206,20 @@ export class RolesOverviewComponent implements OnInit, OnDestroy, SideNavigation
     await this.openDetails(node);
   }
 
-  public get restoreHandler(): IRoleRestoreHandler {
-    return !this.isStructureAdmin && this.isAdmin ? null : this.roleService.targetMap.get(this.ownershipInfo.TableName)?.restore;
+  public get restoreHandler(): IRoleRestoreHandler | undefined {
+    return (!this.isStructureAdmin && this.isAdmin) || this.ownershipInfo.TableName == null
+      ? undefined
+      : this.roleService.targetMap.get(this.ownershipInfo.TableName)?.restore;
   }
 
   public async restoreDeletedRole(): Promise<void> {
     const restoreHandler = this.restoreHandler;
-    const context = this.isAdmin ? restoreHandler.asAdmin() : restoreHandler.asOwner();
+    const context = this.isAdmin ? restoreHandler?.asAdmin() : restoreHandler?.asOwner();
 
     const sidesheetRef = this.sidesheet.open(RestoreComponent, {
       title: await this.translate.get('#LDS#Heading Restore Deleted Object').toPromise(),
       padding: '0px',
-      width: 'max(768px, 80%)',
+      width: calculateSidesheetWidth(1100, 0.7),
       testId: `${this.ownershipInfo.TableName}-role-restore-sidesheet`,
       data: {
         isAdmin: this.isAdmin,
@@ -231,12 +235,12 @@ export class RolesOverviewComponent implements OnInit, OnDestroy, SideNavigation
   public async createNew(event: Event, entity?: IEntity): Promise<void> {
     event.stopPropagation();
     const over = this.busyServiceElemental.show();
-    let newEntity = null;
+    let newEntity: WriteExtTypedEntity<RoleExtendedDataWrite> | undefined = undefined;
 
     try {
       newEntity = await this.roleService.getInteractiveNew(this.ownershipInfo.TableName);
       if (entity != null) {
-        const column = CdrFactoryService.tryGetColumn(newEntity.GetEntity(), `UID_Parent${this.ownershipInfo.TableName}`);
+        const column = CdrFactoryService.tryGetColumn(newEntity?.GetEntity(), `UID_Parent${this.ownershipInfo.TableName}`);
         if (column) {
           await column.PutValue(entity.GetKeys()[0]);
         }
@@ -255,7 +259,7 @@ export class RolesOverviewComponent implements OnInit, OnDestroy, SideNavigation
         .get(this.roleService.getRoleTranslateKeys(this.ownershipInfo.TableName)?.createHeading ?? '#LDS#Heading Create Object')
         .toPromise(),
       padding: '0px',
-      width: 'max(500px, 50%)',
+      width: calculateSidesheetWidth(800, 0.5),
       disableClose: true,
       testId: 'role-create-sidesheet',
       data: {
@@ -284,7 +288,7 @@ export class RolesOverviewComponent implements OnInit, OnDestroy, SideNavigation
 
   private navigateToStartPage(error?: any): void {
     this.logger.error(this, error);
-    this.router.navigate([this.appConfig.Config.routeConfig.start], { queryParams: {} });
+    this.router.navigate([this.appConfig.Config?.routeConfig?.start], { queryParams: {} });
   }
 
   private async openDetails(item: IEntity): Promise<void> {
@@ -309,7 +313,7 @@ export class RolesOverviewComponent implements OnInit, OnDestroy, SideNavigation
 
         subTitle: item.GetDisplay(),
         padding: '0px',
-        width: 'max(768px, 80%)',
+        width: calculateSidesheetWidth(1250, 0.7),
         disableClose: true,
         testId: `${this.ownershipInfo.TableName}-role-detail-sidesheet`,
       })
@@ -335,33 +339,32 @@ export class RolesOverviewComponent implements OnInit, OnDestroy, SideNavigation
   }
 
   private async navigateWithTable(): Promise<void> {
-    if (this.dataModel) {
-      this.exportMethod = this.roleService.getExportMethod(this.ownershipInfo.TableName, this.isAdmin, this.navigationState);
+    if (!!this.entitySchema && !!this.ownershipInfo.TableName) {
+      const dataViewInitParameters: DataViewInitParameters<TypedEntity> = {
+        execute: (params: CollectionLoadParameters): Promise<TypedEntityCollectionData<TypedEntity> | undefined> =>
+          this.roleService.get(this.ownershipInfo.TableName!, this.isAdmin, params),
+        schema: this.entitySchema,
+        columnsToDisplay: this.displayColumns,
+        dataModel: this.dataModel,
+        exportFunction: this.roleService.getExportMethod(this.ownershipInfo.TableName, this.isAdmin, this.dataSource.state()),
+        viewConfig: this.viewConfig,
+        highlightEntity: (entity: TypedEntity) => {
+          this.showDetails(entity);
+        },
+      };
+      this.dataSource.init(dataViewInitParameters);
     }
-    if (this.exportMethod) {
-      this.exportMethod.initialColumns = this.displayColumns.map((col) => col.ColumnName);
-    }
-    this.dstSettings = {
-      dataSource: await this.roleService.get(this.ownershipInfo.TableName, this.isAdmin, this.navigationState),
-      entitySchema: this.entitySchema,
-      navigationState: this.navigationState,
-      displayedColumns: this.displayColumns,
-      filters: this.filterOptions,
-      dataModel: this.dataModel,
-      viewConfig: this.viewConfig,
-      exportMethod: this.exportMethod,
-    };
   }
 
   public async updateConfig(config: ViewConfigData): Promise<void> {
     await this.viewConfigService.putViewConfig(config);
     this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
-    this.dstSettings.viewConfig = this.viewConfig;
+    this.dataSource.viewConfig.set(this.viewConfig);
   }
 
   public async deleteConfigById(id: string): Promise<void> {
     await this.viewConfigService.deleteViewConfig(id);
     this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
-    this.dstSettings.viewConfig = this.viewConfig;
+    this.dataSource.viewConfig.set(this.viewConfig);
   }
 }

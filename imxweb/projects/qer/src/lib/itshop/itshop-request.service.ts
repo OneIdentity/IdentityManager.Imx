@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,9 +26,9 @@
 
 import { Injectable } from '@angular/core';
 
-import { PwoData } from 'imx-api-qer';
-import { IEntity, IEntityColumn, ParameterData, WriteExtTypedEntity } from 'imx-qbm-dbts';
-import { AuthenticationService } from 'qbm';
+import { PwoData } from '@imx-modules/imx-api-qer';
+import { IEntity, IEntityColumn, ParameterData, WriteExtTypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { AuthenticationService, ISessionState } from 'qbm';
 import { Approval } from '../itshopapprove/approval';
 import { ExtendedCollectionData } from '../parameter-data/extended-collection-data.interface';
 import { ParameterDataService } from '../parameter-data/parameter-data.service';
@@ -42,17 +42,17 @@ export class ItshopRequestService {
   constructor(
     private readonly parameterDataService: ParameterDataService,
     private readonly itshopService: ItshopService,
-    authentication: AuthenticationService
+    authentication: AuthenticationService,
   ) {
-    authentication.onSessionResponse.subscribe((session) => (this.currentUser = session.UserUid));
+    authentication.onSessionResponse.subscribe((session: ISessionState) => (this.currentUser = session.UserUid || ''));
   }
 
-  public createParameterColumns(entity: IEntity, parameters: ParameterData[]): IEntityColumn[] {
+  public createParameterColumns(entity: IEntity, parameters: ParameterData[]): (IEntityColumn | undefined)[] {
     return this.parameterDataService.createParameterColumns(
       entity,
       parameters,
       (loadParameters) => this.itshopService.getRequestParameterCandidates(loadParameters),
-      (treeParameters) => this.itshopService.getRequestParameterFilterTree(treeParameters)
+      (treeParameters) => this.itshopService.getRequestParameterFilterTree(treeParameters),
     );
   }
 
@@ -60,7 +60,7 @@ export class ItshopRequestService {
 
   public createRequestApprovalItem(
     typedEntity: WriteExtTypedEntity<any>,
-    extendedCollectionData: ExtendedCollectionData<PwoData>
+    extendedCollectionData: ExtendedCollectionData<PwoData> | undefined,
   ): Approval {
     const entity = typedEntity.GetEntity();
 
@@ -68,14 +68,20 @@ export class ItshopRequestService {
       entity,
       extendedCollectionData,
       (loadParameters) => this.itshopService.getRequestParameterCandidates(loadParameters),
-      (treeParameters) => this.itshopService.getRequestParameterFilterTree(treeParameters)
+      (treeParameters) => this.itshopService.getRequestParameterFilterTree(treeParameters),
     );
 
     return new Approval({
       entity,
       uidCurrentUser: this.currentUser,
       isChiefApproval: this.itshopService.isChiefApproval,
-      pwoData: extendedDataWrapper.data,
+      pwoData: {
+        ...extendedDataWrapper.data,
+        WorkflowSteps: extendedCollectionData?.WorkflowSteps,
+        CanRecallDecision: extendedDataWrapper.data?.CanRecallDecision || false,
+        CanRevokeDelegation: extendedDataWrapper.data?.CanRevokeDelegation || false,
+        CanAskForHelp: extendedDataWrapper.data?.CanAskForHelp || false,
+      },
       parameterColumns: extendedDataWrapper.parameterWrapper.columns,
       commit: async () => {
         typedEntity.extendedData = extendedDataWrapper.parameterWrapper.getEntityWriteDataColumns();

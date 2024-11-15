@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,11 +24,10 @@
  *
  */
 
-import { CustomAuthFlow } from "qbm";
-import { PasscodeLoginComponent } from "./passcode-login.component";
+import { CustomAuthFlow } from 'qbm';
+import { PasscodeLoginComponent } from './passcode-login.component';
 
 export class PasscodeLoginFlow implements CustomAuthFlow {
-
   getEntryComponent() {
     return PasscodeLoginComponent;
   }

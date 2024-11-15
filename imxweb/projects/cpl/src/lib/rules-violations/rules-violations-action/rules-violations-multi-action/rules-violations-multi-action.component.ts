@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -40,10 +40,9 @@ import { ColumnDependentReference } from 'qbm';
 @Component({
   selector: 'imx-rules-violations-multi-action',
   templateUrl: './rules-violations-multi-action.component.html',
-  styleUrls: ['./rules-violations-multi-action.component.scss']
+  styleUrls: ['./rules-violations-multi-action.component.scss'],
 })
 export class RulesViolationsMultiActionComponent implements OnInit {
-
   /**
    * @ignore since this is only an internal component.
    *
@@ -72,7 +71,6 @@ export class RulesViolationsMultiActionComponent implements OnInit {
    * Sets up the {@link columns} to be displayed/edited during OnInit lifecycle hook.
    */
   public ngOnInit(): void {
-
     if (this.data.actionParameters.validUntil) {
       this.columns.push(this.data.actionParameters.validUntil);
     }
@@ -94,8 +92,6 @@ export class RulesViolationsMultiActionComponent implements OnInit {
    */
   public onFormControlCreated(name: string, control: AbstractControl): void {
     // use setTimeout to make addControl asynchronous in order to avoid "NG0100: Expression has changed after it was checked"
-    setTimeout(() =>
-      this.formGroup.addControl(name, control)
-    );
+    setTimeout(() => this.formGroup.addControl(name, control));
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,8 +25,8 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { PortalRules, PortalRulesViolations } from 'imx-api-cpl';
-import { ByAbilityResult, ByRoleResult, PortalTargetsystemSapuser } from 'imx-api-sac';
+import { PortalRules, PortalRulesViolations } from '@imx-modules/imx-api-cpl';
+import { ByAbilityResult, ByRoleResult, PortalTargetsystemSapuser } from '@imx-modules/imx-api-sac';
 import { SapComplianceApiService } from '../sac-api-client.service';
 import { SapSelectionOptions, SapSelectionTypeEnum } from './sap-compliance-violation.model';
 
@@ -94,11 +94,11 @@ export class SapComplianceViolationComponent implements OnInit {
     const uidsapuser = this.selectedAccount.GetEntity().GetKeys()[0];
     this.resultByAbility = await this.api.client.portal_sap_ruleanalysis_fld_get(
       uidsapuser,
-      this.data.complianceRule?.EntityKeysData?.Keys?.[0]
+      this.data.complianceRule?.EntityKeysData?.Keys?.[0] ?? '',
     );
     this.resultByRole = await this.api.client.portal_sap_ruleanalysis_byrole_get(
       uidsapuser,
-      this.data.complianceRule?.EntityKeysData?.Keys?.[0]
+      this.data.complianceRule?.EntityKeysData?.Keys?.[0] ?? '',
     );
     this.loading = false;
   }

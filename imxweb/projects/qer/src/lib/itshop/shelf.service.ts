@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,17 +26,16 @@
 
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { TranslateService } from '@ngx-translate/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
-import { OverlayRef } from '@angular/cdk/overlay';
+import { TranslateService } from '@ngx-translate/core';
 
-import { ClassloggerService, MessageDialogComponent } from 'qbm';
-import { RequestableProductForPerson, ServiceItemForPerson } from 'imx-api-qer';
-import { ShelfSelectionComponent } from './shelf-selection.component';
+import { RequestableProductForPerson, ServiceItemForPerson } from '@imx-modules/imx-api-qer';
+import _ from 'lodash';
+import { ClassloggerService, MessageDialogComponent, calculateSidesheetWidth } from 'qbm';
 import { QerApiService } from '../qer-api-client.service';
 import { NonRequestableItemsComponent } from './non-requestable-items/non-requestable-items.component';
 import { PersonForProduct, ShelfObject, ShelfSelectionObject } from './shelf-selection-sidesheet.model';
-import _ from 'lodash';
+import { ShelfSelectionComponent } from './shelf-selection.component';
 
 @Injectable({
   providedIn: 'root',
@@ -48,7 +47,7 @@ export class ShelfService {
     private readonly logger: ClassloggerService,
     private readonly dialogService: MatDialog,
     private readonly translate: TranslateService,
-    private readonly busyService: EuiLoadingService
+    private readonly busyService: EuiLoadingService,
   ) {}
 
   public async setShops(requestableServiceItemsForPersons: RequestableProductForPerson[]): Promise<boolean> {
@@ -82,8 +81,8 @@ export class ShelfService {
         data.some(
           (shelf) =>
             elem.UidAccProduct === shelf.uidAccproduct &&
-            shelf.personsForProduct.find((person) => person.uidPerson === elem.UidPerson)?.shelfsObjects.length > 0
-        )
+            !!shelf.personsForProduct.find((person) => person.uidPerson === (elem?.UidPerson || ''))?.shelfsObjects.length,
+        ),
       );
 
       if (!(await this.setElementsWithSideSheet(requested, data))) {
@@ -109,7 +108,7 @@ export class ShelfService {
               DisplayRecipient: person.displayPerson,
             });
           }
-        })
+        }),
       );
     }
 
@@ -138,7 +137,7 @@ export class ShelfService {
     const sidesheetRef = this.sideSheet.open(ShelfSelectionComponent, {
       title: await this.translate.get('#LDS#Heading Select Shelf').toPromise(),
       padding: '0px',
-      width: 'max(500px, 50%)',
+      width: calculateSidesheetWidth(800, 0.5),
       testId: 'shelf-selection-sidesheet',
       data: ssos,
     });
@@ -151,7 +150,9 @@ export class ShelfService {
         // TODO TASK 321664: This is only a temporary fix to choose to all items with the same uid, regardless of if they are optional or not.
         const items = requested.filter(
           (elem) =>
-            elem.UidAccProduct === requestedProduct.uidAccproduct && elem.UidPerson === person.uidPerson && person.shelfsObjects.length > 0
+            elem.UidAccProduct === requestedProduct.uidAccproduct &&
+            elem.UidPerson === (person.uidPerson || '') &&
+            person.shelfsObjects.length > 0,
         );
         items.forEach((item) => {
           item.UidITShopOrg = person.uidItShopOrg;
@@ -159,7 +160,7 @@ export class ShelfService {
         // const item = requested.find(elem =>
         //   elem.UidAccProduct === requestedProduct.uidAccproduct && elem.UidPerson === person.uidPerson);
         // item.UidITShopOrg = person.uidItShopOrg;
-      })
+      }),
     );
     return true;
   }
@@ -168,7 +169,7 @@ export class ShelfService {
     // Here we set any unique products with a unique shelf, unique is defined as only one UID for AccProduct, Person
     for (const serviceItemForPerson of requested.filter((elem) => elem.UidITShopOrg == null || elem.UidITShopOrg === '')) {
       const possibleRequestableServiceItems = productsWithShops.filter(
-        (item) => item.UidAccProduct === serviceItemForPerson.UidAccProduct && item.UidPerson === serviceItemForPerson.UidPerson
+        (item) => item.UidAccProduct === serviceItemForPerson.UidAccProduct && item.UidPerson === serviceItemForPerson.UidPerson,
       );
       if (possibleRequestableServiceItems.length === 1) {
         serviceItemForPerson.UidITShopOrg = possibleRequestableServiceItems[0].UidITShopOrg;
@@ -183,7 +184,7 @@ export class ShelfService {
 
   private buildShelfSelection(
     requested: RequestableProductForPerson[],
-    productsWithShops: RequestableProductForPerson[]
+    productsWithShops: RequestableProductForPerson[],
   ): ShelfSelectionObject[] {
     // Build the shelf selection object to then ask the user to set values on
     return requested
@@ -192,27 +193,27 @@ export class ShelfService {
       .map((elem) => ({
         uidAccproduct: elem.uid,
         displayAccProduct: elem.display,
-        personsForProduct: this.getPersonsForProduct(requested, productsWithShops, elem.uid),
-        possibleShelfObjects: this.getPossibleShelfs(productsWithShops, elem.uid),
+        personsForProduct: this.getPersonsForProduct(requested, productsWithShops, elem.uid ?? ''),
+        possibleShelfObjects: this.getPossibleShelfs(productsWithShops, elem.uid ?? ''),
       }))
       .filter((elem) => this.hasMultipleShelfs(elem))
-      .sort((a, b) => a.displayAccProduct.localeCompare(b.displayAccProduct));
+      .sort((a, b) => (a.displayAccProduct ?? '').localeCompare(b.displayAccProduct ?? ''));
   }
 
   private getPersonsForProduct(
     requested: RequestableProductForPerson[],
     productsWithShops: RequestableProductForPerson[],
-    uid: string
+    uid: string,
   ): PersonForProduct[] {
     const elements = requested.filter((elem) => elem.UidAccProduct === uid);
     return elements
       .map((elem) => ({
         uidPerson: elem.UidPerson,
-        uidItShopOrg: this.tryGetItShop(productsWithShops, uid, elem.UidPerson),
+        uidItShopOrg: this.tryGetItShop(productsWithShops, uid, elem.UidPerson ?? ''),
         displayPerson: elem.DisplayRecipient,
-        shelfsObjects: this.getShelfObjects(productsWithShops, uid, elem.UidPerson),
+        shelfsObjects: this.getShelfObjects(productsWithShops, uid, elem.UidPerson ?? ''),
       }))
-      .sort((a, b) => a.displayPerson.localeCompare(b.displayPerson));
+      .sort((a, b) => (a.displayPerson ?? '').localeCompare(b.displayPerson ?? ''));
   }
 
   private getPossibleShelfs(productsWithShops: RequestableProductForPerson[], uid: string): ShelfObject[] {
@@ -225,18 +226,22 @@ export class ShelfService {
       .filter(this.uniqueShelfs);
   }
 
-  private uniqueProducts(value: { display: string; uid: string }, index: number, self: { display: string; uid: string }[]): boolean {
+  private uniqueProducts(
+    value: { display: string | undefined; uid?: string | undefined },
+    index: number,
+    self: { display: string; uid: string }[],
+  ): boolean {
     return self.findIndex((elem) => value.uid === elem.uid) === index;
   }
 
   private tryGetItShop(productsWithShops: RequestableProductForPerson[], uidAcc: string, uidPerson: string): string {
-    const shelf = productsWithShops.filter((elem) => elem.UidAccProduct === uidAcc && elem.UidPerson === uidPerson);
-    return shelf.length === 1 ? shelf[0].UidITShopOrg : '';
+    const shelf = productsWithShops.filter((elem) => elem.UidAccProduct === uidAcc && (elem.UidPerson || '') === uidPerson);
+    return shelf.length === 1 ? shelf[0].UidITShopOrg ?? '' : '';
   }
 
   private getShelfObjects(productsWithShops: RequestableProductForPerson[], uidAcc: string, uidPerson: string): ShelfObject[] {
     return productsWithShops
-      .filter((elem) => elem.UidAccProduct === uidAcc && elem.UidPerson === uidPerson)
+      .filter((elem) => elem.UidAccProduct === uidAcc && (elem.UidPerson || '') === uidPerson)
       .map((elem) => ({ displayShelf: elem.Display, uidItShopOrg: elem.UidITShopOrg }));
   }
 
@@ -247,13 +252,14 @@ export class ShelfService {
   private async findUniqueProductsInShops(serviceItemsForPersons: ServiceItemForPerson[]): Promise<RequestableProductForPerson[]> {
     // Get all unique products within the itshop
     let products: RequestableProductForPerson[];
-    let overlay: OverlayRef;
-    setTimeout(() => (overlay = this.busyService.show()));
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
     try {
       products = await this.qerClient.client.portal_itshop_findproducts_post(serviceItemsForPersons);
       products = _.uniqWith(products, _.isEqual);
     } finally {
-      setTimeout(() => this.busyService.hide(overlay));
+      this.busyService.hide();
     }
     return products;
   }

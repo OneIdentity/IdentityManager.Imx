@@ -1,24 +1,25 @@
 <div eui-sidesheet-content>
   <mat-card class="imx-dialog-content">
+    <eui-alert class="imx-margin-bottom-20" [condensed]="true" [colored]="true" type="info" [dismissable]="false"
+      *ngIf="data?.isRequired && (fkSelector?.selectedCandidates?.length ?? 0) < 1">
+      {{ '#LDS#Select at least one item.' | translate }}
+    </eui-alert>
     <imx-fk-selector #fkSelector [data]="data" (selectedCandidatesChanges)="onSelectedCandidatesChanges()"
       (elementSelected)="selectObject($event)" (tableselected)="updateTable($event)"></imx-fk-selector>
   </mat-card>
 </div>
 
-<div *ngIf="data?.isMultiValue" eui-sidesheet-actions>
-  <div>
-   <imx-selected-elements [selectedElements]="fkSelector?.selectedCandidates" [tables]="tableNames"></imx-selected-elements>
-  </div>
-  <!-- TODO: include MRU object picker, if there is a selected table name -->
-  <button class="justify-start" [disabled]="fkSelector?.selectedCandidates?.length < 1" mat-stroked-button type="button"
-    (click)="fkSelector.clearSelection()" data-imx-identifier="cdr-fkadvancedpicker-button-clear-selection">
-    {{ '#LDS#Clear selection' | translate }}
-  </button>
-  <button [disabled]="data?.isRequired && fkSelector?.selectedCandidates?.length < 1"
-    mat-flat-button color="primary" (click)="applySelection()"
-    data-imx-identifier="cdr-fkadvancedpicker-button-apply-selection">
-    {{ '#LDS#Apply' | translate }}
+<div eui-sidesheet-actions class="imx-button-bar-transparent" *ngIf="data?.isMultiValue">
+  <imx-selected-elements class="justify-start" [selectedElements]="fkSelector?.selectedCandidates"
+    [showDeselectAll]="true" (onDeselectAllClicked)="fkSelector.clearSelection()">
+  </imx-selected-elements>
+  <button
+    mat-flat-button
+    color="primary"
+    [disabled]="data?.isRequired && (fkSelector?.selectedCandidates?.length ?? 0) < 1"
+    (click)="applySelection()"
+    data-imx-identifier="cdr-fkadvancedpicker-button-apply-selection"
+  >
+    {{ '#LDS#Select' | translate }}
   </button>
 </div>
-
-

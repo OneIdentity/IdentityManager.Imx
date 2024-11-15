@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,17 +25,12 @@
  */
 
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
-import {
-  AbstractControl,
-  FormControl,
-  FormGroup,
-  UntypedFormArray,
-} from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, UntypedFormArray } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { IEntity, IEntityColumn, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
-import { IEntity, IEntityColumn, TypedEntity } from 'imx-qbm-dbts';
 
-import { BaseCdr, ClassloggerService, ColumnDependentReference, CdrFactoryService, ExtService, BusyService } from 'qbm';
+import { BusyService, CdrFactoryService, ClassloggerService, ColumnDependentReference, ExtService } from 'qbm';
 import { QerPermissionsService } from '../../admin/qer-permissions.service';
 import { OwnerControlComponent } from '../../owner-control/owner-control.component';
 import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
@@ -90,7 +85,7 @@ export class ServiceItemsEditFormComponent implements OnInit, OnChanges {
     private readonly translate: TranslateService,
     private readonly permission: QerPermissionsService,
     private readonly projectConfig: ProjectConfigurationService,
-    private readonly cdrFactoryService: CdrFactoryService
+    private readonly cdrFactoryService: CdrFactoryService,
   ) {}
 
   get getSelectedUidPerson(): string {
@@ -114,11 +109,11 @@ export class ServiceItemsEditFormComponent implements OnInit, OnChanges {
     }
   }
 
-  public onImageValueChanged(control: AbstractControl, cdr: BaseCdr): void {
+  public onImageValueChanged(cdr?: ColumnDependentReference): void {
     this.updateImageHint(cdr);
   }
 
-  public onFormControlCreated(control: AbstractControl, cdr?: BaseCdr): void {
+  public onFormControlCreated(control: AbstractControl, cdr?: ColumnDependentReference): void {
     this.formGroup.controls.array.push(control);
     this.formControlCreated.emit(control);
 
@@ -131,7 +126,7 @@ export class ServiceItemsEditFormComponent implements OnInit, OnChanges {
     // Invert the toggle value to match with the inverted state of the column 'IsInActive'
     const value = !checkboxChange?.checked;
     if (this.getColumn('IsInActive')?.GetMetadata().CanEdit()) {
-      await this.getColumn('IsInActive').PutValue(value);
+      await this.getColumn('IsInActive')?.PutValue(value);
     }
   }
 
@@ -139,7 +134,7 @@ export class ServiceItemsEditFormComponent implements OnInit, OnChanges {
     return this.editableServiceItemColumns?.includes(property);
   }
 
-  public getColumn(name: string): IEntityColumn {
+  public getColumn(name: string): IEntityColumn | undefined {
     return CdrFactoryService.tryGetColumn(this.serviceItem.GetEntity(), name);
   }
 
@@ -159,7 +154,7 @@ export class ServiceItemsEditFormComponent implements OnInit, OnChanges {
   }
 
   private async setup(): Promise<void> {
-    let isBusy: { endBusy: () => void };
+    let isBusy: { endBusy: () => void } | undefined = undefined;
     if (this.busyService) {
       isBusy = this.busyService.beginBusy();
     } else {
@@ -169,8 +164,8 @@ export class ServiceItemsEditFormComponent implements OnInit, OnChanges {
       this.formGroup.controls.array.clear();
       this.formGroup.markAsPristine();
       const projectConfig = await this.projectConfig.getConfig();
-      this.inheritCategoryImagesToItems = projectConfig.ITShopConfig?.InheritCategoryImagesToItems;
-      this.editableServiceItemColumns = projectConfig.OwnershipConfig?.EditableFields?.AccProduct;
+      this.inheritCategoryImagesToItems = projectConfig.ITShopConfig?.InheritCategoryImagesToItems || false;
+      this.editableServiceItemColumns = projectConfig.OwnershipConfig?.EditableFields?.AccProduct || [];
       const showTermsOfUseCdr = await this.serviceItemsEditService.hasTermsOfUseCancdidates();
       const showProductParamCategory = await this.serviceItemsEditService.hasAccproductparamcategoryCandidates();
       const showFunctionalArea = await this.serviceItemsEditService.hasFunctionalAreaCandidates();
@@ -198,7 +193,7 @@ export class ServiceItemsEditFormComponent implements OnInit, OnChanges {
     entity: IEntity,
     showTermsOfUseCdr: boolean,
     showFunctionalArea: boolean,
-    showProductParamCategory: boolean
+    showProductParamCategory: boolean,
   ): Promise<void> {
     this.cdrList = [];
     const isToHideFromITShopText = await this.translate.get('#LDS#Hide in product selection').toPromise();
@@ -208,7 +203,7 @@ export class ServiceItemsEditFormComponent implements OnInit, OnChanges {
       .filter((name) => name !== 'UID_FunctionalArea' || showFunctionalArea)
       .filter((name) => name !== 'UID_AccProductParamCategory' || showProductParamCategory)
       .map((columnName) => {
-        let cdr: ColumnDependentReference;
+        let cdr: ColumnDependentReference | undefined;
         // Special case the text texts
         if (columnName === 'IsToHideFromITShop') {
           cdr = this.cdrFactoryService.buildCdr(entity, columnName, false, isToHideFromITShopText);
@@ -231,9 +226,11 @@ export class ServiceItemsEditFormComponent implements OnInit, OnChanges {
     }
   }
 
-  private updateImageHint(cdr: BaseCdr): BaseCdr {
-    const column = cdr.column;
-    cdr.hint = this.inheritCategoryImagesToItems && column.GetValue().length === 0 ? this.imageHint : '';
+  private updateImageHint(cdr: ColumnDependentReference | undefined): ColumnDependentReference | undefined {
+    const column = cdr?.column;
+    if (cdr && column) {
+      cdr.hint = this.inheritCategoryImagesToItems && column?.GetValue().length === 0 ? this.imageHint : '';
+    }
     return cdr;
   }
 
@@ -242,7 +239,6 @@ export class ServiceItemsEditFormComponent implements OnInit, OnChanges {
 
     this.productTagsInitial = (await this.serviceItemTagsService.getTags(this.key)).Data.map((elem) => elem.Ident_DialogTag.value);
     this.productTagsSelected = this.productTagsInitial.slice();
-
     this.loadingTags = false;
   }
 }

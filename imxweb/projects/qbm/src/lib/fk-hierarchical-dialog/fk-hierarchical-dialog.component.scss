@@ -1,52 +1,21 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
 
 :host {
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  @include flex-column-container($overflow: auto, $height: 100%);
 }
 
-
-.imx-fk-table-radio {
-  > *:not(:last-child) {
-    margin-right: 30px;
-  }
-}
 
 .imx-dialog-content {
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  height: 100%;
+  @include flex-column-container($overflow: auto, $height: 100%);
 }
 
-.eui-sidesheet-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 0;
-
-  button {
-    margin-left: 10px;
-  }
-
-  .justify-start {
-    margin-right: auto;
-  }
-}
-
-::ng-deep .imx-under {
-  margin-top: 30px;
-}
 .eui-dark-theme {
   :host {
     background-color: $color-gray-80;
-    .imx-sidesheet-content{
+
+    .imx-sidesheet-content {
       background: $color-gray-80;
-    }
-    .imx-dialog-actions {
-      background-color: $color-gray-70;
     }
   }
 }
@@ -54,11 +23,9 @@
 .eui-contrast-theme {
   :host {
     background-color: $color-gray-100;
-    .imx-sidesheet-content{
+
+    .imx-sidesheet-content {
       background: $color-gray-100;
-    }
-    .imx-dialog-actions {
-      background-color: $color-gray-90;
     }
   }
 }

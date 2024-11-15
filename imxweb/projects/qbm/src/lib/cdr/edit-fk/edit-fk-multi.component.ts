@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,24 +26,25 @@
 
 import { Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
-import { Subscription, Subject } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
+import { Subject, Subscription } from 'rxjs';
 
-import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
-import { EntityColumnContainer } from '../entity-column-container';
-import { ColumnDependentReference } from '../column-dependent-reference.interface';
+import { ValueStruct } from '@imx-modules/imx-qbm-dbts';
+import { calculateSidesheetWidth } from '../../base/sidesheet-helper';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
-import { FkAdvancedPickerComponent } from '../../fk-advanced-picker/fk-advanced-picker.component';
-import { ValueStruct } from 'imx-qbm-dbts';
 import { ForeignKeySelection } from '../../fk-advanced-picker/./foreign-key-selection.interface';
+import { FkAdvancedPickerComponent } from '../../fk-advanced-picker/fk-advanced-picker.component';
+import { FkHierarchicalDialogComponent } from '../../fk-hierarchical-dialog/fk-hierarchical-dialog.component';
 import { LdsReplacePipe } from '../../lds-replace/lds-replace.pipe';
 import { MultiValueService } from '../../multi-value/multi-value.service';
-import { FkHierarchicalDialogComponent } from '../../fk-hierarchical-dialog/fk-hierarchical-dialog.component';
+import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
+import { ColumnDependentReference } from '../column-dependent-reference.interface';
+import { EntityColumnContainer } from '../entity-column-container';
 
 /**
  * Provides a {@link CdrEditor | CDR editor} for editing / viewing multi foreign key value columns.
- * 
+ *
  * Its value is changed by clicking on the 'select' / 'change' button. Then a side sheet is opened for selecting multiple values.
  * When set to read-only, it uses a {@link ViewPropertyComponent | view property component} to display the content.
  */
@@ -62,7 +63,7 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
   public loading = false;
   private isWriting = false;
 
-  private currentValueStruct: ValueStruct<string>;
+  private currentValueStruct: ValueStruct<string | undefined>;
 
   private isHierarchical: boolean;
   private readonly subscribers: Subscription[] = [];
@@ -71,13 +72,13 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
    * Creates a new EditFkMultiComponent.
    * @param logger Log service.
    * @param sidesheet Side sheet, that opens the picker dialog for selecting objects.
-   */ 
+   */
   constructor(
     private readonly logger: ClassloggerService,
     private readonly sidesheet: EuiSidesheetService,
     private readonly translateService: TranslateService,
     private readonly ldsReplace: LdsReplacePipe,
-    private readonly multiValueProvider: MultiValueService
+    private readonly multiValueProvider: MultiValueService,
   ) {}
 
   public ngOnDestroy(): void {
@@ -117,7 +118,7 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
         this.subscribers.push(
           cdref.minlengthSubject.subscribe((elem) => {
             this.setValidators();
-          })
+          }),
         );
       }
 
@@ -131,7 +132,7 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
               this,
               `Control (${this.columnContainer.name}) set to new value:`,
               this.columnContainer.value,
-              this.control.value
+              this.control.value,
             );
             this.currentValueStruct = {
               DataValue: this.columnContainer.value,
@@ -140,7 +141,7 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
             this.control.setValue(await this.multiValueToDisplay(this.currentValueStruct), { emitEvent: false });
           }
           this.valueHasChanged.emit({ value: this.currentValueStruct });
-        })
+        }),
       );
 
       this.subscribers.push(
@@ -152,7 +153,7 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
                 DataValue: this.columnContainer.value,
                 DisplayValue: this.columnContainer.displayValue,
               };
-              const candidateCollection = await this.columnContainer.fkRelations[0]?.Get({ PageSize: -1 });
+              const candidateCollection = await this.columnContainer.fkRelations?.[0]?.Get({ PageSize: -1 });
               this.isHierarchical = candidateCollection?.Hierarchy != null;
               this.setValidators();
               this.control.setValue(await this.multiValueToDisplay(this.currentValueStruct), { emitEvent: false });
@@ -161,7 +162,7 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
               this.loading = false;
             }
           });
-        })
+        }),
       );
       this.logger.trace(this, 'Control initialized');
     } else {
@@ -191,7 +192,7 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
       subTitle: await this.translateService.get(this.columnContainer?.display).toPromise(),
       padding: '0',
       disableClose: true,
-      width: 'max(600px,60%)',
+      width: calculateSidesheetWidth(),
       testId: this.isHierarchical ? 'edit-fk-multi-hierarchy-sidesheet' : 'edit-fk-multi-sidesheet',
       data: {
         idList: this.multiValueProvider.getValues(this.columnContainer.value),
@@ -211,7 +212,7 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
           selection.candidates && selection.candidates.length > 0
             ? {
                 DataValue: this.multiValueProvider.getMultiValue(selection.candidates.map((v) => v.DataValue)),
-                DisplayValue: this.multiValueProvider.getMultiValue(selection.candidates.map((v) => v.DisplayValue)),
+                DisplayValue: this.multiValueProvider.getMultiValue(selection.candidates.map((v) => v.DisplayValue ?? '')),
               }
             : {
                 DataValue: undefined,
@@ -232,7 +233,7 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
    * Updates the value for the CDR.
    * @param value The new value struct, that is used for the new value of the component.
    */
-  private async writeValue(value: ValueStruct<string>): Promise<void> {
+  private async writeValue(value: ValueStruct<string | undefined>): Promise<void> {
     this.logger.debug(this, 'writeValue - called with', value);
 
     if (!this.columnContainer.canEdit) {
@@ -270,7 +271,7 @@ export class EditFkMultiComponent implements CdrEditor, OnInit, OnDestroy {
     this.valueHasChanged.emit({ value: this.currentValueStruct, forceEmit: true });
   }
 
-  private async multiValueToDisplay(value: ValueStruct<string>): Promise<string> {
+  private async multiValueToDisplay(value: ValueStruct<string | undefined>): Promise<string | undefined> {
     const values = this.multiValueProvider.getValues(value.DataValue);
 
     if (values == null) {

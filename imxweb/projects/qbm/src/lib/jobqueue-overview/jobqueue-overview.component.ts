@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,16 +24,16 @@
  *
  */
 
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { ChartOptions, XTickConfiguration } from 'billboard.js';
+import { Chart, ChartOptions, XTickConfiguration } from 'billboard.js';
 import { interval, Subscription } from 'rxjs';
-import { JobQueueDataSlice, JobQueueOverviewService } from './jobqueue-overview.service';
-import { XAxisInformation } from '../chart-options/x-axis-information';
 import { LineChartOptions } from '../chart-options/line-chart-options';
-import { YAxisInformation } from '../chart-options/y-axis-information';
 import { SeriesInformation } from '../chart-options/series-information';
+import { XAxisInformation } from '../chart-options/x-axis-information';
+import { YAxisInformation } from '../chart-options/y-axis-information';
+import { JobQueueOverviewService } from './jobqueue-overview.service';
 
 @Component({
   selector: 'imx-jobqueue-overview',
@@ -42,7 +42,7 @@ import { SeriesInformation } from '../chart-options/series-information';
 })
 export class JobQueueOverviewComponent implements OnInit, OnDestroy, OnChanges {
   @Input() public isShowGraph: boolean;
-  public chartOptions: ChartOptions = null;
+  public chartOptions: ChartOptions | null = null;
   public routineSubscription: Subscription;
 
   public queueNames: string[];
@@ -60,33 +60,42 @@ export class JobQueueOverviewComponent implements OnInit, OnDestroy, OnChanges {
   public ylabel: string;
   public title: string;
 
+  private chart: Chart;
+
   private xAxisConfig: XTickConfiguration = {
     culling: { max: 5 },
     format: '%H:%M:%S',
   };
 
-  constructor(private readonly jobQueueOverviewService: JobQueueOverviewService, private translateService: TranslateService) {
+  constructor(
+    private readonly jobQueueOverviewService: JobQueueOverviewService,
+    private translateService: TranslateService,
+    private changeDetectorRef: ChangeDetectorRef,
+  ) {
     this.queueNames = this.jobQueueOverviewService.queueNames;
-    this.translateService.get('#LDS#All queues').subscribe((trans: string) => (this.queue = trans));
+    this.queue = translateService.instant('#LDS#All queues');
 
     // Translate chart labels
-    this.translateService.get('#LDS#Time').subscribe((trans: string) => (this.timeText = trans));
-    this.translateService.get('#LDS#Error').subscribe((trans: string) => (this.errorText = trans));
-    this.translateService.get('#LDS#Waiting').subscribe((trans: string) => (this.waitingText = trans));
-    this.translateService.get('#LDS#Ready').subscribe((trans: string) => (this.readyText = trans));
-    this.translateService.get('#LDS#Processing').subscribe((trans: string) => (this.processingText = trans));
-    this.translateService.get('#LDS#Finished').subscribe((trans: string) => (this.finishedText = trans));
 
-    this.translateService.get('#LDS#Number of processes').subscribe((trans: string) => (this.ylabel = trans));
-    this.translateService.get('#LDS#Processes over time').subscribe((trans: string) => (this.title = trans));
+    this.timeText = translateService.instant('#LDS#Time');
+    this.errorText = translateService.instant('#LDS#Error');
+    this.waitingText = translateService.instant('#LDS#Waiting');
+    this.readyText = translateService.instant('#LDS#Ready');
+    this.processingText = translateService.instant('#LDS#Processing');
+    this.finishedText = translateService.instant('#LDS#Finished');
+
+    this.ylabel = translateService.instant('#LDS#Number of processes');
+    this.title = translateService.instant('#LDS#Processes over time');
   }
 
   public async ngOnInit(): Promise<void> {
+    this.buildOptions();
     // Setup service if it isn't already available
     if (!this.jobQueueOverviewService.isAvailable) {
       await this.jobQueueOverviewService.setUp();
       await this.jobQueueOverviewService.isAvailablePromise;
     }
+
     // Setup an interval and subscribe
     const routine = interval(this.jobQueueOverviewService.configParams.RefreshIntervalSeconds * 1000);
     this.routineSubscription = routine.subscribe(() => this.updatePlot());
@@ -94,8 +103,13 @@ export class JobQueueOverviewComponent implements OnInit, OnDestroy, OnChanges {
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes['isShowGraph']) {
-      this.updatePlot();
+      this.changeDetectorRef.detectChanges();
+      this.chart?.resize(this.getSize());
     }
+  }
+
+  public onChart(chart: Chart) {
+    this.chart = chart;
   }
 
   public updatePlot(): void {
@@ -105,51 +119,67 @@ export class JobQueueOverviewComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     const data = this.jobQueueOverviewService.getSlice(this.queue);
+    const dateArray: any[] = data.Time ? [...data.Time] : [];
+    const errorArray: any[] = data.Error ? [...data.Error] : [];
+    const waitingArray: any[] = data.Waiting ? [...data.Waiting] : [];
+    const readyArray: any[] = data.Ready ? [...data.Ready] : [];
+    const processingArray: any[] = data.Processing ? [...data.Processing] : [];
+    const finishArray: any[] = data.Finished ? [...data.Finished] : [];
 
-    if (data.Time.length > 0) {
-      this.setData(data);
-      this.chartOptions.onresize = () => this.setData(data);
+    //add data ID as first element in arrays
+    dateArray.unshift('x');
+    errorArray.unshift(this.errorText);
+    waitingArray.unshift(this.waitingText);
+    readyArray.unshift(this.readyText);
+    processingArray.unshift(this.processingText);
+    finishArray.unshift(this.finishedText);
+
+    if (!!data.Time?.length) {
+      this.chart?.load({
+        resizeAfter: true,
+        append: true,
+        columns: [dateArray, errorArray, waitingArray, readyArray, processingArray, finishArray],
+      });
     }
   }
 
-  public setData(data: JobQueueDataSlice): void {
+  private buildOptions() {
     // If there is actually data, show it
-    const xAxis = new XAxisInformation('date', data.Time, this.xAxisConfig);
+    const xAxis = new XAxisInformation('date', [], this.xAxisConfig);
     const yAxis = new YAxisInformation([
-      new SeriesInformation(this.errorText, data.Error, 'red'),
-      new SeriesInformation(this.waitingText, data.Waiting, 'orange'),
-      new SeriesInformation(this.readyText, data.Ready, 'blue'),
-      new SeriesInformation(this.processingText, data.Processing, 'yellow'),
-      new SeriesInformation(this.finishedText, data.Finished, 'green'),
+      new SeriesInformation(this.errorText, [], 'red'),
+      new SeriesInformation(this.waitingText, [], 'orange'),
+      new SeriesInformation(this.readyText, [], 'blue'),
+      new SeriesInformation(this.processingText, [], 'violet'),
+      new SeriesInformation(this.finishedText, [], 'green'),
     ]);
     yAxis.tickConfiguration = {
       format: (l) => (Number.isInteger(l) && l > -1 ? l.toString() : ''),
     };
-    yAxis.min = 0;
-    const lineChartOptions = new LineChartOptions(xAxis, yAxis);
+    yAxis.min = -1;
+    const lineChartOptions = new LineChartOptions(
+      xAxis,
+      yAxis,
+      this.translateService.instant('#LDS#Currently, there is no data in any queues.'),
+    );
     lineChartOptions.showPoints = true;
     lineChartOptions.hideLegend = false;
     lineChartOptions.colorArea = false;
     lineChartOptions.canZoom = true;
     lineChartOptions.padding = { left: 20, right: 20, unit: 'px' };
     this.chartOptions = lineChartOptions.options;
-    this.chartOptions.size = this.getSize();
-  }
-
-  public removeOldSVG(): void {
-    const svgElement = document.getElementsByClassName('bb')[0].firstChild;
-    if (svgElement) {
-      svgElement.remove();
+    if (this.chartOptions.data) {
+      this.chartOptions.data.labels = { format: (v, id, i, j) => `${v}` };
     }
+    this.chartOptions.size = { width: 0, height: 0 };
   }
 
   public getSize(): { height: number; width: number } {
-    const graphCard = document.querySelector('.imx-billboard-card');
+    const graphCard = document.querySelector('.imx-card-fill');
     const emptyCard = document.querySelector('.imx-empty-card');
     let divForSize: HTMLDivElement;
     if (graphCard) {
       // The graph is already displayed, use the current graph, remove previous svg first for resize problem
-      this.removeOldSVG();
       divForSize = graphCard as HTMLDivElement;
     } else {
       // We haven't yet rendered the graph, use the empty display instead

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { DbObjectKey, IEntity, TypedEntity, XOrigin } from 'imx-qbm-dbts';
+import { DbObjectKey, IEntity, TypedEntity, XOrigin } from '@imx-modules/imx-qbm-dbts';
 
 import { imx_SessionService } from 'qbm';
 import { QerApiService } from '../../qer-api-client.service';
@@ -43,7 +43,7 @@ export class RoleEntitlementActionService {
     private readonly qerApiService: QerApiService,
     private readonly roleService: RoleService,
     private dataManagementService: DataManagementService,
-    private readonly session: imx_SessionService
+    private readonly session: imx_SessionService,
   ) {}
 
   /**
@@ -51,13 +51,15 @@ export class RoleEntitlementActionService {
    * @param selectedEntities the list of entities including their type
    */
   public async processEntitlementSelections(selectedEntities: SelectedEntitlement[]): Promise<void> {
-    const entity = this.dataManagementService.entityInteractive.GetEntity();
+    const entity = this.dataManagementService.entityInteractive?.GetEntity();
+    if (entity == null) return;
     for (const selectedEntity of selectedEntities) {
-      await this.putSingleItemInShoppingCart(
-        entity,
-        selectedEntity.assignmentType.AssignTable,
-        selectedEntity.entity.GetColumn('XObjectKey').GetValue()
-      );
+      if (selectedEntity.assignmentType.AssignTable != null)
+        await this.putSingleItemInShoppingCart(
+          entity,
+          selectedEntity.assignmentType.AssignTable,
+          selectedEntity.entity.GetColumn('XObjectKey').GetValue(),
+        );
     }
   }
 
@@ -66,7 +68,10 @@ export class RoleEntitlementActionService {
    * @param selectedEntities the lits of entitie, that should be deleted
    */
   public async deleteEntitlements(selectedEntities: TypedEntity[]): Promise<void> {
-    const entity = this.dataManagementService.entityInteractive.GetEntity();
+    const entity = this.dataManagementService.entityInteractive?.GetEntity();
+    if (entity == null) {
+      return;
+    }
     for (const selectedEntity of selectedEntities) {
       await this.delete(entity, selectedEntity);
     }
@@ -85,11 +90,13 @@ export class RoleEntitlementActionService {
     const entitlementTypes = await this.roleService.getEntitlementTypes(entity);
     let countAdd = 0;
     for (const recommendation of recommendations) {
-      const assignTable = entitlementTypes.find(
-        (elem) => elem.TableName === DbObjectKey.FromXml(recommendation.ObjectKey.value).TableName
-      ).AssignTable;
-      await this.putSingleItemInShoppingCart(entity, assignTable, recommendation.ObjectKey.value);
-      countAdd = countAdd + 1;
+      const assignTable = entitlementTypes?.find(
+        (elem) => elem.TableName === DbObjectKey.FromXml(recommendation.ObjectKey.value).TableName,
+      )?.AssignTable;
+      if (assignTable) {
+        await this.putSingleItemInShoppingCart(entity, assignTable, recommendation.ObjectKey.value);
+        countAdd = countAdd + 1;
+      }
     }
     return countAdd;
   }
@@ -111,10 +118,10 @@ export class RoleEntitlementActionService {
         await this.roleService.getEntitlements({
           id: entity.GetKeys().join(','),
           navigationState: {},
-          objectKey: recommendation.ObjectKey.value
+          objectKey: recommendation.ObjectKey.value,
         })
-      ).Data;
-      if (items.length > 0) {
+      )?.Data;
+      if (!!items?.length) {
         this.delete(entity, items[0]);
         countRemove = countRemove + 1;
       }
@@ -134,8 +141,8 @@ export class RoleEntitlementActionService {
 
   private isDirectAssignment(entity: TypedEntity): boolean {
     const xorigin = entity.GetEntity().GetColumn('XOrigin').GetValue() as XOrigin;
-    // tslint:disable-next-line:no-bitwise
-    return xorigin && XOrigin.Direct === (XOrigin.Direct & xorigin);
+    // eslint-disable-next-line no-bitwise
+    return (xorigin && XOrigin.Direct === (XOrigin.Direct & xorigin)) || false;
   }
 
   private isRequestCancellable(entity: TypedEntity): boolean {
@@ -150,7 +157,7 @@ export class RoleEntitlementActionService {
     // i.e. "OrgHasADSGroup|<Key><T>ADSGroup</T><P>468fa7aa-26d8-4c81-8944-a00146014ece</P></Key>"
     newCartItem.EntitlementData.value = assignTable + '|' + entitlementObjectKey;
 
-    newCartItem.UID_PersonOrdered.value = this.session.SessionState.UserUid;
+    newCartItem.UID_PersonOrdered.value = this.session.SessionState.UserUid || '';
 
     await newCartItem.GetEntity().Commit(false);
   }

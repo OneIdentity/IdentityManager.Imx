@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,16 +24,17 @@
  *
  */
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { OverlayRef } from '@angular/cdk/overlay';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { OpsupportJobservers, ServerExtendedData } from 'imx-api-qbm';
-import { JobServersParameters, JobServersService } from './job-servers.service';
-import { DataSourceToolbarSettings, SettingsService, SnackBarService } from 'qbm';
-import { JobServersEditComponent } from './job-servers-edit/job-servers-edit.component';
+import { OpsupportJobservers } from '@imx-modules/imx-api-qbm';
+import { IClientProperty, TypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { calculateSidesheetWidth, DataSourceToolbarSettings, SettingsService, SnackBarService } from 'qbm';
 import { JobServersDetailsComponent } from './job-servers-details/job-servers-details.component';
+import { JobServersEditComponent } from './job-servers-edit/job-servers-edit.component';
+import { JobServersParameters, JobServersService } from './job-servers.service';
 @Component({
   selector: 'imx-job-servers-gridview',
   templateUrl: './job-servers-gridview.component.html',
@@ -55,14 +56,14 @@ export class JobServersGridviewComponent implements OnInit {
     private readonly settingsService: SettingsService,
     private readonly sidesheet: EuiSidesheetService,
     private readonly snackBarService: SnackBarService,
-    private readonly translateService: TranslateService
+    private readonly translateService: TranslateService,
   ) {}
 
   public async ngOnInit(): Promise<void> {
     let overlayRef = this.busyService.show();
     try {
       await this.refresh();
-      this.editableFields = (await this.gridDataService.getProjectConfig()).EditableFields.QBMServer;
+      this.editableFields = (await this.gridDataService.getProjectConfig()).EditableFields?.QBMServer;
     } finally {
       this.busyService.hide(overlayRef);
     }
@@ -100,7 +101,7 @@ export class JobServersGridviewComponent implements OnInit {
       },
     };
     Object.assign(entitySchema.Columns, extraColumns);
-    const displayedColumns = [];
+    const displayedColumns: IClientProperty[] = [];
     displayedColumns.push(entitySchema.Columns.Ident_Server);
     if (this.navigationState.withconnection) {
       displayedColumns.push(entitySchema.Columns.Connection);
@@ -120,7 +121,7 @@ export class JobServersGridviewComponent implements OnInit {
         dataSource: data,
         entitySchema,
         navigationState: this.navigationState,
-        extendedData: data.extendedData[0],
+        extendedData: data.extendedData?.[0] as any[],
       };
 
       this.jobServersChecked.emit(this.navigationState.withconnection);
@@ -128,7 +129,7 @@ export class JobServersGridviewComponent implements OnInit {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
   }
-  public async checkServer(data: any, event: Event) {
+  public async checkServer(data: TypedEntity, event: Event) {
     event.stopPropagation();
     let overlayRef = this.busyService.show();
     let uid = data.GetEntity().GetKeys()[0],
@@ -136,7 +137,7 @@ export class JobServersGridviewComponent implements OnInit {
     connectionTime = await this.gridDataService.checkServerConnection(uid);
     this.busyService.hide(overlayRef);
     if (connectionTime.Value === -1) {
-      let textContainer = { key: '#LDS#The server does not respond.' };
+      let textContainer = { key: '#LDS#The job server does not respond.' };
       this.snackBarService.open(textContainer, '#LDS#Close', { duration: 6000 });
     } else {
       data.GetEntity().Commit(true);
@@ -151,27 +152,29 @@ export class JobServersGridviewComponent implements OnInit {
     return diff > 10;
   }
 
-  public edit(data: OpsupportJobservers): void {
+  public edit(data: TypedEntity): void {
     this.sidesheet.open(JobServersEditComponent, {
-      title: this.translateService.instant('#LDS#Heading Edit Server Settings'),
+      title: this.translateService.instant('#LDS#Heading Edit Job Server Settings'),
+      subTitle: data.GetEntity().GetDisplay(),
       disableClose: true,
       padding: '0',
-      width: 'max(50%,500px)',
+      width: calculateSidesheetWidth(800, 0.5),
       testId: 'job-servers-edit-sidesheet',
       data: { data, properties: this.editableFields },
     });
   }
 
-  public getServerDetails(data: ServerExtendedData[], event: Event): void {
+  public getServerDetails(data: OpsupportJobservers, event: Event): void {
     event.stopPropagation();
     let overlayRef = this.busyService.show();
     try {
       this.sidesheet.open(JobServersDetailsComponent, {
-        title: this.translateService.instant('#LDS#Heading View Server Details'),
-        width: 'max(50%,500px)',
+        title: this.translateService.instant('#LDS#Heading View Job Server Details'),
+        subTitle: data.GetEntity().GetDisplay(),
+        width: calculateSidesheetWidth(800, 0.5),
         padding: '0',
-        testId: 'job-servers-deatils-sidesheet',
-        data: data,
+        testId: 'job-servers-details-sidesheet',
+        data: this.dstSettings.extendedData,
       });
     } finally {
       this.busyService.hide(overlayRef);

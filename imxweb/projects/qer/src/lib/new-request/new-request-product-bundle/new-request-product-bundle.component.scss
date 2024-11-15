@@ -9,9 +9,9 @@
   .imx-product-bundle-toolbar {
     display: flex;
     align-items: center;
-    justify-content: end;
+    justify-content: flex-end;
     .imx-info-button-caption {
-      @include imx-text();
+      @include new-request-text();
     }
   }
   .imx-product-bundle-container {

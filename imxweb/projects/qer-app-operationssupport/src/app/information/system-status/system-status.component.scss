@@ -1,24 +1,13 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
-.imx-db-icon {
-  padding-top: 45px;
-}
-
-.mat-button {
-  color: $iris-blue;
-  font-weight: 600;
-}
-
-eui-icon {
-  text-align: center;
-}
 
 .eui-icon {
+  text-align: center;
   vertical-align: bottom;
 }
 
-.mat-card {
+.mat-mdc-card {
   padding: 0;
   margin: 5px;
 }

@@ -1,9 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
-
-:host {
-  margin: 10px;
-  display: flex;
-}
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 li {
   list-style-type: none;
@@ -13,7 +8,7 @@ li {
 
   > .imx-kpi-display {
     display: table-cell;
-    width: 100%
+    width: 100%;
   }
 
   :nth-child(3n) {
@@ -30,15 +25,12 @@ li {
   }
 }
 
-.mat-card {
-  width: 771px;
-  height: auto;
-  margin: 40px 10px 0px;
+.mat-mdc-card {
   display: flex;
   flex-direction: column;
 }
 
-.mat-card-content {
+.mat-mdc-card-content {
   padding: 0 10px 0 35px;
   overflow: auto;
 
@@ -47,16 +39,14 @@ li {
   }
 }
 
-.mat-card-title {
+.mat-mdc-card-title {
   padding: 20px 33px 0px;
-  font-size: 24px;
   font-weight: 600;
   margin-bottom: 0;
 }
 
-.mat-card-subtitle {
+.mat-mdc-card-subtitle {
   font-size: 16px;
-  color: $black-3;
   font-weight: 400;
   padding: 5px 33px 20px;
   margin-bottom: 0;
@@ -69,7 +59,7 @@ p {
   margin-top: 0;
 }
 
-h1 {
+h2 {
   font-size: 16px;
   font-weight: 600;
   margin: 30px 0 15px 0;
@@ -82,18 +72,11 @@ h1 {
   display: table;
 }
 
-.imx-chart {
-  display: flex;
-  justify-content: center;
-  flex-direction: row;
-}
-
-.mat-dialog-title {
-  display: flex;
+.mat-mdc-dialog-title {
   margin: 0;
 }
 
-.mat-dialog-content {
+.mat-mdc-dialog-content {
   max-height: 100%;
 }
 
@@ -108,11 +91,6 @@ h1 {
   margin: 0;
 }
 
-.imx-close-dialog-button {
-  right: -15px;
-  top: -15px;
-}
-
 .imx-aob-kpi-empty {
   display: flex;
   flex-direction: column;
@@ -122,10 +100,6 @@ h1 {
 
   span {
     margin-left: 24px;
-  }
-
-  > .eui-icon {
-    color: $black-b;
   }
 }
 

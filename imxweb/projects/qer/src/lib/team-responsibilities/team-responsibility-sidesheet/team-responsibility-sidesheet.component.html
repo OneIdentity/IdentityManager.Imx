@@ -1,14 +1,65 @@
-<div eui-sidesheet-content class="imx-team-responsibilities-sidesheet">
-  <eui-alert type="info" condensed="true" [colored]="true" [dismissable]="true" *ngIf="data.extendedData?.OtherIdentities.length == 0">
-    <span> {{ '#LDS#There are no other identities who are also responsible for the object.' | translate }} </span>
-  </eui-alert>
-  <mat-card *ngIf="data.extendedData?.OtherIdentities.length > 0">
-    <mat-list role="list" >
-      <mat-list-item role="listitem" *ngFor="let identity of data.extendedData?.OtherIdentities">{{ identity.Display }}</mat-list-item>
-    </mat-list>
-  </mat-card>
-</div>
+<mat-tab-group mat-stretch-tabs="false" class="imx-responsibilities">
+  <mat-tab label="{{ '#LDS#Heading Details' | translate }}">
+    <div eui-sidesheet-content>
+      <div class="imx-card-title-m imx-padding-bottom-16">{{ data.responsibility.GetEntity().GetDisplayLong() }}</div>
+      <mat-card>
+        <div class="imx-responsibilities-subtitle">{{ '#LDS#Responsible identity' | translate }}:</div>
+        <div class="imx-card-title-m imx-padding-bottom-16">{{ data.responsibility.UID_Person.Column.GetDisplayValue() }}</div>
+        <div class="imx-action-needed" *ngIf="isActionNeeded()">
+          <span> <eui-icon icon="warning" size="s"></eui-icon>{{ '#LDS#Action needed' | translate }}</span>
+          <mat-divider [vertical]="true"></mat-divider>
+          <span>{{ '#LDS#Leaving date' | translate }}: {{ data.responsibility.ExitDate.Column.GetDisplayValue() }}</span>
+        </div>
+        <div>
+          <button
+            mat-stroked-button
+            color="primary"
+            (click)="onReassignResponsibilities()"
+            *ngIf="isDirectResponsibility()"
+            class="imx-margin-right-16"
+          >
+            {{ '#LDS#Reassign responsibility' | translate }}
+          </button>
+          <button mat-stroked-button color="warn" (click)="onDeleteResponsibility()" *ngIf="isDirectResponsibility()">
+            {{ '#LDS#Remove responsibility' | translate }}
+          </button>
+        </div>
+      </mat-card>
+    </div>
+  </mat-tab>
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <span class="imx-margin-right-8">
+        {{ '#LDS#Heading Other Identities Responsible for the Object' | translate }}
+      </span>
+      <eui-badge *ngIf="!!data.extendedData?.OtherIdentities?.length">{{ data.extendedData?.OtherIdentities?.length }}</eui-badge>
+    </ng-template>
+    <div eui-sidesheet-content>
+      <eui-alert type="info" [condensed]="true" [colored]="true" [dismissable]="true" *ngIf="!data.extendedData?.OtherIdentities?.length">
+        <span> {{ '#LDS#There are no other identities who are also responsible for the object.' | translate }} </span>
+      </eui-alert>
+      <mat-card *ngIf="!!data.extendedData?.OtherIdentities?.length">
+        <imx-data-view-toolbar [dataSource]="dataSource" [showSettings]="false"></imx-data-view-toolbar>
+        <imx-data-view-auto-table [dataSource]="dataSource" mode="manual">
+          <ng-container [matColumnDef]="'Display'">
+            <th mat-header-cell *matHeaderCellDef>{{ '#LDS#Name' | translate }}</th>
+            <td mat-cell *matCellDef="let item" role="gridcell">
+              <span *ngIf="!actionNeeded(item)">{{ item.GetEntity().GetColumn('Display').GetDisplayValue() }}</span>
+              <span *ngIf="actionNeeded(item)" class="imx-action-needed-column" [matTooltip]="'#LDS#Action needed' | translate">
+                <span>{{ item.GetEntity().GetColumn('Display').GetDisplayValue() }}</span>
+                <eui-icon icon="warning" size="s"></eui-icon>
+              </span>
+            </td>
+          </ng-container>
+        </imx-data-view-auto-table>
+      </mat-card>
+    </div>
+  </mat-tab>
+</mat-tab-group>
 <div eui-sidesheet-actions>
+  <button mat-stroked-button color="primary" (click)="onAssignResponsibilities()" class="justify-start">
+    {{ (isDirectResponsibility() ? '#LDS#Assign additional identities' : '#LDS#Assign additional identity') | translate }}
+  </button>
   <button mat-flat-button color="primary" (click)="closeSidesheet()">
     {{ '#LDS#Close' | translate }}
   </button>

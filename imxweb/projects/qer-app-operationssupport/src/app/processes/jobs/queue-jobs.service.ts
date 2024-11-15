@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,9 +26,17 @@
 
 import { Injectable } from '@angular/core';
 
-import { EntityCollectionData, EntitySchema, TypedEntityCollectionData, FilterData, CollectionLoadParameters, DataModel, TypedEntity } from 'imx-qbm-dbts';
+import { OpsupportQueueJobs, ReactivateJobMode } from '@imx-modules/imx-api-qbm';
+import {
+  CollectionLoadParameters,
+  DataModel,
+  EntityCollectionData,
+  EntitySchema,
+  FilterData,
+  TypedEntity,
+  TypedEntityCollectionData,
+} from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarFilter, imx_SessionService } from 'qbm';
-import { OpsupportQueueJobs, ReactivateJobMode } from 'imx-api-qbm';
 
 export interface OpsupportQueueJobsParameters extends CollectionLoadParameters {
   frozen?: boolean;
@@ -42,18 +50,18 @@ export class QueueJobsService {
     return this.session.TypedClient.OpsupportQueueJobs.GetSchema();
   }
 
-  constructor(private session: imx_SessionService) { }
+  constructor(private session: imx_SessionService) {}
 
   public Get(parameters: OpsupportQueueJobsParameters): Promise<TypedEntityCollectionData<OpsupportQueueJobs>> {
     return this.session.TypedClient.OpsupportQueueJobs.Get(parameters);
   }
 
   public async getFilters(): Promise<DataSourceToolbarFilter[]> {
-    return (await this.getDataModel()).Filters;
+    return (await this.getDataModel()).Filters ?? [];
   }
 
   public async getDataModel(): Promise<DataModel> {
-    return this.session.Client.opsupport_queue_jobs_datamodel_get(undefined);
+    return this.session.Client.opsupport_queue_jobs_datamodel_get();
   }
 
   public Post(jobs: string[]): Promise<EntityCollectionData> {
@@ -64,8 +72,7 @@ export class QueueJobsService {
     return this.session.Client.opsupport_queue_reactivatejob_post({ Mode: mode, UidJobs: jobs });
   }
 
-  
-  public getTreeData(startUid: string): Promise<TypedEntityCollectionData<TypedEntity>>{
+  public getTreeData(startUid: string): Promise<TypedEntityCollectionData<TypedEntity>> {
     return this.session.TypedClient.OpsupportQueueTree.Get({ uidtree: startUid });
   }
 }

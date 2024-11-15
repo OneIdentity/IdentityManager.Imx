@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,9 +27,9 @@
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EuiLoadingService } from '@elemental-ui/core';
+import { PersonActivationDto } from '@imx-modules/imx-api-att';
 import { TranslateService } from '@ngx-translate/core';
-import { PersonActivationDto } from 'imx-api-att';
-import { AuthenticationService, SessionState, SnackBarService, SplashService } from 'qbm';
+import { AuthenticationService, ConfirmationService, Message, SessionState, SnackBarService, SplashService, UserMessageService } from 'qbm';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../api.service';
 
@@ -43,9 +43,10 @@ export class UserActivationComponent implements OnDestroy {
   public ldsText: string;
   public hasProblems = false;
 
-  private readonly subscription: Subscription;
+  private readonly subscriptions: Subscription[] = [];
   private passcode: string;
   private uidCase: string;
+  public message: Message | undefined;
 
   constructor(
     private readonly attApiService: ApiService,
@@ -55,28 +56,43 @@ export class UserActivationComponent implements OnDestroy {
     private readonly translateService: TranslateService,
     private readonly busyService: EuiLoadingService,
     private readonly splashService: SplashService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly confirmationService: ConfirmationService,
+    private readonly userMessageService: UserMessageService,
   ) {
-    this.subscription = route.queryParamMap.subscribe(async (params) => {
-      this.busy = true;
-      try {
-        this.uidCase = params.get('aeweb_UID_AttestationCase');
-        this.passcode = params.get('aeweb_PassCode');
-        if (!this.hasFormat) {
-          return;
-        }
-        this.data = await this.attApiService.client.passwordreset_activation_init_post(this.uidCase);
+    this.subscriptions.push(
+      route.queryParamMap.subscribe(async (params) => {
+        this.busy = true;
+        try {
+          this.uidCase = params.get('aeweb_UID_AttestationCase') || '';
+          this.passcode = params.get('aeweb_PassCode') || '';
+          if (!this.hasFormat) {
+            return;
+          }
+          this.data = await this.attApiService.client.passwordreset_activation_init_post(this.uidCase);
 
-        // Apply culture
-        this.data?.Culture ? this.useCulture(this.data.Culture) : null;
-      } catch {
-        this.hasProblems = true;
-      } finally {
-        this.determineText();
-        this.splashService.close();
-        this.busy = false;
-      }
-    });
+          // Apply culture
+          this.data?.Culture ? this.useCulture(this.data.Culture) : null;
+        } catch {
+          this.hasProblems = true;
+        } finally {
+          this.determineText();
+          this.splashService.close();
+          this.busy = false;
+        }
+      }),
+    );
+
+    this.subscriptions.push(
+      this.userMessageService.subject.subscribe((message) => {
+        this.message = message;
+        if (!!this.message) {
+          this.confirmationService.showErrorMessage({
+            Message: this.message?.text,
+          });
+        }
+      }),
+    );
   }
 
   public get hasFormat(): boolean {
@@ -84,7 +100,7 @@ export class UserActivationComponent implements OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   public async resendMail(): Promise<void> {
@@ -134,8 +150,7 @@ export class UserActivationComponent implements OnDestroy {
           this.ldsText = '#LDS#Your registration was denied.';
           break;
         default:
-          this.ldsText =
-            '#LDS#There was an unexpected error. Please try again.';
+          this.ldsText = '#LDS#There was an unexpected error. Please try again.';
       }
       return;
     }

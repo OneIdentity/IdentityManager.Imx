@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,26 +31,26 @@ import { MatDialogRef } from '@angular/material/dialog';
 @Component({
   selector: 'imx-dynamic-exclusion-dialog',
   templateUrl: './dynamic-exclusion-dialog.component.html',
-  styleUrls: ['./dynamic-exclusion-dialog.component.scss']
 })
 export class DynamicExclusionDialogComponent implements OnInit {
-
   public dynamicExclusionForm: UntypedFormGroup;
 
-  constructor(private formBuilder: UntypedFormBuilder, public dialogRef: MatDialogRef<DynamicExclusionDialogComponent>) {}
+  constructor(
+    private formBuilder: UntypedFormBuilder,
+    public dialogRef: MatDialogRef<DynamicExclusionDialogComponent>,
+  ) {}
 
   public ngOnInit(): void {
     this.dynamicExclusionForm = this.formBuilder.group({
-      description: ['']
+      description: [''],
     });
   }
 
   public save(): void {
-    this.dialogRef.close(this.dynamicExclusionForm.get('description').value);
+    this.dialogRef.close(this.dynamicExclusionForm.get('description')?.value);
   }
 
   public cancel(): void {
     this.dialogRef.close(undefined);
   }
-
 }

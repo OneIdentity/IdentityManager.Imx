@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,13 +24,12 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, Inject, OnDestroy } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import { FormGroup, UntypedFormGroup } from '@angular/forms';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
-import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 
-import { IEntity } from 'imx-qbm-dbts';
+import { IEntity } from '@imx-modules/imx-qbm-dbts';
 import { BaseCdr, ColumnDependentReference, ConfirmationService } from 'qbm';
 
 @Component({
@@ -38,11 +37,11 @@ import { BaseCdr, ColumnDependentReference, ConfirmationService } from 'qbm';
   templateUrl: './resource-sidesheet.component.html',
   styleUrls: ['./resource-sidesheet.component.scss'],
 })
-export class ResourceSidesheetComponent implements OnDestroy{
+export class ResourceSidesheetComponent implements OnDestroy {
   public cdrList: ColumnDependentReference[];
-  public ownerCdr: ColumnDependentReference;
-  public resourceFromGroup = new UntypedFormGroup({});
-  public formGroup = new UntypedFormGroup({ resource: this.resourceFromGroup });
+  public ownerCdr: BaseCdr | undefined;
+  public resourceFormGroup = new UntypedFormGroup({});
+  public formGroup: FormGroup<{ resource: UntypedFormGroup }>;
   private subscriptions: Subscription[] = [];
 
   constructor(
@@ -56,40 +55,39 @@ export class ResourceSidesheetComponent implements OnDestroy{
     },
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly busy: EuiLoadingService,
-    confirmation: ConfirmationService
+    confirmation: ConfirmationService,
   ) {
-    this.subscriptions.push(sidesheetRef.closeClicked().subscribe(async () => {
-      if (this.formGroup.dirty && !(await confirmation.confirmLeaveWithUnsavedChanges())) {
-        return;
-      }
+    this.formGroup = new UntypedFormGroup({ resource: this.resourceFormGroup });
+    this.subscriptions.push(
+      sidesheetRef.closeClicked().subscribe(async () => {
+        if (this.formGroup.dirty && !(await confirmation.confirmLeaveWithUnsavedChanges())) {
+          return;
+        }
 
-      sidesheetRef.close(false);
-    }));
+        sidesheetRef.close(false);
+      }),
+    );
     this.cdrList = this.data.editableFields.map((elem) => new BaseCdr(this.data.entity.GetColumn(elem)));
     this.ownerCdr = this.data.accProduct == null ? undefined : new BaseCdr(this.data.accProduct.GetColumn('UID_OrgRuler'));
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   public async submit(): Promise<void> {
-    let overlay: OverlayRef;
-
-    setTimeout(() => {
-      overlay = this.busy.show();
-    });
+    if (this.busy.overlayRefs.length === 0) {
+      this.busy.show();
+    }
     try {
-      if (this.resourceFromGroup.dirty) {
+      if (this.resourceFormGroup.dirty) {
         this.data.entity.Commit();
       }
-      if (this.formGroup.get('UID_OrgRuler').dirty) {
+      if (this.formGroup.get('UID_OrgRuler')?.dirty) {
         this.data.accProduct.Commit();
       }
     } finally {
-      setTimeout(() => {
-        this.busy.hide(overlay);
-      });
+      this.busy.hide();
     }
     this.sidesheetRef.close(true);
   }

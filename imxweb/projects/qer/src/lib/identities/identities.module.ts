@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,8 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
@@ -34,6 +34,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
+import { MatMenuModule } from '@angular/material/menu';
+import { ProjectConfig } from '@imx-modules/imx-api-qbm';
 import {
   BusyIndicatorModule,
   CdrModule,
@@ -41,6 +43,7 @@ import {
   DataSourceToolbarModule,
   DataTableModule,
   DataTreeModule,
+  DataViewModule,
   DynamicTabsModule,
   ExtModule,
   HELP_CONTEXTUAL,
@@ -51,23 +54,21 @@ import {
   ObjectHistoryModule,
   RouteGuardService,
 } from 'qbm';
-import { DataExplorerIdentitiesComponent } from './identities.component';
-import { IdentitiesService } from './identities.service';
-import { IdentitySidesheetComponent } from './identity-sidesheet/identity-sidesheet.component';
-import { IdentitiesReportsService } from './identities-reports.service';
 import { isAuditor, isPersonAdmin, isPersonManager } from '../admin/qer-permissions-helper';
-import { RiskModule } from '../risk/risk.module';
 import { DataExplorerRegistryService } from '../data-explorer-view/data-explorer-registry.service';
-import { AssignmentsComponent } from './identity-sidesheet/assignments/assignments.component';
-import { IdentityRoleMembershipsModule } from './identity-sidesheet/identity-role-memberships/identity-role-memberships.module';
+import { MyResponsibilitiesRegistryService } from '../my-responsibilities-view/my-responsibilities-registry.service';
+import { ObjectHyperviewModule } from '../object-hyperview/object-hyperview.module';
 import { OrgChartModule } from '../org-chart/org-chart.module';
+import { RequestHistoryModule } from '../request-history/request-history.module';
+import { RiskModule } from '../risk/risk.module';
 import { CreateNewIdentityComponent } from './create-new-identity/create-new-identity.component';
 import { DuplicatesSidesheetComponent } from './create-new-identity/duplicates-sidesheet/duplicates-sidesheet.component';
-import { RequestHistoryModule } from '../request-history/request-history.module';
-import { ObjectHyperviewModule } from '../object-hyperview/object-hyperview.module';
-import { MyResponsibilitiesRegistryService } from '../my-responsibilities-view/my-responsibilities-registry.service';
-import { MatMenuModule } from '@angular/material/menu';
-import { ProjectConfig } from 'imx-api-qbm';
+import { IdentitiesReportsService } from './identities-reports.service';
+import { DataExplorerIdentitiesComponent } from './identities.component';
+import { IdentitiesService } from './identities.service';
+import { AssignmentsComponent } from './identity-sidesheet/assignments/assignments.component';
+import { IdentityRoleMembershipsModule } from './identity-sidesheet/identity-role-memberships/identity-role-memberships.module';
+import { IdentitySidesheetComponent } from './identity-sidesheet/identity-sidesheet.component';
 
 const routes: Routes = [
   {
@@ -112,18 +113,18 @@ const routes: Routes = [
     IdentityRoleMembershipsModule,
     RouterModule.forChild(routes),
     MatMenuModule,
-    HelpContextualModule
+    HelpContextualModule,
+    DataViewModule,
   ],
   providers: [IdentitiesService, IdentitiesReportsService],
   exports: [DataExplorerIdentitiesComponent],
-  entryComponents: [CreateNewIdentityComponent, DuplicatesSidesheetComponent],
 })
 export class IdentitiesModule {
   constructor(
     private readonly dataExplorerRegistryService: DataExplorerRegistryService,
     private readonly menuService: MenuService,
     private readonly myResponsibilitiesRegistryService: MyResponsibilitiesRegistryService,
-    logger: ClassloggerService
+    logger: ClassloggerService,
   ) {
     logger.info(this, '▶️ IdentitiesModule loaded');
     this.init();
@@ -132,48 +133,45 @@ export class IdentitiesModule {
   }
 
   private setupMenu(): void {
-    this.menuService.addMenuFactories(
-      (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
+    this.menuService.addMenuFactories((preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
+      const items: MenuItem[] = [];
+      if (preProps.includes('ITSHOP') && (isPersonAdmin(features) || isPersonManager(features) || isAuditor(groups))) {
+        items.push({
+          id: 'QER_DataExplorer',
+          navigationCommands: { commands: ['admin', 'dataexplorer'] },
+          title: '#LDS#Menu Entry Data Explorer',
+          sorting: '40-10',
+        });
+      }
 
-        const items: MenuItem[] = [];
-        if (preProps.includes('ITSHOP') && (isPersonAdmin(features) || isAuditor(groups))) {
-          items.push(
-            {
-              id: 'QER_DataExplorer',
-              navigationCommands: { commands: ['admin', 'dataexplorer'] },
-              title: '#LDS#Menu Entry Data Explorer',
-              sorting: '40-10',
-            },
-          );
-        }
-        if (items.length === 0) {
-          return null;
-        }
-        return {
-          id: 'ROOT_Data',
-          title: '#LDS#Data administration',
-          sorting: '40',
-          items
-        };
-      },
-    );
-  }
-
-  private init(): void {
-
-    this.dataExplorerRegistryService.registerFactory((preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
-      if (!isPersonAdmin(features) && !isAuditor(groups)) {
+      if (items.length === 0) {
         return;
       }
       return {
-        instance: DataExplorerIdentitiesComponent,
-        sortOrder: 1,
-        name: 'identities',
-        caption: '#LDS#Identities',
-        icon: 'contactinfo',
-        contextId: HELP_CONTEXTUAL.DataExplorerIdentities
+        id: 'ROOT_Data',
+        title: '#LDS#Data administration',
+        sorting: '40',
+        items,
       };
     });
+  }
+
+  private init(): void {
+    this.dataExplorerRegistryService.registerFactory(
+      (preProps: string[], features: string[], projectConfig: ProjectConfig, groups: string[]) => {
+        if (!isPersonAdmin(features) && !isPersonManager(features) && !isAuditor(groups)) {
+          return;
+        }
+        return {
+          instance: DataExplorerIdentitiesComponent,
+          sortOrder: 1,
+          name: 'identities',
+          caption: '#LDS#Identities',
+          icon: 'contactinfo',
+          contextId: HELP_CONTEXTUAL.DataExplorerIdentities,
+        };
+      },
+    );
   }
 
   private setupMyResponsibilitiesView(): void {
@@ -186,7 +184,7 @@ export class IdentitiesModule {
         sortOrder: 1,
         name: 'identities',
         caption: '#LDS#Identities',
-        contextId: HELP_CONTEXTUAL.MyResponsibilitiesIdentities
+        contextId: HELP_CONTEXTUAL.MyResponsibilitiesIdentities,
       };
     });
   }

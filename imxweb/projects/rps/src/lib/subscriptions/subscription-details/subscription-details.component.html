@@ -7,7 +7,13 @@
 </div>
 
 <div eui-sidesheet-actions>
-  <button mat-raised-button color="primary" [disabled]="!formGroup.dirty || formGroup.invalid" data-imx-identifier="subscription-details-button-save" (click)="submit()">
+  <button
+    mat-flat-button
+    color="primary"
+    [disabled]="!formGroup.dirty || formGroup.invalid"
+    data-imx-identifier="subscription-details-button-save"
+    (click)="submit()"
+  >
     {{ '#LDS#Save' | translate }}
   </button>
 </div>

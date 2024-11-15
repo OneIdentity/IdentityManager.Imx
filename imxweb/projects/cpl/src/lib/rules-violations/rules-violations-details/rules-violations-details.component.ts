@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,8 +28,8 @@ import { Component, Inject, OnDestroy, OnInit, Type, ViewChild } from '@angular/
 import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 
 import { MatTabGroup } from '@angular/material/tabs';
+import { PortalRules } from '@imx-modules/imx-api-cpl';
 import { TranslateService } from '@ngx-translate/core';
-import { PortalRules } from 'imx-api-cpl';
 import { BaseCdr, ExtService, IExtension } from 'qbm';
 import { Subscription } from 'rxjs';
 import { RulesViolationsActionService } from '../rules-violations-action/rules-violations-action.service';
@@ -59,7 +59,7 @@ export class RulesViolationsDetailsComponent implements OnInit, OnDestroy {
   public uidNonCompliance: string;
   public uidCompliance: string;
   public ruleInfoCdrList: BaseCdr[] = [];
-  private subscriptions$: Subscription[] = [];
+  private subscriptions$: (Subscription | undefined)[] = [];
 
   constructor(
     @Inject(EUI_SIDESHEET_DATA)
@@ -71,29 +71,29 @@ export class RulesViolationsDetailsComponent implements OnInit, OnDestroy {
     public sidesheetRef: EuiSidesheetRef,
     private readonly actionService: RulesViolationsActionService,
     private readonly extService: ExtService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
   ) {
     this.uidPerson = data.selectedRulesViolation.GetEntity().GetColumn('UID_Person').GetValue();
     this.uidNonCompliance = data.selectedRulesViolation.GetEntity().GetColumn('UID_NonCompliance').GetValue();
     this.cdrList = data.selectedRulesViolation.propertyInfo;
     if (this.data.complianceRule)
       this.ruleInfoCdrList.push(
-        new BaseCdr(this.data.complianceRule.Description.Column, this.translateService.instant('#LDS#Description')),
-        new BaseCdr(this.data.complianceRule.RuleNumber.Column)
+        new BaseCdr(this.data.complianceRule.Description.Column, this.translateService.instant('#LDS#Rule description')),
+        new BaseCdr(this.data.complianceRule.RuleNumber.Column),
       );
   }
 
   public ngOnInit(): void {
     this.subscriptions$.push(
-      this.sidesheetRef.componentInstance.onOpen().subscribe(() => {
+      this.sidesheetRef.componentInstance?.onOpen().subscribe(() => {
         // Recalculates header
         this.matTabGroup.updatePagination();
-      })
+      }),
     );
   }
 
   /**
-   * Opens the Approve-Sidesheet for the current selected rules violations and closes the sidesheet afterwards.
+   * Opens the Approve-Sidesheet for the current selected rule violations and closes the sidesheet afterwards.
    */
   public async approve(): Promise<void> {
     await this.actionService.approve([this.data.selectedRulesViolation]);
@@ -101,7 +101,7 @@ export class RulesViolationsDetailsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Opens the Deny-Sidesheet for the current selected rules violations and closes the sidesheet afterwards.
+   * Opens the Deny-Sidesheet for the current selected rule violations and closes the sidesheet afterwards.
    */
   public async deny(): Promise<void> {
     await this.actionService.deny([this.data.selectedRulesViolation]);
@@ -118,6 +118,6 @@ export class RulesViolationsDetailsComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions$.map((sub) => sub.unsubscribe());
+    this.subscriptions$.map((sub) => sub?.unsubscribe());
   }
 }

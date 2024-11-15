@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,18 +26,19 @@
 
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
-import { ChartDto, ChartInfoDto } from 'imx-api-qer';
+import { ChartDto } from '@imx-modules/imx-api-qer';
+import { TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
+import { ChartOptions, bar, donut, line } from 'billboard.js';
+import { calculateSidesheetWidth } from 'qbm';
 import { Subscription } from 'rxjs';
 import { ChartDataTyped } from '../charts/chart-data-typed';
 import { ChartTableService } from '../charts/chart-table/chart-table-service.service';
+import { ChartDetails } from '../charts/chart-tile/chart-details';
 import { ChartsSidesheetComponent } from '../charts/charts-sidesheet/charts-sidesheet.component';
 import { StatisticsChartHandlerService } from '../charts/statistics-chart-handler.service';
-import { StatisticsForObjectsApiService } from './statistics-for-objects-api.service';
-import { bar, ChartOptions, donut, line } from 'billboard.js';
-import { TypedEntityCollectionData } from 'imx-qbm-dbts';
-import { ChartDetails } from '../charts/chart-tile/chart-details';
-import { StatisticsConstantsService } from '../statistics-home-page/statistics-constants.service';
 import { ChartInfoTyped } from '../statistics-home-page/chart-info-typed';
+import { StatisticsConstantsService } from '../statistics-home-page/statistics-constants.service';
+import { StatisticsForObjectsApiService } from './statistics-for-objects-api.service';
 
 @Component({
   selector: 'imx-statistics-for-objects',
@@ -48,7 +49,7 @@ export class StatisticsForObjectsComponent implements OnInit, OnDestroy {
   @Input() objectType: string;
   @Input() objectUid: string;
 
-  public charts: ChartInfoDto[];
+  public charts: ChartInfoTyped[];
   public summaryStats: {
     [id: string]: ChartDto;
   } = {};
@@ -65,7 +66,7 @@ export class StatisticsForObjectsComponent implements OnInit, OnDestroy {
     private tableService: ChartTableService,
     private chartHandler: StatisticsChartHandlerService,
     private sidesheetService: EuiSidesheetService,
-    private statisticsConstantService: StatisticsConstantsService
+    private statisticsConstantService: StatisticsConstantsService,
   ) {}
 
   public async ngOnInit(): Promise<void> {
@@ -73,10 +74,10 @@ export class StatisticsForObjectsComponent implements OnInit, OnDestroy {
     this.charts = await this.statisticsApi.getCharts(this.objectType, this.objectUid);
     this.subscriptions$.push(
       ...this.charts.map((chart) => {
-        return this.statisticsApi.summaryStats$[chart.Id].subscribe((summaryStat) => {
-          this.summaryStats[chart.Id] = summaryStat;
+        return this.statisticsApi.summaryStats$[chart.Id.value].subscribe((summaryStat) => {
+          this.summaryStats[chart.Id.value] = summaryStat;
         });
-      })
+      }),
     );
   }
 
@@ -92,67 +93,72 @@ export class StatisticsForObjectsComponent implements OnInit, OnDestroy {
     return this.charts && this.charts.length > 0;
   }
 
-  public chartHasData(chartInfo: ChartInfoDto): boolean {
+  public chartHasData(chartInfo: ChartInfoTyped): boolean {
     const stat = this.getSummaryStat(chartInfo);
-    return stat?.Data && stat.Data.length > 0;
+    return !!stat?.Data?.length;
   }
 
-  public chartIsLoading(chartInfo: ChartInfoDto): boolean {
+  public chartIsLoading(chartInfo: ChartInfoTyped): boolean {
     return !this.getSummaryStat(chartInfo) ?? true;
   }
 
-  public getSummaryStat(chartInfo: ChartInfoDto): ChartDto | undefined {
-    return this.summaryStats[chartInfo.Id];
+  public getSummaryStat(chartInfo: ChartInfoTyped): ChartDto | undefined {
+    return this.summaryStats[chartInfo.Id.value];
   }
 
-  public async openStatistic(chartInfo: ChartInfoDto): Promise<void> {
+  public async openStatistic(chartInfo: ChartInfoTyped): Promise<void> {
     if (!this.chartHasData(chartInfo)) {
       // Prevent any further click progression
       return;
     }
 
     this.sidesheetService.open(ChartsSidesheetComponent, {
-      title: chartInfo.Title,
-      subTitle: chartInfo?.Description,
-      icon: this.chartDetails[chartInfo.Id].icon,
-      width: 'max(500px, 60%)',
+      title: chartInfo.GetEntity().GetDisplay(),
+      subTitle: chartInfo?.Description.value,
+      icon: this.chartDetails[chartInfo.Id.value].icon,
+      width: calculateSidesheetWidth(800, 0.5),
       data: {
-        chartInfo: ChartInfoTyped.toTypedEntity(chartInfo),
+        chartInfo,
         ...this.getChartOptionsWithHistory(chartInfo),
-        dataHasNonZero: this.chartDetails[chartInfo.Id].dataHasNonZero,
-        pointStatStatus: this.chartDetails[chartInfo.Id]?.pointStatus,
+        dataHasNonZero: this.chartDetails[chartInfo.Id.value].dataHasNonZero,
+        pointStatStatus: this.chartDetails[chartInfo.Id.value]?.pointStatus,
       },
     });
   }
 
-  public getChartOptionsWithHistory(chartInfo: ChartInfoDto): {
-    chartData: ChartDto;
-    tableData: TypedEntityCollectionData<ChartDataTyped>;
-    chartOptions: ChartOptions;
-  } {
+  public getChartOptionsWithHistory(chartInfo: ChartInfoTyped):
+    | {
+        chartData: ChartDto;
+        tableData: TypedEntityCollectionData<ChartDataTyped>;
+        chartOptions: ChartOptions;
+      }
+    | undefined {
     const chartData = this.getSummaryStat(chartInfo);
+    if (chartData?.Data == null) {
+      return;
+    }
     const tableData = this.tableService.getDataSource(chartData.Data);
-    let chartOptions: ChartOptions;
+    let chartOptions: ChartOptions = {};
     switch (true) {
-      case !!this.chartDetails[chartInfo.Id]?.pointStatus:
+      case !!this.chartDetails[chartInfo.Id.value]?.pointStatus:
         chartOptions = this.chartHandler.getLineData(chartData, {
           dataLimit: 1,
           nXTicks: 10,
           enableZoom: true,
         });
         break;
-      case this.chartDetails[chartInfo.Id].type === donut():
+      case this.chartDetails[chartInfo.Id.value].type === donut():
         chartOptions = this.chartHandler.getPieData(chartData, {
           dataLimit: 10,
         });
         break;
-      case this.chartDetails[chartInfo.Id].type === bar():
+      case this.chartDetails[chartInfo.Id.value].type === bar():
         chartOptions = this.chartHandler.getBarData(chartData, {
           dataLimit: 10,
-          hasUniqueObjectDisplay: this.chartDetails[chartInfo.Id].hasUniqueObjectDisplay,
+          hasUniqueObjectDisplay: this.chartDetails[chartInfo.Id.value].hasUniqueObjectDisplay,
         });
         break;
-      case this.chartDetails[chartInfo.Id].type === line():
+      case this.chartDetails[chartInfo.Id.value].type === line():
         chartOptions = this.chartHandler.getLineData(chartData, {
           dataLimit: 10,
           pointLimit: 20,
@@ -167,7 +173,7 @@ export class StatisticsForObjectsComponent implements OnInit, OnDestroy {
     };
   }
 
-  public getDetails(chartInfo: ChartInfoDto, chartDetails: ChartDetails): void {
-    this.chartDetails[chartInfo.Id] = chartDetails;
+  public getDetails(chartInfo: ChartInfoTyped, chartDetails: ChartDetails): void {
+    this.chartDetails[chartInfo.Id.value] = chartDetails;
   }
 }

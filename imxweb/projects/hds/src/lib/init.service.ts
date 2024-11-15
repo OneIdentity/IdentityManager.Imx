@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,22 +30,23 @@ import { Router, Route } from '@angular/router';
 import { ExtService } from 'qbm';
 import { CallsComponent } from './calls/calls.component';
 
-
 @Injectable({ providedIn: 'root' })
 export class InitService {
-
   constructor(
     private readonly router: Router,
     private readonly extService: ExtService,
-  ) { }
+  ) {}
 
   public onInit(routes: Route[]): void {
     this.addRoutes(routes);
-    this.extService.register('mastHead', { instance: CallsComponent, inputData: {
-      id: 'helpdeskTickets',
-      label: '#LDS#Menu Entry Help desk tickets',
-      url: 'help-desk-support/tickets'
-    }});
+    this.extService.register('mastHead', {
+      instance: CallsComponent,
+      inputData: {
+        id: 'helpdeskTickets',
+        label: '#LDS#Menu Entry Help desk tickets',
+        url: 'help-desk-support/tickets',
+      },
+    });
 
     /*
     this.dataExplorerRegistryService.registerFactory(
@@ -70,7 +71,7 @@ export class InitService {
 
   private addRoutes(routes: Route[]): void {
     const config = this.router.config;
-    routes.forEach(route => {
+    routes.forEach((route) => {
       config.unshift(route);
     });
     this.router.resetConfig(config);

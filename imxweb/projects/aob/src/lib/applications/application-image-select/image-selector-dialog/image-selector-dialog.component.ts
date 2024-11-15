@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,12 +25,12 @@
  */
 
 import { Component, Inject, OnDestroy } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { SafeUrl } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 
-import { ImageSelectorDialogParameter } from './image-selector-dialog-parameter.interface';
 import { Base64ImageService, ClassloggerService, FileSelectorService } from 'qbm';
+import { ImageSelectorDialogParameter } from './image-selector-dialog-parameter.interface';
 
 /**
  * A dialog to select an icon from a predefined list or upload an own one.
@@ -38,10 +38,12 @@ import { Base64ImageService, ClassloggerService, FileSelectorService } from 'qbm
 @Component({
   selector: 'imx-image-selector-dialog',
   templateUrl: './image-selector-dialog.component.html',
-  styleUrls: ['./image-selector-dialog.component.scss']
+  styleUrls: ['./image-selector-dialog.component.scss'],
 })
 export class ImageSelectorDialogComponent implements OnDestroy {
-  public get imageIsSelected(): boolean { return this.selectedIconName == null; }
+  public get imageIsSelected(): boolean {
+    return this.selectedIconName == null;
+  }
 
   public imageUrl: string;
   public fileFormatError = false;
@@ -49,9 +51,9 @@ export class ImageSelectorDialogComponent implements OnDestroy {
   public readonly iconNames: string[] = [];
   public readonly title: string;
 
-  private selectedIconName: string;
+  private selectedIconName: string | undefined;
 
-  private readonly icons: { [name: string]: string; };
+  private readonly icons: { [name: string]: string };
   private readonly subscriptions: Subscription[] = [];
 
   constructor(
@@ -59,19 +61,17 @@ export class ImageSelectorDialogComponent implements OnDestroy {
     public readonly imageHandler: Base64ImageService,
     private logger: ClassloggerService,
     @Inject(MAT_DIALOG_DATA) data: ImageSelectorDialogParameter,
-    private readonly fileSelector: FileSelectorService
+    private readonly fileSelector: FileSelectorService,
   ) {
     this.subscriptions.push(
-      this.fileSelector.fileFormatError.subscribe(() => this.fileFormatError = true),
-      this.fileSelector.fileSelected.subscribe(imageUrl => this.selectImage(imageUrl))
+      this.fileSelector.fileFormatError.subscribe(() => (this.fileFormatError = true)),
+      this.fileSelector.fileSelected.subscribe((imageUrl) => this.selectImage(imageUrl)),
     );
 
     this.title = data.title;
     this.icons = data.icons;
 
-    Object.keys(data.icons).forEach(iconName =>
-      this.iconNames.push(iconName)
-    );
+    Object.keys(data.icons).forEach((iconName) => this.iconNames.push(iconName));
 
     if (data.imageUrl) {
       this.logger.debug(this, 'show and select actual assigned icon');
@@ -83,7 +83,7 @@ export class ImageSelectorDialogComponent implements OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   public onSave(): void {
@@ -106,8 +106,11 @@ export class ImageSelectorDialogComponent implements OnDestroy {
     this.selectedIconName = name;
   }
 
-  public emitFiles(files: FileList): void {
-    this.fileSelector.emitFiles(files, 'image/png');
+  public emitFiles(event: EventTarget | null): void {
+    const files: FileList | null = (event as HTMLInputElement)?.files;
+    if (files) {
+      this.fileSelector.emitFiles(files, 'image/png');
+    }
   }
 
   public resetFileFormatErrorState(): void {

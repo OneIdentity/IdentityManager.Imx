@@ -1,0 +1,61 @@
+<ng-container *ngIf="(data?.Trustees?.length ?? 0) > 0; else noResources">
+  <div class="imx-trustee-content">
+    <mat-card class="imx-padding-vertical-0 qam-tree-content">
+      <eui-scroll class="imx-scroll-pad">
+        <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="imx-trustee-tree" #tree>
+          <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle [ngClass]="{ 'mat-tree-node--selected': isSelected(node) }">
+            <button mat-button class="tree-item-button" (click)="updateView(node)" [ngClass]="{ 'tree-button-node': isSelected(node) }">
+              {{ node.Display }}
+            </button>
+          </mat-tree-node>
+          <!-- This is the tree node template for expandable nodes -->
+          <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+            <div class="mat-tree-node" [ngClass]="{ 'mat-tree-node--selected': isSelected(node) }">
+              <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
+                <mat-icon class="mat-icon-rtl-mirror">
+                  {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+                </mat-icon>
+              </button>
+              <button mat-button class="tree-item-button" (click)="updateView(node)" [ngClass]="{ 'tree-button-node': isSelected(node) }">
+                {{ node.Display }}
+              </button>
+            </div>
+            <!-- There is inline padding applied to this div using styles.
+          This padding value depends on the mat-icon-button width.  -->
+            <div [class.imx-trustee-tree-invisible]="!treeControl.isExpanded(node)" role="group">
+              <ng-container matTreeNodeOutlet></ng-container>
+            </div>
+          </mat-nested-tree-node>
+        </mat-tree>
+      </eui-scroll>
+    </mat-card>
+    <mat-card class="imx-selected-trustee">
+      <eui-scroll class="imx-scroll-pad">
+        <mat-card class="imx-margin-bottom-3 imx-permission-card" *ngFor="let perm of currentSelectedTrusteePermissions">
+          <mat-card-header> {{ perm.path }} </mat-card-header>
+          <mat-card-content class="imx-flex-line">
+            <imx-box-icon [isChecked]="perm.allowRead" [display]="'#LDS#Allow read' | translate"></imx-box-icon>
+            <imx-box-icon [isChecked]="perm.allowWrite" [display]="'#LDS#Allow write' | translate"></imx-box-icon>
+            <imx-box-icon [isChecked]="perm.anyAllow" [display]="'#LDS#Any allow' | translate"></imx-box-icon>
+            <imx-box-icon [isChecked]="perm.allowFullControl" [display]="'#LDS#Allow full control' | translate"></imx-box-icon>
+            <imx-box-icon [isChecked]="perm.allowChangePermissions" [display]="'#LDS#Allow change permissions' | translate"></imx-box-icon>
+          </mat-card-content>
+        </mat-card>
+      </eui-scroll>
+    </mat-card>
+  </div>
+</ng-container>
+
+<ng-template #noResources>
+  <div class="imx-no-results">
+    <eui-icon icon="content-alert"></eui-icon>
+    <p translate>#LDS#No groups or accounts have access to governed data.</p>
+  </div>
+</ng-template>
+
+<ng-template #selectNode>
+  <div class="imx-no-results">
+    <eui-icon icon="content-alert"></eui-icon>
+    <p translate>#LDS#Please select a trustee.</p>
+  </div>
+</ng-template>

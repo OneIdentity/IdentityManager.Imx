@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,8 @@
  *
  */
 
-import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { EuiTheme } from '@elemental-ui/core';
 
 @Component({
@@ -38,7 +38,7 @@ export class OrderedListComponent {
   @Input() deleteText: string;
   @Input() placeholder: string;
   @Input() testId: string = 'list';
-  @Input() dataSource: { Name: string; Display: string }[] = [];
+  @Input() dataSource: { Name?: string; Display?: string }[] = [];
   @Input() data: string[] = [];
   @Input() isReadOnly: boolean = false;
 
@@ -50,10 +50,10 @@ export class OrderedListComponent {
     return bodyClasses.contains(EuiTheme.LIGHT)
       ? EuiTheme.LIGHT
       : bodyClasses.contains(EuiTheme.DARK)
-      ? EuiTheme.DARK
-      : bodyClasses.contains(EuiTheme.CONTRAST)
-      ? EuiTheme.CONTRAST
-      : '';
+        ? EuiTheme.DARK
+        : bodyClasses.contains(EuiTheme.CONTRAST)
+          ? EuiTheme.CONTRAST
+          : '';
   }
 
   public drop(event: CdkDragDrop<string[]>): void {
@@ -67,7 +67,7 @@ export class OrderedListComponent {
   }
 
   public addNew(): void {
-    this.data.push(null);
+    this.data.push('');
     this.notifyChange();
   }
 

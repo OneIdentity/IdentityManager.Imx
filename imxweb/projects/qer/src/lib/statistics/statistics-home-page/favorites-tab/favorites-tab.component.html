@@ -1,7 +1,7 @@
 <div class="above-card" *ngIf="hasData && !isSearch">
   <div class="ancestor-path unselectable-ancestor">
     <h3>
-      {{ '#LDS#Heading Favorite Statistics ({0})' | translate | ldsReplace : favStats.length }}
+      {{ '#LDS#Heading Favorite Statistics ({0})' | translate | ldsReplace: favStats.length }}
     </h3>
   </div>
   <button mat-stroked-button color="primary" (click)="openFavoriteSideSheet()" data-imx-identifier="favorites-open-sidesheet">
@@ -17,7 +17,7 @@
   </button>
 </div>
 <mat-card class="cards-container">
-  <eui-scroll *ngIf="(hasData && !isSearch) || (isSearch && searchHasData) else noData" [options]="{ alwaysShowTracks: true }">
+  <eui-scroll *ngIf="(hasData && !isSearch) || (isSearch && searchHasData); else noData" [options]="{ alwaysShowTracks: true }">
     <!-- Show search results in the grid -->
     <div *ngIf="isSearch && searchHasData" class="grid-container">
       <imx-statistics-cards-visuals *ngFor="let stat of searchStats" [stat]="stat"> </imx-statistics-cards-visuals>
@@ -45,13 +45,10 @@
         <eui-icon icon="content-alert"></eui-icon>
         <div class="imx-no-data-text">
           <h2>{{ '#LDS#Heading No Favorite Statistics' | translate }}</h2>
-          <span>{{
-            '#LDS#Currently, you have not favorited any statistics.'
-              | translate
-          }}</span>
+          <span>{{ '#LDS#Currently, you have not favorited any statistics.' | translate }}</span>
         </div>
       </div>
-      <button mat-raised-button color="primary" (click)="openFavoriteSideSheet()" data-imx-identifier="favorites-open-sidesheet">
+      <button mat-flat-button color="primary" (click)="openFavoriteSideSheet()" data-imx-identifier="favorites-open-sidesheet">
         <eui-icon icon="star"></eui-icon>
         <span>{{ '#LDS#Select favorite statistics' | translate }}</span>
       </button>

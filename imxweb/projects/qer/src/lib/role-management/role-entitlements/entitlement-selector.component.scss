@@ -3,29 +3,17 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-}
 
-.eui-sidesheet-content {
-  display: flex;
-  flex-direction: column;
-  :last-child {
-    flex: 1 1 auto;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+  .request-entitlement-type-selector {
+    width: 50%;
+  }
+
+  .request-entitlement-type-card {
+    height: 90%;
   }
 }
 
-.eui-sidesheet-actions {
-  button {
-    margin-left: 1em;
-  }
-}
-
-.mat-dialog-actions {
-  display: flex;
-  justify-content: flex-end;
-
+.mat-mdc-dialog-actions {
   button {
     margin-left: 10px;
 
@@ -39,12 +27,8 @@
   margin-right: 10px;
 }
 
-.imx-menu-spacer {
-  flex-grow: 1;
-}
-
 @media screen and (max-width: 480px) {
-  .mat-dialog-actions {
+  .mat-mdc-dialog-actions {
     flex-direction: column-reverse;
     button {
       margin-left: 0;
@@ -54,19 +38,19 @@
   }
 }
 
-.eui-dark-theme{
-  :host{
+.eui-dark-theme {
+  :host {
     background-color: $color-gray-80;
-    .eui-sidesheet-actions{
+    .eui-sidesheet-actions {
       background-color: $color-gray-80;
     }
   }
 }
 
-.eui-contrast-theme{
-  :host{
+.eui-contrast-theme {
+  :host {
     background-color: $color-gray-100;
-    .eui-sidesheet-actions{
+    .eui-sidesheet-actions {
       background-color: $color-gray-100;
     }
   }

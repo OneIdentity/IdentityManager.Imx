@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { PortalItshopApproveHistory } from 'imx-api-qer';
+import { PortalItshopApproveHistory } from '@imx-modules/imx-api-qer';
 import { DecisionHistoryService } from '../decision-history.service';
 import { WorkflowHistoryItemWrapper } from './workflow-history-item-wrapper';
 
@@ -33,18 +33,18 @@ function createProperty(name?, value?, display?) {
     ColumnName: name,
     GetValue: () => value,
     GetDisplayValue: () => value,
-    GetMetadata: () => ({ GetDisplay: () => display || name })
+    GetMetadata: () => ({ GetDisplay: () => display || name }),
   };
 
   return {
     value: value,
     Column: column,
-    GetMetadata: () => column.GetMetadata()
+    GetMetadata: () => column.GetMetadata(),
   };
 }
 
 describe('WorkflowHistoryItemWrapper', () => {
-  const expectedDefaultColumns: { name: string, display?: string }[] = [];
+  const expectedDefaultColumns: { name: string; display?: string }[] = [];
 
   for (const testcase of [
     {},
@@ -63,7 +63,7 @@ describe('WorkflowHistoryItemWrapper', () => {
     { decisionType: 'Unsubscribe' },
     { decisionType: 'Deny' },
     { decisionType: 'AddAdditional' },
-    { decisionType: 'AddAdditional', personRelated: 'value', expectedAdditionalColumns: [{ name: 'UID_PersonRelated' }] }
+    { decisionType: 'AddAdditional', personRelated: 'value', expectedAdditionalColumns: [{ name: 'UID_PersonRelated' }] },
   ]) {
     it('can be initialized with data', () => {
       const expectedColumns = expectedDefaultColumns.concat(testcase.expectedAdditionalColumns || []);
@@ -77,18 +77,18 @@ describe('WorkflowHistoryItemWrapper', () => {
         UID_PWODecisionRule: createProperty('UID_PWODecisionRule', testcase.pwoDecisionRule),
         UID_PersonRelated: createProperty('UID_PersonRelated', testcase.personRelated),
         IsFromDelegation: createProperty('IsFromDelegation', testcase.isFromDelegation),
-        IsDecisionBySystem: createProperty('IsDecisionBySystem')
+        IsDecisionBySystem: createProperty('IsDecisionBySystem'),
       } as PortalItshopApproveHistory;
-      const decision = { } as DecisionHistoryService;
+      const decision = {} as DecisionHistoryService;
 
-      const historyItemWrapper = new WorkflowHistoryItemWrapper(history,decision);
+      const historyItemWrapper = new WorkflowHistoryItemWrapper(history, decision);
 
       expect(historyItemWrapper.approveHistory).toEqual(history);
 
       expect(historyItemWrapper.columns.length).toEqual(expectedColumns.length);
 
-      expectedColumns.forEach(expectedColumn => {
-        const cdr = historyItemWrapper.columns.find(cdr => cdr.column.ColumnName === expectedColumn.name);
+      expectedColumns.forEach((expectedColumn) => {
+        const cdr = historyItemWrapper.columns.find((cdr) => cdr.column.ColumnName === expectedColumn.name);
         expect(cdr.column).toBeDefined();
         if (expectedColumn.display) {
           expect(cdr.display).toContain(expectedColumn.display);
@@ -108,7 +108,7 @@ describe('WorkflowHistoryItemWrapper', () => {
     { decisionType: 'Query', reason: 'value', expectedDisplay: 'Query' },
     { decisionType: 'Create', reason: 'value', expectedDisplay: 'ReasonHead' },
     { decisionType: 'Order', reason: 'value', expectedDisplay: 'ReasonHead' },
-  ].forEach(testcase =>
+  ].forEach((testcase) =>
     it('should getReasonDisplay', () => {
       const history = {
         DecisionType: createProperty('DecisionType', testcase.decisionType),
@@ -119,10 +119,11 @@ describe('WorkflowHistoryItemWrapper', () => {
         RulerLevel: {},
       } as PortalItshopApproveHistory;
 
-      const decision = { getColumnDescriptionForDisplayPersonHead: orderType => orderType} as DecisionHistoryService;
+      const decision = { getColumnDescriptionForDisplayPersonHead: (orderType) => orderType } as DecisionHistoryService;
 
-      const historyItemWrapper = new WorkflowHistoryItemWrapper(history,decision);
+      const historyItemWrapper = new WorkflowHistoryItemWrapper(history, decision);
 
       expect(historyItemWrapper.getReasonDisplay()).toContain(testcase.expectedDisplay);
-    }));
+    }),
+  );
 });

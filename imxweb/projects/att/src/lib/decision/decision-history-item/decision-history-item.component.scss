@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   display: flex;
@@ -18,7 +18,7 @@
   }
 }
 
-.mat-card-title {
+.mat-mdc-card-title {
   margin-bottom: 15px;
   :first-child {
     font-weight: bold;
@@ -29,16 +29,15 @@
   }
 }
 
-.mat-card-header {
-  margin-left: -16px;
+.mat-mdc-card-header {
   margin-bottom: 10px;
 
-  .mat-card-title {
+  .mat-mdc-card-title {
     font-size: 1.05em;
     margin-bottom: 0;
   }
 
-  .mat-card-subtitle.imx-workflowhistory-pwodecisionstep {
+  .mat-mdc-card-subtitle.imx-workflowhistory-pwodecisionstep {
     margin: 5px 0;
   }
 }
@@ -66,7 +65,7 @@ li.imx-event::before {
   background-color: $color-gray-0;
   height: 24px;
   width: 28px;
-  content: "";
+  content: '';
   float: left;
   margin-top: -2px;
 }
@@ -80,7 +79,7 @@ li.imx-event.imx-positive::before {
   font-family: Cadence-Icon;
   font-size: 24px;
   color: $color-green-60;
-  content: "\e049";
+  content: '\e049';
 }
 
 li.imx-event.imx-negative {
@@ -92,7 +91,7 @@ li.imx-event.imx-negative::before {
   font-family: Cadence-Icon;
   font-size: 24px;
   color: $color-red-60;
-  content: "\e05c";
+  content: '\e05c';
 }
 
 li.imx-event.imx-question {
@@ -104,7 +103,7 @@ li.imx-event.imx-question::before {
   font-family: Cadence-Icon;
   font-size: 24px;
   color: $color-blue-60;
-  content: "\e009";
+  content: '\e009';
 }
 
 li.imx-event.imx-info {
@@ -116,7 +115,7 @@ li.imx-event.imx-info::before {
   font-family: Cadence-Icon;
   font-size: 24px;
   color: $color-blue-60;
-  content: "\e010";
+  content: '\e010';
 }
 
 li.imx-event.imx-pending {
@@ -128,22 +127,17 @@ li.imx-event.imx-pending::before {
   font-family: Cadence-Icon;
   font-size: 24px;
   color: $color-gray-30;
-  content: "\e009";
-}
-
-.chief-approval-badge {
-  margin-bottom: .5em;
+  content: '\e009';
 }
 
 .eui-dark-theme {
   :host {
-    li.imx-event::before{
+    li.imx-event::before {
       background-color: $color-gray-70;
     }
 
-    li{
-      .mat-card
-      {
+    li {
+      .mat-mdc-card {
         background-color: $color-gray-60;
       }
     }
@@ -152,13 +146,12 @@ li.imx-event.imx-pending::before {
 
 .eui-contrast-theme {
   :host {
-    li.imx-event::before{
+    li.imx-event::before {
       background-color: $color-gray-90;
     }
 
-    li{
-      .mat-card
-      {
+    li {
+      .mat-mdc-card {
         background-color: $color-gray-80;
       }
     }

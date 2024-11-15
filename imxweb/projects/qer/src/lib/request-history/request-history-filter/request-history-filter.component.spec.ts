@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -40,9 +40,9 @@ describe('RequestHistoryFilterComponent', () => {
   beforeEach(() => {
     return MockBuilder([RequestHistoryFilterComponent, UntypedFormBuilder, ChangeDetectorRef])
       .mock(QerApiService)
-      .beforeCompileComponents(testBed => {
+      .beforeCompileComponents((testBed) => {
         testBed.configureTestingModule({
-          schemas: [CUSTOM_ELEMENTS_SCHEMA]
+          schemas: [CUSTOM_ELEMENTS_SCHEMA],
         });
       });
   });
@@ -55,10 +55,9 @@ describe('RequestHistoryFilterComponent', () => {
 
   afterAll(() => {
     clearStylesFromDOM();
-  })
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 });
-

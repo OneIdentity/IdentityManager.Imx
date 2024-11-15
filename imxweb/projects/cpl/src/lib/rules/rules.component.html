@@ -1,58 +1,71 @@
-<h1 class="mat-headline">
-  <span>{{ '#LDS#Heading Compliance Rules' | translate }}</span>
-  <imx-help-contextual></imx-help-contextual>
-</h1>
-<mat-card>
-  <div class="imx-table-container">
-    <imx-data-source-toolbar
-      #dst
-      [settings]="dstSettings"
-      [options]="['search', 'sort', 'filter', 'settings']"
-      (search)="navigate({ search: $event })"
-      [busyService]="busyService"
-      (navigationStateChanged)="navigate($event)"
-      (updateConfig)="updateConfig($event)"
-      (deleteConfigById)="deleteConfigById($event)"
-    >
-    </imx-data-source-toolbar>
-    <div class="imx-table-container">
-      <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual" data-imx-identifier="rules-table" (highlightedEntityChanged)="showDetails($event)">
-        <imx-data-table-column [entityColumn]="ruleSchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" data-imx-identifier="rules-table-column-Display">
-          <ng-template let-item>
-            <div class="imx-displayColumn" data-imx-identifier="runs-button-show-details">
-              <div>
-                <div data-imx-identifier="rules-table-display">{{ item.GetEntity().GetDisplay() }}</div>
-                <div subtitle data-imx-identifier="rules-table-description">{{ item.Description.Column.GetDisplayValue() }}</div>
-              </div>
-              <eui-badge class="imx-badge" *ngIf="item.IsInActive.value" color="gray">{{ '#LDS#Deactivated' | translate }}</eui-badge>
-            </div>
-          </ng-template>
-        </imx-data-table-column>
-
-        <imx-data-table-generic-column columnName="cases" data-imx-identifier="rules-table-column-Count" [columnLabel]="'#LDS#Rule violations' | translate">
-          <ng-template let-rule>
-            {{ rule.CountOpen.value + rule.CountClosed.value }}
-          </ng-template>
-        </imx-data-table-generic-column>
-
-        <imx-data-table-column [entityColumn]="ruleSchema.Columns.CountOpen" data-imx-identifier="rules-table-column-CountOpen"> </imx-data-table-column>
-
-        <imx-data-table-generic-column *ngIf="canRecalculate" columnName="recalculate" [columnLabel]="" data-imx-identifier="rules-table-column-Recalculate">
-          <ng-template let-rule>
-            <div class="imx-button-column">
-              <button
-                mat-stroked-button
-                data-imx-identifier="runs-button-show-recalculate"
-                (click)="recalculateRule(rule); $event.stopPropagation()"
-                title="{{ '#LDS#Recalculates the violations of this compliance rule' | translate }}"
-              >
-                {{ '#LDS#Recalculate' | translate }}
-              </button>
-            </div>
-          </ng-template>
-        </imx-data-table-generic-column>
-      </imx-data-table>
-    </div>
-    <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
-  </div>
+<div class="imx-header-toolbar">
+  <h2 class="mat-headline-5">
+    <span>{{ '#LDS#Heading Compliance Rules' | translate }}</span>
+    <imx-help-contextual></imx-help-contextual>
+  </h2>
+  <imx-data-view-toolbar
+    [dataSource]="dataSource"
+    (updateConfig)="updateConfig($event)"
+    (deleteConfigById)="deleteConfigById($event)"
+  ></imx-data-view-toolbar>
+</div>
+<mat-card class="imx-card-fill">
+  <imx-data-view-auto-table [dataSource]="dataSource" mode="manual">
+    <ng-container [matColumnDef]="DisplayColumns.DISPLAY_PROPERTYNAME">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ ruleSchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell" class="imx-table-cell">
+        <div class="imx-displayColumn" data-imx-identifier="runs-button-show-details">
+          <div class="imx-display-column-main">
+            <div data-imx-identifier="rules-table-display">{{ item.GetEntity().GetDisplay() }}</div>
+            <div subtitle data-imx-identifier="rules-table-description">{{ item.Description.Column.GetDisplayValue() }}</div>
+          </div>
+          <eui-badge class="imx-badge" *ngIf="item.IsInActive.value" color="gray">{{ '#LDS#Deactivated' | translate }}</eui-badge>
+        </div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="'cases'">
+      <ng-container>
+        <th mat-header-cell *matHeaderCellDef>
+          {{ '#LDS#Rule violations' | translate }}
+        </th>
+      </ng-container>
+      <td mat-cell *matCellDef="let rule" role="gridcell">
+        <span>
+          {{ rule.CountOpen.value + rule.CountClosed.value }}
+        </span>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="ruleSchema?.Columns?.CountOpen?.ColumnName">
+      <ng-container>
+        <th mat-header-cell *matHeaderCellDef>
+          {{ ruleSchema?.Columns?.CountOpen?.Display }}
+        </th>
+      </ng-container>
+      <td mat-cell *matCellDef="let rule" role="gridcell">
+        <span>
+          {{ rule.CountOpen.Column.GetDisplayValue() }}
+        </span>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="'recalculate'">
+      <ng-container>
+        <th mat-header-cell *matHeaderCellDef></th>
+      </ng-container>
+      <td mat-cell *matCellDef="let rule" role="gridcell">
+        <div class="imx-button-column">
+          <button
+            mat-stroked-button
+            data-imx-identifier="runs-button-show-recalculate"
+            (click)="recalculateRule(rule); $event.stopPropagation()"
+            title="{{ '#LDS#Recalculates the violations of this compliance rule' | translate }}"
+          >
+            {{ '#LDS#Recalculate' | translate }}
+          </button>
+        </div>
+      </td>
+    </ng-container>
+  </imx-data-view-auto-table>
+  <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
 </mat-card>

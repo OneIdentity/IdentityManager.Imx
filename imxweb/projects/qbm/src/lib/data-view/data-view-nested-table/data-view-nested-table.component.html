@@ -1,0 +1,90 @@
+<imx-busy-indicator *ngIf="dataSource?.loading()"></imx-busy-indicator>
+<ng-container>
+  <table
+    mat-table
+    matSort
+    (matSortChange)="dataSource?.sortChange($event)"
+    [dataSource]="dataSource"
+    [ngClass]="{
+      'imx-hidden': dataSource?.loading() || !dataSource?.totalCount(),
+      'imx-data-table-highlightedActive': !!dataSource.highlightedExecute,
+    }"
+    role="grid"
+    tableAccessiblility
+    eui-scroll
+    [matSortActive]="dataSource.sortId()"
+    [matSortDirection]="dataSource.sortDirection()"
+  >
+    <ng-container *ngIf="selectable" matColumnDef="select">
+      <th class="imx-table-column" mat-header-cell *matHeaderCellDef sticky>
+        <mat-checkbox
+          (change)="$event ? toggleAllRows() : null"
+          [checked]="dataSource.currentSelectedEntityCount() > 0 && dataSource.isAllSelected()"
+          [indeterminate]="dataSource.currentSelectedEntityCount() > 0 && !dataSource.isAllSelected()"
+          data-imx-identifier="datatable-checkbox-select-all"
+          [attr.aria-label]="dataSource.isAllSelected() ? ('#LDS#Deselect all' | translate) : ('#LDS#Select all' | translate)"
+        >
+        </mat-checkbox>
+      </th>
+      <td class="imx-table-column" mat-cell *matCellDef="let row; index as i">
+        <mat-checkbox
+          [disabled]="!dataSource.itemStatus.enabled(row)"
+          (click)="$event.stopPropagation()"
+          (change)="$event.checked ? dataSource.selection.checked(row) : dataSource.selection.unChecked(row)"
+          [checked]="dataSource.selection.isSelected(row)"
+          [attr.data-imx-identifier]="'datatable-checkbox-select-row' + i"
+          [attr.aria-label]="dataSource.selection.isSelected(row) ? ('#LDS#Deselect' | translate) : ('#LDS#Select' | translate)"
+        >
+        </mat-checkbox>
+      </td>
+    </ng-container>
+
+    <ng-container *ngIf="mode === 'auto'">
+      <ng-container [matColumnDef]="column.ColumnName" *ngFor="let column of dataSource?.columnsToDisplay()">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          [disabled]="!dataSource.isSortable(column.ColumnName || '')"
+          class="imx-header-cell"
+        >
+          {{ dataSource.GetColumnDisplay(column.ColumnName || '', dataSource?.entitySchema()) }}
+        </th>
+        <td mat-cell class="imx-header-cell" *matCellDef="let element" role="gridcell">
+          <span>{{ element?.GetEntity()?.GetColumn(column.ColumnName)?.GetDisplayValue() }}</span>
+        </td>
+      </ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="mode === 'manual'">
+      <ng-container [matColumnDef]="column.ColumnName" *ngFor="let column of dataSource?.additionalColumns()">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          [disabled]="!dataSource.isSortable(column.ColumnName || '')"
+          class="imx-header-cell"
+        >
+          {{ dataSource.GetColumnDisplay(column.ColumnName || '', dataSource?.entitySchema()) }}
+        </th>
+        <td mat-cell class="imx-header-cell" *matCellDef="let element" role="gridcell">
+          <span>{{ element?.GetEntity()?.GetColumn(column.ColumnName)?.GetDisplayValue() }}</span>
+        </td>
+      </ng-container>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="namesOfDisplayedColumns(); sticky: true"></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: namesOfDisplayedColumns()"
+      (click)="dataSource.debouncedHighlightRow(row, $event); $event.stopPropagation()"
+      (keydown.enter)="dataSource.debouncedHighlightRow(row, $event); $event.stopPropagation()"
+    ></tr>
+  </table>
+</ng-container>
+<ng-container *ngIf="dataSource?.totalCount() === 0 && !dataSource?.loading()">
+  <div class="imx-no-results">
+    <eui-icon [icon]="noDataIcon"></eui-icon>
+    <p [translate]="noDataText || '#LDS#No matching data'"></p>
+  </div>
+</ng-container>
+<imx-data-view-paginator [dataSource]="dataSource" *ngIf="!hidePaginator()"></imx-data-view-paginator>

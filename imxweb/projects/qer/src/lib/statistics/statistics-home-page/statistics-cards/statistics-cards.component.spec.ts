@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -41,20 +41,20 @@ describe('StatisticsCardsComponent', () => {
 
   beforeEach(() => {
     return MockBuilder([StatisticsCardsComponent, TranslateService])
-    .mock(StatisticsDataService, {
-      searchStats$: new Subject<GenericStatisticEntity[]>(),
-      selectedNodeAncestors$: new Subject<GenericStatisticNode[]>(),
-      isSearch$: new BehaviorSubject(false)
-    })
-    .mock(StatisticsConstantsService)
-    .mock(EuiSidesheetService)
-    .mock(EuiLoadingService)
-    .beforeCompileComponents(testBed => {
-      testBed.configureTestingModule({
-        schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
-        imports: [BrowserAnimationsModule ]
+      .mock(StatisticsDataService, {
+        searchStats$: new Subject<GenericStatisticEntity[]>(),
+        selectedNodeAncestors$: new Subject<GenericStatisticNode[]>(),
+        isSearch$: new BehaviorSubject(false),
       })
-    })
+      .mock(StatisticsConstantsService)
+      .mock(EuiSidesheetService)
+      .mock(EuiLoadingService)
+      .beforeCompileComponents((testBed) => {
+        testBed.configureTestingModule({
+          schemas: [CUSTOM_ELEMENTS_SCHEMA],
+          imports: [BrowserAnimationsModule],
+        });
+      });
   });
 
   beforeEach(() => {
@@ -65,7 +65,7 @@ describe('StatisticsCardsComponent', () => {
 
   afterAll(() => {
     clearStylesFromDOM();
-  })
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

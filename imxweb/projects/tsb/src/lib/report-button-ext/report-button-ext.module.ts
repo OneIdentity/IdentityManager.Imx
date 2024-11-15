@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,12 +33,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ReportButtonExtComponent } from './report-button-ext.component';
 @NgModule({
   declarations: [ReportButtonExtComponent],
-  imports: [
-    CommonModule,
-    MatMenuModule,
-    EuiCoreModule,
-    TranslateModule
-  ],
-  exports: [ReportButtonExtComponent]
+  imports: [CommonModule, MatMenuModule, EuiCoreModule, TranslateModule],
+  exports: [ReportButtonExtComponent],
 })
-export class ReportButtonExtModule { }
+export class ReportButtonExtModule {}

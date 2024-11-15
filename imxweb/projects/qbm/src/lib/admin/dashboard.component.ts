@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,6 +27,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ConfigService } from './config.service';
 
+import { EuiTheme, EuiThemeService } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 import { AppConfigService } from '../appConfig/appConfig.service';
 import { SideNavigationExtension } from '../side-navigation-view/side-navigation-view-interfaces';
@@ -131,10 +132,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   documentationUiEnabled: boolean = true;
 
-  constructor(private readonly appConfigService: AppConfigService, private readonly configService: ConfigService) {}
+  constructor(
+    private readonly appConfigService: AppConfigService,
+    private readonly configService: ConfigService,
+    private readonly euiThemeService: EuiThemeService,
+  ) {
+    this.euiThemeService.setTheme(EuiTheme.LIGHT);
+  }
 
   async ngOnInit() {
     this.loadDocumentationUi();
+
     this.subscriptions.push(this.configService.submitChanges?.subscribe(() => this.loadDocumentationUi()));
   }
 

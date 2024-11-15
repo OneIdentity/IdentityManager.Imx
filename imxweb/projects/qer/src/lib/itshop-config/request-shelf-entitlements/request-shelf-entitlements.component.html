@@ -15,7 +15,7 @@
     <imx-data-table
       #dataTable
       [dst]="dst"
-      detailViewVisible="false"
+      [detailViewVisible]="false"
       [selectable]="true"
       (selectionChanged)="onEntitlementSelected($event)"
       noDataText="#LDS#There are currently no products."
@@ -24,13 +24,13 @@
       mode="manual"
       [showSelectionInfo]="false"
     >
-      <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns?.DISPLAY_PROPERTYNAME]">
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]">
         <ng-template let-item>
           <div>{{ item.GetEntity().GetDisplay() }}</div>
           <div class="imx-subtext">{{ entitlementTypes.get(item.GetEntity().GetKeys().toString()) }}</div>
         </ng-template>
       </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema?.Columns.XOrigin" [columnLabel]="'#LDS#Origin' | translate">
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns?.XOrigin" [columnLabel]="'#LDS#Origin' | translate">
         <ng-template let-item>
           <div>{{ item.GetEntity().GetColumn('XOrigin').GetDisplayValue() }}</div>
           <eui-badge *ngIf="item.GetEntity().GetColumn('ValidUntil').GetValue()" color="blue" textColor="white">
@@ -39,7 +39,7 @@
           >
         </ng-template>
       </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema?.Columns.XDateInserted" [columnLabel]="'#LDS#Added on' | translate">
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns?.XDateInserted" [columnLabel]="'#LDS#Added on' | translate">
         <ng-template let-item>
           <div>{{ item.GetEntity().GetColumn('XDateInserted').GetValue() | date }}</div>
         </ng-template>
@@ -47,13 +47,11 @@
     </imx-data-table>
     <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
   </mat-card>
-  <imx-selected-elements [selectedElements]="selectedEntitlements"></imx-selected-elements>
 </div>
 
-<div eui-sidesheet-actions class="request-config__action-buttons">
-  <div class="imx-menu-spacer"></div>
+<div eui-sidesheet-actions>
+  <imx-selected-elements class="justify-start" [selectedElements]="selectedEntitlements"></imx-selected-elements>
   <button
-    class="justify-start"
     mat-button
     color="warn"
     [disabled]="selectedEntitlements.length === 0"
@@ -64,5 +62,7 @@
     <span translate>#LDS#Remove</span>
   </button>
 
-  <button mat-raised-button color="primary" data-imx-identifier="add-request-shelf-entitlements" (click)="openEntitlementSelector()">{{ '#LDS#Add products' | translate }}</button>
+  <button mat-flat-button color="primary" data-imx-identifier="add-request-shelf-entitlements" (click)="openEntitlementSelector()">
+    {{ '#LDS#Add products' | translate }}
+  </button>
 </div>

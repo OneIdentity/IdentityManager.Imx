@@ -1,8 +1,8 @@
 {
   "qer-app-operationssupport": [
-      {
-          "Container": "uci",
-          "Name": "UciConfigModule"
-      }
+    {
+      "Container": "uci",
+      "Name": "UciConfigModule"
+    }
   ]
 }

@@ -1,14 +1,29 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
-
-$SearchBarWidth: 535px;
-$SearchBarHeight: 53px;
-
-$VI_Common_Color_Blue_1: #69CCE9;
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/variables';
+@import 'base/mixins';
 
 .imx-searchbar-card {
-  max-width: $SearchBarWidth;
-  width: $SearchBarWidth;
+  max-width: $IMX_SearchBar_Width;
+  width: $IMX_SearchBar_Width;
   padding: 0;
+  .imx-searchbar-card-content {
+    padding: 0 !important;
+  }
+  margin-top: 4px;
+}
+
+.imx-search-component {
+  @include flex-row-container();
+}
+
+.imx-display-card {
+  height: 37px;
+}
+
+.imx-search-input {
+  display: flex;
+  align-items: center;
+  padding: 0px;
 }
 
 .imx-searchbar-resultcard {
@@ -19,62 +34,22 @@ $VI_Common_Color_Blue_1: #69CCE9;
 }
 
 .imx-searchbar-noitems {
-  // color: $VI_Common_Color_Font;
   padding: 15px;
-  font-size: 1.2em;
+  background: $white;
 }
 
 .imx-searchbar-dropdown {
-  max-width: $SearchBarWidth;
+  max-width: $IMX_SearchBar_Width;
   margin-top: 2px;
   padding: 0;
 }
 
 .matlistItem:hover {
-  background-color: $VI_Common_Color_Blue_1;
+  background-color: $color-blue-40;
 }
 
 .matlistItem {
   white-space: pre-line;
-}
-
-.mat-list-option {
-  height: auto !important;
-  padding-top: 10px !important;
-  padding-bottom: 10px !important;
-
-  .mat-list-text {
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
-    // color: $VI_Common_Color_Font !important;
-  }
-}
-
-.mat-card .imx-searchbar-input {
-  border: 0 solid transparent !important;
-  font-size: 1.2em;
-  margin-bottom: 0;
-  height: $SearchBarHeight;
-  box-sizing: border-box;
-  flex-grow: 0;
-  flex-shrink: 0;
-  /* use flex-basis, because of flex shorthand with calc()s doesn't work in IE */
-  flex-basis: calc(100% - 52px);
-}
-
-.mat-card .imx-searchbar-input::placeholder {
-  font-style: italic;
-}
-
-.imx-searchbar-input::-ms-clear {
-  /* hide input-clear button (the 'X') in > IE 10 */
-  display: none;
-  width: 0;
-  height: 0;
-}
-
-.imx-searchbar-input::placeholder {
-  font-style: italic;
 }
 
 imx-searchbar {
@@ -83,32 +58,29 @@ imx-searchbar {
 
 .imx-searchbar-tablefilter {
   margin-left: 15px;
+  width: 300px;
+  display: flex;
 
-  .mat-form-field-wrapper {
-    line-height: 20px;
+  .mat-mdc-form-field {
+    flex: 1 1 auto;
   }
 }
 
 .imx-searchbar-control {
-  height: $SearchBarHeight;
+  height: $IMX_SearchBar_Height;
 }
 
 .imx-searchbar-table {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
   width: 100%;
-  line-height: $SearchBarHeight;
+  line-height: $IMX_SearchBar_Height;
+  .imx-input-searchbar {
+    flex-grow: 1;
+  }
 }
 
 .imx-searchbar-select {
   margin-top: 30px;
   margin-left: 40px;
 }
-
-.mat-autocomplete-panel.mat-autocomplete-visible {
-  width: $SearchBarWidth;
-  margin-right: -13px;
-  margin-left: -40px;
-}
-

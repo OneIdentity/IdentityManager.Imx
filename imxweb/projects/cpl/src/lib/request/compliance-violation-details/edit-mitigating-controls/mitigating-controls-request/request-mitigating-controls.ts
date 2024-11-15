@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,9 +26,9 @@
 
 import { FormControl } from '@angular/forms';
 
+import { PortalPersonMitigatingcontrols } from '@imx-modules/imx-api-cpl';
+import { IWriteValue } from '@imx-modules/imx-qbm-dbts';
 import { BaseCdr, ColumnDependentReference } from 'qbm';
-import { PortalPersonMitigatingcontrols } from 'imx-api-cpl';
-import { IWriteValue } from 'imx-qbm-dbts';
 import { MitigatingControlData } from './mitigating-control-data.interface';
 
 /**
@@ -41,9 +41,12 @@ export class RequestMitigatingControls extends PortalPersonMitigatingcontrols im
    */
   public cdrs: ColumnDependentReference[];
 
-  public formControl = new FormControl<string | undefined>(undefined);
+  public formControl: FormControl<string> = new FormControl('', { nonNullable: true });
 
-  constructor(public editable: boolean, readonly baseObject: PortalPersonMitigatingcontrols) {
+  constructor(
+    public editable: boolean,
+    readonly baseObject: PortalPersonMitigatingcontrols,
+  ) {
     super(baseObject.GetEntity());
 
     this.cdrs = this.initPropertyInfo();

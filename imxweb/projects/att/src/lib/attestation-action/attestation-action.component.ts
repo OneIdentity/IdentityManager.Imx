@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,9 +26,9 @@
 
 import { Component, Inject } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 
-import { DisplayColumns, IEntity } from 'imx-qbm-dbts';
+import { DisplayColumns, IEntity } from '@imx-modules/imx-qbm-dbts';
 import { BaseCdr, BaseReadonlyCdr, BulkItem, BulkItemStatus, ColumnDependentReference, DataSourceToolbarSettings } from 'qbm';
 import { DecisionStepSevice } from 'qer';
 import { AttestationCaseAction } from './attestation-case-action.interface';
@@ -53,8 +53,8 @@ export class AttestationActionComponent {
       description?: string;
       attestationCases: AttestationCaseAction[];
       actionParameters: {
-        reason: ColumnDependentReference;
-        justification: ColumnDependentReference;
+        reason: BaseCdr;
+        justification: BaseCdr;
         person: ColumnDependentReference;
       };
       workflow?: {
@@ -64,9 +64,10 @@ export class AttestationActionComponent {
       };
       approve?: boolean;
       maxReasonType: number;
+      additionalInfo?: BaseReadonlyCdr[];
     },
     public readonly sideSheetRef: EuiSidesheetRef,
-    stepService: DecisionStepSevice
+    stepService: DecisionStepSevice,
   ) {
     Object.keys(this.data.actionParameters).forEach((name) => this.actionParameters.push(this.data.actionParameters[name]));
 
@@ -75,15 +76,14 @@ export class AttestationActionComponent {
         .filter((property) => property.GetValue() != null && property.GetValue() !== '')
         .map((property) => new BaseReadonlyCdr(property));
       const parameter = this.data.attestationCases[0].attestationParameters.map((column) =>
-        this.data.approve ? new BaseCdr(column) : new BaseReadonlyCdr(column)
+        this.data.approve ? new BaseCdr(column) : new BaseReadonlyCdr(column),
       );
-
       this.attestationParameter = [...properties, ...parameter];
 
       const stepCdr = stepService.getCurrentStepCdr(
         this.data.attestationCases[0].typedEntity,
         this.data.attestationCases[0].data,
-        '#LDS#Current approval step'
+        '#LDS#Current approval step',
       );
       if (stepCdr != null) {
         this.attestationParameter.unshift(stepCdr);
@@ -106,7 +106,7 @@ export class AttestationActionComponent {
       }
 
       item.attestationParameters.forEach((column) =>
-        bulkItem.properties.push(this.data.approve ? new BaseCdr(column) : new BaseReadonlyCdr(column))
+        bulkItem.properties.push(this.data.approve ? new BaseCdr(column) : new BaseReadonlyCdr(column)),
       );
 
       if (this.data.workflow) {
@@ -137,7 +137,7 @@ export class AttestationActionComponent {
       return;
     }
     const regex = /\%.+\%/g;
-    const found = attestationCase.uiData.WorkflowActionHint.match(regex);
+    const found = attestationCase.uiData?.WorkflowActionHint.match(regex);
 
     if (found == null) {
       bulkItem.description = attestationCase.uiData?.WorkflowActionHint;
@@ -148,7 +148,7 @@ export class AttestationActionComponent {
       // Cannot use str.replaceAll() - not supported yet.
       const normalized = item.split('%').join('');
       if (attestationCase[normalized]) {
-        bulkItem.description = attestationCase.uiData.WorkflowActionHint.replace(item, attestationCase[normalized].value);
+        bulkItem.description = attestationCase.uiData?.WorkflowActionHint?.replace(item, attestationCase[normalized].value);
       }
     });
   }

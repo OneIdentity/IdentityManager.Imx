@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,25 +24,30 @@
  *
  */
 
-import { NgModule } from '@angular/core';
-import { ViewDevicesComponent } from './view-devices-home/view-devices.component';
-import { ViewDevicesSidesheetComponent } from './view-devices-sidesheet/view-devices-sidesheet.component'
-import { CdrModule, ClassloggerService, DataSourceToolbarModule, DataTableModule, HelpContextualModule, LdsReplaceModule } from 'qbm';
-import { QerProjectConfig } from 'imx-api-qer';
 import { CommonModule } from '@angular/common';
-import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
-import { TranslateModule } from '@ngx-translate/core';
+import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ProjectConfig } from 'imx-api-qbm';
-import { CreateNewDeviceComponent } from './create-new-device/create-new-device.component';
+import { MatTableModule } from '@angular/material/table';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { ProjectConfig } from '@imx-modules/imx-api-qbm';
+import { QerProjectConfig } from '@imx-modules/imx-api-qer';
+import { TranslateModule } from '@ngx-translate/core';
+import {
+  CdrModule,
+  ClassloggerService,
+  DataSourceToolbarModule,
+  DataTableModule,
+  DataViewModule,
+  HelpContextualModule,
+  LdsReplaceModule,
+} from 'qbm';
 import { MyResponsibilitiesRegistryService } from '../my-responsibilities-view/my-responsibilities-registry.service';
+import { CreateNewDeviceComponent } from './create-new-device/create-new-device.component';
+import { ViewDevicesComponent } from './view-devices-home/view-devices.component';
+import { ViewDevicesSidesheetComponent } from './view-devices-sidesheet/view-devices-sidesheet.component';
 
 @NgModule({
-  declarations: [
-    ViewDevicesComponent,
-    ViewDevicesSidesheetComponent,
-    CreateNewDeviceComponent
-  ],
+  declarations: [ViewDevicesComponent, ViewDevicesSidesheetComponent, CreateNewDeviceComponent],
   imports: [
     CommonModule,
     CdrModule,
@@ -54,31 +59,33 @@ import { MyResponsibilitiesRegistryService } from '../my-responsibilities-view/m
     DataSourceToolbarModule,
     DataTableModule,
     HelpContextualModule,
+    MatTableModule,
+    DataViewModule,
   ],
-  exports: [
-    ViewDevicesComponent,
-  ]
+  exports: [ViewDevicesComponent, ViewDevicesSidesheetComponent],
 })
 export class ViewDevicesModule {
-
   constructor(
     private readonly myResponsibilitiesRegistryService: MyResponsibilitiesRegistryService,
     logger: ClassloggerService,
-    ) {
+  ) {
     logger.info(this, '▶️ ViewDevicesModule loaded');
     this.setupMyResponsibilitiesView();
   }
-  private setupMyResponsibilitiesView(): void{
-
-    this.myResponsibilitiesRegistryService.registerFactory((preProps: string[], features: string[],  projectConfig: QerProjectConfig & ProjectConfig) => {
-      if (preProps.includes('MAC') && projectConfig.DeviceConfig.VI_Hardware_Enabled) {
-        return {
-          instance: ViewDevicesComponent,
-          sortOrder: 13,
-          name: 'devices',
-          caption: '#LDS#Heading Devices',
+  private setupMyResponsibilitiesView(): void {
+    this.myResponsibilitiesRegistryService.registerFactory(
+      (preProps: string[], features: string[], projectConfig: QerProjectConfig & ProjectConfig) => {
+        if (preProps.includes('MAC') && projectConfig.DeviceConfig && projectConfig.DeviceConfig.VI_Hardware_Enabled) {
+          return {
+            instance: ViewDevicesComponent,
+            sortOrder: 13,
+            name: 'devices',
+            caption: '#LDS#Heading Devices',
+          };
+        } else {
+          return { caption: '', name: '' };
         }
-      }
-    });
+      },
+    );
   }
 }

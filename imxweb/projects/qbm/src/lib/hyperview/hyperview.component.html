@@ -1,4 +1,12 @@
-<div #container class="imx-hyperview" [style.font-size]="fontSize" data-role="hyperview" data-imx-identifier="hyperview" imxZoomPan (onViewChanged)="onViewChanged()">
+<div
+  #container
+  class="imx-hyperview"
+  [style.font-size]="fontSize"
+  data-role="hyperview"
+  data-imx-identifier="hyperview"
+  imxZoomPan
+  (onViewChanged)="onViewChanged()"
+>
   <div #root class="imx-hyperview-container">
     <ol #elements class="imx-hyperview-shapes" data-imx-identifier="hyperview-shapes">
       <li
@@ -10,8 +18,15 @@
         [style.background-color]="GetShapeEffectiveColor(shape)"
       >
         <ng-container [ngSwitch]="GetShapeType(shape)">
-          <imx-hyperview-listshape [shape]="shape" [selected]="selected" *ngSwitchCase="ShapeType.ListShape"> </imx-hyperview-listshape>
-          <imx-hyperview-propertyshape [shape]="shape" [selected]="selected" *ngSwitchCase="ShapeType.PropertyShape"> </imx-hyperview-propertyshape>
+          <imx-hyperview-listshape
+            [shape]="shape"
+            [selected]="selected"
+            *ngSwitchCase="ShapeType.ListShape"
+            (changeShapeSize)="onChangeShapeSize()"
+          >
+          </imx-hyperview-listshape>
+          <imx-hyperview-propertyshape [shape]="shape" [selected]="selected" *ngSwitchCase="ShapeType.PropertyShape">
+          </imx-hyperview-propertyshape>
           <imx-hyperview-simpleshape [shape]="shape" *ngSwitchCase="ShapeType.SimpleShape"></imx-hyperview-simpleshape>
         </ng-container>
       </li>
@@ -26,34 +41,31 @@
   <div class="imx-hyperview-navigation">
     <button
       type="button"
-      mat-button
-      class="mat-icon-button"
+      mat-icon-button
       (click)="onNavigationChanged(navigationEnum.First)"
       [disabled]="!navigation.first"
       *ngIf="navigation?.navigation"
-      [attr.aria-label]="'#LDS#First page' | translate"
+      [attr.aria-label]="'#LDS#Initial hyperview' | translate"
     >
       <eui-icon icon="jump-first"></eui-icon>
     </button>
     <button
       type="button"
-      mat-button
-      class="mat-icon-button"
+      mat-icon-button
       (click)="onNavigationChanged(navigationEnum.Back)"
       [disabled]="!navigation.back"
       *ngIf="navigation?.navigation"
-      [attr.aria-label]="'#LDS#Previous page' | translate"
+      [attr.aria-label]="'#LDS#Previous hyperview' | translate"
     >
       <eui-icon icon="chevronleft"></eui-icon>
     </button>
     <button
       type="button"
-      mat-button
-      class="mat-icon-button"
+      mat-icon-button
       (click)="onNavigationChanged(navigationEnum.Forward)"
       [disabled]="!navigation.forward"
       *ngIf="navigation?.navigation"
-      [attr.aria-label]="'#LDS#Next page' | translate"
+      [attr.aria-label]="'#LDS#Next hyperview' | translate"
     >
       <eui-icon icon="chevronright"></eui-icon>
     </button>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,8 +27,8 @@
 import { Injectable } from '@angular/core';
 import { EuiDownloadOptions } from '@elemental-ui/core';
 
-import { CompareOperator, FilterType, MethodDefinition } from 'imx-qbm-dbts';
-import { PortalTermsofuse, QerProjectConfig, V2ApiClientMethodFactory } from 'imx-api-qer';
+import { PortalTermsofuse, QerProjectConfig, V2ApiClientMethodFactory } from '@imx-modules/imx-api-qer';
+import { CompareOperator, FilterType, MethodDefinition } from '@imx-modules/imx-qbm-dbts';
 import { AppConfigService, ElementalUiConfigService } from 'qbm';
 
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
@@ -47,7 +47,7 @@ export class TermsOfUseService {
     private readonly appConfig: AppConfigService,
     private readonly elementalUiConfigService: ElementalUiConfigService,
     private readonly qerClient: QerApiService,
-    private readonly projectConfigService: ProjectConfigurationService
+    private readonly projectConfigService: ProjectConfigurationService,
   ) {}
 
   /**
@@ -56,7 +56,10 @@ export class TermsOfUseService {
   public async getTermsOfUse(uidTermsOfUse: string[]): Promise<PortalTermsofuse[]> {
     const arr: PortalTermsofuse[] = [];
     for (const uid of uidTermsOfUse) {
-      arr.push(await this.getSingleTermsOfUse(uid));
+      const termsOfUse = await this.getSingleTermsOfUse(uid);
+      if (termsOfUse) {
+        arr.push(termsOfUse);
+      }
     }
     return arr;
   }
@@ -66,19 +69,18 @@ export class TermsOfUseService {
    * @param uidTermsOfUse the uid for the term of use
    */
   public async getSingleTermsOfUse(uidTermsOfUse: string): Promise<PortalTermsofuse> {
-    return (
-      await this.qerClient.typedClient.PortalTermsofuse.Get({
-        PageSize: 100000,
-        filter: [
-          {
-            ColumnName: 'UID_QERTermsOfUse',
-            CompareOp: CompareOperator.Equal,
-            Value1: uidTermsOfUse,
-            Type: FilterType.Compare,
-          },
-        ],
-      })
-    ).Data[0];
+    const result = await this.qerClient.typedClient.PortalTermsofuse.Get({
+      PageSize: 100000,
+      filter: [
+        {
+          ColumnName: 'UID_QERTermsOfUse',
+          CompareOp: CompareOperator.Equal,
+          Value1: uidTermsOfUse,
+          Type: FilterType.Compare,
+        },
+      ],
+    });
+    return result.Data[0];
   }
 
   /**
@@ -101,7 +103,7 @@ export class TermsOfUseService {
   public async getStepUpAuthenticationProvider(): Promise<string> {
     let projectConfig: QerProjectConfig;
     projectConfig = await this.projectConfigService.getConfig();
-    return projectConfig?.ITShopConfig.StepUpAuthenticationProvider;
+    return projectConfig.ITShopConfig?.StepUpAuthenticationProvider || '';
   }
 
   /**
@@ -113,9 +115,11 @@ export class TermsOfUseService {
   }
 
   /**
-   * Return the download options for a specified uid of a {@link PortalTermsofuse|terms of use}.
+   * Return the download options for a specified {@link PortalTermsofuse|terms of use} item.
    */
-  public getDownloadOptions(key: string, display: string): EuiDownloadOptions {
+  public getDownloadOptions(item: PortalTermsofuse): EuiDownloadOptions {
+    const key = item?.GetEntity()?.GetKeys()[0];
+    const display = item?.GetEntity()?.GetDisplay();
     return {
       ...this.elementalUiConfigService.Config.downloadOptions,
       url: this.appConfig.BaseUrl + new MethodDefinition(this.apiMethodFactory.portal_termsofuse_download_get(key)).path,

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,17 +25,33 @@
  */
 
 import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
-import { MatChipList, MatChipListChange } from '@angular/material/chips';
 import { NavigationEnd, Router } from '@angular/router';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { from } from 'rxjs';
 import { Subscription } from 'rxjs/internal/Subscription';
 
-import { PortalItshopPeergroupMemberships, PortalShopServiceitems } from 'imx-api-qer';
-import { CollectionLoadParameters, DisplayColumns, IClientProperty, IWriteValue, MultiValue, ValueStruct } from 'imx-qbm-dbts';
+import { PortalShopServiceitems } from '@imx-modules/imx-api-qer';
+import {
+  CollectionLoadParameters,
+  DisplayColumns,
+  IClientProperty,
+  IWriteValue,
+  MultiValue,
+  TypedEntity,
+  ValueStruct,
+} from '@imx-modules/imx-qbm-dbts';
 
-import { Busy, BusyService, DataSourceToolbarComponent, DataSourceToolbarSettings, FkAdvancedPickerComponent, HELP_CONTEXTUAL } from 'qbm';
+import { MatChipListbox, MatChipListboxChange } from '@angular/material/chips';
+import {
+  Busy,
+  BusyService,
+  DataSourceToolbarComponent,
+  DataSourceToolbarSettings,
+  FkAdvancedPickerComponent,
+  HELP_CONTEXTUAL,
+  calculateSidesheetWidth,
+} from 'qbm';
 import { ItshopService } from '../../itshop/itshop.service';
 import { QerApiService } from '../../qer-api-client.service';
 import { CurrentProductSource } from '../current-product-source';
@@ -58,7 +74,7 @@ export class NewRequestReferenceUserComponent implements AfterViewInit, OnDestro
   //#endregion
 
   //#region Public
-  @ViewChild(MatChipList) public chipList: MatChipList;
+  @ViewChild(MatChipListbox) public chipList: MatChipListbox;
 
   public selectedChipIndex = 0;
   public productDst: DataSourceToolbarComponent;
@@ -87,8 +103,8 @@ export class NewRequestReferenceUserComponent implements AfterViewInit, OnDestro
     private readonly translate: TranslateService,
     private readonly qerApi: QerApiService,
     private readonly orchestration: NewRequestOrchestrationService,
-    private readonly productDetailsService: ProductDetailsService,
-    private readonly router: Router
+    public readonly productDetailsService: ProductDetailsService,
+    private readonly router: Router,
   ) {
     this.orchestration.selectedView = SelectedProductSource.ReferenceUserProducts;
     this.orchestration.selectedChip = 0;
@@ -121,9 +137,11 @@ export class NewRequestReferenceUserComponent implements AfterViewInit, OnDestro
           this.productDst.busyService = this.busyService;
           this.orchestration.dstSettingsReferenceUserProducts = this.productDstSettings;
           // this.getProductData();
-          this.subscriptions.push(this.selectionService.selectedProducts$.subscribe(() => {
-            this.orchestration.preselectBySource(SelectedProductSource.ReferenceUserProducts, this.productDst);
-          }));
+          this.subscriptions.push(
+            this.selectionService.selectedProducts$.subscribe(() => {
+              this.orchestration.preselectBySource(SelectedProductSource.ReferenceUserProducts, this.productDst);
+            }),
+          );
           this.subscriptions.push(
             this.productDst.searchResults$.subscribe((data) => {
               if (data) {
@@ -136,7 +154,7 @@ export class NewRequestReferenceUserComponent implements AfterViewInit, OnDestro
                 this.orchestration.dstSettingsReferenceUserProducts = this.productDstSettings;
               }
               this.busy.endBusy(true);
-            })
+            }),
           );
         }
 
@@ -144,9 +162,11 @@ export class NewRequestReferenceUserComponent implements AfterViewInit, OnDestro
           this.membershipDst = source.dst;
           this.membershipDst.busyService = this.busyService;
           this.orchestration.dstSettingsReferenceUserOrgs = this.membershipDstSettings;
-          this.subscriptions.push(this.selectionService.selectedProducts$.subscribe(() => {
-            this.orchestration.preselectBySource(SelectedProductSource.ReferenceUserOrgs, this.membershipDst);
-          }));
+          this.subscriptions.push(
+            this.selectionService.selectedProducts$.subscribe(() => {
+              this.orchestration.preselectBySource(SelectedProductSource.ReferenceUserOrgs, this.membershipDst);
+            }),
+          );
           this.subscriptions.push(
             this.membershipDst.searchResults$.subscribe((data) => {
               if (data) {
@@ -156,13 +176,13 @@ export class NewRequestReferenceUserComponent implements AfterViewInit, OnDestro
                   entitySchema: this.membershipApi.PortalItshopPeergroupMembershipsSchema,
                   navigationState: this.membershipNavigationState,
                 };
-                this.orchestration.dstSettingsReferenceUserOrgs= this.membershipDstSettings;
+                this.orchestration.dstSettingsReferenceUserOrgs = this.membershipDstSettings;
               }
               this.busy.endBusy(true);
-            })
+            }),
           );
         }
-      })
+      }),
     );
 
     this.subscriptions.push(
@@ -177,35 +197,37 @@ export class NewRequestReferenceUserComponent implements AfterViewInit, OnDestro
           this.orchestration.dstSettingsReferenceUserOrgs = this.membershipDstSettings;
           await this.getMembershipData();
         }
-      })
+      }),
     );
 
     this.subscriptions.push(
       this.selectionService.selectedProductsCleared$.subscribe(() => {
         this.productDst?.clearSelection();
         this.membershipDst?.clearSelection();
-      })
+      }),
     );
 
-    this.subscriptions.push(this.orchestration.recipients$.subscribe(async (recipients: IWriteValue<string>) => {
-      this.recipients = recipients; 
+    this.subscriptions.push(
+      this.orchestration.recipients$.subscribe(async (recipients: IWriteValue<string>) => {
+        this.recipients = recipients;
 
-      if (this.selectedChipIndex === 0 && this.selectedSource === SelectedProductSource.ReferenceUserProducts) {        
-        this.orchestration.dstSettingsReferenceUserProducts = this.productDstSettings;
-        await this.getProductData();
-      }
-      if (this.selectedChipIndex === 1 && this.selectedSource === SelectedProductSource.ReferenceUserOrgs) {
-        this.orchestration.dstSettingsReferenceUserOrgs = this.membershipDstSettings;
-        await this.getMembershipData();
-      }
-    }));
+        if (this.selectedChipIndex === 0 && this.selectedSource === SelectedProductSource.ReferenceUserProducts) {
+          this.orchestration.dstSettingsReferenceUserProducts = this.productDstSettings;
+          await this.getProductData();
+        }
+        if (this.selectedChipIndex === 1 && this.selectedSource === SelectedProductSource.ReferenceUserOrgs) {
+          this.orchestration.dstSettingsReferenceUserOrgs = this.membershipDstSettings;
+          await this.getMembershipData();
+        }
+      }),
+    );
 
     this.subscriptions.push(
       this.router.events.subscribe(async (event: any) => {
         if (event instanceof NavigationEnd && this.orchestration.referenceUser != null && event.url === '/newrequest/selectReferenceUser') {
           await this.selectReferenceUser();
         }
-      })
+      }),
     );
 
     //#endregion
@@ -218,7 +240,7 @@ export class NewRequestReferenceUserComponent implements AfterViewInit, OnDestro
     if (!this.orchestration.referenceUser) {
       await this.selectReferenceUser();
     } else {
-      this.chipList.chips.first.select();
+      this.chipList._chips.first.select();
       this.cd.detectChanges();
       await this.getProductData();
     }
@@ -228,15 +250,15 @@ export class NewRequestReferenceUserComponent implements AfterViewInit, OnDestro
     this.subscriptions.forEach((subscription: Subscription) => subscription.unsubscribe());
   }
 
-  public searchApi = () => {
+  public searchApi = (keywords: string) => {
     this.busy = this.busyService.beginBusy();
     this.orchestration.abortCall();
     if (this.selectedChipIndex === 0) {
-      const parameters = this.getCollectionLoadParamaters(this.productNavigationState);
+      const parameters = { ...this.getCollectionLoadParamaters(this.productNavigationState), search: keywords };
       return from(this.productApi.get(parameters));
     }
     if (this.selectedChipIndex === 1) {
-      const parameters = this.getCollectionLoadParamaters(this.membershipNavigationState);
+      const parameters = { ...this.getCollectionLoadParamaters(this.membershipNavigationState), search: keywords };
       return from(this.membershipApi.getPeerGroupMemberships(parameters, { signal: this.orchestration.abortController.signal }));
     }
   };
@@ -250,7 +272,7 @@ export class NewRequestReferenceUserComponent implements AfterViewInit, OnDestro
         title: await this.translate.get('#LDS#Heading Select Reference User').toPromise(),
         padding: '0',
         icon: 'user',
-        width: 'min(60%, 800px)',
+        width: calculateSidesheetWidth(),
         testId: 'referenceUser-sidesheet',
         data: {
           displayValue: '',
@@ -272,31 +294,31 @@ export class NewRequestReferenceUserComponent implements AfterViewInit, OnDestro
       return;
     }
 
-    this.orchestration.referenceUser = user
+    this.orchestration.referenceUser = user;
 
     this.productNavigationState = { StartIndex: 0 };
     this.membershipNavigationState = { StartIndex: 0 };
-    this.chipList.chips.first.select();
+    this.chipList._chips.first.select();
     await this.getProductData();
   }
 
-  public async onRowSelected(item: PortalShopServiceitems): Promise<void> {
-    this.productDetailsService.showProductDetails(item, this.recipients);
+  public async onRowSelected(item: TypedEntity): Promise<void> {
+    this.productDetailsService.showProductDetails(item as PortalShopServiceitems, this.recipients);
   }
 
-  public onProductSelectionChanged(items: PortalShopServiceitems[] | PortalItshopPeergroupMemberships[], type: SelectedProductSource): void {
+  public onProductSelectionChanged(items: TypedEntity[], type: SelectedProductSource): void {
     type === SelectedProductSource.ReferenceUserProducts
-    ? this.selectionService.addProducts(items, SelectedProductSource.ReferenceUserProducts)
-    : this.selectionService.addProducts(items, SelectedProductSource.ReferenceUserOrgs);
+      ? this.selectionService.addProducts(items, SelectedProductSource.ReferenceUserProducts)
+      : this.selectionService.addProducts(items, SelectedProductSource.ReferenceUserOrgs);
   }
 
-  public onChipListChange(event: MatChipListChange): void {}
+  public onChipListChange(event: MatChipListboxChange): void {}
 
   public async onChipClicked(index: number): Promise<void> {
     this.selectedChipIndex = index;
     this.orchestration.selectedChip = index;
 
-    this.chipList.chips.forEach((chip, i) => {
+    this.chipList._chips.forEach((chip, i) => {
       i === index ? (chip.selected = true) : (chip.selected = false);
     });
 
@@ -362,11 +384,13 @@ export class NewRequestReferenceUserComponent implements AfterViewInit, OnDestro
   }
 
   private getCollectionLoadParamaters(
-    navigationState: CollectionLoadParameters | ServiceItemParameters
+    navigationState: CollectionLoadParameters | ServiceItemParameters,
   ): CollectionLoadParameters | ServiceItemParameters {
     return {
       ...navigationState,
-      UID_Person: this.orchestration.recipients ? MultiValue.FromString(this.orchestration.recipients.value).GetValues().join(',') : undefined,
+      UID_Person: this.orchestration.recipients
+        ? MultiValue.FromString(this.orchestration.recipients.value).GetValues().join(',')
+        : undefined,
       UID_PersonReference: this.orchestration.referenceUser?.DataValue,
     };
   }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { ChartInfoDto } from 'imx-api-qer';
+import { ChartInfoDto } from '@imx-modules/imx-api-qer';
 import {
   DisplayPattern,
   EntityColumnData,
@@ -37,7 +37,7 @@ import {
   TypedEntity,
   TypedEntityBuilder,
   ValType,
-} from 'imx-qbm-dbts';
+} from '@imx-modules/imx-qbm-dbts';
 
 export class ChartInfoTyped extends TypedEntity {
   public readonly Area: IReadValue<string> = this.GetEntityValue('Area');
@@ -47,6 +47,7 @@ export class ChartInfoTyped extends TypedEntity {
   public readonly Display: IReadValue<string> = this.GetEntityValue('Display');
   public readonly Description: IReadValue<string> = this.GetEntityValue('Description');
   public readonly HistoryLength: IReadValue<number> = this.GetEntityValue('HistoryLength');
+  public readonly DisplayType: IReadValue<number> = this.GetEntityValue('DisplayType');
   public readonly HasListReport: IReadValue<boolean> = this.GetEntityValue('HasListReport');
 
   public GetDisplay(): string {
@@ -79,10 +80,15 @@ export class ChartInfoTyped extends TypedEntity {
     ret.Description = {
       Type: ValType.String,
       ColumnName: 'Description',
+      Display: '#LDS#Description',
     };
     ret.HistoryLength = {
       Type: ValType.Int,
       ColumnName: 'HistoryLength',
+    };
+    ret.DisplayType = {
+      Type: ValType.Int,
+      ColumnName: 'DisplayType',
     };
     ret.HasListReport = {
       Type: ValType.Bool,
@@ -103,7 +109,7 @@ export class ChartInfoTyped extends TypedEntity {
         TotalCount: entityData.length,
         Entities: entityData,
       },
-      ChartInfoTyped.GetEntitySchema()
+      ChartInfoTyped.GetEntitySchema(),
     );
   }
 
@@ -115,6 +121,7 @@ export class ChartInfoTyped extends TypedEntity {
     ret.IsFavorite = { Value: extras?.isFavorite, IsReadOnly: false };
     ret.IsOrg = { Value: extras?.isOrg, IsReadOnly: false };
     ret.Display = { Value: data.Title, IsReadOnly: true };
+    ret.DisplayType = { Value: data.DisplayType, IsReadOnly: true };
     ret.Description = { Value: data.Description, IsReadOnly: true };
     ret.Id = { Value: data.Id, IsReadOnly: true };
     ret.HistoryLength = { Value: data.HistoryLength, IsReadOnly: true };

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,21 +25,19 @@
  */
 
 import { Injectable } from '@angular/core';
-import { TypedEntity } from 'imx-qbm-dbts';
+import { TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { Subject } from 'rxjs';
 import { RoleService } from './role.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DataManagementService {
-  public entityInteractive: TypedEntity;
+  public entityInteractive: TypedEntity | undefined;
   public mainDataDirty$: Subject<boolean> = new Subject();
   public autoMembershipDirty$: Subject<boolean> = new Subject();
 
-  constructor(
-    private roleService: RoleService
-  ) { }
+  constructor(private roleService: RoleService) {}
 
   public mainDataDirty(flag: boolean): void {
     this.mainDataDirty$.next(flag);
@@ -50,10 +48,10 @@ export class DataManagementService {
   }
 
   public async setInteractive(): Promise<void> {
-    this.entityInteractive = await this.roleService.getInteractiveInternal()
+    this.entityInteractive = await this.roleService.getInteractiveInternal();
   }
 
   public async refreshInteractive(): Promise<void> {
-    await this.entityInteractive.GetEntity().Commit(true);
+    await this.entityInteractive?.GetEntity()?.Commit(true);
   }
 }

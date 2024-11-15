@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,20 +26,20 @@
 
 import { Injectable } from '@angular/core';
 
-import { EntityService } from 'qbm';
+import { PortalPersonAll, PortalPersonMasterdata, PortalPersonUid } from '@imx-modules/imx-api-qer';
 import {
-  TypedEntityCollectionData,
   CollectionLoadParameters,
-  MetaTableRelationData,
-  FkProviderItem,
-  IEntityColumn,
-  ValType,
-  FilterData,
   DataModel,
-  GroupInfoData,
   EntitySchema,
-} from 'imx-qbm-dbts';
-import { PortalPersonAll, PortalPersonMasterdata, PortalPersonUid } from 'imx-api-qer';
+  FilterData,
+  FkProviderItem,
+  GroupInfoData,
+  IEntityColumn,
+  MetaTableRelationData,
+  TypedEntityCollectionData,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
+import { EntityService } from 'qbm';
 import { QerApiService } from '../qer-api-client.service';
 import { PersonAllLoadParameters } from './person-all-load-parameters.interface';
 
@@ -55,7 +55,10 @@ export class PersonService {
     return this.qerClient.typedClient.PortalPersonAll.GetSchema();
   }
 
-  constructor(private readonly qerClient: QerApiService, private readonly entityService: EntityService) {}
+  constructor(
+    private readonly qerClient: QerApiService,
+    private readonly entityService: EntityService,
+  ) {}
 
   public async getMasterdataInteractive(uid: string): Promise<TypedEntityCollectionData<PortalPersonMasterdata>> {
     return this.qerClient.typedClient.PortalPersonMasterdataInteractive.Get_byid(uid);
@@ -69,8 +72,11 @@ export class PersonService {
     return this.qerClient.typedClient.PortalPersonUid.Get(uid, parameters);
   }
 
-  public async getAll(parameters: CollectionLoadParameters = {}): Promise<TypedEntityCollectionData<PortalPersonAll>> {
-    return this.qerClient.typedClient.PortalPersonAll.Get(parameters);
+  public async getAll(
+    parameters: CollectionLoadParameters = {},
+    signal?: AbortSignal,
+  ): Promise<TypedEntityCollectionData<PortalPersonAll>> {
+    return this.qerClient.typedClient.PortalPersonAll.Get(parameters, { signal });
   }
 
   public async getDataModel(filter?: FilterData[]): Promise<DataModel> {
@@ -100,14 +106,14 @@ export class PersonService {
         MinLen: 1,
         FkRelation: fkRelation,
       },
-      [this.createFkProviderItem(fkRelation)]
+      [this.createFkProviderItem(fkRelation)],
     );
   }
 
   public createFkProviderItem(fkRelation: MetaTableRelationData, filter?: FilterData[]): FkProviderItem {
     return {
-      columnName: fkRelation.ChildColumnName,
-      fkTableName: fkRelation.ParentTableName,
+      columnName: fkRelation.ChildColumnName || '',
+      fkTableName: fkRelation.ParentTableName || '',
       parameterNames: ['OrderBy', 'StartIndex', 'PageSize', 'filter', 'withProperties', 'search'],
       load: async (_, parameters: CollectionLoadParameters = {}) =>
         this.qerClient.v2Client.portal_person_active_get({ ...parameters, filter }),

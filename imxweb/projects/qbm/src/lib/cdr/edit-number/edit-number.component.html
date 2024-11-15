@@ -1,29 +1,38 @@
-<mat-form-field appearance="outline"  *ngIf="columnContainer?.canEdit; else isReadonly">
-    <mat-label>
-        {{ columnContainer?.display | translate }}
-    </mat-label>
-    <input matInput type="number" [formControl]="control" [readonly]="!columnContainer?.canEdit"
-        [attr.data-imx-identifier]="'cdr-edit-number-input-' + columnContainer?.name"
-        [required]="this.columnContainer?.isValueRequired">
-        <div matSuffix class="imx-suffix-container">
-            <mat-spinner class="imx-suffix-spinner" diameter="30" *ngIf="isBusy"></mat-spinner>
-        </div>
-        <mat-error *ngIf="control.errors?.['invalidInteger']">
-            {{ '#LDS#WD_InputInvalidInteger' | translate | ldsReplace: control.value }}
-        </mat-error>
-        <mat-error *ngIf="control.errors?.['rangeMin']">
-            {{ '#LDS#Please enter a number greater than or equal to {0}.' | translate | ldsReplace: columnContainer.valueConstraint.MinValue }}
-        </mat-error>
-        <mat-error *ngIf="control.errors?.['rangeMax']">
-            {{ '#LDS#Please enter a number less than or equal to {0}.' | translate | ldsReplace: columnContainer.valueConstraint.MaxValue }}
-        </mat-error>
+<mat-form-field class="imx-form-field-width-full" appearance="outline" *ngIf="columnContainer?.canEdit; else isReadonly">
+  <mat-label>
+    {{ columnContainer.display | translate }}
+  </mat-label>
+  <input
+    matInput
+    type="number"
+    [formControl]="control"
+    [readonly]="!columnContainer?.canEdit"
+    [attr.data-imx-identifier]="'cdr-edit-number-input-' + columnContainer?.name"
+    [required]="this.columnContainer?.isValueRequired"
+  />
+  <div matSuffix class="imx-suffix-container">
+    <mat-spinner class="imx-margin-right-5 imx-margin-top-0" diameter="30" *ngIf="isBusy"></mat-spinner>
+  </div>
+  <mat-error *ngIf="control.errors?.['invalidInteger']">
+    {{ '#LDS#The value you entered is invalid. Enter an integer number.' | translate }}
+  </mat-error>
+  <mat-error *ngIf="control.errors?.['rangeMin']">
+    {{
+      '#LDS#The value you entered is invalid. Enter a number greater than or equal to {0}.'
+        | translate
+        | ldsReplace: columnContainer.valueConstraint?.MinValue
+    }}
+  </mat-error>
+  <mat-error *ngIf="control.errors?.['rangeMax']">
+    {{
+      '#LDS#The value you entered is invalid. Enter a number less than or equal to {0}.'
+        | translate
+        | ldsReplace: columnContainer.valueConstraint?.MaxValue
+    }}
+  </mat-error>
 </mat-form-field>
 
 <!-- template for read only elements-->
 <ng-template #isReadonly>
-  <imx-view-property
-    [columnContainer]="columnContainer"
-    defaultValue="#LDS#Not set"
-  >
-  </imx-view-property>
+  <imx-view-property [columnContainer]="columnContainer" defaultValue="#LDS#Not set"> </imx-view-property>
 </ng-template>

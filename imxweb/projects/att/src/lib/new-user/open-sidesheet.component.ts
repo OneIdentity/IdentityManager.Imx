@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,27 +28,26 @@ import { Component, OnInit } from '@angular/core';
 import { EuiSidesheetConfig, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
+import { calculateSidesheetWidth } from 'qbm';
 import { NewUserComponent } from './new-user.component';
 
 @Component({
   template: '',
-  styleUrls: ['./open-sidesheet.component.scss']
 })
-export class OpenSidesheetComponent implements OnInit{
-
+export class OpenSidesheetComponent implements OnInit {
   constructor(
     private readonly sidesheet: EuiSidesheetService,
-    private readonly translate: TranslateService) {
-     }
- public async ngOnInit(): Promise<void> {
-  const config: EuiSidesheetConfig = {
-    title: await this.translate.get('#LDS#Heading Create New Account').toPromise(),
-    width: 'max(650px, 60%)',
-    panelClass: 'imx-sidesheet',
-    padding: '0px',
-    disableClose: true,
-    testId: 'register-new-user',
-  };
-  this.sidesheet.open(NewUserComponent, config);
+    private readonly translate: TranslateService,
+  ) {}
+  public async ngOnInit(): Promise<void> {
+    const config: EuiSidesheetConfig = {
+      title: await this.translate.get('#LDS#Heading Create New Account').toPromise(),
+      width: calculateSidesheetWidth(1000),
+      panelClass: 'imx-sidesheet',
+      padding: '0px',
+      disableClose: true,
+      testId: 'register-new-user',
+    };
+    this.sidesheet.open(NewUserComponent, config);
   }
 }

@@ -1,8 +1,8 @@
 {
   "qer-app-portal": [
-      {
-          "Container": "aob",
-          "Name": "AobConfigModule"
-      }
+    {
+      "Container": "aob",
+      "Name": "AobConfigModule"
+    }
   ]
 }

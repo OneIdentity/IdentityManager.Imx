@@ -1,5 +1,6 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
-@import '../../../../../shared/scss/common-table.scss';
+@import 'base/mixins';
+
 :host {
   display: flex;
   flex-direction: column;
@@ -14,51 +15,27 @@
     overflow: hidden;
   }
 
-  .hidden {
-    display: none;
-  }
-
-  .mat-tab-group {
-    height: 100%;
-    overflow: hidden;
-
-    ::ng-deep .mat-tab-body-wrapper {
-      flex: 1 1 auto;
-
-      .mat-tab-body-content {
-        height: 100%;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-      }
-    }
-  }
-
-  .mat-stroked-button,
-  .mat-raised-button {
-    @include imx-icon-for-image-button();
-  }
-
-  .imx-table-container {
-    @include imx-flex-fill-control-hidden-overflow();
+  .mat-mdc-outlined-button,
+  .mat-mdc-unelevated-button {
+    @include image-button-icon();
   }
 
   > * {
     margin-right: 16px;
   }
-
-  .mat-icon {
-    margin-right: 5px;
-    font-size: 24px;
-  }
 }
+
+.hidden {
+  display: none;
+}
+
 .imx-attestationcase-table {
   flex-grow: 1;
   overflow: auto;
 }
 
 .imx-decision {
-  @include imx-button-column-right();
+  @include button-column-right();
   > button:not(:last-of-type) {
     margin-right: 5px;
   }
@@ -71,51 +48,6 @@
   justify-content: center;
 }
 
-.imx-button-bar {
-  @include imx-button-bar();
-}
-
-.imx-icons-container {
-  padding-right: 15px;
-  .table-icon {
-    display: flex;
-    align-items: center;
-    color: $color-gray-60;
-    font-weight: 600;
-    height: 14px;
-    &--warning {
-      .eui-icon {
-        color: $color-orange-60;
-      }
-    }
-    &--new {
-      .mat-icon {
-        color: $color-green-60;
-      }
-    }
-    &--info {
-      .mat-icon {
-        color: $color-gray-60;
-      }
-    }
-    &--alert {
-      .eui-icon,
-      span {
-        color: $color-red-60;
-      }
-    }
-    &:not(:first-of-type) {
-      margin-left: 8px;
-      border-left: 1px solid $color-gray-20;
-      padding-left: 8px;
-    }
-    .mat-icon,
-    .eui-icon {
-      padding-right: 6px;
-    }
-  }
-}
-
 .toggle-wrapper {
   margin-bottom: 1em;
 }
@@ -123,84 +55,5 @@
 @media only screen and (max-width: 1024px) {
   ::ng-deep .mat-column-decision {
     display: none;
-  }
-}
-
-// Theming
-:host {
-  ::ng-deep .mat-tab-labels {
-    background-color: $color-gray-0;
-  }
-
-  .recommendation-approve-icon {
-    color: $color-green-60;
-  }
-
-  .recommendation-deny-icon {
-    color: $color-red-60;
-  }
-}
-
-.eui-dark-theme {
-  :host {
-    ::ng-deep .mat-tab-labels {
-      background-color: $color-gray-80;
-    }
-
-    .recommendation-approve-icon {
-      color: $color-green-40;
-    }
-
-    .recommendation-deny-icon {
-      color: $color-red-40;
-    }
-    .imx-icons-container {
-      .table-icon {
-        color: $color-gray-10;
-        &--warning {
-          .eui-icon {
-            color: $color-orange-40;
-          }
-        }
-        &--new {
-          .mat-icon {
-            color: $color-green-40;
-          }
-        }
-        &--info {
-          .mat-icon {
-            color: $color-gray-10;
-          }
-        }
-        &--alert {
-          .eui-icon,
-          span {
-            color: $color-red-40;
-          }
-        }
-      }
-    }
-  }
-}
-
-.eui-contrast-theme {
-  :host {
-    ::ng-deep .mat-tab-labels {
-      background-color: $color-gray-100;
-    }
-
-    .recommendation-approve-icon {
-      color: $color-green-40;
-    }
-
-    .recommendation-deny-icon {
-      color: $color-red-40;
-    }
-
-    .imx-icons-container {
-      .table-icon {
-        color: inherit;
-      }
-    }
   }
 }

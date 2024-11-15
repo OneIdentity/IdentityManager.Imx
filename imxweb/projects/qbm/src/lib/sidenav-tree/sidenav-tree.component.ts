@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,8 +26,14 @@
 
 import { animate, animateChild, group, query, state, style, transition, trigger } from '@angular/animations';
 import { FlatTreeControl, NestedTreeControl } from '@angular/cdk/tree';
-import { Component, Input, Output, EventEmitter, TemplateRef, SimpleChanges, OnChanges } from '@angular/core';
-import { MatTreeNestedDataSource } from '@angular/material/tree';
+import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, TemplateRef } from '@angular/core';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatTreeModule, MatTreeNestedDataSource } from '@angular/material/tree';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
+import { DataSourceToolbarModule } from '../data-source-toolbar/data-source-toolbar.module';
+import { CustomTreeControlComponent } from './custom-tree-control.component';
 import { DynamicDataSource } from './sidenav-tree-dynamic-extension';
 
 /**
@@ -58,13 +64,24 @@ import { DynamicDataSource } from './sidenav-tree-dynamic-extension';
   selector: 'imx-sidenav-tree',
   templateUrl: './sidenav-tree.component.html',
   styleUrls: ['./sidenav-tree.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatTreeModule,
+    EuiCoreModule,
+    EuiMaterialModule,
+    MatSidenavModule,
+    TranslateModule,
+    DataSourceToolbarModule,
+    CustomTreeControlComponent,
+  ],
   animations: [
     trigger('expandDiv', [
       state(
         'closed',
         style({
           width: '48px',
-        })
+        }),
       ),
       state('opened', style({ width: '{{ expandWidth }}' }), { params: { expandWidth: '*' } }),
       transition('* <=> *', [
@@ -83,13 +100,13 @@ import { DynamicDataSource } from './sidenav-tree-dynamic-extension';
         'closed',
         style({
           rotate: '180deg',
-        })
+        }),
       ),
       state(
         'opened',
         style({
           rotate: '0deg',
-        })
+        }),
       ),
       transition('* <=> *', animate('400ms ease')),
     ]),
@@ -99,7 +116,7 @@ import { DynamicDataSource } from './sidenav-tree-dynamic-extension';
         style({
           width: '0px',
           visibility: 'hidden',
-        })
+        }),
       ),
       state(
         'opened',
@@ -107,14 +124,14 @@ import { DynamicDataSource } from './sidenav-tree-dynamic-extension';
           width: '320px',
           visibility: 'visible',
         }),
-        { params: { expandWidth: '*' } }
+        { params: { expandWidth: '*' } },
       ),
       state(
         'hidden',
         style({
           width: 0,
           visibility: 'hidden',
-        })
+        }),
       ),
       transition('* <=> *', [group([query('@fadeIcon', animateChild(), { optional: true }), animate('400ms ease')])]),
     ]),
@@ -125,7 +142,7 @@ import { DynamicDataSource } from './sidenav-tree-dynamic-extension';
           opacity: '0',
           width: '0px',
           visibility: 'hidden',
-        })
+        }),
       ),
       state(
         'closed',
@@ -133,14 +150,14 @@ import { DynamicDataSource } from './sidenav-tree-dynamic-extension';
           opacity: '1',
           width: '40px',
           visibility: 'visible',
-        })
+        }),
       ),
       state(
         'hidden',
         style({
           width: 0,
           visibility: 'hidden',
-        })
+        }),
       ),
       transition('* <=> *', animate('400ms ease')),
     ]),
@@ -183,13 +200,16 @@ export class SidenavTreeComponent implements OnChanges {
   @Input() public isSelected = (node: any) => node.isSelected;
 
   // Function used to determine if the node is loading children, this value is maintained outside this component
-  @Input() public isLoading = (node: any) => false;
+  @Input() public isLoading: (node: any) => boolean = (node: any) => false;
 
   // Remove the header and hide the mat-card style in false state
   @Input() public showSidenavHeader = true;
 
   // Text to show when search is empty
   @Input() public noResultText = '#LDS#There are no items matching your search.';
+
+  // hides the expand icon
+  @Input() public hideExpandButton = false;
 
   // Output
   // Emits when the sidenav state changed

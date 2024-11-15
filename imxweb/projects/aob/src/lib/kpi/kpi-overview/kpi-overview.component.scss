@@ -5,7 +5,7 @@
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  .mat-card > .mat-card-actions:last-child {
+  .mat-mdc-card > .mat-mdc-card-actions:last-child {
     margin-bottom: 0;
   }
 }
@@ -25,11 +25,12 @@ li {
   margin: 0 10px 10px 0;
 }
 
-.mat-card {
+.mat-mdc-card {
   padding: 5px 10px;
   width: 340px;
   height: 68px;
   display: flex;
+  flex-direction: row;
 }
 
 h2 {
@@ -40,10 +41,6 @@ h2 {
 p {
   font-size: 14px;
   margin-top: 0;
-}
-
-eui-billboard {
-  width: 500px;
 }
 
 h3 {
@@ -58,10 +55,6 @@ h4 {
   margin: 30px 0 15px 0;
 }
 
-.imx-card-clickable {
-  cursor: pointer;
-}
-
 .imx-kpi-text {
   margin: 0;
   vertical-align: middle;
@@ -73,6 +66,7 @@ h4 {
   align-self: center;
   margin-bottom: 0;
   margin-right: 5px;
+  font-size: 14px;
 }
 
 .imx-spacer {
@@ -105,29 +99,13 @@ h4 {
   padding: 20px 0 0 20px;
 }
 
-.imx-chart {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-}
-
-.mat-dialog-title {
-  display: flex;
-  margin: 0px 0 10px;
-}
-
 .imx-title-text {
   text-align: center;
   margin: 0 24px 0 60px;
   flex: 1;
 }
 
-.imx-close-dialog-button {
-  right: -15px;
-  top: -15px;
-}
-
-.imx-aob-kpi-empty {
+.imx-no-results {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -142,7 +120,7 @@ h4 {
 .eui-light-theme {
   :host {
     li {
-      .mat-card {
+      .mat-mdc-card {
         background-color: $color-gray-0;
       }
     }
@@ -175,13 +153,8 @@ h4 {
 
 .eui-dark-theme {
   :host {
-    .imx-kpi-list > li > .mat-card {
+    .imx-kpi-list > li > .mat-mdc-card {
       background-color: $color-gray-60;
-    }
-    .imx-aob-kpi-empty {
-      > .eui-icon {
-        color: $color-gray-5;
-      }
     }
 
     .imx-pass {
@@ -210,15 +183,8 @@ h4 {
 
 .eui-contrast-theme {
   :host {
-    .imx-kpi-list > li > .mat-card {
+    .imx-kpi-list > li > .mat-mdc-card {
       background-color: $color-gray-80;
-    }
-    .imx-aob-kpi-empty {
-      background-color: $color-gray-90;
-
-      > .eui-icon {
-        color: $color-gray-0;
-      }
     }
 
     .imx-pass {

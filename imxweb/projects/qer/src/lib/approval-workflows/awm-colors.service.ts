@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -41,15 +41,13 @@ export interface AWMColorValues {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AwmColorsService implements OnDestroy {
   public colorValues: AWMColorValues;
   private themeSub$: Subscription;
 
-  constructor(
-    private themeService: EuiThemeService,
-  ) { }
+  constructor(private themeService: EuiThemeService) {}
 
   ngOnDestroy(): void {
     this.themeSub$.unsubscribe();

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,26 +24,25 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, Input, OnInit } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { PortalShopServiceitemsEntitlements } from 'imx-api-qer';
-import { CollectionLoadParameters, DbObjectKey, DisplayColumns, EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
+import { PortalShopServiceitemsEntitlements } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, DbObjectKey, DisplayColumns, EntitySchema, ValType } from '@imx-modules/imx-qbm-dbts';
 import { ClientPropertyForTableColumns, DataSourceToolbarSettings, MetadataService } from 'qbm';
 import { ProductDetailsService } from '../product-details.service';
 
 @Component({
   selector: 'imx-product-entitlements',
   templateUrl: './product-entitlements.component.html',
-  styleUrls: ['./product-entitlements.component.scss']
+  styleUrls: ['./product-entitlements.component.scss'],
 })
 export class ProductEntitlementsComponent implements OnInit {
-
   public dstSettings: DataSourceToolbarSettings;
   public entitySchema: EntitySchema;
   public DisplayColumns = DisplayColumns;
   public showHelperAlert = true;
-  public helperText = '#LDS#Here you can get an overview of the entitlements associated with the product. If you approve the request, the recipient will get the following entitlements.';
+  public helperText =
+    '#LDS#Here you can get an overview of the entitlements associated with the product. If you approve the request, the recipient will get the following entitlements.';
 
   @Input() public uidAccProduct: string;
   public entitlementTypes: Map<string, string>;
@@ -53,16 +52,16 @@ export class ProductEntitlementsComponent implements OnInit {
   constructor(
     private readonly busy: EuiLoadingService,
     private readonly metadata: MetadataService,
-    private readonly detailsProvider: ProductDetailsService
+    private readonly detailsProvider: ProductDetailsService,
   ) {
     this.entitySchema = detailsProvider.productEntitlementSchema;
     this.displayColumns = this.displayColumns = [
       {
         Type: ValType.String,
         ColumnName: 'entitlementDisplay',
-        untranslatedDisplay: '#LDS#Actions'
+        untranslatedDisplay: '#LDS#Actions',
       },
-      this.entitySchema.Columns.TargetEntitlement
+      this.entitySchema.Columns.TargetEntitlement,
     ];
   }
 
@@ -79,33 +78,32 @@ export class ProductEntitlementsComponent implements OnInit {
   }
 
   public async navigate(parameter?: CollectionLoadParameters): Promise<void> {
-    let overlay: OverlayRef;
-    setTimeout(() => { overlay = this.busy.show(); });
+    if (this.busy.overlayRefs.length === 0) {
+      this.busy.show();
+    }
     try {
       const dataSource = await this.detailsProvider.getRoleEntitlements(this.uidAccProduct, parameter);
 
       this.entitlementTypes = new Map();
 
-      dataSource.Data.forEach(async item => {
+      dataSource.Data.forEach(async (item) => {
         this.entitlementTypes.set(item.GetEntity().GetKeys().toString(), await this.getTypeDescription(item));
       });
 
       this.dstSettings = {
         dataSource,
         entitySchema: this.entitySchema,
-        navigationState: parameter,
+        navigationState: parameter || {},
         displayedColumns: this.displayColumns,
       };
     } finally {
-      setTimeout(() => { this.busy.hide(overlay); });
+      this.busy.hide();
     }
-
   }
 
   private async getTypeDescription(item: PortalShopServiceitemsEntitlements): Promise<string> {
     const objKey = DbObjectKey.FromXml(item.TargetEntitlement.value);
     const metadata = await this.metadata.GetTableMetadata(objKey.TableName);
-    return metadata.DisplaySingular;
+    return metadata?.DisplaySingular || '';
   }
-
 }

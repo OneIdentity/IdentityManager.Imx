@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,7 +32,7 @@ import { RouteGuardService } from './lib/route-guard/route-guard.service';
 import { ISessionState } from './lib/session/session-state';
 import { AuthenticationService } from './lib/authentication/authentication.service';
 import { CacheService } from './lib/cache/cache.service';
-import { CachedPromise } from 'imx-qbm-dbts';
+import { CachedPromise } from '@imx-modules/imx-qbm-dbts';
 
 export class QbmDefaultMocks {
   public static readonly afterClosedSubject = new Subject<any>();
@@ -44,8 +44,8 @@ export class QbmDefaultMocks {
 
   public static readonly sidesheetRefStub = {
     close: jasmine.createSpy('close'),
-    closeClicked: jasmine.createSpy('closeClicked').and.returnValue(of(undefined))
-}
+    closeClicked: jasmine.createSpy('closeClicked').and.returnValue(of(undefined)),
+  };
 
   public static readonly authServiceStub = {
     onSessionResponse: new Subject<ISessionState>(),
@@ -59,11 +59,11 @@ export class QbmDefaultMocks {
     ngMocks.defaultMock(TranslateService, () => ({
       get: jasmine.createSpy('get').and.returnValue(of()),
     }));
-    ngMocks.defaultMock(EuiSidesheetRef,()=> QbmDefaultMocks.sidesheetRefStub);
+    ngMocks.defaultMock(EuiSidesheetRef, () => QbmDefaultMocks.sidesheetRefStub);
     ngMocks.defaultMock(CacheService, () => ({
       buildCache: (func) => {
         return new CachedPromise(func);
-      }
+      },
     }));
   }
 }

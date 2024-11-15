@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,8 +29,8 @@ import { ActivatedRoute } from '@angular/router';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiDownloadDirective, EuiLoadingService } from '@elemental-ui/core';
 
-import { OpsupportSyncJournal } from 'imx-api-dpr';
-import { EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
+import { OpsupportSyncJournal } from '@imx-modules/imx-api-dpr';
+import { EntitySchema, IClientProperty, ValType } from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarSettings, ElementalUiConfigService, ClientPropertyForTableColumns, SettingsService } from 'qbm';
 import { OpsSyncJournalParameters, SyncService } from '../sync.service';
 import { SyncSummaryService } from './sync-summary.service';
@@ -38,10 +38,9 @@ import { SyncSummaryService } from './sync-summary.service';
 @Component({
   selector: 'imx-sync-journal',
   templateUrl: './sync-journal.component.html',
-  styleUrls: ['./sync-journal.component.scss']
+  styleUrls: ['./sync-journal.component.scss'],
 })
 export class SyncJournalComponent implements OnInit {
-
   public caption = '';
 
   public dstSettings: DataSourceToolbarSettings;
@@ -57,8 +56,8 @@ export class SyncJournalComponent implements OnInit {
     private syncSummaryService: SyncSummaryService,
     private readonly elementalUiConfigService: ElementalUiConfigService,
     private readonly settings: SettingsService,
-    private busyService: EuiLoadingService) {
-
+    private busyService: EuiLoadingService,
+  ) {
     this.entitySchemaSyncInfo = syncShellService.syncJournalSchema;
     this.displayedColumns = [
       this.entitySchemaSyncInfo.Columns.CreationTime,
@@ -69,8 +68,8 @@ export class SyncJournalComponent implements OnInit {
         ColumnName: 'actions',
         Type: ValType.String,
         afterAdditionals: true,
-        untranslatedDisplay: '#LDS#Actions'
-      }
+        untranslatedDisplay: '#LDS#Actions',
+      },
     ];
   }
 
@@ -78,11 +77,11 @@ export class SyncJournalComponent implements OnInit {
     const filter = this.activeRoute.snapshot.queryParamMap.get('filter');
     const parameters = {
       shell: '',
-      filter: filter ? JSON.parse(filter) : null
+      filter: filter ? JSON.parse(filter) : null,
     };
 
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
       const uidSyncShell = this.activeRoute.snapshot.paramMap.get('uidSyncShell');
       if (uidSyncShell) {
@@ -95,8 +94,10 @@ export class SyncJournalComponent implements OnInit {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
     await this.getData({
-      StartIndex: 0, PageSize: this.settings.DefaultPageSize,
-      shell: parameters.shell, filter: parameters.filter
+      StartIndex: 0,
+      PageSize: this.settings.DefaultPageSize,
+      shell: parameters.shell,
+      filter: parameters.filter,
     });
   }
 
@@ -104,17 +105,15 @@ export class SyncJournalComponent implements OnInit {
     this.navigationState = navigationState;
 
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
-
       const applications = await this.syncShellService.getSyncJournal(navigationState);
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
         dataSource: applications,
         entitySchema: this.entitySchemaSyncInfo,
-        navigationState: this.navigationState
+        navigationState: this.navigationState,
       };
-
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
@@ -122,10 +121,9 @@ export class SyncJournalComponent implements OnInit {
 
   public async showReport(journalItem: OpsupportSyncJournal): Promise<void> {
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
-      const blob = await this.syncSummaryService
-        .Get({ journal: journalItem.UID_DPRJournal.value });
+      const blob = await this.syncSummaryService.Get({ journal: journalItem.UID_DPRJournal.value });
 
       let fileName = journalItem.UID_DPRJournal.Column.GetDisplayValue();
       if (blob.type.startsWith('application/pdf')) {
@@ -137,13 +135,12 @@ export class SyncJournalComponent implements OnInit {
 
       if (this.directive) {
         this.directive.downloadOptions = {
-          ... this.elementalUiConfigService.Config.downloadOptions,
+          ...this.elementalUiConfigService.Config.downloadOptions,
           url: csvUrl,
-          fileName
+          fileName,
         };
         this.directive.onClick();
       }
-
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }

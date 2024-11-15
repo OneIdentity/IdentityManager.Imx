@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -37,24 +37,9 @@ import { SyncJournalComponent } from './sync-journal/sync-journal.component';
 import { SyncService } from './sync.service';
 import { SyncSummaryService } from './sync-journal/sync-summary.service';
 
-
 @NgModule({
-  declarations: [
-    SyncInformationComponent,
-    SyncJournalComponent,
-  ],
-  imports: [
-    CommonModule,
-    EuiCoreModule,
-    DataTableModule,
-    DataSourceToolbarModule,
-    MatButtonModule,
-    MatTooltipModule,
-    TranslateModule
-  ],
-  providers: [
-    SyncService,
-    SyncSummaryService,
-  ]
+  declarations: [SyncInformationComponent, SyncJournalComponent],
+  imports: [CommonModule, EuiCoreModule, DataTableModule, DataSourceToolbarModule, MatButtonModule, MatTooltipModule, TranslateModule],
+  providers: [SyncService, SyncSummaryService],
 })
-export class SyncModule { }
+export class SyncModule {}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,21 +25,20 @@
  */
 
 import { Injectable } from '@angular/core';
-import { HistoryData } from 'imx-qbm-dbts';
+import { HistoryData } from '@imx-modules/imx-qbm-dbts';
 import { QerApiService } from 'qer';
 import { ObjectHistoryApiService } from 'qbm';
-import { HistoryComparisonData } from 'imx-api-qer';
+import { HistoryComparisonData } from '@imx-modules/imx-api-qer';
 
 @Injectable()
 export class PortalHistoryService implements ObjectHistoryApiService {
-
-  constructor(private readonly apiService: QerApiService) { }
+  constructor(private readonly apiService: QerApiService) {}
 
   getHistoryData(table: string, uid: string): Promise<HistoryData[]> {
     return this.apiService.client.portal_history_get(table, uid);
   }
 
-  getHistoryComparisonData(table: string, uid: string,options?: {CompareDate?: Date;}): Promise<HistoryComparisonData[]> {
+  getHistoryComparisonData(table: string, uid: string, options?: { CompareDate?: Date }): Promise<HistoryComparisonData[]> {
     return this.apiService.client.portal_history_comparison_get(table, uid, options);
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,107 +27,98 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
-    templateUrl: "./indexbar.component.html",
-    selector: "imx-indexbar"
+  templateUrl: './indexbar.component.html',
+  selector: 'imx-indexbar',
 })
 export class IndexBarComponent {
-    // TODO replace VI_Common_Color_Gray, VI_Common_Color_Badge_Important,VI_Common_Color_Badge_Success,VI_Common_Color_Badge_Warning
+  // TODO replace VI_Common_Color_Gray, VI_Common_Color_Badge_Important,VI_Common_Color_Badge_Success,VI_Common_Color_Badge_Warning
 
-    ColorFilling(): string {
-        return (this.IsHigh() ? this.ColorHigh() : (this.IsLow() ? this.ColorLow() : this.ColorMedium()));
-    }
+  ColorFilling(): string {
+    return this.IsHigh() ? this.ColorHigh() : this.IsLow() ? this.ColorLow() : this.ColorMedium();
+  }
 
-    Container1Style(): string {
-        return this.HasFlexibleProgressbar
-            ? ''
-            : `display: inline-block; min-width:${this.TotalWidth()}px;`
-    }
+  Container1Style(): string {
+    return this.HasFlexibleProgressbar ? '' : `display: inline-block; min-width:${this.TotalWidth()}px;`;
+  }
 
-    Container2Style(): string {
-        return `width: calc(100% - ${this.LabelWidth + 2}px); height: 14px; border: solid 1px %VI_Common_Color_Gray%; display:inline-block;`;
-    }
+  Container2Style(): string {
+    return `width: calc(100% - ${this.LabelWidth + 2}px); height: 14px; border: solid 1px %VI_Common_Color_Gray%; display:inline-block;`;
+  }
 
-    Container3Style(): string {
-        const f = this.ColorFilling();
-        return `background-color: ${f}; color: ${f}; display: block; overflow: hidden; width: ${this.Percentage()}%; height: 14px;`;
-    }
+  Container3Style(): string {
+    const f = this.ColorFilling();
+    return `background-color: ${f}; color: ${f}; display: block; overflow: hidden; width: ${this.Percentage()}%; height: 14px;`;
+  }
 
-    Label1Style(): string {
-        return `vertical-align: top; text-align:right; float:right; width:${this.LabelWidth}px;`;
-    }
+  Label1Style(): string {
+    return `vertical-align: top; text-align:right; float:right; width:${this.LabelWidth}px;`;
+  }
 
-    ColorHigh(): string {
-        return this.EffectiveWarningOnHighValues()
-            ? '%VI_Common_Color_Badge_Important%'
-            : '%VI_Common_Color_Badge_Success%';
-    }
+  ColorHigh(): string {
+    return this.EffectiveWarningOnHighValues() ? '%VI_Common_Color_Badge_Important%' : '%VI_Common_Color_Badge_Success%';
+  }
 
-    ColorLow(): string {
-        return this.EffectiveWarningOnHighValues()
-            ? '%VI_Common_Color_Badge_Success%'
-            : '%VI_Common_Color_Badge_Important%';
-    }
+  ColorLow(): string {
+    return this.EffectiveWarningOnHighValues() ? '%VI_Common_Color_Badge_Success%' : '%VI_Common_Color_Badge_Important%';
+  }
 
-    ColorMedium(): string {
-        return "%VI_Common_Color_Badge_Warning%";
-    }
+  ColorMedium(): string {
+    return '%VI_Common_Color_Badge_Warning%';
+  }
 
-    EffectiveLabel(): string {
-        return this.Label || this.Percentage() + " %";
-    }
+  EffectiveLabel(): string {
+    return this.Label || this.Percentage() + ' %';
+  }
 
-    EffectiveProgress(): number {
-        return this.Progress < 0.0 ? 0.0 : (this.Progress > 1.0 ? 1.0 : this.Progress);
-    }
+  EffectiveProgress(): number {
+    return this.Progress < 0.0 ? 0.0 : this.Progress > 1.0 ? 1.0 : this.Progress;
+  }
 
-    EffectiveWarningOnHighValues(): boolean {
-        return this.WarningOnHighValues;
-    }
+  EffectiveWarningOnHighValues(): boolean {
+    return this.WarningOnHighValues;
+  }
 
-    IsHigh(): boolean {
-        return this.EffectiveProgress() > this.UpperLimit;
-    }
+  IsHigh(): boolean {
+    return this.EffectiveProgress() > this.UpperLimit;
+  }
 
-    IsLow(): boolean {
-        return this.EffectiveProgress() <= this.LowerLimit;
-    }
+  IsLow(): boolean {
+    return this.EffectiveProgress() <= this.LowerLimit;
+  }
 
-    Percentage(): number {
-        return Math.floor(100.0 * this.EffectiveProgress());
-    }
+  Percentage(): number {
+    return Math.floor(100.0 * this.EffectiveProgress());
+  }
 
-    TotalWidth(): number {
-        return this.LabelWidth >= 0
-            ? this.ProgressbarWidth + this.LabelWidth + 2
-            : this.ProgressbarWidth;
-    }
+  TotalWidth(): number {
+    return this.LabelWidth >= 0 ? this.ProgressbarWidth + this.LabelWidth + 2 : this.ProgressbarWidth;
+  }
 
-    /** Optional value overriding the default label text that displays the progress percentage. */
-    @Input() Label: string;
+  /** Optional value overriding the default label text that displays the progress percentage. */
+  @Input() Label: string;
 
-    @Input() LabelWidth: number = 35;
+  @Input() LabelWidth: number = 35;
 
-    /** Optional. Specify a value if you want to override default lower limit of 0.25
-     * Progress values that are less or equal to this value will be marked with the lower color. */
-    @Input() LowerLimit: number = 0.25;
+  /** Optional. Specify a value if you want to override default lower limit of 0.25
+   * Progress values that are less or equal to this value will be marked with the lower color. */
+  @Input() LowerLimit: number = 0.25;
 
-    /** The progress as double value between 0.0  (0%) and 1.0 (100%) */
-    @Input() Progress: number;
+  /** The progress as double value between 0.0  (0%) and 1.0 (100%) */
+  @Input() Progress: number;
 
-    @Input() Tooltip: string;
+  @Input() Tooltip: string;
 
-    /** Optional. Specify a value if you want to override the default upper limit of 0.5
-     * Progress values that are greater than this value will be marked with the high color. */
-    @Input() UpperLimit: number;
+  /** Optional. Specify a value if you want to override the default upper limit of 0.5
+   * Progress values that are greater than this value will be marked with the high color. */
+  @Input() UpperLimit: number;
 
-    /** Default behaviour is to apply warning colors for low values (high values are good, low values are bad).
-     * You can (optionally) specify WarningOnHighValues = true, if you want to invert this behavior. */
-    @Input() WarningOnHighValues: boolean;
+  /** Default behaviour is to apply warning colors for low values (high values are good, low values are bad).
+   * You can (optionally) specify WarningOnHighValues = true, if you want to invert this behavior. */
+  @Input() WarningOnHighValues: boolean;
 
-    /** Default value is 50 (meaning 50 px). If HasFlexibleProgressbar()=true this width will be ignored and the remaining space will be used. */
-    @Input() ProgressbarWidth: number = 50;
+  /** Default value is 50 (meaning 50 px). If HasFlexibleProgressbar()=true this width will be ignored and the remaining space will be used. */
+  @Input() ProgressbarWidth: number = 50;
 
-    /** Default value is true (meaning the progress bar has a flexible width, if set to false it has a fixed width - see ProgressBarWidth()) */
-    @Input() HasFlexibleProgressbar: boolean = true;
-
+  /** Default value is true (meaning the progress bar has a flexible width, if set to false it has a fixed width - see ProgressBarWidth()) */
+  @Input() HasFlexibleProgressbar: boolean = true;
 }

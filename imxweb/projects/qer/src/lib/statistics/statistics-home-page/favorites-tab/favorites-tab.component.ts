@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,16 +25,17 @@
  */
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
+import { calculateSidesheetWidth, HELP_CONTEXTUAL, HelpContextualComponent, HelpContextualService } from 'qbm';
+import { Subscription } from 'rxjs';
 import { GenericStatisticEntity, StatisticsDataService } from '../statistics-data.service';
 import { StatisticsOrderingSidesheetComponent } from '../statistics-ordering-sidesheet/statistics-ordering-sidesheet.component';
 
 @Component({
   selector: 'imx-favorites-tab',
   templateUrl: './favorites-tab.component.html',
-  styleUrls: ['./favorites-tab.component.scss']
+  styleUrls: ['./favorites-tab.component.scss'],
 })
 export class FavoritesTabComponent implements OnInit, OnDestroy {
   public isSearch: boolean;
@@ -47,8 +48,9 @@ export class FavoritesTabComponent implements OnInit, OnDestroy {
     public dataService: StatisticsDataService,
     private loadingService: EuiLoadingService,
     private sidesheetService: EuiSidesheetService,
-    private translateService: TranslateService
-  ) { }
+    private translateService: TranslateService,
+    private helpService: HelpContextualService,
+  ) {}
 
   get hasData(): boolean {
     return this.favStats && this.favStats.length > 0;
@@ -59,35 +61,46 @@ export class FavoritesTabComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.subscriptions$.push(this.dataService.favStats$.subscribe(favStats => {
-      this.favStats = favStats;
-    }));
+    this.subscriptions$.push(
+      this.dataService.favStats$.subscribe((favStats) => {
+        this.favStats = favStats;
+      }),
+    );
 
-    this.subscriptions$.push(this.dataService.isFavSearch$.subscribe(isSearch => {
-      this.isSearch = isSearch;
-    }));
+    this.subscriptions$.push(
+      this.dataService.isFavSearch$.subscribe((isSearch) => {
+        this.isSearch = isSearch;
+      }),
+    );
 
-    this.subscriptions$.push(this.dataService.searchFavStats$.subscribe(searchStats => {
-      this.searchStats = searchStats;
-    }));
+    this.subscriptions$.push(
+      this.dataService.searchFavStats$.subscribe((searchStats) => {
+        this.searchStats = searchStats;
+      }),
+    );
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions$.forEach(sub => sub.unsubscribe());
+    this.subscriptions$.forEach((sub) => sub.unsubscribe());
   }
 
   public async openFavoriteSideSheet(): Promise<void> {
-    const response: (GenericStatisticEntity[] | null) = await this.sidesheetService.open(StatisticsOrderingSidesheetComponent, {
-      title: await this.translateService.get('#LDS#Heading Manage Favorite Statistics').toPromise(),
-      icon: 'star',
-      padding: '0px',
-      width: 'max(768px, 70%)',
-      disableClose: true,
-      testId: 'statistics-favorites-sidesheet',
-      data: {
-        orderStatIds: this.favStats.map(stat => this.dataService.getId(stat))
-      }
-    }).afterClosed().toPromise();
+    this.helpService.setHelpContextId(HELP_CONTEXTUAL.StatisticsFavoritesOrdering);
+    const response: GenericStatisticEntity[] | null = await this.sidesheetService
+      .open(StatisticsOrderingSidesheetComponent, {
+        title: await this.translateService.get('#LDS#Heading Manage Favorite Statistics').toPromise(),
+        icon: 'star',
+        padding: '0px',
+        width: calculateSidesheetWidth(1100, 0.7),
+        headerComponent: HelpContextualComponent,
+        disableClose: true,
+        testId: 'statistics-favorites-sidesheet',
+        data: {
+          orderStatIds: this.favStats.map((stat) => this.dataService.getId(stat)),
+        },
+      })
+      .afterClosed()
+      .toPromise();
     if (response) {
       this.loadingService.show();
       try {

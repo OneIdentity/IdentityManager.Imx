@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,19 +24,18 @@
  *
  */
 
-import { CollectionLoadParameters, IEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, IEntity } from '@imx-modules/imx-qbm-dbts';
 import { BusyService } from '../base/busy.service';
 import { TreeDatabase } from './tree-database';
 import { TreeNodeResultParameter } from './tree-node-result-parameter.interface';
 
 export class EntityTreeDatabase extends TreeDatabase {
-
   constructor(
     private readonly getEntities: (parameters: CollectionLoadParameters) => Promise<IEntity[]>,
-    busyService: BusyService
+    busyService: BusyService,
   ) {
     super();
-    this.busyService = busyService
+    this.busyService = busyService;
   }
 
   public async getData(showLoading: boolean, parameters: CollectionLoadParameters = {}): Promise<TreeNodeResultParameter> {
@@ -46,7 +45,7 @@ export class EntityTreeDatabase extends TreeDatabase {
 
     try {
       entities = await this.getEntities(parameters);
-    } finally {      
+    } finally {
       isBusy?.endBusy();
     }
 

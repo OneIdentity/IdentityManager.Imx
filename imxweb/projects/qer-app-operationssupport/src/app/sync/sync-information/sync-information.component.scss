@@ -4,20 +4,3 @@
   overflow: hidden;
   height: 100%;
 }
-
-
-.imx-table-container  {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  height: inherit;
-  
-  > :nth-child(2) {
-    flex: 1 1 auto;
-  }
-}
-
-.imx-refresh-button {
-  margin-right: 5px;
-  height: 50px;
-}

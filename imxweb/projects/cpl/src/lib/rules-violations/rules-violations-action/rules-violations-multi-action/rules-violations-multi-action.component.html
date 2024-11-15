@@ -1,5 +1,5 @@
 <mat-card>
-  <mat-card-title>
+  <mat-card-title class="imx-card-title-m">
     {{ '#LDS#Heading General Settings' | translate }}
   </mat-card-title>
   <mat-card-subtitle>
@@ -7,23 +7,26 @@
   </mat-card-subtitle>
   <mat-card-content>
     <div class="imx-rules-violations-parameters">
-      <imx-cdr-editor *ngFor="let cdr of columns; let i = index" [cdr]="cdr"
+      <imx-cdr-editor
+        *ngFor="let cdr of columns; let i = index"
+        [cdr]="cdr"
         (controlCreated)="onFormControlCreated(cdr.column.ColumnName + '_' + i, $event)"
-        [attr.data-imx-identifier]="'rules-violations-multi-action-' + cdr.column.ColumnName + '-' + i">
+        [attr.data-imx-identifier]="'rules-violations-multi-action-' + cdr.column.ColumnName + '-' + i"
+      >
       </imx-cdr-editor>
     </div>
   </mat-card-content>
 </mat-card>
-<mat-card class="imx-list">
-  <mat-card-title>
-    {{ '#LDS#Selected rules violations' | translate }}
+<mat-card class="imx-list-container">
+  <mat-card-title class="imx-card-title-m">
+    {{ '#LDS#Heading Selected Rule Violations' | translate }}
   </mat-card-title>
-  <mat-list #list>
+  <mat-list #list class="imx-list-multi-action">
     <mat-list-item *ngFor="let ruleViolationApproval of data?.rulesViolationsApprovals">
-      <div mat-line>
+      <div class="mat-mdc-line">
         {{ ruleViolationApproval?.GetEntity()?.GetDisplay() }}
       </div>
-      <div mat-line class="imx-list-item-subtitle">
+      <div mat-line class="mat-mdc-line imx-list-item-subtitle imx-margin-bottom-5">
         {{ ruleViolationApproval?.stateBadge?.caption }}
       </div>
     </mat-list-item>

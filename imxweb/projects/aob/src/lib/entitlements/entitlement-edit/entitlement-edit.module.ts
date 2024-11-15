@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -40,12 +40,8 @@ import { CdrModule } from 'qbm';
 import { ServiceItemTagsModule } from 'qer';
 
 @NgModule({
-  declarations: [
-    EntitlementEditComponent
-  ],
-  exports: [
-    EntitlementEditComponent
-  ],
+  declarations: [EntitlementEditComponent],
+  exports: [EntitlementEditComponent],
   imports: [
     CdrModule,
     CommonModule,
@@ -58,7 +54,7 @@ import { ServiceItemTagsModule } from 'qer';
     MatInputModule,
     ReactiveFormsModule,
     ServiceItemTagsModule,
-    TranslateModule
-  ]
+    TranslateModule,
+  ],
 })
-export class EntitlementEditModule { }
+export class EntitlementEditModule {}

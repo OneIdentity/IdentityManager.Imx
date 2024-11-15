@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,22 +24,23 @@
  *
  */
 
-import { EntityCollectionData } from 'imx-qbm-dbts';
+import { EntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { WorkflowDataWrapper } from './workflow-data-wrapper';
 
 describe('WorkflowDataWrapper', () => {
-  const createWorkflowCollection = (data) => ({
-    Entities: data.map(item => {
-      const Columns = {};
-      Object.keys(item).forEach(key => Columns[key] = { Value: item[key] });
-      return { Columns }
-    })
-  } as EntityCollectionData);
+  const createWorkflowCollection = (data) =>
+    ({
+      Entities: data.map((item) => {
+        const Columns = {};
+        Object.keys(item).forEach((key) => (Columns[key] = { Value: item[key] }));
+        return { Columns };
+      }),
+    }) as EntityCollectionData;
 
   const testcaseToString = (testcase) => {
     const tokens = [];
-    Object.keys(testcase).forEach(key =>
-      Object.keys(testcase[key]).forEach(itemkey => tokens.push(itemkey + '="' + testcase[key][itemkey] + '"'))
+    Object.keys(testcase).forEach((key) =>
+      Object.keys(testcase[key]).forEach((itemkey) => tokens.push(itemkey + '="' + testcase[key][itemkey] + '"')),
     );
     return tokens.join();
   };
@@ -50,16 +51,14 @@ describe('WorkflowDataWrapper', () => {
       const LevelNumber = 1;
       const UID_QERWorkingStep = 'some workingstep';
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber, UID_QERWorkingStep }]),
-          WorkflowSteps: createWorkflowCollection([{ UID_QERWorkingStep: 'some other workingstep', DirectSteps: '1' }])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber, UID_QERWorkingStep }]),
+        WorkflowSteps: createWorkflowCollection([{ UID_QERWorkingStep: 'some other workingstep', DirectSteps: '1' }]),
+      });
 
       const directSteps = workflow.getDirectSteps(UID_PersonHead, LevelNumber);
 
-      expect(directSteps).toBeUndefined();
+      expect(directSteps).toEqual([]);
     });
 
     it('returns the directSteps for the matching item', () => {
@@ -67,12 +66,10 @@ describe('WorkflowDataWrapper', () => {
       const LevelNumber = 1;
       const workflowStep = { UID_QERWorkingStep: 'some workingstep', DirectSteps: '1' };
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber, UID_QERWorkingStep: workflowStep.UID_QERWorkingStep }]),
-          WorkflowSteps: createWorkflowCollection([ workflowStep ])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber, UID_QERWorkingStep: workflowStep.UID_QERWorkingStep }]),
+        WorkflowSteps: createWorkflowCollection([workflowStep]),
+      });
 
       const directSteps = workflow.getDirectSteps(UID_PersonHead, LevelNumber);
 
@@ -84,21 +81,16 @@ describe('WorkflowDataWrapper', () => {
       const LevelNumber = 1;
       const SubLevelNumber = 0;
       const workflowStep = { UID_QERWorkingStep: 'some workingstep', DirectSteps: '1' };
-      const workflowStepOther = { UID_QERWorkingStep: 'some other workingstep', DirectSteps: '2' };;
+      const workflowStepOther = { UID_QERWorkingStep: 'some other workingstep', DirectSteps: '2' };
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          WorkflowData: createWorkflowCollection([
-            { UID_PersonHead, LevelNumber, SubLevelNumber: SubLevelNumber + 1, UID_QERWorkingStep: workflowStepOther.UID_QERWorkingStep },
-            { UID_PersonHead, LevelNumber, SubLevelNumber, UID_QERWorkingStep: workflowStep.UID_QERWorkingStep  },
-            { UID_PersonHead, LevelNumber, SubLevelNumber: SubLevelNumber + 2, UID_QERWorkingStep: workflowStepOther.UID_QERWorkingStep }
-          ]),
-          WorkflowSteps: createWorkflowCollection([
-            workflowStep,
-            workflowStepOther
-          ])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        WorkflowData: createWorkflowCollection([
+          { UID_PersonHead, LevelNumber, SubLevelNumber: SubLevelNumber + 1, UID_QERWorkingStep: workflowStepOther.UID_QERWorkingStep },
+          { UID_PersonHead, LevelNumber, SubLevelNumber, UID_QERWorkingStep: workflowStep.UID_QERWorkingStep },
+          { UID_PersonHead, LevelNumber, SubLevelNumber: SubLevelNumber + 2, UID_QERWorkingStep: workflowStepOther.UID_QERWorkingStep },
+        ]),
+        WorkflowSteps: createWorkflowCollection([workflowStep, workflowStepOther]),
+      });
 
       const directSteps = workflow.getDirectSteps(UID_PersonHead, LevelNumber);
 
@@ -112,12 +104,10 @@ describe('WorkflowDataWrapper', () => {
       const LevelNumber = 1;
       const UID_QERWorkingStep = 'some workingstep';
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber, UID_QERWorkingStep }]),
-          WorkflowSteps: createWorkflowCollection([{ UID_QERWorkingStep: 'some other workingstep' }])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber, UID_QERWorkingStep }]),
+        WorkflowSteps: createWorkflowCollection([{ UID_QERWorkingStep: 'some other workingstep' }]),
+      });
 
       expect(workflow.isAdditionalAllowed(UID_PersonHead, LevelNumber)).toBeFalsy();
     });
@@ -126,27 +116,26 @@ describe('WorkflowDataWrapper', () => {
       { workflowData: { IsFromDelegation: true }, workflowStep: { IsAdditionalAllowed: true } },
       { workflowData: { UID_PersonAdditional: 'id of some additional person' }, workflowStep: { IsAdditionalAllowed: true } },
       { workflowData: { UID_PersonInsteadOf: 'id of some other person' }, workflowStep: { IsAdditionalAllowed: true } },
-      { workflowStep: { IsAdditionalAllowed: false } }
-    ].forEach(testcase =>
-    it('returns false if matching item has ' + testcaseToString(testcase), () => {
-      const UID_PersonHead = 'some user id';
-      const LevelNumber = 1;
-      const workflowStep = { ...{ UID_QERWorkingStep: 'some workingstep' }, ...testcase.workflowStep };
+      { workflowStep: { IsAdditionalAllowed: false } },
+    ].forEach((testcase) =>
+      it('returns false if matching item has ' + testcaseToString(testcase), () => {
+        const UID_PersonHead = 'some user id';
+        const LevelNumber = 1;
+        const workflowStep = { ...{ UID_QERWorkingStep: 'some workingstep' }, ...testcase.workflowStep };
 
-      const workflow = new WorkflowDataWrapper(
-        {
+        const workflow = new WorkflowDataWrapper({
           WorkflowData: createWorkflowCollection([
             {
               ...{ UID_PersonHead, LevelNumber, UID_QERWorkingStep: workflowStep.UID_QERWorkingStep },
-              ...testcase.workflowData
-            }
+              ...testcase.workflowData,
+            },
           ]),
-          WorkflowSteps: createWorkflowCollection([ workflowStep ])
-        }
-      );
+          WorkflowSteps: createWorkflowCollection([workflowStep]),
+        });
 
-      expect(workflow.isAdditionalAllowed(UID_PersonHead, LevelNumber)).toBeFalsy();
-    }));
+        expect(workflow.isAdditionalAllowed(UID_PersonHead, LevelNumber)).toBeFalsy();
+      }),
+    );
 
     it('returns true if matching item', () => {
       const UID_PersonHead = 'some user id';
@@ -155,14 +144,12 @@ describe('WorkflowDataWrapper', () => {
       const UID_PersonAdditional = '';
       const UID_PersonInsteadOf = '';
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          WorkflowData: createWorkflowCollection([
-            { UID_PersonHead, LevelNumber, UID_QERWorkingStep: workflowStep.UID_QERWorkingStep, UID_PersonAdditional, UID_PersonInsteadOf }
-          ]),
-          WorkflowSteps: createWorkflowCollection([ workflowStep ])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        WorkflowData: createWorkflowCollection([
+          { UID_PersonHead, LevelNumber, UID_QERWorkingStep: workflowStep.UID_QERWorkingStep, UID_PersonAdditional, UID_PersonInsteadOf },
+        ]),
+        WorkflowSteps: createWorkflowCollection([workflowStep]),
+      });
 
       expect(workflow.isAdditionalAllowed(UID_PersonHead, LevelNumber)).toBeTruthy();
     });
@@ -174,12 +161,10 @@ describe('WorkflowDataWrapper', () => {
       const LevelNumber = 1;
       const UID_QERWorkingStep = 'some workingstep';
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber, UID_QERWorkingStep }]),
-          WorkflowSteps: createWorkflowCollection([{ UID_QERWorkingStep: 'some other workingstep' }])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber, UID_QERWorkingStep }]),
+        WorkflowSteps: createWorkflowCollection([{ UID_QERWorkingStep: 'some other workingstep' }]),
+      });
 
       expect(workflow.isInsteadOfAllowed(UID_PersonHead, LevelNumber)).toBeFalsy();
     });
@@ -188,27 +173,26 @@ describe('WorkflowDataWrapper', () => {
       { workflowData: { IsFromDelegation: true }, workflowStep: { IsInsteadOfAllowed: true } },
       { workflowData: { UID_PersonAdditional: 'id of some additional person' }, workflowStep: { IsInsteadOfAllowed: true } },
       { workflowData: { UID_PersonInsteadOf: 'id of some other person' }, workflowStep: { IsInsteadOfAllowed: true } },
-      { workflowStep: { IsInsteadOfAllowed: false } }
-    ].forEach(testcase =>
-    it('returns false if matching item has ' + testcaseToString(testcase), () => {
-      const UID_PersonHead = 'some user id';
-      const LevelNumber = 1;
-      const workflowStep = { ...{ UID_QERWorkingStep: 'some workingstep' }, ...testcase.workflowStep };
+      { workflowStep: { IsInsteadOfAllowed: false } },
+    ].forEach((testcase) =>
+      it('returns false if matching item has ' + testcaseToString(testcase), () => {
+        const UID_PersonHead = 'some user id';
+        const LevelNumber = 1;
+        const workflowStep = { ...{ UID_QERWorkingStep: 'some workingstep' }, ...testcase.workflowStep };
 
-      const workflow = new WorkflowDataWrapper(
-        {
+        const workflow = new WorkflowDataWrapper({
           WorkflowData: createWorkflowCollection([
             {
               ...{ UID_PersonHead, LevelNumber, UID_QERWorkingStep: workflowStep.UID_QERWorkingStep },
-              ...testcase.workflowData
-            }
+              ...testcase.workflowData,
+            },
           ]),
-          WorkflowSteps: createWorkflowCollection([ workflowStep ])
-        }
-      );
+          WorkflowSteps: createWorkflowCollection([workflowStep]),
+        });
 
-      expect(workflow.isInsteadOfAllowed(UID_PersonHead, LevelNumber)).toBeFalsy();
-    }));
+        expect(workflow.isInsteadOfAllowed(UID_PersonHead, LevelNumber)).toBeFalsy();
+      }),
+    );
 
     it('returns true if matching item', () => {
       const UID_PersonHead = 'some user id';
@@ -217,14 +201,12 @@ describe('WorkflowDataWrapper', () => {
       const UID_PersonAdditional = '';
       const UID_PersonInsteadOf = '';
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          WorkflowData: createWorkflowCollection([
-            { UID_PersonHead, LevelNumber, UID_QERWorkingStep: workflowStep.UID_QERWorkingStep, UID_PersonAdditional, UID_PersonInsteadOf }
-          ]),
-          WorkflowSteps: createWorkflowCollection([ workflowStep ])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        WorkflowData: createWorkflowCollection([
+          { UID_PersonHead, LevelNumber, UID_QERWorkingStep: workflowStep.UID_QERWorkingStep, UID_PersonAdditional, UID_PersonInsteadOf },
+        ]),
+        WorkflowSteps: createWorkflowCollection([workflowStep]),
+      });
 
       expect(workflow.isInsteadOfAllowed(UID_PersonHead, LevelNumber)).toBeTruthy();
     });
@@ -236,12 +218,10 @@ describe('WorkflowDataWrapper', () => {
       const UID_PersonHead = 'some user id';
       const LevelNumber = 1;
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          CanRevokeDelegation,
-          WorkflowData: createWorkflowCollection([{ UID_PersonHead: 'some other user id', LevelNumber }])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        CanRevokeDelegation,
+        WorkflowData: createWorkflowCollection([{ UID_PersonHead: 'some other user id', LevelNumber }]),
+      });
 
       expect(workflow.canRevokeAdditionalApprover(UID_PersonHead, LevelNumber)).toBeFalsy();
     });
@@ -252,12 +232,10 @@ describe('WorkflowDataWrapper', () => {
       const LevelNumber = 1;
       const UID_PersonAdditional = 'some other user id';
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          CanRevokeDelegation,
-          WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber, UID_PersonAdditional }])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        CanRevokeDelegation,
+        WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber, UID_PersonAdditional }]),
+      });
 
       expect(workflow.canRevokeAdditionalApprover(UID_PersonHead, LevelNumber)).toBeFalsy();
     });
@@ -267,12 +245,10 @@ describe('WorkflowDataWrapper', () => {
       const UID_PersonHead = 'some user id';
       const LevelNumber = 1;
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          CanRevokeDelegation,
-          WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber }])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        CanRevokeDelegation,
+        WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber }]),
+      });
 
       expect(workflow.canRevokeAdditionalApprover(UID_PersonHead, LevelNumber)).toBeFalsy();
     });
@@ -283,12 +259,10 @@ describe('WorkflowDataWrapper', () => {
       const LevelNumber = 1;
       const UID_PersonAdditional = 'some other user id';
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          CanRevokeDelegation,
-          WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber, UID_PersonAdditional }])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        CanRevokeDelegation,
+        WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber, UID_PersonAdditional }]),
+      });
 
       expect(workflow.canRevokeAdditionalApprover(UID_PersonHead, LevelNumber)).toBeTruthy();
     });
@@ -300,12 +274,10 @@ describe('WorkflowDataWrapper', () => {
       const UID_PersonHead = 'some user id';
       const LevelNumber = 1;
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          CanRevokeDelegation,
-          WorkflowData: createWorkflowCollection([{ UID_PersonHead: 'some other user id', LevelNumber }])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        CanRevokeDelegation,
+        WorkflowData: createWorkflowCollection([{ UID_PersonHead: 'some other user id', LevelNumber }]),
+      });
 
       expect(workflow.canRevokeDelegatedApprover(UID_PersonHead, LevelNumber)).toBeFalsy();
     });
@@ -316,12 +288,10 @@ describe('WorkflowDataWrapper', () => {
       const LevelNumber = 1;
       const UID_PersonInsteadOf = 'some other user id';
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          CanRevokeDelegation,
-          WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber, UID_PersonInsteadOf }])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        CanRevokeDelegation,
+        WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber, UID_PersonInsteadOf }]),
+      });
 
       expect(workflow.canRevokeDelegatedApprover(UID_PersonHead, LevelNumber)).toBeFalsy();
     });
@@ -331,12 +301,10 @@ describe('WorkflowDataWrapper', () => {
       const UID_PersonHead = 'some user id';
       const LevelNumber = 1;
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          CanRevokeDelegation,
-          WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber }])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        CanRevokeDelegation,
+        WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber }]),
+      });
 
       expect(workflow.canRevokeDelegatedApprover(UID_PersonHead, LevelNumber)).toBeFalsy();
     });
@@ -347,12 +315,10 @@ describe('WorkflowDataWrapper', () => {
       const LevelNumber = 1;
       const UID_PersonInsteadOf = 'some other user id';
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          CanRevokeDelegation,
-          WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber, UID_PersonInsteadOf }])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        CanRevokeDelegation,
+        WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber, UID_PersonInsteadOf }]),
+      });
 
       expect(workflow.canRevokeDelegatedApprover(UID_PersonHead, LevelNumber)).toBeTruthy();
     });
@@ -364,12 +330,10 @@ describe('WorkflowDataWrapper', () => {
       const UID_PersonHead = 'some user id';
       const LevelNumber = 1;
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          CanRevokeDelegation,
-          WorkflowData: createWorkflowCollection([{ UID_PersonHead: 'some other user id', LevelNumber }])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        CanRevokeDelegation,
+        WorkflowData: createWorkflowCollection([{ UID_PersonHead: 'some other user id', LevelNumber }]),
+      });
 
       expect(workflow.canDenyDecision(UID_PersonHead, LevelNumber)).toBeFalsy();
     });
@@ -379,11 +343,9 @@ describe('WorkflowDataWrapper', () => {
       const LevelNumber = 1;
       const IsFromDelegation = false;
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber, IsFromDelegation }])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber, IsFromDelegation }]),
+      });
 
       expect(workflow.canDenyDecision(UID_PersonHead, LevelNumber)).toBeFalsy();
     });
@@ -393,11 +355,9 @@ describe('WorkflowDataWrapper', () => {
       const LevelNumber = 1;
       const IsFromDelegation = false;
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber, IsFromDelegation }])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        WorkflowData: createWorkflowCollection([{ UID_PersonHead, LevelNumber, IsFromDelegation }]),
+      });
 
       expect(workflow.canDenyDecision(UID_PersonHead, LevelNumber)).toBeFalsy();
     });
@@ -408,11 +368,9 @@ describe('WorkflowDataWrapper', () => {
       const LevelNumber = 1;
       const workflowStep = { EscalationSteps: 1, LevelNumber: 2 };
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          WorkflowSteps: createWorkflowCollection([ workflowStep ])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        WorkflowSteps: createWorkflowCollection([workflowStep]),
+      });
 
       expect(workflow.canEscalateDecision(LevelNumber)).toBeFalsy();
     });
@@ -421,11 +379,9 @@ describe('WorkflowDataWrapper', () => {
       const LevelNumber = 1;
       const workflowStep = { EscalationSteps: 0, LevelNumber };
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          WorkflowSteps: createWorkflowCollection([ workflowStep ])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        WorkflowSteps: createWorkflowCollection([workflowStep]),
+      });
 
       expect(workflow.canEscalateDecision(LevelNumber)).toBeFalsy();
     });
@@ -434,11 +390,9 @@ describe('WorkflowDataWrapper', () => {
       const LevelNumber = 1;
       const workflowStep = { EscalationSteps: 1, LevelNumber };
 
-      const workflow = new WorkflowDataWrapper(
-        {
-          WorkflowSteps: createWorkflowCollection([ workflowStep ])
-        }
-      );
+      const workflow = new WorkflowDataWrapper({
+        WorkflowSteps: createWorkflowCollection([workflowStep]),
+      });
 
       expect(workflow.canEscalateDecision(LevelNumber)).toBeTruthy();
     });

@@ -1,7 +1,8 @@
-<h1 class="mat-headline">
-  {{ '#LDS#Heading My Attestations' | translate }}
-  <imx-help-contextual> </imx-help-contextual>
-</h1>
-<mat-card *ngIf="attestationParameters">
-  <imx-attestation-history [selectable]="false" [withAssignmentAnalysis]="true" [parameters]="attestationParameters"></imx-attestation-history>
-</mat-card>
+<ng-container *ngIf="attestationParameters">
+  <imx-attestation-history
+    [selectable]="false"
+    [withAssignmentAnalysis]="true"
+    [parameters]="attestationParameters"
+    [title]="'#LDS#Heading My Attestations' | translate"
+  ></imx-attestation-history>
+</ng-container>

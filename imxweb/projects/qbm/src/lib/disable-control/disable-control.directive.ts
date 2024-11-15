@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,20 +28,18 @@ import { Directive, Input, OnInit } from '@angular/core';
 import { NgControl } from '@angular/forms';
 
 @Directive({
-  selector: '[imxDisableControl]'
+  selector: '[imxDisableControl]',
 })
 export class DisableControlDirective implements OnInit {
-
   @Input() set imxDisableControl(condition: boolean) {
     this.action = condition ? 'disable' : 'enable';
   }
 
   private action: string;
 
-  constructor(private ngControl: NgControl) {
-  }
+  constructor(private ngControl: NgControl) {}
 
   public ngOnInit(): void {
-    this.ngControl.control[this.action]();
+    this.ngControl.control?.[this.action]();
   }
 }

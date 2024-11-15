@@ -1,0 +1,24 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+/* Elemental UI */
+
+/* Angular Material */
+.mat-mdc-tooltip-component .mat-mdc-tooltip.custom-tooltip {
+  background: $color-gray-0;
+  color: $color-gray-100;
+  margin: 5px;
+  max-width: unset;
+  font-size: 12px;
+  border: 1px solid $color-gray-80;
+  border-radius: 4px;
+}
+
+.mat-mdc-tooltip-hide {
+  display: none !important;
+}
+
+/* Imx */
+
+/* Dark theme */
+
+/* High-contrast theme */

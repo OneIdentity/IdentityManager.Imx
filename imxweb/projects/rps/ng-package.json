@@ -3,6 +3,6 @@
   "dest": "../../dist/rps",
   "lib": {
     "entryFile": "src/public_api.ts",
-    "styleIncludePaths": ["../../shared/assets"]
+    "styleIncludePaths": ["../../shared/scss"]
   }
 }

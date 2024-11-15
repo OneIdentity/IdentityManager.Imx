@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -39,8 +39,15 @@ import { MatMenuModule } from '@angular/material/menu';
 import { FormsModule } from '@angular/forms';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
-
-import { BusyIndicatorModule, DataSourceToolbarModule, DataTableModule, JobQueueOverviewModule, LdsReplaceModule, ObjectHistoryModule, QbmModule } from 'qbm';
+import {
+  BusyIndicatorModule,
+  DataSourceToolbarModule,
+  DataTableModule,
+  JobQueueOverviewModule,
+  LdsReplaceModule,
+  ObjectHistoryModule,
+  QbmModule,
+} from 'qbm';
 import { FrozenJobsComponent } from './frozen-jobs/frozen-jobs.component';
 import { SingleFrozenJobComponent } from './frozen-jobs/single-frozen-job.component';
 import { JobChainsComponent } from './job-chains/job-chains.component';
@@ -62,7 +69,6 @@ import { ChangeOperationSidesheetComponent } from './objects-by-id/change-operat
 import { ChangeOperationTableComponent } from './objects-by-id/change-operation-table.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-
 
 @NgModule({
   declarations: [
@@ -103,7 +109,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     MatSlideToggleModule,
     JobQueueOverviewModule,
     ObjectHistoryModule,
-    BusyIndicatorModule
+    BusyIndicatorModule,
   ],
   providers: [
     QueueTreeService,
@@ -112,7 +118,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     JobPerformanceQueuesService,
     JobPerformanceService,
     FrozenJobsService,
-    ObjectByIdService
-  ]
+    ObjectByIdService,
+  ],
 })
-export class ProcessesModule { }
+export class ProcessesModule {}

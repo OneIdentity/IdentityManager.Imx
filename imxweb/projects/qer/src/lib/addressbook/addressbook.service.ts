@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,41 +26,17 @@
 
 import { Injectable } from '@angular/core';
 
-import { PortalPersonAll } from 'imx-api-qer';
-import { DisplayColumns } from 'imx-qbm-dbts';
-import { DataSourceWrapper } from 'qbm';
+import { TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { PersonService } from '../person/person.service';
 import { AddressbookDetail } from './addressbook-detail/addressbook-detail.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AddressbookService {
-  constructor(private readonly personService: PersonService) { }
+  constructor(private readonly personService: PersonService) {}
 
-  public async createDataSourceWrapper(columnNames: string[], identifier?: string): Promise<DataSourceWrapper> {
-
-    const entitySchema = this.personService.schemaPersonAll;
-
-    const displayedColumns = columnNames
-      .filter(columnName => entitySchema.Columns[columnName])
-      .map(columnName => entitySchema.Columns[columnName]);
-    displayedColumns.unshift(entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]);
-
-    return new DataSourceWrapper(
-      state => this.personService.getAll(state),
-      displayedColumns,
-      entitySchema,
-      {
-        dataModel: await this.personService.getDataModel(),
-        getGroupInfo: parameters => this.personService.getGroupInfo(parameters),
-        groupingFilterOptions: ['withmanager', 'orphaned']
-      },
-      identifier
-    );
-  }
-
-  public async getDetail(personAll: PortalPersonAll, columnNames: string[]): Promise<AddressbookDetail> {
+  public async getDetail(personAll: TypedEntity, columnNames: string[]): Promise<AddressbookDetail> {
     const personUid = personAll.GetEntity().GetKeys()[0];
 
     const personDetailEntity = (await this.personService.get(personUid)).Data[0].GetEntity();
@@ -69,9 +45,9 @@ export class AddressbookService {
 
     return {
       columns: columnNames
-        .filter(columnName => entitySchema.Columns[columnName])
-        .map(columnName => personDetailEntity.GetColumn(columnName)),
-      personUid
+        .filter((columnName) => entitySchema.Columns[columnName])
+        .map((columnName) => personDetailEntity.GetColumn(columnName)),
+      personUid,
     };
   }
 }

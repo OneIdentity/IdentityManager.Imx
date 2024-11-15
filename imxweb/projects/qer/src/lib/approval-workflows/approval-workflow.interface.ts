@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,12 +24,8 @@
  *
  */
 
-import {
-  PortalRequestsWorkflowsSubmethodsInteractive,
-  PortalRequestsWorkflowsSubmethodsSteps,
-  PortalRequestsWorkflowsSubmethodsStepsInteractive,
-} from 'imx-api-qer';
-import { ValueConstraint } from 'imx-qbm-dbts';
+import { PortalRequestsWorkflowsSubmethods, PortalRequestsWorkflowsSubmethodsSteps } from '@imx-modules/imx-api-qer';
+import { ValueConstraint } from '@imx-modules/imx-qbm-dbts';
 import { ColumnDependentReference } from 'qbm';
 
 export interface GroupedData {
@@ -43,26 +39,26 @@ export interface GroupedHelp {
 }
 
 export interface RequestWorkflowData {
-  Object: PortalRequestsWorkflowsSubmethodsInteractive;
+  Object: PortalRequestsWorkflowsSubmethods | undefined;
   Data: string[];
   HelpText?: string;
   SaveBeforeClosing?: boolean;
 }
 
 export interface RequestLevelData {
-  Object: PortalRequestsWorkflowsSubmethodsStepsInteractive;
+  Object: PortalRequestsWorkflowsSubmethodsSteps | undefined;
   Data: string[];
   HelpText: string;
 }
 export interface RequestStepData {
-  Object: PortalRequestsWorkflowsSubmethodsStepsInteractive;
+  Object: PortalRequestsWorkflowsSubmethodsSteps | undefined;
   Data: GroupedData;
   HelpText: GroupedHelp;
 }
 
 export interface EditorData {
   WorkFlowKey?: string;
-  WorkFlow?: PortalRequestsWorkflowsSubmethodsInteractive;
+  WorkFlow?: PortalRequestsWorkflowsSubmethods;
   WorkFlowSteps?: PortalRequestsWorkflowsSubmethodsSteps[];
 }
 

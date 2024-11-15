@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { ParmOpt } from 'imx-api-att';
+import { ParmOpt } from '@imx-modules/imx-api-att';
 import { ClassloggerService, clearStylesFromDOM } from 'qbm';
 import { EditOriginComponent } from './edit-origin.component';
 import { FilterElementColumnService } from './filter-element-column.service';
@@ -32,77 +32,76 @@ import { FilterElementModel } from './filter-element-model';
 import { MockBuilder, MockedComponentFixture, MockRender } from 'ng-mocks';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 
-
 function buildFilterModel(config: ParmOpt[], value: string): FilterElementModel {
-    const ret = new FilterElementModel([{ Uid: '1', Options: config }],
-        ['1 Display'], { ParameterValue: value, AttestationSubType: '1' },
-        '',
-        ({ buildColumn: jasmine.createSpy('buildColumn') } as unknown) as FilterElementColumnService
-    );
+  const ret = new FilterElementModel(
+    [{ Uid: '1', Options: config }],
+    ['1 Display'],
+    { ParameterValue: value, AttestationSubType: '1' },
+    '',
+    { buildColumn: jasmine.createSpy('buildColumn') } as unknown as FilterElementColumnService,
+  );
 
-    return ret;
+  return ret;
 }
 
 describe('EditOriginComponent', () => {
-    let component: EditOriginComponent;
-    let fixture: MockedComponentFixture<EditOriginComponent>;
+  let component: EditOriginComponent;
+  let fixture: MockedComponentFixture<EditOriginComponent>;
 
-    beforeEach(() => {
-      return MockBuilder(EditOriginComponent)
-        .mock(ClassloggerService)
-        .beforeCompileComponents(testbed => {
-          testbed.configureTestingModule({
-            schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
-          })
-        })
-    })
+  beforeEach(() => {
+    return MockBuilder(EditOriginComponent)
+      .mock(ClassloggerService)
+      .beforeCompileComponents((testbed) => {
+        testbed.configureTestingModule({
+          schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
+        });
+      });
+  });
 
+  beforeEach(() => {
+    fixture = MockRender(EditOriginComponent);
+    component = fixture.point.componentInstance;
+    fixture.detectChanges();
+  });
 
-    beforeEach(() => {
-        fixture = MockRender(EditOriginComponent)
-        component = fixture.point.componentInstance;
-        fixture.detectChanges();
-    });
+  afterAll(() => {
+    clearStylesFromDOM();
+  });
 
-    afterAll(() => {
-        clearStylesFromDOM();
-    });
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+  it('inits controls', () => {
+    const options = [
+      { Display: 'One', Uid: '1' },
+      { Display: 'Two', Uid: '2' },
+      { Display: 'Three', Uid: '3' },
+    ];
+    component.filterElementModel = buildFilterModel(options, '"1","2"');
+    component.ngOnInit();
 
-    it('inits controls', () => {
-        const options = [
-            { Display: 'One', Uid: '1' },
-            { Display: 'Two', Uid: '2' },
-            { Display: 'Three', Uid: '3' },
-        ];
-        component.filterElementModel = buildFilterModel(options, '"1","2"');
-        component.ngOnInit();
+    expect(component.control.controls.length).toEqual(3);
+    expect(component.control.controls[0].value).toBeTruthy();
+    expect(component.control.controls[1].value).toBeTruthy();
+    expect(component.control.controls[2].value).toBeFalsy();
+  });
 
-        expect(component.control.controls.length).toEqual(3);
-        expect(component.control.controls[0].value).toBeTruthy();
-        expect(component.control.controls[1].value).toBeTruthy();
-        expect(component.control.controls[2].value).toBeFalsy();
-    });
+  it('emits changes', () => {
+    const options = [
+      { Display: 'One', Uid: '1' },
+      { Display: 'Two', Uid: '2' },
+      { Display: 'Three', Uid: '3' },
+    ];
 
-    it('emits changes', () => {
-        const options = [
-            { Display: 'One', Uid: '1' },
-            { Display: 'Two', Uid: '2' },
-            { Display: 'Three', Uid: '3' },
-        ];
+    component.filterElementModel = buildFilterModel(options, "'2','3'");
+    component.ngOnInit();
 
-        component.filterElementModel = buildFilterModel(options, '\'2\',\'3\'')
-        component.ngOnInit();
+    const spy = spyOn(component.valueChanged, 'emit');
 
-        const spy = spyOn(component.valueChanged, 'emit');
+    component.control.controls[0].setValue(false);
+    component.control.controls[2].setValue(true);
 
-        component.control.controls[0].setValue(false);
-        component.control.controls[2].setValue(true);
-
-        expect(spy.calls.mostRecent().args).toEqual([{ ParameterValue: '\'2\',\'3\'', displays: ['\'Two\'', '\'Three\''] }]);
-
-    });
+    expect(spy.calls.mostRecent().args).toEqual([{ ParameterValue: "'2','3'", displays: ["'Two'", "'Three'"] }]);
+  });
 });

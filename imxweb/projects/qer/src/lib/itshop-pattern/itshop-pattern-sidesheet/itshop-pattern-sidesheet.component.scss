@@ -1,105 +1,12 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
-
-@mixin imx-flex-column-container {
-  display: flex;
-  flex-direction: column;
-}
-
-.eui-sidesheet-content {
-  @include imx-flex-column-container();
-  padding: 0;
-}
-
-:host {
-  ::ng-deep .mat-tab-body-content {
-    display: flex;
-  }
-
-  .eui-badge ::ng-deep .eui-badge-content {
-    font-size: 12px;
-    line-height: 12px;
-    margin-bottom: 20px;
-  }
-
-  .imx-helper-alert {
-    width: 100%;
-
-    ::ng-deep .eui-alert {
-      margin-bottom: 20px;
-    }
-  }
-
-  .eui-sidesheet-actions {
-    .justify-start {
-      margin-right: auto;
-    }
-
-    .mat-stroked-button eui-icon {
-      font-size: 14px;
-      margin-right: 4px;
-    }
-
-    button:not(:last-of-type):not(.justify-start) {
-      margin-right: 10px;
-    }
-  }
-
-  ::ng-deep .mat-tab-body-wrapper {
-    flex: 1 1 auto;
-  
-    .mat-tab-body {
-      display: flex;
-      flex-direction: column;
-      flex: 1 1 auto;
-    }
-  }
-  
-  ::ng-deep .mat-tab-body-content {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  ::ng-deep .mat-tab-group {
-    flex-grow: 1;
-    overflow: auto;
-  }
-}
-
-.imx-tab-content {
-  flex: 1;
-  padding: 32px;
-  overflow: auto;
-  @include imx-flex-column-container();
-
-  .mat-card {
-    @include imx-flex-column-container();
-    overflow: hidden;
-
-    .imx-table-container {
-      overflow: auto;
-      @include imx-flex-column-container();
-    }
-  }
-}
-
-// Theming
-:host {
-  ::ng-deep .mat-tab-group .mat-tab-header {
-    background-color: $color-gray-0;
-  }  
-}
+@import 'base/mixins';
 
 .eui-dark-theme {
   :host {
     background-color: $color-gray-80;
     color: $color-gray-0;
-    .eui-sidesheet-actions.mat-card.eui-sidesheet-actions--white{
+    .eui-sidesheet-actions.mat-mdc-card.eui-sidesheet-actions--white {
       background-color: $color-gray-70;
-    }
-    ::ng-deep .mat-tab-group {
-      .mat-tab-header {
-        background-color: $color-gray-80;
-      }
     }
   }
 }
@@ -108,14 +15,8 @@
   :host {
     background-color: $color-gray-100;
     color: $color-gray-0;
-    .eui-sidesheet-actions.mat-card.eui-sidesheet-actions--white{
+    .eui-sidesheet-actions.mat-mdc-card.eui-sidesheet-actions--white {
       background-color: $color-gray-90;
-    }
-    ::ng-deep .mat-tab-group {
-      .mat-tab-header {
-        background-color: $color-gray-100;
-      }
     }
   }
 }
-

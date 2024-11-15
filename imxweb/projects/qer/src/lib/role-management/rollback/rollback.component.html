@@ -2,35 +2,46 @@
   <mat-card class="imx-stepper-card">
     <mat-stepper orientation="vertical" [linear]="true" (selectionChange)="selectedStepChanged($event)">
       <mat-step [stepControl]="dateForm" label="{{ '#LDS#Comparison date' | translate }}">
-        <eui-alert class="imx-top-alert" [condensed]="true" [colored]="true" type="info">
+        <eui-alert [condensed]="true" [colored]="true" type="info">
           {{ '#LDS#Select a date to view the changes since that date.' | translate }}
         </eui-alert>
         <form [formGroup]="dateForm">
-          <imx-cdr-editor [cdr]="dateCdr" (valueChange)="resetControls()" (controlCreated)="addControl(dateCdr.column.ColumnName, $event)"></imx-cdr-editor>
+          <imx-cdr-editor
+            [cdr]="dateCdr"
+            (valueChange)="resetControls()"
+            (controlCreated)="addControl(dateCdr?.column?.ColumnName ?? '', $event)"
+          ></imx-cdr-editor>
         </form>
-        <div class="imx-step-button" *ngIf="dateCdr">
+        <div class="imx-button-stepper" *ngIf="dateCdr">
           <button mat-stroked-button color="primary" data-imx-identifier="compare-step-1-next" matStepperNext [disabled]="dateForm.invalid">
             {{ '#LDS#Next' | translate }}
           </button>
         </div>
       </mat-step>
       <mat-step [stepControl]="comparisonForm" label="{{ '#LDS#View comparison result' | translate }}">
-        <eui-alert class="imx-top-alert" [condensed]="true" [colored]="true" type="info" *ngIf="comparisonItems.length > 0"> {{ ldsSelectItems | translate }}</eui-alert>
+        <eui-alert [condensed]="true" [colored]="true" type="info" *ngIf="!!comparisonItems.length">
+          {{ ldsSelectItems | translate }}
+        </eui-alert>
         <form [formGroup]="comparisonForm">
           <input hidden formControlName="helperInput" />
-          <imx-data-source-toolbar #dst data-imx-identifier="compare-data-source-toolbar" [settings]="dstSettings" [options]=""> </imx-data-source-toolbar>
+          <imx-data-source-toolbar #dst data-imx-identifier="compare-data-source-toolbar" [settings]="dstSettings" [options]="">
+          </imx-data-source-toolbar>
           <div class="imx-step-data-table">
             <imx-data-table
               [showSelectedItemsMenu]="false"
               data-imx-identifier="compare-data-table"
               [dst]="dst"
-              detailViewVisible="false"
+              [detailViewVisible]="false"
               mode="manual"
               [selectable]="true"
               (selectionChanged)="selectionChanged($event)"
               [noDataText]="ldsNoChanges"
             >
-              <imx-data-table-column *ngIf="entitySchema" [columnLabel]="'#LDS#Affected object' | translate" [entityColumn]="entitySchema.Columns.Property">
+              <imx-data-table-column
+                *ngIf="entitySchema"
+                [columnLabel]="'#LDS#Affected object' | translate"
+                [entityColumn]="entitySchema.Columns?.Property"
+              >
                 <ng-template let-entl>
                   <div>{{ entl.Property.value }}</div>
                   <div class="subtext">{{ entl.TypeDisplay.value }}</div>
@@ -39,20 +50,26 @@
               <imx-data-table-column
                 *ngIf="entitySchema"
                 [columnLabel]="'#LDS#Previous state' | translate"
-                [entityColumn]="entitySchema.Columns.HistoryValueDisplay"
+                [entityColumn]="entitySchema.Columns?.HistoryValueDisplay"
               ></imx-data-table-column>
               <imx-data-table-column
                 *ngIf="entitySchema"
                 [columnLabel]="'#LDS#Current state' | translate"
-                [entityColumn]="entitySchema.Columns.CurrentValueDisplay"
+                [entityColumn]="entitySchema.Columns?.CurrentValueDisplay"
               ></imx-data-table-column>
             </imx-data-table>
           </div>
         </form>
 
-        <div class="imx-step-button">
+        <div class="imx-button-stepper">
           <button mat-stroked-button data-imx-identifier="rollback-step-1-back" matStepperPrevious>{{ '#LDS#Back' | translate }}</button>
-          <button mat-stroked-button data-imx-identifier="rollback-step-1-next" color="primary" matStepperNext [disabled]="comparisonForm.invalid">
+          <button
+            mat-stroked-button
+            data-imx-identifier="rollback-step-1-next"
+            color="primary"
+            matStepperNext
+            [disabled]="comparisonForm.invalid"
+          >
             {{ '#LDS#Next' | translate }}
           </button>
         </div>
@@ -60,7 +77,7 @@
 
       <mat-step label="{{ '#LDS#Verify actions' | translate }}">
         <ng-container>
-          <eui-alert class="imx-top-alert" [condensed]="true" [colored]="true" type="info"> {{ ldsActionList | translate }}</eui-alert>
+          <eui-alert [condensed]="true" [colored]="true" type="info"> {{ ldsActionList | translate }}</eui-alert>
 
           <mat-selection-list [(ngModel)]="uidActions">
             <mat-list-option
@@ -75,9 +92,11 @@
             </mat-list-option>
           </mat-selection-list>
 
-          <div class="imx-step-button">
+          <div class="imx-button-stepper">
             <button mat-stroked-button data-imx-identifier="rollback-step-2-back" matStepperPrevious>{{ '#LDS#Back' | translate }}</button>
-            <button mat-stroked-button data-imx-identifier="rollback-step-2-next" (click)="execute()" color="primary" matStepperNext>{{ '#LDS#Next' | translate }}</button>
+            <button mat-stroked-button data-imx-identifier="rollback-step-2-next" (click)="execute()" color="primary" matStepperNext>
+              {{ '#LDS#Next' | translate }}
+            </button>
           </div>
         </ng-container>
       </mat-step>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,14 +24,13 @@
  *
  */
 
-import { HyperViewLayout, toPixelString, HvElement, LayoutResult } from './hyperview-types';
-import { IConnectorProvider, ConnectorProvider } from './connector-provider';
+import { ConnectorProvider, IConnectorProvider } from './connector-provider';
+import { HvElement, HyperViewLayout, LayoutResult, toPixelString } from './hyperview-types';
 
 /**
  * Layouter that aligns the elements vertically, with the root node at the top.
  */
 export class HyperviewLayoutVertical implements HyperViewLayout {
-
   private elements: HvElement[];
 
   constructor(elements: HvElement[]) {
@@ -44,19 +43,16 @@ export class HyperviewLayoutVertical implements HyperViewLayout {
   public layout(): LayoutResult {
     const es = this.elements;
     if (es.length > 0) {
-
       // get the maximum width
       const maxw = this.getMaxWidth();
 
       es.forEach((node, index) => {
         const element = node.element;
         element.style.position = 'absolute';
-        element.style.left = toPixelString(((maxw - element.offsetWidth) / 2));
+        element.style.left = toPixelString((maxw - element.offsetWidth) / 2);
         if (index > 0) {
           const previousElement = es[index - 1].element;
-          element.style.top = toPixelString((previousElement.offsetTop +
-            previousElement.offsetHeight +
-            10));
+          element.style.top = toPixelString(previousElement.offsetTop + previousElement.offsetHeight + 10);
         } else {
           element.style.top = '0px';
         }
@@ -64,6 +60,7 @@ export class HyperviewLayoutVertical implements HyperViewLayout {
 
       return { size: { width: maxw, height: 0 } };
     }
+    return { size: { width: 0, height: 0 } };
   }
 
   /**

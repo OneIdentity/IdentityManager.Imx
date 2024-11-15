@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -40,17 +40,17 @@ export class TeamResponsibilityTileComponent implements OnInit {
     private readonly teamResponsibilitiesService: TeamResponsibilitiesService,
     public readonly router: Router,
     private readonly qerPermissionsService: QerPermissionsService,
-    private readonly dashboardService: DashboardService
+    private readonly dashboardService: DashboardService,
   ) {}
 
   async ngOnInit(): Promise<void> {
     const busy = this.dashboardService.beginBusy();
-    try{
+    try {
       const permission = await this.qerPermissionsService.isPersonManager();
-      if(permission){
+      if (permission) {
         this.inactiveResponsibilitiesCount = await this.teamResponsibilitiesService.countInactiveIdentity();
       }
-    }finally{
+    } finally {
       busy.endBusy();
     }
   }

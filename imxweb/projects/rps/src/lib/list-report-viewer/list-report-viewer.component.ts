@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,8 +27,15 @@
 import { Component, Input, OnInit } from '@angular/core';
 import _ from 'lodash';
 
-import { BusyService, ClassloggerService, DataSourceToolbarGroupData, DataSourceToolbarSettings, createGroupData } from 'qbm';
-import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema } from '@imx-modules/imx-qbm-dbts';
+import {
+  BusyService,
+  ClassloggerService,
+  DataSourceToolbarGroupData,
+  DataSourceToolbarSettings,
+  DataTableGroupedData,
+  createGroupData,
+} from 'qbm';
 import { ListReportDataProvider } from './list-report-data-provider.interface';
 
 /**
@@ -60,9 +67,10 @@ export class ListReportViewerComponent implements OnInit {
   public busyService = new BusyService();
   public dstSettings: DataSourceToolbarSettings;
   public entitySchema: EntitySchema;
-  public groupData: DataSourceToolbarGroupData;
+  public groupedData: { [key: string]: DataTableGroupedData } = {};
 
   private dataModel: DataModel;
+  private groupData: DataSourceToolbarGroupData | undefined;
   private reportColumns: string[];
   private navigationState: CollectionLoadParameters = {};
 
@@ -105,16 +113,18 @@ export class ListReportViewerComponent implements OnInit {
     const isBusy = this.busyService.beginBusy();
 
     try {
-      const groupedData = this.groupData[groupKey];
-      const navigationState = { ...groupedData.navigationState };
-      groupedData.data = await this.dataService.get(navigationState);
-      groupedData.settings = {
-        displayedColumns: this.dstSettings.displayedColumns,
-        dataModel: this.dstSettings.dataModel,
-        dataSource: groupedData.data,
-        entitySchema: this.dstSettings.entitySchema,
-        navigationState,
-      };
+      if (this.groupData?.[groupKey]) {
+        const groupedData = this.groupData[groupKey];
+        const navigationState = { ...groupedData.navigationState };
+        groupedData.data = await this.dataService.get(navigationState);
+        groupedData.settings = {
+          displayedColumns: this.dstSettings.displayedColumns,
+          dataModel: this.dstSettings.dataModel,
+          dataSource: groupedData.data,
+          entitySchema: this.dstSettings.entitySchema,
+          navigationState,
+        };
+      }
     } finally {
       isBusy.endBusy();
     }
@@ -158,13 +168,15 @@ export class ListReportViewerComponent implements OnInit {
     this.dataModel = await this.dataService.getDataModel();
 
     const data = await this.dataService.get({ PageSize: -1 });
-    this.reportColumns = data.extendedData.Columns;
+    if (data.extendedData?.Columns) {
+      this.reportColumns = data.extendedData.Columns;
+    }
 
     // create a copy of listReportSchema and add additional columns to it (because the schema only provides the display at this point)
     this.entitySchema = _.cloneDeep(this.dataService.entitySchema) as any;
 
     for (const column of this.reportColumns) {
-      (this.entitySchema.Columns[column] as any) = data.extendedData.AdditionalProperties.find((elem) => elem.ColumnName === column);
+      (this.entitySchema.Columns[column] as any) = data.extendedData?.AdditionalProperties?.find((elem) => elem.ColumnName === column);
     }
 
     this.navigationState = { ...this.navigationState };
@@ -183,7 +195,7 @@ export class ListReportViewerComponent implements OnInit {
           },
           ...parameters,
         }),
-      []
+      [],
     );
   }
 }

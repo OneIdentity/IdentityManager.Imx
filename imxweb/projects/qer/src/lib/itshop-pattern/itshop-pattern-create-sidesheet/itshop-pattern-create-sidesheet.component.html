@@ -1,19 +1,23 @@
 <div eui-sidesheet-content>
   <imx-usermessage class="imx-errormessages" panelClass="imx-small-message" [target]="'sidesheet'"></imx-usermessage>
   <mat-card>
-    <eui-badge *ngIf="!data.pattern.IsPublicPattern.value">
-      {{ '#LDS#Private product bundle' | translate}}
+    <eui-badge class="imx-margin-bottom-20" *ngIf="!data.pattern.IsPublicPattern.value">
+      {{ '#LDS#Private product bundle' | translate }}
     </eui-badge>
-    <eui-badge color="green" *ngIf="data?.pattern?.IsPublicPattern?.value">
-      {{'#LDS#Public product bundle' | translate}}
+    <eui-badge class="imx-margin-bottom-20" color="green" *ngIf="data?.pattern?.IsPublicPattern?.value">
+      {{ '#LDS#Public product bundle' | translate }}
     </eui-badge>
-    <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="formArray.push($event)">
-    </imx-cdr-editor>
+    <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="formArray.push($event)"> </imx-cdr-editor>
   </mat-card>
 </div>
-<div eui-sidesheet-actions >
-  <button mat-raised-button color="primary" data-imx-identifier="itshop-pattern-sidesheet-button-toggle-create"
-    [disabled]="!detailsFormGroup.dirty || detailsFormGroup.invalid" (click)="save()">
+<div eui-sidesheet-actions>
+  <button
+    mat-flat-button
+    color="primary"
+    data-imx-identifier="itshop-pattern-sidesheet-button-toggle-create"
+    [disabled]="!detailsFormGroup.dirty || detailsFormGroup.invalid"
+    (click)="save()"
+  >
     {{ '#LDS#Create' | translate }}
   </button>
 </div>

@@ -1,23 +1,25 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
+
+:host{
+  @include flex-column-container-fill();
+}
 
 .calls-attachment {
-  height: 100%;
+  @include flex-column-container($height: 100%);
   position: relative;
-  display: flex;
-  flex-direction: column;
   gap: 20px;
-  .mat-card {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+
+  .mat-mdc-card {
+    @include flex-column-container($height: 100%);
     gap: 10px;
     border: 1px solid rgba($color-gray-100, 0.12);
+    margin: 3px;
   }
+
   &__information {
-    display: flex;
-    flex-direction: column;
+    @include flex-column-container($height: 100%);
     justify-content: center;
-    height: 100%;
     background-color: $color-blue-10;
     border: 1px solid $color-blue-20;
     border-radius: 4px;
@@ -35,10 +37,6 @@
         font-size: 48px;
         font-weight: 700;
       }
-      .eui-icon {
-        font-size: 200px !important;
-        line-height: 200px !important;
-      }
     }
 
     .file-size {
@@ -52,41 +50,10 @@
       }
     }
   }
-  &__new-folder {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    .eui-icon {
-      color: $color-blue-60;
-      cursor: pointer;
-      font-size: 20px;
-      padding-right: 4px;
-      &--disabled {
-        color: $color-gray-30;
-        cursor: default;
-      }
-    }
 
-    .deleteIcon {
-      margin-left: auto;
-      .eui-icon{
-        color:inherit
-      }
-      .eui-icon--disabled {
-        color: inherit;
-      }
-    }
-
-    input[type='file'] {
-      display: none;
-    }
-    .mat-primary{
-      color: $color-gray-80;
-    }
-  }
   &__attachments-tree {
     height: 100%;
-    &--hidden{
+    &--hidden {
       display: none;
     }
   }
@@ -95,11 +62,7 @@
     font-weight: 600;
   }
 
-  imx-sidenav-tree {
-    .snavigation {
-      width: 100% !important;
-    }
-  }
+  
   .loading-overlay {
     position: absolute;
     z-index: 999;
@@ -113,23 +76,7 @@
 }
 :host {
   .imx-tree-root > eui-icon {
-    color: $color-blue-60;
     margin-right: 10px;
-  }
-  .imx-tree-root--selected > eui-icon {
-    color: $color-orange-60;
-  }
-  ::ng-deep{
-    .calls-attachment{
-      &__new-folder{
-        button{
-          .mat-button-wrapper{
-            display: flex;
-            align-items: center;
-          }
-        }
-      }
-    }
   }
 }
 
@@ -137,12 +84,6 @@
 
 .eui-dark-theme {
   :host {
-    .imx-tree-root > eui-icon {
-      color: $color-blue-40;
-    }
-    .imx-tree-root--selected > eui-icon {
-      color: $color-orange-40;
-    }
     .calls-attachment {
       &__information {
         background-color: $color-blue-90;
@@ -153,7 +94,7 @@
         }
       }
       &__new-folder {
-        .mat-primary{
+        .mat-primary {
           color: $color-gray-0;
         }
       }

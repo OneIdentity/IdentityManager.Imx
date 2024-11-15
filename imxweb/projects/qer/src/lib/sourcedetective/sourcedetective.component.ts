@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,22 +24,31 @@
  *
  */
 
-import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
-import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { ImxTranslationProviderService, MetadataService, LdsReplacePipe, AuthenticationService, ParameterizedText, TextToken } from 'qbm';
-import { ITShopConfig, SourceNode } from 'imx-api-qer';
-import { DbObjectKey } from 'imx-qbm-dbts';
-import { QerApiService } from '../qer-api-client.service';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
-import { RequestDetailComponent } from '../request-history/request-detail/request-detail.component';
+import { ITShopConfig, SourceNode } from '@imx-modules/imx-api-qer';
+import { DbObjectKey } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
-import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
+import {
+  AuthenticationService,
+  calculateSidesheetWidth,
+  ImxTranslationProviderService,
+  ISessionState,
+  LdsReplacePipe,
+  MetadataService,
+  ParameterizedText,
+  TextToken,
+} from 'qbm';
 import { Subscription } from 'rxjs';
-import { RequestDetailParameter } from '../request-history/request-detail/request-detail-parameter.interface';
-import { ItshopRequest } from '../request-history/itshop-request';
-import { ItshopRequestData } from '../itshop/request-info/itshop-request-data';
 import { ItshopRequestService } from '../itshop/itshop-request.service';
+import { ItshopRequestData } from '../itshop/request-info/itshop-request-data';
+import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
+import { QerApiService } from '../qer-api-client.service';
+import { ItshopRequest } from '../request-history/itshop-request';
+import { RequestDetailParameter } from '../request-history/request-detail/request-detail-parameter.interface';
+import { RequestDetailComponent } from '../request-history/request-detail/request-detail.component';
 import { SourceDetectiveType } from './sourcedetective-type.enum';
 
 type SourceNodeEnriched = SourceNode & {
@@ -79,7 +88,7 @@ export class SourceDetectiveComponent implements OnInit, OnChanges, OnDestroy {
   @Input() public Type: SourceDetectiveType;
 
   public SourceDetectiveType = SourceDetectiveType;
-  private itShopConfig: ITShopConfig;
+  private itShopConfig: ITShopConfig | undefined;
   private currentUserId: string;
 
   private readonly subscriptions: Subscription[] = [];
@@ -96,7 +105,9 @@ export class SourceDetectiveComponent implements OnInit, OnChanges, OnDestroy {
     private readonly itshopRequestService: ItshopRequestService,
     authentication: AuthenticationService,
   ) {
-    this.subscriptions.push(authentication.onSessionResponse.subscribe((state) => (this.currentUserId = state.UserUid)));
+    this.subscriptions.push(
+      authentication.onSessionResponse.subscribe((state: ISessionState) => (this.currentUserId = state.UserUid || '')),
+    );
   }
 
   public hasChild = (node: SourceNodeEnriched) => !!node.Children && node.Children.length > 0;
@@ -122,6 +133,9 @@ export class SourceDetectiveComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public async openRequestDetail(node: SourceNodeEnriched): Promise<void> {
+    if (node.ObjectKey == null) {
+      return;
+    }
     const uidPwo = DbObjectKey.FromXml(node.ObjectKey).Keys[0];
 
     let data: RequestDetailParameter;
@@ -137,9 +151,16 @@ export class SourceDetectiveComponent implements OnInit, OnChanges, OnDestroy {
       }
       const pwoEntity = collection.Data[0];
 
+      const stepData = collection.extendedData?.WorkflowSteps;
+
       const requestData = new ItshopRequestData({ ...collection.extendedData, index: 0 });
       const parameterColumns = this.itshopRequestService.createParameterColumns(pwoEntity.GetEntity(), requestData.parameters);
-      const request = new ItshopRequest(pwoEntity.GetEntity(), requestData.pwoData, parameterColumns, this.currentUserId);
+      const request = new ItshopRequest(
+        pwoEntity.GetEntity(),
+        { ...requestData.pwoData, WorkflowSteps: stepData },
+        parameterColumns,
+        this.currentUserId,
+      );
 
       data = {
         isReadOnly: true,
@@ -161,7 +182,7 @@ export class SourceDetectiveComponent implements OnInit, OnChanges, OnDestroy {
         subTitle: parentNode && parentNode.TextTokens ? parentNode.TextTokens.map((token) => token.value).join('') : undefined,
         testId: 'sourcedetective-request-details-sidesheet',
         padding: '0px',
-        width: 'max(700px, 40%)',
+        width: calculateSidesheetWidth(700, 0.4),
         data,
       });
     }
@@ -187,7 +208,7 @@ export class SourceDetectiveComponent implements OnInit, OnChanges, OnDestroy {
     }
     await this.metadata.updateNonExisting([node.ObjectType]);
 
-    return this.metadata.tables[node.ObjectType].DisplaySingular;
+    return this.metadata.tables[node.ObjectType]?.DisplaySingular || '';
   }
 
   private async reload(): Promise<void> {
@@ -222,32 +243,32 @@ export class SourceDetectiveComponent implements OnInit, OnChanges, OnDestroy {
 
   private async getParametrizedText(node: SourceNode): Promise<ParameterizedText> {
     return {
-      value: await this.GetDescription(node),
+      value: (await this.GetDescription(node)) || '',
       marker: { start: '"%', end: '%"' },
-      getParameterValue: (columnName: string) => node.ObjectDisplayParameters[columnName],
+      getParameterValue: (columnName: string) => node.ObjectDisplayParameters?.[columnName] || '',
     };
   }
 
-  private async GetDescription(node: SourceNode): Promise<string> {
+  private async GetDescription(node: SourceNode): Promise<string | undefined> {
     const tableName = node.ObjectKey ? DbObjectKey.FromXml(node.ObjectKey).TableName : null;
     if (this.isDirectAssignment(node)) {
       if ('Person' === tableName) {
-        return this.translationProvider.Translate('#LDS#The identity is directly assigned to this object.').toPromise();
+        return this.translator.get('#LDS#The identity is directly assigned to this object.').toPromise();
       }
-      return this.translationProvider.Translate('#LDS#The entitlement is directly assigned to this object.').toPromise();
+      return this.translator.get('#LDS#The entitlement is directly assigned to this object.').toPromise();
     } else if (this.isByDynamicGroup(node)) {
-      return this.translationProvider.Translate('#LDS#The identity is a member of the dynamic role.').toPromise();
-    } else if (['Org', 'Locality', 'ProfitCenter', 'Department', 'AERole'].includes(tableName)) {
+      return this.translator.get('#LDS#The identity is a member of the dynamic role.').toPromise();
+    } else if (['Org', 'Locality', 'ProfitCenter', 'Department', 'AERole'].includes(tableName || '')) {
       return this.translationProvider
         .Translate({
           key: '#LDS#Primary assignment: {0} {1}',
-          parameters: [await this.getObjectTypeDisplay(node), node.ObjectDisplay],
+          parameters: [(await this.getObjectTypeDisplay(node)) ?? '', node.ObjectDisplay ?? ''],
         })
         .toPromise();
     } else if ('Person' === tableName) {
-      return this.translationProvider.Translate('#LDS#The identity is a primary member of this role.').toPromise();
+      return this.translator.get('#LDS#The identity is a primary member of this role.').toPromise();
     } else if ('PersonWantsOrg' === tableName) {
-      return this.translationProvider.Translate('#LDS#The assignment was made by a request.').toPromise();
+      return this.translator.get('#LDS#The assignment was made by a request.').toPromise();
     }
     return node.ObjectDisplay;
   }

@@ -1,6 +1,6 @@
 {
   "name": "IMX Web - hds Library",
-  "output": "../../documentation/v92/hds",
+  "output": "../../documentation/v93/hds",
   "theme": "material",
   "assetsFolder": "../../compodoc/assets",
   "customLogo": "../../compodoc/assets/images/oneidentity-logo.png",

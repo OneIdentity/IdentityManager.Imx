@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,24 +25,23 @@
  */
 
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { SqlColumnTypes, ValType } from 'imx-qbm-dbts';
+import { SqlColumnTypes, ValType } from '@imx-modules/imx-qbm-dbts';
 import { SqlNodeView } from './SqlNodeView';
 
 @Component({
-    selector: 'imx-sqlwizard-whereclauseexpression',
-    styleUrls: ['./sqlwizard.scss'],
-    templateUrl: './where-clause-expression.component.html'
+  selector: 'imx-sqlwizard-whereclauseexpression',
+  styleUrls: ['./sqlwizard.scss'],
+  templateUrl: './where-clause-expression.component.html',
 })
 export class WhereClauseExpressionComponent {
+  public ColumnType = SqlColumnTypes;
+  public ValType = ValType;
 
-    public ColumnType = SqlColumnTypes;
-    public ValType = ValType;
+  @Input() public expr: SqlNodeView;
 
-    @Input() public expr: SqlNodeView;
+  @Output() public change = new EventEmitter<any>();
 
-    @Output() public change = new EventEmitter<any>();
-
-    public emitChanges(): void {
-      this.change.emit();
-    }
+  public emitChanges(): void {
+    this.change.emit();
+  }
 }

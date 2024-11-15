@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,38 +26,32 @@
 
 import { Component, Input, OnChanges } from '@angular/core';
 
-import { IEntityColumn } from 'imx-qbm-dbts';
+import { IEntityColumn } from '@imx-modules/imx-qbm-dbts';
 import { BaseReadonlyCdr } from '../base-readonly-cdr';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
 
 @Component({
-    selector: 'imx-property-viewer',
-    templateUrl: './property-viewer.component.html',
-    styleUrls: ['./property-viewer.component.scss']
+  selector: 'imx-property-viewer',
+  templateUrl: './property-viewer.component.html',
+  styleUrls: ['./property-viewer.component.scss'],
 })
 export class PropertyViewerComponent implements OnChanges {
-    public cdrList: ColumnDependentReference[];
-    @Input() public showHiddenProperties = true;
-    @Input() public properties: IEntityColumn[] = [];
+  public cdrList: ColumnDependentReference[];
+  @Input() public showHiddenProperties = true;
+  @Input() public properties: IEntityColumn[] = [];
 
-    public ngOnChanges(): void {
-        if (this.properties) {
-            this.cdrList = this.properties
-                .filter(column => this.showProperty(column))
-                .map(column => new BaseReadonlyCdr(column));
-        }
+  public ngOnChanges(): void {
+    if (this.properties) {
+      this.cdrList = this.properties.filter((column) => this.showProperty(column)).map((column) => new BaseReadonlyCdr(column));
     }
+  }
 
-    private showProperty(column: IEntityColumn): boolean {
-        // show hidden properties?
-        return (column.GetMetadata().CanSee() || this.showHiddenProperties)
-
-            &&
-
-            true;
-        /* TODO
+  private showProperty(column: IEntityColumn): boolean {
+    // show hidden properties?
+    return (column.GetMetadata().CanSee() || this.showHiddenProperties) && true;
+    /* TODO
         // show empty properties?
         (from edittable select current not(isnullorempty(currentcolumn))
         or getconfig("VI_Common_DisplayEmptyProperties") = "true");*/
-    }
+  }
 }

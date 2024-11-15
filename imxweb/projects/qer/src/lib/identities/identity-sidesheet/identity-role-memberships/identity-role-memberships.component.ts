@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,13 +24,19 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit } from '@angular/core';
-import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
+import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, ValType } from 'imx-qbm-dbts';
-import { BusyService, DataSourceToolbarSettings, DynamicTabDataProviderDirective, MetadataService, SettingsService } from 'qbm';
+import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, TypedEntity } from '@imx-modules/imx-qbm-dbts';
+import {
+  BusyService,
+  calculateSidesheetWidth,
+  DataSourceToolbarSettings,
+  DynamicTabDataProviderDirective,
+  MetadataService,
+  SettingsService,
+} from 'qbm';
 import { RoleService } from '../../../role-management/role.service';
 import {
   SourceDetectiveSidesheetComponent,
@@ -48,7 +54,7 @@ export class IdentityRoleMembershipsComponent implements OnInit {
   public readonly DisplayColumns = DisplayColumns;
   public displayedColumns: IClientProperty[];
   public caption: string;
-  public entitySchema: EntitySchema;
+  public entitySchema: EntitySchema | undefined;
   public withActions: boolean;
 
   private referrer: { objectuid: string; tablename: string };
@@ -58,7 +64,6 @@ export class IdentityRoleMembershipsComponent implements OnInit {
   public busyService = new BusyService();
 
   constructor(
-    private readonly busyServiceElemental: EuiLoadingService,
     private readonly metadataService: MetadataService,
     private readonly roleMembershipsService: IdentityRoleMembershipsService,
     private readonly membershipService: RoleService,
@@ -68,10 +73,14 @@ export class IdentityRoleMembershipsComponent implements OnInit {
     dataProvider: DynamicTabDataProviderDirective,
   ) {
     this.referrer = dataProvider.data;
-    this.entitySchema = this.roleMembershipsService.getSchema(this.referrer.tablename);
-    this.withActions = this.roleMembershipsService.canAnalyseAssignment(this.referrer.tablename);
-
     this.navigationState = { PageSize: this.settingService.DefaultPageSize };
+
+    this.withActions = this.roleMembershipsService.canAnalyseAssignment(this.referrer.tablename);
+    this.entitySchema = this.roleMembershipsService.getSchema(this.referrer.tablename);
+
+    if (!this.entitySchema) {
+      return;
+    }
     this.displayedColumns = [
       this.entitySchema.Columns.XOrigin,
       this.entitySchema.Columns.XDateInserted,
@@ -89,7 +98,7 @@ export class IdentityRoleMembershipsComponent implements OnInit {
     } finally {
       isBusy.endBusy();
     }
-    this.caption = this.metadataService.tables[this.referrer.tablename].Display;
+    this.caption = this.metadataService.tables[this.referrer.tablename]?.Display || '';
     return this.getData();
   }
 
@@ -99,7 +108,7 @@ export class IdentityRoleMembershipsComponent implements OnInit {
     }
     const uidPerson = this.referrer.objectuid;
 
-    const uidRole = this.membershipService.targetMap.get(this.referrer.tablename)?.membership.GetUidRole(entity.GetEntity());
+    const uidRole = this.membershipService.targetMap.get(this.referrer.tablename)?.membership?.GetUidRole(entity.GetEntity());
     if (uidRole == null) {
       return;
     }
@@ -113,7 +122,7 @@ export class IdentityRoleMembershipsComponent implements OnInit {
       title: await this.translate.get('#LDS#Heading View Assignment Analysis').toPromise(),
       subTitle: entity.GetEntity().GetDisplay(),
       padding: '0px',
-      width: 'max(768px, 80%)',
+      width: calculateSidesheetWidth(1100, 0.7),
       disableClose: false,
       testId: 'identity-role-memberships-risk-sidesheet',
       data,
@@ -138,9 +147,13 @@ export class IdentityRoleMembershipsComponent implements OnInit {
     try {
       const dataSource = await this.roleMembershipsService.get(this.referrer.tablename, this.referrer.objectuid, this.navigationState);
 
+      if (this.entitySchema == null) {
+        return;
+      }
+
       this.dstSettings = {
         displayedColumns: this.displayedColumnsWithDisplay,
-        dataSource,
+        dataSource: dataSource,
         entitySchema: this.entitySchema,
         navigationState: this.navigationState,
       };

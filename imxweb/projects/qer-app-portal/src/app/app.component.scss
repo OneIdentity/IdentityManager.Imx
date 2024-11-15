@@ -1,5 +1,5 @@
-@import "variables.scss";
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/variables';
 
 .page {
   display: flex;
@@ -13,7 +13,7 @@
   flex-direction: column;
   overflow: hidden;
   height: inherit;
-  margin: 40px 60px;
+  margin: 24px;
 
   &--full-page {
     margin: 0;
@@ -36,22 +36,6 @@
   }
 }
 
-@media only screen and (max-width: 768px) {
-
-  .eui-top-navigation-mobile {
-    .eui-top-navigation-mobile-footer {
-      .mat-button {
-        &.imx-masthead--icon-button {
-          width: 100%;
-
-          .mat-button-wrapper span {
-            display: inline-block;
-          }
-        }
-      }
-    }
-  }
-}
 
 .eui-dark-theme {
   .page {

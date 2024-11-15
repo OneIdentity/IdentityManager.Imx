@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,71 +25,64 @@
  */
 
 import { ShoppingCartValidator } from './shopping-cart-validator';
-import { CartCheckResult, PortalCartitem } from 'imx-api-qer';
+import { CartCheckResult, PortalCartitem } from '@imx-modules/imx-api-qer';
 import { CartItemValidationStatus } from './cart-items/cart-item-validation-status.enum';
 
 describe('ShoppingCartValidator', () => {
-    const checkWithError = {
-        Status: CartItemValidationStatus.error,
-        Title: 'This is an error',
-        ResultText: 'Each error is an error.'
-    };
+  const checkWithError = {
+    Status: CartItemValidationStatus.error,
+    Title: 'This is an error',
+    ResultText: 'Each error is an error.',
+  };
 
-    const resultWithWarningsAndCheckWithError = {
-        HasWarnings: true,
-        Checks: [checkWithError]
-    };
+  const resultWithWarningsAndCheckWithError = {
+    HasWarnings: true,
+    Checks: [checkWithError],
+  };
 
-    const resultItemWithoutWarnings = {
-        HasWarnings: false,
-        Checks: [checkWithError]
-    };
+  const resultItemWithoutWarnings = {
+    HasWarnings: false,
+    Checks: [checkWithError],
+  };
 
-    const resultWithWarningsAndCheckWithSuccess = {
-        HasWarnings: true,
-        Checks: [
-            {
-                Status: CartItemValidationStatus.success,
-                Title: 'This was successful',
-                ResultText: 'But success does not last forever.'
-            }
-        ]
-    };
+  const resultWithWarningsAndCheckWithSuccess = {
+    HasWarnings: true,
+    Checks: [
+      {
+        Status: CartItemValidationStatus.success,
+        Title: 'This was successful',
+        ResultText: 'But success does not last forever.',
+      },
+    ],
+  };
 
-    function getCartItem(_) {
-        return {
-            UID_PersonOrdered: { Column: { GetDisplayValue: () => undefined } },
-            GetEntity: () => ({ GetDisplay: () => undefined })
-        } as PortalCartitem;
-    }
+  function getCartItem(_) {
+    return {
+      UID_PersonOrdered: { Column: { GetDisplayValue: () => undefined } },
+      GetEntity: () => ({ GetDisplay: () => undefined }),
+    } as PortalCartitem;
+  }
 
-    [
-        {
-            CheckResultItems: [resultItemWithoutWarnings],
-            expected: { itemsWithWarnings: 0 }
-        },
-        {
-            CheckResultItems: [
-                resultItemWithoutWarnings,
-                resultWithWarningsAndCheckWithSuccess
-            ],
-            expected: { itemsWithWarnings: 0 }
-        },
-        {
-            CheckResultItems: [
-                resultItemWithoutWarnings,
-                resultWithWarningsAndCheckWithSuccess,
-                resultWithWarningsAndCheckWithError
-            ],
-            expected: { itemsWithWarnings: 1 }
-        }
-    ].forEach(testcase =>
-        it('shows only checks with warnings that have CartItemValidationStatus !== Success', () => {
-            const validator = new ShoppingCartValidator({ Items: testcase.CheckResultItems } as CartCheckResult);
+  [
+    {
+      CheckResultItems: [resultItemWithoutWarnings],
+      expected: { itemsWithWarnings: 0 },
+    },
+    {
+      CheckResultItems: [resultItemWithoutWarnings, resultWithWarningsAndCheckWithSuccess],
+      expected: { itemsWithWarnings: 0 },
+    },
+    {
+      CheckResultItems: [resultItemWithoutWarnings, resultWithWarningsAndCheckWithSuccess, resultWithWarningsAndCheckWithError],
+      expected: { itemsWithWarnings: 1 },
+    },
+  ].forEach((testcase) =>
+    it('shows only checks with warnings that have CartItemValidationStatus !== Success', () => {
+      const validator = new ShoppingCartValidator({ Items: testcase.CheckResultItems } as CartCheckResult);
 
-            const warnings = validator.getWarnings(getCartItem);
+      const warnings = validator.getWarnings(getCartItem);
 
-            expect(warnings.length).toBe(testcase.expected.itemsWithWarnings);
-        })
-    );
+      expect(warnings.length).toBe(testcase.expected.itemsWithWarnings);
+    }),
+  );
 });

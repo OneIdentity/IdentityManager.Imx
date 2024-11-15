@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,7 +36,7 @@ export interface ImageSelectorDialogParameter {
   /**
    * the predefined list of icons
    */
-  icons: { [name: string]: string; };
+  icons: { [name: string]: string };
 
   /**
    * the default icon to select

@@ -8,18 +8,6 @@
   min-height: 40px;
 }
 
-.imx-user-icon {
-  color: $black-3;
-  background-color: $black-c;
-  opacity: 0.6;
-  border-radius: 50%;
-  text-align: center;
-  line-height: 35px;
-  min-width: 35px;
-  min-height: 35px;
-  margin-right: 12px;
-}
-
 .imx-application-property {
   display: flex;
   flex-direction: column;
@@ -32,23 +20,5 @@
     font-weight: 600;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-}
-
-.eui-dark-theme {
-  :host {
-    .imx-user-icon {
-      color: $color-gray-20;
-      background-color: $color-gray-80;
-    }
-  }
-}
-
-.eui-contrast-theme {
-  :host {
-    .imx-user-icon {
-      color: $color-gray-10;
-      background-color: $color-gray-100;
-    }
   }
 }

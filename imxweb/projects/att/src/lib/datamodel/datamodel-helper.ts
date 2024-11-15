@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,55 +31,55 @@ import {
   DataModelGroupInfo,
   DataModelProperty,
   GroupInfoData,
-} from 'imx-qbm-dbts';
-import { DataSourceToolbarGroupData } from 'qbm';
+} from '@imx-modules/imx-qbm-dbts';
+import { DataSourceToolBarGroup, DataSourceToolbarGroupData, DataSourceToolBarGroupingCategory } from 'qbm';
 
 export function createGroupData(
   dataModel: DataModel,
   getGroupInfo: (parameters: { by?: string; def?: string } & CollectionLoadParameters) => Promise<GroupInfoData>,
-  disableGroupingFor: string[]
+  disableGroupingFor: string[],
 ): DataSourceToolbarGroupData {
-  const groups = [];
-  const groupingCategories = [];
+  const groups: DataSourceToolBarGroup[] = [];
+  const groupingCategories: DataSourceToolBarGroupingCategory[] = [];
 
   if (dataModel.Properties) {
     for (const property of dataModel.Properties.filter(
-      (p) => p.IsGroupable && disableGroupingFor.every((elem) => elem !== p.Property?.ColumnName)
+      (p) => p.IsGroupable && disableGroupingFor.every((elem) => elem !== p.Property?.ColumnName),
     )) {
       groups.push({
         property,
-        getData: async (parameters) => await getGroupInfo({ ...{ by: property.Property.ColumnName }, ...parameters }),
+        getData: async (parameters) => await getGroupInfo({ ...{ by: property.Property?.ColumnName }, ...parameters }),
       });
     }
   }
 
-  const getGroupInfoGroups = (options: DataModelFilterOption[]) =>
-    options.map((property) => ({
+  const getGroupInfoGroups = (options?: DataModelFilterOption[]): DataSourceToolBarGroup[] =>
+    options?.map((property) => ({
       property: property as DataModelProperty & DataModelGroupInfo,
       getData: async (parameters) => {
         const original = await getGroupInfo({ ...{ def: property.Value }, ...parameters });
-        const groupDisplay = original.Groups.map((item) => {
-          item.Display.forEach((display) =>
-            item.Filters.forEach((filter) => {
+        const groupDisplay = original.Groups?.map((item) => {
+          item.Display?.forEach((display) =>
+            item.Filters?.forEach((filter) => {
               if (filter.Value1 != null) {
-                display.Display = display.Display.replace(`%${filter.ColumnName}%`, filter.Value1);
+                display.Display = display.Display?.replace(`%${filter.ColumnName}%`, filter.Value1);
               }
-            })
+            }),
           );
           return item;
         });
         return { Groups: groupDisplay, TotalCount: original.TotalCount };
       },
-    }));
+    })) || [];
 
   if (dataModel.GroupInfo?.length === 1) {
-    getGroupInfoGroups(dataModel.GroupInfo[0].Options).forEach((group) => groups.push(group));
+    getGroupInfoGroups(dataModel.GroupInfo?.[0].Options)?.forEach((group) => groups.push(group));
   } else {
     dataModel.GroupInfo?.forEach((dataModelGroupInfo) =>
       groupingCategories.push({
         property: dataModelGroupInfo,
-        groups: getGroupInfoGroups(dataModelGroupInfo.Options),
-      })
+        groups: getGroupInfoGroups(dataModelGroupInfo?.Options),
+      }),
     );
   }
 
@@ -87,5 +87,5 @@ export function createGroupData(
     return { groups, groupingCategories };
   }
 
-  return undefined;
+  return {};
 }

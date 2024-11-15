@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,22 +24,27 @@
  *
  */
 
-import { ICartItemCheck } from 'imx-api-qer';
+import { ICartItemCheck } from '@imx-modules/imx-api-qer';
 
 export enum CartItemValidationStatus {
   pending = 0,
   success = 1,
   warning = 2,
   error = 3,
-  disabled = 4
+  disabled = 4,
 }
 
-export function getCartItemValidationStatus(check: ICartItemCheck): { status: string, icon: string } {
+export function getCartItemValidationStatus(check: ICartItemCheck): { status: string; icon: string } {
   switch (check.Status as CartItemValidationStatus) {
-    case CartItemValidationStatus.disabled: return { status: 'Disabled', icon: 'location_disabled' };
-    case CartItemValidationStatus.error: return { status: 'Error', icon: 'cancel' };
-    case CartItemValidationStatus.pending: return { status: 'Pending', icon: 'hourglass_empty' };
-    case CartItemValidationStatus.success: return { status: 'Success', icon: 'done' };
-    case CartItemValidationStatus.warning: return { status: 'Warning', icon: 'warning' };
+    case CartItemValidationStatus.disabled:
+      return { status: 'Disabled', icon: 'location_disabled' };
+    case CartItemValidationStatus.error:
+      return { status: 'Error', icon: 'cancel' };
+    case CartItemValidationStatus.pending:
+      return { status: 'Pending', icon: 'hourglass_empty' };
+    case CartItemValidationStatus.success:
+      return { status: 'Success', icon: 'done' };
+    case CartItemValidationStatus.warning:
+      return { status: 'Warning', icon: 'warning' };
   }
 }

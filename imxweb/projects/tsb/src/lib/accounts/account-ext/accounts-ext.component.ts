@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,8 +26,8 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 
-import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings, DynamicTabDataProviderDirective, SettingsService, BusyService } from 'qbm';
+import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty } from '@imx-modules/imx-qbm-dbts';
+import { BusyService, DataSourceToolbarSettings, DynamicTabDataProviderDirective, SettingsService } from 'qbm';
 import { AccountsExtService } from './account-ext.service';
 
 @Component({
@@ -37,7 +37,7 @@ import { AccountsExtService } from './account-ext.service';
 export class AccountsExtComponent implements OnInit {
   @Input() public referrer: {
     objecttable?: string;
-    objectuid?: string;
+    objectuid: string;
     tablename?: string;
   };
 
@@ -53,7 +53,7 @@ export class AccountsExtComponent implements OnInit {
   constructor(
     private readonly settingService: SettingsService,
     private readonly accountsService: AccountsExtService,
-    dataProvider: DynamicTabDataProviderDirective
+    dataProvider: DynamicTabDataProviderDirective,
   ) {
     this.referrer = dataProvider?.data;
     this.navigationState = { PageSize: this.settingService.DefaultPageSize };

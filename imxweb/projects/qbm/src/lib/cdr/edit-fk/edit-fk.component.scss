@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 :host {
   flex-grow: 1;
@@ -6,42 +6,8 @@
   align-items: center;
 }
 
-.mat-form-field {
-  flex-grow: 1;
-}
-
 .imx-spacer {
   height: 30px;
-}
-
-.imx-candidate-option {
-  line-height: 1.5em;
-  display: flex;
-  width: 100%;
-  height: 50px;
-
-  .imx-candidate-item {
-    width: 100%;
-
-    .imx-candidate-content {
-      width: 100%;
-      overflow: hidden;
-
-      .imx-candidate-display {
-        font-size: 14px;
-        line-height: 14px;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        width: 100vw;
-      }
-
-      .imx-candidate-longdisplay {
-        font-size: 12px;
-        text-overflow: ellipsis;
-        overflow: hidden;
-      }
-    }
-  }
 }
 
 .imx-viewport {
@@ -50,16 +16,15 @@
   overflow-x: hidden;
 }
 
-.mat-option {
+.mat-mdc-option {
   height: 50px;
 }
 
 .imx-suffix-container {
   display: flex;
-  margin-bottom: 5px;
 
   > *:not(:last-child) {
-    margin-right: 5px;
+    margin-right: 8px;
     margin-top: 0;
   }
 }
@@ -68,16 +33,16 @@
   cursor: pointer;
   margin-top: 0;
   display: inline;
-  line-height: 35px;
+  line-height: 36px !important;
 }
 
 .eui-dark-theme {
   :host {
     color: $color-gray-2;
-    .imx-candidate-option{
-      .imx-candidate-item{
-        .imx-candidate-content{
-          .imx-candidate-display{
+    .imx-candidate-option {
+      .imx-candidate-item {
+        .imx-candidate-content {
+          .imx-candidate-display {
             color: $color-gray-5;
           }
           .imx-candidate-longdisplay {
@@ -92,10 +57,10 @@
 .eui-contrast-theme {
   :host {
     color: $color-gray-0;
-    .imx-candidate-option{
-      .imx-candidate-item{
-        .imx-candidate-content{
-          .imx-candidate-display{
+    .imx-candidate-option {
+      .imx-candidate-item {
+        .imx-candidate-content {
+          .imx-candidate-display {
             color: $color-gray-0;
           }
           .imx-candidate-longdisplay {

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,15 +24,14 @@
  *
  */
 
-import { Component, EventEmitter, Input, Output, ContentChild, TemplateRef, ElementRef } from '@angular/core';
+import { Component, ContentChild, ElementRef, EventEmitter, Input, Output, TemplateRef } from '@angular/core';
 
 @Component({
   templateUrl: './tile.component.html',
   selector: 'imx-tile',
-  styleUrls: ['./tile.component.scss']
+  styleUrls: ['./tile.component.scss'],
 })
 export class TileComponent {
-
   @Input() public caption: string;
   @Input() public subtitle: string;
   @Input() public actionText = '#LDS#View';
@@ -81,12 +80,11 @@ export class TileComponent {
   }
 
   public showImageInHeader(): boolean {
-    return this.image
-      && this.contentType !== 'Image';
+    return this.image != null && this.contentType !== 'Image';
   }
 
   public showImageAsValue(): boolean {
-    return this.image && this.contentType === 'Image';
+    return this.image != null && this.contentType === 'Image';
   }
 
   public showImageAsIconFont(): boolean {
@@ -94,28 +92,26 @@ export class TileComponent {
   }
 
   public styleImage(): string {
-    let style: string;
-    if (this.showImageAsValue) {
+    let style: string = '';
+    if (this.showImageAsValue()) {
       style = 'background-position: center; ';
     }
     return style + `background-repeat: no-repeat; background-image: url('${this.urlImage()}');`;
   }
 
   public urlImage(): string {
-    let firstPart: string;
+    let firstPart: string = '';
     if (this.imageType === 'Url') {
       firstPart = this.image;
     }
 
-    let size: string;
-    if (this.showImageAsValue) {
+    let size: string = '';
+    if (this.showImageAsValue()) {
       size = '&size=Large';
-    } else if (this.showImageInHeader) {
+    } else if (this.showImageInHeader()) {
       size = '&size=big';
     }
 
-
     return firstPart + encodeURI(this.image) + size;
   }
-
 }

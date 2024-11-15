@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { FilterProperty, CollectionLoadParameters, EntityCollectionData } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, EntityCollectionData, FilterProperty } from '@imx-modules/imx-qbm-dbts';
 import { SqlWizardApiService } from 'qbm';
 
 @Injectable({
@@ -37,7 +37,7 @@ export class PwdSqlWizardApiService extends SqlWizardApiService {
   getFilterProperties(table: string): Promise<FilterProperty[]> {
     return new Promise((resolve) => resolve([]));
   }
-  
+
   getCandidates(parentTable: string, options?: CollectionLoadParameters): Promise<EntityCollectionData> {
     return new Promise((resolve) => resolve({ TotalCount: 0 }));
   }

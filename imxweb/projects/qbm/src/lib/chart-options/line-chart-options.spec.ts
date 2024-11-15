@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,7 +31,6 @@ import { SeriesInformation } from './series-information';
 import { clearStylesFromDOM } from '../testing/clear-styles.spec';
 
 describe('LineChartOptions', () => {
-
   afterAll(() => {
     clearStylesFromDOM();
   });
@@ -44,8 +43,8 @@ describe('LineChartOptions', () => {
     { isSmooth: true, isArea: true, expect: 'area-spline' },
     { isSmooth: true, isArea: false, expect: 'spline' },
     { isSmooth: false, isArea: true, expect: 'area' },
-    { isSmooth: false, isArea: false, expect: 'line' }
-  ].forEach(element => {
+    { isSmooth: false, isArea: false, expect: 'line' },
+  ].forEach((element) => {
     it(`gets line type with smooth lines = ${element.isSmooth} and colored area = ${element.isArea}`, () => {
       const xAxisInformation = new XAxisInformation('number', [1, 2, 3]);
       const yAxisInformation = new YAxisInformation([new SeriesInformation('dummy', [1, 2, 3])]);
@@ -54,7 +53,6 @@ describe('LineChartOptions', () => {
       chart.colorArea = element.isArea;
       expect(chart.options.data.type).toBe(element.expect);
     });
-
   });
   it('should create an instance', () => {
     const xAxisInformation = new XAxisInformation('number', [1, 2, 3]);
@@ -62,6 +60,4 @@ describe('LineChartOptions', () => {
     const chart = new LineChartOptions(xAxisInformation, yAxisInformation);
     expect(chart.options.data.type).toBe('area-spline');
   });
-
-
 });

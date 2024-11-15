@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,14 +31,14 @@ import { InfoDialogComponent } from '../info-dialog/info-dialog.component';
 @Component({
   selector: 'imx-info-button',
   templateUrl: './info-button.component.html',
-  styleUrls: ['./info-button.component.scss']
+  styleUrls: ['./info-button.component.scss'],
 })
-export class InfoButtonComponent  {
+export class InfoButtonComponent {
   // width string = '400px'. Sets the width of the appearing dialog.
   @Input() public width = '400px';
 
   // title: string Gives the dialog an h3 title if present
-  @Input() public title: string = null;
+  @Input() public title: string | null = null;
 
   // templateRef: TemplateRef<unknown>. Provides the content within the the dialog
   @Input() public templateRef: TemplateRef<unknown>;
@@ -46,19 +46,19 @@ export class InfoButtonComponent  {
   // panelClass: string | string[]. Allows for a class to be applied to the overlay and the above templateRef to be styled.
   @Input() public panelClass: string | string[];
 
-  constructor(
-    private dialogService: MatDialog
-  ) { }
+  constructor(private dialogService: MatDialog) {}
 
   public async showInfo(): Promise<void> {
-    await this.dialogService.open(InfoDialogComponent, {
-      width: this.width,
-      data: {
-        title: this.title,
-        content: this.templateRef
-      },
-      panelClass: this.panelClass
-    }).afterClosed().toPromise();
+    await this.dialogService
+      .open(InfoDialogComponent, {
+        width: this.width,
+        data: {
+          title: this.title,
+          content: this.templateRef,
+        },
+        panelClass: this.panelClass,
+      })
+      .afterClosed()
+      .toPromise();
   }
-
 }

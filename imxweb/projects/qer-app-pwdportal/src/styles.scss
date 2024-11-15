@@ -1,12 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
-@use '@angular/material' as mat;
-
-$material_icons_font_path: "~node_modules/@elemental-ui/core/assets/MaterialIcons";
-$cadence_font_path: "~node_modules/@elemental-ui/core/assets/Cadence";
-$source_sans_pro_font_path: "~node_modules/@elemental-ui/core/assets/Source_Sans_Pro";
-
 @import '@elemental-ui/core/src/styles/core.scss';
+@import 'components/toolbar';
 
 .eui-dark-theme {
   .page {
@@ -16,11 +11,6 @@ $source_sans_pro_font_path: "~node_modules/@elemental-ui/core/assets/Source_Sans
   .pageContent {
     color: $color-gray-5;
     background-color: $color-gray-80;
-  }
-  .eui-sidesheet {
-    .mat-toolbar{
-      background-color: $color-blue-80;
-    }
   }
 }
 
@@ -32,10 +22,5 @@ $source_sans_pro_font_path: "~node_modules/@elemental-ui/core/assets/Source_Sans
   .pageContent {
     color: $color-gray-0;
     background-color: $color-gray-100;
-  }
-  .eui-sidesheet {
-    .mat-toolbar{
-      background-color: $color-blue-80;
-    }
   }
 }

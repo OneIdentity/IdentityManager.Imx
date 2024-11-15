@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,15 +31,8 @@ import { ParameterizedTextModule } from 'qbm';
 import { AttestationDisplayComponent } from './attestation-display.component';
 
 @NgModule({
-  declarations: [
-    AttestationDisplayComponent
-  ],
-  exports: [
-    AttestationDisplayComponent
-  ],
-  imports: [
-    CommonModule,
-    ParameterizedTextModule
-  ]
+  declarations: [AttestationDisplayComponent],
+  exports: [AttestationDisplayComponent],
+  imports: [CommonModule, ParameterizedTextModule],
 })
-export class AttestationDisplayModule { }
+export class AttestationDisplayModule {}

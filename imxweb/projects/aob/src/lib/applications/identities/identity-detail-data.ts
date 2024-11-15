@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,10 @@
  *
  */
 
-import { PortalApplication } from "imx-api-aob";
-import { TypedEntity } from "imx-qbm-dbts";
+import { PortalApplication } from '@imx-modules/imx-api-aob';
+import { TypedEntity } from '@imx-modules/imx-qbm-dbts';
 
 export interface IdentityDetailData {
-  application: PortalApplication,
-  selectedItem: TypedEntity;
+  application: PortalApplication;
+  selectedItem: TypedEntity | undefined;
 }

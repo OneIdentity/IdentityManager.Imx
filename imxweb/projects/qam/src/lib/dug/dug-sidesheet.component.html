@@ -1,0 +1,150 @@
+<mat-tab-group (selectedTabChange)="updateCurrentTab($event)">
+  <mat-tab>
+    <ng-template mat-tab-label> <span translate>#LDS#Heading Main Data</span>&nbsp; </ng-template>
+    <div class="imx-tab-content">
+      <div class="imx-tab-content-body">
+        <div eui-sidesheet-content>
+          <imx-busy-indicator class="imx-busy-loader" *ngIf="isLoading"></imx-busy-indicator>
+          <mat-card class="imx-card-fill imx-margin-bottom-16" [ngClass]="{ hidden: isLoading }">
+            <form [formGroup]="dugResourceFormGroup">
+              <imx-cdr-editor
+                *ngFor="let cdr of cdrList"
+                [cdr]="cdr"
+                (controlCreated)="dugResourceFormGroup.controls.array.push($event)"
+              ></imx-cdr-editor>
+            </form>
+          </mat-card>
+          <mat-card [ngClass]="{ hidden: isLoading }">
+            <mat-card-title>{{ orderRestrictionHint | translate }}</mat-card-title>
+            <form [formGroup]="dugResourceConditionsFormGroup">
+              <imx-cdr-editor
+                *ngFor="let cdr of cdrListOrderConditions"
+                [cdr]="cdr"
+                (controlCreated)="dugResourceConditionsFormGroup.controls.array.push($event)"
+              ></imx-cdr-editor>
+            </form>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="{{ '#LDS#Heading Hyperview' | translate }}">
+    <ng-template matTabContent>
+      <div class="imx-tab-content">
+        <div class="imx-tab-content-body">
+          <div eui-sidesheet-content>
+            <mat-card class="imx-card-sidesheet">
+              <imx-object-hyperview [objectType]="'QamDuG'" [objectUid]="data.uid"> </imx-object-hyperview>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab data-imx-identifier="dug-sidesheet-tab-history" [label]="'#LDS#History' | translate">
+    <ng-template matTabContent>
+      <div class="imx-tab-content">
+        <div class="imx-tab-content-body">
+          <div eui-sidesheet-content>
+            <mat-card class="imx-card-sidesheet">
+              <imx-object-history objectType="QAMDuG" [showTitle]="false" [objectUid]="data.uid"> </imx-object-history>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab data-imx-identifier="dug-sidesheet-tab-activity" *ngIf="supportsActivity" [label]="'#LDS#Recent activity' | translate">
+    <ng-template matTabContent>
+      <div class="imx-tab-content">
+        <div class="imx-tab-content-body">
+          <div eui-sidesheet-content>
+            <mat-card class="imx-card-sidesheet">
+              <imx-dug-activity [activities]="activity" [interval]="config.ActivityAggregationIntervalDays"></imx-dug-activity>
+            </mat-card>
+          </div>
+          <!-- TODO: group activity by trustee, for each trustee: list comma-seperated displayvalue(Operation)+' ('+Activities+')'-->
+        </div>
+      </div>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab #accessTab data-imx-identifier="dug-sidesheet-tab-access" [label]="'#LDS#Access' | translate">
+    <ng-template matTabContent>
+      <div class="imx-tab-content">
+        <div class="imx-tab-content-body">
+          <div eui-sidesheet-content>
+            <mat-card class="imx-card-sidesheet">
+              <imx-dge-access [dug]="dug"></imx-dge-access>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab data-imx-identifier="dug-sidesheet-tab-accessanalysis" [label]="'#LDS#Access Analysis' | translate">
+    <ng-template matTabContent>
+      <div class="imx-tab-content">
+        <div class="imx-tab-content-body">
+          <div eui-sidesheet-content>
+            <mat-card class="imx-card-sidesheet">
+              <imx-dge-access-analysis [dug]="dug"></imx-dge-access-analysis>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab data-imx-identifier="dug-sidesheet-tab-reports" *ngIf="isRpsEnabled" [label]="'#LDS#Reports' | translate">
+    <ng-template matTabContent>
+      <div class="imx-tab-content">
+        <div class="imx-tab-content-body">
+          <div eui-sidesheet-content>
+            <mat-card class="imx-card-sidesheet">
+              <imx-dug-reports [dugUid]="dug.GetEntity().GetKeys()[0]"></imx-dug-reports>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </mat-tab>
+  <ng-container *ngFor="let tab of dynamicTabs">
+    <mat-tab [imxDataProvider]="parameters" [label]="tab.inputData.label | translate">
+      <ng-template matTabContent>
+        <div class="imx-tab-content">
+          <ng-container class="imx-tab-content" *ngComponentOutlet="tab.instance"></ng-container>
+        </div>
+      </ng-template>
+    </mat-tab>
+  </ng-container>
+</mat-tab-group>
+<div eui-sidesheet-actions *ngIf="!hideActionBar">
+  <button mat-stroked-button data-imx-identifier="imx-application-details-button-menu" [matMenuTriggerFor]="menu">
+    <eui-icon icon="ellipsisvertical"></eui-icon>
+    {{ '#LDS#Actions' | translate }}
+  </button>
+  <mat-menu #menu="matMenu">
+    <button *ngIf="canAnalyzeRisk" (click)="analyzeRisk()" mat-menu-item data-imx-identifier="dug-button-analyze-risk">
+      {{ '#LDS#Analyze risk' | translate }}
+    </button>
+    <button (click)="makeRequest(ChangeRequestType.RejectOwnership)" mat-menu-item data-imx-identifier="dug-button-reject-ownership">
+      {{ '#LDS#Reject Ownership' | translate }}
+    </button>
+    <button
+      *ngIf="showChangePropertyButton"
+      (click)="makeRequest(ChangeRequestType.Change)"
+      mat-menu-item
+      data-imx-identifier="dug-button-change-property"
+    >
+      {{ '#LDS#Change Property' | translate }}
+    </button>
+  </mat-menu>
+  <button mat-flat-button [disabled]="saveDisabled" color="primary" (click)="save()">
+    {{ '#LDS#Save' | translate }}
+  </button>
+</div>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,18 +24,19 @@
  *
  */
 
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 
 /** Wraps default settings for web applications. */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SettingsService {
+  /** Optionset for the paginator by default. */
+  DefaultPageOptions: number[] = [20, 50, 100];
 
   /** Number of elements to load for a data page by default. */
   DefaultPageSize: number = 20;
 
   /**Large number for getting all elements */
   PageSizeForAllElements: number = 999999;
-
 }

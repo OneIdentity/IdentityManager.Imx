@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,8 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
-import { BaseCdr, BaseReadonlyCdr, BulkItem, BulkItemStatus } from 'qbm';
+import { BaseCdr, BulkItem, BulkItemStatus } from 'qbm';
+import { Approval } from '../../approval';
 import { DecisionStepSevice } from '../../decision-step.service';
 import { WorkflowActionEdit } from '../workflow-action-edit.interface';
 
@@ -75,40 +76,47 @@ export class WorkflowMultiActionComponent implements OnInit {
    */
   public ngOnInit(): void {
     this.requests = this.data.requests.map((item) => {
+      const approval = item as Approval;
       const bulkItem: BulkItem = {
         entity: item,
-        additionalInfo: item.OrderState.Column.GetDisplayValue(),
+        additionalInfo: item.GetEntity().GetColumn('OrderState')?.GetDisplayValue(),
         properties: [],
         status: BulkItemStatus.valid,
       };
 
       if (this.data.showValidDate) {
-        if (this.data.showValidDate.validFrom) {
-          bulkItem.properties.push(new BaseReadonlyCdr(item.ValidFrom.Column));
+        if (
+          (this.data.showValidDate.validFrom && approval.ValidFrom.Column.GetValue() !== '') ||
+          approval.ValidFrom.GetMetadata().CanEdit()
+        ) {
+          bulkItem.properties.push(new BaseCdr(approval.ValidFrom.Column));
         }
-        if (this.data.showValidDate.validUntil) {
-          bulkItem.properties.push(new BaseReadonlyCdr(item.ValidUntil.Column));
+        if (
+          (this.data.showValidDate.validUntil && approval.ValidUntil.Column.GetValue() !== '') ||
+          approval.ValidUntil.GetMetadata().CanEdit()
+        ) {
+          bulkItem.properties.push(new BaseCdr(approval.ValidUntil.Column));
         }
       }
 
-      const step = this.stepService.getCurrentStepCdr(item, item.pwoData, '#LDS#Current approval step');
+      const step = this.stepService.getCurrentStepCdr(item, approval.pwoData, '#LDS#Current approval step');
       if (step != null) {
         bulkItem.properties.unshift(step);
       }
 
-      item.parameterColumns.forEach((column) =>
-        bulkItem.properties.push(this.data.approve ? new BaseCdr(column) : new BaseReadonlyCdr(column))
-      );
-
+      approval.parameterColumns.forEach((column) => {
+        if (this.data.approve && (column.GetValue() !== '' || column.GetMetadata().CanEdit()))
+          bulkItem.properties.push(new BaseCdr(column));
+      });
       if (this.data.workflow) {
         bulkItem.customSelectProperties = [
           {
             title: this.data.workflow.title,
             placeholder: this.data.workflow.placeholder,
-            entities: this.data.workflow.data[item.key],
+            entities: this.data.workflow.data[approval.key],
             selectionChange: (entity) => {
-              if (item.updateDirectDecisionTarget) {
-                item.updateDirectDecisionTarget(entity);
+              if (approval.updateDirectDecisionTarget) {
+                approval.updateDirectDecisionTarget(entity);
               }
             },
           },

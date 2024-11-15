@@ -1,21 +1,21 @@
 <div class="imx-tab-content-body">
   <mat-spinner *ngIf="busy"></mat-spinner>
   <ng-container *ngIf="!busy && !sqlExpression">
-    <eui-alert condensed="true" [colored]="true" type="info">
+    <eui-alert [condensed]="true" [colored]="true" type="info" class="imx-margin-20">
       <div class="margin">{{ LdsNoDynamicRole | translate }}</div>
-      <button *ngIf="canEdit" data-imx-identifier="button-dynamic-role-create" mat-raised-button (click)="createDynamic()" color="primary">
+      <button *ngIf="canEdit" data-imx-identifier="button-dynamic-role-create" mat-flat-button color="primary" (click)="createDynamic()">
         {{ '#LDS#Create dynamic role' | translate }}
       </button>
     </eui-alert>
   </ng-container>
   <ng-container *ngIf="sqlExpression">
-    <eui-alert class="helper-alert" *ngIf="sqlExpression.IsUnsupported" condensed="true" [colored]="true" type="info">
+    <eui-alert class="imx-margin-20" *ngIf="sqlExpression.IsUnsupported" [condensed]="true" [colored]="true" type="info">
       {{ LdsUnsupportedExpression | translate }}
     </eui-alert>
 
     <eui-alert
-      class="helper-alert"
-      condensed="true"
+      class="imx-margin-20"
+      [condensed]="true"
       [colored]="true"
       type="info"
       *ngIf="showHelperAlert && !sqlExpression.IsUnsupported"
@@ -27,11 +27,21 @@
 
     <div class="imx-main-content">
       <mat-card>
-        <imx-sqlwizard [canEdit]="canEdit" *ngIf="!sqlExpression.IsUnsupported" tableName="Person" [expression]="sqlExpression.Expression" (change)="checkChanges()">
+        <imx-sqlwizard
+          *ngIf="!sqlExpression.IsUnsupported"
+          tableName="Person"
+          [expression]="sqlExpression.Expression"
+          (change)="checkChanges()"
+        >
         </imx-sqlwizard>
 
-        <ng-container *ngIf="cdrList.length > 0">
-          <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="formArray.push($event)" (valueChange)="checkCDRs()"></imx-cdr-editor>
+        <ng-container *ngIf="!!cdrList.length">
+          <imx-cdr-editor
+            *ngFor="let cdr of cdrList"
+            [cdr]="cdr"
+            (controlCreated)="formArray.push($event)"
+            (valueChange)="checkCDRs()"
+          ></imx-cdr-editor>
         </ng-container>
       </mat-card>
       <div eui-sidesheet-actions *ngIf="canEdit">
@@ -41,9 +51,11 @@
         </button>
         <button
           data-imx-identifier="button-dynamic-role-save"
-          mat-raised-button
+          mat-flat-button
           (click)="save()"
-          [disabled]="(exprHasntChanged && cdrsHaventChanged) || formGroup.invalid || (!sqlExpression.IsUnsupported && isConditionInvalid())"
+          [disabled]="
+            (exprHasntChanged && cdrsHaventChanged) || formGroup.invalid || (!sqlExpression.IsUnsupported && isConditionInvalid())
+          "
           color="primary"
         >
           {{ '#LDS#Save' | translate }}

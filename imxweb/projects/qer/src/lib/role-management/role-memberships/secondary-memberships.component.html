@@ -1,9 +1,9 @@
-<div class="imx-tab-content-body">
-  <div eui-sidesheet-content>
-    <eui-alert class="helper-alert" condensed="true" [colored]="true" type="info" [dismissable]="true" (dismissed)="showHelperAlert = false">
+<div class="imx-tab-content-sidesheet-with-table imx-sidesheet-content__overflow">
+  <div eui-sidesheet-content class="imx-card-fill">
+    <eui-alert [condensed]="true" [colored]="true" type="info" [dismissable]="true" (dismissed)="showHelperAlert = false">
       {{ secondaryAlert | translate }}
     </eui-alert>
-    <mat-card>
+    <mat-card class="imx-sidesheet-content__overflow">
       <imx-data-source-toolbar
         #dst
         data-imx-identifier="roles-secondary-memberships-dst"
@@ -19,7 +19,7 @@
         #dataTable
         data-imx-identifier="roles-secondary-memberships-table"
         [dst]="dst"
-        detailViewVisible="false"
+        [detailViewVisible]="false"
         mode="manual"
         [selectable]="canEdit"
         [showSelectionInfo]="false"
@@ -27,21 +27,23 @@
         (selectionChanged)="onSelectionChanged($event)"
         (highlightedEntityChanged)="onHighlightedEntityChanged($event)"
       >
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns.UID_Person"> </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns.XDateInserted"> </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns.OrderState"> </imx-data-table-column>
-        <imx-data-table-column width="200px" [entityColumn]="entitySchema?.Columns.XOrigin">
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns?.UID_Person"> </imx-data-table-column>
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns?.XDateInserted"> </imx-data-table-column>
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns?.OrderState"> </imx-data-table-column>
+        <imx-data-table-column width="200px" [entityColumn]="entitySchema?.Columns?.XOrigin">
           <ng-template let-item>
             <div>{{ item.GetEntity().GetColumn('XOrigin').GetDisplayValue() }}</div>
-            <eui-badge *ngIf="item.GetEntity().GetColumn('XMarkedForDeletion').GetValue() > 0" class="spaced-badge">
+            <eui-badge *ngIf="item.GetEntity().GetColumn('XMarkedForDeletion').GetValue() > 0" class="imx-margin-right-15">
               {{ item.GetEntity().GetColumn('XMarkedForDeletion').GetDisplayValue() }}
             </eui-badge>
             <eui-badge color="gray" *ngIf="isNotEffective(item)">{{ '#LDS#Not effective' | translate }} </eui-badge>
           </ng-template>
         </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns.ValidUntil">
+        <imx-data-table-column [entityColumn]="entitySchema?.Columns?.ValidUntil">
           <ng-template let-item>
-            <eui-badge *ngIf="item.GetEntity().GetColumn('ValidUntil').GetValue()" color="blue" textColor="white">{{ getValidUntil(item) }}</eui-badge>
+            <eui-badge *ngIf="item.GetEntity().GetColumn('ValidUntil').GetValue()" color="blue" textColor="white">{{
+              getValidUntil(item)
+            }}</eui-badge>
           </ng-template>
         </imx-data-table-column>
       </imx-data-table>
@@ -49,9 +51,14 @@
     </mat-card>
   </div>
   <div eui-sidesheet-actions *ngIf="canEdit">
-    <imx-selected-elements [selectedElements]="selectedEntities"></imx-selected-elements>
-    <div class="imx-menu-spacer"></div>
-    <button data-imx-identifier="roles-secondary-memberships-remove-button" mat-stroked-button color="warn" [disabled]="!canDeleteAllSelected()" (click)="onDeleteMemberships()">
+    <imx-selected-elements class="justify-start" [selectedElements]="selectedEntities"></imx-selected-elements>
+    <button
+      data-imx-identifier="roles-secondary-memberships-remove-button"
+      mat-stroked-button
+      color="warn"
+      [disabled]="!canDeleteAllSelected()"
+      (click)="onDeleteMemberships()"
+    >
       <eui-icon icon="delete"></eui-icon>
       {{ '#LDS#Remove' | translate }}
     </button>

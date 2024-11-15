@@ -1,34 +1,34 @@
 <div class="imx-content-header">
-  <h1 class="mat-headline">
+  <h2 class="mat-headline-5">
     {{ '#LDS#Heading Unresolved References' | translate }}
-  </h1>
+  </h2>
 </div>
 <div class="imx-table-container">
   <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings" [options]="['filter', 'groupBy']">
     <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
   </imx-data-source-toolbar>
-  <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual">
-    <imx-data-table-column [entityColumn]="entitySchemaRefs?.Columns.DisplayName">
+  <imx-data-table [dst]="dst" [detailViewVisible]="false" mode="manual">
+    <imx-data-table-column [entityColumn]="entitySchemaRefs.Columns.DisplayName">
       <ng-template let-data>
         <div class="imx-unresolved-refs-data">{{ data?.DisplayName?.Column.GetDisplayValue() }}</div>
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaRefs?.Columns.OwnerObject">
+    <imx-data-table-column [entityColumn]="entitySchemaRefs.Columns.OwnerObject">
       <ng-template let-data>
         <div class="imx-unresolved-refs-data">{{ data?.OwnerObject?.Column.GetDisplayValue() }}</div>
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaRefs?.Columns.ShellDisplay">
+    <imx-data-table-column [entityColumn]="entitySchemaRefs.Columns.ShellDisplay">
       <ng-template let-data>
         <div class="imx-unresolved-refs-data">{{ data?.ShellDisplay?.Column.GetDisplayValue() }}</div>
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaRefs?.Columns.SystemDisplay">
+    <imx-data-table-column [entityColumn]="entitySchemaRefs.Columns.SystemDisplay">
       <ng-template let-data>
         <div class="imx-unresolved-refs-data">{{ data?.SystemDisplay?.Column.GetDisplayValue() }}</div>
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaRefs?.Columns.Data">
+    <imx-data-table-column [entityColumn]="entitySchemaRefs.Columns.Data">
       <ng-template let-data>
         <div class="imx-unresolved-refs-data">{{ data?.Data?.Column.GetDisplayValue() }}</div>
       </ng-template>
@@ -37,7 +37,7 @@
 </div>
 
 <ng-template #customToolbarTemplate>
-  <button mat-stroked-button color="primary" class="imx-refresh-button" (click)="refresh()">
+  <button mat-stroked-button color="primary" class="imx-button-icon" (click)="refresh()">
     <eui-icon icon="sync"></eui-icon>
     <span>{{ '#LDS#Refresh' | translate }}</span>
   </button>

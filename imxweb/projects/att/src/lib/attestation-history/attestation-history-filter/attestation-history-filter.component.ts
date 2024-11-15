@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,12 +26,12 @@
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import { PortalPersonAll } from 'imx-api-qer';
-import { ValType } from 'imx-qbm-dbts';
+import { PortalPersonAll } from '@imx-modules/imx-api-qer';
+import { ValType } from '@imx-modules/imx-qbm-dbts';
 import { PersonService } from 'qer';
 
-import { BaseCdr, ColumnDependentReference, DataSourceToolbarComponent, DataSourceToolbarSelectedFilter, EntityService } from 'qbm';
 import { TranslateService } from '@ngx-translate/core';
+import { BaseCdr, ColumnDependentReference, DataSourceToolbarComponent, DataSourceToolbarSelectedFilter, EntityService } from 'qbm';
 
 @Component({
   selector: 'imx-attestation-history-filter',
@@ -43,16 +43,17 @@ export class AttestationHistoryFilterComponent implements OnInit {
   @Output() public selectedFiltersChanged = new EventEmitter<string>();
 
   public personData: PortalPersonAll[];
-  public selectedUid: string;
+  public selectedUid: string | undefined;
   public dstFilterRef: DataSourceToolbarSelectedFilter;
   public identityCdr: ColumnDependentReference;
 
   private skipSelectionEmitMode = false;
 
-  constructor(private entityService: EntityService,
+  constructor(
+    private entityService: EntityService,
     private translator: TranslateService,
-    private person: PersonService) {
-  }
+    private person: PersonService,
+  ) {}
 
   async ngOnInit(): Promise<void> {
     this.identityCdr = await this.createCdrPerson();
@@ -81,13 +82,13 @@ export class AttestationHistoryFilterComponent implements OnInit {
 
   public async clearPersonFilterSelection(clearSelectControl?: boolean): Promise<void> {
     if (clearSelectControl) {
-     this.identityCdr.column.PutValue(undefined);
+      this.identityCdr.column.PutValue(undefined);
     }
     this.clearDstSelectedFilter(this.dstFilterRef);
   }
 
-  public onCustomFilterClearedExternally(filter: DataSourceToolbarSelectedFilter): void{
-    this.selectedUid = undefined
+  public onCustomFilterClearedExternally(filter: DataSourceToolbarSelectedFilter): void {
+    this.selectedUid = undefined;
     this.clearPersonFilterSelection(true);
     this.selectedFiltersChanged.emit();
   }
@@ -97,7 +98,7 @@ export class AttestationHistoryFilterComponent implements OnInit {
       ChildColumnName: 'UID_PersonRelated',
       ParentTableName: 'Person',
       ParentColumnName: 'UID_Person',
-      IsMemberRelation: false
+      IsMemberRelation: false,
     };
 
     const column = this.entityService.createLocalEntityColumn(
@@ -105,9 +106,9 @@ export class AttestationHistoryFilterComponent implements OnInit {
         ColumnName: fkRelation.ChildColumnName,
         Type: ValType.String,
         FkRelation: fkRelation,
-        MinLen: 0
+        MinLen: 0,
       },
-      [this.person.createFkProviderItem(fkRelation)]
+      [this.person.createFkProviderItem(fkRelation)],
     );
 
     const display = await this.translator.get('#LDS#Attestor').toPromise();
@@ -121,7 +122,7 @@ export class AttestationHistoryFilterComponent implements OnInit {
       // Remove the 'isCustom' property to avoid an event being triggered in dst code
       selectedFilterRef.isCustom = undefined;
       // Then make call to remove selected filter
-      this.dst.removeSelectedFilter(selectedFilterRef.filter, false, selectedFilterRef.selectedOption.Value, selectedFilterRef);
+      this.dst.removeSelectedFilter(selectedFilterRef.filter, false, selectedFilterRef.selectedOption?.Value, selectedFilterRef);
     }
   }
 }

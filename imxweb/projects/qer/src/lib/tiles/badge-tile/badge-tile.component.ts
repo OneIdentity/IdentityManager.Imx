@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,20 +24,16 @@
  *
  */
 
-import { Component, Input, EventEmitter, Output} from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TileComponent } from 'qbm';
 
 @Component({
   selector: 'imx-badge-tile',
   templateUrl: './badge-tile.component.html',
-  styleUrls: ['./badge-tile.component.scss']
+  styleUrls: ['./badge-tile.component.scss'],
 })
 export class BadgeTileComponent extends TileComponent {
-  @Input() public caption: string;
-  @Input() public value: string;
-  @Input() public identifier: string;
   @Input() public tooltip: string;
-  @Input() public loadingState: boolean = false;
 
   @Output() public actionClick: EventEmitter<any> = new EventEmitter();
 

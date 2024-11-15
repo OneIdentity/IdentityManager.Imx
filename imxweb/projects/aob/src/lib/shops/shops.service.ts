@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,65 +26,77 @@
 
 import { Injectable } from '@angular/core';
 
-import { ClassloggerService, ApiClientService } from 'qbm';
-import { CollectionLoadParameters, TypedEntity, TypedEntityCollectionData } from 'imx-qbm-dbts';
-import { PortalShops, PortalApplicationinshop, PortalApplication } from 'imx-api-aob';
+import { PortalApplication, PortalApplicationinshop, PortalShops } from '@imx-modules/imx-api-aob';
+import { CollectionLoadParameters, TypedEntity, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
+import { ApiClientService, ClassloggerService } from 'qbm';
 import { AobApiService } from '../aob-api-client.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ShopsService {
   public get display(): string {
-    return this.aobClient.typedClient.PortalShops.GetSchema().Display;
+    return this.aobClient.typedClient.PortalShops.GetSchema().Display || '';
   }
 
   constructor(
     private readonly aobClient: AobApiService,
     private readonly logger: ClassloggerService,
-    private readonly apiProvider: ApiClientService
-  ) { }
+    private readonly apiProvider: ApiClientService,
+  ) {}
 
-  public async get(parameters: CollectionLoadParameters = { ParentKey: '' }): Promise<TypedEntityCollectionData<PortalShops>> {
+  public async get(parameters: CollectionLoadParameters = { ParentKey: '' }): Promise<TypedEntityCollectionData<PortalShops> | undefined> {
     this.logger.debug(this, 'get');
-    return this.apiProvider.request(() => this.aobClient.typedClient.PortalShops.Get(parameters));
+    return this.apiProvider.request(
+      () => this.aobClient.typedClient.PortalShops.Get(parameters) as Promise<TypedEntityCollectionData<PortalShops>>,
+    );
   }
 
-  public async getApplicationInShop(application: string, parameters: CollectionLoadParameters = {}):
-    Promise<TypedEntityCollectionData<PortalApplicationinshop>> {
+  public async getApplicationInShop(
+    application: string,
+    parameters: CollectionLoadParameters = {},
+  ): Promise<TypedEntityCollectionData<PortalApplicationinshop> | undefined> {
     this.logger.debug(this, 'getApplicationInShop');
     if (application) {
-      return this.apiProvider.request(() =>
-        this.aobClient.typedClient.PortalApplicationinshop.Get(application, parameters));
+      return this.apiProvider.request(() => this.aobClient.typedClient.PortalApplicationinshop.Get(application, parameters));
     }
   }
 
-  public async getFirstAndCount(uidApplication: string): Promise<{ first: TypedEntity, count: number }> {
-
+  public async getFirstAndCount(uidApplication: string): Promise<{ first: TypedEntity | undefined; count: number }> {
     const shops = await this.getApplicationInShop(uidApplication, { PageSize: 1 });
 
     return {
-      first: shops.Data.length === 0 ? undefined : shops.Data[0],
-      count: shops.totalCount
+      first: shops?.Data.length === 0 ? undefined : shops?.Data[0],
+      count: shops?.totalCount || 0,
     };
   }
 
-  public async updateApplicationInShops(application: PortalApplication, changeSet: { add: PortalShops[], remove: PortalShops[] }): Promise<boolean> {
+  public async updateApplicationInShops(
+    application: PortalApplication,
+    changeSet: { add: PortalShops[]; remove: PortalShops[] },
+  ): Promise<boolean> {
     this.logger.debug(this, 'updateApplicationInShops');
 
     const applicationInShop = await this.getApplicationInShop(application.UID_AOBApplication.value);
 
-    return applicationInShop &&
-      await this.addShops(application, changeSet.add.filter(shop => !ShopsService.isAssigned(shop, applicationInShop.Data))) &&
-      this.removeShops(application, changeSet.remove.filter(shop => ShopsService.isAssigned(shop, applicationInShop.Data)));
+    return (
+      !!applicationInShop &&
+      (await this.addShops(
+        application,
+        changeSet.add.filter((shop) => !ShopsService.isAssigned(shop, applicationInShop.Data)),
+      )) &&
+      (await this.removeShops(
+        application,
+        changeSet.remove.filter((shop) => ShopsService.isAssigned(shop, applicationInShop.Data)),
+      ))
+    );
   }
 
   private async addShops(application: PortalApplication, shops: PortalShops[]): Promise<boolean> {
     let count = 0;
     await this.apiProvider.request(async () => {
       for (const shop of shops) {
-        await this.aobClient.client.
-          portal_applicationinshop_put(application.UID_AOBApplication.value, shop.UID_ITShopOrg.value, []);
+        await this.aobClient.client.portal_applicationinshop_put(application.UID_AOBApplication.value, shop.UID_ITShopOrg.value, []);
         count++;
       }
     });
@@ -95,8 +107,11 @@ export class ShopsService {
     let count = 0;
     await this.apiProvider.request(async () => {
       for (const shop of shops) {
-        await this.aobClient.client
-          .portal_applicationinshop_delete(application.UID_AOBApplication.value, shop.UID_ITShopOrg.value, undefined);
+        await this.aobClient.client.portal_applicationinshop_delete(
+          application.UID_AOBApplication.value,
+          shop.UID_ITShopOrg.value,
+          '',
+        );
         count++;
       }
     });
@@ -104,6 +119,6 @@ export class ShopsService {
   }
 
   public static isAssigned(shop: PortalShops, shopsAssigned: PortalApplicationinshop[]): boolean {
-    return shopsAssigned && shopsAssigned.find(shopAssigned => shopAssigned.UID_ITShopOrg.value === shop.UID_ITShopOrg.value) != null;
+    return shopsAssigned && shopsAssigned.find((shopAssigned) => shopAssigned.UID_ITShopOrg.value === shop.UID_ITShopOrg.value) != null;
   }
 }

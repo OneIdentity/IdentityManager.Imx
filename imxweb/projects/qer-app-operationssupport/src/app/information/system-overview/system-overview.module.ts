@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -39,14 +39,7 @@ import { SystemTreeDataSource } from './system-tree/system-tree-datasource';
 
 @NgModule({
   declarations: [SystemOverviewComponent],
-  imports: [
-    CommonModule,
-    MatTreeModule,
-    MatButtonModule,
-    EuiCoreModule,
-    TranslateModule,
-    LdsReplaceModule
-  ],
-  providers: [SystemTreeDatabase, SystemTreeDataSource, SystemOverviewService]
+  imports: [CommonModule, MatTreeModule, MatButtonModule, EuiCoreModule, TranslateModule, LdsReplaceModule],
+  providers: [SystemTreeDatabase, SystemTreeDataSource, SystemOverviewService],
 })
-export class SystemOverviewModule { }
+export class SystemOverviewModule {}

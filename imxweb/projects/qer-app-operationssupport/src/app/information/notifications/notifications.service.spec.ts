@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,9 +29,10 @@ import { Router } from '@angular/router';
 import { of } from 'rxjs';
 
 import { NotificationsService } from './notifications.service';
-import { TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { NotificationIssueType } from './notification-issue-item';
 import { imx_SessionService, ImxTranslationProviderService } from 'qbm';
+import { TranslateService } from '@ngx-translate/core';
 
 interface JournalStatCounter {
   Errors?: number;
@@ -63,15 +64,18 @@ interface SpyMethod {
 }
 
 function CreateSpyObj(name: string, methods: SpyMethod[]): any {
-  const spyobj = jasmine.createSpyObj(name, methods.map(method => method.name));
-  methods.forEach(method => spyobj[method.name].and.callFake(() => Promise.resolve(method.getValue())));
+  const spyobj = jasmine.createSpyObj(
+    name,
+    methods.map((method) => method.name),
+  );
+  methods.forEach((method) => spyobj[method.name].and.callFake(() => Promise.resolve(method.getValue())));
   return spyobj;
 }
 
 describe('NotificationsService', () => {
   function prepareTestBed(testCase: TestCase = { TestInput: [{}] }) {
-    const frozenjobs = generator(testCase.TestInput.map(item => item.Frozenjobs));
-    const journalStat = generator(testCase.TestInput.map(item => item.JournalStat));
+    const frozenjobs = generator(testCase.TestInput.map((item) => item.Frozenjobs));
+    const journalStat = generator(testCase.TestInput.map((item) => item.JournalStat));
     TestBed.configureTestingModule({
       providers: [
         NotificationsService,
@@ -81,26 +85,32 @@ describe('NotificationsService', () => {
             Client = CreateSpyObj('Client', [
               {
                 name: 'opsupport_journal_stat_get',
-                getValue: () => journalStat.next().value
-              }
+                getValue: () => journalStat.next().value,
+              },
             ]);
             TypedClient = {
               OpsupportQueueFrozenjobs: CreateSpyObj('OpsupportQueueFrozenjobs', [
                 {
                   name: 'Get',
-                  getValue: () => frozenjobs.next().value
-                }
-              ])
+                  getValue: () => frozenjobs.next().value,
+                },
+              ]),
             };
-          }
+          },
         },
         {
           provide: Router,
           useClass: class {
             navigate = jasmine.createSpy('navigate');
-          }
-        }
-      ]
+          },
+        },
+        {
+          provide: TranslateService,
+          useValue: {
+            get: jasmine.createSpy('get').and.callFake(() => of('')),
+          },
+        },
+      ],
     });
   }
 
@@ -114,29 +124,29 @@ describe('NotificationsService', () => {
     {
       Description: 'with a non-empty frozenjobs collection and without errors/warnings in the journal',
       TestInput: [{ Frozenjobs: { totalCount: 1 } }],
-      ExpectedNotificationItems: [NotificationIssueType.FrozenJobsSinceYesterday]
+      ExpectedNotificationItems: [NotificationIssueType.FrozenJobsSinceYesterday],
     } as TestCase,
     {
       Description: 'with an empty frozenjobs collection and without errors/warnings in the journal',
       TestInput: [{}],
-      ExpectedNotificationItems: []
+      ExpectedNotificationItems: [],
     } as TestCase,
     {
       Description: 'with a non-empty frozenjobs collection and with errors/warnings in the journal',
       TestInput: [{ Frozenjobs: { totalCount: 1 }, JournalStat: { Errors: 1, Warnings: 0 } }],
-      ExpectedNotificationItems: [NotificationIssueType.FrozenJobsSinceYesterday, NotificationIssueType.SystemJournalSinceYesterday]
+      ExpectedNotificationItems: [NotificationIssueType.FrozenJobsSinceYesterday, NotificationIssueType.SystemJournalSinceYesterday],
     } as TestCase,
     {
       Description: 'with an empty frozenjobs collection and with errors in the journal',
       TestInput: [{ JournalStat: { Errors: 1, Warnings: 0 } }],
-      ExpectedNotificationItems: [NotificationIssueType.SystemJournalSinceYesterday]
+      ExpectedNotificationItems: [NotificationIssueType.SystemJournalSinceYesterday],
     } as TestCase,
     {
       Description: 'with an empty frozenjobs collection and with warnings in the journal',
       TestInput: [{ JournalStat: { Errors: 0, Warnings: 1 } }],
-      ExpectedNotificationItems: [NotificationIssueType.SystemJournalSinceYesterday]
-    } as TestCase
-  ].forEach(testcase => {
+      ExpectedNotificationItems: [NotificationIssueType.SystemJournalSinceYesterday],
+    } as TestCase,
+  ].forEach((testcase) => {
     describe('should update all items', () => {
       beforeEach(() => prepareTestBed(testcase));
 
@@ -145,14 +155,14 @@ describe('NotificationsService', () => {
         inject(
           [NotificationsService],
           fakeAsync((service: NotificationsService) => {
-            service.updateItems().then(_ => {
-              expect(service.items.map(item => item.type)).toEqual(testcase.ExpectedNotificationItems);
+            service.updateItems().then((_) => {
+              expect(service.items.map((item) => item.type)).toEqual(testcase.ExpectedNotificationItems);
             });
 
             tick();
             discardPeriodicTasks();
-          })
-        )
+          }),
+        ),
       );
     });
   });
@@ -161,19 +171,19 @@ describe('NotificationsService', () => {
     {
       Description: 'with a non-empty frozenjobs collection - then empty',
       TestInput: [{ Frozenjobs: { totalCount: 1 } }, {}],
-      ExpectedNotificationItems: []
+      ExpectedNotificationItems: [],
     } as TestCase,
     {
       Description: 'with errors/warnings in the journal - then empty',
       TestInput: [{ JournalStat: { Errors: 1, Warnings: 0 } }, {}],
-      ExpectedNotificationItems: []
+      ExpectedNotificationItems: [],
     } as TestCase,
     {
       Description: 'with a non-empty frozenjobs collection and with errors/warnings in the journal - then no emtpy frozenjobs collection',
       TestInput: [{ Frozenjobs: { totalCount: 1 }, JournalStat: { Errors: 1, Warnings: 0 } }, { JournalStat: { Errors: 1, Warnings: 0 } }],
-      ExpectedNotificationItems: [NotificationIssueType.SystemJournalSinceYesterday]
-    } as TestCase
-  ].forEach(testcase => {
+      ExpectedNotificationItems: [NotificationIssueType.SystemJournalSinceYesterday],
+    } as TestCase,
+  ].forEach((testcase) => {
     describe('should remove items', () => {
       beforeEach(() => prepareTestBed(testcase));
 
@@ -182,17 +192,17 @@ describe('NotificationsService', () => {
         inject(
           [NotificationsService],
           fakeAsync((service: NotificationsService) => {
-            service.updateItems().then(_ => {
+            service.updateItems().then((_) => {
               expect(service.items.length).toBeGreaterThan(0);
-              service.updateItems().then(_0 => {
-                expect(service.items.map(item => item.type)).toEqual(testcase.ExpectedNotificationItems);
+              service.updateItems().then((_0) => {
+                expect(service.items.map((item) => item.type)).toEqual(testcase.ExpectedNotificationItems);
               });
             });
 
             tick();
             discardPeriodicTasks();
-          })
-        )
+          }),
+        ),
       );
     });
   });

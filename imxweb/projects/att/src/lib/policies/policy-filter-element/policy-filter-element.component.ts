@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,9 +24,8 @@
  *
  */
 
-import { ChangeDetectorRef, EventEmitter, ViewChild } from '@angular/core';
-import { Component, Input, Output } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { FormGroup, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatExpansionPanel } from '@angular/material/expansion';
 import { MatSelectChange } from '@angular/material/select';
 
@@ -36,11 +35,10 @@ import { FilterElementModel } from '../editors/filter-element-model';
 @Component({
   selector: 'imx-policy-filter-element',
   templateUrl: './policy-filter-element.component.html',
-  styleUrls: ['./policy-filter-element.component.scss']
+  styleUrls: ['./policy-filter-element.component.scss'],
 })
 export class PolicyFilterElementComponent {
-
-  @Input() public formGroup: UntypedFormGroup;
+  @Input() public formGroup: FormGroup<{ filterParameter: UntypedFormControl; type: UntypedFormControl }>;
   @Input() public idForTest: string;
 
   @Output() public deleteFilter = new EventEmitter<UntypedFormGroup>();
@@ -48,18 +46,14 @@ export class PolicyFilterElementComponent {
   @Output() public parameterChanged = new EventEmitter<FilterElementModel>();
 
   @ViewChild(MatExpansionPanel) private panel: MatExpansionPanel;
-  public get filterElementModel(): FilterElementModel {
-    return this.formGroup?.get(this.filterParameter).value;
+  public get filterElementModel(): FilterElementModel | undefined {
+    return this.formGroup.controls.filterParameter.value;
   }
 
-  private readonly filterParameter = 'filterParameter';
-
-  constructor(private readonly cd: ChangeDetectorRef) { }
+  constructor(private readonly cd: ChangeDetectorRef) {}
 
   public open(): void {
-    if (this.panel
-      && (this.filterElementModel.attestationSubType == null || this.filterElementModel.attestationSubType === '')
-    ) {
+    if (this.panel && (this.filterElementModel?.attestationSubType == null || this.filterElementModel?.attestationSubType === '')) {
       this.panel.open();
       this.cd.detectChanges();
     }
@@ -69,12 +63,21 @@ export class PolicyFilterElementComponent {
     if (this.filterElementModel == null) {
       return;
     }
-    this.filterElementModel.updateColumn({
-      ParameterName: this.filterElementModel.getParameterData(arg.value).RequiredParameter,
-      AttestationSubType: arg.value,
-      ParameterValue: FilterElementModel.getDefaultValue(this.filterElementModel.getParameterData(arg.value).RequiredParameter, false),
-      ParameterValue2: FilterElementModel.getDefaultValue(this.filterElementModel.getParameterData(arg.value).RequiredParameter, true),
-    }, []);
+    this.filterElementModel.updateColumn(
+      {
+        ParameterName: this.filterElementModel.getParameterData(arg.value).RequiredParameter,
+        AttestationSubType: arg.value,
+        ParameterValue: FilterElementModel.getDefaultValue(
+          this.filterElementModel.getParameterData(arg.value).RequiredParameter || '',
+          false,
+        ),
+        ParameterValue2: FilterElementModel.getDefaultValue(
+          this.filterElementModel.getParameterData(arg.value).RequiredParameter || '',
+          true,
+        ),
+      },
+      [],
+    );
     this.formGroup.updateValueAndValidity();
     this.conditionTypeChanged.emit(this.filterElementModel);
   }
@@ -83,8 +86,7 @@ export class PolicyFilterElementComponent {
     if (this.filterElementModel == null) {
       return;
     }
-    this.filterElementModel.updateColumn(this.filterElementModel.filterElement, arg.displays);
+    this.filterElementModel.updateColumn(this.filterElementModel.filterElement, arg.displays || []);
     this.parameterChanged.emit(this.filterElementModel);
   }
-
 }

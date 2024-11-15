@@ -3,7 +3,7 @@ $theme_font_family: 'Source Sans Pro, "Helvetica Neue", sans-serif' !default;
 @use 'sass:math';
 @use '@angular/material' as mat;
 @use '@elemental-ui/core/src/styles/theming/theme' as theme;
-@use '../shared/scss/theme' as imx-theme;
+@use '../shared/scss/base/theme' as imx-theme;
 
 @import '@elemental-ui/core/src/styles/functions/to_number';
 
@@ -23,7 +23,7 @@ $custom-typography: mat.define-typography-config(
   $font-family: $theme_font_family,
   $button: mat.define-typography-level(14px, 14px, 400),
 );
-@include mat.core($custom-typography);
+@include mat.core();
 
 // Define the custom theme.
 $primary: mat.define-palette($gunmetal-palette);
@@ -37,10 +37,10 @@ $theme: mat.define-light-theme(
       accent: $accent,
       warn: $warn,
     ),
+    typography: $custom-typography
   )
 );
 // Rename the $theme-name variable to your theme's name. (e.g.space-theme)
 $theme-name: 'custom-theme';
-
 @include theme.theme($theme-name, $theme);
 @include imx-theme.theme($theme-name, $theme);

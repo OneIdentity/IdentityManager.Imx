@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,16 +26,15 @@
 
 import { Injectable } from '@angular/core';
 
-import { ClassloggerService } from 'qbm';
 import {
   PortalItshopApproveHistory,
   PortalItshopCart,
-  PortalItshopPersondecision,
   PortalItshopPeergroupMemberships,
+  PortalItshopPersondecision,
+  PortalShopServiceitems,
   PwoData,
   ServiceItemsExtendedData,
-  PortalShopServiceitems,
-} from 'imx-api-qer';
+} from '@imx-modules/imx-api-qer';
 import {
   ApiRequestOptions,
   CollectionLoadParameters,
@@ -47,10 +46,11 @@ import {
   FilterType,
   TypedEntityBuilder,
   TypedEntityCollectionData,
-} from 'imx-qbm-dbts';
+} from '@imx-modules/imx-qbm-dbts';
+import { ClassloggerService } from 'qbm';
+import { ServiceItemParameters } from '../new-request/new-request-product/service-item-parameters';
 import { ParameterDataLoadParameters } from '../parameter-data/parameter-data-load-parameters.interface';
 import { QerApiService } from '../qer-api-client.service';
-import { ServiceItemParameters } from '../new-request/new-request-product/service-item-parameters';
 
 @Injectable({
   providedIn: 'root',
@@ -64,7 +64,10 @@ export class ItshopService {
 
   private readonly historyBuilder = new TypedEntityBuilder(PortalItshopApproveHistory);
 
-  constructor(private readonly qerClient: QerApiService, private readonly logger: ClassloggerService) {}
+  constructor(
+    private readonly qerClient: QerApiService,
+    private readonly logger: ClassloggerService,
+  ) {}
 
   public async get(
     parameters: CollectionLoadParameters & {
@@ -74,12 +77,12 @@ export class ItshopService {
       UID_AccProductParent?: string;
       UID_PersonReference?: string;
       UID_PersonPeerGroup?: string;
-    }
+    },
   ): Promise<ExtendedTypedEntityCollection<PortalShopServiceitems, ServiceItemsExtendedData>> {
     return this.qerClient.typedClient.PortalShopServiceitems.Get(parameters);
   }
 
-  public async getServiceItem(serviceItemUid: string, isSkippable?: boolean): Promise<PortalShopServiceitems> {
+  public async getServiceItem(serviceItemUid: string, isSkippable?: boolean): Promise<PortalShopServiceitems | undefined> {
     const serviceItemCollection = await this.get({
       IncludeChildCategories: false,
       filter: [
@@ -93,7 +96,7 @@ export class ItshopService {
     });
     if (serviceItemCollection == null || serviceItemCollection.Data == null || serviceItemCollection.Data.length === 0) {
       if (isSkippable) {
-        return null;
+        return undefined;
       }
       throw new Error('getServiceItem - service item not found');
     }
@@ -102,8 +105,8 @@ export class ItshopService {
   }
 
   public async getPeerGroupMemberships(
-    parameters: (CollectionLoadParameters | ServiceItemParameters),
-    requestOpts?: ApiRequestOptions
+    parameters: CollectionLoadParameters | ServiceItemParameters,
+    requestOpts?: ApiRequestOptions,
   ): Promise<ExtendedTypedEntityCollection<PortalItshopPeergroupMemberships, ServiceItemsExtendedData>> {
     return this.qerClient.typedClient.PortalItshopPeergroupMemberships.Get(parameters, requestOpts);
   }
@@ -112,38 +115,38 @@ export class ItshopService {
     if (pwoData?.WorkflowHistory) {
       return this.historyBuilder.buildReadWriteEntities(
         pwoData.WorkflowHistory,
-        this.qerClient.typedClient.PortalItshopApproveHistory.GetSchema()
+        this.qerClient.typedClient.PortalItshopApproveHistory.GetSchema(),
       ).Data;
     }
 
-    return undefined;
+    return [];
   }
 
   public async getRequestParameterCandidates(parameters: ParameterDataLoadParameters): Promise<EntityCollectionData> {
     return this.qerClient.client.portal_itshop_requests_parameter_candidates_post(
       parameters.columnName,
-      parameters.fkTableName,
-      parameters.diffData,
+      parameters.fkTableName || '',
+      parameters.diffData || {},
       {
         OrderBy: parameters.OrderBy,
         StartIndex: parameters.StartIndex,
         PageSize: parameters.PageSize,
         filter: parameters.filter,
         search: parameters.search,
-        ParentKey: parameters.ParentKey
-      }
+        ParentKey: parameters.ParentKey,
+      },
     );
   }
 
   public async getRequestParameterFilterTree(parameters: ParameterDataLoadParameters): Promise<FilterTreeData> {
     return this.qerClient.client.portal_itshop_requests_parameter_candidates_filtertree_post(
       parameters.columnName,
-      parameters.fkTableName,
-      parameters.diffData,
+      parameters.fkTableName || '',
+      parameters.diffData || {},
       {
         filter: parameters.filter,
-        parentkey: parameters.ParentKey
-      }
+        parentkey: parameters.ParentKey,
+      },
     );
   }
 

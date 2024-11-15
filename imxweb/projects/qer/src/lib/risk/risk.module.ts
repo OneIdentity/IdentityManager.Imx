@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -42,10 +42,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
-  declarations: [
-    RiskAnalysisComponent,
-    RiskAnalysisSidesheetComponent,
-  ],
+  declarations: [RiskAnalysisComponent, RiskAnalysisSidesheetComponent],
   imports: [
     QbmModule,
     CommonModule,
@@ -65,9 +62,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatTooltipModule,
     MatTreeModule,
   ],
-  exports: [
-    RiskAnalysisComponent,
-    RiskAnalysisSidesheetComponent
-  ]
+  exports: [RiskAnalysisComponent, RiskAnalysisSidesheetComponent],
 })
-export class RiskModule { }
+export class RiskModule {}

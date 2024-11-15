@@ -3,6 +3,6 @@
   "dest": "../../dist/pol",
   "lib": {
     "entryFile": "src/public_api.ts",
-    "styleIncludePaths": ["../../shared/assets"]
+    "styleIncludePaths": ["../../shared/scss"]
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,18 +24,17 @@
  *
  */
 
-import { ChangeDetectorRef, Component, Inject } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
+import { AbstractControl, UntypedFormGroup } from '@angular/forms';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { ClassloggerService, ColumnDependentReference } from 'qbm';
 import { ReportSubscription } from '../../subscriptions/report-subscription/report-subscription';
 
 @Component({
   selector: 'imx-parameter-sidesheet',
   templateUrl: './parameter-sidesheet.component.html',
-  styleUrls: ['./parameter-sidesheet.component.scss']
 })
-export class ParameterSidesheetComponent {
+export class ParameterSidesheetComponent implements OnInit {
   public readonly reportFormGroup = new UntypedFormGroup({});
 
   public cdrs: ColumnDependentReference[];
@@ -43,10 +42,9 @@ export class ParameterSidesheetComponent {
   constructor(
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly changeDetectorRef: ChangeDetectorRef,
-    @Inject(EUI_SIDESHEET_DATA) public readonly data: { subscription: ReportSubscription },
-    logger: ClassloggerService
+    @Inject(EUI_SIDESHEET_DATA) public readonly data: { subscription: ReportSubscription; presetParameter: { [key: string]: string } },
+    logger: ClassloggerService,
   ) {
-    this.cdrs = data.subscription.getParameterCdr();
     data.subscription.reportEntityWrapper.startWriteData.subscribe(() => {
       this.writeOperators = this.writeOperators + 1;
       logger.debug(this, 'number of write operations:', this.writeOperators);
@@ -59,12 +57,21 @@ export class ParameterSidesheetComponent {
     });
   }
 
-  public addFormControl(name: string, control: UntypedFormControl) {
+  public async ngOnInit(): Promise<void> {
+    if (this.data.presetParameter) {
+      await this.data.subscription.fillColumnsWithPreset(this.data.presetParameter);
+      this.cdrs = this.data.subscription.getParameterCdr(Object.entries(this.data.presetParameter).map((elem) => elem[0]));
+    } else {
+      this.cdrs = this.data.subscription.getParameterCdr();
+    }
+  }
+
+  public addFormControl(name: string, control: AbstractControl<any, any>) {
     this.reportFormGroup.addControl(name, control);
     this.changeDetectorRef.detectChanges();
   }
 
-  public viewReport() {
+  public async viewReport(): Promise<void> {
     this.sidesheetRef.close(true);
   }
 }

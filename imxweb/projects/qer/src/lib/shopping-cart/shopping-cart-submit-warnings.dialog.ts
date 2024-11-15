@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,22 +27,22 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
-import { ICartItemCheck } from 'imx-api-qer';
+import { ICartItemCheck } from '@imx-modules/imx-api-qer';
 import { getCartItemValidationStatus } from './cart-items/cart-item-validation-status.enum';
 
 @Component({
   selector: 'imx-shopping-cart-submit-result',
   templateUrl: './shopping-cart-submit-warnings.dialog.html',
-  styleUrls: ['./shopping-cart-submit-warnings.dialog.scss']
+  styleUrls: ['./shopping-cart-submit-warnings.dialog.scss'],
 })
-// tslint:disable-next-line: component-class-suffix
+// eslint-disable-next-line @angular-eslint/component-class-suffix
 export class ShoppingCartSubmitWarningsDialog {
   constructor(
     public dialogRef: MatDialogRef<ShoppingCartSubmitWarningsDialog>,
-    @Inject(MAT_DIALOG_DATA) public readonly data: any
-  ) { }
+    @Inject(MAT_DIALOG_DATA) public readonly data: any,
+  ) {}
 
-  public getStatus(check: ICartItemCheck): { status: string, icon: string } {
+  public getStatus(check: ICartItemCheck): { status: string; icon: string } {
     return getCartItemValidationStatus(check);
   }
 }

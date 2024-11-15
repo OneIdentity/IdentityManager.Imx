@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,15 +33,16 @@ import { TextToken } from './text-token.interface';
 @Component({
   selector: 'imx-parameterized-text',
   templateUrl: './parameterized-text.component.html',
-  styleUrls: ['./parameterized-text.component.scss']
+  styleUrls: ['./parameterized-text.component.scss'],
 })
 export class ParameterizedTextComponent implements OnInit {
   public textTokens: TextToken[];
 
   @Input() parameterizedText: ParameterizedText;
+  @Input() additionalText: string = '';
   @Output() textReady = new EventEmitter<TextToken[]>();
 
-  constructor(private readonly service: ParameterizedTextService) { }
+  constructor(private readonly service: ParameterizedTextService) {}
 
   public ngOnInit(): void {
     this.textTokens = this.service.createTextTokens(this.parameterizedText);

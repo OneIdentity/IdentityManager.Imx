@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -43,9 +43,9 @@ describe('PermissionsService', () => {
       .mock(OpSupportUserService, {
         getGroups: jasmine.createSpy('userGroups').and.callFake(() => userGroups),
       })
-      .beforeCompileComponents(testBed => {
+      .beforeCompileComponents((testBed) => {
         testBed.configureTestingModule({
-          schemas: [CUSTOM_ELEMENTS_SCHEMA]
+          schemas: [CUSTOM_ELEMENTS_SCHEMA],
         });
       });
   });
@@ -66,5 +66,5 @@ describe('PermissionsService', () => {
 
       expect(await service.isOutstandingManager()).toEqual(testcase.canSee);
     });
-  };
+  }
 });

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { SessionInfoData } from 'imx-api-qbm';
+import { SessionInfoData } from '@imx-modules/imx-api-qbm';
 
 export interface SystemUsers {
   AuthenticatedBy?: string;

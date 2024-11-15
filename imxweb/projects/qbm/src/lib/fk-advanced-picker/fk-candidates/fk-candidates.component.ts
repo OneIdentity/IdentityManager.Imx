@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,18 +25,29 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { CollectionLoadParameters, DisplayColumns, FilterData, IForeignKeyInfo, TypedEntity, ValType } from 'imx-qbm-dbts';
+import {
+  CollectionLoadParameters,
+  DataModel,
+  DisplayColumns,
+  EntitySchema,
+  FilterData,
+  IForeignKeyInfo,
+  TypedEntity,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
+import { BusyService } from '../../base/busy.service';
 import { ClientPropertyForTableColumns } from '../../data-source-toolbar/client-property-for-table-columns';
 import { DataSourceToolbarSettings } from '../../data-source-toolbar/data-source-toolbar-settings';
 import { DataSourceToolbarComponent } from '../../data-source-toolbar/data-source-toolbar.component';
 import { DataTableComponent } from '../../data-table/data-table.component';
+import { TypedEntityFkData } from '../../entity/typed-entity-select/typed-entity-fk-data.interface';
 import { SettingsService } from '../../settings/settings-service';
+import { CandidateEntity } from '../candidate-entity';
 import { FkCandidateEntityBuilderService } from './fk-candidate-entity-builder.service';
 import { FkCandidatesData } from './fk-candidates-data.interface';
-import { BusyService } from '../../base/busy.service';
 
 @Component({
   selector: 'imx-fk-candidates',
@@ -44,9 +55,9 @@ import { BusyService } from '../../base/busy.service';
   styleUrls: ['./fk-candidates.component.scss'],
 })
 export class FkCandidatesComponent implements OnChanges {
-  @Input() public data: FkCandidatesData;
+  @Input() public data: FkCandidatesData | TypedEntityFkData;
   @Input() public selectedFkTable: IForeignKeyInfo;
-  @Input() public showLongdisplay = false;
+  @Input() public showLongDisplay = false;
   @Input() public showSelectedItemsMenu = true;
   @Input() public noDataText: string;
   @Input() public busyService: BusyService;
@@ -57,23 +68,23 @@ export class FkCandidatesComponent implements OnChanges {
   public readonly DisplayColumns = DisplayColumns; // Enables use of this static class in the Angular Template.
 
   public settings: DataSourceToolbarSettings;
-  public entitySchema = this.candidateBuilder.entitySchema;
+  public entitySchema: EntitySchema;
+  public dataModel: DataModel | undefined;
 
   @ViewChild(DataTableComponent) private readonly table: DataTableComponent<TypedEntity>;
   @ViewChild(DataSourceToolbarComponent) private readonly dst: DataSourceToolbarComponent;
 
-  private busyIndicator: OverlayRef;
+  private busyIndicator: OverlayRef | undefined;
+  private abortController: AbortController = new AbortController();
 
   constructor(
     private readonly busyServiceElemental: EuiLoadingService,
     private readonly settingsService: SettingsService,
-    private readonly candidateBuilder: FkCandidateEntityBuilderService
+    private readonly candidateBuilder: FkCandidateEntityBuilderService,
   ) {}
 
-  public async ngOnChanges(changes: SimpleChanges): Promise<void> {
-    if ((changes['data'] && this.data) || changes['selectedFkTable']) {
-      await this.getData({ StartIndex: 0, PageSize: this.settingsService.DefaultPageSize, filter: undefined, search: '' });
-    }
+  public async ngOnChanges(): Promise<void> {
+    await this.getData({ StartIndex: 0, PageSize: this.settingsService.DefaultPageSize });
   }
 
   public async search(keywords: string): Promise<void> {
@@ -95,7 +106,7 @@ export class FkCandidatesComponent implements OnChanges {
   }
 
   public get showToolbar(): boolean {
-    return this.settings?.navigationState?.filter?.length > 0;
+    return !!this.settings?.navigationState?.filter?.length;
   }
 
   public async filterByTree(filters: FilterData[]): Promise<void> {
@@ -108,6 +119,10 @@ export class FkCandidatesComponent implements OnChanges {
    * @param newState the state of the data source
    */
   public async getData(newState?: CollectionLoadParameters): Promise<void> {
+    // Abort any previous calls
+    this.abortController.abort();
+    this.abortController = new AbortController();
+
     let isBusy;
     if (this.busyService) {
       isBusy = this.busyService.beginBusy();
@@ -117,16 +132,20 @@ export class FkCandidatesComponent implements OnChanges {
       }
     }
     try {
-      let navigationState = this.settings?.navigationState || { PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 };
-
-      if (newState) {
-        navigationState = { ...navigationState, ...newState };
-      }
+      let navigationState = this.settings?.navigationState
+        ? { ...this.settings.navigationState, ...newState }
+        : { PageSize: this.settingsService.DefaultPageSize, StartIndex: 0 };
 
       const dataSource = this.data.getTyped
-        ? await this.data.getTyped(navigationState)
+        ? await this.data.getTyped(navigationState, { signal: this.abortController.signal })
         : this.candidateBuilder.build(
-            this.selectedFkTable ? await this.selectedFkTable.Get(navigationState) : await this.data.get(navigationState)
+            this.selectedFkTable
+              ? await this.selectedFkTable.Get(navigationState, { signal: this.abortController.signal })
+              : this.data.Get
+                ? await this.data.Get(navigationState, { signal: this.abortController.signal })
+                : { TotalCount: 0 },
+            this.selectedFkTable?.fkColumnName,
+            this.selectedFkTable?.TableName,
           );
       const displayedColumns: ClientPropertyForTableColumns[] = [DisplayColumns.DISPLAY_PROPERTY];
 
@@ -137,18 +156,23 @@ export class FkCandidatesComponent implements OnChanges {
           untranslatedDisplay: '#LDS#Selection',
         });
       }
+      this.entitySchema = CandidateEntity.GetEntitySchema(
+        this.selectedFkTable?.fkColumnName ?? this.selectedFkTable?.ColumnName,
+        this.selectedFkTable?.TableName,
+      );
       this.settings = {
         dataSource,
         displayedColumns,
         entitySchema: this.entitySchema,
         navigationState,
+        dataModel: this.data.GetDataModel ? await this.data.GetDataModel({ signal: this.abortController.signal }) : undefined,
         filterTree: {
           filterMethode: async (parentKey) => {
             return this.selectedFkTable
-              ? this.selectedFkTable.GetFilterTree(parentKey)
+              ? this.selectedFkTable.GetFilterTree(parentKey, { signal: this.abortController.signal })
               : this.data.GetFilterTree
-              ? this.data.GetFilterTree(parentKey)
-              : { Elements: [] };
+                ? this.data.GetFilterTree(parentKey, { signal: this.abortController.signal })
+                : { Elements: [] };
           },
           multiSelect: false,
         },

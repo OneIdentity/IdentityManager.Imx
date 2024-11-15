@@ -1,10 +1,5 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
-
-eui-alert {
-  margin-bottom: 1em;
-  display: block;
-}
 
 .subtext {
   font-size: small;
@@ -19,43 +14,24 @@ eui-alert {
   }
 }
 
-.imx-step-button,
-.imx-step-button-save {
-  margin-top: 10px;
-  > *:not(:last-child) {
-    margin-right: 10px;
-  }
-}
-
 .imx-step-data-table {
   display: flex;
   flex-direction: column;
   max-height: 500px;
 }
 
-.imx-stepper-card{
+.imx-stepper-card {
   height: 100%;
 }
 
-.imx-top-alert {
-  display: block;
-  margin: 1em 0;
-}
-
-.eui-dark-theme{
-  :host{
+.eui-dark-theme {
+  :host {
     background-color: $color-gray-70;
-    ::ng-deep .mat-input-element, ::ng-deep .eui-icon {
-      color: $color-blue-40;
-    }
   }
 }
 
-.eui-contrast-theme{
-  :host{
+.eui-contrast-theme {
+  :host {
     background-color: $color-gray-70;
-    ::ng-deep .mat-input-element, ::ng-deep .eui-icon {
-      color: $color-blue-40;
-    }
   }
 }

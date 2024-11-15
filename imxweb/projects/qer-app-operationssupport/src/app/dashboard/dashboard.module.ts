@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,13 +36,6 @@ import { ServiceReportModule } from '../service-report/service-report.module';
 
 @NgModule({
   declarations: [DashboardComponent],
-  imports: [
-    CommonModule,
-    ObjectSearchModule,
-    NotificationsModule,
-    ServiceIssuesModule,
-    ServiceReportModule,
-    TranslateModule
-  ]
+  imports: [CommonModule, ObjectSearchModule, NotificationsModule, ServiceIssuesModule, ServiceReportModule, TranslateModule],
 })
-export class DashboardModule { }
+export class DashboardModule {}

@@ -16,12 +16,11 @@
     "@elemental-ui/core",
     "@ngx-translate/core",
     "@ngx-translate/http-loader",
-    "applicationinsights-js",
     "billboard.js"
   ],
-  "dest": "../../html/rps",
+  "dest": "../../html/qer-app-portal/rps",
   "lib": {
     "entryFile": "src/public_api.ts",
-    "styleIncludePaths": ["../../shared/assets"]
+    "styleIncludePaths": ["../../shared/scss"]
   }
 }

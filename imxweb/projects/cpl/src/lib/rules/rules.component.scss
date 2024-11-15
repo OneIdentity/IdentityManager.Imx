@@ -1,5 +1,5 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
-@import '../../../../../shared/scss/common-table.scss';
+@import 'base/mixins';
 
 div[subtitle] {
   font-size: smaller;
@@ -13,32 +13,15 @@ div[subtitle] {
   height: inherit;
 }
 
-.mat-card {
-  @include imx-flex-fill-control-hidden-overflow();
-  margin: 3px;
-}
-
-.imx-table-container {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  flex: 1 1 auto;
-}
-
-.imx-button-column {
-  @include imx-button-column-right();
-}
-
-.imx-displayColumn {
-  display: flex;
-  flex-direction: row;
-
-  :first-child {
+.imx-display-column {
+  width: 100% !important;
+  cursor: inherit !important;
+  &-main {
     flex: 1 1 auto;
+    display: block !important;
+    cursor: inherit !important;
   }
-
   .imx-badge {
-    align-self: center;
-    margin-left: 15px;
+    align-self: flex-end;
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,10 +29,8 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'imx-discrete-legend',
   templateUrl: './discrete-legend.component.html',
-  styleUrls: ['./discrete-legend.component.scss']
+  styleUrls: ['./discrete-legend.component.scss'],
 })
 export class DiscreteLegendComponent {
-
-  constructor() { }
-
+  constructor() {}
 }

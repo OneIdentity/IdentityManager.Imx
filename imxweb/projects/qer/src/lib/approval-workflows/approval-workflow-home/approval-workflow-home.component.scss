@@ -1,6 +1,4 @@
-@import '@elemental-ui/core/src/styles/_eui_palette.scss';
-@import '../approval-workflow-styles.scss';
-@import '../../../../../../shared/scss/common-table.scss';
+@import 'base/mixins';
 
 :host {
   display: flex;
@@ -11,7 +9,7 @@
   .awm-header {
     display: flex;
 
-    h1 {
+    h2 {
       margin: 6px 0 40px;
     }
 
@@ -19,20 +17,11 @@
       margin: 0 0 0 auto;
     }
   }
-
-  .imx-table-container {
-   @include imx-flex-fill-control-hidden-overflow();
-    @include EUI-Elevation-1;
-  }
-
-  .button-row {
-    @include imx-button-bar();
-  }
 }
 
 // Theming
 :host {
-  @include awmColors();
+  @include Awm-Colors();
   .awm-left-header {
     button {
       color: $color-blue-60;
@@ -46,21 +35,21 @@
   .button-row {
     .filled-button:hover:not(:disabled) {
       background-color: $color-orange-60;
-      @include Ease-Transition;
+      @include ease-transition;
     }
   }
 }
 
 .eui-dark-theme {
   :host {
-    @include awmColors(eui-dark-theme);
+    @include Awm-Colors(eui-dark-theme);
     .awm-left-header {
       button {
         color: $color-blue-40;
 
         &:hover {
           color: $color-orange-40;
-          @include Ease-Transition;
+          @include ease-transition;
         }
       }
     }
@@ -68,7 +57,7 @@
     .button-row {
       .filled-button:hover:not(:disabled) {
         background-color: $color-orange-40;
-        @include Ease-Transition;
+        @include ease-transition;
       }
     }
   }
@@ -76,14 +65,14 @@
 
 .eui-contrast-theme {
   :host {
-    @include awmColors(eui-contrast-theme);
+    @include Awm-Colors(eui-contrast-theme);
     .awm-left-header {
       button {
         color: $color-blue-40;
 
         &:hover {
           color: $color-orange-40;
-          @include Ease-Transition;
+          @include ease-transition;
         }
       }
     }
@@ -91,7 +80,7 @@
     .button-row {
       .filled-button:hover:not(:disabled) {
         background-color: $color-orange-40;
-        @include Ease-Transition;
+        @include ease-transition;
       }
     }
   }

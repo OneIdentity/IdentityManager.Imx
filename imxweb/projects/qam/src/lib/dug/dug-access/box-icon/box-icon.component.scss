@@ -1,0 +1,10 @@
+@import 'base/mixins';
+
+.imx-single-permission {
+  @include flex-column-container($overflow: hidden);
+  align-items: center;
+
+  > div {
+    text-align: center;
+  }
+}

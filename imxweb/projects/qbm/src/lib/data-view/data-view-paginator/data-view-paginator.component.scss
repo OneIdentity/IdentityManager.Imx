@@ -1,0 +1,8 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+:host{
+
+  .mat-mdc-paginator{
+    border:none;
+  }
+}

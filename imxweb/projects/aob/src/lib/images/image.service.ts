@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,18 +31,19 @@ import { ApiClientService } from 'qbm';
 import { QerApiService } from 'qer';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ImageService {
   constructor(
     private readonly qerClient: QerApiService,
     private readonly sanitizer: DomSanitizer,
-    private readonly apiProvider: ApiClientService) { }
+    private readonly apiProvider: ApiClientService,
+  ) {}
 
   /**
    * Gets the person image URL converted to a SafeUrl
    */
-  public async getPersonImageUrl(uid: string): Promise<SafeUrl> {
+  public async getPersonImageUrl(uid: string | undefined): Promise<SafeUrl | undefined> {
     if (uid && uid.length > 0) {
       const imageData = await this.apiProvider.request(() => this.qerClient.client.portal_person_image_get(uid));
 

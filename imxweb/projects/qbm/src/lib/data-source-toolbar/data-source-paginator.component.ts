@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,14 +24,13 @@
  *
  */
 
-import { Component, Input, Output, EventEmitter, SimpleChanges, OnChanges, ViewChild, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { PageEvent, MatPaginator } from '@angular/material/paginator';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Subscription } from 'rxjs';
 
-import { CollectionLoadParameters } from 'imx-qbm-dbts';
-import { DataSourceToolbarComponent } from './data-source-toolbar.component';
+import { CollectionLoadParameters } from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarSettings } from './data-source-toolbar-settings';
-
+import { DataSourceToolbarComponent } from './data-source-toolbar.component';
 
 /**
  * Paginator for navigating the datasource of the {@link DataSourceToolbarComponent| datasource toolbar component}.
@@ -47,7 +46,6 @@ import { DataSourceToolbarSettings } from './data-source-toolbar-settings';
 @Component({
   selector: 'imx-data-source-paginator',
   templateUrl: './data-source-paginator.component.html',
-  styleUrls: ['./data-source-paginator.component.scss']
 })
 export class DataSourcePaginatorComponent implements OnChanges, OnDestroy {
   /**
@@ -58,11 +56,11 @@ export class DataSourcePaginatorComponent implements OnChanges, OnDestroy {
   /**
    * Add in first/last buttons
    */
-  @Input() public showFirstLastButtons: boolean = false;
+  @Input() public showFirstLastButtons: boolean = true;
 
   /**
-    * List of options for the page size.
-    */
+   * List of options for the page size.
+   */
   @Input() public pageSizeOptions: number[] = [20, 50, 100];
 
   /**
@@ -81,11 +79,11 @@ export class DataSourcePaginatorComponent implements OnChanges, OnDestroy {
    *  Hides the paginator, if there is not data, a group is applied or the control is loading new content
    */
   public get hidePaginator() {
-    return !this.dst?.dataSourceHasData  || this.dst.settings?.groupData?.currentGrouping != null || this.isLoading;
+    return !this.dst?.dataSourceHasData || this.dst.settings?.groupData?.currentGrouping != null || this.isLoading;
   }
   public isLoading = true;
 
-  constructor (private readonly changeDetector: ChangeDetectorRef){}
+  constructor(private readonly changeDetector: ChangeDetectorRef) {}
 
   /**
    * @ignore
@@ -101,16 +99,18 @@ export class DataSourcePaginatorComponent implements OnChanges, OnDestroy {
     if (changes['dst'] && changes['dst'].currentValue) {
       this.setPaginator();
 
-      this.subscriptions.push(this.dst.settingsChanged.subscribe((value: DataSourceToolbarSettings) => {
-        this.dst.settings = value;
-        this.setPaginator();
-      }));
+      this.subscriptions.push(
+        this.dst.settingsChanged.subscribe((value: DataSourceToolbarSettings) => {
+          this.dst.settings = value;
+          this.setPaginator();
+        }),
+      );
 
-      if(this.dst.busyService){
-        this.dst.busyService.busyStateChanged.subscribe((value:boolean) =>{
+      if (this.dst.busyService) {
+        this.dst.busyService.busyStateChanged.subscribe((value: boolean) => {
           this.isLoading = value;
           this.changeDetector.detectChanges();
-        })
+        });
       } else {
         this.isLoading = false;
       }
@@ -122,7 +122,7 @@ export class DataSourcePaginatorComponent implements OnChanges, OnDestroy {
    * Unsubscribes all listeners.
    */
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   /**
@@ -146,8 +146,9 @@ export class DataSourcePaginatorComponent implements OnChanges, OnDestroy {
       }
 
       if (this.dst.settings.navigationState) {
-        this.paginator.pageSize = this.dst.settings.navigationState.PageSize;
-        this.paginator.pageIndex = this.dst.settings.navigationState.StartIndex / this.dst.settings.navigationState.PageSize;
+        this.paginator.pageSize = this.dst.settings.navigationState.PageSize ?? 0;
+        if (this.paginator.pageSize > 0)
+          this.paginator.pageIndex = (this.dst.settings.navigationState.StartIndex ?? 0) / this.paginator.pageSize;
       }
     }
   }

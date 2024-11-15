@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 .imx-report-table {
   display: flex;
@@ -12,10 +12,6 @@ imx-property-viewer {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px 20px;
-}
-
-.imx-overview-alert {
-  margin: 10px 0;
 }
 
 .imx-wait-for-overview-load {

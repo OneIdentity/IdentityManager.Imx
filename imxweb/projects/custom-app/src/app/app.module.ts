@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,96 +24,81 @@
  *
  */
 
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule, APP_INITIALIZER, ErrorHandler } from '@angular/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
-import { TranslateModule, TranslateLoader, MissingTranslationHandler, TranslateService } from '@ngx-translate/core';
+import { MissingTranslationHandler, TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 
+import { MatPaginatorIntl } from '@angular/material/paginator';
 import {
-  ImxTranslateLoader,
-  ImxMissingTranslationHandler,
-  MastHeadModule,
-  UserMessageModule,
-  GlobalErrorHandler,
-  Paginator,
-  LdsReplacePipe,
-  QbmModule,
   AuthenticationModule,
-  MenuModule,
-  CustomThemeModule
+  CustomThemeModule,
+  GlobalErrorHandler,
+  ImxMissingTranslationHandler,
+  ImxTranslateLoader,
+  LdsReplacePipe,
+  MastHeadModule,
+  Paginator,
+  QbmModule,
+  UserMessageModule,
 } from 'qbm';
+import appConfigJson from '../appconfig.json';
+import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AppService } from './app.service';
-import { MatPaginatorIntl } from '@angular/material/paginator';
-import { environment } from '../environments/environment';
-import appConfigJson from '../appconfig.json';
 import { StartComponent } from './start.component';
 
-
-@NgModule({
-  declarations: [
-    AppComponent,
-    StartComponent
-  ],
-  imports: [
-    AppRoutingModule,
-    AuthenticationModule,
-    BrowserAnimationsModule,
-    BrowserModule,
-    EuiCoreModule,
-    EuiMaterialModule,
-    MatButtonModule,
-    MatCardModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    HttpClientModule,
-    LoggerModule.forRoot({ level: NgxLoggerLevel.DEBUG, serverLogLevel: NgxLoggerLevel.OFF }),
-    MastHeadModule,
-    MenuModule,
-    QbmModule,
-    CustomThemeModule,
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useClass: ImxTranslateLoader
-      },
-      missingTranslationHandler: {
-        provide: MissingTranslationHandler,
-        useClass: ImxMissingTranslationHandler
-      }
-    }),
-    UserMessageModule
-  ],
-  providers: [
-    { provide: 'environment', useValue: environment },
-    { provide: 'appConfigJson', useValue: appConfigJson },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: AppService.init,
-      deps: [AppService],
-      multi: true
-    },
-    {
-      provide: ErrorHandler,
-      useClass: GlobalErrorHandler
-    },
-    {
-      provide: MatPaginatorIntl,
-      useFactory: Paginator.Create,
-      deps: [
-        TranslateService,
-        LdsReplacePipe
-      ]
-    }
-  ],
-  bootstrap: [AppComponent]
-})
-export class AppModule { }
+@NgModule({ declarations: [AppComponent, StartComponent],
+    bootstrap: [AppComponent], imports: [AppRoutingModule,
+        AuthenticationModule,
+        BrowserAnimationsModule,
+        BrowserModule,
+        EuiCoreModule,
+        EuiMaterialModule,
+        MatButtonModule,
+        MatCardModule,
+        MatIconModule,
+        MatProgressSpinnerModule,
+        LoggerModule.forRoot({ level: NgxLoggerLevel.DEBUG, serverLogLevel: NgxLoggerLevel.OFF }),
+        MastHeadModule,
+        QbmModule,
+        CustomThemeModule,
+        TranslateModule.forRoot({
+            loader: {
+                provide: TranslateLoader,
+                useClass: ImxTranslateLoader,
+            },
+            missingTranslationHandler: {
+                provide: MissingTranslationHandler,
+                useClass: ImxMissingTranslationHandler,
+            },
+        }),
+        UserMessageModule], providers: [
+        { provide: 'environment', useValue: environment },
+        { provide: 'appConfigJson', useValue: appConfigJson },
+        {
+            provide: APP_INITIALIZER,
+            useFactory: AppService.init,
+            deps: [AppService],
+            multi: true,
+        },
+        {
+            provide: ErrorHandler,
+            useClass: GlobalErrorHandler,
+        },
+        {
+            provide: MatPaginatorIntl,
+            useFactory: Paginator.Create,
+            deps: [TranslateService, LdsReplacePipe],
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
+export class AppModule {}

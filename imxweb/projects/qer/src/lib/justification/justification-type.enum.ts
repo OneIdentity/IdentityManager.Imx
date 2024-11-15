@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,5 +34,5 @@ export enum JustificationType {
   approveRuleViolation = 64,
   denyRuleViolation = 128,
   approvePolicyViolation = 256,
-  denyPolicyViolation = 512 
+  denyPolicyViolation = 512,
 }

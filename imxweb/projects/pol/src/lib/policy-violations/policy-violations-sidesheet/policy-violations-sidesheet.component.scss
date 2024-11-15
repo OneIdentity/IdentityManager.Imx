@@ -6,68 +6,22 @@
   overflow: hidden;
   height: 100%;
 
-  .tab-group-wrapper {
-    display: flex;
-    overflow: auto;
-    flex: 1;
-
-    .mat-tab-group {
-      width: 100%;
-    }
-
-    ::ng-deep .mat-tab-body-content {
-      display: flex;
-      flex-direction: column;
-    }
-
-    ::ng-deep .mat-tab-body-wrapper {
-      flex: 1;
-    }
-  }
-
-  ::ng-deep .mat-tab-group {
-    height: 100%;
-    flex-grow: 1;
-    overflow: auto;
-
-    .mat-tab-header {
-      padding: 0 32px;
-    }
-
-    ::ng-deep .mat-tab-body-wrapper {
-      height: 100%;
-    }
-
-    ::ng-deep .mat-tab-body-content {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-
-  }
-
   .imx-dirty-indicator {
     margin-left: 5px;
   }
 
-  .imx-content{
+  .imx-content {
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
   }
 
-  .eui-sidesheet-actions{
+  .eui-sidesheet-actions {
     margin-top: auto;
   }
 
-  .eui-sidesheet-actions.mat-card {
+  .eui-sidesheet-actions.mat-mdc-card {
     margin: 16px 32px;
-  }
-
-  .eui-badge ::ng-deep .eui-badge-content {
-    font-size: 12px;
-    line-height: 12px;
-    margin-bottom: 20px;
   }
 
   .imx-state-caption {
@@ -75,13 +29,7 @@
     padding-bottom: 5px;
   }
 
-  .eui-sidesheet-actions {
-    button:not(:last-of-type) {
-      margin-right: 10px;
-    }
-  }
-
-  .imx-policy-violations-hyperview{
+  .imx-policy-violations-hyperview {
     display: flex;
     flex-direction: column;
   }
@@ -89,11 +37,7 @@
 
 //Theming
 :host {
-  ::ng-deep .mat-tab-header {
-    background-color: $color-gray-0;
-  }
-
-   .imx-state-caption {
+  .imx-state-caption {
     color: $color-gray-40;
   }
 
@@ -104,10 +48,6 @@
 
 .eui-dark-theme {
   :host {
-    ::ng-deep .mat-tab-header {
-      background-color: $color-gray-80;
-    }
-
     .imx-state-caption {
       color: $color-gray-10;
     }
@@ -120,10 +60,6 @@
 
 .eui-contrast-theme {
   :host {
-    ::ng-deep .mat-tab-header {
-      background-color: $color-gray-90;
-    }
-
     .imx-state-caption {
       color: $color-gray-0;
     }

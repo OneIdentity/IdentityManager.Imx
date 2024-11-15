@@ -1,0 +1,49 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "sac",
+  "sourceRoot": "projects/sac/src",
+  "implicitDependencies": ["qer"],
+  "projectType": "library",
+  "generators": {
+    "@schematics/angular:component": {
+      "style": "scss"
+    }
+  },
+  "prefix": "imx",
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:ng-packagr",
+      "options": {
+        "tsConfig": "projects/sac/tsconfig.lib.json",
+        "project": "projects/sac/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "projects/sac/tsconfig.lib.prod.json"
+        },
+        "dynamic": {
+          "project": "projects/sac/ng-package.dynamic.json"
+        }
+      },
+      "outputs": ["{workspaceRoot}/dist/sac"]
+    },
+    "test": {
+      "executor": "@angular-devkit/build-angular:karma",
+      "options": {
+        "main": "projects/sac/src/test.ts",
+        "tsConfig": "projects/sac/tsconfig.spec.json",
+        "karmaConfig": "projects/sac/karma.conf.js",
+        "stylePreprocessorOptions": {
+          "includePaths": ["./shared/assets", "./shared/scss"]
+        }
+      }
+    },
+    "lint": {
+      "executor": "@angular-devkit/build-angular:tslint",
+      "options": {
+        "tsConfig": ["projects/sac/tsconfig.lib.json", "projects/sac/tsconfig.spec.json"],
+        "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+      }
+    }
+  }
+}

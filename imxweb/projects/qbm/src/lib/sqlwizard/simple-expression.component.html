@@ -15,12 +15,25 @@
   <div class="value-list" *ngIf="isArray(expr.Data.Value)">
     <div class="value-box" *ngFor="let elem of expr.Data.Value; let idx = index; trackBy: trackByFn">
       <imx-sqlwizard-singlevalue [expr]="expr" mode="array" [index]="idx" (change)="emitChanges()"></imx-sqlwizard-singlevalue>
-      <button mat-icon-button [attr.aria-label]="'#LDS#Delete' | translate" data-imx-identifier="simple-exp-button-delete-element" (click)="delete(idx)" class="imx-delete-btn">
+      <button
+        mat-icon-button
+        color="warn"
+        [attr.aria-label]="'#LDS#Delete' | translate"
+        data-imx-identifier="simple-exp-button-delete-element"
+        (click)="delete(idx)"
+      >
         <eui-icon icon="delete"></eui-icon>
       </button>
     </div>
     <div>
-      <button data-imx-identifier="simple-exp-button-add-element" mat-stroked-button class="imx-add-button color-blue-40" (click)="addNew()">{{ '#LDS#Add new value' | translate }}</button>
+      <button
+        mat-stroked-button
+        color="primary"
+        data-imx-identifier="simple-exp-button-add-element"
+        (click)="addNew()"
+      >
+        {{ '#LDS#Add new value' | translate }}
+      </button>
     </div>
   </div>
 

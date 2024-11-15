@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,18 +26,25 @@
 
 import { Injectable } from '@angular/core';
 
+import { HistoryOperationsData, OpsupportQueueJobaffects, ReactivateJobMode } from '@imx-modules/imx-api-qbm';
+import {
+  EntityCollectionData,
+  EntityData,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  IEntityColumn,
+  TypedEntity,
+  TypedEntityCollectionData,
+} from '@imx-modules/imx-qbm-dbts';
 import { CdrFactoryService, ImxDataSource, imx_SessionService } from 'qbm';
-import { EntityCollectionData, EntityData, EntitySchema, ExtendedTypedEntityCollection, IEntityColumn, TypedEntity, TypedEntityCollectionData } from 'imx-qbm-dbts';
-import { HistoryOperationsData, OpsupportQueueJobaffects, ReactivateJobMode } from 'imx-api-qbm';
 import { QueueJobsService } from '../jobs/queue-jobs.service';
 
 @Injectable()
 export class QueueTreeService extends ImxDataSource<TypedEntity> {
-
   public startUid: string;
 
   public items: TypedEntity[];
-  public load: (startId: string) => Promise<TypedEntityCollectionData<TypedEntity>>
+  public load: (startId: string) => Promise<TypedEntityCollectionData<TypedEntity>>;
 
   constructor(
     private session: imx_SessionService,
@@ -53,26 +60,39 @@ export class QueueTreeService extends ImxDataSource<TypedEntity> {
   public itemsProvider = async () => {
     let result: ExtendedTypedEntityCollection<TypedEntity, unknown>;
 
-    result = await this.load(this.startUid);//await this.session.TypedClient.OpsupportQueueTree.Get({ uidtree: this.startUid });
-    return this.data = this.items = result?.Data;
-  }
+    result = await this.load(this.startUid); //await this.session.TypedClient.OpsupportQueueTree.Get({ uidtree: this.startUid });
+
+    this.items = result?.Data;
+    return this.items;
+  };
 
   public childItemsProvider = (item: TypedEntity) => {
+    const child1 = this.items
+      ? this.items.find((el) => this.getColumn(el, 'UID_Job')?.GetValue() === this.getColumn(item, 'UID_JobError')?.GetValue())
+      : undefined;
+    const child2 = this.items
+      ? this.items.find((el) => this.getColumn(el, 'UID_Job')?.GetValue() === this.getColumn(item, 'UID_JobSuccess')?.GetValue())
+      : undefined;
 
-    const child1 = this.items ? this.items.find(el => this.getColumn(el, 'UID_Job').GetValue() === this.getColumn(item, 'UID_JobError').GetValue()) : null;
-    const child2 = this.items ? this.items.find(el => this.getColumn(el, 'UID_Job').GetValue() === this.getColumn(item, 'UID_JobSuccess').GetValue()) : null;
-
-    const res = [];
-    if (child1) { res.push(child1); }
-    if (child2) { res.push(child2); }
+    const res: TypedEntity[] = [];
+    if (child1) {
+      res.push(child1);
+    }
+    if (child2) {
+      res.push(child2);
+    }
 
     return Promise.resolve(res);
-  }
+  };
 
   public hasChildrenProvider = (data: TypedEntity) => {
-    return (this.getColumn(data, 'UID_JobError').GetValue() != null && this.getColumn(data, 'UID_JobError').GetValue() !== '')
-      || (this.getColumn(data, 'UID_JobSuccess').GetValue() != null && this.getColumn(data, 'UID_JobSuccess').GetValue() !== '');
-  }
+    const error = this.getColumn(data, 'UID_JobError')?.GetValue();
+    const success = this.getColumn(data, 'UID_JobSuccess')?.GetValue()
+    return (
+      ( error && success) ||
+      ( error !== '' && success !== '')
+    );
+  };
 
   public async GetAffectedObjects(uidJob: string): Promise<OpsupportQueueJobaffects[]> {
     return (await this.session.TypedClient.OpsupportQueueJobaffects.Get(uidJob)).Data;
@@ -84,11 +104,13 @@ export class QueueTreeService extends ImxDataSource<TypedEntity> {
 
   public GetTotalSteps(): number {
     let count = 1;
-    this.items.forEach(el => {
-      if (this.getColumn(el, 'UID_JobError').GetValue() !== '') {
+    this.items.forEach((el) => {
+      const error = this.getColumn(el, 'UID_JobError')?.GetValue();
+      if (error && error !== '') {
         count++;
       }
-      if (this.getColumn(el, 'UID_JobSuccess').GetValue() !== '') {
+      const success = this.getColumn(el, 'UID_JobSuccess')?.GetValue();
+      if (success && success !== '') {
         count++;
       }
     });
@@ -96,13 +118,13 @@ export class QueueTreeService extends ImxDataSource<TypedEntity> {
   }
 
   public GetCompleteSteps(): number {
-    const root = this.items.find(el => this.getColumn(el, 'IsRootJob').GetValue());
-    return this.GetCompleteSubSteps(this.getColumn(root, 'UID_Job').GetValue());
+    const root = this.items.find((el) => this.getColumn(el, 'IsRootJob')?.GetValue());
+    return root ? this.GetCompleteSubSteps(this.getColumn(root, 'UID_Job')?.GetValue()) : 0;
   }
 
   public RemoveEmpty(ent: EntityData[]): EntityData[] {
     const ret: EntityData[] = [];
-    ent.forEach(el => {
+    ent.forEach((el) => {
       if (el !== null) {
         ret.push(el);
       }
@@ -111,34 +133,43 @@ export class QueueTreeService extends ImxDataSource<TypedEntity> {
   }
 
   public CanBeReactivated(): boolean {
-    if (!this.items) { return false; }
-    return this.getFrozenItem() !== undefined;
-  }
-
-  public async Reactivate(mode: ReactivateJobMode): Promise<EntityCollectionData> {
-    const frozen = this.getFrozenItem();
-    if (frozen) {
-      return this.jobService.Retry(mode, [this.getColumn(frozen, 'UID_Job').GetValue()]);
+    if (!this.items) {
+      return false;
     }
-    return Promise.resolve(null);
+    return !!this.getFrozenItem();
   }
 
-  private GetCompleteSubSteps(uidJob: string): number {
+  public async Reactivate(mode: ReactivateJobMode): Promise<EntityCollectionData | undefined> {
+    const frozen = this.getFrozenItem();
+    const uidJob = frozen ? this.getColumn(frozen, 'UID_Job')?.GetValue() : undefined;
+    if (frozen && uidJob) {
+      return this.jobService.Retry(mode, [uidJob]);
+    }
+  }
 
-    if (uidJob === '') { return 0; }
-    const current = this.items.find(el => this.getColumn(el, 'UID_Job').GetValue() === uidJob);
+  private GetCompleteSubSteps(uidJob?: string): number {
+    if (!uidJob || uidJob === '') {
+      return 0;
+    }
+    const current = this.items.find((el) => this.getColumn(el, 'UID_Job')?.GetValue() === uidJob);
 
     const count = current && (this.getColumn(current, 'Ready2EXE')?.GetValue() ?? 'FINISHED') === 'FINISHED' ? 1 : 0;
-
-    return count + this.GetCompleteSubSteps(this.getColumn(current, 'UID_JobSuccess').GetValue()) + this.GetCompleteSubSteps(this.getColumn(current, 'UID_JobError').GetValue());
+    return current
+      ? count +
+          this.GetCompleteSubSteps(this.getColumn(current, 'UID_JobSuccess')?.GetValue()) +
+          this.GetCompleteSubSteps(this.getColumn(current, 'UID_JobError')?.GetValue())
+      : count;
   }
 
-  public getFrozenItem(): TypedEntity {
-    return this.items.find(el => this.getColumn(el, 'Ready2EXE')?.GetValue()?.toUpperCase() === 'FROZEN' ||
-      this.getColumn(el, 'Ready2EXE')?.GetValue()?.toUpperCase() === 'OVERLIMIT');
+  public getFrozenItem(): TypedEntity | undefined {
+    return this.items.find(
+      (el) =>
+        this.getColumn(el, 'Ready2EXE')?.GetValue()?.toUpperCase() === 'FROZEN' ||
+        this.getColumn(el, 'Ready2EXE')?.GetValue()?.toUpperCase() === 'OVERLIMIT',
+    );
   }
 
-  private getColumn(entity: TypedEntity, name: string): IEntityColumn {
+  private getColumn(entity: TypedEntity, name: string): IEntityColumn | undefined {
     return CdrFactoryService.tryGetColumn(entity.GetEntity(), name);
   }
 }

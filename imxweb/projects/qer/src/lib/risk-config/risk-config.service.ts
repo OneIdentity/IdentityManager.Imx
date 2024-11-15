@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,26 +24,30 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Injectable } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { PortalRiskFunctions, RiskIndexExtendedData } from 'imx-api-qer';
-import { CollectionLoadParameters, DataModel, EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+import { PortalRiskFunctions, RiskIndexExtendedData } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, DataModel, EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 import { QerApiService } from '../qer-api-client.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RiskConfigService {
-  private busyIndicator: OverlayRef;
-  constructor(private readonly qerClient: QerApiService, private readonly busyService: EuiLoadingService) {}
+  constructor(
+    private readonly qerClient: QerApiService,
+    private readonly busyService: EuiLoadingService,
+  ) {}
 
   public get riskFunctionsSchema(): EntitySchema {
     return this.qerClient.typedClient.PortalRiskFunctions.GetSchema();
   }
 
-  public async get(parameters: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<PortalRiskFunctions, unknown>> {
-    return this.qerClient.typedClient.PortalRiskFunctions.Get(parameters);
+  public async get(
+    parameters: CollectionLoadParameters,
+    signal: AbortSignal,
+  ): Promise<ExtendedTypedEntityCollection<PortalRiskFunctions, unknown>> {
+    return this.qerClient.typedClient.PortalRiskFunctions.Get(parameters, { signal });
   }
 
   public async getDataModel(): Promise<DataModel> {
@@ -51,7 +55,7 @@ export class RiskConfigService {
   }
 
   public async getPortalRiskEntity(
-    uidRiskIndex: string
+    uidRiskIndex: string,
   ): Promise<ExtendedTypedEntityCollection<PortalRiskFunctions, RiskIndexExtendedData>> {
     return await this.qerClient.typedClient.PortalRiskFunctionsInteractive.Get_byid(uidRiskIndex);
   }
@@ -61,17 +65,10 @@ export class RiskConfigService {
   }
 
   public handleOpenLoader(): void {
-    if (!this.busyIndicator) {
-      setTimeout(() => (this.busyIndicator = this.busyService.show()));
-    }
+    this.busyService.show();
   }
 
   public handleCloseLoader(): void {
-    if (this.busyIndicator) {
-      setTimeout(() => {
-        this.busyService.hide(this.busyIndicator);
-        this.busyIndicator = undefined;
-      });
-    }
+    this.busyService.hide();
   }
 }

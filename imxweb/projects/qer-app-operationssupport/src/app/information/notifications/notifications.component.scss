@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 .startSubTitle {
@@ -40,23 +40,12 @@ imx-iconstack {
   line-height: 3em;
 }
 
-.mat-button {
-  height: 100%;
-  color: $iris-blue;
-  font-weight: 600;
-}
-
-.imx-spinner{
-  display: inline-block;
-}
-
-
 .imx-notification-container {
   display: flex;
   flex-wrap: wrap;
   margin-bottom: -10px;
 
-  >.imx-notification-card{
+  > .imx-notification-card {
     margin-right: 10px;
     margin-bottom: 10px;
   }
@@ -69,7 +58,6 @@ imx-iconstack {
 
   eui-icon {
     margin: 12px 15px;
-    color: $corbin-orange;
   }
 
   > * {
@@ -110,12 +98,12 @@ imx-iconstack {
 }
 
 .eui-dark-theme {
-  :host{
-    .notificationContentPane{
-      .notificationTitle{
+  :host {
+    .notificationContentPane {
+      .notificationTitle {
         color: $color-gray-5;
       }
-      .notificationContent{
+      .notificationContent {
         color: $color-gray-5;
       }
     }
@@ -123,12 +111,12 @@ imx-iconstack {
 }
 
 .eui-contrast-theme {
-  :host{
-    .notificationContentPane{
-      .notificationTitle{
+  :host {
+    .notificationContentPane {
+      .notificationTitle {
         color: $color-gray-0;
       }
-      .notificationContent{
+      .notificationContent {
         color: $color-gray-0;
       }
     }

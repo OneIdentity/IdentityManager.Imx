@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,95 +24,100 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatRadioModule } from '@angular/material/radio';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { LdsReplaceModule, DataSourceToolbarModule, DataTableModule, CdrModule, ClassloggerModule, HelpContextualModule, DataTreeWrapperModule } from 'qbm';
-import { UserModule, StatisticsModule } from 'qer';
-import { EditNameComponent } from './editors/edit-name.component';
+import {
+  CdrModule,
+  ClassloggerModule,
+  DataSourceToolbarModule,
+  DataTableModule,
+  DataTreeWrapperModule,
+  DataViewModule,
+  DateModule,
+  HelpContextualModule,
+  LdsReplaceModule,
+} from 'qbm';
+import { StatisticsModule, UserModule } from 'qer';
+import { AttestationRunsModule } from '../runs/attestation-runs.module';
+import { AttestationCasesComponent } from './attestation-cases/attestation-cases.component';
+import { ConfirmDeactivationComponent } from './confirm-deactivation/confirm-deactivation.component';
+import { EditMasterDataComponent } from './edit-master-data/edit-master-data.component';
 import { EditGenericComponent } from './editors/edit-generic.component';
+import { EditNameComponent } from './editors/edit-name.component';
 import { EditOriginComponent } from './editors/edit-origin.component';
 import { EditThresholdComponent } from './editors/edit-threshold.component';
 import { EditUintComponent } from './editors/edit-uint.component';
-import { EditMasterDataComponent } from './edit-master-data/edit-master-data.component';
-import { PolicyService } from './policy.service';
-import { AttestationCasesComponent } from './attestation-cases/attestation-cases.component';
 import { FilterEditorComponent } from './editors/filter-editor.component';
-import { ConfirmDeactivationComponent } from './confirm-deactivation/confirm-deactivation.component';
-import { PolicyFilterElementComponent } from './policy-filter-element/policy-filter-element.component';
-import { PolicyEditorComponent } from './policy-editor/policy-editor.component';
-import { PolicyListComponent } from './policy-list/policy-list.component';
-import { SelectedObjectsComponent } from './selected-objects/selected-objects.component';
 import { PolicyDetailsComponent } from './policy-details/policy-details.component';
-import { AttestationRunsModule } from '../runs/attestation-runs.module';
-
+import { PolicyEditorComponent } from './policy-editor/policy-editor.component';
+import { PolicyFilterElementComponent } from './policy-filter-element/policy-filter-element.component';
+import { PolicyListComponent } from './policy-list/policy-list.component';
+import { PolicyService } from './policy.service';
+import { SelectedObjectsComponent } from './selected-objects/selected-objects.component';
 
 @NgModule({
-    imports: [
-        CdrModule,
-        CommonModule,
-        DataSourceToolbarModule,
-        DataTableModule,
-        EuiCoreModule,
-        EuiMaterialModule,
-        FormsModule,
-        LdsReplaceModule,
-        MatExpansionModule,
-        MatTooltipModule,
-        MatInputModule,
-        MatButtonModule,
-        MatDialogModule,
-        MatRadioModule,
-        MatProgressSpinnerModule,
-        MatCheckboxModule,
-        MatSlideToggleModule,
-        MatMenuModule,
-        ReactiveFormsModule,
-        TranslateModule,
-        UserModule,
-        ClassloggerModule,
-        AttestationRunsModule,
-        LdsReplaceModule,
-        StatisticsModule,
-        HelpContextualModule,
-        DataTreeWrapperModule,
-    ],
-    declarations: [
-        EditGenericComponent,
-        EditNameComponent,
-        EditOriginComponent,
-        EditMasterDataComponent,
-        EditThresholdComponent,
-        EditUintComponent,
-        PolicyEditorComponent,
-        PolicyListComponent,
-        SelectedObjectsComponent,
-        AttestationCasesComponent,
-        FilterEditorComponent,
-        ConfirmDeactivationComponent,
-        PolicyFilterElementComponent,
-        PolicyDetailsComponent
-    ],
-    providers: [
-        PolicyService
-    ],
-    exports: [
-        PolicyListComponent,
-        EditMasterDataComponent,
-        AttestationCasesComponent
-    ]
+  imports: [
+    CdrModule,
+    CommonModule,
+    DataSourceToolbarModule,
+    DataTableModule,
+    EuiCoreModule,
+    EuiMaterialModule,
+    FormsModule,
+    LdsReplaceModule,
+    MatExpansionModule,
+    MatTooltipModule,
+    MatInputModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatRadioModule,
+    MatProgressSpinnerModule,
+    MatCheckboxModule,
+    MatSlideToggleModule,
+    MatMenuModule,
+    ReactiveFormsModule,
+    TranslateModule,
+    UserModule,
+    ClassloggerModule,
+    AttestationRunsModule,
+    LdsReplaceModule,
+    StatisticsModule,
+    HelpContextualModule,
+    DataTreeWrapperModule,
+    DataViewModule,
+    DateModule,
+  ],
+  declarations: [
+    EditGenericComponent,
+    EditNameComponent,
+    EditOriginComponent,
+    EditMasterDataComponent,
+    EditThresholdComponent,
+    EditUintComponent,
+    PolicyEditorComponent,
+    PolicyListComponent,
+    SelectedObjectsComponent,
+    AttestationCasesComponent,
+    FilterEditorComponent,
+    ConfirmDeactivationComponent,
+    PolicyFilterElementComponent,
+    PolicyDetailsComponent,
+  ],
+  providers: [PolicyService],
+  exports: [PolicyListComponent, EditMasterDataComponent, AttestationCasesComponent],
 })
-export class PolicyModule { }
+export class PolicyModule {}

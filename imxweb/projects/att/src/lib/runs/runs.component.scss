@@ -8,17 +8,6 @@
 .heading-wrapper {
   display: flex;
   align-items: flex-start;
-
-  .helper-alert {
-    display: flex;
-    margin: 0 0 20px auto;
-    align-self: flex-end;
-    width: 50%;
-
-    span {
-      display: block;
-    }
-  }
 }
 
 .imx-runs-grid {
@@ -26,8 +15,4 @@
   flex-direction: column;
   overflow: hidden;
   flex: 1 1 auto;
-
-  ::ng-deep .eui-sidesheet-actions{
-    background-color: transparent;
-  }
 }

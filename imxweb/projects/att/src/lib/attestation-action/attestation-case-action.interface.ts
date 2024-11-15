@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,8 @@
  *
  */
 
-import { AttestationCaseUiData } from 'imx-api-att';
-import { IEntity, IEntityColumn, TypedEntity } from 'imx-qbm-dbts';
+import { AttestationCaseUiData } from '@imx-modules/imx-api-att';
+import { IEntity, IEntityColumn, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 
 export interface AttestationCaseAction {
   /**
@@ -56,7 +56,7 @@ export interface AttestationCaseAction {
   key: string;
 
   /**
-   * Method, that might update the direct decision target 
+   * Method, that might update the direct decision target
    */
-  updateDirectDecisionTarget?: (workflow: IEntity) => void;  // used for rerouting
+  updateDirectDecisionTarget?: (workflow: IEntity) => void; // used for rerouting
 }

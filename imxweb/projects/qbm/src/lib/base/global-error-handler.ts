@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,19 +24,24 @@
  *
  */
 
+import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorHandler, Injectable, Injector } from '@angular/core';
 
-import { UserMessageService } from '../user-message/user-message.service';
 import { ClassloggerService } from '../classlogger/classlogger.service';
-import { HttpErrorResponse } from '@angular/common/http';
+import { ConfirmationService } from '../confirmation/confirmation.service';
+import { UserMessageService } from '../user-message/user-message.service';
 import { ErrorService } from './error.service';
 
 @Injectable()
 export class GlobalErrorHandler implements ErrorHandler {
   private messageService: UserMessageService;
   private logger: ClassloggerService;
+  private confirm: ConfirmationService;
 
-  constructor(private injector: Injector, private readonly errorService: ErrorService) {}
+  constructor(
+    private injector: Injector,
+    private readonly errorService: ErrorService,
+  ) {}
 
   private get target() {
     return this.errorService.target;
@@ -46,8 +51,16 @@ export class GlobalErrorHandler implements ErrorHandler {
     this.checkInjectedServices();
 
     if (error instanceof HttpErrorResponse) {
-      this.handleHttpErrorResponse(error);
+      if (error.status !== 419) {
+        this.handleHttpErrorResponse(error);
+      }
+    } else if (error.name === 'AbortError') {
+      return;
     } else if (error instanceof Error) {
+      if (error.message != null && error.message.indexOf('57002006') !== -1) {
+        this.handleSessionExpired();
+        return;
+      }
       if (error.message != null && error.message.indexOf('\n') !== -1) {
         this.messageService.subject.next({
           text: error.message.substring(0, error.message.indexOf('\n')).replace('Uncaught (in promise):', ''),
@@ -111,5 +124,13 @@ export class GlobalErrorHandler implements ErrorHandler {
     if (this.logger == null) {
       this.logger = this.injector.get(ClassloggerService);
     }
+
+    if (this.confirm == null) {
+      this.confirm = this.injector.get(ConfirmationService);
+    }
+  }
+
+  private handleSessionExpired(): void {
+    this.confirm.handleExpiredSession();
   }
 }

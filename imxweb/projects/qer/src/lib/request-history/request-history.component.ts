@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,30 +24,43 @@
  *
  */
 
-import { Component, OnInit } from '@angular/core';
-import { QerPermissionsService } from  '../admin/qer-permissions.service';
-import { HELP_CONTEXTUAL, HelpContextualValues } from 'qbm';
+import { AfterViewInit, Component, OnInit, signal, ViewChild, WritableSignal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { PwoExtendedData } from '@imx-modules/imx-api-qer';
+import { DataViewSource, HELP_CONTEXTUAL, HelpContextualValues } from 'qbm';
+import { QerPermissionsService } from '../admin/qer-permissions.service';
+import { ItshopRequest } from './itshop-request';
+import { RequestTableComponent } from './request-table.component';
 
 @Component({
   templateUrl: './request-history.component.html',
-  styleUrls: ['./request-history.component.scss']
+  styleUrls: ['./request-history.component.scss'],
 })
-export class RequestHistoryComponent implements OnInit {
-
+export class RequestHistoryComponent implements OnInit, AfterViewInit {
   public auditMode = false;
   contextId: HelpContextualValues;
+  public dataSource: WritableSignal<DataViewSource<ItshopRequest, PwoExtendedData> | undefined> = signal(undefined);
+  public filterByDelegations: boolean = false;
+  public filterMyPendings: boolean = false;
+  @ViewChild('requestTable', { static: false }) public requestTableComponent: RequestTableComponent;
 
   constructor(
     private readonly qerPermissionService: QerPermissionsService,
+    private activeRoute: ActivatedRoute,
   ) {}
 
   public async ngOnInit(): Promise<void> {
+    this.filterByDelegations = this.activeRoute.snapshot.queryParamMap.get('showDelegations') === 'true';
+    this.filterMyPendings = this.activeRoute.snapshot.queryParamMap.get('showMyPendings') === 'true';
     this.auditMode = await this.qerPermissionService.isShopStatistics();
-    if(this.auditMode){
+    if (this.auditMode) {
       this.contextId = HELP_CONTEXTUAL.RequestHistoryAuditor;
-    }else{
+    } else {
       this.contextId = HELP_CONTEXTUAL.RequestHistory;
     }
-    
+  }
+
+  ngAfterViewInit(): void {
+    this.dataSource.set(this.requestTableComponent?.dataSource);
   }
 }

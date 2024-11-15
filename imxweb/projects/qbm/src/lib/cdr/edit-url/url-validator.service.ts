@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,7 +31,7 @@ import { ValidatorFn, Validators } from '@angular/forms';
  * A service for providing an url validation.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UrlValidatorService {
 
@@ -43,6 +43,6 @@ export class UrlValidatorService {
    * 'http://www.google.com'
    */
   public readonly validators: ReadonlyArray<ValidatorFn> = [
-    Validators.pattern(new RegExp('^(http|https)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?'))
+    Validators.pattern(new RegExp('^(http|https)://[a-zA-Z0-9-.]+.[a-zA-Z]{2,3}(/S*)?')),
   ];
 }

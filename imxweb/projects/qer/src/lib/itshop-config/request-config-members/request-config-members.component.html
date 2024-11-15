@@ -1,6 +1,13 @@
 <div eui-sidesheet-content class="imx-flex-content">
   <div class="membership-view-toggle" *ngIf="managedByDynamicGroup">
-    <mat-button-toggle-group #buttonToggle value="members" (change)="onToggleChanged($event)" [vertical]="isMobile">
+    <mat-button-toggle-group
+      #buttonToggle
+      class="imx-button-toggle-group-warning"
+      value="members"
+      [hideSingleSelectionIndicator]="true"
+      (change)="onToggleChanged($event)"
+      [vertical]="isMobile"
+    >
       <mat-button-toggle value="members">{{ '#LDS#Assigned members' | translate }}</mat-button-toggle>
       <mat-button-toggle value="exclusions">{{ '#LDS#Excluded members' | translate }}</mat-button-toggle>
     </mat-button-toggle-group>
@@ -8,7 +15,14 @@
   </div>
 
   <ng-container *ngIf="membershipViewMode === 'members'">
-    <eui-alert *ngIf="showHelperAlert" class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true" (dismissed)="onHelperDismissed()">
+    <eui-alert
+      *ngIf="showHelperAlert"
+      type="info"
+      [condensed]="true"
+      [colored]="true"
+      [dismissable]="true"
+      (dismissed)="onHelperDismissed()"
+    >
       <span>{{ requestsService.LdsSpecifyMembers | translate }}</span>
     </eui-alert>
 
@@ -27,7 +41,7 @@
         class="no-row-selection imx-requests-table"
         #dataTable
         [dst]="dst"
-        detailViewVisible="false"
+        [detailViewVisible]="false"
         [selectable]="true"
         (selectionChanged)="onMemberSelected($event)"
         noDataText="#LDS#There are currently no members."
@@ -36,11 +50,17 @@
       ></imx-data-table>
       <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
     </mat-card>
-    <imx-selected-elements [selectedElements]="selectedMembers"></imx-selected-elements>
   </ng-container>
 
   <ng-container *ngIf="membershipViewMode === 'exclusions'">
-    <eui-alert *ngIf="showHelperAlert" class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true" (dismissed)="onHelperDismissed()">
+    <eui-alert
+      *ngIf="showHelperAlert"
+      type="info"
+      [condensed]="true"
+      [colored]="true"
+      [dismissable]="true"
+      (dismissed)="onHelperDismissed()"
+    >
       <span>{{ requestsService.LdsMembersByDynamicRole | translate }}</span>
     </eui-alert>
 
@@ -59,7 +79,7 @@
         class="no-row-selection imx-requests-table"
         #dataTableExclusions
         [dst]="dstExcluded"
-        detailViewVisible="false"
+        [detailViewVisible]="false"
         [selectable]="true"
         (selectionChanged)="onExcusionSelected($event)"
         noDataText="#LDS#There are currently no excluded members."
@@ -68,8 +88,6 @@
       ></imx-data-table>
       <imx-data-source-paginator [dst]="dstExcluded"></imx-data-source-paginator>
     </mat-card>
-
-    <imx-selected-elements [selectedElements]="selectedExclusions" style="margin-left: 16px"></imx-selected-elements>
   </ng-container>
 </div>
 
@@ -77,8 +95,8 @@
 
 <ng-container *ngIf="membershipViewMode === 'members'">
   <div eui-sidesheet-actions class="request-config__action-buttons">
+    <imx-selected-elements class="justify-start" [selectedElements]="selectedMembers"></imx-selected-elements>
     <button
-      class="justify-start"
       mat-stroked-button
       color="warn"
       [disabled]="selectedMembers.length === 0"
@@ -89,7 +107,13 @@
       <span translate>#LDS#Remove</span>
     </button>
 
-    <button mat-raised-button color="primary" data-imx-identifier="add-new-request-config-member" [disabled]="selectedMembers.length > 0" (click)="openMemberSelector()">
+    <button
+      mat-flat-button
+      color="primary"
+      data-imx-identifier="add-new-request-config-member"
+      [disabled]="!!selectedMembers.length"
+      (click)="openMemberSelector()"
+    >
       {{ '#LDS#Add members' | translate }}
     </button>
   </div>
@@ -97,8 +121,8 @@
 
 <ng-container *ngIf="membershipViewMode === 'exclusions'">
   <div eui-sidesheet-actions class="request-config__action-buttons">
+    <imx-selected-elements class="justify-start" [selectedElements]="selectedExclusions" style="margin-left: 16px"></imx-selected-elements>
     <button
-      class="justify-start"
       mat-stroked-button
       color="warn"
       [disabled]="selectedExclusions.length === 0"

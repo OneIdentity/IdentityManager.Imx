@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,49 +24,51 @@
  *
  */
 
-import { NgModule } from '@angular/core';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatTableModule } from '@angular/material/table';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { ScrollingModule } from '@angular/cdk/scrolling';
-import { MatDividerModule } from '@angular/material/divider';
 
+import { MatTableModule } from '@angular/material/table';
 import {
+  CdrModule,
   ClassloggerModule,
-  DataTilesModule,
   DataSourceToolbarModule,
   DataTableModule,
+  DataTilesModule,
+  DataViewModule,
   DisableControlModule,
-  QbmModule,
+  InfoModalDialogModule,
   LdsReplaceModule,
-  CdrModule,
+  QbmModule,
+  SelectedElementsModule,
   SqlWizardModule,
-  InfoModalDialogModule
 } from 'qbm';
-import { EntitlementsAddComponent } from './entitlement-add/entitlements-add.component';
-import { EntitlementsComponent } from './entitlements.component';
-import { EntitlementsService } from './entitlements.service';
-import { AobUserModule } from '../user/user.module';
 import { LifecycleActionsModule } from '../lifecycle-actions/lifecycle-actions.module';
-import { EntitlementEditModule } from './entitlement-edit/entitlement-edit.module';
-import { EntitlementDetailComponent } from './entitlement-detail/entitlement-detail.component';
+import { AobUserModule } from '../user/user.module';
+import { EntitlementsAddComponent } from './entitlement-add/entitlements-add.component';
 import { SystemRoleConfigComponent } from './entitlement-add/system-role-config/system-role-config.component';
+import { EntitlementDetailComponent } from './entitlement-detail/entitlement-detail.component';
 import { EntitlementEditAutoAddComponent } from './entitlement-edit-auto-add/entitlement-edit-auto-add.component';
 import { MappedEntitlementsPreviewComponent } from './entitlement-edit-auto-add/mapped-entitlements-preview/mapped-entitlements-preview.component';
+import { EntitlementEditModule } from './entitlement-edit/entitlement-edit.module';
+import { EntitlementsComponent } from './entitlements.component';
+import { EntitlementsService } from './entitlements.service';
 
 @NgModule({
   declarations: [
@@ -75,7 +77,7 @@ import { MappedEntitlementsPreviewComponent } from './entitlement-edit-auto-add/
     EntitlementDetailComponent,
     SystemRoleConfigComponent,
     EntitlementEditAutoAddComponent,
-    MappedEntitlementsPreviewComponent
+    MappedEntitlementsPreviewComponent,
   ],
   imports: [
     ClassloggerModule,
@@ -111,13 +113,11 @@ import { MappedEntitlementsPreviewComponent } from './entitlement-edit-auto-add/
     CdrModule,
     ScrollingModule,
     SqlWizardModule,
-    InfoModalDialogModule
+    InfoModalDialogModule,
+    SelectedElementsModule,
+    DataViewModule,
   ],
-  providers: [
-    EntitlementsService
-  ],
-  exports: [
-    EntitlementsComponent
-  ],
+  providers: [EntitlementsService],
+  exports: [EntitlementsComponent],
 })
-export class EntitlementsModule { }
+export class EntitlementsModule {}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,18 +25,20 @@
  */
 
 import { Injectable } from '@angular/core';
-import { PortalApplicationIdentities, PortalApplicationIdentitiesbyidentity } from 'imx-api-aob';
-import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+import { PortalApplicationIdentities, PortalApplicationIdentitiesbyidentity } from '@imx-modules/imx-api-aob';
+import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 import { AobApiService } from '../../aob-api-client.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class IdentityService {
+  constructor(private readonly api: AobApiService) {}
 
-  constructor(private readonly api: AobApiService) { }
-
-  public async get(applicationId: string, params?: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<PortalApplicationIdentities, unknown>> {
+  public async get(
+    applicationId: string,
+    params?: CollectionLoadParameters,
+  ): Promise<ExtendedTypedEntityCollection<PortalApplicationIdentities, unknown>> {
     return await this.api.typedClient.PortalApplicationIdentities.Get(applicationId, params);
   }
 
@@ -44,12 +46,15 @@ export class IdentityService {
     return this.api.typedClient.PortalApplicationIdentities.GetSchema();
   }
 
-  public async getByIdentity(applicationId: string, identityId: string, params?: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<PortalApplicationIdentitiesbyidentity, unknown>> {
+  public async getByIdentity(
+    applicationId: string,
+    identityId: string,
+    params?: CollectionLoadParameters,
+  ): Promise<ExtendedTypedEntityCollection<PortalApplicationIdentitiesbyidentity, unknown>> {
     return await this.api.typedClient.PortalApplicationIdentitiesbyidentity.Getbyidentity(applicationId, identityId, params);
   }
 
   public getByIdentitySchema(): EntitySchema {
     return this.api.typedClient.PortalApplicationIdentitiesbyidentity.GetSchema();
   }
-
 }

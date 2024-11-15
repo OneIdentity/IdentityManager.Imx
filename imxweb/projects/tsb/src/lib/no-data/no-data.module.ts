@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,6 @@
  *
  */
 
-
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EuiCoreModule } from '@elemental-ui/core';
@@ -33,16 +32,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { DataExplorerNoDataComponent } from './no-data.component';
 
 @NgModule({
-  declarations: [
-    DataExplorerNoDataComponent
-  ],
-  exports: [
-    DataExplorerNoDataComponent
-  ],
-  imports: [
-    CommonModule,
-    EuiCoreModule,
-    TranslateModule
-  ]
+  declarations: [DataExplorerNoDataComponent],
+  exports: [DataExplorerNoDataComponent],
+  imports: [CommonModule, EuiCoreModule, TranslateModule],
 })
-export class NoDataModule { }
+export class NoDataModule {}

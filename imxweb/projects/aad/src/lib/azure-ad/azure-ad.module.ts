@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -47,7 +47,7 @@ import { LicenceOverviewButtonComponent } from '../aad-extension/licence-overvie
     AadUserDeniedPlansComponent,
     AadGroupSubscriptionsComponent,
     AadGroupDeniedPlansComponent,
-    LicenceOverviewButtonComponent
+    LicenceOverviewButtonComponent,
   ],
   imports: [
     CommonModule,
@@ -61,16 +61,13 @@ import { LicenceOverviewButtonComponent } from '../aad-extension/licence-overvie
     DataSourceToolbarModule,
     DataTableModule,
   ],
-  providers: [
-    AzureAdService,
-    AadPermissionsService
-  ],
+  providers: [AzureAdService, AadPermissionsService],
   exports: [
     AadUserSubscriptionsComponent,
     AadUserDeniedPlansComponent,
     AadGroupSubscriptionsComponent,
     AadGroupDeniedPlansComponent,
-    LicenceOverviewButtonComponent
+    LicenceOverviewButtonComponent,
   ],
 })
 export class AzureAdModule {}

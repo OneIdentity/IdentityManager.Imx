@@ -1,71 +1,107 @@
-<mat-card class="imx-table-card">
-  <imx-data-source-toolbar
-    #dst
-    [settings]="dstSettings"
-    [options]="['search', 'sort', 'filter', 'groupBy', 'settings']"
-    (search)="onSearch($event)"
-    (navigationStateChanged)="getData($event)"
-    (updateConfig)="updateConfig($event)" (deleteConfigById)="deleteConfigById($event)"
+<mat-card class="imx-table-card" [ngClass]="{ 'imx-margin-horizontal-20': uidAttestationPolicy }">
+  <imx-data-view-toolbar
+    [dataSource]="dataSource"
+    *ngIf="uidAttestationPolicy"
+    (updateConfig)="updateConfig($event)"
+    (deleteConfigById)="deleteConfigById($event)"
+  ></imx-data-view-toolbar>
+  <imx-data-view-auto-table
+    [dataSource]="dataSource"
+    mode="manual"
+    matSort
+    (matSortChange)="dataSource?.sortChange($event)"
+    [matSortActive]="dataSource.sortId()"
+    [matSortDirection]="dataSource.sortDirection()"
   >
-  </imx-data-source-toolbar>
-  <div class="imx-table-container">
-    <imx-data-table
-      [dst]="dst"
-      detailViewVisible="false"
-      mode="manual"
-      data-imx-identifier="runs-table"
-      (highlightedEntityChanged)="onRunChanged($event)"
-      [groupData]="groupedData"
-      (groupDataChanged)="onGroupingChange($event)"
-    >
-      <imx-data-table-column [entityColumn]="entitySchema?.Columns.UID_AttestationPolicy" data-imx-identifier="runs-table-column-UID_AttestationPolicy">
-        <ng-template let-item>
-          <div>
-            <div>{{ item.UID_AttestationPolicy.Column.GetDisplayValue() }}</div>
-            <div subtitle>
-              {{ item.UID_AttestationPolicyGroup.Column.GetDisplayValue() }}
-            </div>
+    <ng-container [matColumnDef]="entitySchema.Columns.UID_AttestationPolicy.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.UID_AttestationPolicy?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div *ngIf="item.UID_AttestationPolicy?.Column?.GetDisplayValue() !== ''">
+          <div>{{ item.UID_AttestationPolicy.Column.GetDisplayValue() }}</div>
+          <div subtitle>
+            {{ item.UID_AttestationPolicyGroup.Column.GetDisplayValue() }}
           </div>
-        </ng-template>
-      </imx-data-table-column>
-      <imx-data-table-generic-column columnName="RunCategory" data-imx-identifier="runs-table-column-RunCategory">
-        <ng-template let-item>
-          <eui-badge *ngIf="!isCompleted(item) && item.Progress.value * 100 > progressCalcThreshold" [color]="categoryBadgeColor[item.RunCategory.value]">
-            {{ item.RunCategory.Column.GetDisplayValue() }}
-          </eui-badge>
-        </ng-template>
-      </imx-data-table-generic-column>
-      <imx-data-table-column [entityColumn]="entitySchema?.Columns.PolicyProcessed" data-imx-identifier="runs-table-column-PolicyProcessed"> </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema?.Columns.DueDate" data-imx-identifier="runs-table-column-DueDate"> </imx-data-table-column>
-      <imx-data-table-column
-        columnLabel="{{ '#LDS#Pending' | translate }}"
-        align="center"
-        [entityColumn]="entitySchema?.Columns.PendingCases"
-        data-imx-identifier="runs-table-column-PendingCases"
-      >
-      </imx-data-table-column>
-      <imx-data-table-column
-        columnLabel="{{ '#LDS#Closed' | translate }}"
-        align="center"
-        [entityColumn]="entitySchema?.Columns.ClosedCases"
-        data-imx-identifier="runs-table-column-ClosedCases"
-      >
-      </imx-data-table-column>
-      <imx-data-table-column
-        [entityColumn]="entitySchema?.Columns.Progress"
-        [columnLabel]="'#LDS#Progress' | translate"
-        data-imx-identifier="runs-table-column-Progress"
-      >
-        <ng-template let-item>
-          <imx-progress [attestationRun]="item" [limit]="attestationRunConfig?.LimitGood"></imx-progress>
-        </ng-template>
-      </imx-data-table-column>
-    </imx-data-table>
-  </div>
-  <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+        </div>
+        <div *ngIf="item.UID_AttestationPolicy?.Column?.GetDisplayValue() === ''">
+          <div subtitle>
+            {{
+              '#LDS#Started via policy collection "{0}"' | translate | ldsReplace: item.UID_AttestationPolicyGroup.Column.GetDisplayValue()
+            }}
+          </div>
+        </div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="'RunCategory'">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <eui-badge
+          *ngIf="!isCompleted(item) && item.Progress.value * 100 > progressCalcThreshold"
+          [color]="categoryBadgeColor[item.RunCategory.value]"
+        >
+          {{ item.RunCategory.Column.GetDisplayValue() }}
+        </eui-badge>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.PolicyProcessed.ColumnName">
+      <ng-container *ngIf="dataSource.isSortable(entitySchema.Columns.PolicyProcessed?.ColumnName)">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{ entitySchema?.Columns?.PolicyProcessed?.Display }}
+        </th>
+      </ng-container>
+      <ng-container *ngIf="!dataSource.isSortable(entitySchema.Columns.PolicyProcessed?.ColumnName)">
+        <th mat-header-cell *matHeaderCellDef>
+          {{ entitySchema?.Columns?.PolicyProcessed?.Display }}
+        </th>
+      </ng-container>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.PolicyProcessed.Column.GetValue() | shortDate }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.DueDate.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.DueDate?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.DueDate.Column.GetValue() | shortDate }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.PendingCases.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ '#LDS#Pending' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.PendingCases.Column.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.ClosedCases.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ '#LDS#Closed' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.ClosedCases.Column.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.Progress.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ '#LDS#Progress' | translate }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <imx-progress [attestationRun]="item" [limit]="attestationRunConfig?.LimitGood"></imx-progress>
+      </td>
+    </ng-container>
+  </imx-data-view-auto-table>
+  <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
 </mat-card>
-<div eui-sidesheet-actions class="button-row">
-  <button mat-raised-button color="primary" *ngIf="canSeeAttestationPolicies" (click)="sendReminderEmail()" [disabled]="!hasPendingAttestations">
+<div [ngClass]="uidAttestationPolicy ? 'eui-sidesheet-actions' : 'imx-button-bar-transparent'" class="imx-margin-top-16">
+  <button
+    mat-flat-button
+    color="primary"
+    *ngIf="canSeeAttestationPolicies"
+    (click)="sendReminderEmail()"
+    [disabled]="!hasPendingAttestations"
+  >
     {{ '#LDS#Send reminders for displayed runs' | translate }}
   </button>
 </div>

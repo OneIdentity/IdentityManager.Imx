@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,22 +26,21 @@
 
 import { Injectable } from '@angular/core';
 
-import { RoleComplianceViolation } from 'imx-api-cpl';
-import { EntityColumnData, EntityData, TypedEntityBuilder, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { RoleComplianceViolation } from '@imx-modules/imx-api-cpl';
+import { EntityColumnData, EntityData, TypedEntityBuilder, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { RoleComplianceViolationTypedEntity } from './role-compliance-violation-typed-entity';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RoleComplianceViolationsWrapperService {
-
   public readonly roleComplianceEntitySchema = RoleComplianceViolationTypedEntity.GetEntitySchema();
   private readonly builder = new TypedEntityBuilder(RoleComplianceViolationTypedEntity);
 
   public build(data: RoleComplianceViolation[]): TypedEntityCollectionData<RoleComplianceViolationTypedEntity> {
     const violations = {
       TotalCount: data.length,
-      Entities: data.map(elem => this.buildEntityData(elem))
+      Entities: data.map((elem) => this.buildEntityData(elem)),
     };
     return this.builder.buildReadWriteEntities(violations, this.roleComplianceEntitySchema);
   }
@@ -57,4 +56,3 @@ export class RoleComplianceViolationsWrapperService {
     return { Columns: ret };
   }
 }
-

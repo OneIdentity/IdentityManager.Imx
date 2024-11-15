@@ -6,16 +6,11 @@
   ::ng-deep .eui-alert {
     margin-bottom: 20px;
   }
-
   ::ng-deep .mat-card-header-text {
     margin: 0;
   }
 
-  ::ng-deep .mat-form-field-wrapper {
-    padding-bottom: 0;
-  }
-
-  .mat-card-actions {
+  .mat-mdc-card-actions {
     display: flex;
   }
 
@@ -34,11 +29,6 @@
   .auth-button {
     display: flex;
     flex-direction: row;
-  }
-
-  .mat-spinner {
-    margin-right: 16px;
-    margin-left: 16px;
   }
 }
 

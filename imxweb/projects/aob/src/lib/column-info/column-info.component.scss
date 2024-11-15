@@ -5,7 +5,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 
-  >span {
+  > span {
     font-weight: 600;
     color: $black-6;
   }
@@ -14,7 +14,7 @@
 .eui-dark-theme {
   :host {
     .imx-user-properties {
-      >span {
+      > span {
         color: $color-gray-10;
       }
     }
@@ -24,7 +24,7 @@
 .eui-contrast-theme {
   :host {
     .imx-user-properties {
-      >span {
+      > span {
         color: $color-gray-0;
       }
     }

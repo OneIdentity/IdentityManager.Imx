@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 .risk-tree-invisible {
   display: none;
@@ -9,11 +9,6 @@
   margin-top: 0;
   margin-bottom: 0;
   list-style-type: none;
-}
-
-eui-alert {
-  margin-bottom: 1em;
-  display: block;
 }
 
 .risk-display {

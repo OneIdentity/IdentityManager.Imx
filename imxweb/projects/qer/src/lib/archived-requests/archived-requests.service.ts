@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,10 +25,17 @@
  */
 
 import { Injectable } from '@angular/core';
-import { DisplayBuilder, FkCandidateProvider, IClientProperty, MetaTableRelationData, ReadWriteEntity, ValType } from 'imx-qbm-dbts';
+import {
+  DisplayBuilder,
+  FkCandidateProvider,
+  IClientProperty,
+  MetaTableRelationData,
+  ReadWriteEntity,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
+import { TranslateService } from '@ngx-translate/core';
 import { BaseCdr, ImxTranslationProviderService } from 'qbm';
 import { QerApiService } from '../qer-api-client.service';
-import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
   providedIn: 'root',
@@ -37,28 +44,29 @@ export class ArchivedRequestsService {
   constructor(
     private readonly qerClient: QerApiService,
     private translate: TranslateService,
-    private translateService: ImxTranslationProviderService
+    private translateService: ImxTranslationProviderService,
   ) {}
 
   public createRecipientCdr(): BaseCdr {
     const columnProperties = {};
 
-    const property = this.createRequesterProperty();
-    columnProperties[property.ColumnName] = property;
+    const columnName = 'PersonColumnName';
+    const property = this.createRequesterProperty(columnName);
+    columnProperties[columnName] = property;
     const entityColumn = new ReadWriteEntity(
       { Columns: columnProperties },
       {},
       this.createRequesterFkProvider(property.FkRelation),
       undefined,
-      new DisplayBuilder(this.translateService)
-    ).GetColumn(property.ColumnName);
+      new DisplayBuilder(this.translateService),
+    ).GetColumn(columnName);
 
     return new BaseCdr(entityColumn, '#LDS#Recipient or requester');
   }
 
-  private createRequesterProperty(): IClientProperty {
+  private createRequesterProperty(columnName: string): IClientProperty {
     const fkRelation = {
-      ChildColumnName: 'PersonColumnName',
+      ChildColumnName: columnName,
       ParentTableName: 'Person',
       ParentColumnName: 'UID_Person',
       IsMemberRelation: false,
@@ -71,11 +79,11 @@ export class ArchivedRequestsService {
     };
   }
 
-  private createRequesterFkProvider(fkRelation: MetaTableRelationData): FkCandidateProvider {
+  private createRequesterFkProvider(fkRelation: MetaTableRelationData | undefined): FkCandidateProvider {
     return new FkCandidateProvider([
       {
-        columnName: fkRelation.ChildColumnName,
-        fkTableName: fkRelation.ParentTableName,
+        columnName: fkRelation?.ChildColumnName || '',
+        fkTableName: fkRelation?.ParentTableName || '',
         parameterNames: ['OrderBy', 'StartIndex', 'PageSize', 'filter', 'search'],
         load: async (_, parameters = {}) => this.qerClient.client.portal_candidates_Person_get(parameters),
         getDataModel: async () => ({}),

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,14 +24,14 @@
  *
  */
 
-import { IEntityColumn, TypedEntity } from "imx-qbm-dbts";
+import { IEntityColumn, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 
 export enum EntitlementsType {
   UnsGroup,
   Eset,
   Qerresource,
   Rpsreport,
-  Tsbaccountdef
+  Tsbaccountdef,
 }
 
 export interface AddEntitlementParameter {

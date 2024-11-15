@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -40,10 +40,7 @@ import { DataTileComponent } from './data-tile.component';
 import { BusyIndicatorModule } from '../busy-indicator/busy-indicator.module';
 
 @NgModule({
-  declarations: [
-    DataTilesComponent,
-    DataTileComponent
-  ],
+  declarations: [DataTilesComponent, DataTileComponent],
   imports: [
     CommonModule,
     EuiCoreModule,
@@ -54,8 +51,8 @@ import { BusyIndicatorModule } from '../busy-indicator/busy-indicator.module';
     MatMenuModule,
     MatBadgeModule,
     TranslateModule,
-    BusyIndicatorModule
+    BusyIndicatorModule,
   ],
-  exports: [ DataTilesComponent ],
+  exports: [DataTilesComponent],
 })
-export class DataTilesModule { }
+export class DataTilesModule {}

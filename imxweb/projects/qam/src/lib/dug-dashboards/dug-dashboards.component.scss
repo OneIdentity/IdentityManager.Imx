@@ -1,0 +1,41 @@
+@import 'base/mixins';
+
+:host {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chart-container {
+  display: flex;
+  height: fit-content;
+  flex-wrap: wrap;
+  grid-auto-rows: auto;
+  gap: 15px;
+  grid-auto-flow: dense;
+  padding: 10px;
+  overflow: auto;
+}
+
+.mat-card-header {
+  justify-content: center;
+}
+
+.center-content {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+}
+
+.stat-card {
+  min-height: 300px;
+  min-width: 500px;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  border: 1px solid transparent;
+  @include eui-elevation-1;
+}

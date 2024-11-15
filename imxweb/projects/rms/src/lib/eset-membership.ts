@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,63 +24,27 @@
  *
  */
 
-import { CollectionLoadParameters, ExtendedTypedEntityCollection, TypedEntity, EntityCollectionData, EntitySchema, IEntity, DataModel } from 'imx-qbm-dbts';
-import { IRoleMembershipType } from 'qer';
-import { DynamicMethod, ImxTranslationProviderService, imx_SessionService } from 'qbm';
+import {
+  CollectionLoadParameters,
+  EntityCollectionData,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  TypedEntity,
+} from '@imx-modules/imx-qbm-dbts';
+import { ImxTranslationProviderService, imx_SessionService } from 'qbm';
+import { BaseMembership } from 'qer';
 import { RmsApiService } from './rms-api-client.service';
 
-export class EsetMembership implements IRoleMembershipType {
-
+export class EsetMembership extends BaseMembership {
   public supportsDynamicMemberships = false;
-  private readonly schemaPaths: Map<string, string> = new Map();
-
-  private readonly basePath = 'portal/roles/config/membership/ESet';
 
   constructor(
     private readonly api: RmsApiService,
     private readonly session: imx_SessionService,
-    private readonly translator: ImxTranslationProviderService
+    private readonly translator: ImxTranslationProviderService,
   ) {
-    this.schemaPaths.set('get', `${this.basePath}/{UID_ESet}`);
-    this.schemaPaths.set('candidates', `${this.basePath}/{UID_ESet}/UID_Person/candidates`);
-  }
-
-  public async get(id: string, navigationState?: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
-    return this.api.typedClient.PortalRolesConfigMembershipEset.Get(id, navigationState);
-  }
-
-  public getSchema(key: string): EntitySchema {
-    return this.session.Client.getSchema(this.schemaPaths.get(key));
-  }
-
-  public GetUidPerson(entity: IEntity) {
-    return entity.GetColumn('UID_Person').GetValue();
-  }
-
-  public async getCandidates(
-    id: string,
-    navigationState?: CollectionLoadParameters
-  ): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
-    const api = new DynamicMethod(
-      this.schemaPaths.get('candidates'),
-      `/${this.basePath}/${id}/UID_Person/candidates`,
-      this.api.apiClient,
-      this.session,
-      this.translator
-    );
-
-    return api.Get(navigationState);
-  }
-
-  public async getCandidatesDataModel(id: string): Promise<DataModel> {
-    const dynamicMethod = new DynamicMethod(
-      this.schemaPaths.get('candidates'),
-      `/${this.basePath}/${id}/UID_Person/candidates`,
-      this.api.apiClient,
-      this.session,
-      this.translator
-    );
-    return dynamicMethod.getDataModei();
+    super(api, session, translator);
+    this.setRoleName('ESet', 'UID_ESet');
   }
 
   public async delete(role: string, identity: string): Promise<EntityCollectionData> {
@@ -91,13 +55,9 @@ export class EsetMembership implements IRoleMembershipType {
     return false;
   }
 
-  public GetUidRole(entity: IEntity): string {
-    return entity.GetColumn("UID_ESet").GetValue();
-  }
-
   public getPrimaryMembers(
     uid: string,
-    navigationstate: CollectionLoadParameters
+    navigationstate: CollectionLoadParameters,
   ): Promise<ExtendedTypedEntityCollection<TypedEntity, any>> {
     throw new Error('System roles do not allow primary memberships.');
   }

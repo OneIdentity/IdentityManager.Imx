@@ -1,6 +1,5 @@
-@import '../../../../../shared/scss/common-table.scss';
+@import 'base/mixins';
 
-
-.mat-stroked-button {
-  @include imx-icon-for-image-button();
+.mat-mdc-outlined-button {
+  @include image-button-icon();
 }

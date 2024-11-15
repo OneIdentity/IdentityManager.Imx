@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,13 +25,13 @@
  */
 
 import { EventEmitter, Injectable } from '@angular/core';
-import { CollectionLoadParameters } from 'imx-qbm-dbts';
+import { CollectionLoadParameters } from '@imx-modules/imx-qbm-dbts';
+import { SqlWizardApiService } from '../../sqlwizard/sqlwizard-api.service';
 import { DataSourceToolbarSelectedFilter } from '../data-source-toolbar-filters.interface';
 import { FilterFormState, FilterTypeIdentifier } from './filter-wizard.interfaces';
-import { SqlWizardApiService } from '../../sqlwizard/sqlwizard-api.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FilterWizardService {
   public navigationStateChanged = new EventEmitter<selectedFiltersParams>();
@@ -40,10 +40,10 @@ export class FilterWizardService {
   public filterFormStateEvent = new EventEmitter<FilterFormState>();
   public filterTabChangedEvent = new EventEmitter<FilterTypeIdentifier>();
 
-  constructor(public readonly sqlWizardSvc: SqlWizardApiService) { }
+  constructor(public readonly sqlWizardSvc: SqlWizardApiService) {}
 
   public get isSqlWizardImplemented(): boolean {
-    return this.sqlWizardSvc.implemented;
+    return this.sqlWizardSvc.implemented ?? false;
   }
 
   public updateNavigation(id: string, params: CollectionLoadParameters, selectedFilters: DataSourceToolbarSelectedFilter[]): void {
@@ -68,7 +68,7 @@ export class FilterWizardService {
 }
 
 export interface selectedFiltersParams {
-  id:  string;
+  id: string;
   params: CollectionLoadParameters;
   selectedFilters: DataSourceToolbarSelectedFilter[];
 }

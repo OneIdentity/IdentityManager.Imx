@@ -3,24 +3,9 @@
   flex-direction: column;
   flex-grow: 1;
 
-  .imx-flex-container{
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 auto;
-    padding-bottom: 20px;
-  }
-
-  imx-busy-indicator{
+  imx-busy-indicator {
     justify-self: center;
     align-self: center;
-  }
-}
-
-.imx-table-container {
-  flex: 1 1 auto;
-
-  > :nth-child(2) {
-    flex: 1 1 auto;
   }
 }
 
@@ -30,13 +15,8 @@
   flex-direction: row;
 }
 
-.reactivate-radio {
-  display: block;
-}
-
 .inner-card {
-  margin-top: 1em;
-
+  margin-bottom: 1em;
   mat-card-content {
     padding: 0 1em;
   }
@@ -55,8 +35,10 @@
   list-style-type: initial;
 }
 
-.small-busy {
-  margin-left: 1em;
-  align-self: center;
-  flex: 1 1 auto;
+.imx-single-frozen.imx-flex-container {
+  margin: 0;
+
+  ::ng-deep .mat-mdc-table {
+    box-shadow: none;
+  }
 }

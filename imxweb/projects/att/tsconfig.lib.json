@@ -5,11 +5,13 @@
     "outDir": "../../out-tsc/lib",
     "declaration": true,
     "declarationMap": true,
+    "sourceMap": true,
     "inlineSources": true,
-    "types": []
+    "types": [],
+    "strictNullChecks": true
   },
-  "exclude": [
-    "src/test.ts",
-    "**/*.spec.ts"
-  ]
+  "angularCompilerOptions": {
+    "strictTemplates": true
+  },
+  "exclude": ["src/test.ts", "**/*.spec.ts"]
 }

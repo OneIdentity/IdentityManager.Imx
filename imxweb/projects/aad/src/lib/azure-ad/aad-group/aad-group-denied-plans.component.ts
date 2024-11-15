@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,25 +26,24 @@
 
 import { Component, OnInit, ViewChild } from '@angular/core';
 
-import { PortalTargetsystemAadgroupDeniedserviceplans } from 'imx-api-aad';
-import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
+import { PortalTargetsystemAadgroupDeniedserviceplans } from '@imx-modules/imx-api-aad';
+import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty } from '@imx-modules/imx-qbm-dbts';
 import {
   ClassloggerService,
   DataSourceToolbarFilter,
   DataSourceToolbarSettings,
   DataTableComponent,
   DynamicTabDataProviderDirective,
-  SettingsService
+  SettingsService,
 } from 'qbm';
 import { AzureAdService } from '../azure-ad.service';
 
 @Component({
   selector: 'imx-aad-group-denied-plans',
   templateUrl: './aad-group-denied-plans.component.html',
-  styleUrls: ['../azure-ad-common.scss']
+  styleUrls: ['../azure-ad-common.scss'],
 })
 export class AadGroupDeniedPlansComponent implements OnInit {
-
   @ViewChild('dataTable', { static: false }) public dataTable: DataTableComponent<PortalTargetsystemAadgroupDeniedserviceplans>;
   public dstSettings: DataSourceToolbarSettings;
   public navigationState: CollectionLoadParameters;
@@ -53,13 +52,13 @@ export class AadGroupDeniedPlansComponent implements OnInit {
   public readonly DisplayColumns = DisplayColumns;
 
   private displayedColumns: IClientProperty[] = [];
-  private referrer: { objecttable: string; objectuid: string; };
+  private referrer: { objecttable: string; objectuid: string };
 
   constructor(
     private readonly logger: ClassloggerService,
     private readonly aadService: AzureAdService,
     settings: SettingsService,
-    dataProvider: DynamicTabDataProviderDirective
+    dataProvider: DynamicTabDataProviderDirective,
   ) {
     this.navigationState = { PageSize: settings.DefaultPageSize, StartIndex: 0 };
     this.entitySchemaAadGroupDeniedPlan = this.aadService.aadGroupDeniedPlansSchema;
@@ -68,8 +67,8 @@ export class AadGroupDeniedPlansComponent implements OnInit {
 
   public async ngOnInit(): Promise<void> {
     this.displayedColumns = [
-      this.entitySchemaAadGroupDeniedPlan.Columns.UID_AADDeniedServicePlan,
-      this.entitySchemaAadGroupDeniedPlan.Columns.XOrigin
+      this.entitySchemaAadGroupDeniedPlan.Columns?.UID_AADDeniedServicePlan,
+      this.entitySchemaAadGroupDeniedPlan.Columns?.XOrigin,
     ];
     await this.navigate();
   }
@@ -89,7 +88,6 @@ export class AadGroupDeniedPlansComponent implements OnInit {
   }
 
   private async navigate(): Promise<void> {
-
     this.aadService.handleOpenLoader();
     try {
       const data = await this.aadService.getAadGroupDeniedPlans(this.referrer.objectuid, this.navigationState);
@@ -100,10 +98,9 @@ export class AadGroupDeniedPlansComponent implements OnInit {
         navigationState: this.navigationState,
         filters: this.filterOptions,
       };
-      this.logger.debug(this, `Head at ${data.Data.length + this.navigationState.StartIndex} of ${data.totalCount} item(s)`);
+      this.logger.debug(this, `Head at ${data.Data.length + (this.navigationState.StartIndex ?? 0)} of ${data.totalCount} item(s)`);
     } finally {
       this.aadService.handleCloseLoader();
     }
   }
-
 }

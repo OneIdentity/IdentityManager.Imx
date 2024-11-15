@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,14 +35,16 @@ export class RoutingMock {
     return {
       snapshot: {
         paramMap: {
-          get: spyResult != null ? jasmine.createSpy('get').and
-            .returnValue(spyResult) : jasmine.createSpy('get').and.callFake((key: string) => key)
+          get:
+            spyResult != null
+              ? jasmine.createSpy('get').and.returnValue(spyResult)
+              : jasmine.createSpy('get').and.callFake((key: string) => key),
         },
         queryParamMap: {
-          get: jasmine.createSpy('get').and.returnValue(queryParamsMap)
-        }
+          get: jasmine.createSpy('get').and.returnValue(queryParamsMap),
+        },
       },
-      queryParams
+      queryParams,
     };
   }
 

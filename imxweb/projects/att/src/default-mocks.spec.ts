@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,7 +28,7 @@ import { of, Subject } from 'rxjs';
 import { ngMocks } from 'ng-mocks';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
-import { ISessionState,AuthenticationService,RouteGuardService } from 'qbm';
+import { ISessionState, AuthenticationService, RouteGuardService } from 'qbm';
 
 export class AttDefaultMocks {
   public static readonly afterClosedSubject = new Subject<any>();

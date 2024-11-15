@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,8 @@
  *
  */
 
-import { PortalItshopApproveRequests, PwoData, ITShopConfig } from 'imx-api-qer';
-import { IEntity, IEntityColumn } from 'imx-qbm-dbts';
+import { ITShopConfig, PortalItshopApproveRequests, PwoData } from '@imx-modules/imx-api-qer';
+import { IEntity, IEntityColumn } from '@imx-modules/imx-qbm-dbts';
 import { BaseReadonlyCdr } from 'qbm';
 import { ItshopRequestEntityWrapper } from '../itshop/request-info/itshop-request-entity-wrapper.interface';
 import { RequestParameterDataEntity } from '../itshop/request-info/request-parameter-data-entity.interface';
@@ -67,7 +67,7 @@ export class Approval extends PortalItshopApproveRequests implements RequestPara
       this.workflowWrapper = new WorkflowDataWrapper(this.pwoData);
     }
 
-    this.parameterColumns = entityWrapper.parameterColumns;
+    this.parameterColumns = entityWrapper.parameterColumns || [];
 
     this.propertyInfo = [
       this.DisplayOrg,
@@ -91,11 +91,11 @@ export class Approval extends PortalItshopApproveRequests implements RequestPara
           property.value != null &&
           property.value !== '' &&
           property.value !== false &&
-          !this.parameterColumns.find((column) => column.ColumnName === property.Column.ColumnName)
+          !this.parameterColumns.find((column) => column.ColumnName === property.Column.ColumnName),
       )
       .map((property) => new BaseReadonlyCdr(property.Column));
 
-    this.currentUser = entityWrapper.uidCurrentUser;
+    this.currentUser = entityWrapper.uidCurrentUser ?? '';
   }
 
   public async commit(): Promise<void> {
@@ -106,12 +106,12 @@ export class Approval extends PortalItshopApproveRequests implements RequestPara
     return this.ValidFrom.GetMetadata().CanEdit() && !this.entityWrapper.isChiefApproval && this.OrderState.value !== 'OrderUnsubscribe';
   }
 
-  public canSetValidUntil(itShopConfig: ITShopConfig): boolean {
+  public canSetValidUntil(itShopConfig: ITShopConfig | undefined): boolean {
     return (
       this.ValidUntil.GetMetadata().CanEdit() &&
       !this.entityWrapper.isChiefApproval &&
       this.OrderState.value !== 'OrderUnsubscribe' &&
-      (!itShopConfig.VI_ITShop_ShowValidUntilQERReuse || this.TableName.value !== 'QERReuse')
+      (!itShopConfig?.VI_ITShop_ShowValidUntilQERReuse || this.TableName.value !== 'QERReuse')
     );
   }
 

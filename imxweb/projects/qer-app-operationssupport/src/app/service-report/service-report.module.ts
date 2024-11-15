@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -61,11 +61,11 @@ import { JobServersDetailsComponent } from './job-servers-details/job-servers-de
     MatCardModule,
     MatButtonModule,
     MatTooltipModule,
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule,
-    MatTabsModule
+    MatTabsModule,
   ],
   providers: [JobServersService],
-  exports: [ServiceReportComponent]
+  exports: [ServiceReportComponent],
 })
-export class ServiceReportModule { }
+export class ServiceReportModule {}

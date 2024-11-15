@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,16 +28,16 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 @Component({
   templateUrl: './jobs.component.html',
-  styleUrls: ['./jobs.component.scss']
+  styleUrls: ['./jobs.component.scss'],
 })
 export class JobsComponent implements OnInit {
-
   public failed = false;
   public isShowGraph = false;
 
-  public infoText = '#LDS#Here you can get an overview of all processes of the JobQueue. You can view them individually in a table or grouped by status in a chart. Additionally, you can handle failed processes.';
+  public infoText =
+    '#LDS#Here you can get an overview of all processes of the JobQueue. You can view them individually in a table or grouped by status in a chart. Additionally, you can handle failed processes.';
 
-  constructor(private activeRoute: ActivatedRoute) { }
+  constructor(private activeRoute: ActivatedRoute) {}
 
   public ngOnInit(): void {
     const failed = this.activeRoute.snapshot.queryParamMap.get('failed');
@@ -46,5 +46,4 @@ export class JobsComponent implements OnInit {
       this.failed = failed === 'true';
     }
   }
-
 }

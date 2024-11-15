@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,14 +24,13 @@
  *
  */
 
-import { Component, Input } from "@angular/core";
+import { Component, Input } from '@angular/core';
 
 @Component({
   templateUrl: './config-key-path.component.html',
   selector: 'config-key-path',
-  styleUrls: ['./config-key-path.component.scss']
+  styleUrls: ['./config-key-path.component.scss'],
 })
 export class ConfigKeyPathComponent {
-
-  @Input() public path: string[] = [];
+  @Input() public path: (string | undefined)[] = [];
 }

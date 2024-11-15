@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,45 +26,43 @@
 
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { SqlNodeView, SqlViewSettings } from './SqlNodeView';
-import { LogOp as _logOp } from 'imx-qbm-dbts';
+import { LogOp as _logOp } from '@imx-modules/imx-qbm-dbts';
 
 @Component({
-    selector: 'imx-sqlwizard-singleexpression',
-    styleUrls: ['single-expression.component.scss', './sqlwizard.scss'],
-    templateUrl: './single-expression.component.html'
+  selector: 'imx-sqlwizard-singleexpression',
+  styleUrls: ['single-expression.component.scss', './sqlwizard.scss'],
+  templateUrl: './single-expression.component.html',
 })
 export class SingleExpressionComponent {
+  @Input() public expr: SqlNodeView;
+  @Input() public first: boolean;
+  @Input() public last: boolean;
+  @Input() public viewSettings: SqlViewSettings;
 
-    @Input() public expr: SqlNodeView;
-    @Input() public first: boolean;
-    @Input() public last: boolean;
-    @Input() public viewSettings: SqlViewSettings;
+  @Output() public change = new EventEmitter<any>();
 
-    @Output() public change = new EventEmitter<any>();
+  public LogOp = _logOp;
 
-    public LogOp = _logOp;
+  public emitChanges(): void {
+    this.change.emit();
+  }
 
-    public emitChanges(): void {
-      this.change.emit();
-    }
+  public IsEmpty(): boolean {
+    return !this.expr.Data.PropertyId;
+  }
 
-    public IsEmpty(): boolean {
-        return !this.expr.Data.PropertyId;
-    }
+  public toggleLogOperator() {
+    this.expr.Parent.Data.LogOperator = this.expr.Parent.Data.LogOperator === _logOp.OR ? _logOp.AND : _logOp.OR;
+    this.change.emit();
+  }
 
-    public toggleLogOperator() {
-        this.expr.Parent.Data.LogOperator = this.expr.Parent.Data.LogOperator === _logOp.OR ? _logOp.AND : _logOp.OR;
-        this.change.emit();
-    }
+  public async addExpression(): Promise<void> {
+    await this.expr.Parent.addChildNode();
+    this.emitChanges();
+  }
 
-    public async addExpression(): Promise<void> {
-      await this.expr.Parent.addChildNode();
-      this.emitChanges();
-    }
-
-    public removeExpression(): void {
-      this.expr.remove();
-      this.emitChanges();
-    }
-
+  public removeExpression(): void {
+    this.expr.remove();
+    this.emitChanges();
+  }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,39 +25,39 @@
  */
 
 import {
-  Component,
-  ViewChild,
-  ElementRef,
-  Input,
-  ChangeDetectorRef,
-  EventEmitter,
-  Renderer2,
-  AfterViewInit,
-  OnDestroy,
   AfterViewChecked,
-  QueryList,
-  ViewChildren,
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
   Output,
+  QueryList,
+  Renderer2,
+  ViewChild,
+  ViewChildren,
 } from '@angular/core';
 
-import { Connectors } from './connectors';
+import { ShapeData } from '@imx-modules/imx-api-qbm';
+import { Subscription } from 'rxjs';
+import { ClassloggerService } from '../classlogger/classlogger.service';
 import { Connector } from './connector';
+import { Connectors } from './connectors';
 import { HyperviewLayoutHierarchical } from './hyperview-layout-hierarchical';
-import { HyperviewLayoutVertical } from './hyperview-layout-vertical';
 import { HyperviewLayoutHorizontal } from './hyperview-layout-horizontal';
+import { HyperviewLayoutVertical } from './hyperview-layout-vertical';
 import {
-  HyperViewLayout,
-  HvSettings,
   HvElement,
-  ShapeClickArgs,
-  toPixelString,
-  LayoutResult,
+  HvSettings,
+  HyperViewLayout,
   HyperViewNavigation,
   HyperViewNavigationEnum,
+  LayoutResult,
+  ShapeClickArgs,
+  toPixelString,
 } from './hyperview-types';
-import { ShapeData } from 'imx-api-qbm';
-import { ClassloggerService } from '../classlogger/classlogger.service';
-import { Subscription } from 'rxjs';
 
 export enum ShapeType {
   ListShape,
@@ -115,11 +115,14 @@ export class HyperviewComponent implements AfterViewInit, OnDestroy, AfterViewCh
   /**
    * Creates a new hyperview component.
    */
-  constructor(private changeDetectorRef: ChangeDetectorRef, private logger: ClassloggerService, private renderer: Renderer2) {}
+  constructor(
+    private changeDetectorRef: ChangeDetectorRef,
+    private logger: ClassloggerService,
+    private renderer: Renderer2,
+  ) {}
 
   ngAfterViewInit(): void {
     this.setupLayout();
-
     // register for element resize
     const observer = new ResizeObserver(() => {
       this.logger.trace(this, 'resize event detected, marking layout as dirty');
@@ -133,7 +136,7 @@ export class HyperviewComponent implements AfterViewInit, OnDestroy, AfterViewCh
       this.shapeList.changes.subscribe(() => {
         this.logger.trace(this, 'shape list changed, marking layout as dirty');
         this.layoutDirty = true;
-      })
+      }),
     );
   }
 
@@ -188,7 +191,7 @@ export class HyperviewComponent implements AfterViewInit, OnDestroy, AfterViewCh
     const layouter = this.buildLayouter();
     const layoutResult = layouter.layout();
     this.connectors = new Connectors(layouter.getConnectorProvider().getConnectors(this.settings)).connectorList.filter(
-      (connector) => !connector.isHidden
+      (connector) => !connector.isHidden,
     );
     this.scrollToMiddleCenterShape(layoutResult);
     this.changeDetectorRef.detectChanges();
@@ -221,7 +224,7 @@ export class HyperviewComponent implements AfterViewInit, OnDestroy, AfterViewCh
 
   public get selectedHyperviewCaption(): string {
     const centerObj = this.shapes.filter((shape) => shape.LayoutType === 'MiddleCenter')?.[0];
-    return !!centerObj?.HeaderText ? `${centerObj.HeaderText}: ${centerObj.Caption}` : centerObj?.Caption;
+    return !!centerObj?.HeaderText ? `${centerObj.HeaderText}: ${centerObj.Caption}` : centerObj?.Caption ?? '';
   }
 
   private scrollToMiddleCenterShape(layoutResult: LayoutResult) {
@@ -279,7 +282,9 @@ export class HyperviewComponent implements AfterViewInit, OnDestroy, AfterViewCh
         this.middleCenterShape = { position: this.middleCenterPosition, element };
         res.push(this.middleCenterShape);
       } else {
-        res.push({ position, element });
+        if (position) {
+          res.push({ position, element });
+        }
       }
     }
 

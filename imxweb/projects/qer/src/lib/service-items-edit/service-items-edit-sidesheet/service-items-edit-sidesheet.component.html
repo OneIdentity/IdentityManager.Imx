@@ -1,28 +1,31 @@
-<div eui-sidesheet-content>
-  <mat-tab-group #tabs>
-    <mat-tab [label]="'#LDS#Heading Details' | translate">
-      <div class="imx-tab-content">
-        <div class="imx-tab-content-body">
-          <imx-help-contextual [contextId]="contextId" [title]="'#LDS#Information about this tab:'"></imx-help-contextual>
-          <imx-service-items-edit-form #serviceItemsEditForm [serviceItem]="serviceItem"
-            (formControlCreated)="this.formArray.push($event)">
-          </imx-service-items-edit-form>
-          </div>
-        </div>
-      <div eui-sidesheet-actions>
-        <button mat-flat-button color="primary" data-imx-identifier="service-items-edit-sidesheet-button-save"
-          (click)="saveChanges()" [disabled]="formGroup.pristine || formGroup.invalid">
-          {{'#LDS#Save'| translate}}
-        </button>
-      </div>
-    </mat-tab>
-    <mat-tab label="{{'#LDS#Heading Hyperview' | translate}}">
-      <ng-template matTabContent>
+<mat-tab-group mat-stretch-tabs="false" #tabs>
+  <mat-tab [label]="'#LDS#Heading Details' | translate">
+    <div eui-sidesheet-content>
+      <imx-help-contextual [contextId]="contextId" [title]="'#LDS#Information about this tab:'"></imx-help-contextual>
+      <imx-service-items-edit-form #serviceItemsEditForm [serviceItem]="serviceItem" (formControlCreated)="this.formArray.push($event)">
+      </imx-service-items-edit-form>
+    </div>
+    <div eui-sidesheet-actions>
+      <button
+        mat-flat-button
+        color="primary"
+        data-imx-identifier="service-items-edit-sidesheet-button-save"
+        (click)="saveChanges()"
+        [disabled]="formGroup.pristine || formGroup.invalid"
+      >
+        {{ '#LDS#Save' | translate }}
+      </button>
+    </div>
+  </mat-tab>
+  <mat-tab label="{{ '#LDS#Heading Hyperview' | translate }}">
+    <ng-template matTabContent>
+      <div eui-sidesheet-content>
         <imx-object-hyperview
           [objectType]="serviceItem?.GetEntity()?.TypeName"
-          [objectUid]="serviceItem?.GetEntity()?.GetKeys()[0]">
+          [objectUid]="serviceItem?.GetEntity()?.GetKeys()?.[0] || ''"
+        >
         </imx-object-hyperview>
-      </ng-template>
-    </mat-tab>
-  </mat-tab-group>
-</div>
+      </div>
+    </ng-template>
+  </mat-tab>
+</mat-tab-group>

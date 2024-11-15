@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 @import '../../new-request-global.scss';
 
 @include Table-Styles;
@@ -16,8 +16,9 @@
     align-items: center;
     justify-content: center;
     row-gap: 10px;
+    margin: 10px 0;
 
-    > h3 {
+    h3 {
       font-size: 20px;
       line-height: 20px;
       font-weight: 600;
@@ -28,9 +29,12 @@
       flex-direction: row;
       align-items: center;
       column-gap: 10px;
+
+      .eui-icon {
+        padding-right: 4px;
+      }
     }
   }
-
 
   imx-data-source-toolbar {
     display: none;
@@ -69,10 +73,8 @@
       }
     }
     button {
-      @include EUI-Elevation-1;
-
       &:hover {
-        @include Ease-Transition;
+        @include ease-transition;
       }
 
       eui-icon {
@@ -82,17 +84,21 @@
       }
     }
   }
-
 }
 
 // Theming
 :host {
-  .imx-bundle-header > h3 {
+  .imx-bundle-header h3 {
     color: $color-gray-60;
   }
 
+  .imx-bundle-header h3.bundleSelected {
+    color: $color-orange-40;
+  }
+
   .imx-no-data-top {
-    h2, eui-icon {
+    h2,
+    eui-icon {
       color: $color-gray-20;
     }
     span {
@@ -104,14 +110,45 @@
   }
 }
 
-.eui-dark-theme {
+.eui-contrast-theme{
   :host {
-    .imx-bundle-header > h3 {
-      color: $color-gray-20;
+    .imx-bundle-header h3 {
+      color: $color-gray-0;
+    }
+
+    .imx-bundle-header h3.bundleSelected {
+      color: $color-orange-20;
     }
 
     .imx-no-data-top {
-      h2, eui-icon {
+      h2,
+      eui-icon {
+        color: $color-gray-0;
+      }
+      span {
+        color: $color-gray-0;
+      }
+    }
+
+    .imx-no-data button:hover {
+      background-color: $color-orange-20;
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .imx-bundle-header h3 {
+      color: $color-gray-20;
+    }
+
+    .imx-bundle-header h3.bundleSelected {
+      color: $color-orange-20;
+    }
+
+    .imx-no-data-top {
+      h2,
+      eui-icon {
         color: $color-gray-20;
       }
       span {
@@ -124,4 +161,3 @@
     }
   }
 }
-

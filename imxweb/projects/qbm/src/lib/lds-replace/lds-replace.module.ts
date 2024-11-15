@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,14 +30,8 @@ import { CommonModule } from '@angular/common';
 import { LdsReplacePipe } from './lds-replace.pipe';
 
 @NgModule({
-  declarations: [
-    LdsReplacePipe
-  ],
-  exports: [
-    LdsReplacePipe
-  ],
-  imports: [
-    CommonModule
-  ]
+  declarations: [LdsReplacePipe],
+  exports: [LdsReplacePipe],
+  imports: [CommonModule],
 })
-export class LdsReplaceModule { }
+export class LdsReplaceModule {}

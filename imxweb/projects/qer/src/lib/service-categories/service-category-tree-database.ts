@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,34 +24,30 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { CollectionLoadParameters, TypedEntityCollectionData } from 'imx-qbm-dbts';
-import { PortalServicecategories } from 'imx-api-qer';
+import { PortalServicecategories } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 
-import { TreeDatabase, TreeNodeResultParameter, SettingsService } from 'qbm';
+import { SettingsService, TreeDatabase, TreeNodeResultParameter } from 'qbm';
 import { ServiceCategoriesService } from './service-categories.service';
 
 /** Provider of servicecategory-data for the imx-data-tree */
 export class ServiceCategoryTreeDatabase extends TreeDatabase {
-
   constructor(
     private readonly loadingServiceElemental: EuiLoadingService,
     private readonly settings: SettingsService,
-    private readonly serviceCategoriesProvider: ServiceCategoriesService
+    private readonly serviceCategoriesProvider: ServiceCategoriesService,
   ) {
     super();
     this.identifierColumnName = 'FullPath';
     this.canSearch = true;
   }
 
-  public async getData(showLoading: boolean, parameters: CollectionLoadParameters = { ParentKey: '' })
-    : Promise<TreeNodeResultParameter> {
+  public async getData(showLoading: boolean, parameters: CollectionLoadParameters = { ParentKey: '' }): Promise<TreeNodeResultParameter> {
     let entities: TreeNodeResultParameter;
-    let overlayRef: OverlayRef;
-    if (showLoading) {
-      setTimeout(() => overlayRef = this.loadingServiceElemental.show());
+    if (showLoading && this.loadingServiceElemental.overlayRefs.length === 0) {
+      this.loadingServiceElemental.show();
     }
     try {
       const opts = {
@@ -60,16 +56,16 @@ export class ServiceCategoryTreeDatabase extends TreeDatabase {
         ...parameters,
       };
 
-      const serviceCategories: TypedEntityCollectionData<PortalServicecategories>
-        = await this.serviceCategoriesProvider.get(opts);
+      const serviceCategories: TypedEntityCollectionData<PortalServicecategories> | undefined =
+        await this.serviceCategoriesProvider.get(opts);
       entities = {
-        entities: serviceCategories?.Data?.map(element => element.GetEntity()),
-        canLoadMore: opts.StartIndex + opts.PageSize < serviceCategories.totalCount,
-        totalCount: serviceCategories.totalCount
+        entities: serviceCategories?.Data?.map((element) => element.GetEntity()) ?? [],
+        canLoadMore: opts.StartIndex + opts.PageSize < (serviceCategories?.totalCount ?? 0),
+        totalCount: serviceCategories?.totalCount ?? 0,
       };
     } finally {
       if (showLoading) {
-        setTimeout(() => this.loadingServiceElemental.hide(overlayRef));
+        this.loadingServiceElemental.hide();
       }
     }
     return entities;

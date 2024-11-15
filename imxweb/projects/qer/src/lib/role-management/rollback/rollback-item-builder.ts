@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { EntityCollectionData, EntityData, TypedEntityBuilder, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { EntityCollectionData, EntityData, TypedEntityBuilder, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { RollbackItem, ComparisonItem } from './rollback-item';
 
 @Injectable({
@@ -58,7 +58,10 @@ export class RollbackItemBuilder {
         Id: { Value: item.Id },
         TypeDisplay: { Value: item.TypeDisplay },
       },
-      Keys: [item.Id ?? [item.ChangeType ?? '', item.CurrentValueDisplay ?? '', item.HistoryValueDisplay ?? '',item.TypeDisplay ?? ''].join('_')],
+      Keys: [
+        item.Id ??
+          [item.ChangeType ?? '', item.CurrentValueDisplay ?? '', item.HistoryValueDisplay ?? '', item.TypeDisplay ?? ''].join('_'),
+      ],
     };
   }
 }

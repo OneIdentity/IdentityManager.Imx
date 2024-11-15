@@ -1,11 +1,20 @@
 <ng-container *ngIf="searchResults.length > 0; else noResultsContainer">
   <ng-container *ngIf="withMultiSelect; else singleList">
-    <mat-selection-list [multiple]="true" (selectionChange)="onSelectionChanged($event)"
-      [attr.data-imx-identifier]="'data-tree-search-result-list-multi'" [(ngModel)]="selectedOptions"
-      class="imx-search-results-multi" [compareWith]="compareFunction">
-      <mat-list-option checkboxPosition="before" *ngFor="let result of searchResults; index as i" [value]="result"
-        [ngClass]="{'imx-candidate-option':true, 'imx-selected-candidate': isSelected(result)}"
-        [attr.data-imx-identifier]="'data-tree-search-result-list-result-' + result.GetKeys()[0]">
+    <mat-selection-list
+      [multiple]="true"
+      (selectionChange)="onSelectionChanged($event)"
+      [attr.data-imx-identifier]="'data-tree-search-result-list-multi'"
+      [(ngModel)]="selectedOptions"
+      class="imx-search-results-multi imx-list-data-tree"
+      [compareWith]="compareFunction"
+    >
+      <mat-list-option
+        checkboxPosition="before"
+        *ngFor="let result of searchResults; index as i"
+        [value]="result"
+        [ngClass]="{ 'imx-candidate-option': true, 'imx-selected-candidate': isSelected(result) }"
+        [attr.data-imx-identifier]="'data-tree-search-result-list-result-' + result.GetKeys()[0]"
+      >
         <div class="imx-candidate-content">
           <div [class]="withMultiSelect ? 'imx-candidate-display-check' : 'imx-candidate-display'">
             <div class="imx-result-text">
@@ -18,8 +27,13 @@
       </mat-list-option>
     </mat-selection-list>
   </ng-container>
-  <mat-paginator [length]="paginatorLength" [pageSize]="paginatorPageSize" [pageSizeOptions]="[20, 50, 100]"
-    (page)="onPaginatorStateChanged($event)" data-imx-identifier="data-tree-search-result-paginator">
+  <mat-paginator
+    [length]="paginatorLength"
+    [pageSize]="paginatorPageSize"
+    [pageSizeOptions]="[20, 50, 100]"
+    (page)="onPaginatorStateChanged($event)"
+    data-imx-identifier="data-tree-search-result-paginator"
+  >
   </mat-paginator>
 </ng-container>
 
@@ -32,20 +46,22 @@
 
 <ng-template #singleList>
   <mat-list class="imx-search-results">
-    <mat-list-item *ngFor="let result of searchResults; index as i"
-    [attr.data-imx-identifier]="'data-tree-search-result-single-list-item-'+ result.GetKeys().join('-')">
-        <div 
-        [attr.data-imx-identifier]="'data-tree-search-result-single-list-item-clickpanel'+ result.GetKeys().join('-')"
+    <mat-list-item
+      *ngFor="let result of searchResults; index as i"
+      [attr.data-imx-identifier]="'data-tree-search-result-single-list-item-' + result.GetKeys().join('-')"
+    >
+      <div
+        [attr.data-imx-identifier]="'data-tree-search-result-single-list-item-clickpanel' + result.GetKeys().join('-')"
         [ngClass]="{ 'imx-background-highlight': withSelectedNodeHighlight && selectedEntity === result, 'imx-search-result-item': true }"
-         (click)=resultClicked(result)>
-          <div class="imx-result-text">
-            <p>
-              {{ result.GetDisplayLong() }}
-            </p>
-          </div>
-          <ng-container [ngIf]="templateRef" *ngTemplateOutlet="templateRef; context: { $implicit: result }">
-          </ng-container>
+        (click)="resultClicked(result)"
+      >
+        <div class="imx-result-text">
+          <p>
+            {{ result.GetDisplayLong() }}
+          </p>
         </div>
+        <ng-container [ngIf]="templateRef" *ngTemplateOutlet="templateRef; context: { $implicit: result }"> </ng-container>
+      </div>
     </mat-list-item>
   </mat-list>
 </ng-template>

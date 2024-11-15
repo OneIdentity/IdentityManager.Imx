@@ -1,11 +1,19 @@
 <h2 mat-dialog-title translate>#LDS#Heading Discard Selected Products</h2>
 <mat-dialog-content class="mat-typography">
-<p translate>
-  {{dialogMessage}}
-</p>
+  <p translate>
+    {{ dialogMessage }}
+  </p>
 </mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-stroked-button mat-dialog-close (click)="onDoNotDiscardSelection()"><span translate>#LDS#Keep products and go back</span></button>
-  <button mat-stroked-button [mat-dialog-close]="true" (click)="onAddToCart()"><div class="imx-action-button"><eui-icon icon="cart" size="s"></eui-icon><span translate>#LDS#Add products to cart and proceed</span></div></button>
-  <button mat-flat-button [mat-dialog-close]="true" class="imx-discard-button" (click)="onDiscardSelection()"><div class="imx-action-button"><eui-icon icon="close" size="s"></eui-icon><span translate>#LDS#Discard products and proceed</span></div></button>
+<mat-dialog-actions>
+  <button mat-stroked-button mat-dialog-close (click)="onDoNotDiscardSelection()">
+    <span translate>#LDS#Keep products and go back</span>
+  </button>
+  <button mat-stroked-button class="imx-button-icon-14" [mat-dialog-close]="true" (click)="onAddToCart()">
+      <eui-icon icon="cart"></eui-icon>
+    <span translate>#LDS#Add products to cart and proceed</span>
+  </button>
+  <button mat-flat-button class="imx-button-icon-14" color="warn" [mat-dialog-close]="true" (click)="onDiscardSelection()">
+    <eui-icon icon="close"></eui-icon>
+    <span translate>#LDS#Discard products and proceed</span>
+  </button>
 </mat-dialog-actions>

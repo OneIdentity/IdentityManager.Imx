@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,16 +28,15 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { DisplayColumns, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
+import { DisplayColumns, EntitySchema, IClientProperty } from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarSettings } from 'qbm';
 import { JobChainsService } from './job-chains.service';
 
 @Component({
   templateUrl: './job-chains.component.html',
-  styleUrls: ['./job-chains.component.scss']
+  styleUrls: ['./job-chains.component.scss'],
 })
 export class JobChainsComponent implements OnInit {
-
   public dstSettings: DataSourceToolbarSettings;
   public readonly entitySchemaJobChains: EntitySchema;
   public readonly DisplayColumns = DisplayColumns;
@@ -45,12 +44,10 @@ export class JobChainsComponent implements OnInit {
 
   constructor(
     private jobChains: JobChainsService,
-    private busyService: EuiLoadingService) {
+    private busyService: EuiLoadingService,
+  ) {
     this.entitySchemaJobChains = jobChains.EntitySchema;
-    this.displayedColumns = [
-      this.entitySchemaJobChains.Columns.JobChainName,
-      this.entitySchemaJobChains.Columns.Count
-    ];
+    this.displayedColumns = [this.entitySchemaJobChains.Columns.JobChainName, this.entitySchemaJobChains.Columns.Count];
   }
 
   public async ngOnInit(): Promise<void> {
@@ -62,19 +59,16 @@ export class JobChainsComponent implements OnInit {
   }
 
   public async getData(): Promise<void> {
-
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
-
       const jobChainList = await this.jobChains.Get();
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
         dataSource: jobChainList,
         entitySchema: this.entitySchemaJobChains,
-        navigationState: {}
+        navigationState: {},
       };
-
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }

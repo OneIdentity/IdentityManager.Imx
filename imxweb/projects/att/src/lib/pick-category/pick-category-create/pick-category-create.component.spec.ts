@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,24 +27,25 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
+import { PortalPickcategoryItems } from '@imx-modules/imx-api-qer';
 import { of } from 'rxjs';
-import { PortalPickcategoryItems } from 'imx-api-qer';
 
-import { ConfirmationService } from 'qbm';
+import { PortalPersonAll } from '@imx-modules/imx-api-qer';
+import { ClassloggerService, ConfirmationService, MessageDialogService, SqlWizardApiService } from 'qbm';
 import { PickCategoryService } from '../pick-category.service';
 import { PickCategoryCreateComponent } from './pick-category-create.component';
+
+import { IdentitiesService } from 'qer';
 
 describe('PickCategoryCreateComponent', () => {
   let component: PickCategoryCreateComponent;
   let fixture: ComponentFixture<PickCategoryCreateComponent>;
 
-  
   let confirm = true;
   const mockConfirmationService = {
-    confirm: jasmine.createSpy('confirm')
-      .and.callFake(() => Promise.resolve(confirm))
-  }
+    confirm: jasmine.createSpy('confirm').and.callFake(() => Promise.resolve(confirm)),
+  };
 
   const sidesheetData = {
     pickCategory: {
@@ -59,16 +60,9 @@ describe('PickCategoryCreateComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        PickCategoryCreateComponent
-      ],
-      schemas: [
-        CUSTOM_ELEMENTS_SCHEMA
-      ],
-      imports: [
-        FormsModule,
-        ReactiveFormsModule
-      ],
+      declarations: [PickCategoryCreateComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [FormsModule, ReactiveFormsModule],
       providers: [
         {
           provide: EUI_SIDESHEET_DATA,
@@ -77,13 +71,13 @@ describe('PickCategoryCreateComponent', () => {
         {
           provide: EuiSidesheetRef,
           useValue: {
-            close: jasmine.createSpy('close'),            
+            close: jasmine.createSpy('close'),
             closeClicked: jasmine.createSpy('closeClicked').and.returnValue(of(undefined)),
-          }
+          },
         },
         {
           provide: ConfirmationService,
-          useValue: mockConfirmationService
+          useValue: mockConfirmationService,
         },
         {
           provide: PickCategoryService,
@@ -92,12 +86,20 @@ describe('PickCategoryCreateComponent', () => {
             deletePickCategoryItems: jasmine.createSpy('deletePickCategoryItems').and.returnValue({}),
             getPickCategoryItems: jasmine.createSpy('getPickCategoryItems').and.returnValue({}),
             handleOpenLoader: jasmine.createSpy('handleOpenLoader').and.callThrough(),
-            handleCloseLoader: jasmine.createSpy('handleCloseLoader').and.callThrough()
-          }
-        }
-      ]
-    })
-      .compileComponents();
+            handleCloseLoader: jasmine.createSpy('handleCloseLoader').and.callThrough(),
+          },
+        },
+        {
+          provide: IdentitiesService,
+          useValue: {
+            personAllSchema: PortalPersonAll.GetEntitySchema(),
+          },
+        },
+        { provide: ClassloggerService, useValue: { debug: () => {} } },
+        { provide: MessageDialogService, useValue: {} },
+        { provide: SqlWizardApiService, useValue: {} },
+      ],
+    }).compileComponents();
   });
 
   beforeEach(() => {

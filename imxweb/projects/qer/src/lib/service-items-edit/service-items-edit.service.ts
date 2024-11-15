@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,30 +28,32 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import { Injectable } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { PortalServiceitems } from 'imx-api-qer';
-import { CollectionLoadParameters, ExtendedTypedEntityCollection, EntitySchema } from 'imx-qbm-dbts';
+import { PortalServiceitems } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 import { DynamicMethodService, GenericTypedEntity } from 'qbm';
 import { QerApiService } from '../qer-api-client.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ServiceItemsEditService {
-
   private busyIndicator: OverlayRef;
 
   constructor(
     private readonly qerClient: QerApiService,
     private readonly dynamicMethodService: DynamicMethodService,
-    private readonly busyService: EuiLoadingService
-  ) { }
+    private readonly busyService: EuiLoadingService,
+  ) {}
 
   public get serviceitemsSchema(): EntitySchema {
     return this.qerClient.typedClient.PortalServiceitems.GetSchema();
   }
 
-  public async get(parameters: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<PortalServiceitems, unknown>> {
-    return this.qerClient.typedClient.PortalServiceitems.Get(parameters);
+  public async get(
+    parameters: CollectionLoadParameters,
+    signal: AbortSignal,
+  ): Promise<ExtendedTypedEntityCollection<PortalServiceitems, unknown>> {
+    return this.qerClient.typedClient.PortalServiceitems.Get(parameters, { signal });
   }
 
   public async getServiceItem(serviceItemUid: string): Promise<PortalServiceitems> {
@@ -69,15 +71,19 @@ export class ServiceItemsEditService {
   }
 
   public async hasFunctionalAreaCandidates(): Promise<boolean> {
-
-    return (await this.dynamicMethodService.get(
-      this.qerClient.apiClient,
-      {
-        type: GenericTypedEntity,
-        path: '/portal/candidates/FunctionalArea',
-        schemaPath: 'portal/candidates/FunctionalArea'
-      },
-      { PageSize: -1 })).totalCount > 0;
+    return (
+      (
+        await this.dynamicMethodService.get(
+          this.qerClient.apiClient,
+          {
+            type: GenericTypedEntity,
+            path: '/portal/candidates/FunctionalArea',
+            schemaPath: 'portal/candidates/FunctionalArea',
+          },
+          { PageSize: -1 },
+        )
+      ).totalCount > 0
+    );
   }
 
   public async hasTermsOfUseCancdidates(): Promise<boolean> {
@@ -85,17 +91,12 @@ export class ServiceItemsEditService {
   }
 
   public handleOpenLoader(): void {
-    if (!this.busyIndicator) {
-      setTimeout(() => this.busyIndicator = this.busyService.show());
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
     }
   }
 
   public handleCloseLoader(): void {
-    if (this.busyIndicator) {
-      setTimeout(() => {
-        this.busyService.hide(this.busyIndicator);
-        this.busyIndicator = undefined;
-      });
-    }
+    this.busyService.hide();
   }
 }

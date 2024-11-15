@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,31 +24,22 @@
  *
  */
 
-import { OverlayRef } from "@angular/cdk/overlay";
-import { Injectable } from "@angular/core";
-import { EuiLoadingService } from "@elemental-ui/core";
+import { Injectable } from '@angular/core';
+import { EuiLoadingService } from '@elemental-ui/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ChangeViewService {
-
-  constructor(private readonly busyService: EuiLoadingService) { }
-  
-  private busyIndicator: OverlayRef;
+  constructor(private readonly busyService: EuiLoadingService) {}
 
   public handleOpenLoader(): void {
-    if (!this.busyIndicator) {
-      setTimeout(() => this.busyIndicator = this.busyService.show());
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
     }
   }
 
   public handleCloseLoader(): void {
-    if (this.busyIndicator) {
-      setTimeout(() => {
-        this.busyService.hide(this.busyIndicator);
-        this.busyIndicator = undefined;
-      });
-    }
+    this.busyService.hide();
   }
 }

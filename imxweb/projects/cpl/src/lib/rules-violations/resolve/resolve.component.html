@@ -7,9 +7,11 @@
         {{ LdsContributingPermissions | translate }}
       </eui-alert>
 
-      <eui-alert [condensed]="true" [colored]="true" type="info" *ngIf="entitlements.length == 0"> {{ LdsNoPermissions | translate }}</eui-alert>
+      <eui-alert [condensed]="true" [colored]="true" type="info" *ngIf="entitlements.length == 0">
+        {{ LdsNoPermissions | translate }}</eui-alert
+      >
 
-      <mat-selection-list [(ngModel)]="selectedEntitlements" *ngIf="entitlements.length > 0">
+      <mat-selection-list class="imx-margin-bottom-20" [(ngModel)]="selectedEntitlements" *ngIf="entitlements.length > 0">
         <mat-list-option
           checkboxPosition="before"
           *ngFor="let entl of entitlements"
@@ -21,8 +23,14 @@
         </mat-list-option>
       </mat-selection-list>
 
-      <div class="imx-step-button">
-        <button mat-stroked-button data-imx-identifier="resolve-step-1-next" color="primary" matStepperNext [disabled]="selectedEntitlements.length < 1">
+      <div class="imx-button-stepper">
+        <button
+          mat-stroked-button
+          data-imx-identifier="resolve-step-1-next"
+          color="primary"
+          matStepperNext
+          [disabled]="selectedEntitlements.length < 1"
+        >
           {{ '#LDS#Next' | translate }}
         </button>
       </div>
@@ -48,11 +56,22 @@
         </mat-list-option>
       </mat-selection-list>
 
-      <imx-cdr-editor *ngFor="let cdr of cdrs; let i = index" [cdr]="cdr" [attr.data-imx-identifier]="'resolve-cdr-' + cdr.column.ColumnName + '-' + i"> </imx-cdr-editor>
+      <imx-cdr-editor
+        *ngFor="let cdr of cdrs; let i = index"
+        [cdr]="cdr"
+        [attr.data-imx-identifier]="'resolve-cdr-' + cdr.column.ColumnName + '-' + i"
+      >
+      </imx-cdr-editor>
 
-      <div class="imx-step-button">
+      <div class="imx-button-stepper">
         <button mat-stroked-button data-imx-identifier="resolve-step-2-back" matStepperPrevious>{{ '#LDS#Back' | translate }}</button>
-        <button mat-stroked-button data-imx-identifier="resolve-step-2-next" color="primary" matStepperNext [disabled]="uidActions.length < 1">
+        <button
+          mat-stroked-button
+          data-imx-identifier="resolve-step-2-next"
+          color="primary"
+          matStepperNext
+          [disabled]="uidActions.length < 1"
+        >
           {{ '#LDS#Next' | translate }}
         </button>
       </div>
@@ -62,7 +81,9 @@
     <mat-spinner *ngIf="busy"></mat-spinner>
 
     <ng-container *ngIf="!busy">
-      <eui-alert [condensed]="true" [colored]="true" *ngIf="0 === entitlementsLoseAlso.length" type="info"> {{ LdsNoLoseAdditional | translate }}</eui-alert>
+      <eui-alert [condensed]="true" [colored]="true" *ngIf="0 === entitlementsLoseAlso.length" type="info">
+        {{ LdsNoLoseAdditional | translate }}</eui-alert
+      >
 
       <ng-container *ngIf="0 < entitlementsLoseAlso.length">
         <eui-alert [condensed]="true" [colored]="true" type="warning"> {{ LdsLoseEntitlements | translate }}</eui-alert>
@@ -75,9 +96,11 @@
         </ul>
       </ng-container>
 
-      <div class="imx-step-button">
+      <div class="imx-button-stepper">
         <button mat-stroked-button data-imx-identifier="resolve-step-3-back" matStepperPrevious>{{ '#LDS#Back' | translate }}</button>
-        <button mat-stroked-button data-imx-identifier="resolve-step-3-next" (click)="Execute()" color="primary" matStepperNext>{{ '#LDS#Next' | translate }}</button>
+        <button mat-stroked-button data-imx-identifier="resolve-step-3-next" (click)="Execute()" color="primary" matStepperNext>
+          {{ '#LDS#Next' | translate }}
+        </button>
       </div>
     </ng-container>
   </mat-step>

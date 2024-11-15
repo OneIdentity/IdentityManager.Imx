@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,26 +24,28 @@
  *
  */
 
-import { Component, Inject } from '@angular/core';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { Component, Inject, OnDestroy } from '@angular/core';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
 
+import { ObjectInfo } from '@imx-modules/imx-api-pol';
+import { DbObjectKey } from '@imx-modules/imx-qbm-dbts';
 import { ColumnDependentReference } from 'qbm';
+import { Subscription } from 'rxjs';
 import { PolicyViolation } from '../policy-violation';
 import { PolicyViolationsService } from '../policy-violations.service';
-import { ObjectInfo } from 'imx-api-pol';
-import { DbObjectKey } from 'imx-qbm-dbts';
 
 @Component({
   selector: 'imx-policy-violations-sidesheet',
   templateUrl: './policy-violations-sidesheet.component.html',
-  styleUrls: ['./policy-violations-sidesheet.component.scss']
+  styleUrls: ['./policy-violations-sidesheet.component.scss'],
 })
-export class PolicyViolationsSidesheetComponent {
-
+export class PolicyViolationsSidesheetComponent implements OnDestroy {
   public cdrList: ColumnDependentReference[] = [];
   public selectedHyperviewType: string;
   public selectedHyperviewUID: string;
-  public selectedOption: ObjectInfo
+  public selectedOption: ObjectInfo;
+  public result: boolean = false;
+  public closeSubscription: Subscription;
 
   public get isPending(): boolean {
     return this.data.policyViolation.State.value?.toLocaleLowerCase() === 'pending';
@@ -58,44 +60,69 @@ export class PolicyViolationsSidesheetComponent {
   }
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public data: {
+    @Inject(EUI_SIDESHEET_DATA)
+    public data: {
       policyViolation: PolicyViolation;
       isMControlPerViolation: boolean;
       isReadOnly: boolean;
     },
     private readonly policyViolationService: PolicyViolationsService,
-    public readonly sideSheetRef: EuiSidesheetRef
+    public readonly sideSheetRef: EuiSidesheetRef,
+    private readonly euiLoadingService: EuiLoadingService,
   ) {
     this.cdrList = this.data.policyViolation.properties;
+    this.closeSubscription = sideSheetRef.closeClicked().subscribe(() => {
+      sideSheetRef.close(this.result);
+    });
+  }
+
+  public ngOnDestroy(): void {
+    this.closeSubscription?.unsubscribe();
   }
 
   /**
-   * Opens the Approve-Sidesheet for the current selected rules violations and closes the sidesheet afterwards.
+   * Opens the Approve-Sidesheet for the current selected rule violations.
    */
   public async approve(): Promise<void> {
-    await this.policyViolationService.approve([this.data.policyViolation]);
-    return this.sideSheetRef.close(true);
+    if (await this.policyViolationService.approve([this.data.policyViolation])) {
+      return this.reloadData();
+    }
   }
 
   /**
-   * Opens the Deny-Sidesheet for the current selected rules violations and closes the sidesheet afterwards.
+   * Opens the Deny-Sidesheet for the current selected rule violations.
    */
   public async deny(): Promise<void> {
-    await this.policyViolationService.deny([this.data.policyViolation]);
-    return this.sideSheetRef.close(true);
+    if (await this.policyViolationService.deny([this.data.policyViolation])) {
+      return this.reloadData();
+    }
   }
 
-  public get relatedOptions(): ObjectInfo[]{
+  public get relatedOptions(): ObjectInfo[] {
     return this.data.policyViolation.data || [];
   }
 
-  public setHyperviewObject(selectedRelatedObject: ObjectInfo): void{
-    const dbKey = DbObjectKey.FromXml(selectedRelatedObject.ObjectKey);
+  public setHyperviewObject(selectedRelatedObject: ObjectInfo): void {
+    const dbKey = DbObjectKey.FromXml(selectedRelatedObject.ObjectKey ?? '');
     this.selectedHyperviewType = dbKey.TableName;
     this.selectedHyperviewUID = dbKey.Keys.join(',');
   }
 
   public onHyperviewOptionSelected(): void {
-    this.setHyperviewObject(this.selectedOption)
+    this.setHyperviewObject(this.selectedOption);
+  }
+
+  private async reloadData() {
+    this.result = true;
+    this.euiLoadingService.show();
+    try {
+      const value = await this.policyViolationService.get(true, {
+        filter: [{ ColumnName: 'ObjectKey', Value1: this.data.policyViolation.ObjectKey.value }],
+      });
+      this.data.policyViolation = value.Data[0];
+      this.cdrList = this.data.policyViolation.properties;
+    } finally {
+      this.euiLoadingService.hide();
+    }
   }
 }

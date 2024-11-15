@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,20 +26,20 @@
 
 import { Injectable } from '@angular/core';
 
+import { ChartDto } from '@imx-modules/imx-api-aob';
 import { ApiClientService } from 'qbm';
-import { ChartDto } from 'imx-api-aob';
 import { AobApiService } from '../../aob-api-client.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class KpiOverviewService {
-
   constructor(
     private readonly aobClient: AobApiService,
-    private readonly apiProvider: ApiClientService) { }
+    private readonly apiProvider: ApiClientService,
+  ) {}
 
-  public async get(uidapplication: string): Promise<ChartDto[]> {
+  public async get(uidapplication: string): Promise<ChartDto[] | undefined> {
     return this.apiProvider.request(() => this.aobClient.client.portal_application_kpi_get(uidapplication));
   }
 }

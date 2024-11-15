@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,9 +26,9 @@
 
 import { Component, Inject } from '@angular/core';
 import { EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { ListReportDataProvider } from '../../list-report-viewer/list-report-data-provider.interface';
 import { ReportSubscription } from '../report-subscription/report-subscription';
 import { ReportSubscriptionService } from '../report-subscription/report-subscription.service';
-import { ListReportDataProvider } from '../../list-report-viewer/list-report-data-provider.interface';
 
 /**
  * Represents the content of a side sheet, that shows the data of a list report
@@ -50,7 +50,7 @@ export class ListReportViewerSidesheetComponent {
   constructor(
     @Inject(EUI_SIDESHEET_DATA)
     public readonly data: { dataService: ListReportDataProvider; subscription?: ReportSubscription },
-    private readonly reportSubscriptionService: ReportSubscriptionService
+    private readonly reportSubscriptionService: ReportSubscriptionService,
   ) {
     if (data.subscription) {
       this.reportParameter = data.subscription.getParameterDictionary();
@@ -58,9 +58,11 @@ export class ListReportViewerSidesheetComponent {
   }
 
   /**
-   * Downloads the subscription 
+   * Downloads the subscription
    */
   public async downloadReport(): Promise<void> {
-    this.reportSubscriptionService.downloadSubsciption(this.data.subscription);
+    if (this.data.subscription) {
+      this.reportSubscriptionService.downloadSubsciption(this.data.subscription);
+    }
   }
 }

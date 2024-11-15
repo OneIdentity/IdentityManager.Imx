@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -43,7 +43,7 @@ export class MitigatingControlsRulesComponent implements OnInit, OnDestroy {
   @Input() public uidCompliance: string;
   @Input() public mControls: RulesMitigatingControls[];
   @Input() public sidesheetRef: EuiSidesheetRef;
-  @Input() public canEdit = true; 
+  @Input() public canEdit = true;
   public subscriptions$: Subscription[] = [];
   public formGroup: UntypedFormGroup;
 
@@ -53,7 +53,7 @@ export class MitigatingControlsRulesComponent implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     private busyService: EuiLoadingService,
     private snackbarService: SnackBarService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
   ) {
     this.formGroup = new UntypedFormGroup({ formArray: formBuilder.array([]) });
   }
@@ -68,7 +68,7 @@ export class MitigatingControlsRulesComponent implements OnInit, OnDestroy {
         if (!this.formGroup.dirty || (await this.confirmationService.confirmLeaveWithUnsavedChanges())) {
           this.sidesheetRef.close();
         }
-      })
+      }),
     );
   }
 
@@ -113,7 +113,8 @@ export class MitigatingControlsRulesComponent implements OnInit, OnDestroy {
       await this.confirmationService.confirmGeneral({
         ShowOk: true,
         Title: '#LDS#Heading Mitigating Control Assigned More Than Once',
-        Message: '#LDS#Saving is not possible. At least one mitigating control is assigned more than once. Remove the multiple assigned mitigating control and try again.',
+        Message:
+          '#LDS#Saving is not possible. At least one mitigating control is assigned more than once. Remove the multiple assigned mitigating control and try again.',
       });
       return;
     }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,8 +26,8 @@
 
 import { Component, Inject, OnInit } from '@angular/core';
 import { EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { DataModelFilterOption, DbObjectKey, DisplayColumns, EntitySchema, IClientProperty, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
-import { DataModelFilterOption, DbObjectKey, DisplayColumns, EntitySchema, IClientProperty, TypedEntity } from 'imx-qbm-dbts';
 import { MetadataService } from '../../base/metadata.service';
 import { CdrFactoryService } from '../../cdr/cdr-factory.service';
 import { DataSourceToolbarFilter } from '../../data-source-toolbar/data-source-toolbar-filters.interface';
@@ -95,12 +95,15 @@ export class TypedEntityCandidateSidesheetComponent implements OnInit {
   public navigate(source: TypedEntityTableFilter): void {
     this.navigationState = { ...this.navigationState, ...source };
     const possible = source.table
-      ? this.searchedEntities.filter(
-          (elem) => CdrFactoryService.tryGetColumn(elem.GetEntity(), 'XObjectKey')?.GetValue()?.includes(source.table),
+      ? this.searchedEntities.filter((elem) =>
+          CdrFactoryService.tryGetColumn(elem.GetEntity(), 'XObjectKey')?.GetValue()?.includes(source.table),
         )
       : this.searchedEntities;
 
-    const data = possible.slice(this.navigationState.StartIndex, this.navigationState.StartIndex + this.navigationState.PageSize);
+    const data = possible.slice(
+      this.navigationState.StartIndex,
+      (this.navigationState.StartIndex ?? 0) + (this.navigationState.PageSize ?? 0),
+    );
     this.dstSettings = {
       displayedColumns: this.displayedColumns,
       dataSource: {
@@ -122,16 +125,18 @@ export class TypedEntityCandidateSidesheetComponent implements OnInit {
       return '';
     }
     const tableName = DbObjectKey.FromXml(column.GetValue()).TableName;
-    return this.metaData.tables[tableName]?.DisplaySingular;
+    return this.metaData.tables[tableName]?.DisplaySingular ?? '';
   }
 
   private getOptionsForFilter(): DataModelFilterOption[] {
-    return this.data.tables
-      .map((elem) => ({ Value: elem, Display: this.metaData.tables[elem]?.DisplaySingular }))
-      .filter((elem) =>
-        this.data.entities.some(
-          (entity) => CdrFactoryService.tryGetColumn(entity.GetEntity(), 'XObjectKey')?.GetValue().includes(elem.Value),
-        ),
-      );
+    return (
+      this.data.tables
+        ?.map((elem) => ({ Value: elem, Display: this.metaData.tables[elem]?.DisplaySingular ?? '' }))
+        .filter((elem) =>
+          this.data.entities.some((entity) =>
+            CdrFactoryService.tryGetColumn(entity.GetEntity(), 'XObjectKey')?.GetValue().includes(elem.Value),
+          ),
+        ) ?? []
+    );
   }
 }

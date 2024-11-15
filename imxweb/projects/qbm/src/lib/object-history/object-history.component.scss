@@ -1,67 +1,29 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
 
 :host {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  height: 100%;
-
-  ::ng-deep eui-date-picker {
-    .mat-form-field-wrapper {
-      padding: 0;
-
-      .mat-form-field-subscript-wrapper {
-        margin: 0;
-      }
-
-      .mat-form-field-flex {
-        padding: 0 0 0 0.5rem;
-
-        .mat-form-field-infix {
-          padding: 0.3rem 0 0.4rem 0;
-          width: 140px;
-        }
-      }
-    }
-  }
-
-  ::ng-deep eui-time-picker {
-    .eui-time-picker-container {
-      display: flex;
-      align-items: center;
-    }
-  }
+  @include flex-column-container($overflow: hidden, $height: 100%);
 }
-
 .imx-viewmode-content {
+  @include flex-column-container($overflow: auto);
   flex: 1 1 auto;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
 }
 
 .imx-viewmode-content-controls {
   margin-bottom: 1rem;
+  .eui-select{
+    width: 180px;
+  }
 }
 
-.imx-timeline-from, .imx-timeline-to, .imx-viewmode-content-controls {
+.imx-timeline-from,
+.imx-timeline-to,
+.imx-viewmode-content-controls {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: baseline;
   gap: 6px;
-
-  ::ng-deep .mat-form-field-type-mat-select > .mat-form-field-wrapper {
-    padding: 0;
-
-    .mat-form-field-infix {
-      border: none;
-    }
-
-    .mat-form-field-subscript-wrapper {
-      margin: 0;
-    }
-  }
 
   .timeline-to-text {
     margin-left: 1rem;
@@ -70,42 +32,21 @@
 
 mat-button-toggle-group {
   margin-left: auto;
-
-  ::ng-deep .mat-button-toggle-appearance-standard[ng-reflect-value='table'] .mat-button-toggle-label-content {
-    padding: 0 8px;
-  }
+}
+.mdc-icon-button{
+  line-height: 20px;
 }
 
-.eui-dark-theme {
-  :host {
-    mat-button-toggle-group {
-      .mat-button-toggle-checked {
-        background-color: $color-blue-40;
-      }
-    }
-
-    .imx-viewmode-dropdown {
-      .mat-form-field-infix {
-        color: $color-gray-40;
-      }
-
-      .mat-form-field-flex {
-        background-color: $color-gray-70;
-      }
-    }
+.imx-filter-icon{
+  font-size: 20px;
+  padding-right: 8px;
+  &-edit{
+    color: $color-blue-60;
   }
-}
-
-.eui-contrast-theme {
-  :host {
-    .imx-viewmode-dropdown {
-      .mat-form-field-infix {
-        color: $color-gray-20;
-      }
-
-      .mat-form-field-flex {
-        background-color: $color-gray-90;
-      }
-    }
+  &-add{
+    color: $color-green-60;
+  }
+  &-remove{
+    color: $color-red-60;
   }
 }

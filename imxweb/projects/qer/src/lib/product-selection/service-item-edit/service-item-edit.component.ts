@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -44,7 +44,7 @@ export class ServiceItemEditComponent {
     private readonly confirmationService: ConfirmationService,
     private readonly ldsReplace: LdsReplacePipe,
     private readonly translate: TranslateService,
-    private readonly sideSheetRef: EuiSidesheetRef
+    private readonly sideSheetRef: EuiSidesheetRef,
   ) {
     this.sideSheetRef.closeClicked().subscribe(() => this.confirmCancel());
   }
@@ -81,10 +81,10 @@ export class ServiceItemEditComponent {
     const skipProductsMessage = this.ldsReplace.transform(
       await this.translate
         .get(
-          '#LDS#You have not specified additional information for {0} products. This is equivalent to skipping. Are you sure you do not want to add the products to your shopping cart?'
+          '#LDS#You have not specified additional information for {0} products. This is equivalent to skipping. Are you sure you do not want to add the products to your shopping cart?',
         )
         .toPromise(),
-      bulkItemsWithNoDecision.length
+      bulkItemsWithNoDecision.length,
     );
 
     // Confirm we will skip the unknown statuses, if they decline we won't close the sidesheet
@@ -95,7 +95,7 @@ export class ServiceItemEditComponent {
       })
     ) {
       this.bulkItems = this.bulkItems.map((item) =>
-        item.status === BulkItemStatus.unknown ? { ...item, status: BulkItemStatus.skipped } : item
+        item.status === BulkItemStatus.unknown ? { ...item, status: BulkItemStatus.skipped } : item,
       );
       return this.sideSheetRef.close(true);
     }

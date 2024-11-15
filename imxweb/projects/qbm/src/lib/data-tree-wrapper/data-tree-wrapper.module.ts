@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,20 +32,9 @@ import { DataTreeWrapperComponent } from './data-tree-wrapper.component';
 import { DataSourceToolbarModule } from '../data-source-toolbar/data-source-toolbar.module';
 import { DataTreeModule } from '../data-tree/data-tree.module';
 
-
-
 @NgModule({
-  declarations: [
-    DataTreeWrapperComponent
-  ],
-  imports: [
-    CommonModule,
-    DataSourceToolbarModule,
-    DataTreeModule,
-    TranslateModule
-  ],
-  exports: [
-    DataTreeWrapperComponent
-  ]
+  declarations: [DataTreeWrapperComponent],
+  imports: [CommonModule, DataSourceToolbarModule, DataTreeModule, TranslateModule],
+  exports: [DataTreeWrapperComponent],
 })
-export class DataTreeWrapperModule { }
+export class DataTreeWrapperModule {}

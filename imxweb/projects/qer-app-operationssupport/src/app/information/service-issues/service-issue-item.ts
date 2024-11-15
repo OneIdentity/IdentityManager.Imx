@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,7 @@
  *
  */
 
-import { IssueItem, IssueAction } from './service-issues.models';
-
+import { IssueAction, IssueItem } from './service-issues.models';
 
 export enum ServiceIssueType {
   Undefined,
@@ -36,7 +35,8 @@ export enum ServiceIssueType {
   FrozenJobs,
   InactiveServers,
   UnresolvedRefs,
-  SyncIssues
+  SyncIssues,
+  SystemThresholdExceeded,
 }
 
 export class ServiceIssueItem implements IssueItem {
@@ -52,4 +52,3 @@ export class ServiceIssueItem implements IssueItem {
     this.type = ServiceIssueType.Undefined;
   }
 }
-

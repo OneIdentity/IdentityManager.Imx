@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,22 +24,28 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PortalSubscription } from 'imx-api-rps';
-import { CollectionLoadParameters, DisplayColumns, EntitySchema, ValType } from 'imx-qbm-dbts';
-import { ConfirmationService, DataSourceToolbarSettings, ClientPropertyForTableColumns, SnackBarService, BusyService } from 'qbm';
+import { PortalSubscription } from '@imx-modules/imx-api-rps';
+import { CollectionLoadParameters, DisplayColumns, EntitySchema, TypedEntity, ValType } from '@imx-modules/imx-qbm-dbts';
+import {
+  BusyService,
+  ClientPropertyForTableColumns,
+  ConfirmationService,
+  DataSourceToolbarSettings,
+  SnackBarService,
+  calculateSidesheetWidth,
+} from 'qbm';
+import { ListReportViewerService } from '../list-report-viewer/list-report-viewer.service';
+import { ListReportViewerSidesheetComponent } from './list-report-viewer-sidesheet/list-report-viewer-sidesheet.component';
 import { ReportSubscription } from './report-subscription/report-subscription';
 import { ReportSubscriptionService } from './report-subscription/report-subscription.service';
 import { ReportViewConfigComponent } from './report-view-config/report-view-config.component';
 import { SubscriptionDetailsComponent } from './subscription-details/subscription-details.component';
 import { SubscriptionWizardComponent } from './subscription-wizard/subscription-wizard.component';
 import { SubscriptionsService } from './subscriptions.service';
-import { ListReportViewerSidesheetComponent } from './list-report-viewer-sidesheet/list-report-viewer-sidesheet.component';
-import { ListReportViewerService } from '../list-report-viewer/list-report-viewer.service';
 
 @Component({
   selector: 'imx-subscriptions',
@@ -66,7 +72,7 @@ export class SubscriptionsComponent implements OnInit {
     private readonly snackbar: SnackBarService,
     private readonly translate: TranslateService,
     private readonly busyServiceElemental: EuiLoadingService,
-    private readonly listReportViewerService: ListReportViewerService
+    private readonly listReportViewerService: ListReportViewerService,
   ) {
     this.entitySchema = subscriptionService.PortalSubscriptionSchema;
     this.displayedColumns = [
@@ -130,7 +136,7 @@ export class SubscriptionsComponent implements OnInit {
       title: await this.translate.get('#LDS#Heading View Report').toPromise(),
       subTitle: subscription.GetEntity().GetDisplay(),
       padding: '0',
-      width: 'max(550px,55%)',
+      width: calculateSidesheetWidth(),
       testId: 'subscription-report-viewer',
       data,
     });
@@ -144,12 +150,13 @@ export class SubscriptionsComponent implements OnInit {
         identifier: 'subscriptions-confirm-unsubscribe-report',
       })
     ) {
-      let overlayRef: OverlayRef;
-      setTimeout(() => (overlayRef = this.busyServiceElemental.show()));
+      if (this.busyServiceElemental.overlayRefs.length === 0) {
+        this.busyServiceElemental.show();
+      }
       try {
         await this.subscriptionService.deleteSubscription(subscription.GetEntity().GetKeys()[0]);
       } finally {
-        setTimeout(() => this.busyServiceElemental.hide(overlayRef));
+        this.busyServiceElemental.hide();
       }
       const message = {
         key: '#LDS#You have successfully unsubscribed from the report "{0}".',
@@ -161,17 +168,18 @@ export class SubscriptionsComponent implements OnInit {
     }
   }
 
-  public async editSubscription(subscription: PortalSubscription): Promise<void> {
-    let rpsSubscription: ReportSubscription;
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyServiceElemental.show()));
+  public async editSubscription(subscription: TypedEntity): Promise<void> {
+    let rpsSubscription: ReportSubscription | undefined = undefined;
+    if (this.busyServiceElemental.overlayRefs.length === 0) {
+      this.busyServiceElemental.show();
+    }
     try {
       const sub = await this.subscriptionService.getSubscriptionInteractive(subscription.GetEntity().GetKeys()[0]);
       if (sub.Data.length > 0) {
         rpsSubscription = this.rpsReportService.buildRpsSubscription(sub.Data[0]);
       }
     } finally {
-      setTimeout(() => this.busyServiceElemental.hide(overlayRef));
+      this.busyServiceElemental.hide();
     }
 
     if (rpsSubscription) {
@@ -180,7 +188,7 @@ export class SubscriptionsComponent implements OnInit {
         subTitle: subscription.GetEntity().GetDisplay(),
         testId: 'edit-subscription-sidesheet',
         padding: '0px',
-        width: 'max(700px,70%)',
+        width: calculateSidesheetWidth(1000),
         disableClose: true,
         data: rpsSubscription,
       });
@@ -195,7 +203,7 @@ export class SubscriptionsComponent implements OnInit {
     const sidesheetRef = this.sideSheet.open(SubscriptionWizardComponent, {
       title: await this.translate.get('#LDS#Heading Add Report Subscription').toPromise(),
       padding: '0px',
-      width: '70%',
+      width: calculateSidesheetWidth(1000),
       disableClose: true,
       testId: 'subscriptions-create',
     });
@@ -211,7 +219,7 @@ export class SubscriptionsComponent implements OnInit {
     const sidesheetRef = this.sideSheet.open(ReportViewConfigComponent, {
       title: await this.translate.get('#LDS#Heading View a Report').toPromise(),
       padding: '0px',
-      width: '70%',
+      width: calculateSidesheetWidth(1000),
       testId: 'subscriptions-view-config',
     });
 

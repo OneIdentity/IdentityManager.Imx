@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,12 +24,10 @@
  *
  */
 
-import { IExtension } from "qbm";
-import { ComplianceViolationDetailsComponent } from "./compliance-violation-details/compliance-violation-details.component";
+import { IExtension } from 'qbm';
+import { ComplianceViolationDetailsComponent } from './compliance-violation-details/compliance-violation-details.component';
 
 export class RequestRuleViolationDetail implements IExtension {
   public static readonly id = 'cpl.ruleViolationDetail';
   public instance = ComplianceViolationDetailsComponent;
-
-
 }

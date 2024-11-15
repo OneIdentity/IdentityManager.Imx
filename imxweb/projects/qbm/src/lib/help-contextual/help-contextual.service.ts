@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,9 +25,9 @@
  */
 
 import { Injectable } from '@angular/core';
-import { AppConfigService } from '../appConfig/appConfig.service';
-import { ContextualHelpItem } from 'imx-api-qbm';
+import { ContextualHelpItem } from '@imx-modules/imx-api-qbm';
 import { TranslateService } from '@ngx-translate/core';
+import { AppConfigService } from '../appConfig/appConfig.service';
 
 /**
  * Contains all the methods for help context.
@@ -36,7 +36,7 @@ import { TranslateService } from '@ngx-translate/core';
   providedIn: 'root',
 })
 export class HelpContextualService {
-  private helpContextId: HelpContextualValues;
+  private helpContextId: HelpContextualValues | null;
   constructor(
     private appConfigService: AppConfigService,
     private translateService: TranslateService,
@@ -48,7 +48,7 @@ export class HelpContextualService {
    * @returns the selected ContextualHelpItem
    */
   public async getHelpContext(contextId: HelpContextualValues): Promise<ContextualHelpItem> {
-    const lang = this.translateService.currentLang;
+    const lang = this.translateService.currentLang === 'de' ? 'de-DE' : this.translateService.currentLang;
     let contextItem: ContextualHelpItem;
     try {
       contextItem = await this.appConfigService.client.imx_help_context_get(contextId, lang);
@@ -71,7 +71,7 @@ export class HelpContextualService {
    * The call sets the stored help context ID.
    * @param {HelpContextualValues}
    */
-  public setHelpContextId(contextId: HelpContextualValues): void {
+  public setHelpContextId(contextId: HelpContextualValues | null): void {
     this.helpContextId = contextId;
   }
 
@@ -79,7 +79,7 @@ export class HelpContextualService {
    * The call returns the stored help context ID.
    * @returns {HelpContextualValues}
    */
-  public GetHelpContextId(): HelpContextualValues {
+  public GetHelpContextId(): HelpContextualValues | null {
     return this.helpContextId;
   }
 }
@@ -92,6 +92,7 @@ export class HelpContextualService {
 export const HELP_CONTEXTUAL = {
   Default: 'default',
   StatisticsPage: 'statistics-page',
+  StatisticsFavoritesOrdering: 'statistics-favorites-ordering',
   NewRequest: 'new-request',
   NewRequestRecommendedProduct: 'new-request-recommended-product',
   NewRequestReferenceUser: 'new-request-reference-user',
@@ -178,6 +179,7 @@ export const HELP_CONTEXTUAL = {
   ServiceItemsEdit: 'service-items-edit',
   ApprovalWorkflowManager: 'approval-workflow-manager',
   ApprovalWorkflowManagerCreate: 'approval-workflow-manager-create',
+  ApprovalWorkflowManagerEdit: 'approval-workflow-manager-edit',
   Reports: 'reports',
   ReportsCreate: 'reports-create',
   ReportsEdit: 'reports-edit',
@@ -187,6 +189,8 @@ export const HELP_CONTEXTUAL = {
   Profile: 'profile',
   ProfileMultipleIdentities: 'profile-multiple-identities',
   Addressbook: 'addressbook',
+  RoleEntitlements: 'role-entitlements',
+  ProcessingQueue: 'processing-queue',
 } as const;
 type ObjectValues<T> = T[keyof T];
 export type HelpContextualValues = ObjectValues<typeof HELP_CONTEXTUAL>;

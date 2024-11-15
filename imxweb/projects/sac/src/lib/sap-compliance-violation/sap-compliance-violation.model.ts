@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,20 +24,19 @@
  *
  */
 
+import { ByRoleResultElement } from '@imx-modules/imx-api-sac';
 
-import { ByRoleResultElement } from 'imx-api-sac';
-
-export interface SapRoleTreeNodeModel extends ByRoleResultElement{
+export interface SapRoleTreeNodeModel extends ByRoleResultElement {
   level: number;
   expandable: boolean;
 }
 
 export enum SapSelectionTypeEnum {
   ROLE = 'ROLE',
-  ABILITY = 'ABILITY'
+  ABILITY = 'ABILITY',
 }
 
-export interface SapSelectionOptions{
+export interface SapSelectionOptions {
   label: string;
-  value: SapSelectionTypeEnum
+  value: SapSelectionTypeEnum;
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,15 +24,12 @@
  *
  */
 
-import { DataModelFilterOption, DataModelProperty, ValType } from 'imx-qbm-dbts';
+import { DataModelFilterOption, DataModelProperty, ValType } from '@imx-modules/imx-qbm-dbts';
 import { createGroupData } from './data-model-helper';
 
 describe('DataModelHelper', () => {
   it('should createGroupData - undefined if no data', () => {
-    const groupData = createGroupData(
-      { },
-      undefined
-    );
+    const groupData = createGroupData({}, undefined);
 
     expect(groupData).toBeUndefined();
   });
@@ -43,11 +40,11 @@ describe('DataModelHelper', () => {
         Properties: [
           { IsGroupable: false, Property: { Type: ValType.String, ColumnName: 'some columnName not groupable' } },
           { IsGroupable: true, Property: { Type: ValType.String, ColumnName: 'some columnName excluded' } },
-          { IsGroupable: true, Property: { Type: ValType.String, ColumnName: 'some columnName' } }
-        ] as DataModelProperty[]
+          { IsGroupable: true, Property: { Type: ValType.String, ColumnName: 'some columnName' } },
+        ] as DataModelProperty[],
       },
-      __ => Promise.resolve({ TotalCount: 0 }),
-      ['some columnName excluded']
+      (__) => Promise.resolve({ TotalCount: 0 }),
+      ['some columnName excluded'],
     );
 
     expect(groupData.groups.length).toEqual(1);
@@ -58,11 +55,9 @@ describe('DataModelHelper', () => {
   it('should createGroupData groups based on GroupInfo with length === 1', () => {
     const groupData = createGroupData(
       {
-        GroupInfo: [
-          { Options: [{ Value: 'option1' }] }
-        ]
+        GroupInfo: [{ Options: [{ Value: 'option1' }] }],
       },
-      __ => Promise.resolve({ TotalCount: 0 })
+      (__) => Promise.resolve({ TotalCount: 0 }),
     );
 
     expect(groupData.groups.length).toEqual(1);
@@ -73,12 +68,9 @@ describe('DataModelHelper', () => {
   it('should createGroupData groupingCategories based on GroupInfo with length > 1', () => {
     const groupData = createGroupData(
       {
-        GroupInfo: [
-          { Options: [{ Value: 'option1' }] },
-          { Options: [{ Value: 'option2' }] }
-        ]
+        GroupInfo: [{ Options: [{ Value: 'option1' }] }, { Options: [{ Value: 'option2' }] }],
       },
-      __ => Promise.resolve({ TotalCount: 0 })
+      (__) => Promise.resolve({ TotalCount: 0 }),
     );
 
     expect(groupData.groups.length).toEqual(0);
@@ -92,14 +84,10 @@ describe('DataModelHelper', () => {
   it('should createGroupData groups based on Properties and GroupInfo length === 1', () => {
     const groupData = createGroupData(
       {
-        Properties: [
-          { IsGroupable: true, Property: { Type: ValType.String, ColumnName: 'some columnName' } }
-        ] as DataModelProperty[],
-        GroupInfo: [
-          { Options: [{ Value: 'option1' }] }
-        ]
+        Properties: [{ IsGroupable: true, Property: { Type: ValType.String, ColumnName: 'some columnName' } }] as DataModelProperty[],
+        GroupInfo: [{ Options: [{ Value: 'option1' }] }],
       },
-      __ => Promise.resolve({ TotalCount: 0 })
+      (__) => Promise.resolve({ TotalCount: 0 }),
     );
 
     expect(groupData.groups.length).toEqual(2);
@@ -111,15 +99,10 @@ describe('DataModelHelper', () => {
   it('should createGroupData groups and groupingCategories based on Properties and GroupInfo with length > 1', () => {
     const groupData = createGroupData(
       {
-        Properties: [
-          { IsGroupable: true, Property: { Type: ValType.String, ColumnName: 'some columnName' } }
-        ] as DataModelProperty[],
-        GroupInfo: [
-          { Options: [{ Value: 'option1' }] },
-          { Options: [{ Value: 'option2' }] }
-        ]
+        Properties: [{ IsGroupable: true, Property: { Type: ValType.String, ColumnName: 'some columnName' } }] as DataModelProperty[],
+        GroupInfo: [{ Options: [{ Value: 'option1' }] }, { Options: [{ Value: 'option2' }] }],
       },
-      __ => Promise.resolve({ TotalCount: 0 })
+      (__) => Promise.resolve({ TotalCount: 0 }),
     );
 
     expect(groupData.groups.length).toEqual(1);

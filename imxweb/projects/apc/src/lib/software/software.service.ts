@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,8 +26,12 @@
 
 import { Injectable } from '@angular/core';
 
-import { PortalResourcesApplicationsMembership, PortalRespApplication } from 'imx-api-apc';
-import { ProjectConfig, QerProjectConfig } from 'imx-api-qer';
+import {
+  PortalResourcesApplicationServiceitemWrapper,
+  PortalResourcesApplicationsMembership,
+  PortalRespApplication,
+} from '@imx-modules/imx-api-apc';
+import { ProjectConfig, QerProjectConfig } from '@imx-modules/imx-api-qer';
 import {
   CollectionLoadParameters,
   CompareOperator,
@@ -40,7 +44,7 @@ import {
   TypedEntity,
   TypedEntityBuilder,
   TypedEntityCollectionData,
-} from 'imx-qbm-dbts';
+} from '@imx-modules/imx-qbm-dbts';
 import { ProjectConfigurationService, QerApiService } from 'qer';
 import { ApcApiService } from '../apc-api-client.service';
 import { ResourceInfo } from '../app-info.model';
@@ -56,26 +60,31 @@ export class SoftwareService {
   constructor(
     protected readonly project: ProjectConfigurationService,
     private readonly api: ApcApiService,
-    private readonly qerClient: QerApiService
-  ) {}
+    private readonly qerClient: QerApiService,
+  ) {
+    this.appInfo = {
+      table: 'Application',
+      caption: '#LDS#Software',
+      accProduct: this.api.typedClient.PortalResourcesApplicationServiceitem,
+      resp: {
+        type: PortalRespApplication,
+        get: async (parameter: any) => this.api.client.portal_resp_application_get(parameter),
+        schema: this.api.typedClient.PortalRespApplication.GetSchema(),
+        dataModel: async (filter?: FilterData[]) => this.api.client.portal_resp_application_datamodel_get({ filter }),
+        interactive: this.api.typedClient.PortalRespApplicationInteractive,
+      },
+    };
+  }
 
-  private appInfo = {
-    table: 'Application',
-    caption: '#LDS#Software',
-    accProduct: this.api.typedClient.PortalResourcesApplicationServiceitem,
-    resp: {
-      type: PortalRespApplication,
-      get: async (parameter: any) => this.api.client.portal_resp_application_get(parameter),
-      schema: this.api.typedClient.PortalRespApplication.GetSchema(),
-      dataModel: async (filter?: FilterData[]) => this.api.client.portal_resp_application_datamodel_get({ filter }),
-      interactive: this.api.typedClient.PortalRespApplicationInteractive,
-    },
+  private appInfo: {
+    table: string;
+    caption: string;
+    accProduct: PortalResourcesApplicationServiceitemWrapper;
+    resp: any;
   };
 
   public async get(parameter: CollectionLoadParameters): Promise<TypedEntityCollectionData<TypedEntity>> {
     const conf = this.appInfo.resp;
-
-    if (!conf) return null;
     const builder = new TypedEntityBuilder(conf.type);
     const data = await conf.get(parameter);
 
@@ -102,11 +111,11 @@ export class SoftwareService {
       this.config = await this.project.getConfig();
     }
 
-    const list = primary ? this.config.OwnershipConfig.PrimaryFields : this.config.OwnershipConfig.EditableFields;
-    return list[objectType].filter((name) => entity.GetSchema().Columns[name]);
+    const list = primary ? this.config?.OwnershipConfig?.PrimaryFields : this.config?.OwnershipConfig?.EditableFields;
+    return list && list[objectType] ? list[objectType].filter((name) => entity.GetSchema().Columns[name]) : [];
   }
 
-  public async getServiceItem(uidAccProduct: string): Promise<TypedEntity> {
+  public async getServiceItem(uidAccProduct: string): Promise<TypedEntity | null> {
     const filter: FilterData[] = [
       {
         Type: FilterType.Compare,
@@ -118,12 +127,12 @@ export class SoftwareService {
 
     const item = await this.appInfo.accProduct.Get({ filter });
 
-    return item.Data.length > 0 ? item.Data[0] : undefined;
+    return item.Data.length > 0 ? item.Data[0] : null;
   }
 
   public async getMemberShips(
     uidApplication: string,
-    parameter: CollectionLoadParameters
+    parameter: CollectionLoadParameters,
   ): Promise<ExtendedTypedEntityCollection<PortalResourcesApplicationsMembership, unknown>> {
     return this.api.typedClient.PortalResourcesApplicationsMembership.Get(uidApplication, parameter);
   }
@@ -131,8 +140,9 @@ export class SoftwareService {
   public async deleteGroupMembers(uidSoftware: string, uidPersonList: string[]): Promise<any[]> {
     return await Promise.all(
       uidPersonList.map(async (item) => {
-        (await this.api.typedClient.PortalResourcesApplicationsMembership.Delete(uidSoftware,item)).Data[0]
-      }));
+        (await this.api.typedClient.PortalResourcesApplicationsMembership.Delete(uidSoftware, item)).Data[0];
+      }),
+    );
   }
 
   public async unsubscribeMembership(item: TypedEntity): Promise<void> {

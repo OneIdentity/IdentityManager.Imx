@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,10 +27,9 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 
-import { IEntityColumn } from 'imx-qbm-dbts';
-import { ColumnDependentReference } from '../column-dependent-reference.interface';
+import { IEntityColumn } from '@imx-modules/imx-qbm-dbts';
 import { CdrEditorComponent } from '../cdr-editor/cdr-editor.component';
-
+import { ColumnDependentReference } from '../column-dependent-reference.interface';
 
 /**
  * Provides a column editor component, that wraps around a {@link CdrEditor | column dependent reference editor}.
@@ -45,7 +44,7 @@ export class EntityColumnEditorComponent implements OnChanges {
    * @ignore only used in template.
    * The column dependent reference used by the editor.
    */
-  public cdr: ColumnDependentReference;
+  public cdr: ColumnDependentReference | undefined;
 
   /**
    * An entity column, that should be edited with a {@link CdrEditor | column dependent reference editor}.
@@ -56,6 +55,7 @@ export class EntityColumnEditorComponent implements OnChanges {
    * Indicator, whether the control should be displayed as read-only.
    */
   @Input() public readonly: boolean;
+  @Input() public display: string;
 
   /**
    * This is emitted, after the control is created properly.
@@ -79,6 +79,7 @@ export class EntityColumnEditorComponent implements OnChanges {
         ? {
             column: this.column,
             isReadOnly: () => this.readonly || !this.column.GetMetadata().CanEdit(),
+            display: this.display,
           }
         : undefined;
     }

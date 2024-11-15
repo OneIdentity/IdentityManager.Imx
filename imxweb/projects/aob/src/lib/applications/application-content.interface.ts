@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,12 +24,12 @@
  *
  */
 
-import { PortalApplication, PortalApplicationNew } from 'imx-api-aob';
+import { PortalApplication, PortalApplicationNew } from '@imx-modules/imx-api-aob';
 import { Subject } from 'rxjs';
 
 export interface ApplicationContent {
-    application: PortalApplication | PortalApplicationNew;
-    totalCount?: number;
-    keywords?: string;
-    loadingSubject?: Subject<boolean>
+  application: PortalApplication | PortalApplicationNew | undefined;
+  totalCount?: number;
+  keywords?: string;
+  loadingSubject?: Subject<boolean>;
 }

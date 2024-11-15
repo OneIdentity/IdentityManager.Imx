@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,22 +25,22 @@
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 
-import { AppConfigService, AuthenticationService, ISessionState } from "qbm";
+import { AppConfigService, AuthenticationService, ISessionState } from 'qbm';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ApplicationGuardService implements CanActivate, OnDestroy {
+export class ApplicationGuardService implements OnDestroy {
   private onSessionResponse: Subscription;
 
   constructor(
     private readonly authentication: AuthenticationService,
     private readonly appConfig: AppConfigService,
-    private readonly router: Router
-  ) { }
+    private readonly router: Router,
+  ) {}
 
   public canActivate(route: ActivatedRouteSnapshot, _: RouterStateSnapshot): Observable<boolean> {
     return new Observable<boolean>((observer) => {
@@ -48,7 +48,7 @@ export class ApplicationGuardService implements CanActivate, OnDestroy {
         if (sessionState.IsLoggedIn) {
           const isPortal = this.appConfig?.Config?.WebAppIdentifier?.toLocaleLowerCase() === 'portal';
           if (!isPortal) {
-            this.router.navigate([this.appConfig.Config.routeConfig.start], { queryParams: {} });
+            this.router.navigate([this.appConfig.Config?.routeConfig?.start], { queryParams: {} });
           }
           observer.next(isPortal ? true : false);
           observer.complete();

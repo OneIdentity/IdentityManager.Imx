@@ -1,38 +1,72 @@
-<h2 mat-dialog-title>{{'#LDS#Narrow the selection further down by: {0}' | translate |ldsReplace:data.type}}</h2>
+<h2 mat-dialog-title>{{ '#LDS#Narrow the selection further down by: {0}' | translate | ldsReplace: data.type }}</h2>
 <mat-dialog-content class="imx-dialog-content">
-  <imx-data-tree [withSelectedNodeHighlight]="true" data-imx-identifier="filter-tree-data-tree" #tree [hideSelection]="true" *ngIf="database" (checkedNodesChanged)="onCheckedNodesChanged()"
-   [selectedEntities]="currentlySelectedFilterEntities" [withMultiSelect]="data?.filterTreeParameter?.multiSelect" [database]="database" (nodeSelected)="onNodeSelected($event)">
+  <imx-data-tree
+    [withSelectedNodeHighlight]="true"
+    data-imx-identifier="filter-tree-data-tree"
+    #tree
+    [hideSelection]="true"
+    *ngIf="database"
+    (checkedNodesChanged)="onCheckedNodesChanged()"
+    [selectedEntities]="currentlySelectedFilterEntities"
+    [withMultiSelect]="data?.filterTreeParameter?.multiSelect"
+    [database]="database"
+    (nodeSelected)="onNodeSelected($event)"
+  >
   </imx-data-tree>
 </mat-dialog-content>
 
-<mat-dialog-actions *ngIf="data?.filterTreeParameter?.multiSelect || currentlySelectedFilter?.length > 0">
-  <div class="imx-current-filter" *ngIf="!data?.filterTreeParameter?.multiSelect && currentlySelectedFilter?.length > 0">
-    <span>{{'#LDS#Selected item' |translate}}:</span>
-    <span>{{currentlySelectedFilter[0].display}}</span>
+<mat-dialog-actions *ngIf="data?.filterTreeParameter?.multiSelect || !!currentlySelectedFilter?.length">
+  <div class="imx-current-filter" *ngIf="!data?.filterTreeParameter?.multiSelect && !!currentlySelectedFilter?.length">
+    <span>{{ '#LDS#Selected item' | translate }}:</span>
+    <span>{{ currentlySelectedFilter[0]?.display }}</span>
   </div>
 
-  <button data-imx-identifier="filter-tree-selected-filter-button" [disabled]="currentlySelectedFilter?.length < 1" mat-button color="primary"
-    *ngIf="data?.filterTreeParameter?.multiSelect" [matMenuTriggerFor]="selectedElements">
-    {{'#LDS#Selected items' | translate }}
+  <button
+    data-imx-identifier="filter-tree-selected-filter-button"
+    [disabled]="(currentlySelectedFilter?.length ?? 0) < 1"
+    mat-button
+    color="primary"
+    *ngIf="data?.filterTreeParameter?.multiSelect"
+    [matMenuTriggerFor]="selectedElements"
+  >
+    {{ '#LDS#Selected items' | translate }}
     <eui-badge class="imx-badge" color="orange">
-      {{currentlySelectedFilter?.length || 0}}
+      {{ currentlySelectedFilter?.length || 0 }}
     </eui-badge>
   </button>
 
-  <button *ngIf="data?.filterTreeParameter?.multiSelect" data-imx-identifier="filter-tree-clear-filter-button" [disabled]="currentlySelectedFilter == null" mat-button color="primary" (click)="clearValue()">
-    {{'#LDS#Clear selection' | translate}}
+  <button
+    *ngIf="data?.filterTreeParameter?.multiSelect"
+    data-imx-identifier="filter-tree-clear-filter-button"
+    [disabled]="currentlySelectedFilter == null"
+    mat-button
+    color="primary"
+    (click)="clearValue()"
+  >
+    {{ '#LDS#Clear selection' | translate }}
   </button>
   <div class="imx-spacer"></div>
-  <button *ngIf="data?.filterTreeParameter?.multiSelect" data-imx-identifier="filter-tree-apply-button"  [disabled]="currentlySelectedFilter == null" mat-raised-button color="primary" (click)="submitValues()">
-    {{'#LDS#Apply' | translate}}
+  <button
+    *ngIf="data?.filterTreeParameter?.multiSelect"
+    data-imx-identifier="filter-tree-apply-button"
+    [disabled]="currentlySelectedFilter == null"
+    mat-flat-button
+    color="primary"
+    (click)="submitValues()"
+  >
+    {{ '#LDS#Apply' | translate }}
   </button>
 </mat-dialog-actions>
 
 <mat-menu #selectedElements class="imx-selected-items-menu">
   <mat-list>
-    <mat-list-item class="imx-list-item" *ngFor="let filterElement of currentlySelectedFilter" [attr.data-imx-identifier]="'filter-tree-selected-item' + filterElement.entity?.GetKeys()[0]">
+    <mat-list-item
+      class="imx-list-item"
+      *ngFor="let filterElement of currentlySelectedFilter"
+      [attr.data-imx-identifier]="'filter-tree-selected-item' + filterElement?.entity?.GetKeys()?.[0]"
+    >
       <div class="imx-selected-item-element">
-        {{filterElement.display}}
+        {{ filterElement?.display }}
       </div>
     </mat-list-item>
   </mat-list>

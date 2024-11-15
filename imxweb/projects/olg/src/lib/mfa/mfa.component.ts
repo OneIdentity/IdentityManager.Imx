@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { ChangeDetectorRef, Component, Inject, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
 import { BusyService } from 'qbm';
@@ -49,16 +49,16 @@ interface AuthForm {
 })
 export class MfaComponent implements OnDestroy {
   public authForm = new FormGroup<AuthForm>({
-    authenticator: new FormControl<boolean>(false),
+    authenticator: new FormControl<boolean>(false, { nonNullable: true }),
   });
   /** Indicates whether the user has authenticators defined or not */
-  public hasAuthenticators: boolean = false;
+  public hasAuthenticators = false;
 
   /** Indicates whether the control is loading or not */
-  public isLoading: boolean = false;
+  public isLoading = false;
 
   /** busy service used in the authentication control and its sub controls */
-  public busyService: BusyService = new BusyService();
+  public busyService = new BusyService();
 
   private subscriptions: Subscription[] = [];
 
@@ -68,20 +68,20 @@ export class MfaComponent implements OnDestroy {
       workflowActionId: string;
     },
     sideSheetRef: EuiSidesheetRef,
-    change: ChangeDetectorRef
+    change: ChangeDetectorRef,
   ) {
     this.subscriptions.push(
       this.busyService.busyStateChanged.subscribe((state) => {
         this.isLoading = state;
         change.detectChanges();
-      })
+      }),
     );
     this.subscriptions.push(
       this.authForm.controls.authenticator.valueChanges.subscribe((value) => {
         if (!!value) {
           sideSheetRef.close(true);
         }
-      })
+      }),
     );
   }
 

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { IForeignKeyInfo, IValueMetadata, ValType, ValueConstraint, ValueStruct } from 'imx-qbm-dbts';
+import { IForeignKeyInfo, IValueMetadata, ValType, ValueConstraint, ValueStruct } from '@imx-modules/imx-qbm-dbts';
 import { Subscription } from 'rxjs';
 import { ValueWrapper } from '../value-wrapper/value-wrapper';
 import { ColumnDependentReference } from './column-dependent-reference.interface';
@@ -52,14 +52,14 @@ export class EntityColumnContainer<T = any> implements ValueWrapper<T> {
   /**
    * The display value of the column.
    */
-  public get displayValue(): string {
+  public get displayValue(): string | undefined {
     return this.cdr && this.cdr.column ? this.cdr.column.GetDisplayValue() : undefined;
   }
 
   /**
    * A read-only list of {@link IForeignKeyInfo | FK informations}
    */
-  public get fkRelations(): ReadonlyArray<IForeignKeyInfo> {
+  public get fkRelations(): ReadonlyArray<IForeignKeyInfo> | undefined {
     return this.cdr && this.cdr.column ? this.cdr.column.GetMetadata().GetFkRelations() : undefined;
   }
 
@@ -68,51 +68,53 @@ export class EntityColumnContainer<T = any> implements ValueWrapper<T> {
    * If the CDR itself doesn't contain a display, the display given by the column is used.
    */
   public get display(): string {
-    return this.cdr && (this.cdr.display || (this.cdr.column ? this.cdr.column.GetMetadata().GetDisplay() : undefined));
+    return this.cdr && (this.cdr.display || (this.cdr.column ? this.cdr.column.GetMetadata().GetDisplay() : ''));
   }
 
   /**
    * The information, whether a value is mandatory or not.
    */
   public get isValueRequired(): boolean {
-    return this.cdr && (this.cdr.minLength > 0 || (this.cdr.column && this.cdr.column.GetMetadata().GetMinLength() > 0));
+    return this.cdr && ((this.cdr?.minLength ?? 0) > 0 || (this.cdr.column && this.cdr.column.GetMetadata().GetMinLength() > 0));
   }
 
   /**
    * The name of the column.
    */
-  public get name(): string {
+  public get name(): string | undefined {
     return this.cdr && this.cdr.column ? this.cdr.column.ColumnName : undefined;
   }
-
   /**
    * The value type of the column, like bool, number, string, etc.
    */
-  public get type(): ValType {
+  public get type(): ValType | undefined {
     return this.cdr && this.cdr.column ? this.cdr.column.GetType() : undefined;
   }
 
   /**
    * The information of a min value, a max value or limited values used by the given column.
    */
-  public get valueConstraint(): ValueConstraint {
+  public get valueConstraint(): ValueConstraint | undefined {
     return this.cdr && (this.cdr.valueConstraint || (this.cdr.column ? this.cdr.column.GetMetadata().valueConstraint : undefined));
   }
 
   /**
    * The meta data provided for the given column, like minLength, display, isMultiLine, etc.
    */
-  public get metaData(): IValueMetadata {
+  public get metaData(): IValueMetadata | undefined {
     return this.cdr && this.cdr.column ? this.cdr.column.GetMetadata() : undefined;
   }
 
   /**
    * An additinal hint provided by the given CDR.
    */
-  public get hint(): string {
+  public get hint(): string | undefined {
     return this.cdr?.hint;
   }
 
+  /**
+   * The visibility of the display value.
+   */
   public get showDisplayValue(): boolean {
     return !!this.metaData?.CanSee();
   }
@@ -149,7 +151,7 @@ export class EntityColumnContainer<T = any> implements ValueWrapper<T> {
    * Updates the value and puts it into the column
    * @param value The new value for the column
    */
-  public async updateValue(value: T): Promise<void> {
+  public async updateValue(value: T | undefined): Promise<void> {
     if (this.cdr && this.cdr.column) {
       return this.cdr.column.PutValue(value);
     }
@@ -159,7 +161,7 @@ export class EntityColumnContainer<T = any> implements ValueWrapper<T> {
    * Updates column value and column display in one call
    * @param value The value struct, that should be used
    */
-  public async updateValueStruct(value: ValueStruct<T>): Promise<void> {
+  public async updateValueStruct(value: ValueStruct<T | undefined>): Promise<void> {
     if (this.cdr && this.cdr.column) {
       return this.cdr.column.PutValueStruct(value);
     }

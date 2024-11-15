@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,13 +31,12 @@ import { AobPermissionsService } from '../../permissions/aob-permissions.service
 @Component({
   selector: 'imx-kpi-tile',
   templateUrl: './kpi-tile.component.html',
-  styleUrls: ['./kpi-tile.component.scss'],
 })
 export class KpiTileComponent {
-
-  constructor(private readonly router: Router,
+  constructor(
+    private readonly router: Router,
     private readonly aobPermissionService: AobPermissionsService,
-  ) { }
+  ) {}
 
   public isAobOwner: boolean;
 
@@ -48,5 +47,4 @@ export class KpiTileComponent {
   public goToGlobalKpi(): void {
     this.router.navigate(['applications/kpi']);
   }
-
 }

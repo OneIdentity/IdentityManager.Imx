@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 :host {
   overflow: hidden;
@@ -6,7 +6,6 @@
   flex-direction: column;
   height: 100%;
 }
-
 
 .imx-memberships {
   flex: 1 1 auto;
@@ -21,8 +20,4 @@
   flex-direction: column;
   overflow: auto;
   margin-top: 20px;
-}
-
-.helper-alert  {
-  margin: 20px 2px;
 }

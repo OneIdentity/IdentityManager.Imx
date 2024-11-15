@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,16 +29,14 @@ import { OpSupportUserService } from 'qer';
 
 @Component({
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
-
   public isOperationsSupporter: boolean;
 
-  constructor(private readonly userService: OpSupportUserService) {
-  }
+  constructor(private readonly userService: OpSupportUserService) {}
 
   public async ngOnInit() {
-    this.isOperationsSupporter = (await this.userService.getGroups()).map(g => g.Name).includes("QER_4_OperationsSupport");
+    this.isOperationsSupporter = (await this.userService.getGroups()).map((g) => g.Name).includes('QER_4_OperationsSupport');
   }
 }

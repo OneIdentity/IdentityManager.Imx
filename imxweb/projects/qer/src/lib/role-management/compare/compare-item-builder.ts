@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,9 +24,9 @@
  *
  */
 
-import { EntityCollectionData, EntityData, TypedEntityBuilder, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { EntityCollectionData, EntityData, TypedEntityBuilder, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { CompareItem } from './compare-item';
-import { RoleCompareItem } from 'imx-api-qer';
+import { RoleCompareItem } from '@imx-modules/imx-api-qer';
 
 export class CompareItemBuilder {
   public readonly entitySchema = CompareItem.GetEntitySchema();

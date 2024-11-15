@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { EventEmitter, Injectable } from "@angular/core";
+import { EventEmitter, Injectable } from '@angular/core';
 
 export interface Busy {
   endBusy: (forceEnd?: boolean) => void;
@@ -37,9 +37,10 @@ export interface Busy {
   providedIn: 'root',
 })
 export class BusyService {
-
   /** Returns false if and only if there are no active busy sections. */
-  public get isBusy() { return this.busyCounter > 0; }
+  public get isBusy() {
+    return this.busyCounter > 0;
+  }
 
   private busyCounter = 0;
 
@@ -48,19 +49,16 @@ export class BusyService {
    */
   beginBusy(): Busy {
     this.busyCounter++;
-    if (this.busyCounter >= 1)
-      this.busyStateChanged.emit(true);
+    if (this.busyCounter >= 1) this.busyStateChanged.emit(true);
     var isEnded = false;
     return {
       endBusy: (forceEnd?: boolean) => {
         // section can only be ended once.
-        if (isEnded)
-          return;
+        if (isEnded) return;
         isEnded = true;
-        this.busyCounter = forceEnd ? 0 : this.busyCounter-1;
-        if (this.busyCounter <= 0)
-          this.busyStateChanged.emit(false);
-      }
+        this.busyCounter = forceEnd ? 0 : this.busyCounter - 1;
+        if (this.busyCounter <= 0) this.busyStateChanged.emit(false);
+      },
     };
   }
 

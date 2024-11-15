@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -37,14 +37,7 @@ import { BusinessOwnerOverviewTileComponent } from './businessowner-overview-til
 
 @NgModule({
   declarations: [BusinessOwnerOverviewTileComponent],
-  imports: [
-    CommonModule,
-    TileModule,
-    TranslateModule,
-    FormsModule,
-    MatDialogModule,
-    MatTabsModule
-  ],
+  imports: [CommonModule, TileModule, TranslateModule, FormsModule, MatDialogModule, MatTabsModule],
   exports: [BusinessOwnerOverviewTileComponent],
 })
-export class BusinessownerOverviewTileModule { }
+export class BusinessownerOverviewTileModule {}

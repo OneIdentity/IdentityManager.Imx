@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,10 +25,10 @@
  */
 
 import { Component, Inject, OnInit } from '@angular/core';
-import { EuiDownloadOptions, EuiLoadingService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiLoadingService } from '@elemental-ui/core';
 
-import { PortalTermsofuse } from 'imx-api-qer';
-import { IReadValue } from 'imx-qbm-dbts';
+import { PortalTermsofuse } from '@imx-modules/imx-api-qer';
+import { IReadValue } from '@imx-modules/imx-qbm-dbts';
 import { TermsOfUseService } from '../terms-of-use.service';
 
 @Component({
@@ -40,11 +40,11 @@ export class TermsOfUseViewerComponent implements OnInit {
   public terms: PortalTermsofuse;
 
   constructor(
-    private termsOfUseService: TermsOfUseService,
+    public termsOfUseService: TermsOfUseService,
     @Inject(EUI_SIDESHEET_DATA)
     private readonly data: IReadValue<string>,
-    private readonly busyService: EuiLoadingService
-    ) {}
+    private readonly busyService: EuiLoadingService,
+  ) {}
 
   public async ngOnInit(): Promise<void> {
     const overlay = this.busyService.show();
@@ -53,12 +53,5 @@ export class TermsOfUseViewerComponent implements OnInit {
     } finally {
       this.busyService.hide(overlay);
     }
-  }
-
-  /**
-   * Gets the {@link EuiDownloadOptions|download options} for the given uid.
-   */
-  public getDownloadOptions(key: string, display: string): EuiDownloadOptions {
-    return this.termsOfUseService.getDownloadOptions(key, display);
   }
 }

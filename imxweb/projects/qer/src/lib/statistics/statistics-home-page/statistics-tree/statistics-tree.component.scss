@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   height: 100%;
@@ -8,41 +8,4 @@
       margin-right: 5px;
     }
   }
-}
-
-// Theming
-:host {
-  .imx-tree-root > eui-icon {
-    color: $color-blue-60;
-  }
-  .imx-tree-root--selected > eui-icon {
-    color: $color-orange-60;
-  }
-}
-
-
-.eui-dark-theme {
-  :host {
-    .imx-tree-root > eui-icon {
-      color: $color-blue-40;
-    }
-
-    .imx-tree-root--selected > eui-icon {
-      color: $color-orange-40;
-    }
-  }
-
-}
-
-.eui-contrast-theme {
-  :host {
-    .imx-tree-root > eui-icon {
-      color: $color-blue-40;
-    }
-
-    .imx-tree-root--selected > eui-icon {
-      color: $color-orange-40;
-    }
-  }
-
 }

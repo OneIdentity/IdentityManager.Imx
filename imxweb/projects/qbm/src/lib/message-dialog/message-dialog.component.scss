@@ -5,3 +5,10 @@
   max-height: 400px;
   max-width: 600px;
 }
+.mat-mdc-dialog-title {
+  align-items: end;
+  h2{
+    font-weight: inherit;
+    font-size: inherit;
+  }
+}

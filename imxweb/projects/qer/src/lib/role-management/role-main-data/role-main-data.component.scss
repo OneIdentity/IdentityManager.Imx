@@ -1,6 +1,3 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
-@import '@elemental-ui/core/src/styles/_eui_palette.scss';
-
 :host {
   display: flex;
   flex-direction: column;
@@ -12,47 +9,12 @@ form {
   overflow: auto;
 }
 
-.imx-tab-content {
+.imx-tab-content-body {
   display: flex;
-  flex-direction: column;
-  height: 100%;
-
-  .imx-tab-content-body {
-    display: flex;
-    .mat-card {
-      flex: 1 1 auto;
-      display: flex;
-      flex-direction: column;
-    }
-  }
-
-  .imx-cdr-group {
-    flex: 1 1 auto;
-    overflow: auto;
-    padding-right: 10px;
-  }
 }
 
-.eui-sidesheet-actions {
-
-  > *:not(:last-child){
-    margin-right: 5px;
-  }
-
-}
-
-.eui-dark-theme {
-  :host {
-    .imx-tab-content .imx-action-buttons {
-      background-color: $color-gray-70;
-    }
-  }
-}
-
-.eui-contrast-theme {
-  :host {
-    .imx-tab-content .imx-action-buttons {
-      background-color: $color-gray-90;
-    }
-  }
+.imx-cdr-group {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding-right: 10px;
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -41,10 +41,9 @@ import { RulesViolationsApproval } from '../../rules-violations-approval';
 @Component({
   selector: 'imx-rules-violations-single-action',
   templateUrl: './rules-violations-single-action.component.html',
-  styleUrls: ['./rules-violations-single-action.component.scss']
+  styleUrls: ['./rules-violations-single-action.component.scss'],
 })
 export class RulesViolationsSingleActionComponent implements OnInit {
-
   /**
    * @ignore since this is only an internal component.
    *
@@ -73,7 +72,6 @@ export class RulesViolationsSingleActionComponent implements OnInit {
    * The single ruoes violation taken from {@link data}
    */
   public rulesViolation: RulesViolationsApproval;
-
 
   /**
    * @ignore since this is only an internal component
@@ -104,8 +102,6 @@ export class RulesViolationsSingleActionComponent implements OnInit {
    */
   public onFormControlCreated(name: string, control: AbstractControl): void {
     // use setTimeout to make addControl asynchronous in order to avoid "NG0100: Expression has changed after it was checked"
-    setTimeout(() =>
-      this.formGroup.addControl(name, control)
-    );
+    setTimeout(() => this.formGroup.addControl(name, control));
   }
 }

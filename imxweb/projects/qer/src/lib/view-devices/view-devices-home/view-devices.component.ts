@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,53 +25,58 @@
  */
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ViewDevicesService } from '../view-devices.service';
+import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
+import { DeviceConfig, PortalCandidatesHardwaretype, PortalDevices } from '@imx-modules/imx-api-qer';
+import {
+  CollectionLoadParameters,
+  DataModel,
+  DisplayColumns,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  IClientProperty,
+  TypedEntityCollectionData,
+  ValueStruct,
+} from '@imx-modules/imx-qbm-dbts';
+import { TranslateService } from '@ngx-translate/core';
 import {
   AuthenticationService,
-  BusyService, DataModelWrapper,
-  DataSourceToolbarSettings,
-  DataSourceWrapper,
+  BusyService,
+  DataViewInitParameters,
+  DataViewSource,
+  HELP_CONTEXTUAL,
   HelpContextualComponent,
   HelpContextualService,
-  HELP_CONTEXTUAL,
-  SideNavigationComponent
+  ISessionState,
+  SideNavigationComponent,
+  calculateSidesheetWidth,
 } from 'qbm';
-import { DeviceConfig, PortalCandidatesHardwaretype, PortalDevices } from 'imx-api-qer';
-import { CollectionLoadParameters, DisplayColumns, EntitySchema, ValueStruct } from 'imx-qbm-dbts';
-import { OverlayRef } from '@angular/cdk/overlay';
-import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
-import { ViewDevicesSidesheetComponent } from '../view-devices-sidesheet/view-devices-sidesheet.component';
-import { TranslateService } from '@ngx-translate/core';
-import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
-import { QerPermissionsService } from '../../admin/qer-permissions.service';
 import { Subscription } from 'rxjs';
+import { QerPermissionsService } from '../../admin/qer-permissions.service';
 import { IdentitiesService } from '../../identities/identities.service';
+import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
 import { CreateNewDeviceComponent } from '../create-new-device/create-new-device.component';
+import { ViewDevicesSidesheetComponent } from '../view-devices-sidesheet/view-devices-sidesheet.component';
+import { ViewDevicesService } from '../view-devices.service';
 
 @Component({
   selector: 'imx-view-devices-home',
   templateUrl: './view-devices.component.html',
   styleUrls: ['./view-devices.component.scss'],
+  providers: [DataViewSource],
 })
-export class ViewDevicesComponent implements OnInit, OnDestroy, SideNavigationComponent{
-  public dataModelWrapper: DataModelWrapper;
-  public hardwareTypeDataModelWrapper: DataModelWrapper;
-  public dstWrapper: DataSourceWrapper<PortalDevices>;
-  public dstWrapperHardwareType: DataSourceWrapper<PortalCandidatesHardwaretype>;
+export class ViewDevicesComponent implements OnInit, OnDestroy, SideNavigationComponent {
   public entitySchema: EntitySchema;
-  public entitySchemaHardwareType: EntitySchema;
-  public dstSettings: DataSourceToolbarSettings;
-  public dstSettingsHardwareType: DataSourceToolbarSettings;
+  public dataModel: DataModel;
+  public displayedColumns: IClientProperty[];
+  public hardwareCandidates: ExtendedTypedEntityCollection<PortalCandidatesHardwaretype, unknown>;
   public DisplayColumns = DisplayColumns;
-  public deviceModelValueStruct: ValueStruct<string>[];
-  public hardwareBasicTypeList: { type: string, basicType: string, key: string }[];
+  public deviceModelValueStruct: ValueStruct<string>[] | undefined;
+  public hardwareBasicTypeList: { type: string; basicType: string; key: string }[];
   public busyService = new BusyService();
   public contextId = HELP_CONTEXTUAL.PortalDevices;
-
-  public deviceConfig: DeviceConfig;
+  public deviceConfig: DeviceConfig | undefined;
   public managerId: string;
   public isAdmin = false;
-
   public currentUser: string;
   public isManagerForPersons: boolean;
   public isAuditor: boolean;
@@ -86,16 +91,13 @@ export class ViewDevicesComponent implements OnInit, OnDestroy, SideNavigationCo
     private readonly authService: AuthenticationService,
     private readonly identitiesService: IdentitiesService,
     private readonly helpContextualService: HelpContextualService,
-    qerPermissionService: QerPermissionsService,
+    public qerPermissionService: QerPermissionsService,
+    public dataSource: DataViewSource<PortalDevices>,
   ) {
     this.entitySchema = this.viewDevicesService.devicesSchema;
-
-    this.entitySchemaHardwareType = this.viewDevicesService.hardwareTypeSchema;
-
-    this.sessionResponse$ = this.authService.onSessionResponse.subscribe(async (session) => {
+    this.sessionResponse$ = this.authService.onSessionResponse.subscribe(async (session: ISessionState) => {
       if (session.IsLoggedIn) {
-        this.currentUser = session.UserUid,
-        this.isManagerForPersons = await qerPermissionService.isPersonManager();
+        (this.currentUser = session.UserUid || ''), (this.isManagerForPersons = await qerPermissionService.isPersonManager());
         this.isAuditor = await qerPermissionService.isStructStatistics();
       }
     });
@@ -119,137 +121,117 @@ export class ViewDevicesComponent implements OnInit, OnDestroy, SideNavigationCo
       if (this.deviceConfig == null) {
         this.deviceConfig = (await this.projectConfigService.getConfig()).DeviceConfig;
       }
-
-      this.dataModelWrapper = {
-        dataModel: await this.viewDevicesService.getDataModel(),
-      };
-
-      this.hardwareTypeDataModelWrapper = {
-        dataModel: await this.viewDevicesService.getHardwareTypeDataModel(),
-      };
-    } finally {
-      isBusy.endBusy();
-    }
-
-    this.dstWrapper = new DataSourceWrapper(
-      (state) => this.viewDevicesService.get(state),
-      [
+      this.dataModel = await this.viewDevicesService.getDataModel();
+      this.displayedColumns = [
         this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
         this.entitySchema.Columns.UID_HardwareType,
         this.entitySchema.Columns.UID_PersonOwner,
-      ],
-      this.entitySchema,
-      this.dataModelWrapper,
-      'view-devices'
-    );
-
-    this.dstWrapperHardwareType = new DataSourceWrapper(
-      (state) => this.viewDevicesService.getPortalCandidatesHardwaretype(state),
-      [
-        this.entitySchemaHardwareType.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
-      ],
-      this.entitySchemaHardwareType,
-      this.hardwareTypeDataModelWrapper,
-      'hardware-type'
-    );
-
+      ];
+      this.hardwareCandidates = await this.viewDevicesService.getPortalCandidatesHardwaretype({});
+      this.deviceModelValueStruct = await this.hardwareCandidates?.Data.map((d) => {
+        return {
+          DataValue: d.GetEntity().GetKeys()[0],
+          DisplayValue: d.GetEntity().GetDisplay(),
+        };
+      });
+    } finally {
+      isBusy.endBusy();
+    }
     this.getData();
   }
 
-  public async getData(newState?: CollectionLoadParameters): Promise<void> {
-    const isbusy = this.busyService.beginBusy();
-    try {
-      this.dstSettings = await this.dstWrapper.getDstSettings(newState);
-      this.dstSettingsHardwareType = await this.dstWrapperHardwareType.getDstSettings(newState);
-
-      this.deviceModelValueStruct = this.dstSettingsHardwareType.dataSource.Data.map(d => {
-        return {
-            DataValue: d.GetEntity().GetKeys()[0],
-            DisplayValue: d.GetEntity().GetDisplay()
-        };
-    });
-    } finally {
-      isbusy.endBusy();
-    }
+  public async getData(): Promise<void> {
+    const dataViewInitParameters: DataViewInitParameters<PortalDevices> = {
+      execute: async (params: CollectionLoadParameters, signal: AbortSignal): Promise<TypedEntityCollectionData<PortalDevices>> =>
+        this.viewDevicesService.get(params, signal),
+      schema: this.entitySchema,
+      columnsToDisplay: this.displayedColumns,
+      dataModel: this.dataModel,
+      highlightEntity: (entity: PortalDevices) => {
+        this.onHighlightedEntityChanged(entity);
+      },
+    };
+    this.dataSource.init(dataViewInitParameters);
   }
 
   public async onHighlightedEntityChanged(portalDevices: PortalDevices): Promise<void> {
     if (portalDevices) {
-      let overlayRef: OverlayRef;
-      setTimeout(() => (overlayRef = this.euiBusyService.show()));
+      if (this.euiBusyService.overlayRefs.length === 0) {
+        this.euiBusyService.show();
+      }
 
       let extendedEntity;
-      let deviceEntityConfig = this.deviceConfig['VI_Hardware_Fields_Default'];
+      let deviceEntityConfig = this.deviceConfig?.['VI_Hardware_Fields_Default'];
       try {
         const key = portalDevices.GetEntity().GetKeys().join(',');
         extendedEntity = await this.viewDevicesService.getPortalDeviceEntity(key);
 
         const hardwareBasicType = extendedEntity.Data[0].HardwareBasicType.value;
-
-        if (this.deviceConfig[`VI_Hardware_Fields_${hardwareBasicType}`]) {
-          deviceEntityConfig = this.deviceConfig[`VI_Hardware_Fields_${hardwareBasicType}`];
+        if (this.deviceConfig?.[`VI_Hardware_Fields_${hardwareBasicType}`]) {
+          deviceEntityConfig = this.deviceConfig?.[`VI_Hardware_Fields_${hardwareBasicType}`];
         }
       } finally {
-        setTimeout(() => this.euiBusyService.hide(overlayRef));
+        this.euiBusyService.hide();
       }
 
       if (!extendedEntity || !deviceEntityConfig) {
         return;
       }
 
-        this.helpContextualService.setHelpContextId(HELP_CONTEXTUAL.PortalDevicesEdit);
-        const result = await this.sideSheet
-          .open(ViewDevicesSidesheetComponent, {
-            title: await this.translate.get('#LDS#Heading Edit Device').toPromise(),
-            subTitle: portalDevices.GetEntity().GetDisplay(),
-            padding: '0',
-            width: 'max(600px, 60%)',
-            disableClose: true,
-            testId: 'devices-sidesheet',
-            data: {
-              device: extendedEntity.Data[0],
-              deviceEntityConfig: deviceEntityConfig,
-            },
-            headerComponent: HelpContextualComponent
-          })
-          .afterClosed()
-          .toPromise();
+      this.helpContextualService.setHelpContextId(HELP_CONTEXTUAL.PortalDevicesEdit);
+      const result = await this.sideSheet
+        .open(ViewDevicesSidesheetComponent, {
+          title: await this.translate.get('#LDS#Heading Edit Device').toPromise(),
+          subTitle: portalDevices.GetEntity().GetDisplay(),
+          padding: '0',
+          width: calculateSidesheetWidth(),
+          disableClose: true,
+          testId: 'devices-sidesheet',
+          data: {
+            device: extendedEntity.Data[0],
+            deviceEntityConfig: deviceEntityConfig,
+          },
+          headerComponent: HelpContextualComponent,
+        })
+        .afterClosed()
+        .toPromise();
 
       if (result) {
-        this.getData();
+        this.dataSource.updateState();
       }
     }
   }
 
   public async createNewDevice(key: string, index: number): Promise<void> {
-    let deviceEntityConfig = this.deviceConfig['VI_Hardware_Fields_Default'];
-    const hardwareBasicTypeListElement = this.hardwareBasicTypeList.find(hardwareType => hardwareType.key === key);
+    let deviceEntityConfig = this.deviceConfig?.['VI_Hardware_Fields_Default'];
+    const hardwareBasicTypeListElement = this.hardwareBasicTypeList.find((hardwareType) => hardwareType.key === key);
     if (hardwareBasicTypeListElement) {
       const hardwareBasicType = this.hardwareBasicTypeList[this.hardwareBasicTypeList.indexOf(hardwareBasicTypeListElement)].basicType;
-      deviceEntityConfig = this.deviceConfig[`VI_Hardware_Fields_${hardwareBasicType}`];
+      deviceEntityConfig = this.deviceConfig ? this.deviceConfig[`VI_Hardware_Fields_${hardwareBasicType}`] : undefined;
     }
-    let deviceModelValueStruct = this.deviceModelValueStruct[index];
-
-      this.helpContextualService.setHelpContextId(HELP_CONTEXTUAL.PortalDevicesCreate);
-      const result = await this.sideSheet
-        .open(CreateNewDeviceComponent, {
-          title: await this.translate.get('#LDS#Heading Create Device').toPromise(),
-          padding: '0px',
-          width: 'max(650px, 65%)',
-          disableClose: false,
-          testId: 'create-new-device-sidesheet',
-          data: {
-            newDevice: await this.viewDevicesService.createNewDevice(),
-            deviceEntityConfig: deviceEntityConfig,
-            deviceModelValueStruct: deviceModelValueStruct,
-          },
-          headerComponent: HelpContextualComponent
-        })
-        .afterClosed()
-        .toPromise();
+    let deviceModelValueStruct = this.deviceModelValueStruct ? this.deviceModelValueStruct[index] : undefined;
+    this.helpContextualService.setHelpContextId(HELP_CONTEXTUAL.PortalDevicesCreate);
+    const newDeviceEntity = await this.viewDevicesService.createNewDevice();
+    await newDeviceEntity.UID_HardwareType.Column.PutValue(key);
+    const result = await this.sideSheet
+      .open(CreateNewDeviceComponent, {
+        title: await this.translate.get('#LDS#Heading Create Device').toPromise(),
+        padding: '0px',
+        width: calculateSidesheetWidth(1000),
+        disableClose: false,
+        testId: 'create-new-device-sidesheet',
+        data: {
+          newDevice: newDeviceEntity,
+          deviceEntityConfig: deviceEntityConfig,
+          deviceModelValueStruct: deviceModelValueStruct,
+        },
+        headerComponent: HelpContextualComponent,
+      })
+      .afterClosed()
+      .toPromise();
 
     if (result) {
-      this.getData();
+      this.dataSource.updateState();
     }
   }
 

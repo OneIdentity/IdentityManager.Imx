@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,13 +26,13 @@
 
 import { Component, ErrorHandler, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ColumnDependentReference } from 'qbm';
 import { Subscription } from 'rxjs';
+import { ApprovalWorkflowDataService } from '../approval-workflow-data.service';
 import { ColumnConstraints, RequestWorkflowData } from '../approval-workflow.interface';
 import { FormDataService } from '../form-data.service';
-import { ApprovalWorkflowDataService } from '../approval-workflow-data.service';
 
 @Component({
   selector: 'imx-approval-workflow-form',
@@ -44,7 +44,7 @@ export class ApprovalWorkflowFormComponent implements OnInit, OnDestroy {
   public cdrList: ColumnDependentReference[] = [];
   public isInActiveFormControl = new FormControl();
   public initialState: {
-    [key: string]: any
+    [key: string]: any;
   };
 
   private readonly subscriptions: Subscription[] = [];
@@ -56,14 +56,14 @@ export class ApprovalWorkflowFormComponent implements OnInit, OnDestroy {
     public readonly translate: TranslateService,
     public readonly sidesheetRef: EuiSidesheetRef,
     private approvalWorkFlowDataService: ApprovalWorkflowDataService,
-    private errorHandler: ErrorHandler
-    ) {
+    private errorHandler: ErrorHandler,
+  ) {
     this.formGroup = new FormGroup({ formArray: formBuilder.array([]) });
 
     this.subscriptions.push(
       this.sidesheetRef.closeClicked().subscribe(async () => {
         await this.formService.cancelChanges(this.formGroup, this.sidesheetRef, this.requestData);
-      })
+      }),
     );
   }
   get formArray(): FormArray {
@@ -74,9 +74,9 @@ export class ApprovalWorkflowFormComponent implements OnInit, OnDestroy {
     const columnConstraints: ColumnConstraints = {
       DaysToAbort: {
         valueConstraint: {
-          MinValue: 0
-        }
-      }
+          MinValue: 0,
+        },
+      },
     };
     this.cdrList = this.formService.setup(this.requestData, columnConstraints);
   }
@@ -86,7 +86,7 @@ export class ApprovalWorkflowFormComponent implements OnInit, OnDestroy {
     if (this.requestData.SaveBeforeClosing) {
       this.approvalWorkFlowDataService.handleOpenLoader();
       try {
-        await this.requestData.Object.GetEntity().Commit(true);
+        await this.requestData.Object?.GetEntity().Commit(true);
       } catch (error) {
         this.errorHandler.handleError(error);
         closeSheet = false;

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,32 +28,27 @@ import { ConnectorProvider } from './connector-provider';
 import { clearStylesFromDOM } from '../testing/clear-styles.spec';
 
 describe('ConnectorProvider', () => {
-
   afterAll(() => {
     clearStylesFromDOM();
   });
 
   it('should create an instance', () => {
-
     expect(() => {
       const connector = new ConnectorProvider(true);
-
     }).not.toThrowError();
   });
 
   [
     { description: 'should return no connectors', nbOfElements: 1, expectedConnectors: 0 },
     { description: 'should return one connectors', nbOfElements: 2, expectedConnectors: 1 },
-    { description: 'should return three connectors', nbOfElements: 3, expectedConnectors: 2 }
-  ].forEach(testcase => {
-
+    { description: 'should return three connectors', nbOfElements: 3, expectedConnectors: 2 },
+  ].forEach((testcase) => {
     it('getConnectors ' + testcase.description, () => {
-
       // Arrange
       const singleElement = {
         position: 'bla',
-        element: document.createElement('div')
-      }
+        element: document.createElement('div'),
+      };
 
       const hvElements = [];
       for (let i = 0; i < testcase.nbOfElements; i++) {
@@ -62,8 +57,8 @@ describe('ConnectorProvider', () => {
 
       const hvSettings = {
         enforceVerticalLayout: false,
-        elements: hvElements
-      }
+        elements: hvElements,
+      };
 
       expect(() => {
         // Act
@@ -78,25 +73,23 @@ describe('ConnectorProvider', () => {
 
   [
     { description: 'should return no connectors', isHierarchical: false, expectedConnectors: 0 },
-    { description: 'should return one connectors', isVertical: true, expectedConnectors: 1 }
-  ].forEach(testcase => {
-
+    { description: 'should return one connectors', isVertical: true, expectedConnectors: 1 },
+  ].forEach((testcase) => {
     it('getConnectors should create different connectors according to the layout ' + testcase.description, () => {
-
       // Arrange
       const hvElements = [];
       for (let i = 0; i < 3; i++) {
         const singleElement = {
           position: i,
-          element: document.createElement('div' + i)
-        }
+          element: document.createElement('div' + i),
+        };
         hvElements.push(singleElement);
       }
 
       const hvSettings = {
         enforceVerticalLayout: false,
-        elements: hvElements
-      }
+        elements: hvElements,
+      };
 
       expect(() => {
         // Act
@@ -114,10 +107,7 @@ describe('ConnectorProvider', () => {
             expect(conn.element1.tagName).toBe('DIV' + index);
           }
         });
-
       }).not.toThrowError();
     });
   });
-
-
 });

@@ -1,37 +1,30 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
 
   .imx-helper-alert {
     margin-bottom: 20px;
   }
 
-  .imx-data-no-results {
+  .imx-no-results {
     text-align: center;
-    flex: 1 1 auto;
-
-    .eui-icon {
-      font-size: 100px;
-    }
+    margin: auto;
 
     p {
       margin: 0;
       font-size: 18px;
     }
     button {
-      margin-top : 10px;
+      margin-top: 10px;
     }
   }
 }
 
 :host {
-  .imx-data-no-results {
-    .eui-icon {
-      color: $color-gray-10;
-    }
-
+  .imx-no-results {
     p {
       color: $color-gray-50;
     }
@@ -40,11 +33,7 @@
 
 .eui-dark-theme {
   :host {
-    .imx-data-no-results {
-      .eui-icon {
-        color: $color-gray-20;
-      }
-
+    .imx-no-results {
       p {
         color: $color-gray-10;
       }
@@ -54,11 +43,7 @@
 
 .eui-contrast-theme {
   :host {
-    .imx-data-no-results {
-      .eui-icon {
-        color: $color-gray-10;
-      }
-
+    .imx-no-results {
       p {
         color: $color-gray-0;
       }

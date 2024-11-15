@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -72,17 +72,11 @@ export class LineChartOptions {
    */
   public tooltip: (data: any) => string; // TODO: hier müsste noch eine bessere Lösung gefunden werden
 
-  /**
-   * Gets the {@link XAxisInformation|x axis informations} for the chart
-   */
-  public readonly xAxisInformation: XAxisInformation;
-
-  /**
-   * Gets the {@link YAxisInformation|y axis informations} for the chart
-   */
-  public readonly yAxisInformation: YAxisInformation;
-
-  public constructor(xAxisInformation: XAxisInformation, yAxisInformation: YAxisInformation) {
+  public constructor(
+    public readonly xAxisInformation: XAxisInformation,
+    public readonly yAxisInformation: YAxisInformation,
+    public readonly emptyText?: string,
+  ) {
     this.xAxisInformation = xAxisInformation;
     this.yAxisInformation = yAxisInformation;
   }
@@ -103,6 +97,11 @@ export class LineChartOptions {
         columns: col,
         names: this.yAxisInformation.getNames(),
         type: this.getType(),
+        empty: {
+          label: {
+            text: this.emptyText ?? '',
+          },
+        },
         colors: this.yAxisInformation.getColors(),
       },
       tooltip: {
@@ -121,6 +120,7 @@ export class LineChartOptions {
           lines: this.additionalLines,
         },
       },
+
       padding: this.padding,
     };
   }

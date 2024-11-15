@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,16 +27,16 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AbstractControl, UntypedFormGroup } from '@angular/forms';
 
-import { PortalApplication } from 'imx-api-aob';
+import { PortalApplication } from '@imx-modules/imx-api-aob';
 import { BaseCdr } from 'qbm';
 
 @Component({
   selector: 'imx-authentication-root',
   templateUrl: './authentication-root.component.html',
-  styleUrls: ['./authentication-root.component.scss']
+  styleUrls: ['./authentication-root.component.scss'],
 })
 export class AuthenticationRootComponent implements OnInit {
-  public readonly form = new UntypedFormGroup({}, __ => {
+  public readonly form = new UntypedFormGroup({}, (__) => {
     if (this.application == null) {
       return null;
     }
@@ -46,7 +46,7 @@ export class AuthenticationRootComponent implements OnInit {
     return !authenticationRootValue?.length && isAuthenticationIntegrated ? { relationInvalid: true } : null;
   });
 
-  public authenticationRootWrapper: BaseCdr; 
+  public authenticationRootWrapper: BaseCdr;
 
   @Input() public application: PortalApplication;
 
@@ -58,7 +58,7 @@ export class AuthenticationRootComponent implements OnInit {
     if (!authenticationRootHelper.value?.length) {
       await authenticationRootHelper.Column.PutValueStruct({
         DataValue: this.application.AuthenticationRoot.value,
-        DisplayValue: this.application.AuthenticationRoot.Column.GetDisplayValue()
+        DisplayValue: this.application.AuthenticationRoot.Column.GetDisplayValue(),
       });
     }
 

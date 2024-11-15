@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,26 +24,25 @@
  *
  */
 
-import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
-import { MatChipList } from '@angular/material/chips';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
 import { from } from 'rxjs';
 import { Subscription } from 'rxjs/internal/Subscription';
 
-import { PortalItshopPeergroupMemberships, PortalShopServiceitems } from 'imx-api-qer';
-import { CollectionLoadParameters, DisplayColumns, IClientProperty, IWriteValue, MultiValue } from 'imx-qbm-dbts';
+import { PortalItshopPeergroupMemberships } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, DisplayColumns, IClientProperty, IWriteValue, MultiValue, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 
+import { MatDialog } from '@angular/material/dialog';
 import { Busy, BusyService, DataSourceToolbarComponent, DataSourceToolbarSettings, HELP_CONTEXTUAL, SettingsService } from 'qbm';
-import { NewRequestOrchestrationService } from '../new-request-orchestration.service';
-import { NewRequestProductApiService } from '../new-request-product/new-request-product-api.service';
 import { ItshopService } from '../../itshop/itshop.service';
-import { ServiceItemParameters } from '../new-request-product/service-item-parameters';
+import { CurrentProductSource } from '../current-product-source';
+import { NewRequestOrchestrationService } from '../new-request-orchestration.service';
+import { NewRequestCategoryApiService } from '../new-request-product/new-request-category-api.service';
+import { NewRequestProductApiService } from '../new-request-product/new-request-product-api.service';
 import { ProductDetailsService } from '../new-request-product/product-details-sidesheet/product-details.service';
+import { ServiceItemParameters } from '../new-request-product/service-item-parameters';
 import { SelectedProductSource } from '../new-request-selected-products/selected-product-item.interface';
 import { NewRequestSelectionService } from '../new-request-selection.service';
-import { CurrentProductSource } from '../current-product-source';
-import { MatDialog } from '@angular/material/dialog';
 import { PeerGroupDiscardSelectedComponent } from './peer-group-discard-selected.component';
-import { NewRequestCategoryApiService } from '../new-request-product/new-request-category-api.service';
 
 @Component({
   selector: 'imx-new-request-peer-group',
@@ -57,7 +56,6 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
   //#endregion
 
   //#region Public
-  @ViewChild(MatChipList) public chipList: MatChipList;
 
   public selectedChipIndex = 0;
   public productDst: DataSourceToolbarComponent;
@@ -198,40 +196,39 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
     //#endregion
   }
 
-  public ngAfterViewInit(): void {
+  public async ngAfterViewInit(): Promise<void> {
     this.productNavigationState = { StartIndex: 0, PageSize: this.settingService.PageSizeForAllElements };
     this.membershipNavigationState = { StartIndex: 0, PageSize: this.settingService.PageSizeForAllElements };
 
-    setTimeout(async () => {
-      this.chipList.chips.first.select();
-      await this.getProductData();
-    });
+    await this.getProductData();
   }
 
   public ngOnDestroy(): void {
     this.subscriptions.forEach((subscription: Subscription) => subscription.unsubscribe());
   }
 
-  public onSelectionChanged(items: PortalShopServiceitems[] | PortalItshopPeergroupMemberships[], type: SelectedProductSource): void {
+  public onSelectionChanged(items: TypedEntity[] | PortalItshopPeergroupMemberships[], type: SelectedProductSource): void {
     type === SelectedProductSource.PeerGroupProducts
       ? this.selectionService.addProducts(items, SelectedProductSource.PeerGroupProducts)
       : this.selectionService.addProducts(items, SelectedProductSource.PeerGroupOrgs);
   }
 
-  public searchApi = () => {
+  public searchApi = (keywords: string) => {
     this.busy = this.busyService.beginBusy();
     this.orchestration.abortCall();
     if (this.selectedChipIndex === 0) {
-      const parameters = this.getCollectionLoadParamaters(this.productNavigationState);
+      const parameters = { ...this.getCollectionLoadParamaters(this.productNavigationState), search: keywords };
       return from(this.productApi.get(parameters));
     }
     if (this.selectedChipIndex === 1) {
-      const parameters = this.getCollectionLoadParamaters(this.membershipNavigationState);
+      const parameters = { ...this.getCollectionLoadParamaters(this.membershipNavigationState), search: keywords };
       return from(this.membershipApi.getPeerGroupMemberships(parameters, { signal: this.orchestration.abortController.signal }));
     }
+
+    return undefined;
   };
 
-  public async onRowSelected(item: PortalShopServiceitems): Promise<void> {
+  public async onRowSelected(item: TypedEntity): Promise<void> {
     this.productDetailsService.showProductDetails(item, this.orchestration.recipients);
   }
 
@@ -243,10 +240,6 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
     this.selectedChipIndex = index;
     this.orchestration.selectedChip = index;
     // this.orchestration.clearSearch$.next(true);
-
-    this.chipList.chips.forEach((chip, i) => {
-      i === index ? (chip.selected = true) : (chip.selected = false);
-    });
 
     if (index === 0) {
       this.orchestration.selectedView = SelectedProductSource.PeerGroupProducts;
@@ -302,7 +295,7 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
         await this.orchestration.setRecipients(firstRecipient);
       }
 
-      setTimeout(() => (busy = this.busyService.beginBusy()));
+      busy = this.busyService.beginBusy();
 
       const userParams = {
         UID_Person: this.orchestration.recipients
@@ -328,13 +321,10 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
         data.Data?.sort((a, b) => {
           if (a?.CountInPeerGroup?.value < b?.CountInPeerGroup.value) return 1;
           if (a?.CountInPeerGroup?.value > b?.CountInPeerGroup.value) return -1;
-          return a
-            ?.GetEntity()
-            .GetDisplay()
-            .localeCompare(b?.GetEntity().GetDisplay());
+          return a?.GetEntity().GetDisplay().localeCompare(b?.GetEntity().GetDisplay());
         });
 
-        this.peerGroupSize = data.extendedData?.PeerGroupSize | 0;
+        this.peerGroupSize = data.extendedData?.PeerGroupSize || 0;
         this.productDstSettings = {
           dataSource: data,
           displayedColumns: this.displayedProductColumns,
@@ -358,7 +348,7 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
       //   await this.orchestration.setDefaultUser();
       // }
 
-      setTimeout(() => (busy = this.busyService.beginBusy()));
+      busy = this.busyService.beginBusy();
       this.cd.detectChanges();
       const parameters = this.getCollectionLoadParamaters(this.membershipNavigationState);
       let data = await this.membershipApi.getPeerGroupMemberships(parameters, { signal: this.orchestration.abortController.signal });
@@ -368,14 +358,11 @@ export class NewRequestPeerGroupComponent implements AfterViewInit, OnDestroy {
         data.Data?.sort((a, b) => {
           if (a?.CountInPeerGroup?.value < b?.CountInPeerGroup.value) return 1;
           if (a?.CountInPeerGroup?.value > b?.CountInPeerGroup.value) return -1;
-          return a
-            ?.GetEntity()
-            .GetDisplay()
-            .localeCompare(b?.GetEntity().GetDisplay());
+          return a?.GetEntity().GetDisplay().localeCompare(b?.GetEntity().GetDisplay());
         });
 
         this.orchestration.disableSearch = data.totalCount < 1;
-        this.peerGroupSize = data.extendedData.PeerGroupSize;
+        this.peerGroupSize = data.extendedData?.PeerGroupSize || 0;
         this.membershipDstSettings = {
           dataSource: data,
           displayedColumns: this.displayedMembershipColumns,

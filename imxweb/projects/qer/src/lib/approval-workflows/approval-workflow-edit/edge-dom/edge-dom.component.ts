@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,15 +29,13 @@ import { Component, Input, OnInit } from '@angular/core';
 @Component({
   selector: 'imx-edge-dom',
   templateUrl: './edge-dom.component.html',
-  styleUrls: ['./edge-dom.component.scss']
+  styleUrls: ['./edge-dom.component.scss'],
 })
 export class EdgeDomComponent implements OnInit {
   public hasIcon = false;
   public icon = '';
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

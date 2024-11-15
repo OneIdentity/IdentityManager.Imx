@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,10 +25,9 @@
  */
 
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import { AuthenticationGuardService, LoginComponent, RouteGuardService } from 'qbm';
+import { RouterModule, Routes } from '@angular/router';
+import { AdminRoutes, AuthenticationGuardService, LoginComponent, RouteGuardService } from 'qbm';
 import { StartComponent } from './start/start.component';
-import { AdminRoutes } from 'qbm';
 
 const routes: Routes = [
   ...AdminRoutes,
@@ -45,7 +44,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy' })],
+  imports: [RouterModule.forRoot(routes, { useHash: true })],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

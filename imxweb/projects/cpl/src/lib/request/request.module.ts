@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -48,7 +48,7 @@ import { MitigatingControlContainerModule } from '../mitigating-control-containe
     EditMitigatingControlsComponent,
     WorkflowViolationDetailsComponent,
     ComplianceViolationDetailsComponent,
-    RequestMitigatingControlFilterPipe
+    RequestMitigatingControlFilterPipe,
   ],
   imports: [
     CdrModule,
@@ -63,9 +63,9 @@ import { MitigatingControlContainerModule } from '../mitigating-control-containe
     MatExpansionModule,
     ReactiveFormsModule,
     TranslateModule,
-    MitigatingControlContainerModule
+    MitigatingControlContainerModule,
   ],
-  exports: [MitigatingControlsRequestComponent]
+  exports: [MitigatingControlsRequestComponent],
 })
 export class RequestModule {
   constructor(logger: ClassloggerService) {

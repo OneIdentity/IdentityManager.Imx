@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -56,10 +56,10 @@ export class MitigatingControlsComponent implements OnInit {
     private confirmationService: ConfirmationService,
     private cd: ChangeDetectorRef,
     private snackbar: SnackBarService,
-    formBuilder: UntypedFormBuilder
+    formBuilder: UntypedFormBuilder,
   ) {
     this.mitigatingForm = new UntypedFormGroup({ formArray: formBuilder.array([]) });
-    this.mitigatingCaption = violationService.mitigationSchema.Columns.UID_MitigatingControl.Display;
+    this.mitigatingCaption = violationService.mitigationSchema.Columns.UID_MitigatingControl.Display ?? '';
   }
 
   public filter = (option: EuiSelectOption, searchInputValue: string): boolean =>
@@ -99,13 +99,12 @@ export class MitigatingControlsComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.sidesheetRef.componentInstance.disableClose = true;
     this.subscriptions$.push(
       this.sidesheetRef.closeClicked().subscribe(async () => {
         if (!this.isDirty || (await this.confirmationService.confirmLeaveWithUnsavedChanges())) {
           this.sidesheetRef.close();
         }
-      })
+      }),
     );
     return this.loadMitigationControls();
   }
@@ -121,7 +120,7 @@ export class MitigatingControlsComponent implements OnInit {
     );
   }
 
-  public async delete(index: number): Promise<void> {
+  public async onDelete(index: number): Promise<void> {
     const elem = this.mControls[index];
     if (elem.UID_MitigatingControl.value !== '' && !(await this.confirmationService.confirmDelete())) {
       return;
@@ -146,6 +145,8 @@ export class MitigatingControlsComponent implements OnInit {
       (control: FormControl<string | undefined>) => (this.isDuplicate(control) ? { duplicated: true } : null),
     ]);
     this.cd.detectChanges();
+
+    this.mitigatingForm.markAsDirty();
   }
 
   public async save() {
@@ -172,7 +173,7 @@ export class MitigatingControlsComponent implements OnInit {
     try {
       //reload
       this.mControls = (await this.violationService.getMitigatingContols(this.uidViolation)).Data.map(
-        (elem) => new PolicyViolationExtended(false, elem)
+        (elem) => new PolicyViolationExtended(false, elem),
       );
       this.mControls.forEach((elem) => this.formArray.push(elem.formControl));
       await this.initOptions();
@@ -182,14 +183,15 @@ export class MitigatingControlsComponent implements OnInit {
   }
 
   private async initOptions(): Promise<void> {
-    this.options = (
-      await this.violationService.getCandidates(
-        this.uidViolation,
-        {},
-        {
-          PageSize: 100000,
-        }
-      )
-    ).Entities?.map((elem) => ({ display: elem.Display, value: elem.Keys[0] }));
+    this.options =
+      (
+        await this.violationService.getCandidates(
+          this.uidViolation,
+          {},
+          {
+            PageSize: 100000,
+          },
+        )
+      ).Entities?.map((elem) => ({ display: elem.Display ?? '', value: elem.Keys?.[0] ?? '' })) ?? [];
   }
 }

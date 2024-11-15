@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,8 +25,8 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
+import { TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
-import { TypedEntityCollectionData } from 'imx-qbm-dbts';
 import { ClientPropertyForTableColumns, DataSourceToolbarSettings } from 'qbm';
 import { ChartDataTyped } from '../chart-data-typed';
 import { ChartTableService } from './chart-table-service.service';
@@ -34,7 +34,7 @@ import { ChartTableService } from './chart-table-service.service';
 @Component({
   selector: 'imx-chart-table',
   templateUrl: './chart-table.component.html',
-  styleUrls: ['./chart-table.component.scss']
+  styleUrls: ['./chart-table.component.scss'],
 })
 export class ChartTableComponent implements OnInit {
   @Input() public tableData: TypedEntityCollectionData<ChartDataTyped>;
@@ -46,8 +46,8 @@ export class ChartTableComponent implements OnInit {
 
   constructor(
     public chartTableService: ChartTableService,
-    private translate: TranslateService
-  ) { }
+    private translate: TranslateService,
+  ) {}
 
   public async ngOnInit(): Promise<void> {
     const schema = ChartDataTyped.GetEntitySchema();
@@ -61,7 +61,7 @@ export class ChartTableComponent implements OnInit {
       displayedColumns.splice(1, 0, schema.Columns.ObjectDisplay);
     }
     for await (const column of displayedColumns) {
-      column.Display = await this.translate.get(column.Display).toPromise();
+      column.Display = column.Display == null ? '' : await this.translate.get(column.Display).toPromise();
     }
     this.dstSettings = {
       dataSource: this.tableData,
@@ -69,8 +69,8 @@ export class ChartTableComponent implements OnInit {
       displayedColumns,
       navigationState: {
         StartIndex: 0,
-        PageSize: this.pageSize
-      }
-    }
+        PageSize: this.pageSize,
+      },
+    };
   }
 }

@@ -1,0 +1,95 @@
+/* You can add styles to this file, and also import other style files */
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+
+:host {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+
+  .imx-header-cell {
+    cursor: pointer;
+    padding-right: 20px;
+  }
+
+  .imx-no-results {
+    text-align: center;
+    margin: 20px 0;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    &-title {
+      font-size: 64px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    li {
+      text-align: left;
+      list-style-type: unset;
+      font-weight: 600;
+    }
+  }
+  tr.expanded-detail-row {
+    height: 0;
+    &:hover {
+      background-color: unset;
+    }
+  }
+
+  .expanded-group-row {
+    td {
+      border-bottom-width: 0;
+    }
+  }
+  .mat-mdc-cell {
+    .mat-mdc-icon-button {
+      justify-content: center;
+    }
+  }
+  .expanded-group-detail {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .mat-column-expand {
+    width: 40px;
+  }
+}
+
+.imx-no-results {
+  &-title {
+    color: $color-gray-10;
+  }
+  li {
+    color: $color-gray-60;
+  }
+}
+
+/* Dark theme */
+.eui-dark-theme {
+  :host {
+    .imx-no-results {
+      &-title {
+        color: $color-gray-20;
+      }
+      li {
+        color: $color-gray-10;
+      }
+    }
+  }
+}
+
+/* High-contrast theme */
+.eui-contrast-theme {
+  :host {
+    .imx-no-results {
+      &-title {
+        color: $color-gray-0;
+      }
+      li {
+        color: $color-gray-0;
+      }
+    }
+  }
+}

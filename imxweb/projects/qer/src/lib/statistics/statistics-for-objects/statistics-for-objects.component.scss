@@ -10,7 +10,10 @@
 
   .cards-container {
     height: 100%;
-    @include EUI-Elevation-1;
+    @include eui-elevation-1;
+    .eui-scroll{
+      overflow: hidden;
+    }
   }
 
   .checkbox-container {

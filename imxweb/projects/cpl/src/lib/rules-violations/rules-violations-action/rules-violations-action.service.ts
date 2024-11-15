@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,29 +25,28 @@
  */
 
 import { Injectable } from '@angular/core';
-import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 
-import { NonComplianceDecisionInput } from 'imx-api-cpl';
-import { ValType } from 'imx-qbm-dbts';
-import { SnackBarService, EntityService, ColumnDependentReference, BaseCdr } from 'qbm';
+import { NonComplianceDecisionInput } from '@imx-modules/imx-api-cpl';
+import { ValType } from '@imx-modules/imx-qbm-dbts';
+import { BaseCdr, ColumnDependentReference, EntityService, SnackBarService, calculateSidesheetWidth } from 'qbm';
 import { JustificationService, JustificationType, UserModelService } from 'qer';
 import { ApiService } from '../../api.service';
-import { RulesViolationsApproval } from '../rules-violations-approval';
-import { RulesViolationsActionComponent } from './rules-violations-action.component';
-import { RulesViolationsActionParameters } from './rules-violations-action-parameters.interface';
 import { ResolveComponent } from '../resolve/resolve.component';
+import { RulesViolationsApproval } from '../rules-violations-approval';
+import { RulesViolationsActionParameters } from './rules-violations-action-parameters.interface';
+import { RulesViolationsActionComponent } from './rules-violations-action.component';
 
 /**
  * Service that handles the approve and deny of one or more rules violations.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RulesViolationsActionService {
-  public readonly applied = new Subject();
+  public readonly applied = new Subject<void>();
 
   constructor(
     private readonly justification: JustificationService,
@@ -56,9 +55,9 @@ export class RulesViolationsActionService {
     private readonly busyService: EuiLoadingService,
     private readonly translate: TranslateService,
     private readonly snackBar: SnackBarService,
+    private readonly entityService: EntityService,
     private readonly userService: UserModelService,
-    private readonly entityService: EntityService
-  ) { }
+  ) {}
 
   /**
    * Approve the rules violation
@@ -83,31 +82,30 @@ export class RulesViolationsActionService {
       title: await this.translate.get('#LDS#Heading Resolve Rule Violation').toPromise(),
       subTitle: ruleViolation.GetEntity().GetDisplay(),
       padding: '0px',
-      width: 'max(600px, 60%)',
+      width: calculateSidesheetWidth(),
       testId: 'rulesviolations-resolve-sidesheet',
       data: {
         uidPerson: ruleViolation.UID_Person.value,
-        uidNonCompliance: ruleViolation.UID_NonCompliance.value
-      }
+        uidNonCompliance: ruleViolation.UID_NonCompliance.value,
+      },
     });
 
     return sidesheetRef.afterClosed().toPromise();
   }
 
   private async makeDecisions(rulesViolationsApprovals: RulesViolationsApproval[], approve: boolean): Promise<void> {
-    let justification: ColumnDependentReference;
+    let justification: ColumnDependentReference | undefined;
 
-    let busyIndicator: OverlayRef;
-    setTimeout(() => busyIndicator = this.busyService.show());
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
 
     try {
       justification = await this.justification.createCdr(
-        approve
-          ? JustificationType.approveRuleViolation
-          : JustificationType.denyRuleViolation
+        approve ? JustificationType.approveRuleViolation : JustificationType.denyRuleViolation,
       );
     } finally {
-      setTimeout(() => this.busyService.hide(busyIndicator));
+      this.busyService.hide();
     }
 
     const actionParameters: RulesViolationsActionParameters = {
@@ -129,7 +127,7 @@ export class RulesViolationsActionService {
 
     return this.editAction({
       title: sidesheetTitle,
-      data: { rulesViolationsApprovals, actionParameters, approve, },
+      data: { rulesViolationsApprovals, actionParameters, approve },
       message: approve
         ? '#LDS#Exceptions have been successfully granted for {0} rule violations.'
         : '#LDS#Exceptions have been successfully denied for {0} rule violations.',
@@ -140,7 +138,7 @@ export class RulesViolationsActionService {
           ExceptionValidUntil: actionParameters.validUntil?.column?.GetValue(),
           Decision: approve,
         });
-      }
+      },
     });
   }
   /**
@@ -149,37 +147,38 @@ export class RulesViolationsActionService {
    * @param config the configuration for the sidesheet (title) and the corresponding rules violations data
    */
   private async editAction(config: any): Promise<void> {
-    const result = await this.sidesheet.open(RulesViolationsActionComponent, {
-      title: await this.translate.get(config.title).toPromise(),
-      subTitle: config.data.rulesViolationsApprovals.length == 1  
-        ? config.data.rulesViolationsApprovals[0].GetEntity().GetDisplay() 
-        : '',
-      panelClass: 'imx-sidesheet',
-      padding: '0',
-      width: '600px',
-      testId: `rulesvioalations-action-sidesheet-${config.data.approve ? 'approve' : 'deny'}`,
-      data: config.data
-    }).afterClosed().toPromise();
+    const result = await this.sidesheet
+      .open(RulesViolationsActionComponent, {
+        title: await this.translate.get(config.title).toPromise(),
+        subTitle: config.data.rulesViolationsApprovals.length == 1 ? config.data.rulesViolationsApprovals[0].GetEntity().GetDisplay() : '',
+        panelClass: 'imx-sidesheet',
+        padding: '0',
+        width: calculateSidesheetWidth(600, 0.4),
+        testId: `rulesvioalations-action-sidesheet-${config.data.approve ? 'approve' : 'deny'}`,
+        data: config.data,
+      })
+      .afterClosed()
+      .toPromise();
 
     if (result) {
-      let busyIndicator: OverlayRef;
-      setTimeout(() => busyIndicator = this.busyService.show());
+      if (this.busyService.overlayRefs.length === 0) {
+        this.busyService.show();
+      }
 
       let success: boolean;
       try {
         for (const rulesViolation of config.data.rulesViolationsApprovals) {
           await config.apply(rulesViolation);
         }
-        success = true; 
+        success = true;
         await this.userService.reloadPendingItems();
       } finally {
-        setTimeout(() => this.busyService.hide(busyIndicator));
+        this.busyService.hide();
       }
 
       if (success) {
-        this.snackBar.open(config.getMessage ?
-          config.getMessage() :
-          { key: config.message, parameters: [config.data.rulesViolationsApprovals.length] }
+        this.snackBar.open(
+          config.getMessage ? config.getMessage() : { key: config.message, parameters: [config.data.rulesViolationsApprovals.length] },
         );
         this.applied.next();
       }
@@ -197,21 +196,22 @@ export class RulesViolationsActionService {
     return this.cplClient.client.portal_rules_violations_post(
       ruleViolationToApprove.UID_Person.value,
       ruleViolationToApprove.UID_NonCompliance.value,
-      input);
+      input,
+    );
   }
 
   /**
    * Creates a Cdr-Editor for the reason.
    */
-  private createCdrReason(metadata: { display?: string, mandatory?: boolean } = {}): ColumnDependentReference {
+  private createCdrReason(metadata: { display?: string; mandatory?: boolean } = {}): ColumnDependentReference {
     return new BaseCdr(
       this.entityService.createLocalEntityColumn({
         ColumnName: 'ReasonHead',
         Type: ValType.Text,
         IsMultiLine: true,
-        MinLen: metadata.mandatory ? 1 : 0
+        MinLen: metadata.mandatory ? 1 : 0,
       }),
-      metadata.display || '#LDS#Reason for your decision'
+      metadata.display || '#LDS#Reason for your decision',
     );
   }
 
@@ -228,13 +228,12 @@ export class RulesViolationsActionService {
         Type: schema.Columns.ExceptionValidUntil.Type,
         IsMultiLine: schema.Columns.ExceptionValidUntil.IsMultiLine,
         MinLen: schema.Columns.ExceptionValidUntil.MinLen,
-        Display: schema.Columns.ExceptionValidUntil.Display
+        Display: schema.Columns.ExceptionValidUntil.Display,
       },
       undefined,
-      { ValueConstraint: { MinValue: minDateUntil } }
+      { ValueConstraint: { MinValue: minDateUntil } },
     );
 
     return new BaseCdr(validUntilColumn);
   }
-
 }

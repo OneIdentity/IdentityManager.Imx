@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { CollectionLoadParameters, DbObjectKey, FilterData } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DbObjectKey, FilterData } from '@imx-modules/imx-qbm-dbts';
 import { AccountTypedEntity } from './account-typed-entity';
 
 export interface AccountSidesheetData {
@@ -45,7 +45,5 @@ export interface GetAccountsOptionalParameters extends CollectionLoadParameters 
 
 export interface AcountsFilterTreeParameters {
   parentkey: string;
-  container: string;
-  system: string;
-  filter: FilterData[];
+  filter: FilterData[] | undefined;
 }

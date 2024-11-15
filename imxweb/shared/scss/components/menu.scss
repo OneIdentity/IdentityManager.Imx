@@ -1,0 +1,29 @@
+/* Elemental UI */
+
+/* Angular Material */
+
+/* Imx */
+.imx-menu {
+  &-with-spinner {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 16px;
+
+    .mat-mdc-progress-spinner {
+      overflow: visible;
+    }
+  }
+}
+.imx-config-menu{
+  .mat-mdc-menu-item-text{
+    display:flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+
+/* Dark theme */
+
+/* High-contrast theme */

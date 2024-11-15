@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,8 +25,8 @@
  */
 
 import { Injectable } from '@angular/core';
-import { PolicyConfig, PortalPoliciesMitigatingcontrols, PortalPolicies } from 'imx-api-pol';
-import { CollectionLoadParameters, DataModel, EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+import { PolicyConfig, PortalPolicies, PortalPoliciesMitigatingcontrols } from '@imx-modules/imx-api-pol';
+import { CollectionLoadParameters, DataModel, EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 import { AppConfigService } from 'qbm';
 import { ApiService } from '../api.service';
 
@@ -34,7 +34,10 @@ import { ApiService } from '../api.service';
   providedIn: 'root',
 })
 export class PoliciesService {
-  constructor(private apiservice: ApiService, private appConfig: AppConfigService) {}
+  constructor(
+    private apiservice: ApiService,
+    private appConfig: AppConfigService,
+  ) {}
 
   public get policySchema(): EntitySchema {
     return this.apiservice.typedClient.PortalPolicies.GetSchema();
@@ -44,8 +47,11 @@ export class PoliciesService {
     return this.apiservice.client.portal_policy_config_get();
   }
 
-  public async getPolicies(parameter?: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<PortalPolicies, unknown>> {
-    return this.apiservice.typedClient.PortalPolicies.Get(parameter);
+  public async getPolicies(
+    parameter?: CollectionLoadParameters,
+    signal?: AbortSignal,
+  ): Promise<ExtendedTypedEntityCollection<PortalPolicies, unknown>> {
+    return this.apiservice.typedClient.PortalPolicies.Get(parameter, { signal });
   }
 
   public async getDataModel(): Promise<DataModel> {

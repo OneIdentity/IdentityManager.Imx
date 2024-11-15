@@ -1,6 +1,6 @@
 {
   "name": "IMX Web - QER Library",
-  "output": "../../documentation/v92/qer",
+  "output": "../../documentation/v93/qer",
   "theme": "material",
   "assetsFolder": "../../compodoc/assets",
   "customLogo": "../../compodoc/assets/images/oneidentity-logo.png",

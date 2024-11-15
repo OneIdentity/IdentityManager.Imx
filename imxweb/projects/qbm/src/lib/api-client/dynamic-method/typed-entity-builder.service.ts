@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,34 +27,42 @@
 import { Injectable } from '@angular/core';
 
 import {
-  ApiClient, EntityCollectionData, EntityData, EntityState, ExtendedTypedEntityCollection, ExtendedInteractiveEntityData,
-  FkCandidateBuilder, InteractiveTypedEntityBuilder, TypedEntity, TypedEntityBuilder
-} from 'imx-qbm-dbts';
+  ApiClient,
+  EntityCollectionData,
+  EntityData,
+  EntityState,
+  ExtendedInteractiveEntityData,
+  ExtendedTypedEntityCollection,
+  FkCandidateBuilder,
+  InteractiveTypedEntityBuilder,
+  TypedEntity,
+  TypedEntityBuilder,
+} from '@imx-modules/imx-qbm-dbts';
 import { AppConfigService } from '../../appConfig/appConfig.service';
 import { ImxTranslationProviderService } from '../../translation/imx-translation-provider.service';
 import { DynamicMethodTypeWrapper } from './dynamic-method-type-wrapper.interface';
 import { MethodDescriptorService } from './method-descriptor.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TypedEntityBuilderService {
   constructor(
     private readonly appConfig: AppConfigService,
     private readonly methodDescriptor: MethodDescriptorService,
-    private readonly translationProvider: ImxTranslationProviderService
-  ) { }
+    private readonly translationProvider: ImxTranslationProviderService,
+  ) {}
 
   public buildReadWriteEntities<TEntity extends TypedEntity, TExtendedData = any>(
     apiClient: ApiClient,
     typeWrapper: DynamicMethodTypeWrapper<TEntity>,
-    data: EntityCollectionData
+    data: EntityCollectionData,
   ): ExtendedTypedEntityCollection<TEntity, TExtendedData> {
-    const schemaPath = typeWrapper.schemaPath ||
-      (typeWrapper.path.startsWith('/') ? typeWrapper.path.substring(1) : typeWrapper.path).toLowerCase();
+    const schemaPath =
+      typeWrapper.schemaPath || (typeWrapper.path.startsWith('/') ? typeWrapper.path.substring(1) : typeWrapper.path).toLowerCase();
 
     const entitySchema = this.appConfig.client.getSchema(schemaPath);
-    const fkProviderItems = new FkCandidateBuilder(entitySchema?.FkCandidateRoutes, apiClient).build();
+    const fkProviderItems = new FkCandidateBuilder(entitySchema?.FkCandidateRoutes ?? [], apiClient).build();
     const commitMethod = (__, writeData) => apiClient.processRequest(this.methodDescriptor.put(typeWrapper.path, writeData));
 
     const builder = new TypedEntityBuilder(typeWrapper.type, fkProviderItems, commitMethod, this.translationProvider);
@@ -64,13 +72,13 @@ export class TypedEntityBuilderService {
   public buildInteractiveEntities<TEntity extends TypedEntity, TExtendedData = any>(
     apiClient: ApiClient,
     typeWrapper: DynamicMethodTypeWrapper<TypedEntity>,
-    data: ExtendedInteractiveEntityData<TExtendedData>
+    data: ExtendedInteractiveEntityData<TExtendedData>,
   ): ExtendedTypedEntityCollection<TypedEntity, TExtendedData> {
-    const schemaPath = typeWrapper.schemaPath ||
-      (typeWrapper.path.startsWith('/') ? typeWrapper.path.substring(1) : typeWrapper.path).toLowerCase();
+    const schemaPath =
+      typeWrapper.schemaPath || (typeWrapper.path.startsWith('/') ? typeWrapper.path.substring(1) : typeWrapper.path).toLowerCase();
 
     const entitySchema = this.appConfig.client.getSchema(schemaPath);
-    const fkProviderItems = new FkCandidateBuilder(entitySchema?.FkCandidateRoutes, apiClient).build();
+    const fkProviderItems = new FkCandidateBuilder(entitySchema?.FkCandidateRoutes ?? [], apiClient).build();
     const commitMethod = (__, writeData) => apiClient.processRequest(this.methodDescriptor.putInteractive(typeWrapper.path, writeData));
 
     const builder = new InteractiveTypedEntityBuilder(typeWrapper.type, fkProviderItems, commitMethod, this.translationProvider);
@@ -80,12 +88,12 @@ export class TypedEntityBuilderService {
   public createEntity<TEntity extends TypedEntity>(
     apiClient: ApiClient,
     typeWrapper: DynamicMethodTypeWrapper<TEntity>,
-    initialData?: EntityData
+    initialData?: EntityData,
   ): TEntity {
-    const schemaPath = typeWrapper.schemaPath ||
-      (typeWrapper.path.startsWith('/') ? typeWrapper.path.substring(1) : typeWrapper.path).toLowerCase();
+    const schemaPath =
+      typeWrapper.schemaPath || (typeWrapper.path.startsWith('/') ? typeWrapper.path.substring(1) : typeWrapper.path).toLowerCase();
     const entitySchema = this.appConfig.client.getSchema(schemaPath);
-    const fkProviderItems = new FkCandidateBuilder(entitySchema?.FkCandidateRoutes, apiClient).build();
+    const fkProviderItems = new FkCandidateBuilder(entitySchema?.FkCandidateRoutes ?? [], apiClient).build();
     const commitMethod = (__, writeData) => apiClient.processRequest(this.methodDescriptor.post(typeWrapper.path, writeData));
 
     const builder = new TypedEntityBuilder(typeWrapper.type, fkProviderItems, commitMethod, this.translationProvider);

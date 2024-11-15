@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,13 +28,13 @@ import { Component, Input, OnChanges } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 
-import { IReadValue, IWriteValue } from 'imx-qbm-dbts';
+import { IReadValue, IWriteValue } from '@imx-modules/imx-qbm-dbts';
 import { ClassloggerService } from 'qbm';
 
 @Component({
   selector: 'imx-user',
   templateUrl: './user.component.html',
-  styleUrls: ['./user.component.scss']
+  styleUrls: ['./user.component.scss'],
 })
 export class UserComponent implements OnChanges {
   @Input() public uid: IReadValue<any> | IWriteValue<any>;
@@ -49,8 +49,8 @@ export class UserComponent implements OnChanges {
 
   constructor(
     private readonly translateService: TranslateService,
-    private readonly logger: ClassloggerService) {
-  }
+    private readonly logger: ClassloggerService,
+  ) {}
 
   public ngOnChanges(): void {
     if (!this.noUserText || this.noUserText.length < 1) {
@@ -60,7 +60,7 @@ export class UserComponent implements OnChanges {
 
     if (!this.hasValidUser()) {
       this.logger.debug(this, 'Show noUserText because of an empty value.');
-      this.translateService.get(this.noUserText).subscribe((trans: string) => this.secondaryValue = trans);
+      this.translateService.get(this.noUserText).subscribe((trans: string) => (this.secondaryValue = trans));
       this.primaryValue = '';
     } else {
       this.primaryValue = this.uid.Column.GetDisplayValue();

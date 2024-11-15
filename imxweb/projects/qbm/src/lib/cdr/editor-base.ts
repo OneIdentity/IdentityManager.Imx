@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -23,16 +23,16 @@
  * THIS SOFTWARE OR ITS DERIVATIVES.
  *
  */
-import { OnDestroy, Component, EventEmitter, ErrorHandler } from '@angular/core';
-import { AbstractControl, ValidatorFn, Validators } from '@angular/forms';
+import { ChangeDetectorRef, Component, ErrorHandler, EventEmitter, OnDestroy } from '@angular/core';
+import { AbstractControl, Validators } from '@angular/forms';
 import { Subject, Subscription } from 'rxjs';
 
+import { ValType } from '@imx-modules/imx-qbm-dbts';
+import { ServerError } from '../base/server-error';
+import { ClassloggerService } from '../classlogger/classlogger.service';
 import { CdrEditor, ValueHasChangedEventArg } from './cdr-editor.interface';
 import { ColumnDependentReference } from './column-dependent-reference.interface';
-import { ClassloggerService } from '../classlogger/classlogger.service';
 import { EntityColumnContainer } from './entity-column-container';
-import { ServerError } from '../base/server-error';
-import { ValType } from 'imx-qbm-dbts';
 
 /**
  * A base class for CDR editors, that handles simple dataTypes like string, boolean or integer.
@@ -73,7 +73,7 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
    * @ignore
    * Used for the template and displays the last server error, that occured while loading content.
    */
-  public lastError: ServerError | undefined;
+  public lastError: ServerError;
 
   /**
    * The maximal length a string could have.
@@ -86,7 +86,11 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
   private readonly subscribers: Subscription[] = [];
   private isWriting = false;
 
-  public constructor(protected readonly logger: ClassloggerService, protected readonly errorHandler?: ErrorHandler) {}
+  public constructor(
+    protected readonly logger: ClassloggerService,
+    protected readonly errorHandler?: ErrorHandler,
+    private cdr?: ChangeDetectorRef,
+  ) {}
 
   /**
    * Unsubscribes all events, as soon as the component is destroyed.
@@ -98,8 +102,11 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
   /**
    * If an error occured, it returns its message
    */
-  public get validationErrorMessage(): string {
-    return this.lastError?.toString() || '';
+  public get validationErrorMessage(): string | undefined {
+    if (this.control.errors?.['generalError']) {
+      return this.lastError.toString();
+    }
+    return undefined;
   }
 
   /**
@@ -111,8 +118,6 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
     if (cdref && cdref.column) {
       this.columnContainer.init(cdref);
 
-      this.control.addValidators(EditorBase.hasServerError(this));
-
       this.setControlValue();
 
       this.subscribers.push(this.control.valueChanges.subscribe(async (value) => this.writeValue(value)));
@@ -121,7 +126,7 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
         this.subscribers.push(
           cdref.minlengthSubject.subscribe((elem) => {
             this.setControlValue();
-          })
+          }),
         );
       }
 
@@ -132,38 +137,30 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
             return;
           }
 
-          if (!this.control.hasError('generalError') && this.control.value !== this.columnContainer.value) {
+          if (this.control.value !== this.columnContainer.value) {
             this.logger.trace(
               this,
               `Control (${this.columnContainer.name}) set to new value:`,
               this.columnContainer.value,
-              this.control.value
+              this.control.value,
             );
             this.setControlValue();
           }
           this.valueHasChanged.emit({ value: this.control.value });
-        })
+        }),
       );
 
       this.subscribers.push(
         this.updateRequested.subscribe(() => {
           setTimeout(() => {
             try {
-              if (!this.control.hasError('generalError') && this.control.value !== this.columnContainer.value) {
-                 this.logger.trace(
-                   this,
-                   `Control (${this.columnContainer.name}) set to new value:`,
-                   this.columnContainer.value,
-                   this.control.value
-                 );
-                this.setControlValue();
-                this.control.updateValueAndValidity({ onlySelf: true, emitEvent: false });
-              }
+              this.setControlValue();
+              this.control.updateValueAndValidity({ onlySelf: true, emitEvent: false });
             } finally {
             }
             this.valueHasChanged.emit({ value: this.control.value });
           });
-        })
+        }),
       );
 
       this.logger.trace(this, 'Control initialized');
@@ -183,9 +180,9 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
       this.columnContainer.type !== ValType.Bool // because bool is always valid
     ) {
       this.logger.debug(this, `A value for column "${this.columnContainer.name}" is required`);
-      this.control.setValidators([Validators.required, EditorBase.hasServerError(this)]);
+      this.control.setValidators(Validators.required);
     } else {
-      this.control.setValidators(EditorBase.hasServerError(this));
+      this.control.setValidators(null);
     }
   }
 
@@ -194,10 +191,11 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
    * @param value the new value
    */
   private async writeValue(value: any): Promise<void> {
-    if (this.control.errors && Object.keys(this.control.errors).some((elem) => elem !== 'generalError')) {
-      this.logger.debug(this, 'writeValue - client validation failed');
+    if (this.control.errors) {
+      this.logger.debug(this, 'writeValue - validation failed');
       return;
     }
+
     this.logger.debug(this, 'writeValue called with value', value);
 
     if (!this.columnContainer.canEdit || this.columnContainer.value === value) {
@@ -209,11 +207,10 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
     try {
       this.logger.debug(this, 'writeValue - PutValue...');
       await this.columnContainer.updateValue(value);
-      this.lastError = undefined;
     } catch (e) {
       this.lastError = e;
       this.logger.error(this, e);
-      this.control.updateValueAndValidity({ emitEvent: true });
+      this.control.setErrors({ generalError: true });
     } finally {
       this.isBusy = false;
       this.isWriting = false;
@@ -224,11 +221,6 @@ export abstract class EditorBase<T = any> implements CdrEditor, OnDestroy {
     }
 
     this.valueHasChanged.emit({ value, forceEmit: true });
-  }
-
-  private static hasServerError(base: any): ValidatorFn {
-    return (_: AbstractControl): { [key: string]: boolean } | null => {
-      return !base.lastError ? null : { generalError: true };
-    };
+    this.cdr?.detectChanges();
   }
 }

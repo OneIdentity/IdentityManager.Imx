@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,12 +25,12 @@
  */
 
 import { Component, Inject, OnDestroy } from '@angular/core';
-import { EuiDownloadOptions, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiDownloadOptions, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
-import { PortalRules } from 'imx-api-cpl';
-import { DisplayColumns } from 'imx-qbm-dbts';
-import { BaseReadonlyCdr, ColumnDependentReference, ElementalUiConfigService } from 'qbm';
+import { PortalRules } from '@imx-modules/imx-api-cpl';
+import { DisplayColumns } from '@imx-modules/imx-qbm-dbts';
+import { BaseReadonlyCdr, ElementalUiConfigService } from 'qbm';
 import { RulesMitigatingControls } from '../mitigating-controls-rules/rules-mitigating-controls';
 import { RulesService } from '../rules.service';
 
@@ -41,7 +41,7 @@ import { RulesService } from '../rules.service';
 })
 export class RulesSidesheetComponent implements OnDestroy {
   public reportDownload: EuiDownloadOptions;
-  public cdrList: ColumnDependentReference[];
+  public cdrList: BaseReadonlyCdr[];
   public uidNonCompliance: string;
   public uidCompliance: string;
 
@@ -58,7 +58,7 @@ export class RulesSidesheetComponent implements OnDestroy {
     },
     public sidesheetRef: EuiSidesheetRef,
     private readonly rulesProvider: RulesService,
-    elementalUiConfigService: ElementalUiConfigService
+    elementalUiConfigService: ElementalUiConfigService,
   ) {
     this.uidNonCompliance = data.selectedRule.GetEntity().GetColumn('UID_NonCompliance').GetValue();
     this.uidCompliance = data.selectedRule.GetEntity().GetKeys().join(',');
@@ -66,14 +66,14 @@ export class RulesSidesheetComponent implements OnDestroy {
       new BaseReadonlyCdr(this.data.selectedRule.GetEntity().GetColumn(DisplayColumns.DISPLAY_PROPERTYNAME)),
       new BaseReadonlyCdr(this.data.selectedRule.Description.Column),
       new BaseReadonlyCdr(this.data.selectedRule.RuleNumber.Column),
-      data.hasRiskIndex ? new BaseReadonlyCdr(this.data.selectedRule.RiskIndex.Column) : null,
-      data.hasRiskIndex && this.data.selectedRule.RiskIndex.value !== this.data.selectedRule.RiskIndexReduced.value
-        ? new BaseReadonlyCdr(this.data.selectedRule.RiskIndexReduced.Column)
-        : null,
+      ...(data.hasRiskIndex ? [new BaseReadonlyCdr(this.data.selectedRule.RiskIndex.Column)] : []),
+      ...(data.hasRiskIndex && this.data.selectedRule.RiskIndex.value !== this.data.selectedRule.RiskIndexReduced.value
+        ? [new BaseReadonlyCdr(this.data.selectedRule.RiskIndexReduced.Column)]
+        : []),
       new BaseReadonlyCdr(this.data.selectedRule.IsInActive.Column),
       new BaseReadonlyCdr(this.data.selectedRule.CountOpen.Column),
       new BaseReadonlyCdr(this.data.selectedRule.CountClosed.Column),
-    ].filter((elem) => elem != null);
+    ];
 
     this.reportDownload = {
       ...elementalUiConfigService.Config.downloadOptions,

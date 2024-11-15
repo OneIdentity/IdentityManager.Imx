@@ -1,22 +1,24 @@
-<mat-form-field appearance="outline" *ngIf="columnContainer?.canEdit; else isReadonly">
-    <mat-label> {{ columnContainer.display | translate }}
-    </mat-label>
-    <textarea matInput cdkTextareaAutosize cdkAutosizeMaxRows="5" [readonly]="!columnContainer.canEdit"
-        [formControl]="control" [attr.data-imx-identifier]="'cdr-edit-multiline-textarea-' +  columnContainer.name"
-        [required]="columnContainer.isValueRequired"></textarea>
-    <div matSuffix class="imx-suffix-container">
-        <mat-spinner diameter="30" *ngIf="isBusy"></mat-spinner>
-    </div>
-    <mat-error *ngIf="control.errors?.['required']">
-        {{ '#LDS#This field is mandatory.' | translate }}
-    </mat-error>
+<mat-form-field class="imx-form-field-width-full" appearance="outline" *ngIf="columnContainer?.canEdit; else isReadonly">
+  <mat-label> {{ columnContainer.display | translate }} </mat-label>
+  <textarea
+    matInput
+    cdkTextareaAutosize
+    cdkAutosizeMaxRows="5"
+    class="imx-textarea-content-box"
+    [readonly]="!columnContainer.canEdit"
+    [formControl]="control"
+    [attr.data-imx-identifier]="'cdr-edit-multiline-textarea-' + columnContainer.name"
+    [required]="columnContainer.isValueRequired"
+  ></textarea>
+  <div matSuffix class="imx-suffix-container">
+    <mat-spinner diameter="30" *ngIf="isBusy"></mat-spinner>
+  </div>
+  <mat-error *ngIf="control.errors?.['required']">
+    {{ '#LDS#This field is mandatory.' | translate }}
+  </mat-error>
 </mat-form-field>
 
 <!-- template for read only elements-->
 <ng-template #isReadonly>
-  <imx-view-property
-    [columnContainer]="columnContainer"
-    defaultValue="#LDS#Not set"
-  >
-  </imx-view-property>
+  <imx-view-property [columnContainer]="columnContainer" defaultValue="#LDS#Not set"> </imx-view-property>
 </ng-template>

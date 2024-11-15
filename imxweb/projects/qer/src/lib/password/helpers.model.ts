@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,7 +38,7 @@ export class Column implements IColumn {
   public title: string;
 }
 
-export function GetLocalDataForPage<T>(allData: T[], state: { page: number, pageSize: number, skip: number }): T[] {
+export function GetLocalDataForPage<T>(allData: T[], state: { page: number; pageSize: number; skip: number }): T[] {
   if (state) {
     const currentIndex = state.page * state.pageSize;
     return allData.slice(currentIndex, currentIndex + state.pageSize);

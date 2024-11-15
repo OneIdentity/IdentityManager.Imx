@@ -1,30 +1,7 @@
-@mixin imx-flex-column-container {
-  display: flex;
-  flex-direction: column;
-}
-
-@mixin imx-flex-row-container {
-  display: flex;
-  flex-direction: row;
-}
-
-.eui-sidesheet-content {
-  @include imx-flex-column-container();
-}
+@import 'base/mixins';
 
 .heading-wrapper {
-  @include imx-flex-row-container();
+  @include flex-row-container();
   flex: 0 0 auto;
   align-items: flex-start;
-
-  .helper-alert {
-    display: flex;
-    margin-bottom: 15px;
-  }
-
-  .alert-wrapper {
-    margin: 0 0 0 auto;
-    align-self: flex-end;
-    width: 50%;
-  }
 }

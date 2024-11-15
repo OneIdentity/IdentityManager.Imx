@@ -1,33 +1,53 @@
 <div class="attestationRun-pendingapprovers-content">
-   <eui-alert *ngIf="showHelper" class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true"
-      (dismissed)="onHelperDismissed()">
-      <span translate>#LDS#Here you can get an overview of attestors who still have to approve attestation cases in the selected attestation run. Additionally, you can select attestors and send them reminders.</span>
-   </eui-alert>
+  <eui-alert
+    *ngIf="showHelper"
+    class="imx-margin-15"
+    type="info"
+    [condensed]="true"
+    [colored]="true"
+    [dismissable]="true"
+    (dismissed)="onHelperDismissed()"
+  >
+    <span translate>{{ LdsKeyAttestorOverview }}</span>
+  </eui-alert>
 
-   <mat-card *ngIf="dstSettings" class="imx-pending-approvers-container">
-      <imx-data-source-toolbar #dst [settings]="dstSettings" [hidden]="true">
-      </imx-data-source-toolbar>
-      <div class="imx-table-container">
-         <imx-data-table [dst]="dst" detailViewVisible="false" [selectable]="true" mode="manual"
-            (selectionChanged)="onSelectionChanged($event)" data-imx-identifier="approvers-table">
-            <imx-data-table-column [entityColumn]="dstSettings.entitySchema.Columns.UID_PersonHead"
-               data-imx-identifier="pending-approvers-table-column-UID_PersonHead">
-            </imx-data-table-column>
-            <imx-data-table-column columnLabel="{{'#LDS#Pending' | translate}}" align='center'
-               [entityColumn]="dstSettings.entitySchema.Columns.PendingCases"
-               data-imx-identifier="pending-approvers-table-column-PendingCases">
-            </imx-data-table-column>
-            <imx-data-table-column columnLabel="{{'#LDS#Closed' | translate}}" align='center'
-               [entityColumn]="dstSettings.entitySchema.Columns.ClosedCases"
-               data-imx-identifier="pending-approvers-table-column-ClosedCases">
-            </imx-data-table-column>
-         </imx-data-table>
-      </div>
-   </mat-card>
+  <mat-card *ngIf="dataViewSource" class="imx-card-fill">
+    <imx-data-view-auto-table [dataSource]="dataViewSource" mode="manual" [selectable]="true">
+      <ng-container [matColumnDef]="entitySchema.Columns.UID_PersonHead.ColumnName">
+        <th mat-header-cell *matHeaderCellDef>
+          {{ entitySchema?.Columns?.UID_PersonHead?.Display }}
+        </th>
+        <td mat-cell *matCellDef="let item" role="gridcell">
+          <div>{{ item.UID_PersonHead.Column.GetDisplayValue() }}</div>
+        </td>
+      </ng-container>
+      <ng-container [matColumnDef]="entitySchema.Columns.PendingCases.ColumnName">
+        <th mat-header-cell *matHeaderCellDef>
+          {{ '#LDS#Pending' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let item" role="gridcell">
+          <div>{{ item.PendingCases.Column.GetDisplayValue() }}</div>
+        </td>
+      </ng-container>
+      <ng-container [matColumnDef]="entitySchema.Columns.ClosedCases.ColumnName">
+        <th mat-header-cell *matHeaderCellDef>
+          {{ '#LDS#Closed' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let item" role="gridcell">
+          <div>{{ item.ClosedCases.Column.GetDisplayValue() }}</div>
+        </td>
+      </ng-container>
+    </imx-data-view-auto-table>
+  </mat-card>
 </div>
 <div eui-sidesheet-actions>
-  <button mat-stroked-button color="primary" data-imx-identifier="run-approvers-button-send-reminder"
-    [disabled]="!selected.length" (click)="sendReminder.emit(selected)">
+  <button
+    mat-stroked-button
+    color="primary"
+    data-imx-identifier="run-approvers-button-send-reminder"
+    [disabled]="!selected.length"
+    (click)="sendReminder.emit(selected)"
+  >
     {{ '#LDS#Send reminder' | translate }}
   </button>
 </div>

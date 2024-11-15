@@ -1,13 +1,8 @@
-@import '../../../../../shared/scss/common-table.scss';
-:host {
-  @include imx-flex-fill-control-hidden-overflow();
-  height: 100%;
+@import 'base/mixins';
 
-  .mat-card {
-    @include imx-flex-fill-control-hidden-overflow();
-    margin-right: 3px;
-    margin-bottom: 3px;
-  }
+:host {
+  @include flex-column-container-fill();
+  height: 100%;
 }
 
 .imx-addressbook-table {

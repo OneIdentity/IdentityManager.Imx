@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,29 +25,45 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { PortalPolicies } from 'imx-api-pol';
-import { CollectionLoadParameters, DisplayColumns, EntitySchema, ValType } from 'imx-qbm-dbts';
-import { BusyService, ClientPropertyForTableColumns, DataSourceToolbarFilter, DataSourceToolbarSettings, SystemInfoService } from 'qbm';
-import { PolicyParameter } from './policy-parameter';
-import { PoliciesService } from './policies.service';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
+import { PortalPolicies } from '@imx-modules/imx-api-pol';
+import {
+  CollectionLoadParameters,
+  DataModel,
+  DisplayColumns,
+  EntitySchema,
+  TypedEntityCollectionData,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
+import {
+  BusyService,
+  ClientPropertyForTableColumns,
+  DataSourceToolbarFilter,
+  DataSourceToolbarSettings,
+  DataViewInitParameters,
+  DataViewSource,
+  SystemInfoService,
+  calculateSidesheetWidth,
+} from 'qbm';
 import { PoliciesSidesheetComponent } from './policies-sidesheet/policies-sidesheet.component';
+import { PoliciesService } from './policies.service';
 
 @Component({
   selector: 'imx-policies',
   templateUrl: './policies.component.html',
   styleUrls: ['./policies.component.scss'],
+  providers: [DataViewSource],
 })
 export class PoliciesComponent implements OnInit {
   public dstSettings: DataSourceToolbarSettings;
   public readonly DisplayColumns = DisplayColumns;
   public policySchema: EntitySchema;
   public busyService = new BusyService();
+  public dataModel: DataModel;
 
   private displayedColumns: ClientPropertyForTableColumns[] = [];
   private filterOptions: DataSourceToolbarFilter[] = [];
-  private navigationState: PolicyParameter = {};
   private isMControlPerViolation: boolean;
 
   constructor(
@@ -55,7 +71,8 @@ export class PoliciesComponent implements OnInit {
     private readonly sideSheetService: EuiSidesheetService,
     private readonly systemInfoService: SystemInfoService,
     private readonly translate: TranslateService,
-    private readonly euiBusysService: EuiLoadingService
+    private readonly euiBusysService: EuiLoadingService,
+    public dataSource: DataViewSource<PortalPolicies>,
   ) {
     this.policySchema = policiesProvider.policySchema;
     this.displayedColumns = [
@@ -71,32 +88,26 @@ export class PoliciesComponent implements OnInit {
   public async ngOnInit(): Promise<void> {
     this.euiBusysService.show();
     try {
-      this.filterOptions = (await this.policiesProvider.getDataModel()).Filters;
+      this.dataModel = await this.policiesProvider.getDataModel();
       this.isMControlPerViolation = (await this.policiesProvider.featureConfig()).MitigatingControlsPerViolation;
     } finally {
       this.euiBusysService.hide();
     }
-
-    const indexActive = this.filterOptions.findIndex((elem) => elem.Name === 'active');
-    if (indexActive > -1) {
-      this.filterOptions[indexActive].InitialValue = '1';
-      this.navigationState.active = '1';
-    }
-    await this.navigate({});
+    await this.getData();
   }
 
   public async showDetails(selectedPolicy: PortalPolicies): Promise<void> {
-    const hasRiskIndex = (await this.systemInfoService.get()).PreProps.includes('RISKINDEX');
+    const hasRiskIndex = (await this.systemInfoService.get())?.PreProps?.includes('RISKINDEX');
 
     await this.sideSheetService
       .open(PoliciesSidesheetComponent, {
         title: await this.translate.get('#LDS#Heading View Company Policy Details').toPromise(),
         subTitle: selectedPolicy.GetEntity().GetDisplay(),
         padding: '0px',
-        width: 'max(700px, 60%)',
+        width: calculateSidesheetWidth(700, 0.4),
         testId: 'policy-details-sidesheet',
         data: {
-          selectedPolicy,
+          selectedPolicy: selectedPolicy as PortalPolicies,
           hasRiskIndex,
           isMControlPerViolation: this.isMControlPerViolation,
         },
@@ -105,22 +116,24 @@ export class PoliciesComponent implements OnInit {
       .toPromise();
   }
 
-  public async navigate(parameter: CollectionLoadParameters): Promise<void> {
-    const isBusy = this.busyService.beginBusy();
-
-    this.navigationState = { ...this.navigationState, ...parameter };
-
-    try {
-      const data = await this.policiesProvider.getPolicies(this.navigationState);
-      this.dstSettings = {
-        displayedColumns: this.displayedColumns,
-        dataSource: data,
-        entitySchema: this.policySchema,
-        navigationState: this.navigationState,
-        filters: this.filterOptions,
-      };
-    } finally {
-      isBusy.endBusy();
-    }
+  public async getData(): Promise<void> {
+    this.filterOptions = this.dataModel?.Filters || [];
+    this.filterOptions.map((filter) => {
+      if (filter.Name === 'active') {
+        filter.CurrentValue = '1';
+      }
+    });
+    this.dataSource.state.update((state) => ({ ...state, active: '1' }));
+    const dataViewInitParameters: DataViewInitParameters<PortalPolicies> = {
+      execute: (params: CollectionLoadParameters, signal: AbortSignal): Promise<TypedEntityCollectionData<PortalPolicies>> =>
+        this.policiesProvider.getPolicies(params, signal),
+      schema: this.policySchema,
+      columnsToDisplay: this.displayedColumns,
+      dataModel: this.dataModel,
+      highlightEntity: (entity: PortalPolicies) => {
+        this.showDetails(entity);
+      },
+    };
+    this.dataSource.init(dataViewInitParameters);
   }
 }

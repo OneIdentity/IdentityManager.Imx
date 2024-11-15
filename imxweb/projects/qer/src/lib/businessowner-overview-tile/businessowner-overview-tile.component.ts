@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,10 +28,9 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   templateUrl: './businessowner-overview-tile.component.html',
-  selector: 'imx-businessowner-overview-tile'
+  selector: 'imx-businessowner-overview-tile',
 })
 export class BusinessOwnerOverviewTileComponent {
-
   /* TODO (TFS 806002)
   ExpressionColumnList({"ScriptItemUID":"ExpressionColumnList2","ColumnList":"GetConfig(PropertyList())"});
   }*/

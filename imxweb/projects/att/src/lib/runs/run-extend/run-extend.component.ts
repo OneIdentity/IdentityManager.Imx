@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,8 +25,8 @@
  */
 
 import { Component, Inject, OnDestroy } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { AbstractControl, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
 import { ColumnDependentReference } from 'qbm';
@@ -34,7 +34,7 @@ import { ColumnDependentReference } from 'qbm';
 @Component({
   selector: 'imx-run-extend',
   templateUrl: './run-extend.component.html',
-  styleUrls: ['./run-extend.component.scss']
+  styleUrls: ['./run-extend.component.scss'],
 })
 export class RunExtendComponent implements OnDestroy {
   public showHelper = true;
@@ -47,28 +47,26 @@ export class RunExtendComponent implements OnDestroy {
   private readonly subscriptions: Subscription[] = [];
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) readonly data: { ProlongateUntil: Date, reason: ColumnDependentReference },
-    public readonly sideSheetRef: EuiSidesheetRef
+    @Inject(EUI_SIDESHEET_DATA) readonly data: { ProlongateUntil: Date; reason: ColumnDependentReference },
+    public readonly sideSheetRef: EuiSidesheetRef,
   ) {
     this.tomorrow = new Date();
-    this.tomorrow.setDate((new Date()).getDate() + 1);
+    this.tomorrow.setDate(new Date().getDate() + 1);
     this.date = new UntypedFormControl(data.ProlongateUntil, { updateOn: 'blur' });
-    this.date.valueChanges.subscribe(value => data.ProlongateUntil = value);
+    this.date.valueChanges.subscribe((value) => (data.ProlongateUntil = value));
     this.addControl('date', this.date);
     this.reason = data.reason;
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   public onHelperDismissed(): void {
     this.showHelper = false;
   }
 
-  public addControl(name: string, control: UntypedFormControl): void {
-    setTimeout(() =>
-      this.form.addControl(name, control)
-    );
+  public addControl(name: string, control: AbstractControl): void {
+    setTimeout(() => this.form.addControl(name, control));
   }
 }

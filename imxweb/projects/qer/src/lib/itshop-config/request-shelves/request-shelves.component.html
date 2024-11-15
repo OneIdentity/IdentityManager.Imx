@@ -17,25 +17,25 @@
       [dst]="dst"
       mode="manual"
       (highlightedEntityChanged)="onRequestShelfChanged($event)"
-      detailViewVisible="false"
+      [detailViewVisible]="false"
       noDataText="#LDS#There are currently no shelves configured."
       noMatchingDataText="#LDS#There are no shelves matching your search."
       data-imx-identifier="request-shelves-tabledata-table"
     >
-      <imx-data-table-column [entityColumn]="entitySchemaShopStructure?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+      <imx-data-table-column [entityColumn]="entitySchemaShopStructure?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]">
         <ng-template let-item>
           <div data-imx-identifier="request-shelves-tabledata-display">{{ item.GetEntity().GetDisplay() }}</div>
           <div subtitle data-imx-identifier="request-shelves-tabledata-description">{{ item.Description.Column.GetDisplayValue() }}</div>
         </ng-template>
       </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchemaShopStructure?.Columns.UID_OrgAttestator"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchemaShopStructure?.Columns?.UID_OrgAttestator"> </imx-data-table-column>
     </imx-data-table>
     <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
   </mat-card>
 </div>
 
 <div eui-sidesheet-actions>
-  <button mat-raised-button color="primary" data-imx-identifier="create-new-request-config-shelf" (click)="createRequestConfigShelf()">
+  <button mat-flat-button color="primary" data-imx-identifier="create-new-request-config-shelf" (click)="createRequestConfigShelf()">
     {{ '#LDS#Create shelf' | translate }}
   </button>
 </div>

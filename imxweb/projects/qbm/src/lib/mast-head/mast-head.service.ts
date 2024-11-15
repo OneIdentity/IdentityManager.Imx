@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,23 +25,23 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
-import { MastHeadMenu } from './mast-head-menu.interface';
-import { MastHeadMenuItem } from './mast-head-menu-item.interface';
-import { AppConfigService } from '../appConfig/appConfig.service';
+import { SessionInfoData } from '@imx-modules/imx-api-qbm';
 import { TranslateService } from '@ngx-translate/core';
-import { SessionInfoData } from 'imx-api-qbm';
+import { Subject } from 'rxjs';
+import { AppConfigService } from '../appConfig/appConfig.service';
+import { MastHeadMenuItem } from './mast-head-menu-item.interface';
+import { MastHeadMenu } from './mast-head-menu.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MastHeadService {
   public itemClickedSubject: Subject<MastHeadMenu | MastHeadMenuItem> = new Subject();
 
   constructor(
     private readonly appConfig: AppConfigService,
-    private readonly translate: TranslateService
-  ) { }
+    private readonly translate: TranslateService,
+  ) {}
 
   public itemClicked(menuItem: MastHeadMenu | MastHeadMenuItem): void {
     this.itemClickedSubject.next(menuItem);
@@ -67,6 +67,9 @@ export class MastHeadService {
   private getLocaleDocumentationPath(): string {
     const docPaths = this.appConfig.Config.LocalDocPath;
     const currentLanguage = this.translate.currentLang;
+    if (!docPaths) {
+      return '';
+    }
     const directLocaleMatch = docPaths[currentLanguage];
     // If the browser culture directly matches a key for documentation paths, then use that
     if (directLocaleMatch) {
@@ -77,6 +80,6 @@ export class MastHeadService {
     const docKeys = Object.keys(docPaths);
     const matchingKey = docKeys.find((element) => element.includes(currentLanguageShort));
     // If still no match, fallback to the first documentation path entry
-    return docPaths[matchingKey] ?? docPaths[docKeys[0]];
+    return (matchingKey ? docPaths[matchingKey] : docPaths[docKeys[0]]) ?? docPaths[docKeys[0]];
   }
 }

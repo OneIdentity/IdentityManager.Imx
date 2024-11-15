@@ -1,41 +1,56 @@
 <div eui-sidesheet-actions class="top-actions">
-<div class="toolbar">
-  <button
-  mat-stroked-button
-  color="primary"
-  [matTooltip]="'#LDS#Automatically reorders the approval levels' | translate"
-  matTooltipShowDelay="500"
-  matTooltipHideDelay="0"
-  data-imx-identifier="approval-workflow-edit-button-align"
-  (click)="alignWorkFlow()"
->
-  <eui-icon icon="aligncenter" size="s"></eui-icon>
-  <span>
-    {{ '#LDS#Align workflow' | translate }}
-  </span>
-</button>
-<mat-slide-toggle
-  color="primary"
-  [matTooltip]="'#LDS#Toggles between node and connection editing' | translate"
-  matTooltipShowDelay="500"
-  [checked]="isDraw"
-  (change)="switchGraphMode()"
-  data-imx-identifier="approval-workflow-edit-toggle-mode"
->
-  <span [translate]="isDraw ? '#LDS#Connection editing' : '#LDS#Node editing'"></span>
-</mat-slide-toggle>
-</div>
-
-  <button mat-button color="primary" class="mat-icon-button info-button" (click)="showInfo()">
-    <eui-icon icon="info"></eui-icon>
-  </button>
+  <div class="toolbar">
+    <button
+      mat-stroked-button
+      color="primary"
+      [matTooltip]="'#LDS#Automatically reorders the approval levels' | translate"
+      matTooltipShowDelay="500"
+      matTooltipHideDelay="0"
+      data-imx-identifier="approval-workflow-edit-button-align"
+      (click)="alignWorkFlow()"
+    >
+      <eui-icon icon="aligncenter"></eui-icon>
+      <span>
+        {{ '#LDS#Align workflow' | translate }}
+      </span>
+    </button>
+    <mat-slide-toggle
+      color="primary"
+      [matTooltip]="'#LDS#Toggles between node and connection editing' | translate"
+      matTooltipShowDelay="500"
+      [checked]="isDraw"
+      (change)="switchGraphMode()"
+      data-imx-identifier="approval-workflow-edit-toggle-mode"
+    >
+      <span [translate]="isDraw ? '#LDS#Connection editing' : '#LDS#Node editing'"></span>
+    </mat-slide-toggle>
+  </div>
+  <imx-help-contextual [contextId]="helpContextId"></imx-help-contextual>
 </div>
 <div eui-sidesheet-content>
   <mat-card class="graph-container">
     <div id="graph" tabindex="0"></div>
-    <div style="position: relative" [style.left]="menuTLPosition.x" [style.top]="menuTLPosition.y" [matMenuTriggerFor]="coreMenu" data-imx-identifier="approval-workflow-edit-menu-core"></div>
-    <div style="position: relative" [style.left]="menuTLPosition.x" [style.top]="menuTLPosition.y" [matMenuTriggerFor]="nodeMenu" data-imx-identifier="approval-workflow-edit-menu-node"></div>
-    <div style="position: relative" [style.left]="menuTLPosition.x" [style.top]="menuTLPosition.y" [matMenuTriggerFor]="edgeMenu" data-imx-identifier="approval-workflow-edit-menu-edge"></div>
+    <div
+      style="position: relative"
+      [style.left]="menuTLPosition.x"
+      [style.top]="menuTLPosition.y"
+      [matMenuTriggerFor]="coreMenu"
+      data-imx-identifier="approval-workflow-edit-menu-core"
+    ></div>
+    <div
+      style="position: relative"
+      [style.left]="menuTLPosition.x"
+      [style.top]="menuTLPosition.y"
+      [matMenuTriggerFor]="nodeMenu"
+      data-imx-identifier="approval-workflow-edit-menu-node"
+    ></div>
+    <div
+      style="position: relative"
+      [style.left]="menuTLPosition.x"
+      [style.top]="menuTLPosition.y"
+      [matMenuTriggerFor]="edgeMenu"
+      data-imx-identifier="approval-workflow-edit-menu-edge"
+    ></div>
   </mat-card>
 </div>
 
@@ -54,7 +69,7 @@
     </span>
   </button>
   <button
-    mat-raised-button
+    mat-flat-button
     class="save-button"
     color="primary"
     [matTooltip]="'#LDS#Saves all changes to the approval workflow' | translate"
@@ -63,15 +78,17 @@
     (click)="saveChanges()"
     [disabled]="!unsavedChanges"
   >
-  <eui-icon icon="save" size="s"></eui-icon>
-  <span>
-    {{ '#LDS#Save' | translate }}
-  </span>
+    <eui-icon icon="save" size="s"></eui-icon>
+    <span>
+      {{ '#LDS#Save' | translate }}
+    </span>
   </button>
 </div>
 
 <mat-menu #coreMenu="matMenu">
-  <button mat-menu-item (click)="addLevel()"
+  <button
+    mat-menu-item
+    (click)="addLevel()"
     [matTooltip]="'#LDS#Adds a new approval level to the approval workflow' | translate"
     matTooltipShowDelay="1000"
     matTooltipPosition="after"
@@ -79,7 +96,9 @@
   >
     {{ '#LDS#Add approval level' | translate }}
   </button>
-  <button mat-menu-item (click)="fitGraph()"
+  <button
+    mat-menu-item
+    (click)="fitGraph()"
     [matTooltip]="'#LDS#Adjusts the zoom/pan to fit the approval workflow on your screen' | translate"
     matTooltipShowDelay="1000"
     matTooltipPosition="after"
@@ -93,13 +112,20 @@
   <button mat-menu-item [matMenuTriggerFor]="levelMenu" data-imx-identifier="approval-workflow-node-menu-level-actions">
     {{ '#LDS#Approval level actions' | translate }}
   </button>
-  <button mat-menu-item [matMenuTriggerFor]="stepMenu" [disabled]="isStepDisabled" data-imx-identifier="approval-workflow-node-menu-step-actions">
+  <button
+    mat-menu-item
+    [matMenuTriggerFor]="stepMenu"
+    [disabled]="isStepDisabled"
+    data-imx-identifier="approval-workflow-node-menu-step-actions"
+  >
     {{ '#LDS#Approval step actions' | translate }}
   </button>
 </mat-menu>
 
 <mat-menu #levelMenu="matMenu">
-  <button mat-menu-item (click)="addStep()"
+  <button
+    mat-menu-item
+    (click)="addStep()"
     [matTooltip]="'#LDS#Adds a new approval step to this approval level' | translate"
     matTooltipShowDelay="1000"
     matTooltipPosition="after"
@@ -107,15 +133,19 @@
   >
     {{ '#LDS#Add approval step' | translate }}
   </button>
-  <button mat-menu-item (click)="editLevel()"
-    [matTooltip]="'#LDS#Lets you edit this approval level' | translate"
+  <button
+    mat-menu-item
+    (click)="editLevel()"
+    [matTooltip]="'#LDS#Opens properties of this approval level for editing' | translate"
     matTooltipShowDelay="1000"
     matTooltipPosition="after"
     data-imx-identifier="approval-workflow-level-menu-edit-step"
   >
     {{ '#LDS#Edit approval level' | translate }}
   </button>
-  <button mat-menu-item (click)="removeLevel()"
+  <button
+    mat-menu-item
+    (click)="removeLevel()"
     [matTooltip]="'#LDS#Deletes this approval level, all contained approval steps, and all outgoing and incoming connections' | translate"
     matTooltipShowDelay="1000"
     matTooltipPosition="after"
@@ -126,15 +156,19 @@
 </mat-menu>
 
 <mat-menu #stepMenu="matMenu">
-  <button mat-menu-item (click)="editStep()"
-    [matTooltip]="'#LDS#Lets you edit this approval step' | translate"
+  <button
+    mat-menu-item
+    (click)="editStep()"
+    [matTooltip]="'#LDS#Opens properties of this approval step for editing' | translate"
     matTooltipShowDelay="1000"
     matTooltipPosition="after"
     data-imx-identifier="approval-workflow-step-menu-edit-step"
   >
     {{ '#LDS#Edit approval step' | translate }}
   </button>
-  <button mat-menu-item (click)="removeStep()"
+  <button
+    mat-menu-item
+    (click)="removeStep()"
     [matTooltip]="'#LDS#Deletes this approval step in this approval level' | translate"
     matTooltipShowDelay="1000"
     matTooltipPosition="after"
@@ -148,7 +182,9 @@
   <button mat-menu-item [matMenuTriggerFor]="edgeSetMenu" data-imx-identifier="approval-workflow-edge-menu-set-edge">
     {{ '#LDS#Specify connection type' | translate }}
   </button>
-  <button mat-menu-item (click)="removeEdge()"
+  <button
+    mat-menu-item
+    (click)="removeEdge()"
     [matTooltip]="'#LDS#Deletes this connection' | translate"
     matTooltipShowDelay="1000"
     matTooltipPosition="after"
@@ -159,7 +195,9 @@
 </mat-menu>
 
 <mat-menu #edgeSetMenu="matMenu">
-  <button mat-menu-item (click)="editEdge(constantsService.edgeTypes.approval)"
+  <button
+    mat-menu-item
+    (click)="editEdge(constantsService.edgeTypes.approval)"
     [matTooltip]="'#LDS#Connection if the current approval level was approved' | translate"
     matTooltipShowDelay="1000"
     matTooltipPosition="after"
@@ -167,7 +205,9 @@
   >
     {{ '#LDS#Approval' | translate }}
   </button>
-  <button mat-menu-item (click)="editEdge(constantsService.edgeTypes.reject)"
+  <button
+    mat-menu-item
+    (click)="editEdge(constantsService.edgeTypes.reject)"
     [matTooltip]="'#LDS#Connection if the current approval level was not approved' | translate"
     matTooltipShowDelay="1000"
     matTooltipPosition="after"
@@ -175,7 +215,9 @@
   >
     {{ '#LDS#Denial' | translate }}
   </button>
-  <button mat-menu-item (click)="editEdge(constantsService.edgeTypes.escalation)"
+  <button
+    mat-menu-item
+    (click)="editEdge(constantsService.edgeTypes.escalation)"
     [matTooltip]="'#LDS#Connection to escalate the current approval decision' | translate"
     matTooltipShowDelay="1000"
     matTooltipPosition="after"
@@ -183,7 +225,9 @@
   >
     {{ '#LDS#Escalation' | translate }}
   </button>
-  <button mat-menu-item (click)="editEdge(constantsService.edgeTypes.reroute)"
+  <button
+    mat-menu-item
+    (click)="editEdge(constantsService.edgeTypes.reroute)"
     [matTooltip]="'#LDS#Connection to reroute the current approval decision' | translate"
     matTooltipShowDelay="1000"
     matTooltipPosition="after"

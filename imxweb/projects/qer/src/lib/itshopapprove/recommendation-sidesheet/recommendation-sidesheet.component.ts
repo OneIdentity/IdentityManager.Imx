@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,13 +25,13 @@
  */
 
 import { Component, Inject } from '@angular/core';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { RecommendationData, RecommendationDataItem, RecommendationEnum } from 'imx-api-qer';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
+import { RecommendationData, RecommendationDataItem, RecommendationEnum } from '@imx-modules/imx-api-qer';
 
 @Component({
   selector: 'imx-recommendation-sidesheet',
   templateUrl: './recommendation-sidesheet.component.html',
-  styleUrls: ['./recommendation-sidesheet.component.scss']
+  styleUrls: ['./recommendation-sidesheet.component.scss'],
 })
 export class RecommendationSidesheetComponent {
   public isRecApprove: boolean;
@@ -41,18 +41,18 @@ export class RecommendationSidesheetComponent {
 
   constructor(
     private sideSheetRef: EuiSidesheetRef,
-    @Inject(EUI_SIDESHEET_DATA) private data: RecommendationData
+    @Inject(EUI_SIDESHEET_DATA)
+    public data: { recommendations: RecommendationData; informationTexts?: { approve: string; reject: string; noRecord: string } },
   ) {
-    if (data.Recommendation === RecommendationEnum.Approve) {
+    if (data.recommendations.Recommendation === RecommendationEnum.Approve) {
       this.isRecApprove = true;
-    } else if (data.Recommendation === RecommendationEnum.Deny) {
+    } else if (data.recommendations.Recommendation === RecommendationEnum.Deny) {
       this.isRecReject = true;
     } else {
       this.isNoRec = true;
     }
-    this.recommendationItems = data.Items;
+    this.recommendationItems = data.recommendations.Items || [];
   }
-
 
   public onApprove(): void {
     this.sideSheetRef.close('approve');
@@ -61,5 +61,4 @@ export class RecommendationSidesheetComponent {
   public onDeny(): void {
     this.sideSheetRef.close('deny');
   }
-
 }

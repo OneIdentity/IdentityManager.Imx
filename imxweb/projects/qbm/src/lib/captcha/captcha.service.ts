@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,40 +24,72 @@
  *
  */
 
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class CaptchaService {
+  private _recaptchaPublicKey: string;
+
+  /** CAPTCHA response entered by the user. */
+  public Response: string = '';
+
+  /**
+   * Url parameter for One Identity's ReCaptcha
+   */
+  public builtInUrlParameter: string;
+
+  /**
+   * Url parameter for captcha image.
+   */
+  public captchaImageUrl: string;
+
+  /**
+   * This variable holds the public key for ReCaptcha V3.
+   * The ReCaptchaPublicKey can be set in Password Reset Portal config.
+   */
+  public get recaptchaPublicKey(): string {
+    return this._recaptchaPublicKey;
+  }
+
+  /**
+   * Holds a CaptchaMode based on if the user has recaptchaPublicKey or not.
+   */
+  public get Mode(): CaptchaMode {
+    if (this.recaptchaPublicKey) return CaptchaMode.RecaptchaV3;
+
+    return CaptchaMode.BuiltIn;
+  }
+
+  /**
+   * True if One Identity's ReCaptcha is enabled
+   */
+  public get isBuiltIn(): boolean {
+    return this.Mode === CaptchaMode.BuiltIn;
+  }
+
+  /**
+   * True if ReCaptchaV3 is enabled
+   */
+  public get isReCaptchaV3(): boolean {
+    return this.Mode === CaptchaMode.RecaptchaV3;
+  }
 
   constructor() {
     this.ReinitCaptcha();
   }
 
-  private _recaptchaPublicKey: string;
-
-  public get recaptchaPublicKey() { return this._recaptchaPublicKey; }
-
-  /** CAPTCHA response entered by the user. */
-  public Response: string = "";
-
-  public builtInUrlParameter: string;
-
-  enableReCaptcha(publicKey: string) {
-    throw new Error("not supported");
+  /**
+   * Enables Google's ReCaptcha V3 function.
+   * @param publicKey Google ReCaptcha's public key, provided by Password Reset Portal's config.
+   */
+  public enableReCaptcha(publicKey: string) {
     this._recaptchaPublicKey = publicKey;
-  }
-
-  public get Mode(): CaptchaMode {
-    if (this._recaptchaPublicKey)
-      return CaptchaMode.RecaptchaV2;
-
-    return CaptchaMode.BuiltIn;
   }
 
   /** Reinitializes the image to help users who cannot read a particular CAPTCHA, or if an authentication
    * attempt has failed.   */
-  ReinitCaptcha() {
-    this.Response = "";
+  public ReinitCaptcha() {
+    this.Response = '';
 
     // Add a cache-busting parameter
     this.builtInUrlParameter = '?t=' + new Date().getTime();
@@ -66,5 +98,6 @@ export class CaptchaService {
 
 export enum CaptchaMode {
   BuiltIn,
-  RecaptchaV2
+  RecaptchaV2,
+  RecaptchaV3,
 }

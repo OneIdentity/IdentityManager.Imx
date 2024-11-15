@@ -1,8 +1,24 @@
 {
-    "explorer.compactFolders": false,
-    "editor.tabSize": 2,
-    "git.ignoreLimitWarning": true,
-    "cSpell.words": [
-        "requestable"
-    ]
+  "explorer.compactFolders": false,
+  "editor.tabSize": 2,
+  "git.ignoreLimitWarning": true,
+  "editor.wordWrapColumn": 140,
+  "editor.wordWrap": "wordWrapColumn",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "eslint.options": {
+    "extensions": [".ts", ".html"]
+  },
+  "eslint.validate": ["javascript", "typescript", "html"],
+  "eslint.format.enable": true,
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

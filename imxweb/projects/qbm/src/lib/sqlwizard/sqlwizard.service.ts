@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,17 +25,15 @@
  */
 
 import { Injectable } from '@angular/core';
-import { FilterProperty } from 'imx-qbm-dbts';
-import { DateDiffUnit } from 'imx-qbm-dbts';
-import { SqlViewSettings } from './SqlNodeView';
+import { DateDiffUnit, FilterProperty } from '@imx-modules/imx-qbm-dbts';
 import { AuthenticationService } from '../authentication/authentication.service';
+import { SqlViewSettings } from './SqlNodeView';
 
 @Injectable()
 export class SqlWizardService {
   public constructor(authentication: AuthenticationService) {
-
     authentication.onSessionResponse.subscribe(async (elem) => {
-      this.currentUser = elem.UserUid;
+      this.currentUser = elem.UserUid ?? '';
     });
   }
 
@@ -50,10 +48,10 @@ export class SqlWizardService {
     { DisplayMl: '#LDS#SW_Hours', Value: DateDiffUnit.Hours },
   ];
 
-  public getColumns(viewSettings: SqlViewSettings, tableName: string): Promise<FilterProperty[]> {
+  public async getColumns(viewSettings: SqlViewSettings, tableName: string): Promise<FilterProperty[]> {
     const tableUser = tableName + this.currentUser;
     if (this._cache.has(tableUser)) {
-      return this._cache.get(tableUser);
+      return (await this._cache.get(tableUser)) ?? [];
     }
     const promise = this.getInternal(tableName, viewSettings);
     this._cache.set(tableUser, promise);

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,11 +27,12 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
-import { TranslateModule, TranslateLoader, MissingTranslationHandler } from '@ngx-translate/core';
+import { MissingTranslationHandler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 
-import { MastHeadComponent } from './mast-head.component';
-import { ImxTranslateLoader } from '../translation/imx-translate-loader';
+import { ExtModule } from '../ext/ext.module';
 import { ImxMissingTranslationHandler } from '../translation/imx-missing-translation-handler';
+import { ImxTranslateLoader } from '../translation/imx-translate-loader';
+import { MastHeadComponent } from './mast-head.component';
 import { MastHeadService } from './mast-head.service';
 
 @NgModule({
@@ -40,22 +41,19 @@ import { MastHeadService } from './mast-head.service';
     CommonModule,
     EuiCoreModule,
     EuiMaterialModule,
+    ExtModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useClass: ImxTranslateLoader
+        useClass: ImxTranslateLoader,
       },
       missingTranslationHandler: {
         provide: MissingTranslationHandler,
-        useClass: ImxMissingTranslationHandler
-      }
+        useClass: ImxMissingTranslationHandler,
+      },
     }),
   ],
-  exports: [
-    MastHeadComponent
-  ],
-  providers: [
-    MastHeadService
-  ]
+  exports: [MastHeadComponent],
+  providers: [MastHeadService],
 })
-export class MastHeadModule { }
+export class MastHeadModule {}

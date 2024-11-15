@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,65 +24,32 @@
  *
  */
 
-import * as TypeMoq from 'typemoq';
+import { EntityColumnData, EntityData, IEntity, IEntityColumn, IReadValue } from '@imx-modules/imx-qbm-dbts';
 
-import {
-  EntityColumnData,
-  EntityData,
-  IEntityColumn,
-  IReadValue,
-  IEntity
-} from 'imx-qbm-dbts';
-
-export function CreateIReadValue<T>(value: T, column: IEntityColumn = CreateIEntityColumn((value as unknown) as string)): IReadValue<T> {
-  const readValueMock = TypeMoq.Mock.ofType<IReadValue<T>>();
-  readValueMock.setup((readValue: IReadValue<T>) => readValue.value).returns(() => value);
-  readValueMock.setup((readValue: IReadValue<T>) => readValue.Column).returns(() => column);
-  return readValueMock.object;
+export function CreateIReadValue<T>(value: T, column: IEntityColumn = CreateIEntityColumn(value as unknown as string)): IReadValue<T> {
+  return { value, Column: column } as IReadValue<T>;
 }
 
-export function CreateIEntityColumn(displayValue: string): IEntityColumn {
-  const mock = TypeMoq.Mock.ofType<IEntityColumn>();
-  mock.setup((item: IEntityColumn) => item.GetDisplayValue).returns(() => () => displayValue);
-  return mock.object;
+export function CreateIEntityColumn(displayValue: string | undefined): IEntityColumn {
+  return { GetDisplayValue: () => displayValue } as IEntityColumn;
 }
 
 export function CreateIEntity(getColumn: (name: string) => IEntityColumn, typeName?: string, keys?: string[]): IEntity {
-  const mock = TypeMoq.Mock.ofType<IEntity>();
-  mock.setup((item: IEntity) => item.GetColumn).returns(() => (name: string) => getColumn(name));
-  if (typeName) {
-    mock.setup(item => item.TypeName).returns(() => typeName);
-  }
-  if (keys && keys.length > 0) {
-    mock.setup(item => item.GetKeys()).returns(() => keys);
-  }
-  return mock.object;
+  return { getColumn: (name: string) => getColumn(name), TypeName: typeName, GetKeys: () => keys } as unknown as IEntity;
 }
 
 export class BaseImxApiDtoMock {
   public static CreateEntityDataCollection(dataCollection: EntityData[]): EntityData[] {
-    const result = dataCollection.map(data => {
-      if (data === null) {
-        return null;
-      }
-
-      const mock = TypeMoq.Mock.ofType<EntityData>();
-      mock.setup(property => property.Display).returns(() => data.Display);
-      mock.setup(property => property.LongDisplay).returns(() => data.LongDisplay);
-      mock.setup(property => property.Keys).returns(() => data.Keys);
-      mock.setup(property => property.Columns).returns(() => BaseImxApiDtoMock.CreateEntityDataColumnCollection(data.Columns));
-      return mock.object;
+    const result = dataCollection.map((data) => {
+      return { ...data };
     });
     return result;
   }
 
   private static CreateEntityDataColumnCollection(columns: { [key: string]: EntityColumnData }): { [key: string]: EntityColumnData } {
     const entityDataColumns: { [key: string]: EntityColumnData } = {};
-    Object.keys(columns).forEach(key => {
-      const mock = TypeMoq.Mock.ofType<EntityColumnData>();
-      mock.setup(property => property.DisplayValue).returns(() => columns[key].DisplayValue);
-      mock.setup(property => property.Value).returns(() => columns[key].Value);
-      entityDataColumns[key] = mock.object;
+    Object.keys(columns).forEach((key) => {
+      entityDataColumns[key] = { DisplayValue: columns[key].DisplayValue, Value: columns[key].Value };
     });
     return entityDataColumns;
   }
@@ -90,7 +57,7 @@ export class BaseImxApiDtoMock {
 
 export class BaseImxApiDataMock {
   public static CreateEntityDataCollection<TEntityCollection>(createEntity: (i: number) => TEntityCollection, numOfEntries: number) {
-    const dataCollection = [];
+    const dataCollection: TEntityCollection[] = [];
     for (let i = 1; i <= numOfEntries; i++) {
       dataCollection.push(createEntity(i));
     }

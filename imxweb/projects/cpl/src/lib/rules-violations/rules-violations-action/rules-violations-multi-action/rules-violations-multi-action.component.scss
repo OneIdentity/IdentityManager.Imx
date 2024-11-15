@@ -1,48 +1,16 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
-
-@mixin imx-flex-column-container {
-  display: flex;
-  flex-direction: column;
-}
+@import '@elemental-ui/core/src/styles/_palette.scss';
+@import 'base/mixins';
 
 mat-card {
+  @include flex-column-container();
   margin-bottom: 20px;
-  @include imx-flex-column-container();
-
-  .mat-card-title {
-    font-size: 20px;
-  }
-
-  > .mat-selection-list {
-    overflow: auto;
-  }
 }
 
 .imx-items-title {
   font-size: 16px;
 }
 
-.imx-list {
+.imx-list-container {
   overflow: hidden;
   margin-bottom: 10px;
-
-  .mat-list {
-    overflow: auto;
-  }
-
-  mat-list-item {
-    font-size: 14px;
-    height: auto;
-    margin-bottom: 10px;
-
-    .mat-line {
-      white-space: normal;
-    }
-
-    .imx-list-item-subtitle {
-      font-size: smaller;
-      font-style: italic;
-      color: $black_9;
-    }
-  }
 }

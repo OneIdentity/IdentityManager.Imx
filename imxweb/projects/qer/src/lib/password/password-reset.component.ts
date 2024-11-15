@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,18 +25,17 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
-import { OverlayRef } from '@angular/cdk/overlay';
-import { TranslateService } from '@ngx-translate/core';
 import { PageEvent } from '@angular/material/paginator';
+import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
+import { TranslateService } from '@ngx-translate/core';
 
-import { PasswordItemData } from 'imx-api-qer';
-import { MetadataService } from 'qbm';
+import { PasswordItemData } from '@imx-modules/imx-api-qer';
+import { calculateSidesheetWidth, MetadataService } from 'qbm';
 import { CheckPasswordsComponent } from './check-passwords.component';
-import { PasswordHelper } from './password-helper';
-import { PasswordService } from './password.service';
-import { PasswordItem } from './password-item';
 import { Column, GetLocalDataForPage, IColumn } from './helpers.model';
+import { PasswordHelper } from './password-helper';
+import { PasswordItem } from './password-item';
+import { PasswordService } from './password.service';
 
 @Component({
   selector: 'imx-password-reset',
@@ -116,18 +115,19 @@ export class PasswordResetComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busy.show()));
+    if (this.busy.overlayRefs.length === 0) {
+      this.busy.show();
+    }
     try {
       this.passwordHelper.passwordItemData = await this.passwordSvc.getPasswordItems(this.passwordHelper.uidPerson);
-      this.passwordItems = this.passwordHelper.passwordItemData.Items.map((elem) => new PasswordItem(elem));
+      this.passwordItems = this.passwordHelper.passwordItemData.Items?.map((elem) => new PasswordItem(elem)) || [];
     } finally {
-      setTimeout(() => this.busy.hide(overlayRef));
+      this.busy.hide();
     }
 
     await this.metadataSvc.updateNonExisting(this.passwordItems.map((elem) => elem.tableName));
     for (const p of this.passwordItems) {
-      p.tableDisplay = this.metadataSvc.tables[p.tableName].DisplaySingular;
+      p.tableDisplay = this.metadataSvc.tables[p.tableName]?.DisplaySingular || '';
     }
 
     this.updateDataCollection();
@@ -137,8 +137,9 @@ export class PasswordResetComponent implements OnInit {
     this.passwordHelper.selectItem(item);
     this.sideSheet.open(CheckPasswordsComponent, {
       title: await this.translate.get('#LDS#Heading Set New Password').toPromise(),
+      subTitle: this.passwordHelper.selectedPassword.Display,
       padding: '0px',
-      width: '50%',
+      width: calculateSidesheetWidth(800, 0.5),
       icon: 'password',
       disableClose: true,
       testId: 'set-new-password-sidesheet',

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,16 +26,15 @@
 
 import { Component, Input } from '@angular/core';
 
-import { IClientProperty, TypedEntity, ValType } from 'imx-qbm-dbts';
+import { IClientProperty, TypedEntity, ValType } from '@imx-modules/imx-qbm-dbts';
 import { buildAdditionalElementsString } from '../data-table-additional-info.model';
 
 @Component({
   selector: 'imx-data-table-display-cell',
   templateUrl: './data-table-display-cell.component.html',
-  styleUrls: ['./data-table-display-cell.component.scss']
+  styleUrls: ['./data-table-display-cell.component.scss'],
 })
 export class DataTableDisplayCellComponent {
-
   public readonly ValType = ValType;
 
   @Input() public entity: TypedEntity;
