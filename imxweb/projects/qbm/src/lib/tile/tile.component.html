@@ -1,39 +1,49 @@
 <section [ngClass]="sectionClass()" [attr.data-imx-identifier]="identifier">
-  <mat-card *ngIf="isLargeOverview()" [class.mat-elevation-z1]="!mouseOvered" [class.mat-elevation-z4]="mouseOvered"
-    (mouseover)="mouseOvered=true" (mouseout)="mouseOvered=false"
-    [attr.data-imx-identifier]="'tile-mat-card-large-overview-'+identifier">
+  <mat-card
+    *ngIf="isLargeOverview()"
+    [class.mat-elevation-z1]="!mouseOvered"
+    [class.mat-elevation-z4]="mouseOvered"
+    (mouseover)="mouseOvered = true"
+    (mouseout)="mouseOvered = false"
+    [attr.data-imx-identifier]="'tile-mat-card-large-overview-' + identifier"
+  >
     <div class="imx-generic-tile-content large-overview">
-      <span [attr.data-imx-identifier]="'tile-mat-card-span-large-overview-'+identifier">
-        <ng-container *ngTemplateOutlet="captionTemplate ? captionTemplate : CaptionComponent">
-        </ng-container>
+      <span [attr.data-imx-identifier]="'tile-mat-card-span-large-overview-' + identifier">
+        <ng-container *ngTemplateOutlet="captionTemplate ? captionTemplate : CaptionComponent"> </ng-container>
       </span>
       <div class="imx-generic-tile-value">
-        <ng-container *ngTemplateOutlet="valueTemplate ? valueTemplate : ValueComponent">
-        </ng-container>
+        <ng-container *ngTemplateOutlet="valueTemplate ? valueTemplate : ValueComponent"> </ng-container>
       </div>
     </div>
   </mat-card>
 
-  <mat-card *ngIf="isDashboard()" [class.mat-elevation-z1]="!mouseOvered" [class.mat-elevation-z4]="mouseOvered"
-    (mouseover)="mouseOvered=true" (mouseout)="mouseOvered=false"
-    [attr.data-imx-identifier]="'tile-mat-card-dashboard-'+identifier">
-    <ng-container *ngTemplateOutlet="captionTemplate ? captionTemplate : CaptionComponent">
-    </ng-container>
+  <mat-card
+    *ngIf="isDashboard()"
+    [class.mat-elevation-z1]="!mouseOvered"
+    [class.mat-elevation-z4]="mouseOvered"
+    (mouseover)="mouseOvered = true"
+    (mouseout)="mouseOvered = false"
+    [attr.data-imx-identifier]="'tile-mat-card-dashboard-' + identifier"
+  >
+    <ng-container *ngTemplateOutlet="captionTemplate ? captionTemplate : CaptionComponent"> </ng-container>
     <div class="imx-generic-tile-value imx-flex-child">
       <ng-content></ng-content>
     </div>
   </mat-card>
 
-  <mat-card *ngIf="isDefault()" [class.mat-elevation-z1]="!mouseOvered" [class.mat-elevation-z4]="mouseOvered"
-    (mouseover)="mouseOvered=true" (mouseout)="mouseOvered=false"
-    [attr.data-imx-identifier]="'tile-mat-card-default-'+identifier">
-    <ng-container *ngTemplateOutlet="CustomComponent">
-    </ng-container>
+  <mat-card
+    *ngIf="isDefault()"
+    [class.mat-elevation-z1]="!mouseOvered"
+    [class.mat-elevation-z4]="mouseOvered"
+    (mouseover)="mouseOvered = true"
+    (mouseout)="mouseOvered = false"
+    [attr.data-imx-identifier]="'tile-mat-card-default-' + identifier"
+  >
+    <ng-container *ngTemplateOutlet="CustomComponent"> </ng-container>
   </mat-card>
 
-  <mat-card *ngIf="isCustomTile()" [attr.data-imx-identifier]="'tile-mat-card-custom-'+identifier">
-    <ng-container *ngTemplateOutlet="customTemplate ? customTemplate : CustomComponent">
-    </ng-container>
+  <mat-card *ngIf="isCustomTile()" [attr.data-imx-identifier]="'tile-mat-card-custom-' + identifier">
+    <ng-container *ngTemplateOutlet="customTemplate ? customTemplate : CustomComponent"> </ng-container>
   </mat-card>
 
   <div class="loading-overlay" *ngIf="loadingState">
@@ -43,10 +53,8 @@
 
 <ng-template #CustomComponent>
   <div class="imx-generic-tile-content">
-    <ng-container *ngTemplateOutlet="captionTemplate ? captionTemplate : CaptionComponent">
-    </ng-container>
-    <ng-container *ngTemplateOutlet="valueTemplate ? valueTemplate : ValueComponent">
-    </ng-container>
+    <ng-container *ngTemplateOutlet="captionTemplate ? captionTemplate : CaptionComponent"> </ng-container>
+    <ng-container *ngTemplateOutlet="valueTemplate ? valueTemplate : ValueComponent"> </ng-container>
   </div>
 </ng-template>
 
@@ -54,47 +62,46 @@
   <div class="imx-flex-header">
     <div data-imx-identifier="tile-div-caption-container" class="imx-generic-tile-caption">
       <span data-imx-identifier="tile-div-image-container" *ngIf="showImageInHeader() && !showImageAsIconFont()">
-        <img data-imx-identifier="tile-image" [attr.src]="urlImage()" class="IconImage">
+        <img data-imx-identifier="tile-image" [attr.src]="urlImage()" class="IconImage" />
       </span>
-      <div data-imx-identifier="tile-div-iconFont-container" *ngIf="showImageInHeader() && showImageAsIconFont()"
-        class="imx-generic-tile-iconfont">
+      <div data-imx-identifier="tile-div-iconFont-container" *ngIf="showImageInHeader() && showImageAsIconFont()" class="imx-generic-tile-iconfont">
         <span data-imx-identifier="tile-div-iconFont" [ngClass]="image"></span>
       </div>
-      <h1 data-imx-identifier="tile-h1-caption" *ngIf="caption">
-        {{caption}}
-      </h1>
+      <h3 data-imx-identifier="tile-h3-caption" *ngIf="caption">
+        {{ caption }}
+      </h3>
       <h4 data-imx-identifier="tile-h4-caption" *ngIf="caption">
-        {{subtitle}}
+        {{ subtitle }}
       </h4>
     </div>
     <ng-container *ngIf="!isLargeOverview() && !hideActionButton">
       <div class="imx-mobile-mobileonly">
-        <button mat-icon-button color="primary" [attr.data-imx-identifier]="'tile-button-explore-mobile-'+identifier"
-          type="button" (click)="emitOnClick()">
+        <button mat-icon-button color="primary" [attr.data-imx-identifier]="'tile-button-explore-mobile-' + identifier" type="button" (click)="emitOnClick()">
           <eui-icon icon="chevronright"></eui-icon>
         </button>
       </div>
       <div class="imx-mobile-nomobile">
-        <button mat-button color="primary" [attr.data-imx-identifier]="'tile-button-explore-nomobile-'+identifier"
-          (click)="emitOnClick()">{{actionText | translate}}</button>
+        <button mat-button color="primary" [attr.data-imx-identifier]="'tile-button-explore-nomobile-' + identifier" (click)="emitOnClick()">{{ actionText | translate }}</button>
       </div>
     </ng-container>
   </div>
-
 </ng-template>
 
 <ng-template #ValueComponent>
-  <span data-imx-identifier="tile-span-value-container" *ngIf="showImageAsValue() || value"
+  <span
+    data-imx-identifier="tile-span-value-container"
+    *ngIf="showImageAsValue() || value"
     [attr.style]="showImageAsValue() && !showImageAsIconFont() ? styleImage() : ''"
-    [ngClass]="'imx-generic-tile-value' + (showImageAsValue() && showImageAsIconFont() ? ' imx-generic-tile-iconfont' : '')">
+    [ngClass]="'imx-generic-tile-value' + (showImageAsValue() && showImageAsIconFont() ? ' imx-generic-tile-iconfont' : '')"
+  >
     <!-- TODO (TFS 806274): use eui-icon instead of cux-icon, but therefore all cux-icons-references have to
       change (find corresponding cadence- or material design icons)
     <eui-icon data-imx-identifier="Tile_IconFont" *ngIf="ShowImageAsValue() && ShowImageAsIconFont()" size="20px" icon="{{image}}"></eui-icon>
     -->
-    <span [ngClass]="image" *ngIf="imageType ==='IconFont'"></span>
-    <eui-icon data-imx-identifier="tile-eui-icon" *ngIf="imageType ==='EuiIcon'" size="xl" icon="{{image}}"></eui-icon>
-    <span data-imx-identifier="tile-span-imageUrl" *ngIf="showImageAsValue() && !showImageAsIconFont() || value">
-      {{showImageAsValue() ? ' ' : value}}
+    <span [ngClass]="image" *ngIf="imageType === 'IconFont'"></span>
+    <eui-icon data-imx-identifier="tile-eui-icon" *ngIf="imageType === 'EuiIcon'" size="xl" icon="{{ image }}"></eui-icon>
+    <span data-imx-identifier="tile-span-imageUrl" *ngIf="(showImageAsValue() && !showImageAsIconFont()) || value">
+      {{ showImageAsValue() ? ' ' : value }}
     </span>
   </span>
 </ng-template>

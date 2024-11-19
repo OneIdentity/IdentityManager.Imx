@@ -1,10 +1,9 @@
 <imx-tile size="Custom-Tile" [attr.data-imx-identifier]="'badge-tile' + identifier" [identifier]="identifier" [loadingState]="loadingState">
   <ng-template #CustomTemplate>
     <div class="imx-generic-tile-content">
-      <div>{{value}}</div>
-      <div [matTooltip]="tooltip || caption">{{caption}}</div>
-      <button mat-button color="primary" [attr.data-imx-identifier]="'tile-button-explore-nomobile-'+identifier"
-        (click)="emitOnClick()">{{'#LDS#Explore' | translate}}</button>
+      <div>{{ value }}</div>
+      <h3 [matTooltip]="tooltip || caption">{{ caption }}</h3>
+      <button mat-button color="primary" [attr.data-imx-identifier]="'tile-button-explore-nomobile-' + identifier" (click)="emitOnClick()">{{ '#LDS#Explore' | translate }}</button>
     </div>
   </ng-template>
 </imx-tile>

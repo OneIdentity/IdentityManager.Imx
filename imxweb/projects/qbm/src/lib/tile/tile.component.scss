@@ -22,7 +22,7 @@
   font-size: 1.35em;
 }
 
-.imx-generic-tile h1 {
+.imx-generic-tile h3 {
   display: block;
   font-size: 0.975em;
   font-weight: normal;
@@ -30,22 +30,22 @@
   padding: 0px;
 }
 
-.imx-generic-tile.square h1 {
+.imx-generic-tile.square h3 {
   display: inline;
   font-size: 1.05em;
 }
 
-.imx-generic-tile.overview h1 {
+.imx-generic-tile.overview h3 {
   display: inline;
   font-size: 1.05em;
 }
 
-.imx-generic-tile.large-overview h1 {
+.imx-generic-tile.large-overview h3 {
   display: inline;
   font-size: 1.05em;
 }
 
-.imx-generic-tile.dashboard h1 {
+.imx-generic-tile.dashboard h3 {
   font-size: 1.15em;
   font-weight: 600;
   text-overflow: ellipsis;
@@ -67,7 +67,7 @@ section.imx-generic-tile.addon-tile > .mat-card > a {
   overflow: auto;
 }
 
-.imx-generic-tile.addon-tile h1 {
+.imx-generic-tile.addon-tile h3 {
   font-size: 1.05em;
 }
 

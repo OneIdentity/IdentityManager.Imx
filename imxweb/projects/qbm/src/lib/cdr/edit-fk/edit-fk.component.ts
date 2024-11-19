@@ -554,7 +554,7 @@ export class EditFkComponent implements CdrEditor, AfterViewInit, OnDestroy, OnI
 
   private equal(value: ValueStruct<string>, value2: ValueStruct<string>): boolean {
     if (value && value2) {
-      return value.DataValue === value2.DataValue && value.DisplayValue === value.DisplayValue;
+      return value.DataValue === value2.DataValue && value.DisplayValue === value2.DisplayValue;
     }
 
     return value == null && value2 == null;

@@ -1,30 +1,27 @@
 <mat-spinner *ngIf="busy"></mat-spinner>
 <div *ngIf="!busy && objectKey" class="imx-flex imx-flex-child">
-  <h1 class="mat-headline">
-    {{display}}
-  </h1>
+  <h2 class="mat-headline">
+    {{ display }}
+  </h2>
   <div class="sub-headline">
-    {{tableDisplay}}
+    {{ tableDisplay }}
   </div>
   <mat-tab-group #tabGroup [(selectedIndex)]="tabIndex" class="imx-flex imx-flex-child">
     <mat-tab label="{{ '#LDS#Queues' | translate }}">
       <ng-template matTabContent class="imx-tab-content">
         <div class="imx-job-queue-div">
           <div class="imx-content-header">
-            <h2 class="mat-headline">{{ '#LDS#JobQueue' | translate }}
-            </h2>
+            <h3 class="mat-headline">{{ '#LDS#JobQueue' | translate }}</h3>
           </div>
           <div *ngIf="!queuesUnsupported">
             <div class="imx-table-container">
-              <imx-data-source-toolbar [alwaysVisible]="true" #dstJobs [settings]="dstSettingsJobs"
-                [options]="['filter', 'groupBy']">
-                <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplateJobs">
-                </imx-data-source-toolbar-custom>
+              <imx-data-source-toolbar [alwaysVisible]="true" #dstJobs [settings]="dstSettingsJobs" [options]="['filter', 'groupBy']">
+                <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplateJobs"> </imx-data-source-toolbar-custom>
               </imx-data-source-toolbar>
               <imx-data-table [dst]="dstJobs" detailViewVisible="false" mode="manual">
                 <imx-data-table-column [entityColumn]="entitySchemaJobs?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
                   <ng-template let-dataItem>
-                    {{dataItem.GetEntity().GetDisplay()}}
+                    {{ dataItem.GetEntity().GetDisplay() }}
                   </ng-template>
                 </imx-data-table-column>
                 <imx-data-table-column [entityColumn]="entitySchemaJobs?.Columns.Queue">
@@ -39,36 +36,30 @@
                 </imx-data-table-column>
                 <imx-data-table-generic-column columnName="actions">
                   <ng-template let-dataItem>
-                    <button [disabled]="!isFrozen(dataItem)" mat-button color="primary"
-                      (click)="reactivate(dataItem)">{{
-                      '#LDS#Retry' | translate }}</button>
-                    <button [disabled]="!hasContent(dataItem)" mat-button color="primary"
-                      (click)="showMessage(dataItem)">{{
-                      '#LDS#Show message' | translate }}</button>
+                    <button [disabled]="!isFrozen(dataItem)" mat-button color="primary" (click)="reactivate(dataItem)">{{ '#LDS#Retry' | translate }}</button>
+                    <button [disabled]="!hasContent(dataItem)" mat-button color="primary" (click)="showMessage(dataItem)">{{ '#LDS#Show message' | translate }}</button>
                   </ng-template>
                 </imx-data-table-generic-column>
               </imx-data-table>
             </div>
           </div>
           <div class="imx-ops-ElementStyle" *ngIf="queuesUnsupported">
-            {{'#LDS#The queue cannot be displayed for this object type.' | translate}}
+            {{ '#LDS#The queue cannot be displayed for this object type.' | translate }}
           </div>
         </div>
         <div>
           <div class="imx-content-header">
-            <h2 class="mat-headline">{{ '#LDS#DBQueue' | translate }}</h2>
+            <h3 class="mat-headline">{{ '#LDS#DBQueue' | translate }}</h3>
           </div>
           <div *ngIf="!queuesUnsupported">
             <div class="imx-table-container">
-              <imx-data-source-toolbar [alwaysVisible]="true" #dstDbs [settings]="dstSettingsDb"
-                [options]="['filter', 'groupBy']">
-                <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplateDbs">
-                </imx-data-source-toolbar-custom>
+              <imx-data-source-toolbar [alwaysVisible]="true" #dstDbs [settings]="dstSettingsDb" [options]="['filter', 'groupBy']">
+                <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplateDbs"> </imx-data-source-toolbar-custom>
               </imx-data-source-toolbar>
               <imx-data-table [dst]="dstDbs" detailViewVisible="false" mode="manual">
                 <imx-data-table-column [entityColumn]="entitySchemaDbs?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
                   <ng-template let-dataItem>
-                    {{dataItem.GetEntity().GetDisplay()}}
+                    {{ dataItem.GetEntity().GetDisplay() }}
                   </ng-template>
                 </imx-data-table-column>
                 <imx-data-table-column [entityColumn]="entitySchemaDbs?.Columns.Object">
@@ -90,7 +81,7 @@
             </div>
           </div>
           <div class="imx-ops-ElementStyle" *ngIf="queuesUnsupported">
-            {{'#LDS#The queue cannot be displayed for this object type.' | translate}}
+            {{ '#LDS#The queue cannot be displayed for this object type.' | translate }}
           </div>
         </div>
       </ng-template>
@@ -103,15 +94,13 @@
     <mat-tab *ngIf="showPassCodeTab" label="{{ '#LDS#Passwords' | translate }}">
       <imx-ext id="QBM_ops_ObjectOverview_Actions" [referrer]="this"></imx-ext>
     </mat-tab>
-    <mat-tab label="{{'#LDS#Hyperview' | translate}}">
+    <mat-tab label="{{ '#LDS#Hyperview' | translate }}">
       <ng-template matTabContent>
-        <imx-object-hyperview (selected)="onShapeClick($event)" [objectType]="tablename" [objectUid]="objectUID"
-          [condensed]="true"></imx-object-hyperview>
+        <imx-object-hyperview (selected)="onShapeClick($event)" [objectType]="tablename" [objectUid]="objectUID" [condensed]="true"></imx-object-hyperview>
       </ng-template>
     </mat-tab>
   </mat-tab-group>
 </div>
-
 
 <ng-template #customToolbarTemplateDbs>
   <button mat-stroked-button color="primary" class="imx-refresh-button" (click)="loadQueue('dbQueue')">

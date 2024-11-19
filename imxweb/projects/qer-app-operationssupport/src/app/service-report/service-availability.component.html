@@ -1,11 +1,11 @@
-<h1  class="mat-headline">
-  {{'#LDS#Heading Service Availability Check' | translate}}
-</h1>
+<h2 class="mat-headline">
+  {{ '#LDS#Heading Service Availability Check' | translate }}
+</h2>
 <mat-card>
   <mat-card-content>
     <button mat-button (click)="Update()">{{ '#LDS#Check all services' | translate }}</button>
     <div *ngIf="lastUpdate?.length > 0">
-      <span>{{'#LDS#Last check' | translate}}</span>
+      <span>{{ '#LDS#Last check' | translate }}</span>
       <span>{{ lastUpdate }}</span>
     </div>
   </mat-card-content>

@@ -1,40 +1,50 @@
-<h1 class="mat-headline">
-    <span>{{ '#LDS#Heading Saved for Later' | translate }}</span>
-    <imx-help-contextual></imx-help-contextual>
-</h1>
+<h2 class="mat-headline">
+  <span>{{ '#LDS#Heading Saved for Later' | translate }}</span>
+  <imx-help-contextual></imx-help-contextual>
+</h2>
 
 <div class="imx-itshop-content">
-    <mat-card>
-        <imx-cart-items #cartItems [shoppingCart]="shoppingCart" (dataChange)="getData()" (selectionChange)="selectionChanged($event)" [forLater]="true">
-        </imx-cart-items>
-    </mat-card>
-    <div class="imx-toolbar">
-      <button mat-stroked-button
-        data-imx-identifier="for-later-button-actions-menu-trigger"
-        title="{{ '#LDS#Actions' | translate }}"
-        [matMenuTriggerFor]="ToolbarButton1">
-        <eui-icon icon="ellipsisvertical"></eui-icon>
+  <mat-card>
+    <imx-cart-items #cartItems [shoppingCart]="shoppingCart" (dataChange)="getData()" (selectionChange)="selectionChanged($event)" [forLater]="true"> </imx-cart-items>
+  </mat-card>
+  <div class="imx-toolbar">
+    <button mat-stroked-button data-imx-identifier="for-later-button-actions-menu-trigger" title="{{ '#LDS#Actions' | translate }}" [matMenuTriggerFor]="ToolbarButton1">
+      <eui-icon icon="ellipsisvertical"></eui-icon>
+    </button>
+    <mat-menu data-imx-identifier="for-later-actions-menu" #ToolbarButton1="matMenu">
+      <button data-imx-identifier="for-later-menu-go-to-shopping-cart" title="{{ '#LDS#Shows your shopping cart' | translate }}" mat-menu-item [routerLink]="['..']">
+        {{ '#LDS#View shopping cart' | translate }}
       </button>
-      <mat-menu data-imx-identifier="for-later-actions-menu" #ToolbarButton1="matMenu">
-        <button data-imx-identifier="for-later-menu-go-to-shopping-cart" title="{{ '#LDS#Shows your shopping cart' | translate }}" mat-menu-item
-              [routerLink]="['..']">
-              {{ '#LDS#View shopping cart' | translate}}
-        </button>
-        <mat-divider></mat-divider>
-        <button  mat-menu-item data-imx-identifier="imx-table-actions-move-menu" [disabled]="!cartItems?.itemsCanBeMoved()"
-        title="{{ '#LDS#Moves the selected products to your shopping cart' | translate }}" (click)="cartItems?.moveSelectedToCart()">
+      <mat-divider></mat-divider>
+      <button
+        mat-menu-item
+        data-imx-identifier="imx-table-actions-move-menu"
+        [disabled]="!cartItems?.itemsCanBeMoved()"
+        title="{{ '#LDS#Moves the selected products to your shopping cart' | translate }}"
+        (click)="cartItems?.moveSelectedToCart()"
+      >
         {{ '#LDS#Move to shopping cart' | translate }}
-        </button>
-        <button data-imx-identifier="imx-table-actions-remove-menu" [disabled]="!cartItems?.itemsCanBeDeleted()"
-          title="{{'#LDS#Removes the selected products from your Saved for Later list'| translate }}" mat-menu-item (click)="cartItems?.removeSelectedItems()">
-            {{'#LDS#Remove selected' | translate  }}
-        </button>
-      </mat-menu>
-      <button mat-stroked-button color="warn" title="{{'#LDS#Deletes all products from your Saved for Later list.' | translate }}"
-          data-imx-identifier="for-later-button-delete-all" [disabled]="shoppingCart?.totalCount === 0"
-          (click)="clearForLaterList()">
-          <eui-icon icon="delete"></eui-icon>
-          {{ '#LDS#Delete Saved for Later list' | translate }}
       </button>
-    </div>
+      <button
+        data-imx-identifier="imx-table-actions-remove-menu"
+        [disabled]="!cartItems?.itemsCanBeDeleted()"
+        title="{{ '#LDS#Removes the selected products from your Saved for Later list' | translate }}"
+        mat-menu-item
+        (click)="cartItems?.removeSelectedItems()"
+      >
+        {{ '#LDS#Remove selected' | translate }}
+      </button>
+    </mat-menu>
+    <button
+      mat-stroked-button
+      color="warn"
+      title="{{ '#LDS#Deletes all products from your Saved for Later list.' | translate }}"
+      data-imx-identifier="for-later-button-delete-all"
+      [disabled]="shoppingCart?.totalCount === 0"
+      (click)="clearForLaterList()"
+    >
+      <eui-icon icon="delete"></eui-icon>
+      {{ '#LDS#Delete Saved for Later list' | translate }}
+    </button>
+  </div>
 </div>

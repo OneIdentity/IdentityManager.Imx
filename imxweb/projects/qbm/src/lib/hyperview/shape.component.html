@@ -1,9 +1,9 @@
 <header class="imx-hyperview-shape-header">
   <div class="{{ imageClass }} imx-hyperview-shape-header-image"></div>
-  <h1 class="imx-shape-header-info" [matTooltip]="shape.Description">
+  <h4 class="imx-shape-header-info" [matTooltip]="shape.Description">
     <div class="imx-hyperview-header">{{ shape.HeaderText }}</div>
     <div class="imx-hyperview-caption" [ngClass]="{ 'imx-hyperview-caption--link': navigate && !isShapeLayoutMiddle }" (click)="click()">{{ shape.Caption }}</div>
-  </h1>
+  </h4>
   <div *ngIf="ObjectCount > -1" matBadge="{{ ObjectCount }}" matBadgePosition="above before" matBadgeOverlap="false"></div>
 </header>
 <section class="imx-hyperview-shape-content">

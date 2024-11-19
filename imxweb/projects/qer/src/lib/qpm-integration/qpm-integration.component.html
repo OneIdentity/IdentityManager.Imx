@@ -1,25 +1,23 @@
-<h1 class="mat-headline">{{'#LDS#Heading Password Manager' | translate }}</h1>
+<h2 class="mat-headline">{{ '#LDS#Heading Password Manager' | translate }}</h2>
 
 <ng-container *ngIf="dataReady">
-  <eui-alert *ngIf="!links" type="error">{{'#LDS#You cannot open Password Manager. The Password Manager integration is not enabled.'|translate}}</eui-alert>
+  <eui-alert *ngIf="!links" type="error">{{ '#LDS#You cannot open Password Manager. The Password Manager integration is not enabled.' | translate }}</eui-alert>
 
   <ng-container *ngIf="links">
-
     <mat-card class="imx-password-card">
       <mat-card-header>
         <div mat-card-avatar>
           <eui-icon size="32px" icon="password"></eui-icon>
         </div>
-        <mat-card-title>{{'#LDS#Heading Passwords' | translate}}</mat-card-title>
+        <mat-card-title>{{ '#LDS#Heading Passwords' | translate }}</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <p>
-          {{'#LDS#If you know your current password, you can securely change all your passwords.' | translate}}
+          {{ '#LDS#If you know your current password, you can securely change all your passwords.' | translate }}
         </p>
       </mat-card-content>
       <mat-card-actions>
-        <a mat-raised-button color="primary" [href]="getManagePasswordsUrl()">{{'#LDS#Manage my passwords' |
-          translate}}</a>
+        <a mat-raised-button color="primary" [href]="getManagePasswordsUrl()">{{ '#LDS#Manage my passwords' | translate }}</a>
       </mat-card-actions>
     </mat-card>
 
@@ -28,16 +26,15 @@
         <div mat-card-avatar>
           <eui-icon size="32px" icon="wrench"></eui-icon>
         </div>
-        <mat-card-title>{{'#LDS#Heading Q&A Profile' | translate}}</mat-card-title>
+        <mat-card-title>{{ '#LDS#Heading Q&A Profile' | translate }}</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <p>
-          {{profileText | translate}}
+          {{ profileText | translate }}
         </p>
       </mat-card-content>
       <mat-card-actions>
-        <a mat-raised-button color="primary" [href]="getQAProfileUrl()">{{'#LDS#Manage my Q&A profile' |
-          translate}}</a>
+        <a mat-raised-button color="primary" [href]="getQAProfileUrl()">{{ '#LDS#Manage my Q&A profile' | translate }}</a>
       </mat-card-actions>
     </mat-card>
 
@@ -46,19 +43,16 @@
         <div mat-card-avatar>
           <eui-icon size="32px" icon="content-alert"></eui-icon>
         </div>
-        <mat-card-title>{{'#LDS#Heading Alerts' | translate}}</mat-card-title>
+        <mat-card-title>{{ '#LDS#Heading Alerts' | translate }}</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <p>
-          {{alertText | translate}}
+          {{ alertText | translate }}
         </p>
       </mat-card-content>
       <mat-card-actions>
-        <a mat-raised-button color="primary" [href]="getAlertsUrl()">{{'#LDS#Manage my alerts' |
-          translate}}</a>
+        <a mat-raised-button color="primary" [href]="getAlertsUrl()">{{ '#LDS#Manage my alerts' | translate }}</a>
       </mat-card-actions>
     </mat-card>
-
   </ng-container>
-
 </ng-container>

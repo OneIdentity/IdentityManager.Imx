@@ -1,7 +1,7 @@
-<h1 class="mat-headline">
+<h2 class="mat-headline">
   <span>{{ '#LDS#Heading Assign an Owner for a Device' | translate }}</span>
   <imx-help-contextual></imx-help-contextual>
-</h1>
+</h2>
 
 <mat-stepper orientation="vertical" *ngIf="canClaimDevice; else policyDeactivated" [linear]="true" (selectionChange)="stepChange($event)" #stepper>
   <mat-step [stepControl]="deviceForm" label="{{ '#LDS#Select a device' | translate }}" data-imx-identifier="claim-device-device-step" [editable]="!ownerAssigned">

@@ -21,6 +21,9 @@
   width: 100%;
   padding: 6px;
   font-weight: 600;
+  h3{
+    font-size: inherit;
+  }
 }
 
 .imx-generic-tile-content >:first-child {

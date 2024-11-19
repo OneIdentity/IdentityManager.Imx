@@ -24,7 +24,7 @@
  *
  */
 
-import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, QueryList, SimpleChanges, ViewChildren } from '@angular/core';
 import { AbstractControl, UntypedFormGroup } from '@angular/forms';
 
 import { BulkItem } from './bulk-item/bulk-item';
@@ -33,9 +33,9 @@ import { BulkItemComponent } from './bulk-item/bulk-item.component';
 @Component({
   selector: 'imx-bulk-editor',
   templateUrl: './bulk-property-editor.component.html',
-  styleUrls: ['./bulk-property-editor.component.scss']
+  styleUrls: ['./bulk-property-editor.component.scss'],
 })
-export class BulkPropertyEditorComponent implements OnInit {
+export class BulkPropertyEditorComponent implements OnChanges {
   public formGroup = new UntypedFormGroup({});
 
   @Input() public entities: BulkItem[] = [];
@@ -48,34 +48,36 @@ export class BulkPropertyEditorComponent implements OnInit {
 
   @ViewChildren(BulkItemComponent) private panels: QueryList<BulkItemComponent>;
 
-  public ngOnInit(): void {
-    this.entities.sort((a, b) => {
-      let typeA = a.properties.every(p => p.isReadOnly());
-      let typeB = b.properties.every(p => p.isReadOnly());
+  public ngOnChanges(simple: SimpleChanges): void {
+    if (simple.entities?.currentValue) {
+      this.entities.sort((a, b) => {
+        let typeA = a.properties.every((p) => p.isReadOnly());
+        let typeB = b.properties.every((p) => p.isReadOnly());
 
-      if (typeA && typeB) {
-        return 0;
-      }
+        if (typeA && typeB) {
+          return 0;
+        }
 
-      if (typeA) {
-        return 1;
-      }
+        if (typeA) {
+          return 1;
+        }
 
-      typeA = a.properties.some(p => p.column.GetMetadata().GetMinLength() > 0);
-      typeB = b.properties.some(p => p.column.GetMetadata().GetMinLength() > 0);
+        typeA = a.properties.some((p) => p.column.GetMetadata().GetMinLength() > 0);
+        typeB = b.properties.some((p) => p.column.GetMetadata().GetMinLength() > 0);
 
-      if (typeA && typeB) {
-        return 0;
-      }
+        if (typeA && typeB) {
+          return 0;
+        }
 
-      if (typeA) {
-        return -1;
-      } else {
-        return 1;
-      }
-    });
+        if (typeA) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
 
-    this.controlCreated.emit(this.formGroup);
+      this.controlCreated.emit(this.formGroup);
+    }
   }
 
   public handleAction(item: BulkItem, save: boolean): void {

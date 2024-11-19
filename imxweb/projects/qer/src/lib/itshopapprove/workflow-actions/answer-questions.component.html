@@ -1,55 +1,48 @@
-<h1>{{'#LDS#Heading Request Inquiries' | translate}}</h1>
+<h2>{{ '#LDS#Heading Request Inquiries' | translate }}</h2>
 
-<p *ngIf="0 === PersonWantsOrg.length">{{'#LDS#There are no pending approval inquiries.' | translate}}></p>
+<p *ngIf="0 === PersonWantsOrg.length">{{ '#LDS#There are no pending approval inquiries.' | translate }}></p>
 
 <div data-imx-identifier="Container7" *ngIf="0 < this.personwantsorg.length">
-    <p>{{'#LDS#You have been asked to answer inquiries about the following requests.' | translate}}</p>
+  <p>{{ '#LDS#You have been asked to answer inquiries about the following requests.' | translate }}</p>
 
-    <VI_ITShop_PWO_MasterDetail [ShowCancelOrder]="false" [DbWhereClause]="PWOWhereClause()" [IsReadOnly]="true"
-        [PersonWantsOrg]="PersonWantsOrg">
-        <ng-template AdditionalActions>
-            <button mat-button (click)="Button3()">{{'#LDS#Respond' | translate}}</button>
-        </ng-template>
+  <VI_ITShop_PWO_MasterDetail [ShowCancelOrder]="false" [DbWhereClause]="PWOWhereClause()" [IsReadOnly]="true" [PersonWantsOrg]="PersonWantsOrg">
+    <ng-template AdditionalActions>
+      <button mat-button (click)="Button3()">{{ '#LDS#Respond' | translate }}</button>
+    </ng-template>
 
-        <ng-template AdditionalControlsColumn1>
-            <div>
-                <!-- TODO
+    <ng-template AdditionalControlsColumn1>
+      <div>
+        <!-- TODO
                 {{select top 1 DateHead + ' - ' + displayvalue(DisplayPersonHead)
 from PWODecisionHistory where DecisionType = 'Query' and UID_PersonRelated = GetUser() and uid_personwantsorg = (select current uid_personwantsorg from PersonWantsOrg) order by datehead desc
 }}
 -->
-                <div>
-                    <!-- TODO
+        <div>
+          <!-- TODO
                     {{select top 1 displayvalue(Reasonhead)
 from PWODecisionHistory where DecisionType = 'Query' and UID_PersonRelated = GetUser() and uid_personwantsorg = (select current uid_personwantsorg from PersonWantsOrg) order by datehead desc
 }}
 -->
-                </div>
-            </div>
-        </ng-template>
-
-    </VI_ITShop_PWO_MasterDetail>
+        </div>
+      </div>
+    </ng-template>
+  </VI_ITShop_PWO_MasterDetail>
 </div>
 
-
 <ng-template #Call1>
-    <h1 mat-dialog-title>{{'#LDS#Respond to an inquiry' | translate}}</h1>
-    <mat-dialog-content>
+  <h2 mat-dialog-title>{{ '#LDS#Respond to an inquiry' | translate }}</h2>
+  <mat-dialog-content>
+    <p>{{ '#LDS#Question' | translate }}:</p>
 
-        <p>{{'#LDS#Question' | translate}}:</p>
-
-        <!-- TODO
+    <!-- TODO
                     {{not_translatable: select top 1 DateHead + ' - ' + displayvalue(DisplayPersonHead) + ' - ' + displayvalue(Reasonhead)
 from PWODecisionHistory where DecisionType = 'Query' and UID_PersonRelated = GetUser() and uid_personwantsorg = (select current uid_personwantsorg from PersonWantsOrg) order by datehead desc
 }}-->
 
-        <!-- TODO show textarea for Notice -->
-
-    </mat-dialog-content>
-    <mat-dialog-actions>
-        <button data-imx-identifier="Button4" mat-button (click)="Button4()"
-            mat-dialog-close>{{'#LDS#Save' | translate}}</button>
-        <button mat-raised-button type="button" mat-dialog-close>{{'#LDS#Cancel' | translate}}</button>
-    </mat-dialog-actions>
-
+    <!-- TODO show textarea for Notice -->
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button data-imx-identifier="Button4" mat-button (click)="Button4()" mat-dialog-close>{{ '#LDS#Save' | translate }}</button>
+    <button mat-raised-button type="button" mat-dialog-close>{{ '#LDS#Cancel' | translate }}</button>
+  </mat-dialog-actions>
 </ng-template>

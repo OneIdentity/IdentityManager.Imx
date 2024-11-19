@@ -1,33 +1,32 @@
-
-<mat-card class="imx-data-tree-container" >
+<mat-card class="imx-data-tree-container">
   <div class="data-explorer-card-header">
     <div class="data-explorer-card-header-bg">
-      <span>{{ tablenameDisplay }}</span>
+      <h3>{{ tablenameDisplay }}</h3>
       <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
     </div>
   </div>
   <div class="imx-card-content">
     <imx-data-source-toolbar
-    #dst
-    data-imx-identifier="software-data-source-toolbar"
-    [settings]="dstSettings"
-    [busyService]="busyService"
-    [options]="['search', 'filter', 'settings']"
-    [searchBoxText]="'#LDS#Search' | translate"
-    (navigationStateChanged)="onNavigationStateChanged($event)"
-    (search)="onSearch($event)"
-  >
-  </imx-data-source-toolbar>
-  <imx-data-table #dataTable data-imx-identifier="software-data-table" [dst]="dst" detailViewVisible="false" mode="manual" (highlightedEntityChanged)="showDetails($event)">
-    <imx-data-table-column *ngIf="entitySchema" [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
-      <ng-template let-item>
-        <div>
-          {{ item?.GetEntity()?.GetDisplay() }}
-        </div>
-      </ng-template>
-    </imx-data-table-column>
-    <imx-data-table-column *ngIf="entitySchema && entitySchema.Columns.Requestable" [entityColumn]="entitySchema.Columns.Requestable"> </imx-data-table-column>
-  </imx-data-table>
-  <imx-data-source-paginator data-imx-identifier="software-paginator" [dst]="dst"></imx-data-source-paginator>
+      #dst
+      data-imx-identifier="software-data-source-toolbar"
+      [settings]="dstSettings"
+      [busyService]="busyService"
+      [options]="['search', 'filter', 'settings']"
+      [searchBoxText]="'#LDS#Search' | translate"
+      (navigationStateChanged)="onNavigationStateChanged($event)"
+      (search)="onSearch($event)"
+    >
+    </imx-data-source-toolbar>
+    <imx-data-table #dataTable data-imx-identifier="software-data-table" [dst]="dst" detailViewVisible="false" mode="manual" (highlightedEntityChanged)="showDetails($event)">
+      <imx-data-table-column *ngIf="entitySchema" [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+        <ng-template let-item>
+          <div>
+            {{ item?.GetEntity()?.GetDisplay() }}
+          </div>
+        </ng-template>
+      </imx-data-table-column>
+      <imx-data-table-column *ngIf="entitySchema && entitySchema.Columns.Requestable" [entityColumn]="entitySchema.Columns.Requestable"> </imx-data-table-column>
+    </imx-data-table>
+    <imx-data-source-paginator data-imx-identifier="software-paginator" [dst]="dst"></imx-data-source-paginator>
   </div>
 </mat-card>

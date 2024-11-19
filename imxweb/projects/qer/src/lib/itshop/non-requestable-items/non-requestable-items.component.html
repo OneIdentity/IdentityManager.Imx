@@ -1,10 +1,9 @@
-<h1 mat-dialog-title>{{'#LDS#Heading Products Cannot Be Requested' | translate}}</h1>
+<h2 mat-dialog-title>{{ '#LDS#Heading Products Cannot Be Requested' | translate }}</h2>
 <div mat-dialog-content>
   <p>
-    {{'#LDS#The following products could not be added to the shopping cart for the following recipients.' | translate}}
+    {{ '#LDS#The following products could not be added to the shopping cart for the following recipients.' | translate }}
   </p>
-  <table mat-table [dataSource]="data.nonRequestableProductsForPersons"
-    data-imx-identifier="non-requestable-items-table">
+  <table mat-table [dataSource]="data.nonRequestableProductsForPersons" data-imx-identifier="non-requestable-items-table">
     <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column.name">
       <th mat-header-cell *matHeaderCellDef>
         {{ column.title | translate }}
@@ -14,9 +13,9 @@
       </td>
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="columnNames"></tr>
-    <tr mat-row *matRowDef="let row; columns: columnNames;"></tr>
+    <tr mat-row *matRowDef="let row; columns: columnNames"></tr>
   </table>
 </div>
 <div mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close color="primary">{{'#LDS#Close' | translate}}</button>
+  <button mat-button mat-dialog-close color="primary">{{ '#LDS#Close' | translate }}</button>
 </div>

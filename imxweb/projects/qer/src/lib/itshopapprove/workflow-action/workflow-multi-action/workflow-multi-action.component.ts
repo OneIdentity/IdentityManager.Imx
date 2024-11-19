@@ -26,9 +26,11 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
-import { BaseCdr, BaseReadonlyCdr, BulkItem, BulkItemStatus } from 'qbm';
+import { BaseCdr, BaseReadonlyCdr, BulkItem, BulkItemStatus, BusyService } from 'qbm';
 import { DecisionStepSevice } from '../../decision-step.service';
 import { WorkflowActionEdit } from '../workflow-action-edit.interface';
+import { Approval } from '../../approval';
+import { ApprovalsService } from '../../approvals.service';
 
 /**
  * @ignore since this is only an internal component.
@@ -66,57 +68,26 @@ export class WorkflowMultiActionComponent implements OnInit {
    */
   public requests: BulkItem[];
 
-  constructor(private readonly stepService: DecisionStepSevice) {}
+  /**
+   * @ignore only used in template
+   * The service, that is used for an async loading process.
+   */
+  public busyService = new BusyService();
+
+  constructor(private readonly stepService: DecisionStepSevice, private readonly approvalService: ApprovalsService) {}
 
   /**
    * @ignore since this is only an internal component
    *
    * Sets up during OnInit lifecycle hook the bulk items and their {@link columns} to be displayed/edited for the requests.
    */
-  public ngOnInit(): void {
-    this.requests = this.data.requests.map((item) => {
-      const bulkItem: BulkItem = {
-        entity: item,
-        additionalInfo: item.OrderState.Column.GetDisplayValue(),
-        properties: [],
-        status: BulkItemStatus.valid,
-      };
-
-      if (this.data.showValidDate) {
-        if (this.data.showValidDate.validFrom) {
-          bulkItem.properties.push(new BaseReadonlyCdr(item.ValidFrom.Column));
-        }
-        if (this.data.showValidDate.validUntil) {
-          bulkItem.properties.push(new BaseReadonlyCdr(item.ValidUntil.Column));
-        }
-      }
-
-      const step = this.stepService.getCurrentStepCdr(item, item.pwoData, '#LDS#Current approval step');
-      if (step != null) {
-        bulkItem.properties.unshift(step);
-      }
-
-      item.parameterColumns.forEach((column) =>
-        bulkItem.properties.push(this.data.approve ? new BaseCdr(column) : new BaseReadonlyCdr(column))
-      );
-
-      if (this.data.workflow) {
-        bulkItem.customSelectProperties = [
-          {
-            title: this.data.workflow.title,
-            placeholder: this.data.workflow.placeholder,
-            entities: this.data.workflow.data[item.key],
-            selectionChange: (entity) => {
-              if (item.updateDirectDecisionTarget) {
-                item.updateDirectDecisionTarget(entity);
-              }
-            },
-          },
-        ];
-      }
-
-      return bulkItem;
-    });
+  public async ngOnInit(): Promise<void> {
+    const isBusy = this.busyService.beginBusy();
+    try {
+      this.requests = await Promise.all(this.data.requests.map(async (item) => this.buildSingleItem(item)));
+    } finally {
+      isBusy.endBusy();
+    }
   }
 
   /**
@@ -129,5 +100,51 @@ export class WorkflowMultiActionComponent implements OnInit {
    */
   public validateItem(bulkItem: BulkItem): void {
     bulkItem.status = bulkItem.valid ? BulkItemStatus.valid : BulkItemStatus.unknown;
+  }
+
+  private async buildSingleItem(item: Approval): Promise<BulkItem> {
+    const bulkItem: BulkItem = {
+      entity: item,
+      additionalInfo: item.OrderState.Column.GetDisplayValue(),
+      properties: [],
+      status: BulkItemStatus.valid,
+    };
+
+    if (this.data.showValidDate) {
+      if (this.data.showValidDate.validFrom) {
+        bulkItem.properties.push(new BaseReadonlyCdr(item.ValidFrom.Column));
+      }
+      if (this.data.showValidDate.validUntil) {
+        bulkItem.properties.push(new BaseReadonlyCdr(item.ValidUntil.Column));
+      }
+    }
+
+    const step = this.stepService.getCurrentStepCdr(item, item.pwoData, '#LDS#Current approval step');
+    if (step != null) {
+      bulkItem.properties.unshift(step);
+    }
+
+    if (item.parameterColumns) {
+      const entityWrapper = await this.approvalService.getExtendedEntity(item.key);
+      const interactiveColumns = entityWrapper.parameterCategoryColumns.map((item) => item.column);
+      interactiveColumns.forEach((pCol) => bulkItem.properties.push(this.data.approve ? new BaseCdr(pCol) : new BaseReadonlyCdr(pCol)));
+    }
+
+    if (this.data.workflow) {
+      bulkItem.customSelectProperties = [
+        {
+          title: this.data.workflow.title,
+          placeholder: this.data.workflow.placeholder,
+          entities: this.data.workflow.data[item.key],
+          selectionChange: (entity) => {
+            if (item.updateDirectDecisionTarget) {
+              item.updateDirectDecisionTarget(entity);
+            }
+          },
+        },
+      ];
+    }
+
+    return bulkItem;
   }
 }

@@ -42,6 +42,8 @@
   }}</eui-alert-content>
 </eui-alert>
 
+<imx-busy-indicator *ngIf="busyService.isBusy"></imx-busy-indicator>
+
 <imx-bulk-editor
   data-imx-identifier="request-parameters-editor"
   class="imx-bulk-editor"

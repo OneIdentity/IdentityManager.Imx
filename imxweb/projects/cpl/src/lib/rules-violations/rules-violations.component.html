@@ -1,51 +1,63 @@
 <div class="imx-rules-violations-page">
   <div class="heading-wrapper">
-    <h1 class="mat-headline">
+    <h2 class="mat-headline">
       <span>{{ '#LDS#Heading Rule Violations' | translate }}</span>
       <imx-help-contextual></imx-help-contextual>
-    </h1>
+    </h2>
   </div>
   <mat-card>
     <div class="imx-table-container">
-      <imx-data-source-toolbar #dst [options]="['search', 'sort', 'filter', 'groupBy', 'settings']"
-        [settings]="dstSettings" [busyService]="busyService" (search)="onSearch($event)"
-        (navigationStateChanged)="getData($event)" (updateConfig)="updateConfig($event)"
-        (deleteConfigById)="deleteConfigById($event)" data-imx-identifier="rules-violations-dst">
+      <imx-data-source-toolbar
+        #dst
+        [options]="['search', 'sort', 'filter', 'groupBy', 'settings']"
+        [settings]="dstSettings"
+        [busyService]="busyService"
+        (search)="onSearch($event)"
+        (navigationStateChanged)="getData($event)"
+        (updateConfig)="updateConfig($event)"
+        (deleteConfigById)="deleteConfigById($event)"
+        data-imx-identifier="rules-violations-dst"
+      >
       </imx-data-source-toolbar>
-      <imx-data-table #dataTable [dst]="dst" class="imx-rules-violations-table" [detailViewVisible]="false"
-        mode="manual" [selectable]="true" [showSelectedItemsMenu]="false"
-        (selectionChanged)="onSelectionChanged($event)" (highlightedEntityChanged)="viewDetails($event)"
-        [groupData]="groupedData" (groupDataChanged)="onGroupingChange($event)"
-        data-imx-identifier="rules-violations-datatable">
-        <imx-data-table-column data-imx-identifier="rules-violations-table-column-UidPerson"
-          [entityColumn]="entitySchema?.Columns.UID_Person"> </imx-data-table-column>
-        <imx-data-table-column data-imx-identifier="rules-violations-table-column-UID_NonCompliance"
-          [entityColumn]="entitySchema?.Columns.UID_NonCompliance">
+      <imx-data-table
+        #dataTable
+        [dst]="dst"
+        class="imx-rules-violations-table"
+        [detailViewVisible]="false"
+        mode="manual"
+        [selectable]="true"
+        [showSelectedItemsMenu]="false"
+        (selectionChanged)="onSelectionChanged($event)"
+        (highlightedEntityChanged)="viewDetails($event)"
+        [groupData]="groupedData"
+        (groupDataChanged)="onGroupingChange($event)"
+        data-imx-identifier="rules-violations-datatable"
+      >
+        <imx-data-table-column data-imx-identifier="rules-violations-table-column-UidPerson" [entityColumn]="entitySchema?.Columns.UID_Person"> </imx-data-table-column>
+        <imx-data-table-column data-imx-identifier="rules-violations-table-column-UID_NonCompliance" [entityColumn]="entitySchema?.Columns.UID_NonCompliance">
         </imx-data-table-column>
-        <imx-data-table-column data-imx-identifier="rules-violations-table-column-state"
-          [entityColumn]="entitySchema?.Columns.State">
+        <imx-data-table-column data-imx-identifier="rules-violations-table-column-state" [entityColumn]="entitySchema?.Columns.State">
           <ng-template let-item>
             {{ item?.stateBadge?.caption }}
           </ng-template>
         </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema.Columns.RiskIndexCalculated"
-          data-imx-identifier="rules-violations-table-column-RiskIndexCalculated">
+        <imx-data-table-column [entityColumn]="entitySchema.Columns.RiskIndexCalculated" data-imx-identifier="rules-violations-table-column-RiskIndexCalculated">
         </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema.Columns.RiskIndexReduced"
-          data-imx-identifier="rules-violations-table-column-RiskIndexReduced">
-        </imx-data-table-column>
-        <imx-data-table-generic-column columnName="decision"
-          data-imx-identifier="rules-violations-table-column-decision">
+        <imx-data-table-column [entityColumn]="entitySchema.Columns.RiskIndexReduced" data-imx-identifier="rules-violations-table-column-RiskIndexReduced"> </imx-data-table-column>
+        <imx-data-table-generic-column columnName="decision" data-imx-identifier="rules-violations-table-column-decision">
           <ng-template let-item>
             <div class="imx-decision">
-              <button color="warn" mat-stroked-button (click)="$event.stopPropagation(); actionService.deny([item])"
-                data-imx-identifier="rules-violations-table-row-button-deny">
+              <button color="warn" mat-stroked-button (click)="$event.stopPropagation(); actionService.deny([item])" data-imx-identifier="rules-violations-table-row-button-deny">
                 <eui-icon icon="ignore"></eui-icon>
                 {{ '#LDS#Deny exception' | translate }}
               </button>
-              <button color="primary" mat-stroked-button
+              <button
+                color="primary"
+                mat-stroked-button
                 (click)="$event.stopPropagation(); actionService.approve([item])"
-                data-imx-identifier="rules-violations-table-row-button-approve" class="imx-margin-right">
+                data-imx-identifier="rules-violations-table-row-button-approve"
+                class="imx-margin-right"
+              >
                 <eui-icon icon="check"></eui-icon>
                 {{ '#LDS#Grant exception' | translate }}
               </button>
@@ -53,20 +65,29 @@
           </ng-template>
         </imx-data-table-generic-column>
       </imx-data-table>
-      <imx-data-source-paginator data-imx-identifier="rules-violations-paginator" [dst]="dst">
-      </imx-data-source-paginator>
+      <imx-data-source-paginator data-imx-identifier="rules-violations-paginator" [dst]="dst"> </imx-data-source-paginator>
     </div>
   </mat-card>
   <div class="imx-button-bar">
     <imx-selected-elements [selectedElements]="selectedRulesViolations"></imx-selected-elements>
     <div class="imx-menu-spacer"></div>
-    <button color="warn" mat-raised-button (click)="actionService.deny(selectedRulesViolations)"
-      data-imx-identifier="rules-violations-button-deny" [disabled]="!selectedRulesViolations.length">
+    <button
+      color="warn"
+      mat-raised-button
+      (click)="actionService.deny(selectedRulesViolations)"
+      data-imx-identifier="rules-violations-button-deny"
+      [disabled]="!selectedRulesViolations.length"
+    >
       <eui-icon icon="ignore"></eui-icon>
       {{ '#LDS#Deny exception' | translate }}
     </button>
-    <button mat-raised-button color="primary" (click)="actionService.approve(selectedRulesViolations)"
-      data-imx-identifier="rules-violations-button-approve" [disabled]="!selectedRulesViolations.length">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="actionService.approve(selectedRulesViolations)"
+      data-imx-identifier="rules-violations-button-approve"
+      [disabled]="!selectedRulesViolations.length"
+    >
       <eui-icon icon="check"></eui-icon>
       {{ '#LDS#Grant exception' | translate }}
     </button>

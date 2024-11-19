@@ -1,23 +1,19 @@
-<h1 mat-dialog-title>
+<h2 mat-dialog-title>
   <span translate>#LDS#Heading Specify Reason for Exclusion</span>
-</h1>
+</h2>
 <div mat-dialog-content>
-
   <form [formGroup]="dynamicExclusionForm">
-
-      <mat-form-field appearance="outline">
-          <input matInput formControlName="description">
-          <mat-label translate>#LDS#Reason</mat-label>
-      </mat-form-field>
-
+    <mat-form-field appearance="outline">
+      <input matInput formControlName="description" />
+      <mat-label translate>#LDS#Reason</mat-label>
+    </mat-form-field>
   </form>
-
 </div>
 <div mat-dialog-actions align="end">
   <button mat-button (click)="cancel()" data-imx-identifier="dynamic-exclusion-dialog-cancel">
     <span translate>#LDS#Cancel</span>
   </button>
   <button mat-flat-button color="primary" (click)="save()" data-imx-identifier="dynamic-exclusion-dialog-save">
-      <span translate>#LDS#Exclude members</span>
+    <span translate>#LDS#Exclude members</span>
   </button>
 </div>

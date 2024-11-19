@@ -1,5 +1,5 @@
 <div class="flex-container">
-  <h1 class="mat-headline" translate>#LDS#Configuration</h1>
+  <h2 class="mat-headline" translate>#LDS#Configuration</h2>
 
   <div class="config-summary">
     <mat-form-field class="project-selector">
@@ -57,7 +57,9 @@
         <mat-spinner *ngIf="loading" [attr.aria-label]="'#LDS#Loading...' | translate"></mat-spinner>
 
         <ng-container *ngIf="!loading">
-          <div *ngIf="sectionsFiltered.length == 0" class="no-results"><eui-icon [icon]="'search'"></eui-icon>{{ '#LDS#There are no configuration keys matching your search.' | translate }}</div>
+          <div *ngIf="sectionsFiltered.length == 0" class="no-results">
+            <eui-icon [icon]="'search'"></eui-icon>{{ '#LDS#There are no configuration keys matching your search.' | translate }}
+          </div>
 
           <ng-container *cdkVirtualFor="let section of sectionsFiltered; trackBy: sectionTrackByFn">
             <h2 class="section-header">{{ section.Title }}</h2>

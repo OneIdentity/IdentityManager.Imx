@@ -1,18 +1,23 @@
 <div>
-  <h1 mat-dialog-title>{{passcodeParameter.Title}}</h1>
+  <h2 mat-dialog-title>{{ passcodeParameter.Title }}</h2>
   <mat-dialog-content>
-    <div *ngIf="passcodeParameter.PasscodeSplit && passcodeParameter.Manager==='' else default">
-      <p>{{LdsExplanation | translate}}</p>
+    <div *ngIf="passcodeParameter.PasscodeSplit && passcodeParameter.Manager === ''; else default">
+      <p>{{ LdsExplanation | translate }}</p>
     </div>
     <ng-template #default>
-      <p>{{'#LDS#The identity can log in with this passcode.' | translate}}</p>
-      <p>{{'#LDS#The passcode is valid for {0} hours.' |translate |ldsReplace:passcodeParameter.duration}}</p>
-      <p *ngIf="passcodeParameter.PasscodeSplit">{{'#LDS#This is the first half of the passcode. The manager "{0}" has the second half of the passcode.' | translate | ldsReplace:passcodeParameter.Manager ? '(' + passcodeParameter.Manager +') ' : ''}}
+      <p>{{ '#LDS#The identity can log in with this passcode.' | translate }}</p>
+      <p>{{ '#LDS#The passcode is valid for {0} hours.' | translate | ldsReplace : passcodeParameter.duration }}</p>
+      <p *ngIf="passcodeParameter.PasscodeSplit">
+        {{
+          '#LDS#This is the first half of the passcode. The manager "{0}" has the second half of the passcode.'
+            | translate
+            | ldsReplace : (passcodeParameter.Manager ? '(' + passcodeParameter.Manager + ') ' : '')
+        }}
       </p>
-      <div class="imx-message-CreatePassCode">{{passcodeParameter.Code}}</div>
+      <div class="imx-message-CreatePassCode">{{ passcodeParameter.Code }}</div>
     </ng-template>
   </mat-dialog-content>
   <mat-dialog-actions align="end">
-    <button mat-raised-button color="primary" mat-dialog-close>{{'#LDS#Close' | translate}}</button>
+    <button mat-raised-button color="primary" mat-dialog-close>{{ '#LDS#Close' | translate }}</button>
   </mat-dialog-actions>
 </div>

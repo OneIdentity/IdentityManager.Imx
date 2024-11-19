@@ -6,11 +6,10 @@
         <eui-icon size="xl" icon="application" class="imx-application-details-icon"></eui-icon>
       </ng-template>
       <div class="imx-application-details-title">
-        <div>{{ application.GetEntity().GetDisplay() }}</div>
-        <imx-info-button *ngIf="selectedTabIndex === 3" [title]="'#LDS#Heading Identities With Access' | translate" [templateRef]="dialogContent"></imx-info-button>  
+        <h3>{{ application.GetEntity().GetDisplay() }}</h3>
+        <imx-info-button *ngIf="selectedTabIndex === 3" [title]="'#LDS#Heading Identities With Access' | translate" [templateRef]="dialogContent"></imx-info-button>
       </div>
       <div class="imx-application-details-subtitle">{{ application.Description.Column.GetDisplayValue() }}</div>
-      
     </div>
   </div>
   <mat-tab-group class="imx-tab-group" (selectedTabChange)="onSelectedTabChanged($event)">
@@ -43,8 +42,11 @@
 </div>
 
 <ng-template #dialogContent>
-  <p translate>
-    #LDS#Here you can get an overview of identities that have access to at least one application entitlement of this application. Additionally, you can view which application entitlements the respective identities have access to.
+  <p>
+    {{
+      '#LDS#Here you can get an overview of identities that have access to at least one application entitlement of this application. Additionally, you can view which application entitlements the respective identities have access to.'
+        | translate
+    }}
   </p>
 </ng-template>
 
@@ -59,7 +61,14 @@
       <span class="imx-application-content-no-app-text">
         {{ (keywords ? '#LDS#No application found' : '#LDS#No applications available') | translate }}
       </span>
-      <button *ngIf="isAdmin && !isLoading" mat-raised-button color="primary" (click)="createApplication()" class="imx-application-content-create-app" data-imx-identifier="button-create-app">
+      <button
+        *ngIf="isAdmin && !isLoading"
+        mat-raised-button
+        color="primary"
+        (click)="createApplication()"
+        class="imx-application-content-create-app"
+        data-imx-identifier="button-create-app"
+      >
         {{ '#LDS#Create new application' | translate }}
       </button>
     </ng-template>

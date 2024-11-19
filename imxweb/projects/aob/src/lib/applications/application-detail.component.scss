@@ -60,7 +60,7 @@ $imx-component-height: calc(100vh - 180px);
 .imx-application-details-header {
   display: grid;
   grid-template-columns: 60px 1fr;
-  grid-template-rows: 2fr 1fr;
+  grid-template-rows: auto;
   grid-row-gap: 5px;
   align-items: center;
   padding: 30px 40px 35px;
@@ -158,7 +158,7 @@ imx-application-hyperview {
 .eui-dark-theme {
   :host {
     ::ng-deep .mat-tab-labels {
-      
+
       background-color:$color-gray-70;
     }
     .imx-application-content {
@@ -169,7 +169,7 @@ imx-application-hyperview {
       background-color:rgba($color-gray-70, 0.55);
     }
 
-    
+
     .imx-application-content-no-app {
       .imx-application-content-no-app-text,
       .imx-application-content-no-app-description {

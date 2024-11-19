@@ -1,9 +1,9 @@
 <div class="imx-risk-config-page">
   <div class="heading-wrapper">
-    <h1 class="mat-headline">
+    <h2 class="mat-headline">
       <span>{{ '#LDS#Heading Risk Index Functions' | translate }}</span>
       <imx-help-contextual></imx-help-contextual>
-    </h1>
+    </h2>
   </div>
   <mat-card>
     <div class="imx-table-container">
@@ -27,7 +27,8 @@
         data-imx-identifier="risk-config-datatable"
         (highlightedEntityChanged)="onHighlightedEntityChanged($event)"
       >
-        <imx-data-table-column data-imx-identifier="risk-config-table-column-display" [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"> </imx-data-table-column>
+        <imx-data-table-column data-imx-identifier="risk-config-table-column-display" [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+        </imx-data-table-column>
         <imx-data-table-column [entityColumn]="entitySchema?.Columns.TargetTable"></imx-data-table-column>
         <imx-data-table-column [entityColumn]="entitySchema?.Columns.Description"></imx-data-table-column>
         <imx-data-table-column [entityColumn]="entitySchema?.Columns.IsInActive"></imx-data-table-column>
@@ -37,7 +38,7 @@
       <imx-data-source-paginator data-imx-identifier="risk-config-paginator" [dst]="dst"> </imx-data-source-paginator>
     </div>
   </mat-card>
-  <div class="imx-risk-config-page-actions" >
+  <div class="imx-risk-config-page-actions">
     <button data-imx-identifier="risk-config-recalculate-button" mat-raised-button color="primary" (click)="onRecalculate()" [disabled]="recalculatingInProcess">
       {{ '#LDS#Recalculate risk index' | translate }}
     </button>

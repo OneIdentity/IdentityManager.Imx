@@ -1,13 +1,16 @@
-<h1 class="mat-headline">
-  {{'#LDS#Frozen process steps' | translate}} &quot;{{queueName}}&quot; ({{jobCount}})
-</h1>
+<h2 class="mat-headline">{{ '#LDS#Frozen process steps' | translate }} &quot;{{ queueName }}&quot; ({{ jobCount }})</h2>
 <div class="imx-table-container">
-  <imx-data-source-toolbar  [alwaysVisible]="true" #dst [settings]="dstSettings" (search)="onSearch($event)"
-    [options]="['search', 'filter', 'groupBy']" (navigationStateChanged)="getData($event)">
+  <imx-data-source-toolbar
+    [alwaysVisible]="true"
+    #dst
+    [settings]="dstSettings"
+    (search)="onSearch($event)"
+    [options]="['search', 'filter', 'groupBy']"
+    (navigationStateChanged)="getData($event)"
+  >
     <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
   </imx-data-source-toolbar>
-  <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual" [selectable]="true"
-    (selectionChanged)="onSelectionChanged($event)">
+  <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual" [selectable]="true" (selectionChanged)="onSelectionChanged($event)">
     <imx-data-table-column [entityColumn]="entitySchemaFrozenJobs?.Columns.JobChainName">
       <ng-template let-dataItem>
         <div>{{ dataItem.JobChainName.Column.GetDisplayValue() }}</div>
@@ -20,8 +23,8 @@
     </imx-data-table-column>
     <imx-data-table-generic-column columnName="actions">
       <ng-template let-dataItem>
-        <button mat-button color="primary" (click)="viewDetails(dataItem)">{{'#LDS#Details' |translate}}</button>
-        <button mat-button color="primary" (click)="showMessage(dataItem)">{{'#LDS#Show message' |translate}}</button>
+        <button mat-button color="primary" (click)="viewDetails(dataItem)">{{ '#LDS#Details' | translate }}</button>
+        <button mat-button color="primary" (click)="showMessage(dataItem)">{{ '#LDS#Show message' | translate }}</button>
       </ng-template>
     </imx-data-table-generic-column>
   </imx-data-table>
@@ -29,14 +32,12 @@
 </div>
 <div class="imx-button-bar">
   <mat-menu #ActionMenu="matMenu" yPosition="below">
-    <button mat-menu-item (click)="reactivateSelected()">{{'#LDS#Retry'| translate}}</button>
+    <button mat-menu-item (click)="reactivateSelected()">{{ '#LDS#Retry' | translate }}</button>
   </mat-menu>
-  <button mat-raised-button class="rightButtonFloat" [disabled]="selectedJobs.length === 0"
-    [matMenuTriggerFor]="ActionMenu">
-    {{'#LDS#Actions'| translate}}
+  <button mat-raised-button class="rightButtonFloat" [disabled]="selectedJobs.length === 0" [matMenuTriggerFor]="ActionMenu">
+    {{ '#LDS#Actions' | translate }}
   </button>
 </div>
-
 
 <ng-template #customToolbarTemplate>
   <button mat-stroked-button color="primary" class="imx-refresh-button" (click)="refresh()">

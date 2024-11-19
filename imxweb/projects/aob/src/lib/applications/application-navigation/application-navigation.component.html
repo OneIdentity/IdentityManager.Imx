@@ -1,6 +1,6 @@
-<div class="imx-main-container" >
+<div class="imx-main-container">
   <div class="imx-title-area">
-    <h1> {{'#LDS#Applications' | translate}}</h1>
+    <h2>{{ '#LDS#Applications' | translate }}</h2>
     <imx-help-contextual></imx-help-contextual>
     <button *ngIf="isAdmin" mat-icon-button (click)="onCreateNew()" class="mat-elevation-z4 imx-icon-button" data-imx-identifier="navigation-button-create-app">
       <eui-icon size="20px" icon="add"></eui-icon>
@@ -9,7 +9,8 @@
   <mat-checkbox (change)="filterApplicationsWithKpiIssues()" [(ngModel)]="filterKpiChecked" [disabled]="!dstSettings?.dataSource?.totalCount">
     {{ '#LDS#Only show applications with KPI issues' | translate }}
   </mat-checkbox>
-  <imx-data-source-toolbar #dst
+  <imx-data-source-toolbar
+    #dst
     [settings]="dstSettings"
     (navigationStateChanged)="getData($event)"
     [options]="['search']"
@@ -17,10 +18,12 @@
     [itemStatus]="status"
     [busyService]="busyService"
     (search)="onSearch($event)"
-    [alwaysVisible]="true">
+    [alwaysVisible]="true"
+  >
   </imx-data-source-toolbar>
 
-  <imx-data-tiles #tiles
+  <imx-data-tiles
+    #tiles
     class="imx-application-list"
     [dst]="dst"
     [selectable]="selectable"
@@ -32,9 +35,9 @@
     (selectionChanged)="onSelectionChanged($event)"
     [selectedEntity]="selectedEntity"
     (selectionChanged)="onSelectionChanged($event)"
-    (selected)="onTileSelected($event)">
+    (selected)="onTileSelected($event)"
+  >
   </imx-data-tiles>
 
-  <imx-data-source-paginator class="mat-elevation-z2" [dst]="dst" ></imx-data-source-paginator>
+  <imx-data-source-paginator class="mat-elevation-z2" [dst]="dst"></imx-data-source-paginator>
 </div>
-

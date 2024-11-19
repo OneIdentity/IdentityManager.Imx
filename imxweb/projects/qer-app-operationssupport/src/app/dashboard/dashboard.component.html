@@ -1,11 +1,11 @@
-<h1 class="mat-headline">
-    {{'#LDS#Welcome' | translate}}
-</h1>
+<h2 class="mat-headline">
+  {{ '#LDS#Welcome' | translate }}
+</h2>
 <div class="imx-ops-webstart">
-    <ng-container *ngIf="isOperationsSupporter">
-        <imx-object-search></imx-object-search>
-        <imx-notifications></imx-notifications>
-        <imx-service-issues></imx-service-issues>
-        <imx-service-report></imx-service-report>
-    </ng-container>
+  <ng-container *ngIf="isOperationsSupporter">
+    <imx-object-search></imx-object-search>
+    <imx-notifications></imx-notifications>
+    <imx-service-issues></imx-service-issues>
+    <imx-service-report></imx-service-report>
+  </ng-container>
 </div>

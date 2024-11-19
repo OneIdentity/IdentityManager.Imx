@@ -1,6 +1,6 @@
-<h1 class="mat-headline">
-  {{'#LDS#Heading System Status' | translate}}
-</h1>
+<h2 class="mat-headline">
+  {{ '#LDS#Heading System Status' | translate }}
+</h2>
 <div class="imx-system-status">
   <mat-card>
     <mat-card-content>
@@ -11,19 +11,15 @@
         </div>
         <div class="issueContentPane">
           <div class="issueTitlePane">
-            <div class="issueTitle">{{'#LDS#DBQueue' | translate}}</div>
+            <div class="issueTitle">{{ '#LDS#DBQueue' | translate }}</div>
             <div class="issueContent">
-              <span *ngIf="status !== undefined && status.IsDbSchedulerDisabled">
-                {{'#LDS#DBQueue is paused' | translate}}</span>
-              <span *ngIf="status !== undefined && !status.IsDbSchedulerDisabled">
-                {{'#LDS#DBQueue is running' | translate}}</span>
+              <span *ngIf="status !== undefined && status.IsDbSchedulerDisabled"> {{ '#LDS#DBQueue is paused' | translate }}</span>
+              <span *ngIf="status !== undefined && !status.IsDbSchedulerDisabled"> {{ '#LDS#DBQueue is running' | translate }}</span>
             </div>
           </div>
           <button [disabled]="!isAdmin" mat-button class="issueAction" (click)="toggleDbQueue()">
-            <span *ngIf="status !== undefined && status.IsDbSchedulerDisabled">
-              {{'#LDS#Button Start' | translate}}</span>
-            <span *ngIf="status !== undefined && !status.IsDbSchedulerDisabled">
-              {{'#LDS#Button Stop' | translate}}</span>
+            <span *ngIf="status !== undefined && status.IsDbSchedulerDisabled"> {{ '#LDS#Button Start' | translate }}</span>
+            <span *ngIf="status !== undefined && !status.IsDbSchedulerDisabled"> {{ '#LDS#Button Stop' | translate }}</span>
           </button>
         </div>
       </div>
@@ -38,19 +34,15 @@
         </div>
         <div class="issueContentPane">
           <div class="issueTitlePane">
-            <div class="issueTitle">{{'#LDS#JobQueue' | translate}}</div>
+            <div class="issueTitle">{{ '#LDS#JobQueue' | translate }}</div>
             <div class="issueContent">
-              <span *ngIf="status !== undefined && status.IsJobServiceDisabled">
-                {{'#LDS#Job queue is paused' | translate}}</span>
-              <span *ngIf="status !== undefined && !status.IsJobServiceDisabled">
-                {{'#LDS#Job queue is running' | translate}}</span>
+              <span *ngIf="status !== undefined && status.IsJobServiceDisabled"> {{ '#LDS#Job queue is paused' | translate }}</span>
+              <span *ngIf="status !== undefined && !status.IsJobServiceDisabled"> {{ '#LDS#Job queue is running' | translate }}</span>
             </div>
           </div>
           <button [disabled]="!isAdmin" mat-button class="issueAction" (click)="toggleJobQueue()">
-            <span *ngIf="status !== undefined && status.IsJobServiceDisabled">{{'#LDS#Button Start' |
-              translate}}</span>
-            <span *ngIf="status !== undefined && !status.IsJobServiceDisabled">{{'#LDS#Button Stop' |
-              translate}}</span>
+            <span *ngIf="status !== undefined && status.IsJobServiceDisabled">{{ '#LDS#Button Start' | translate }}</span>
+            <span *ngIf="status !== undefined && !status.IsJobServiceDisabled">{{ '#LDS#Button Stop' | translate }}</span>
           </button>
         </div>
       </div>
@@ -63,22 +55,17 @@
         <div [ngClass]="iconClassDbStatus"></div>
         <div class="issueContentPane">
           <div class="issueTitlePane">
-            <div class="issueTitle">{{'#LDS#Database' | translate}}</div>
+            <div class="issueTitle">{{ '#LDS#Database' | translate }}</div>
             <div class="issueContent">
               <div>
                 <eui-icon [icon]="iconClassMaintenance" size="20px"></eui-icon>
-                <span *ngIf="status !== undefined && status.IsInMaintenanceMode">
-                  {{'#LDS#Database runs in maintenance mode' |
-                  translate}}</span>
-                <span *ngIf="status !== undefined && !status.IsInMaintenanceMode">
-                  {{'#LDS#Database is up and running' | translate}}</span>
+                <span *ngIf="status !== undefined && status.IsInMaintenanceMode"> {{ '#LDS#Database runs in maintenance mode' | translate }}</span>
+                <span *ngIf="status !== undefined && !status.IsInMaintenanceMode"> {{ '#LDS#Database is up and running' | translate }}</span>
               </div>
               <div>
                 <eui-icon [icon]="iconClassUpdateStatus" size="20px"></eui-icon>
-                <span *ngIf="status !== undefined && status.IsCompilationRequired">
-                  {{'#LDS#Database must be compiled' | translate}}</span>
-                <span *ngIf="status !== undefined && !status.IsCompilationRequired">
-                  {{'#LDS#Database is up to date' | translate}}</span>
+                <span *ngIf="status !== undefined && status.IsCompilationRequired"> {{ '#LDS#Database must be compiled' | translate }}</span>
+                <span *ngIf="status !== undefined && !status.IsCompilationRequired"> {{ '#LDS#Database is up to date' | translate }}</span>
               </div>
             </div>
           </div>

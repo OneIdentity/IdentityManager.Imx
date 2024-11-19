@@ -1,7 +1,7 @@
 <mat-spinner *ngIf="busy"></mat-spinner>
 
 <ng-container *ngIf="dstSettings">
-  <h1 class="mat-headline">{{ '#LDS#Heading Outstanding Objects' | translate }}</h1>
+  <h2 class="mat-headline">{{ '#LDS#Heading Outstanding Objects' | translate }}</h2>
   <eui-alert *ngIf="showHelper" class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true" (dismissed)="onHelperDismissed()">
     {{ LdsOutstandingText | translate }}
   </eui-alert>
@@ -25,10 +25,11 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
-    <mat-checkbox (change)="onShowAllData()" [(ngModel)]="showAllData" [disabled]="!selectedNamespace || loadingTableData" >
-      {{ !!selectedNamespaceTitle && !loadingTableData ?
-        ('#LDS#Show all outstanding objects of {0} ({1})' | translate | ldsReplace: selectedNamespaceTitle : tableDataCount):
-        ('#LDS#Show all outstanding objects of the target system type' | translate)
+    <mat-checkbox (change)="onShowAllData()" [(ngModel)]="showAllData" [disabled]="!selectedNamespace || loadingTableData">
+      {{
+        !!selectedNamespaceTitle && !loadingTableData
+          ? ('#LDS#Show all outstanding objects of {0} ({1})' | translate | ldsReplace : selectedNamespaceTitle : tableDataCount)
+          : ('#LDS#Show all outstanding objects of the target system type' | translate)
       }}
     </mat-checkbox>
   </div>

@@ -5,19 +5,20 @@
         <form [formGroup]="formGroup" class="imx-policy-edit-form">
           <div class="imx-master-data-grid">
             <mat-card class="imx-master-data-cdrs">
-                <h2>
-                  <span>{{'#LDS#Heading Attestation Policy Settings' | translate}}</span>
-                  <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
-                </h2>
-                <eui-alert *ngIf="policy.showSampleDataWarning" class="imx-helper-alert" type="warning" [colored]="true" [dismissable]="true">
-                    <eui-alert-content>
-                        <span translate>#LDS#The sample assigned to the original attestation policy has been removed for the copy. Samples can be assigned to only one attestation policy at a time.</span>
-                        <span translate>#LDS#However, you can assign a different sample to this attestation policy.</span>
-                    </eui-alert-content>
-                  </eui-alert>
-                <imx-cdr-editor [cdr]="objectProperties.IsInActive?.cdr"
-                    (controlCreated)="addControl($event, policy.policy.IsInActive.Column.ColumnName)">
-                </imx-cdr-editor>
+              <h3>
+                <span>{{ '#LDS#Heading Attestation Policy Settings' | translate }}</span>
+                <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
+              </h3>
+              <eui-alert *ngIf="policy.showSampleDataWarning" class="imx-helper-alert" type="warning" [colored]="true" [dismissable]="true">
+                <eui-alert-content>
+                  <span>{{
+                    '#LDS#The sample assigned to the original attestation policy has been removed for the copy. Samples can be assigned to only one attestation policy at a time.'
+                      | translate
+                  }}</span>
+                  <span translate>#LDS#However, you can assign a different sample to this attestation policy.</span>
+                </eui-alert-content>
+              </eui-alert>
+              <imx-cdr-editor [cdr]="objectProperties.IsInActive?.cdr" (controlCreated)="addControl($event, policy.policy.IsInActive.Column.ColumnName)"> </imx-cdr-editor>
 
               <imx-cdr-editor [cdr]="objectProperties.Ident_AttestationPolicy?.cdr" (controlCreated)="addControl($event, policy.policy.Ident_AttestationPolicy.Column.ColumnName)">
               </imx-cdr-editor>
@@ -41,10 +42,15 @@
                 (controlCreated)="addControl($event, policy.policy.Attestators.Column.ColumnName)"
               >
               </imx-cdr-editor>
-              <imx-cdr-editor (readOnlyChanged)="updateReadOnlySchedule()" [cdr]="objectProperties.UID_DialogSchedule?.cdr" (controlCreated)="addControl($event, policy.policy.UID_DialogSchedule.Column.ColumnName)">
+              <imx-cdr-editor
+                (readOnlyChanged)="updateReadOnlySchedule()"
+                [cdr]="objectProperties.UID_DialogSchedule?.cdr"
+                (controlCreated)="addControl($event, policy.policy.UID_DialogSchedule.Column.ColumnName)"
+              >
               </imx-cdr-editor>
               <imx-cdr-editor [cdr]="objectProperties.SolutionDays?.cdr" (controlCreated)="addControl($event, policy.policy.SolutionDays.Column.ColumnName)"> </imx-cdr-editor>
-              <imx-cdr-editor [cdr]="objectProperties.UID_PersonOwner?.cdr" (controlCreated)="addControl($event, policy.policy.UID_PersonOwner.Column.ColumnName)"> </imx-cdr-editor>
+              <imx-cdr-editor [cdr]="objectProperties.UID_PersonOwner?.cdr" (controlCreated)="addControl($event, policy.policy.UID_PersonOwner.Column.ColumnName)">
+              </imx-cdr-editor>
 
               <imx-cdr-editor [cdr]="objectProperties.RiskIndex?.cdr" (controlCreated)="addControl($event, policy.policy.RiskIndex?.Column.ColumnName)"> </imx-cdr-editor>
 
@@ -54,7 +60,10 @@
                 (controlCreated)="addControl($event, policy.policy.Areas.Column.ColumnName)"
               >
               </imx-cdr-editor>
-              <imx-cdr-editor [cdr]="objectProperties.UID_AttestationPolicyGroup?.cdr" (controlCreated)="addControl($event, policy.policy.UID_AttestationPolicyGroup?.Column.ColumnName)">
+              <imx-cdr-editor
+                [cdr]="objectProperties.UID_AttestationPolicyGroup?.cdr"
+                (controlCreated)="addControl($event, policy.policy.UID_AttestationPolicyGroup?.Column.ColumnName)"
+              >
               </imx-cdr-editor>
 
               <imx-cdr-editor
@@ -63,14 +72,16 @@
                 (valueChange)="updatePickCategory()"
               >
               </imx-cdr-editor>
-              <imx-cdr-editor [cdr]="objectProperties.UID_DialogCulture?.cdr" (controlCreated)="addControl($event, policy.policy.UID_DialogCulture?.Column.ColumnName)"> </imx-cdr-editor>
+              <imx-cdr-editor [cdr]="objectProperties.UID_DialogCulture?.cdr" (controlCreated)="addControl($event, policy.policy.UID_DialogCulture?.Column.ColumnName)">
+              </imx-cdr-editor>
               <imx-cdr-editor [cdr]="objectProperties.IsShowElementsInvolved?.cdr" (controlCreated)="addControl($event, policy.policy.IsShowElementsInvolved?.Column.ColumnName)">
               </imx-cdr-editor>
               <imx-cdr-editor [cdr]="objectProperties.IsAutoCloseOldCases?.cdr" (controlCreated)="addControl($event, policy.policy.IsAutoCloseOldCases.Column.ColumnName)">
               </imx-cdr-editor>
               <imx-cdr-editor [cdr]="objectProperties.IsApproveRequiresMfa?.cdr" (controlCreated)="addControl($event, policy.policy.IsApproveRequiresMfa.Column.ColumnName)">
               </imx-cdr-editor>
-              <imx-cdr-editor [cdr]="objectProperties.LimitOfOldCases?.cdr" (controlCreated)="addControl($event, policy.policy.LimitOfOldCases.Column.ColumnName)"> </imx-cdr-editor>
+              <imx-cdr-editor [cdr]="objectProperties.LimitOfOldCases?.cdr" (controlCreated)="addControl($event, policy.policy.LimitOfOldCases.Column.ColumnName)">
+              </imx-cdr-editor>
             </mat-card>
             <imx-policy-editor #filterControl [formGroup]="formGroup" [filterModel]="filterModel"></imx-policy-editor>
           </div>
@@ -86,7 +97,7 @@
           [disabled]="!policy.policy?.IsOob?.value || hasAttestations"
           (click)="delete()"
         >
-        <eui-icon icon="delete"></eui-icon>
+          <eui-icon icon="delete"></eui-icon>
           {{ '#LDS#Delete' | translate }}
         </button>
         <button mat-raised-button color="primary" [disabled]="!formGroup.dirty || formGroup.invalid" data-imx-identifier="edit-master-data-button-save" (click)="submit()">

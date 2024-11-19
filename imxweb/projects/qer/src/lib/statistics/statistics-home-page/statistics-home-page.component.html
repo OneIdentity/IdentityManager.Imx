@@ -1,46 +1,50 @@
 <div class="stats-header">
-  <div class="left-header">
-    <h1>{{'#LDS#Heading Statistics' | translate}}</h1>
+  <h2 class="left-header mat-headline">
+    <span>{{ '#LDS#Heading Statistics' | translate }}</span>
     <imx-help-contextual></imx-help-contextual>
-  </div>
+  </h2>
   <div class="right-header">
-    <imx-data-source-toolbar #allStatsDST [ngStyle]="{'display': tabIndex === 0 ? '' : 'none'}"
-    [alwaysVisible]="true"
-    [isStandaloneToolbar]="true"
-    [settings]="allStatsSettings"
-    [options]="['search']"
-    [searchBoxText]="constantService.allStatsSearchText"
-    [isDataSourceLocal]="true"
-    [localSearchColumns]="['Display']"
-    useThemedStyle="true"
-    (settingsChanged)="onAllStatsSettingsChanged($event)"
-    data-imx-identifier="all-statistics-toolbar"
+    <imx-data-source-toolbar
+      #allStatsDST
+      [ngStyle]="{ display: tabIndex === 0 ? '' : 'none' }"
+      [alwaysVisible]="true"
+      [isStandaloneToolbar]="true"
+      [settings]="allStatsSettings"
+      [options]="['search']"
+      [searchBoxText]="constantService.allStatsSearchText"
+      [isDataSourceLocal]="true"
+      [localSearchColumns]="['Display']"
+      useThemedStyle="true"
+      (settingsChanged)="onAllStatsSettingsChanged($event)"
+      data-imx-identifier="all-statistics-toolbar"
     >
     </imx-data-source-toolbar>
-    <imx-data-source-toolbar #favStatsDST [ngStyle]="{'display': tabIndex === 1 ? '' : 'none'}"
-    [alwaysVisible]="true"
-    [isStandaloneToolbar]="true"
-    [settings]="myFavoritesSettings"
-    [options]="['search']"
-    [searchBoxText]="constantService.myFavoritesSearchText"
-    [isDataSourceLocal]="true"
-    [localSearchColumns]="['Display']"
-    useThemedStyle="true"
-    (settingsChanged)="onMyFavoritesSettingsChanged($event)"
-    data-imx-identifier="my-favorites-toolbar"
+    <imx-data-source-toolbar
+      #favStatsDST
+      [ngStyle]="{ display: tabIndex === 1 ? '' : 'none' }"
+      [alwaysVisible]="true"
+      [isStandaloneToolbar]="true"
+      [settings]="myFavoritesSettings"
+      [options]="['search']"
+      [searchBoxText]="constantService.myFavoritesSearchText"
+      [isDataSourceLocal]="true"
+      [localSearchColumns]="['Display']"
+      useThemedStyle="true"
+      (settingsChanged)="onMyFavoritesSettingsChanged($event)"
+      data-imx-identifier="my-favorites-toolbar"
     >
     </imx-data-source-toolbar>
   </div>
 </div>
 <div class="stats-content">
-  <mat-tab-group (selectedTabChange)="onTabChange($event)" >
-    <mat-tab label="{{'#LDS#Heading All Statistics' | translate}}">
+  <mat-tab-group (selectedTabChange)="onTabChange($event)">
+    <mat-tab label="{{ '#LDS#Heading All Statistics' | translate }}">
       <div class="tab-wrapper">
         <imx-statistics-tree></imx-statistics-tree>
         <imx-statistics-cards></imx-statistics-cards>
       </div>
     </mat-tab>
-    <mat-tab label="{{'#LDS#Heading My Favorites' | translate}}">
+    <mat-tab label="{{ '#LDS#Heading My Favorites' | translate }}">
       <!-- This tab needs to be lazy-loaded so it comes after the previous -->
       <ng-template matTabContent>
         <div class="tab-wrapper">

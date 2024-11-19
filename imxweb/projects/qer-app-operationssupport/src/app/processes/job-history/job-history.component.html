@@ -1,6 +1,6 @@
-<h1 class="mat-headline">
+<h2 class="mat-headline">
   {{ '#LDS#Heading Process History' | translate }}
-</h1>
+</h2>
 <div class="imx-table-container">
   <imx-data-source-toolbar
     [alwaysVisible]="true"
@@ -23,7 +23,7 @@
     </imx-data-table-generic-column>
     <imx-data-table-column [entityColumn]="entitySchema?.Columns.XDateInserted">
       <ng-template let-dataItem>
-        <span>{{getDateTimeString(dataItem.XDateInserted.value)}}</span>
+        <span>{{ getDateTimeString(dataItem.XDateInserted.value) }}</span>
       </ng-template>
     </imx-data-table-column>
     <imx-data-table-column [entityColumn]="entitySchema?.Columns.GenProcID"> </imx-data-table-column>

@@ -1,5 +1,5 @@
 <div class="imx-top-container">
-  <h1 class="mat-headline">
+  <h2 class="mat-headline">
     <span translate>#LDS#Heading New Request</span>
     <span *ngIf="referenceUser || uidPersonPeerGroup"
       >&nbsp;-
@@ -31,7 +31,7 @@
         {{ '#LDS#Show products other identities requested' | translate }}
       </button>
     </mat-menu>
-  </h1>
+  </h2>
 
   <!-- <eui-alert #infobox *ngIf="referenceUser || uidPersonPeerGroup" class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" dismissable="true"  (dismissed)="infoboxVisible = false">
     <div class="imx-flex-alert">
@@ -213,7 +213,7 @@
     <!-- <h1 mat-dialog-title>{{accProductSelected.GetEntity().GetDisplay()}}</h1> -->
 
     <h2>
-      {{ '#LDS#This product has already been assigned to {0}.' | translate | ldsReplace: recipients?.Column?.GetDisplayValue() }}
+      {{ '#LDS#This product has already been assigned to {0}.' | translate | ldsReplace : recipients?.Column?.GetDisplayValue() }}
       {{ '#LDS#You can still submit a request for the product. Please see the details about the assignmeht below.' | translate }}
     </h2>
     <!-- TODO later
@@ -228,7 +228,7 @@
 </ng-template>
 
 <ng-template #CallAction12>
-  <h1 mat-dialog-title>{{ '#LDS#Select product bundle' | translate }}</h1>
+  <h2 mat-dialog-title>{{ '#LDS#Select product bundle' | translate }}</h2>
   <mat-dialog-content>
     <!-- TODO later
         <imx-itshop-patternselection></imx-itshop-patternselection>

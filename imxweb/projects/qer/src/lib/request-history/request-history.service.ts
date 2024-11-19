@@ -70,9 +70,7 @@ export class RequestHistoryService {
       return undefined;
     }
     return {
-      tableName: collection.tableName,
-      totalCount: collection.totalCount,
-      extendedData: collection.extendedData,
+      ...collection,
       Data: collection.Data.map((element, index) => {
         const requestData = new ItshopRequestData({ ...collection.extendedData, ...{ index } });
         const parameterColumns = this.itshopRequest.createParameterColumns(element.GetEntity(), requestData.parameters);
@@ -102,14 +100,14 @@ export class RequestHistoryService {
   ): Promise<ExtendedTypedEntityCollection<ItshopRequest, PwoExtendedData>> {
     const dummy: ArchivedRequestHistoryLoadParameters = {};
     recipientId ? (dummy.uidpersonordered = recipientId) : (dummy.uidpersoninserted = userUid);
-    const collection = await this.qerClient.typedClient.PortalItshopHistoryRequests.Get(new Date(), dummy, { signal: this.abortController.signal });
+    const collection = await this.qerClient.typedClient.PortalItshopHistoryRequests.Get(new Date(), dummy, {
+      signal: this.abortController.signal,
+    });
     if (!collection) {
       return undefined;
     }
     return {
-      tableName: collection.tableName,
-      totalCount: collection.totalCount,
-      extendedData: collection.extendedData,
+      ...collection,
       Data: collection.Data.map((element, index) => {
         const requestData = new ItshopRequestData({ ...collection.extendedData, ...{ index } });
         const parameterColumns = this.itshopRequest.createParameterColumns(element.GetEntity(), requestData.parameters);

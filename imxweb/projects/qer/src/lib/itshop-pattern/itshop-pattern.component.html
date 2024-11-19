@@ -1,9 +1,9 @@
 <div class="imx-pattern-page">
   <div class="heading-wrapper">
-    <h1 class="mat-headline">
+    <h2 class="mat-headline">
       <span>{{ '#LDS#Heading Product Bundles' | translate }}</span>
       <imx-help-contextual [contextId]="helpContextId"></imx-help-contextual>
-    </h1>
+    </h2>
   </div>
   <mat-card>
     <div class="imx-table-container" *ngIf="dstWrapper && dstSettings">
@@ -72,7 +72,7 @@
       {{ '#LDS#Share' | translate }}
     </button>
     <button mat-raised-button color="primary" data-imx-identifier="itshop-pattern-button-create" (click)="createNewPattern()">
-    <eui-icon icon="add"></eui-icon>
+      <eui-icon icon="add"></eui-icon>
       {{ '#LDS#Create product bundle' | translate }}
     </button>
   </div>

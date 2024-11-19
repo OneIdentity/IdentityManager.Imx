@@ -1,7 +1,7 @@
-<h1 class="mat-headline">
+<h2 class="mat-headline">
   <span>{{ '#LDS#Heading Pending Attestations' | translate }}</span>
   <imx-help-contextual></imx-help-contextual>
-</h1>
+</h2>
 
 <div *ngIf="hasInquiries" class="imx-cases-content">
   <mat-tab-group [(selectedIndex)]="tabIndex">
@@ -27,10 +27,10 @@
     <ng-container>
       <div class="toggle-wrapper" *ngIf="dstSettings">
         <mat-slide-toggle
-          *ngIf="isUserEscalationApprover && ! hideToolbar"
+          *ngIf="isUserEscalationApprover && !hideToolbar"
           class="escalation-approver-toggle"
           color="primary"
-          [(ngModel)]="viewEscalation"
+          [checked]="attestationCases.isChiefApproval"
           (change)="switchEscalation()"
           data-imx-identifier="attestation-decision-escalation-slider"
           [matTooltip]="
@@ -42,7 +42,7 @@
         </mat-slide-toggle>
       </div>
       <imx-data-source-toolbar
-        [ngClass]="{'hidden': hideToolbar}"
+        [ngClass]="{ hidden: hideToolbar }"
         #dst
         [options]="['search', 'sort', 'filter', 'groupBy', 'settings']"
         [busyService]="busyService"

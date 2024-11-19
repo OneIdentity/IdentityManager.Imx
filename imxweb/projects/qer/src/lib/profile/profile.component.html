@@ -1,9 +1,8 @@
 <ng-container *ngIf="selectedIdentity">
-
-  <h1 class="mat-headline">
+  <h2 class="mat-headline">
     <span translate>#LDS#Heading Profile Settings</span>
     <imx-help-contextual [contextId]="selectedContextId"></imx-help-contextual>
-  </h1>
+  </h2>
 
   <imx-identity-select
     [entities]="identities"
@@ -28,8 +27,7 @@
             </mat-radio-group>
           </mat-card-content>
         </mat-card>
-        <imx-object-hyperview [objectType]="'Person'" [objectUid]="userUid"
-          [hyperviewName]="isShowEntitlementsHyperview ? 'VI_Person_Person_Entitlements_Overview' : ''">
+        <imx-object-hyperview [objectType]="'Person'" [objectUid]="userUid" [hyperviewName]="isShowEntitlementsHyperview ? 'VI_Person_Person_Entitlements_Overview' : ''">
         </imx-object-hyperview>
       </ng-template>
     </mat-tab>

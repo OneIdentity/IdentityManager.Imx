@@ -1,21 +1,21 @@
-<h1 mat-dialog-title>{{ dialogTitle }}</h1>
+<h2 mat-dialog-title>{{ dialogTitle }}</h2>
 <div mat-dialog-content>
   <div imxtable>
-    <imx-data-source-toolbar #dataSourceToolbar [settings]="dstSettings">
-    </imx-data-source-toolbar>
+    <imx-data-source-toolbar #dataSourceToolbar [settings]="dstSettings"> </imx-data-source-toolbar>
     <imx-data-table [dst]="dataSourceToolbar" mode="manual" detailViewVisible="false">
-      <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" columnLabel="{{tableDisplay}}">
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" columnLabel="{{ tableDisplay }}">
         <ng-template let-data>
           <div imxTitle>{{ data?.GetEntity().GetDisplay() }}</div>
-          <div imxSubtitle>{{ data?.Description.Column.GetDisplayValue()}}</div>
+          <div imxSubtitle>{{ data?.Description.Column.GetDisplayValue() }}</div>
         </ng-template>
       </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema?.Columns['UID_AERoleOwner']">
-      </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchema?.Columns['UID_AERoleOwner']"> </imx-data-table-column>
     </imx-data-table>
   </div>
-  <span *ngIf="isEntitlement() && isUnassign()"
-    class="mat-small">{{'#LDS#*If you unassign an application entitlement from this application, it is removed from this application. The application entitlement can still be reassigned as required.' | translate }}</span>
+  <span *ngIf="isEntitlement() && isUnassign()" class="mat-small">{{
+    '#LDS#*If you unassign an application entitlement from this application, it is removed from this application. The application entitlement can still be reassigned as required.'
+      | translate
+  }}</span>
   <div *ngIf="isPublish()" class="imx-entitlements-publish-settings">
     <div class="imx-entitlements-publish-itshops">
       <h5>{{ ('#LDS#Shops' | translate) + (data.type === 'AobEntitlement' ? '*' : '') }}</h5>
@@ -24,12 +24,14 @@
         <mat-card-title>{{ shop.GetEntity().GetDisplay() }}</mat-card-title>
       </mat-card>
       <span *ngIf="data.shops.length == 0" class="mat-error">
-        {{ (data.type === 'AobEntitlement' ? '#LDS#Application entitlements cannot be published. No shop is assigned to the application. Please assign at least one shop to the application.':
-        '#LDS#No shop is assigned to the application. Without a shop, the assigned application entitlements cannot be requested. Please assign at least one shop to the application.'
-         ) | translate }}
+        {{
+          (data.type === 'AobEntitlement'
+            ? '#LDS#Application entitlements cannot be published. No shop is assigned to the application. Please assign at least one shop to the application.'
+            : '#LDS#No shop is assigned to the application. Without a shop, the assigned application entitlements cannot be requested. Please assign at least one shop to the application.'
+          ) | translate
+        }}
       </span>
-      <span *ngIf="data.type === 'AobEntitlement'"
-        class="mat-small">*{{'#LDS#IT Shops are set at the application level.' | translate }}</span>
+      <span *ngIf="data.type === 'AobEntitlement'" class="mat-small">*{{ '#LDS#IT Shops are set at the application level.' | translate }}</span>
     </div>
     <div class="imx-entitlements-publish-date">
       <form class="imx-form" id="publishDateForm" [formGroup]="publishDateForm" (ngSubmit)="submitData()">
@@ -39,11 +41,15 @@
           <mat-radio-button value="future">{{ '#LDS#Later' | translate }}</mat-radio-button>
         </mat-radio-group>
         <span *ngIf="!publishFuture" class="mat-small">
-          {{(isApplication()? '#LDS#The application will be published immediately. The exact time may vary.':
-            '#LDS#The application entitlement will be published immediately. The exact time may vary.')| translate}}</span>
+          {{
+            (isApplication()
+              ? '#LDS#The application will be published immediately. The exact time may vary.'
+              : '#LDS#The application entitlement will be published immediately. The exact time may vary.'
+            ) | translate
+          }}</span
+        >
         <mat-form-field *ngIf="publishFuture">
-          <input matInput [min]="minDate" [matDatepicker]="datepicker" required
-            placeholder="{{ '#LDS#Date' | translate }}" formControlName="datepickerFormControl">
+          <input matInput [min]="minDate" [matDatepicker]="datepicker" required placeholder="{{ '#LDS#Date' | translate }}" formControlName="datepickerFormControl" />
           <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
           <mat-datepicker #datepicker></mat-datepicker>
           <mat-error *ngIf="datepickerFormControl.hasError('noFutureDateSelected')">
@@ -54,11 +60,14 @@
           </mat-error>
         </mat-form-field>
         <!-- TODO 225775: Add Timepicker -->
-        <span *ngIf="publishFuture && this.datepickerFormControl.value "
-          class="mat-small">{{ (isApplication()
+        <span *ngIf="publishFuture && this.datepickerFormControl.value" class="mat-small">{{
+          (isApplication()
             ? '#LDS#The application will be published on {0} at {1} (your local time).'
-            : '#LDS#The application entitlement will be published on {0} at {1} (your local time) if the application is published.')
-        | translate | ldsReplace: dateString : timeString }}</span>
+            : '#LDS#The application entitlement will be published on {0} at {1} (your local time) if the application is published.'
+          )
+            | translate
+            | ldsReplace : dateString : timeString
+        }}</span>
       </form>
     </div>
   </div>
@@ -68,8 +77,15 @@
   <button mat-raised-button color="warn" *ngIf="!isPublish()" (click)="submitData()" cdkFocusInitial>
     {{ actionButtonText }}
   </button>
-  <button mat-raised-button color="primary" (click)="submitDataIe()" form="publishDateForm" *ngIf="isPublish()" cdkFocusInitial
-    [disabled]="publishDateForm.invalid || (data.shops.length < 1 && data.type ==='AobEntitlement')">
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="submitDataIe()"
+    form="publishDateForm"
+    *ngIf="isPublish()"
+    cdkFocusInitial
+    [disabled]="publishDateForm.invalid || (data.shops.length < 1 && data.type === 'AobEntitlement')"
+  >
     {{ actionButtonText }}
   </button>
 </div>

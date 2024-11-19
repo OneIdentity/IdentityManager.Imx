@@ -1,12 +1,10 @@
 <div class="imx-content-header">
-  <h1  class="mat-headline">
-    {{'#LDS#Synchronization log' | translate}} {{ caption }}
-  </h1>
+  <h2 class="mat-headline">{{ '#LDS#Synchronization log' | translate }} {{ caption }}</h2>
 </div>
-<input [hidden]="true" [euiDownload]="{}"> <!-- dummy element as reference for EuiDownloadDirective-->
-<div class ="imx-table-container">
-  <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings" [options]="['filter', 'groupBy']"
-    (navigationStateChanged)="getData($event)">
+<input [hidden]="true" [euiDownload]="{}" />
+<!-- dummy element as reference for EuiDownloadDirective-->
+<div class="imx-table-container">
+  <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings" [options]="['filter', 'groupBy']" (navigationStateChanged)="getData($event)">
     <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
   </imx-data-source-toolbar>
   <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual">
@@ -32,7 +30,9 @@
     </imx-data-table-column>
     <imx-data-table-generic-column columnName="actions">
       <ng-template let-dataItem>
-        <button mat-button color="primary" [attr.data-imx-identifier]="'sync-journal-' + dataItem.GetEntity().GetKeys()[0]" (click)="showReport(dataItem)">{{'#LDS#Download report' |translate}}</button>
+        <button mat-button color="primary" [attr.data-imx-identifier]="'sync-journal-' + dataItem.GetEntity().GetKeys()[0]" (click)="showReport(dataItem)">
+          {{ '#LDS#Download report' | translate }}
+        </button>
       </ng-template>
     </imx-data-table-generic-column>
   </imx-data-table>

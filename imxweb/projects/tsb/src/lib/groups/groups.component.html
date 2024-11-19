@@ -1,7 +1,7 @@
 <mat-card *ngIf="!usedInSidesheet" class="data-explorer data-explorer--groups">
   <div class="data-explorer-card-header">
     <div class="data-explorer-card-header-bg">
-      <span translate>#LDS#Heading System Entitlements</span>
+      <h3 translate>#LDS#Heading System Entitlements</h3>
       <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
     </div>
   </div>
@@ -30,7 +30,8 @@
     (navigationStateChanged)="onNavigationStateChanged($event)"
     (search)="onSearch($event)"
     (filterTreeSelectionChanged)="filterByTree($event)"
-    (updateConfig)="updateConfig($event)" (deleteConfigById)="deleteConfigById($event)"
+    (updateConfig)="updateConfig($event)"
+    (deleteConfigById)="deleteConfigById($event)"
   >
   </imx-data-source-toolbar>
 
@@ -91,7 +92,7 @@
   <div class="imx-spacer"></div>
   <button mat-stroked-button data-imx-identifier="groups-button-actions" title="{{ '#LDS#Actions' | translate }}" [matMenuTriggerFor]="actionsMenu">
     <eui-icon icon="ellipsisvertical"></eui-icon>
-    {{'#LDS#Actions' | translate}}
+    {{ '#LDS#Actions' | translate }}
   </button>
   <mat-menu yPosition="above" xPosition="before" data-imx-identifier="attestations-actions-menu" #actionsMenu="matMenu">
     <button mat-menu-item color="primary" [disabled]="itemsAreRequestable" (click)="bulkUpdateSelected(true)">

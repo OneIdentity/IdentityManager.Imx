@@ -1,11 +1,11 @@
 <div class="heading-wrapper">
-  <h1 *ngIf="showTitle" class="mat-headline">
-    {{'#LDS#Heading Entitlement Loss' | translate}}
-  </h1>
-  <div class="alert-wrapper" [ngClass]="{'alert-wrapper--shortened': showTitle}">
+  <h2 *ngIf="showTitle" class="mat-headline">
+    {{ '#LDS#Heading Entitlement Loss' | translate }}
+  </h2>
+  <div class="alert-wrapper" [ngClass]="{ 'alert-wrapper--shortened': showTitle }">
     <eui-alert class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="false">
       <span>
-        {{'#LDS#Here you can get an overview of all entitlements that will be withdrawn if the attestation case is denied.' | translate }}
+        {{ '#LDS#Here you can get an overview of all entitlements that will be withdrawn if the attestation case is denied.' | translate }}
       </span>
     </eui-alert>
   </div>
@@ -25,14 +25,14 @@
           {{ row?.Display }}
         </div>
         <div subtitle class="table-subtitle">
-          {{row?.Table}}
+          {{ row?.Table }}
         </div>
       </td>
     </ng-container>
     <ng-container matColumnDef="ObjectDisplay">
       <th mat-header-cell *matHeaderCellDef>{{ lossPreviewDisplayKeys.ObjectDisplay | translate }}</th>
       <td mat-cell *matCellDef="let row">
-        {{row?.ObjectDisplay}}
+        {{ row?.ObjectDisplay }}
       </td>
     </ng-container>
     <ng-container matColumnDef="Person">
@@ -40,7 +40,7 @@
       <td mat-cell *matCellDef="let row">{{ row?.Person }}</td>
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="lossPreviewHeaders"></tr>
-    <tr mat-row *matRowDef="let row; columns: lossPreviewHeaders;"></tr>
+    <tr mat-row *matRowDef="let row; columns: lossPreviewHeaders"></tr>
   </table>
   <div class="imx-data-no-results" *ngIf="lossPreviewItems.length === 0">
     <eui-icon size="xl" icon="table"></eui-icon>

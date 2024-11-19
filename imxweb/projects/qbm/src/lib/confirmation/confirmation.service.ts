@@ -93,7 +93,8 @@ export class ConfirmationService {
       },
       panelClass: 'imx-messageDialog',
     });
-    return (await dialogRef.afterClosed().toPromise()) === MessageDialogResult.YesResult;
+    const result =await dialogRef.afterClosed().toPromise();
+    return result === MessageDialogResult.YesResult || result === MessageDialogResult.OkResult;
   }
 
   // Damit es bis "Pull Request 38432: 299557-imxweb-confirmdialogs-with-yes-no-buttons" funktioniert

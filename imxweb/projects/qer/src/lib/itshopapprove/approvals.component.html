@@ -1,10 +1,10 @@
 <imx-busy-indicator *ngIf="!viewReady"></imx-busy-indicator>
 
 <div class="heading-wrapper" *ngIf="viewReady">
-  <h1 class="mat-headline">
+  <h2 class="mat-headline">
     <span translate>#LDS#Heading Pending Requests</span>
     <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
-  </h1>
+  </h2>
 </div>
 
 <div class="imx-approvals-content" *ngIf="viewReady">
@@ -16,11 +16,10 @@
     </mat-tab>
     <mat-tab [label]="'#LDS#Heading Inquiries' | translate">
       <ng-template matTabContent>
-        <imx-inquiries ></imx-inquiries>
+        <imx-inquiries></imx-inquiries>
       </ng-template>
     </mat-tab>
   </mat-tab-group>
 
   <imx-approvals-table *ngIf="!hasInquiries" [params]="params"></imx-approvals-table>
-
 </div>

@@ -89,15 +89,10 @@ export class AttestationCasesService {
   }
 
   public async get(
-    attDecisionParameters?: AttestationDecisionLoadParameters,
+    attDecisionParameters: AttestationDecisionLoadParameters,
     isUserEscalationApprover = false
   ): Promise<TypedEntityCollectionData<AttestationCase> | undefined> {
-    const navigationState = {
-      ...attDecisionParameters,
-      Escalation: (attDecisionParameters.uid_attestationcase !== '' && isUserEscalationApprover) || attDecisionParameters.Escalation,
-    };
-
-    const collection = await this.attClient.typedClient.PortalAttestationApprove.Get(navigationState, {
+    const collection = await this.attClient.typedClient.PortalAttestationApprove.Get(attDecisionParameters, {
       signal: this.abortController.signal,
     });
     if (!collection) {
@@ -114,7 +109,7 @@ export class AttestationCasesService {
           (treefilterparameter) => this.getFilterTree(treefilterparameter)
         );
 
-        return new AttestationCase(item, this.isChiefApproval, parameterDataContainer, { ...collection?.extendedData, ...{ index } });
+        return new AttestationCase(item, isUserEscalationApprover, parameterDataContainer, { ...collection?.extendedData, ...{ index } });
       }),
     };
   }

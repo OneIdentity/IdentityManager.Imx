@@ -1,5 +1,5 @@
 <div class="imx-title">
-  <h2 class="imx-filter-header">{{ '#LDS#Heading Objects to be Attested by this Attestation Policy' | translate }}</h2>
+  <h3 class="imx-filter-header">{{ '#LDS#Heading Objects to be Attested by this Attestation Policy' | translate }}</h3>
   <imx-selected-objects
     [isTotal]="true"
     testId="total-objects"
@@ -51,8 +51,9 @@
 </ng-container>
 
 <ng-template #noPolicy>
-  <div *ngIf="filterModel?.policyFilterData?.IsReadOnly">{{ '#LDS#No conditions are specified for this attestation
-        policy.' | translate }}</div>
+  <div *ngIf="filterModel?.policyFilterData?.IsReadOnly">
+    {{ '#LDS#No conditions are specified for this attestation policy.' | translate }}
+  </div>
 </ng-template>
 
 <ng-template #disabledView>

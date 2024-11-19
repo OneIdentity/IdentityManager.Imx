@@ -1,6 +1,6 @@
-<h1 class="mat-headline">
+<h2 class="mat-headline">
   {{ '#LDS#Heading Processes and Operations by Process ID' | translate }}
-</h1>
+</h2>
 
 <mat-card>
   <div class="imx-procces-action">
@@ -42,7 +42,14 @@
       </div>
     </div>
 
-    <imx-jobs-gridview [noData]="noDataText | translate" [withActions]="false" *ngIf="selectedType === 2" [style.display]="isShowGraph ? 'none' : 'flex'" class="imx-job-grid" [proccessId]="processId">
+    <imx-jobs-gridview
+      [noData]="noDataText | translate"
+      [withActions]="false"
+      *ngIf="selectedType === 2"
+      [style.display]="isShowGraph ? 'none' : 'flex'"
+      class="imx-job-grid"
+      [proccessId]="processId"
+    >
     </imx-jobs-gridview>
   </ng-container>
 </mat-card>

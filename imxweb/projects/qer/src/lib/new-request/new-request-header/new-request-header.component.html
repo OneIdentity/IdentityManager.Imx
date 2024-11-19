@@ -1,5 +1,5 @@
 <div class="container">
-  <div class="imx-request-title" translate>#LDS#Heading New Request</div>
+  <h2 class="imx-request-title" translate>#LDS#Heading New Request</h2>
   <!-- <imx-info-button class="imx-info-icon" [title]="'#LDS#Heading New Request' | translate" [templateRef]="infoDialogContent"></imx-info-button> -->
   <imx-help-contextual></imx-help-contextual>
   <imx-new-request-reference-user-card></imx-new-request-reference-user-card>
@@ -25,9 +25,7 @@
 
 <!-- Template for the info dialog -->
 <ng-template #infoDialogContent>
-  <p translate class="no-top">
-    #LDS#Here you can request products for yourself or others.
-  </p>
+  <p translate class="no-top">#LDS#Here you can request products for yourself or others.</p>
   <!-- TODO: This needs to link to the help page when that page exists  -->
-  <a href="#" onclick="return false;" target="_blank" rel="noopener noreferrer">{{'#LDS#Show help' | translate}}</a>
+  <a href="#" onclick="return false;" target="_blank" rel="noopener noreferrer">{{ '#LDS#Show help' | translate }}</a>
 </ng-template>

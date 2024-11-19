@@ -19,6 +19,7 @@
 
     <imx-cdr-editor [cdr]="currentStepCdr" data-imx-identifier="workflow-single-action-current-step"></imx-cdr-editor>
 
+    <imx-busy-indicator *ngIf="busyService.isBusy"></imx-busy-indicator>
     <ng-container *ngIf="data.additionalInfo != null">
       <imx-cdr-editor
         *ngFor="let cdr of data.additionalInfo; let i = index"

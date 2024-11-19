@@ -6,6 +6,8 @@ $config: mat.define-typography-config();
 
 mat-card-content {
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 mat-card-title {

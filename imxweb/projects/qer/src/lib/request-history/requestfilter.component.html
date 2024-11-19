@@ -1,33 +1,30 @@
-<button mat-button (click)="Button3()">{{'#LDS#Advanced search' | translate}}</button>
+<button mat-button (click)="Button3()">{{ '#LDS#Advanced search' | translate }}</button>
 
 <ng-template #Call1>
-    <h1 mat-dialog-title>{{'#LDS#Advanced search' | translate}}</h1>
-    <mat-dialog-content>
-        <div data-imx-identifier="Container9" *ngIf="showaudit">
-            {{(showfor('Requester') ? '#LDS#Select identity' : '#LDS#Select approver') | translate}}:
+  <h2 mat-dialog-title>{{ '#LDS#Advanced search' | translate }}</h2>
+  <mat-dialog-content>
+    <div data-imx-identifier="Container9" *ngIf="showaudit">
+      {{ (showfor('Requester') ? '#LDS#Select identity' : '#LDS#Select approver') | translate }}:
 
-            <!-- picker for UID_PersonAudit,can be any person-->
-        </div>
+      <!-- picker for UID_PersonAudit,can be any person-->
+    </div>
 
-        <div *ngIf="showfor('Requester') && getuseraudit() != ''">
-            {{'#LDS#Display requests' | translate}}
+    <div *ngIf="showfor('Requester') && getuseraudit() != ''">
+      {{ '#LDS#Display requests' | translate }}
 
-            <ng-container *ngIf="showfor('Approver') && !auditmode() && !showaudit">
-                {{'#LDS#Approved by' | translate}}
-                <!-- TODO show CDR editor for UID_PersonApproved-->
-            </ng-container>
+      <ng-container *ngIf="showfor('Approver') && !auditmode() && !showaudit">
+        {{ '#LDS#Approved by' | translate }}
+        <!-- TODO show CDR editor for UID_PersonApproved-->
+      </ng-container>
 
-            <div>
-                {{'#LDS#Filter by request number' | translate }}
-                <input class="imx-textbox" type="text" ng-model="[documentnumber].value">
-            </div>
-        </div>
-
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-        <button mat-dialog-close data-imx-identifier="Reset" mat-raised-button
-            (click)="Button1()">{{'#LDS#Reset' | translate}}</button>
-        <button mat-dialog-close data-imx-identifier="Search" mat-raised-button
-            (click)="Button2()">{{'#LDS#Search' | translate}}</button>
-    </mat-dialog-actions>
+      <div>
+        {{ '#LDS#Filter by request number' | translate }}
+        <input class="imx-textbox" type="text" ng-model="[documentnumber].value" />
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-dialog-close data-imx-identifier="Reset" mat-raised-button (click)="Button1()">{{ '#LDS#Reset' | translate }}</button>
+    <button mat-dialog-close data-imx-identifier="Search" mat-raised-button (click)="Button2()">{{ '#LDS#Search' | translate }}</button>
+  </mat-dialog-actions>
 </ng-template>

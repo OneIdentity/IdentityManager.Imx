@@ -2,12 +2,12 @@
 
 <ng-container *ngIf="!busy">
   <div class="flex-container">
-    <h1 class="mat-headline" translate>#LDS#Heading Caches</h1>
+    <h2 class="mat-headline" translate>#LDS#Heading Caches</h2>
 
     <table class="plugin-table" data-imx-identifier="admin-status-cache">
       <thead>
         <tr>
-          <td>{{'#LDS#Name' | translate}}</td>
+          <td>{{ '#LDS#Name' | translate }}</td>
           <td>{{ '#LDS#Cached items' | translate }}</td>
           <td>{{ '#LDS#Cache hits' | translate }}</td>
         </tr>
@@ -15,7 +15,7 @@
       <tbody>
         <tr *ngFor="let d of cacheKeys">
           <td>
-            {{d}}
+            {{ d }}
           </td>
           <td>
             {{ cacheData[d].ObjectCount }}
@@ -27,7 +27,7 @@
       </tbody>
       <tfoot>
         <tr>
-          <td>{{'#LDS#Total' | translate}}</td>
+          <td>{{ '#LDS#Total' | translate }}</td>
           <td>{{ totalEntries }}</td>
           <td>{{ totalHits }}</td>
         </tr>
@@ -36,16 +36,14 @@
   </div>
 
   <div class="button-bar">
-    <button (click)="reload()" data-imx-identifier="admin-cache-reload" mat-stroked-button>
-      <eui-icon icon="refresh"></eui-icon> {{LdsReload | translate}}
-    </button>
+    <button (click)="reload()" data-imx-identifier="admin-cache-reload" mat-stroked-button><eui-icon icon="refresh"></eui-icon> {{ LdsReload | translate }}</button>
 
     <button (click)="flushall()" data-imx-identifier="admin-cache-flush-all" color="warn" mat-stroked-button>
-      <eui-icon icon="delete"></eui-icon> {{LdsFlushAll | translate}}
+      <eui-icon icon="delete"></eui-icon> {{ LdsFlushAll | translate }}
     </button>
 
     <button (click)="switchall()" data-imx-identifier="admin-cache-switch" color="primary" mat-flat-button>
-      {{GetLdsSwitchText() | translate}}
+      {{ GetLdsSwitchText() | translate }}
     </button>
   </div>
 </ng-container>

@@ -1,8 +1,7 @@
-
 <mat-card class="data-explorer">
   <div class="data-explorer-card-header">
     <div class="data-explorer-card-header-bg">
-      <span translate>#LDS#Heading Devices</span>
+      <h3 translate>#LDS#Heading Devices</h3>
       <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
     </div>
   </div>
@@ -13,7 +12,7 @@
         [options]="['search', 'settings', 'filter']"
         [settings]="dstSettings"
         [busyService]="busyService"
-      (search)="getData({ search: $event })"
+        (search)="getData({ search: $event })"
         (navigationStateChanged)="getData($event)"
         data-imx-identifier="view-devices-dst"
       >
@@ -29,7 +28,7 @@
         (highlightedEntityChanged)="onHighlightedEntityChanged($event)"
       >
         <imx-data-table-column data-imx-identifier="view-devices-table-column-display" [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
-      </imx-data-table-column>
+        </imx-data-table-column>
         <imx-data-table-column [entityColumn]="entitySchema?.Columns.UID_HardwareType"></imx-data-table-column>
         <imx-data-table-column [entityColumn]="entitySchema?.Columns.UID_PersonOwner"></imx-data-table-column>
       </imx-data-table>

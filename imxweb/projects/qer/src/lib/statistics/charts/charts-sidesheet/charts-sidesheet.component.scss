@@ -92,7 +92,7 @@
         flex-direction: column;
         align-items: flex-start;
 
-        h2 {
+        h3 {
           font-size: min(50px, max(5vw, 20px));
           font-weight: 700;
         }
@@ -104,7 +104,7 @@
     display: flex;
     padding: 0 20px 20px;
     justify-content: space-between;
-    
+
     button {
       display: flex;
       @include EUI-Elevation-1;
@@ -246,7 +246,7 @@
 
 .eui-contrast-theme {
   :host {
-   
+
     ::ng-deep .mat-tab-labels {
       background-color: $color-gray-80;
     }

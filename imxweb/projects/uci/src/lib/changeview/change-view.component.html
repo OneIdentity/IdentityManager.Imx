@@ -1,40 +1,47 @@
 <div class="imx-content-header">
-    <h1 class="mat-headline">
-        {{'#LDS#Heading Pending Provisioning Processes' | translate}}
-    </h1>
+  <h2 class="mat-headline">
+    {{ '#LDS#Heading Pending Provisioning Processes' | translate }}
+  </h2>
 </div>
 
 <mat-card class="imx-table-container" *ngIf="dstWrapper && dstSettings">
-    <imx-data-source-toolbar #dst [options]="['search', 'filter']" [settings]="dstSettings"
-        (search)="getData({ search: $event })" (navigationStateChanged)="getData($event)"
-        data-imx-identifier="changeview-dst">
-    </imx-data-source-toolbar>
-    <imx-data-table #dataTable [dst]="dst" class="imx-changeview-table" [detailViewVisible]="false" mode="manual"
-        noDataText="#LDS#There are currently no pending provisioning processes."
-        (highlightedEntityChanged)="viewDetails($event)"
-        noDataText="#LDS#There are currently no pending provisioning processes."
-        data-imx-identifier="changeview-datatable">
-        <imx-data-table-generic-column columnName="ObjectKeyElement"
-            [columnLabel]="entitySchema.Columns.ObjectKeyElement.Display">
-            <ng-template let-prod>
-                <div>{{ prod.ObjectKeyElement.Column.GetDisplayValue() }}</div>
-                <div class="subtitle">{{ getTableDisplay(prod) }}</div>
-            </ng-template>
-        </imx-data-table-generic-column>
-        <imx-data-table-column [entityColumn]="entitySchema.Columns.IsProcessed">
-            <ng-template let-prod>
-                <div>
-                    <eui-badge class="state-badge" *ngIf="prod.IsProcessed.value == 1" color="green">{{'#LDS#Successful' | translate }}</eui-badge>
-                    <eui-badge class="state-badge" *ngIf="prod.IsProcessed.value == 0" color="orange">{{'#LDS#Pending' | translate }}</eui-badge>
-                    <eui-badge class="state-badge" *ngIf="prod.IsProcessed.value == 2" color="red">{{'#LDS#Failed' | translate }}</eui-badge>
-                </div>
-            </ng-template>
-        </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_UCIRoot">
-        </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema.Columns.XDateInserted">
-        </imx-data-table-column>
-    </imx-data-table>
-    <imx-data-source-paginator data-imx-identifier="changeview-paginator" [dst]="dst">
-    </imx-data-source-paginator>
+  <imx-data-source-toolbar
+    #dst
+    [options]="['search', 'filter']"
+    [settings]="dstSettings"
+    (search)="getData({ search: $event })"
+    (navigationStateChanged)="getData($event)"
+    data-imx-identifier="changeview-dst"
+  >
+  </imx-data-source-toolbar>
+  <imx-data-table
+    #dataTable
+    [dst]="dst"
+    class="imx-changeview-table"
+    [detailViewVisible]="false"
+    mode="manual"
+    noDataText="#LDS#There are currently no pending provisioning processes."
+    (highlightedEntityChanged)="viewDetails($event)"
+    noDataText="#LDS#There are currently no pending provisioning processes."
+    data-imx-identifier="changeview-datatable"
+  >
+    <imx-data-table-generic-column columnName="ObjectKeyElement" [columnLabel]="entitySchema.Columns.ObjectKeyElement.Display">
+      <ng-template let-prod>
+        <div>{{ prod.ObjectKeyElement.Column.GetDisplayValue() }}</div>
+        <div class="subtitle">{{ getTableDisplay(prod) }}</div>
+      </ng-template>
+    </imx-data-table-generic-column>
+    <imx-data-table-column [entityColumn]="entitySchema.Columns.IsProcessed">
+      <ng-template let-prod>
+        <div>
+          <eui-badge class="state-badge" *ngIf="prod.IsProcessed.value == 1" color="green">{{ '#LDS#Successful' | translate }}</eui-badge>
+          <eui-badge class="state-badge" *ngIf="prod.IsProcessed.value == 0" color="orange">{{ '#LDS#Pending' | translate }}</eui-badge>
+          <eui-badge class="state-badge" *ngIf="prod.IsProcessed.value == 2" color="red">{{ '#LDS#Failed' | translate }}</eui-badge>
+        </div>
+      </ng-template>
+    </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_UCIRoot"> </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchema.Columns.XDateInserted"> </imx-data-table-column>
+  </imx-data-table>
+  <imx-data-source-paginator data-imx-identifier="changeview-paginator" [dst]="dst"> </imx-data-source-paginator>
 </mat-card>

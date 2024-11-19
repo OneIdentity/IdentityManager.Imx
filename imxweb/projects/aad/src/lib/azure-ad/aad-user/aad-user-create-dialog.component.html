@@ -1,17 +1,16 @@
 <div mat-dialog-content>
   <div class="aad-user-create-dialog">
-    <h1>{{ data.title | translate }}</h1>
-      <form [formGroup]="detailsFormGroup">
-        <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="formArray.push($event)"></imx-cdr-editor>
-      </form>
+    <h2>{{ data.title | translate }}</h2>
+    <form [formGroup]="detailsFormGroup">
+      <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="formArray.push($event)"></imx-cdr-editor>
+    </form>
   </div>
 </div>
 <div mat-dialog-actions align="end">
   <button mat-button mat-dialog-close cdkFocusInitial data-imx-identifier="aad-user-create-dialog-cancel">
     <span translate>#LDS#Cancel</span>
   </button>
-  <button mat-flat-button color="primary" (click)="create()"
-    [disabled]="detailsFormGroup.pristine || detailsFormGroup.invalid" data-imx-identifier="aad-user-create-dialog-add">
+  <button mat-flat-button color="primary" (click)="create()" [disabled]="detailsFormGroup.pristine || detailsFormGroup.invalid" data-imx-identifier="aad-user-create-dialog-add">
     <span translate>#LDS#Add</span>
   </button>
 </div>

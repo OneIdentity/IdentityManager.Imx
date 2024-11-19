@@ -1,41 +1,35 @@
-<h1 *ngIf="!isEmpty" class="mat-headline">
+<h2 *ngIf="!isEmpty" class="mat-headline">
   <span>{{ '#LDS#Heading Shopping Cart' | translate }}</span>
   <imx-help-contextual></imx-help-contextual>
-</h1>
+</h2>
 
 <imx-shopping-cart-empty *ngIf="isEmpty"></imx-shopping-cart-empty>
 
 <div *ngIf="!isEmpty" class="imx-shoppingcart-top-container">
   <div>
-      <ng-container *ngIf="shoppingCartCandidates.length > 1">
+    <ng-container *ngIf="shoppingCartCandidates.length > 1">
       <p class="imx-itshop-info">
-          {{ '#LDS#You currently have more than one shopping cart. Select the shopping cart you want to use.' | translate }}
+        {{ '#LDS#You currently have more than one shopping cart. Select the shopping cart you want to use.' | translate }}
       </p>
 
       <mat-form-field appearance="outline" *ngIf="shoppingCartCandidates.length > 3; else shoppingCartSelectRadioGroup">
-          <mat-label>{{ '#LDS#Shopping cart' | translate }}</mat-label>
-          <mat-select [(ngModel)]="selectedItshopCart" (selectionChange)="getData(false)"
-            data-imx-identifier="shoppingCart-select-cart-select" class="imx-itshop-info">
-            <mat-option *ngFor="let item of shoppingCartCandidates; let i = index" [value]="item"
-                [attr.data-imx-identifier]="'shoppingCarts-option-' + (i + 1)">
-                <ng-container *ngTemplateOutlet="shoppingCartDisplay; context: { $implicit: item }"></ng-container>
-            </mat-option>
-          </mat-select>
+        <mat-label>{{ '#LDS#Shopping cart' | translate }}</mat-label>
+        <mat-select [(ngModel)]="selectedItshopCart" (selectionChange)="getData(false)" data-imx-identifier="shoppingCart-select-cart-select" class="imx-itshop-info">
+          <mat-option *ngFor="let item of shoppingCartCandidates; let i = index" [value]="item" [attr.data-imx-identifier]="'shoppingCarts-option-' + (i + 1)">
+            <ng-container *ngTemplateOutlet="shoppingCartDisplay; context: { $implicit: item }"></ng-container>
+          </mat-option>
+        </mat-select>
       </mat-form-field>
 
       <ng-template #shoppingCartSelectRadioGroup>
-          <mat-radio-group [(ngModel)]="selectedItshopCart" (change)="getData(false)"
-            data-imx-identifier="shoppingCart-select-cart-radioGroup" class="imx-itshop-info">
-            <mat-radio-button *ngFor="let item of shoppingCartCandidates; let i = index" [value]="item"
-                [attr.data-imx-identifier]="'shoppingCarts-radio-' + (i + 1)">
-                <ng-container *ngTemplateOutlet="shoppingCartDisplay; context: { $implicit: item }"></ng-container>
-            </mat-radio-button>
-          </mat-radio-group>
+        <mat-radio-group [(ngModel)]="selectedItshopCart" (change)="getData(false)" data-imx-identifier="shoppingCart-select-cart-radioGroup" class="imx-itshop-info">
+          <mat-radio-button *ngFor="let item of shoppingCartCandidates; let i = index" [value]="item" [attr.data-imx-identifier]="'shoppingCarts-radio-' + (i + 1)">
+            <ng-container *ngTemplateOutlet="shoppingCartDisplay; context: { $implicit: item }"></ng-container>
+          </mat-radio-button>
+        </mat-radio-group>
       </ng-template>
 
-      <ng-template #shoppingCartDisplay let-item>
-          {{ '#LDS#Shopping cart' | translate }}:&nbsp;{{ item.DocumentNumber.value }}
-      </ng-template>
+      <ng-template #shoppingCartDisplay let-item> {{ '#LDS#Shopping cart' | translate }}:&nbsp;{{ item.DocumentNumber.value }} </ng-template>
     </ng-container>
   </div>
   <div class="imx-shoppingcart-top-right-container">
@@ -49,81 +43,141 @@
 </div>
 
 <ng-container *ngIf="!isEmpty && selectedItshopCart && shoppingCart">
-   <div class="imx-itshop-content" *ngIf="selectedItshopCart.CheckStatus.value === 0; else shoppingCartIsBeingProcessed">
-      <mat-card>
-         <imx-cart-items #cartItems  (dataChange)="getData($event)" (selectionChange)="selectionChanged($event)" [shoppingCart]="shoppingCart"></imx-cart-items>
-      </mat-card>
-      <div class="imx-toolbar">
-        <button mat-stroked-button data-imx-identifier="shoppingcart-actions-button"
-          title="{{ '#LDS#Actions' | translate }}" [matMenuTriggerFor]="actionsMenu">
-          <eui-icon icon="ellipsisvertical"></eui-icon>
-        </button>
-        <mat-menu data-imx-identifier="imx-table-actions" #bulkActionToolbar="matMenu">
-          <button *ngIf="cartItems?.forLater; else moveToLater" mat-menu-item data-imx-identifier="imx-table-actions-move-menu" [disabled]="!cartItems?.itemsCanBeMoved()"
-              title="{{ '#LDS#Moves the selected products to your shopping cart' | translate }}" (click)="cartItems?.moveSelectedToCart()">
-              {{ '#LDS#Move to shopping cart' | translate }}
-          </button>
-          <ng-template #moveToLater>
-              <button mat-menu-item data-imx-identifier="imx-table-actions-move-menu" [disabled]="!cartItems?.itemsCanBeMoved()"
-                  title="{{ '#LDS#Moves the selected products to your Saved for Later list' | translate }}" (click)="cartItems?.moveSelectedToLater()">
-                  {{ '#LDS#Move to saved for later' | translate }}
-              </button>
-          </ng-template>
-          <button data-imx-identifier="imx-table-actions-remove-menu" [disabled]="!cartItems?.itemsCanBeDeleted()"
-            title="{{'#LDS#Removes the selected products from your shopping cart'| translate }}" mat-menu-item (click)="cartItems?.removeSelectedItems()">
-              {{'#LDS#Remove selected' | translate  }}
-          </button>
-      </mat-menu>
-        <button mat-raised-button color="primary" data-imx-identifier="shoppingcart-submit-button"
-            (click)="submitShoppingCart()" [disabled]="shoppingCart.totalCount === 0 || shoppingCart.hasErrors || selectedItems?.length > 0">
-            {{ '#LDS#Submit' | translate }}
-        </button>
-        <mat-menu data-imx-identifier="shoppingcart-actions-menu" #actionsMenu="matMenu">
-            <button *ngIf="shoppingCart.totalCount > 0" data-imx-identifier="shoppingcart-check-cart-button" [disabled]="selectedItems?.length > 0"
-              title="{{ '#LDS#Checks your request for possible errors' | translate }}" mat-menu-item (click)="validate()">
-              {{ '#LDS#Check shopping cart' | translate }}
-            </button>
-            <button data-imx-identifier="shoppingcart-delete-all-requests-button"
-              title="{{ '#LDS#Removes all products from your shopping cart' | translate }}" mat-menu-item (click)="deleteCart()">
-              {{ '#LDS#Delete shopping cart' | translate }}
-            </button>
-            <button data-imx-identifier="shoppingcart-goto-save-for-later-link"
-              title="{{ '#LDS#Shows all products in your Saved for Later list' | translate }}" mat-menu-item [routerLink]="['later']">
-              {{ '#LDS#View saved for later list' | translate }}
-            </button>
-            <mat-divider></mat-divider>
-            <button *ngIf="canCreateRequestTemplates" [disabled]="!cartItems?.haveSelectedItems()" data-imx-identifier="shoppingcart-create-itshoppattern-button-selected-products"
-              mat-menu-item (click)="createItshopPattern(selectedItems)">
-              {{'#LDS#Create product bundle' | translate}}
-            </button>
-            <button *ngIf="cartItems?.forLater; else moveToLater" mat-menu-item data-imx-identifier="imx-table-actions-move-menu" [disabled]="!cartItems?.itemsCanBeMoved()"
-                title="{{ '#LDS#Moves the selected products to your shopping cart' | translate }}" (click)="cartItems?.moveSelectedToCart()">
-                {{ '#LDS#Move to shopping cart' | translate }}
-            </button>
-            <ng-template #moveToLater>
-                <button mat-menu-item data-imx-identifier="imx-table-actions-move-menu" [disabled]="!cartItems?.itemsCanBeMoved()"
-                    title="{{ '#LDS#Moves the selected products to your Saved for Later list' | translate }}" (click)="cartItems?.moveSelectedToLater()">
-                    {{ '#LDS#Move to saved for later' | translate }}
-                </button>
-            </ng-template>
-            <button data-imx-identifier="imx-table-actions-remove-menu" [disabled]="!cartItems?.itemsCanBeDeleted()"
-              title="{{'#LDS#Removes the selected products from your shopping cart'| translate }}" mat-menu-item (click)="cartItems?.removeSelectedItems()">
-                {{'#LDS#Remove selected' | translate  }}
-            </button>
-            <button data-imx-identifier="imx-table-actions-edit-menu" [disabled]="!cartItems?.itemsCanBeEdited()"
-              title="{{'#LDS#Lets you edit common request properties for the selected products'| translate }}" mat-menu-item (click)="cartItems?.editSelectedItems()">
-                {{'#LDS#Edit selected' | translate  }}
-            </button>
-        </mat-menu>
-      </div>
-   </div>
-
-   <ng-template #shoppingCartIsBeingProcessed>
-      <div class="LabelBlock" class="imx-message imx-message-info">
-         {{ '#LDS#The shopping cart is currently being processed.' | translate }}
-      </div>
-      <button mat-button (click)="getData(false)" data-imx-identifier="shoppingcart-reload-button">
-         {{ '#LDS#Reload' | translate }}
+  <div class="imx-itshop-content" *ngIf="selectedItshopCart.CheckStatus.value === 0; else shoppingCartIsBeingProcessed">
+    <mat-card>
+      <imx-cart-items #cartItems (dataChange)="getData($event)" (selectionChange)="selectionChanged($event)" [shoppingCart]="shoppingCart"></imx-cart-items>
+    </mat-card>
+    <div class="imx-toolbar">
+      <button mat-stroked-button data-imx-identifier="shoppingcart-actions-button" title="{{ '#LDS#Actions' | translate }}" [matMenuTriggerFor]="actionsMenu">
+        <eui-icon icon="ellipsisvertical"></eui-icon>
       </button>
-   </ng-template>
+      <mat-menu data-imx-identifier="imx-table-actions" #bulkActionToolbar="matMenu">
+        <button
+          *ngIf="cartItems?.forLater; else moveToLater"
+          mat-menu-item
+          data-imx-identifier="imx-table-actions-move-menu"
+          [disabled]="!cartItems?.itemsCanBeMoved()"
+          title="{{ '#LDS#Moves the selected products to your shopping cart' | translate }}"
+          (click)="cartItems?.moveSelectedToCart()"
+        >
+          {{ '#LDS#Move to shopping cart' | translate }}
+        </button>
+        <ng-template #moveToLater>
+          <button
+            mat-menu-item
+            data-imx-identifier="imx-table-actions-move-menu"
+            [disabled]="!cartItems?.itemsCanBeMoved()"
+            title="{{ '#LDS#Moves the selected products to your Saved for Later list' | translate }}"
+            (click)="cartItems?.moveSelectedToLater()"
+          >
+            {{ '#LDS#Move to saved for later' | translate }}
+          </button>
+        </ng-template>
+        <button
+          data-imx-identifier="imx-table-actions-remove-menu"
+          [disabled]="!cartItems?.itemsCanBeDeleted()"
+          title="{{ '#LDS#Removes the selected products from your shopping cart' | translate }}"
+          mat-menu-item
+          (click)="cartItems?.removeSelectedItems()"
+        >
+          {{ '#LDS#Remove selected' | translate }}
+        </button>
+      </mat-menu>
+      <button
+        mat-raised-button
+        color="primary"
+        data-imx-identifier="shoppingcart-submit-button"
+        (click)="submitShoppingCart()"
+        [disabled]="shoppingCart.totalCount === 0 || shoppingCart.hasErrors || selectedItems?.length > 0"
+      >
+        {{ '#LDS#Submit' | translate }}
+      </button>
+      <mat-menu data-imx-identifier="shoppingcart-actions-menu" #actionsMenu="matMenu">
+        <button
+          *ngIf="shoppingCart.totalCount > 0"
+          data-imx-identifier="shoppingcart-check-cart-button"
+          [disabled]="selectedItems?.length > 0"
+          title="{{ '#LDS#Checks your request for possible errors' | translate }}"
+          mat-menu-item
+          (click)="validate()"
+        >
+          {{ '#LDS#Check shopping cart' | translate }}
+        </button>
+        <button
+          data-imx-identifier="shoppingcart-delete-all-requests-button"
+          title="{{ '#LDS#Removes all products from your shopping cart' | translate }}"
+          mat-menu-item
+          (click)="deleteCart()"
+        >
+          {{ '#LDS#Delete shopping cart' | translate }}
+        </button>
+        <button
+          data-imx-identifier="shoppingcart-goto-save-for-later-link"
+          title="{{ '#LDS#Shows all products in your Saved for Later list' | translate }}"
+          mat-menu-item
+          [routerLink]="['later']"
+        >
+          {{ '#LDS#View saved for later list' | translate }}
+        </button>
+        <mat-divider></mat-divider>
+        <button
+          *ngIf="canCreateRequestTemplates"
+          [disabled]="!cartItems?.haveSelectedItems()"
+          data-imx-identifier="shoppingcart-create-itshoppattern-button-selected-products"
+          mat-menu-item
+          (click)="createItshopPattern(selectedItems)"
+        >
+          {{ '#LDS#Create product bundle' | translate }}
+        </button>
+        <button
+          *ngIf="cartItems?.forLater; else moveToLater"
+          mat-menu-item
+          data-imx-identifier="imx-table-actions-move-menu"
+          [disabled]="!cartItems?.itemsCanBeMoved()"
+          title="{{ '#LDS#Moves the selected products to your shopping cart' | translate }}"
+          (click)="cartItems?.moveSelectedToCart()"
+        >
+          {{ '#LDS#Move to shopping cart' | translate }}
+        </button>
+        <ng-template #moveToLater>
+          <button
+            mat-menu-item
+            data-imx-identifier="imx-table-actions-move-menu"
+            [disabled]="!cartItems?.itemsCanBeMoved()"
+            title="{{ '#LDS#Moves the selected products to your Saved for Later list' | translate }}"
+            (click)="cartItems?.moveSelectedToLater()"
+          >
+            {{ '#LDS#Move to saved for later' | translate }}
+          </button>
+        </ng-template>
+        <button
+          data-imx-identifier="imx-table-actions-remove-menu"
+          [disabled]="!cartItems?.itemsCanBeDeleted()"
+          title="{{ '#LDS#Removes the selected products from your shopping cart' | translate }}"
+          mat-menu-item
+          (click)="cartItems?.removeSelectedItems()"
+        >
+          {{ '#LDS#Remove selected' | translate }}
+        </button>
+        <button
+          data-imx-identifier="imx-table-actions-edit-menu"
+          [disabled]="!cartItems?.itemsCanBeEdited()"
+          title="{{ '#LDS#Lets you edit common request properties for the selected products' | translate }}"
+          mat-menu-item
+          (click)="cartItems?.editSelectedItems()"
+        >
+          {{ '#LDS#Edit selected' | translate }}
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+
+  <ng-template #shoppingCartIsBeingProcessed>
+    <div class="LabelBlock" class="imx-message imx-message-info">
+      {{ '#LDS#The shopping cart is currently being processed.' | translate }}
+    </div>
+    <button mat-button (click)="getData(false)" data-imx-identifier="shoppingcart-reload-button">
+      {{ '#LDS#Reload' | translate }}
+    </button>
+  </ng-template>
 </ng-container>

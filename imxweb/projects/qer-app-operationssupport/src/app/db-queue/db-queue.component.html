@@ -1,23 +1,15 @@
-<h1 class="mat-headline">
+<h2 class="mat-headline">
   {{ '#LDS#Heading DBQueue' | translate }}
-</h1>
+</h2>
 <div class="imx-table-container">
-  <imx-data-source-toolbar
-    [alwaysVisible]="true"
-    #dst
-    [settings]="dstSettings"
-    (search)="onSearch($event)"
-    [options]="['search']"
-    (navigationStateChanged)="getData($event)"
-  >
-  <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
-
+  <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings" (search)="onSearch($event)" [options]="['search']" (navigationStateChanged)="getData($event)">
+    <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
   </imx-data-source-toolbar>
   <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual">
-    <imx-data-table-column columnLabel="{{'#LDS#DBQueue task' | translate}}" [entityColumn]="entitySchema?.Columns.UID_Task"> </imx-data-table-column>
-    <imx-data-table-column columnLabel="{{'#LDS#In processing' | translate}}" [entityColumn]="entitySchema?.Columns.CountProcessing"> </imx-data-table-column>
-    <imx-data-table-column columnLabel="{{'#LDS#To be processed' | translate}}" [entityColumn]="entitySchema?.Columns.CountWaiting"> </imx-data-table-column>
-     </imx-data-table>
+    <imx-data-table-column columnLabel="{{ '#LDS#DBQueue task' | translate }}" [entityColumn]="entitySchema?.Columns.UID_Task"> </imx-data-table-column>
+    <imx-data-table-column columnLabel="{{ '#LDS#In processing' | translate }}" [entityColumn]="entitySchema?.Columns.CountProcessing"> </imx-data-table-column>
+    <imx-data-table-column columnLabel="{{ '#LDS#To be processed' | translate }}" [entityColumn]="entitySchema?.Columns.CountWaiting"> </imx-data-table-column>
+  </imx-data-table>
   <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
 </div>
 
@@ -27,4 +19,3 @@
     <span>{{ '#LDS#Refresh' | translate }}</span>
   </button>
 </ng-template>
-

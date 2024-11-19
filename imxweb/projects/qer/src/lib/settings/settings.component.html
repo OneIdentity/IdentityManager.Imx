@@ -1,24 +1,26 @@
-<h1 mat-dialog-title>{{'#LDS#Heading User Interface Settings' | translate }}</h1>
+<h2 mat-dialog-title>{{ '#LDS#Heading User Interface Settings' | translate }}</h2>
 <div mat-dialog-content>
   <div class="setting-form-fields">
-    <eui-theme-switcher #themeSwitcherControl
+    <eui-theme-switcher
+      #themeSwitcherControl
       [autoThemeDisplayText]="'#LDS#Device theme' | translate"
       [label]="'#LDS#Application theme' | translate"
       [lightThemeDisplayText]="'#LDS#Light theme' | translate"
-      [darkThemeDisplayText]="'#LDS#Dark theme'| translate"
+      [darkThemeDisplayText]="'#LDS#Dark theme' | translate"
       [contrastThemeDisplayText]="'#LDS#High-contrast theme' | translate"
-      [customThemes]="customThemes">
+      [customThemes]="customThemes"
+    >
     </eui-theme-switcher>
     <imx-cdr-editor class="fullwidth" [cdr]="timeZoneCdr"></imx-cdr-editor>
     <mat-slide-toggle *ngIf="profileSettings" [(ngModel)]="profileSettings.UseProfileLanguage" [disabled]="!userCulture">
       {{ '#LDS#Use profile language' | translate }}
-      <span *ngIf="userCulture">({{userCulture}})</span>
+      <span *ngIf="userCulture">({{ userCulture }})</span>
     </mat-slide-toggle>
   </div>
 </div>
 <div mat-dialog-actions>
-  <button mat-stroked-button color="warn" (click)="resetProfileSettings()"> {{ '#LDS#Reset' | translate }}</button>
+  <button mat-stroked-button color="warn" (click)="resetProfileSettings()">{{ '#LDS#Reset' | translate }}</button>
   <div class="auto-space"></div>
   <button mat-stroked-button mat-dialog-close (click)="cancelProfileSettings()">{{ '#LDS#Cancel' | translate }}</button>
-  <button mat-raised-button color="primary" (click)="saveProfileSettings()"> {{ '#LDS#Save' | translate }}</button>
+  <button mat-raised-button color="primary" (click)="saveProfileSettings()">{{ '#LDS#Save' | translate }}</button>
 </div>

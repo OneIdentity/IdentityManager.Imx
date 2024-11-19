@@ -1,15 +1,19 @@
+<h2 class="mat-headline">
+  {{ '#LDS#Global KPIs' | translate }}
+</h2>
 <mat-card>
-  <mat-card-title>{{ '#LDS#Global KPIs' | translate }}</mat-card-title>
   <mat-card-subtitle>{{ '#LDS#These KPIs give you an overview of your applications, their contents and states.' | translate }}</mat-card-subtitle>
   <mat-card-content>
     <ng-container *ngIf="hasKpis(); else nonExisting">
       <ul class="imx-kpi-list">
         <li *ngFor="let kpi of kpiData">
-          <span class="imx-kpi-number">{{!kpi.calculated ? '-' : !kpi.currentDataValue ? '' : kpi.currentDataValue.toLocaleString(this.browserCulture,
-            { minimumFractionDigits: 0, maximumFractionDigits: 3 })}}</span>
+          <span class="imx-kpi-number">{{
+            !kpi.calculated ? '-' : !kpi.currentDataValue ? '' : kpi.currentDataValue.toLocaleString(this.browserCulture, { minimumFractionDigits: 0, maximumFractionDigits: 3 })
+          }}</span>
           <span class="imx-kpi-display">{{ kpi.chartData.Display }}</span>
-          <button [disabled]="!isCalculated(kpi.chartData)" color="primary" mat-button data-imx-identifier="global_KPI_showShowDetails"
-            (click)="showDetails(kpi)">{{ '#LDS#View' | translate }}</button>
+          <button [disabled]="!isCalculated(kpi.chartData)" color="primary" mat-button data-imx-identifier="global_KPI_showShowDetails" (click)="showDetails(kpi)">
+            {{ '#LDS#View' | translate }}
+          </button>
         </li>
       </ul>
     </ng-container>
@@ -18,24 +22,22 @@
 
 <ng-template #chartdialog let-data>
   <div mat-dialog-title>
-    <div class="imx-title-text">{{data.chartData.Display }}</div>
-    <button mat-icon-button color="basic" data-imx-identifier="global_KPI_closeChartDialog"
-      class="imx-close-dialog-button" mat-dialog-close>
+    <div class="imx-title-text">{{ data.chartData.Display }}</div>
+    <button mat-icon-button color="basic" data-imx-identifier="global_KPI_closeChartDialog" class="imx-close-dialog-button" mat-dialog-close>
       <eui-icon icon="close" size="large"></eui-icon>
     </button>
   </div>
   <div mat-dialog-content>
-    <p class="imx-subtitle-text">{{ data.chartData.Description}}</p>
-    <div class="imx-chart" *ngIf="data.pieChart != null" >
+    <p class="imx-subtitle-text">{{ data.chartData.Description }}</p>
+    <div class="imx-chart" *ngIf="data.pieChart != null">
       <eui-billboard class="imx-kpi-chart" [options]="data.pieChart"></eui-billboard>
     </div>
-  <h1 *ngIf="data.chartOptions != null">{{'#LDS#History' | translate}}</h1>
+    <h3 *ngIf="data.chartOptions != null">{{ '#LDS#History' | translate }}</h3>
     <div class="imx-chart">
       <eui-billboard [options]="data.chartDetails"></eui-billboard>
     </div>
   </div>
 </ng-template>
-
 
 <!-- Template for non existing entitlements -->
 <ng-template #nonExisting>

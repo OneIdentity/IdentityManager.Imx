@@ -1,16 +1,12 @@
-<h1 mat-dialog-title>{{'#LDS#Heading Memberships Cannot Be Requested' | translate}}</h1>
+<h2 mat-dialog-title>{{ '#LDS#Heading Memberships Cannot Be Requested' | translate }}</h2>
 <div mat-dialog-content>
   <p>
-    {{'#LDS#The membership in "{0}" could not be requested for the following identities.' | translate |
-    ldsReplace:data.membershipName }}
+    {{ '#LDS#The membership in "{0}" could not be requested for the following identities.' | translate | ldsReplace : data.membershipName }}
   </p>
   <mat-card class="imx-dialog-mat-card-content">
-    <imx-data-source-toolbar #dst [settings]="dstSettings"
-      data-imx-identifier="not-requestable-memberships-dst">
-    </imx-data-source-toolbar>
+    <imx-data-source-toolbar #dst [settings]="dstSettings" data-imx-identifier="not-requestable-memberships-dst"> </imx-data-source-toolbar>
     <div class="imx-table-container">
-      <imx-data-table [dst]="dst" mode="manual" [detailViewVisible]="false" [selectable]="false"
-        data-imx-identifier="not-requestable-memberships-datatable">
+      <imx-data-table [dst]="dst" mode="manual" [detailViewVisible]="false" [selectable]="false" data-imx-identifier="not-requestable-memberships-datatable">
         <imx-data-table-column [entityColumn]="data.entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
           <ng-template let-item>
             <div>{{ item.GetEntity().GetDisplay() }}</div>
@@ -27,6 +23,6 @@
 </div>
 <div mat-dialog-actions align="end">
   <button mat-button mat-dialog-close color="primary" data-imx-identifier="not-requestable-memberships-button-close">
-    {{'#LDS#Close' | translate}}
+    {{ '#LDS#Close' | translate }}
   </button>
 </div>

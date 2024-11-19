@@ -24,11 +24,10 @@
  *
  */
 
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, UntypedFormControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 
-import moment from 'moment-timezone';
-import { Moment } from 'moment-timezone';
+import moment, { Moment } from 'moment-timezone';
 import { Subscription } from 'rxjs';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
 import { DateParser } from './date-parser';
@@ -219,6 +218,9 @@ export class DateComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.control.valueChanges.subscribe((x) => {
+        if (this.shadowText.untouched) {
+          this.shadowText.markAsTouched();
+        }
         this.isUpdated = true;
         this.handleControlChanged();
       })

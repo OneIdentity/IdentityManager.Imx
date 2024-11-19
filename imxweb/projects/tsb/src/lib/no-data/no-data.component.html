@@ -1,12 +1,12 @@
 <div class="data-explorer-sync-status">
   <div *ngIf="mode === 'no-sync'">
     <eui-icon icon="sync"></eui-icon>
-    <h1 translate>#LDS#Heading No Synchronization Configured</h1>
+    <h2 translate>#LDS#Heading No Synchronization Configured</h2>
     <p translate>#LDS#Please configure a synchronization using the Synchronization Editor.</p>
   </div>
   <div *ngIf="mode === 'no-data'">
     <eui-icon icon="database"></eui-icon>
-    <h1 translate>#LDS#Heading No Data Synchronized</h1>
+    <h2 translate>#LDS#Heading No Data Synchronized</h2>
     <p translate>#LDS#A synchronization has been configured in the Synchronization Editor, but not run yet.</p>
   </div>
 </div>

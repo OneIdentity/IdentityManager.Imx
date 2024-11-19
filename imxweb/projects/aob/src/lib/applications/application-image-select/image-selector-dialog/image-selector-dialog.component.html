@@ -1,35 +1,31 @@
 <div>
-  <h1 mat-dialog-title>{{ title | translate }}</h1>
+  <h2 mat-dialog-title>{{ title | translate }}</h2>
   <div mat-dialog-content>
-    <span>{{'#LDS#Select an Icon' | translate}}</span>
+    <span>{{ '#LDS#Select an Icon' | translate }}</span>
     <div class="imx-image-selector-list">
-      <mat-card *ngFor="let name of iconNames" (click)="selectIcon(name)" [class.selected]="iconIsSelected(name)"
-        data-imx-identifier="selector-icon-select">
+      <mat-card *ngFor="let name of iconNames" (click)="selectIcon(name)" [class.selected]="iconIsSelected(name)" data-imx-identifier="selector-icon-select">
         <eui-icon size="xl" icon="{{ name }}"></eui-icon>
       </mat-card>
     </div>
-    <span>{{'#LDS#WC_Or' | translate}}</span>
+    <span>{{ '#LDS#WC_Or' | translate }}</span>
     <mat-card *ngIf="!imageUrl" class="imx-default-preview-image" (click)="file.click()" data-imx-identifier="selector-image-open-upload">
       <eui-icon size="xl" icon="image"></eui-icon>
     </mat-card>
     <mat-card class="imx-default-preview-image" *ngIf="imageUrl" (click)="selectImage()" [class.selected]="imageIsSelected">
-      <img [src]="imageHandler.addBase64Prefix(imageUrl)" height="48" class="imx-preview-image" data-imx-identifier="selector-image-select">
+      <img [src]="imageHandler.addBase64Prefix(imageUrl)" height="48" class="imx-preview-image" data-imx-identifier="selector-image-select" />
     </mat-card>
-    <button type="button" mat-raised-button color="warn" data-imx-identifier="selector-image-open-upload-button"
-      (click)="file.click()">{{'#LDS#Select image' | translate}}</button>
-    <input class="imx-hidden-element" #file
-      type="file" multiple='false' accept='image/png'
-      (click)="resetFileFormatErrorState()" (change)="emitFiles($event.target.files)"/>
-    <div *ngIf="fileFormatError" class="imx-error-message">{{'#LDS#Please select an image in PNG format.' | translate}}</div>
+    <button type="button" mat-raised-button color="warn" data-imx-identifier="selector-image-open-upload-button" (click)="file.click()">
+      {{ '#LDS#Select image' | translate }}
+    </button>
+    <input class="imx-hidden-element" #file type="file" multiple="false" accept="image/png" (click)="resetFileFormatErrorState()" (change)="emitFiles($event.target.files)" />
+    <div *ngIf="fileFormatError" class="imx-error-message">{{ '#LDS#Please select an image in PNG format.' | translate }}</div>
   </div>
   <div mat-dialog-actions align="end">
-    <button mat-stroked-button type="button" mat-dialog-close
-      data-imx-identifier="selector-dialog-button-cancel">
-      {{'#LDS#Cancel' | translate}}
+    <button mat-stroked-button type="button" mat-dialog-close data-imx-identifier="selector-dialog-button-cancel">
+      {{ '#LDS#Cancel' | translate }}
     </button>
-    <button mat-raised-button type="button" color="primary" (click)="onSave()"
-      data-imx-identifier="selector-dialog-button-save">
-      {{'#LDS#Save' | translate}}
+    <button mat-raised-button type="button" color="primary" (click)="onSave()" data-imx-identifier="selector-dialog-button-save">
+      {{ '#LDS#Save' | translate }}
     </button>
   </div>
 </div>

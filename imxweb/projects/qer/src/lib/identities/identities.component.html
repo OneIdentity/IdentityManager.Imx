@@ -1,22 +1,35 @@
 <mat-card class="data-explorer data-explorer--identities" [class.identities--fullscreen]="showFullscreen">
   <div class="data-explorer-card-header">
     <div class="data-explorer-card-header-bg">
-      <span translate>#LDS#Identities</span>
+      <h3 translate>#LDS#Identities</h3>
       <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
     </div>
   </div>
-  <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['search', 'sort', 'filter', 'groupBy', 'settings']" [busyService]="busyService"
-    [searchBoxText]="'#LDS#Search' | translate" (navigationStateChanged)="onNavigationStateChanged($event)"
-    (search)="onSearch($event)" (updateConfig)="updateConfig($event)" (deleteConfigById)="deleteConfigById($event)"></imx-data-source-toolbar>
+  <imx-data-source-toolbar
+    #dst
+    [settings]="dstSettings"
+    [options]="['search', 'sort', 'filter', 'groupBy', 'settings']"
+    [busyService]="busyService"
+    [searchBoxText]="'#LDS#Search' | translate"
+    (navigationStateChanged)="onNavigationStateChanged($event)"
+    (search)="onSearch($event)"
+    (updateConfig)="updateConfig($event)"
+    (deleteConfigById)="deleteConfigById($event)"
+  ></imx-data-source-toolbar>
   <div class="data-explorer-table">
-    <imx-data-table [dst]="dst" (highlightedEntityChanged)="onIdentityChanged($event)" detailViewVisible="false"
-      data-imx-identifier="identities-tabledata-table" mode="manual" [groupData]="groupData"
-      (groupDataChanged)="onGroupingChange($event)">
+    <imx-data-table
+      [dst]="dst"
+      (highlightedEntityChanged)="onIdentityChanged($event)"
+      detailViewVisible="false"
+      data-imx-identifier="identities-tabledata-table"
+      mode="manual"
+      [groupData]="groupData"
+      (groupDataChanged)="onGroupingChange($event)"
+    >
       <imx-data-table-column [entityColumn]="entitySchemaPersonReports?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
         <ng-template let-item>
           <div data-imx-identifier="identities-tabledata-display">{{ item.GetEntity().GetDisplay() }}</div>
-          <div subtitle data-imx-identifier="identities-tabledata-description">{{
-            item.DefaultEmailAddress.Column.GetDisplayValue() }}</div>
+          <div subtitle data-imx-identifier="identities-tabledata-description">{{ item.DefaultEmailAddress.Column.GetDisplayValue() }}</div>
         </ng-template>
       </imx-data-table-column>
       <imx-data-table-column [entityColumn]="entitySchemaPersonReports?.Columns.IsSecurityIncident" columnLabel="">
@@ -26,16 +39,11 @@
           </div>
         </ng-template>
       </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchemaPersonReports?.Columns.UID_Department">
-      </imx-data-table-column>
-      <imx-data-table-column *ngIf="!this.isAdmin" [entityColumn]="entitySchemaPersonReports?.Columns.IdentityType">
-      </imx-data-table-column>
-      <imx-data-table-column *ngIf="!this.isAdmin" [entityColumn]="entitySchemaPersonReports?.Columns.EmployeeType">
-      </imx-data-table-column>
-      <imx-data-table-column *ngIf="!this.isAdmin" [entityColumn]="entitySchemaPersonReports?.Columns.IsExternal">
-      </imx-data-table-column>
-      <imx-data-table-generic-column alignHeader="center" alignContent="center"
-        [columnName]="entitySchemaPersonReports?.Columns.XMarkedForDeletion.ColumnName">
+      <imx-data-table-column [entityColumn]="entitySchemaPersonReports?.Columns.UID_Department"> </imx-data-table-column>
+      <imx-data-table-column *ngIf="!this.isAdmin" [entityColumn]="entitySchemaPersonReports?.Columns.IdentityType"> </imx-data-table-column>
+      <imx-data-table-column *ngIf="!this.isAdmin" [entityColumn]="entitySchemaPersonReports?.Columns.EmployeeType"> </imx-data-table-column>
+      <imx-data-table-column *ngIf="!this.isAdmin" [entityColumn]="entitySchemaPersonReports?.Columns.IsExternal"> </imx-data-table-column>
+      <imx-data-table-generic-column alignHeader="center" alignContent="center" [columnName]="entitySchemaPersonReports?.Columns.XMarkedForDeletion.ColumnName">
         <ng-template let-item>
           <div *ngIf="item.XMarkedForDeletion.value !== 0">
             <eui-badge color="gray">{{ item.XMarkedForDeletion.Column.GetDisplayValue() }}</eui-badge>
@@ -50,19 +58,26 @@
 <div class="data-explorer-bottom-button-row">
   <button mat-button [matMenuTriggerFor]="menu" data-imx-identifier="identities-button-actions" *ngIf="isManagerForPersons || isAuditor">
     <eui-icon icon="ellipsisvertical"></eui-icon>
-    {{'#LDS#Actions' | translate}}
+    {{ '#LDS#Actions' | translate }}
   </button>
-  <button *ngIf="isPersonAdmin || isManagerForPersons" mat-raised-button color="primary" data-imx-identifier="identities-button-create-new-identity" (click)="createNewIdentity()" class="imx-right-button">
+  <button
+    *ngIf="isPersonAdmin || isManagerForPersons"
+    mat-raised-button
+    color="primary"
+    data-imx-identifier="identities-button-create-new-identity"
+    (click)="createNewIdentity()"
+    class="imx-right-button"
+  >
     <eui-icon icon="add"></eui-icon>
     <span translate>#LDS#Create identity</span>
   </button>
   <mat-menu #menu="matMenu">
     <button *ngIf="isManagerForPersons && !isAdmin" mat-menu-item data-imx-identifier="identities-menu-item-download-report" (click)="personsManagedReport()">
-      {{'#LDS#Download report on identities you are directly responsible for' | translate}}
+      {{ '#LDS#Download report on identities you are directly responsible for' | translate }}
     </button>
     <!-- Created this way because of the accessibility -->
     <ng-container *ngFor="let extension of extensions; let index">
-      <button mat-menu-item (click)="showDynamicReport(extension)">{{extension?.inputData?.caption | translate}}</button>
+      <button mat-menu-item (click)="showDynamicReport(extension)">{{ extension?.inputData?.caption | translate }}</button>
     </ng-container>
   </mat-menu>
 </div>

@@ -1,25 +1,27 @@
-<h1 mat-dialog-title>{{data.prod.GetEntity().GetDisplay()}}</h1>
+<h2 mat-dialog-title>{{ data.prod.GetEntity().GetDisplay() }}</h2>
 <div mat-dialog-content>
   <mat-list>
     <mat-list-item *ngIf="isValueContains(data.prod.OrderableStatus.value, ['PERSONHASOBJECT', 'PERSONHASASSIGNMENTORDER', 'ASSIGNED'])">
-      <eui-icon mat-list-icon icon='info'></eui-icon>
-      <div mat-line>{{
-        data.recipients.value?
-        ('#LDS#This product has already been assigned to {0}.' | translate | ldsReplace:data.recipients.Column.GetDisplayValue())
-        :( '#LDS#This product has already been assigned.' | translate)
-      }}</div>
+      <eui-icon mat-list-icon icon="info"></eui-icon>
+      <div mat-line>
+        {{
+          data.recipients.value
+            ? ('#LDS#This product has already been assigned to {0}.' | translate | ldsReplace : data.recipients.Column.GetDisplayValue())
+            : ('#LDS#This product has already been assigned.' | translate)
+        }}
+      </div>
     </mat-list-item>
     <mat-list-item *ngIf="isValueContains(data.prod.OrderableStatus.value, 'ORDER')">
-      <eui-icon mat-list-icon icon='request'></eui-icon>
-      <div mat-line>{{'#LDS#This product has already been requested.' | translate}}</div>
+      <eui-icon mat-list-icon icon="request"></eui-icon>
+      <div mat-line>{{ '#LDS#This product has already been requested.' | translate }}</div>
     </mat-list-item>
     <mat-list-item *ngIf="isValueContains(data.prod.OrderableStatus.value, 'NOTORDERABLE')">
-      <eui-icon mat-list-icon icon='error'></eui-icon>
-      <div mat-line>{{'#LDS#This product cannot currently be requested.' | translate}}</div>
+      <eui-icon mat-list-icon icon="error"></eui-icon>
+      <div mat-line>{{ '#LDS#This product cannot currently be requested.' | translate }}</div>
     </mat-list-item>
     <mat-list-item *ngIf="isValueContains(data.prod.OrderableStatus.value, 'CART')">
-      <eui-icon mat-list-icon icon='error'></eui-icon>
-      <div mat-line>{{'#LDS#This product is already in your shopping cart.' | translate}}</div>
+      <eui-icon mat-list-icon icon="error"></eui-icon>
+      <div mat-line>{{ '#LDS#This product is already in your shopping cart.' | translate }}</div>
     </mat-list-item>
     <mat-list-item *ngIf="data.prod.OrderableStatus.value === ''">
       <eui-icon mat-list-icon icon="error"></eui-icon>
@@ -28,5 +30,5 @@
   </mat-list>
 </div>
 <div mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close color="primary">{{'#LDS#Close' | translate}}</button>
+  <button mat-button mat-dialog-close color="primary">{{ '#LDS#Close' | translate }}</button>
 </div>

@@ -1,9 +1,9 @@
-<h1 class="mat-headline">{{ '#LDS#Welcome' | translate }}</h1>
+<h2 class="mat-headline">{{ '#LDS#Welcome' | translate }}</h2>
 
 <imx-busy-indicator *ngIf="!viewReady"></imx-busy-indicator>
 
 <ng-container>
-  <div [ngClass]="{ hidden: !viewReady, 'imx-flexible-tile-row': true}">
+  <div [ngClass]="{ hidden: !viewReady, 'imx-flexible-tile-row': true }">
     <imx-badge-tile
       data-imx-identifier="start-tile-shopping-cart"
       [caption]="'#LDS#Heading Products in Shopping Cart' | translate"
@@ -66,7 +66,7 @@
 
     <imx-ext class="imx-flexible-tile-row" id="Dashboard-SmallTiles" [referrer]="this"></imx-ext>
   </div>
-  <div [ngClass]="{ hidden: !viewReady, 'imx-flexible-tile-row': true}">
+  <div [ngClass]="{ hidden: !viewReady, 'imx-flexible-tile-row': true }">
     <imx-icon-tile
       *ngIf="viewReady && ShowPasswordTile()"
       data-imx-identifier="start-tile-no-password-query-and-answer-set"

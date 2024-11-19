@@ -454,9 +454,7 @@ export class DelegationComponent implements OnInit, OnDestroy {
     const schema = this.delegationService.getDelegationSchema();
     this.cdrTimeSpan = [schema.Columns.InsertValidFrom, schema.Columns.InsertValidUntil].map((property) => {
       property.IsReadOnly = false;
-      return new BaseCdr(
-        this.entityService.createLocalEntityColumn(property, undefined, { ValueConstraint: { MinValue: moment().startOf('day') } })
-      );
+      return new BaseCdr(this.entityService.createLocalEntityColumn(property, undefined, { ValueConstraint: { MinValue: moment() } }));
     });
   }
 

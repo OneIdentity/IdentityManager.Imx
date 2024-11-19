@@ -1,25 +1,22 @@
-<h1 class="mat-headline">
-  <span>{{'#LDS#Heading Shopping Cart' | translate}}</span>
+<h2 class="mat-headline">
+  <span>{{ '#LDS#Heading Shopping Cart' | translate }}</span>
   <imx-help-contextual></imx-help-contextual>
-</h1>
+</h2>
 
 <div mat-card-avatar>
   <mat-icon>shopping_cart</mat-icon>
 </div>
-<h2> {{'#LDS#Your shopping cart is currently empty.' | translate}} </h2>
+<h2>{{ '#LDS#Your shopping cart is currently empty.' | translate }}</h2>
 
 <mat-card class="mat-elevation-z0">
-  <button mat-raised-button color="primary" type="button" [routerLink]="['/newrequest/allProducts']"
-    data-imx-identifier="emptycart-link-newproducts">
+  <button mat-raised-button color="primary" type="button" [routerLink]="['/newrequest/allProducts']" data-imx-identifier="emptycart-link-newproducts">
     {{ '#LDS#Start new request' | translate }}
   </button>
   <mat-divider></mat-divider>
-  <button mat-stroked-button type="button" [routerLink]="['/requesthistory']"
-    data-imx-identifier="emptycart-link-requesthistory">
-    {{ '#LDS#View request history' | translate}}
+  <button mat-stroked-button type="button" [routerLink]="['/requesthistory']" data-imx-identifier="emptycart-link-requesthistory">
+    {{ '#LDS#View request history' | translate }}
   </button>
-  <button mat-stroked-button type="button" [routerLink]="['/shoppingcart/later']"
-    data-imx-identifier="emptycart-link-saveforlater">
-    {{'#LDS#View saved for later list' | translate }}
+  <button mat-stroked-button type="button" [routerLink]="['/shoppingcart/later']" data-imx-identifier="emptycart-link-saveforlater">
+    {{ '#LDS#View saved for later list' | translate }}
   </button>
 </mat-card>

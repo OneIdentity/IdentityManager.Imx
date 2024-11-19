@@ -1,23 +1,23 @@
 <div class="imx-content">
-  <h1 class="mat-headline" translate>#LDS#Heading Azure Active Directory Subscriptions</h1>
+  <h2 class="mat-headline" translate>#LDS#Heading Azure Active Directory Subscriptions</h2>
   <mat-card class="imx-content-card">
-    <imx-data-source-toolbar #dst [settings]="dstSettings"
+    <imx-data-source-toolbar
+      #dst
+      [settings]="dstSettings"
       [options]="['search', 'filter']"
       [hiddenFilters]="['namespace']"
-      [searchBoxText]="'#LDS#Search' | translate" (navigationStateChanged)="onNavigationStateChanged($event)"
+      [searchBoxText]="'#LDS#Search' | translate"
+      (navigationStateChanged)="onNavigationStateChanged($event)"
       data-imx-identifier="aad-group-subscriptions-toolbar"
-      (search)="onSearch($event)">
+      (search)="onSearch($event)"
+    >
     </imx-data-source-toolbar>
 
-    <imx-data-table #dataTable [dst]="dst" detailViewVisible="false" [selectable]="false" mode="manual"
-      data-imx-identifier="aad-group-subscriptions-tabledata-table">
-      <imx-data-table-column [entityColumn]="entitySchemaAadGroupSub?.Columns.UID_AADSubSku">
-      </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchemaAadGroupSub?.Columns.XOrigin">
-      </imx-data-table-column>
+    <imx-data-table #dataTable [dst]="dst" detailViewVisible="false" [selectable]="false" mode="manual" data-imx-identifier="aad-group-subscriptions-tabledata-table">
+      <imx-data-table-column [entityColumn]="entitySchemaAadGroupSub?.Columns.UID_AADSubSku"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchemaAadGroupSub?.Columns.XOrigin"> </imx-data-table-column>
     </imx-data-table>
 
     <imx-data-source-paginator data-imx-identifier="aad-group-subscriptions-paginator" [dst]="dst"></imx-data-source-paginator>
-
   </mat-card>
 </div>

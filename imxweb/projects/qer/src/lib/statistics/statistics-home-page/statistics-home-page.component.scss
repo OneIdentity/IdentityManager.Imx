@@ -28,12 +28,6 @@
   }
 
   .left-header {
-    display: flex;
-    align-items: center;
-    h1 {
-      font-weight: inherit;
-    }
-
     eui-icon:hover {
       @include Ease-Transition;
     }

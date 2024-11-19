@@ -1,5 +1,14 @@
+:host {
+  display: flex;
+  flex-direction: column;
+}
+
 mat-card {
   margin-bottom: 20px;
+}
+
+imx-busy-indicator {
+  margin-top: 10px;
 }
 
 imx-bulk-editor {

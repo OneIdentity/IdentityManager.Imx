@@ -1,11 +1,17 @@
 <div class="imx-content-header">
-  <h1 class="mat-headline">
-    {{'#LDS#Heading Web Applications' | translate}}
-  </h1>
+  <h2 class="mat-headline">
+    {{ '#LDS#Heading Web Applications' | translate }}
+  </h2>
 </div>
 <div class="imx-table-container">
-  <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings" (search)="onSearch($event)" [options]="['search', 'filter', 'groupBy']"
-    (navigationStateChanged)="getData($event)">
+  <imx-data-source-toolbar
+    [alwaysVisible]="true"
+    #dst
+    [settings]="dstSettings"
+    (search)="onSearch($event)"
+    [options]="['search', 'filter', 'groupBy']"
+    (navigationStateChanged)="getData($event)"
+  >
     <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
   </imx-data-source-toolbar>
   <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual">

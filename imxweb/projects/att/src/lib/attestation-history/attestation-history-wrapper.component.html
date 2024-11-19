@@ -1,26 +1,29 @@
-<h1 class="mat-headline">
+<h2 class="mat-headline">
   <span>{{ '#LDS#Heading Attestation History' | translate }}</span>
   <imx-help-contextual></imx-help-contextual>
-</h1>
+</h2>
 <mat-card class="imx-history-card">
   <imx-attestation-history (selectionChanged)="onSelectionChanged($event)"></imx-attestation-history>
 </mat-card>
 <div class="imx-button-bar">
   <imx-selected-elements [selectedElements]="selectedCases"></imx-selected-elements>
   <div class="imx-menu-spacer"></div>
-  <button mat-stroked-button data-imx-identifier="attestation-history-button-actions"
-    title="{{ '#LDS#Actions' | translate }}" [matMenuTriggerFor]="actionsMenu" [disabled]="!canPerformActions">
-    <eui-icon icon='ellipsisvertical'></eui-icon>
-    {{'#LDS#Actions' | translate}}
+  <button
+    mat-stroked-button
+    data-imx-identifier="attestation-history-button-actions"
+    title="{{ '#LDS#Actions' | translate }}"
+    [matMenuTriggerFor]="actionsMenu"
+    [disabled]="!canPerformActions"
+  >
+    <eui-icon icon="ellipsisvertical"></eui-icon>
+    {{ '#LDS#Actions' | translate }}
   </button>
   <mat-menu yPosition="above" xPosition="before" data-imx-identifier="attestation-history-actions-menu" #actionsMenu="matMenu">
-    <button *ngIf="canRecallDecision" mat-menu-item data-imx-identifier="attestation-history-recall-decision"
-      (click)="attestationAction.recallDecision(selectedCases)">
-      {{'#LDS#Undo approval decision' | translate}}
+    <button *ngIf="canRecallDecision" mat-menu-item data-imx-identifier="attestation-history-recall-decision" (click)="attestationAction.recallDecision(selectedCases)">
+      {{ '#LDS#Undo approval decision' | translate }}
     </button>
-    <button *ngIf="canWithdrawDelegation" mat-menu-item data-imx-identifier="attestation-history-withdraw-delegation"
-      (click)="attestationAction.revokeAdditional(selectedCases)">
-      {{'#LDS#Withdraw additional attestor' | translate}}
+    <button *ngIf="canWithdrawDelegation" mat-menu-item data-imx-identifier="attestation-history-withdraw-delegation" (click)="attestationAction.revokeAdditional(selectedCases)">
+      {{ '#LDS#Withdraw additional attestor' | translate }}
     </button>
   </mat-menu>
 </div>

@@ -1,7 +1,7 @@
-<h1 class="mat-headline">
+<h2 class="mat-headline">
   <span>{{ '#LDS#Heading Assign an Owner for a System Entitlement' | translate }}</span>
   <imx-help-contextual></imx-help-contextual>
-</h1>
+</h2>
 <div class="imx-system-entitlement-stepper">
   <mat-stepper orientation="vertical" *ngIf="canClaimGroup; else policyDeactivated" [linear]="true" (selectionChange)="stepChange($event)" #stepper>
     <mat-step [stepControl]="entitlementForm" label="{{ '#LDS#Select a system entitlement' | translate }}" [editable]="!ownerAssigned">

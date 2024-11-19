@@ -1,15 +1,12 @@
 <div class="imx-heading-wrapper">
-  <h1 class="mat-headline" translate>#LDS#Processes</h1>
+  <h2 class="mat-headline" translate>#LDS#Processes</h2>
   <eui-alert class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" [dismissable]="false">
-    <span>{{infoText | translate}}</span>
+    <span>{{ infoText | translate }}</span>
   </eui-alert>
 </div>
 
-<mat-slide-toggle class="jobs-toggle-showGraph" color="primary" [checked]="isShowGraph"
-  (change)="isShowGraph = !isShowGraph" data-imx-identifier="jobs-toggle-showGraph">
-  <span>{{(isShowGraph ? '#LDS#Chart view' : '#LDS#Table view') | translate}}</span>
+<mat-slide-toggle class="jobs-toggle-showGraph" color="primary" [checked]="isShowGraph" (change)="isShowGraph = !isShowGraph" data-imx-identifier="jobs-toggle-showGraph">
+  <span>{{ (isShowGraph ? '#LDS#Chart view' : '#LDS#Table view') | translate }}</span>
 </mat-slide-toggle>
-<imx-jobs-gridview [style.display]="isShowGraph ? 'none' : 'flex'" class="imx-job-grid"
-  [preselectFailed]="failed">
-</imx-jobs-gridview>
+<imx-jobs-gridview [style.display]="isShowGraph ? 'none' : 'flex'" class="imx-job-grid" [preselectFailed]="failed"> </imx-jobs-gridview>
 <imx-jobqueue-overview [isShowGraph]="isShowGraph" [style.display]="isShowGraph ? 'flex' : 'none'"></imx-jobqueue-overview>

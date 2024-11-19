@@ -1,20 +1,17 @@
-
-<h1 mat-dialog-title>{{ '#LDS#Heading Edit Translations' | translate}}</h1>
+<h2 mat-dialog-title>{{ '#LDS#Heading Edit Translations' | translate }}</h2>
 <div mat-dialog-content>
-  <ng-container   *ngFor="let column of translationData.ColumnNames">
+  <ng-container *ngFor="let column of translationData.ColumnNames">
     <mat-form-field *ngFor="let item of translationData.Languages | keyvalue" appearance="outline">
-      <mat-label>{{getDisplay(column)}} {{item.value}}</mat-label>
-      <input matInput (input)="onInput($event.target.value, column, item.key)" [ngModel]="getValue(column,item.key)"/>
+      <mat-label>{{ getDisplay(column) }} {{ item.value }}</mat-label>
+      <input matInput (input)="onInput($event.target.value, column, item.key)" [ngModel]="getValue(column, item.key)" />
     </mat-form-field>
   </ng-container>
 </div>
 <div mat-dialog-actions align="end">
-  <button mat-stroked-button type="button" mat-dialog-close
-    data-imx-identifier="translation-editor-button-cancel">
-    {{'#LDS#Cancel' | translate}}
+  <button mat-stroked-button type="button" mat-dialog-close data-imx-identifier="translation-editor-button-cancel">
+    {{ '#LDS#Cancel' | translate }}
   </button>
-  <button mat-raised-button type="button" color="primary"
-    data-imx-identifier="translation-editor-button-save" (click)="save()">
-    {{'#LDS#Save' | translate}}
+  <button mat-raised-button type="button" color="primary" data-imx-identifier="translation-editor-button-save" (click)="save()">
+    {{ '#LDS#Save' | translate }}
   </button>
 </div>

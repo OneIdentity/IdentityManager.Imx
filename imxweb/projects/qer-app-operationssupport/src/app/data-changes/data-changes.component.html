@@ -1,15 +1,11 @@
-<h1 class="mat-headline">{{ '#LDS#Heading Operation History' | translate }}</h1>
+<h2 class="mat-headline">{{ '#LDS#Heading Operation History' | translate }}</h2>
 <div class="search-type">
   <label>{{ '#LDS#Show operations by' | translate }}:</label>
-  <mat-radio-group [attr.data-imx-identifier]="'search-type-radio-group'" class="search-type-radio-group"
-    [(ngModel)]="selectedSearchType" (change)="searchTypeChange()">
-    <mat-radio-button class="search-type-radio-button" [attr.data-imx-identifier]="'search-type-radio-button-user-name'"
-      [value]="'UserName'">
+  <mat-radio-group [attr.data-imx-identifier]="'search-type-radio-group'" class="search-type-radio-group" [(ngModel)]="selectedSearchType" (change)="searchTypeChange()">
+    <mat-radio-button class="search-type-radio-button" [attr.data-imx-identifier]="'search-type-radio-button-user-name'" [value]="'UserName'">
       {{ '#LDS#User' | translate }}
     </mat-radio-button>
-    <mat-radio-button class="search-type-radio-button"
-      [attr.data-imx-identifier]="'search-type-radio-button-date-range-and-change-type'"
-      [value]="'ChangeType'">
+    <mat-radio-button class="search-type-radio-button" [attr.data-imx-identifier]="'search-type-radio-button-date-range-and-change-type'" [value]="'ChangeType'">
       {{ '#LDS#Type of operation' | translate }}
     </mat-radio-button>
   </mat-radio-group>
@@ -17,33 +13,42 @@
 <form [attr.data-imx-identifier]="'search-form'" [formGroup]="searchForm" class="search-type-option-controls">
   <mat-form-field *ngIf="isEnabledUsername">
     <mat-label>{{ '#LDS#User name' | translate }}</mat-label>
-    <input [attr.data-imx-identifier]="'username-input'" formControlName="usernameFormControl" matInput type="text">
+    <input [attr.data-imx-identifier]="'username-input'" formControlName="usernameFormControl" matInput type="text" />
   </mat-form-field>
 
   <mat-form-field *ngIf="isEnabledChangeType">
     <mat-label>{{ '#LDS#Type of operation' | translate }}</mat-label>
     <mat-select [attr.data-imx-identifier]="'change-type-selection'" formControlName="changeTypeFormControl" multiple>
-      <mat-option *ngFor="let changeType of changeTypes" [value]="changeType.value"
-        [attr.data-imx-identifier]="'search-form-change-type-' + changeType.name">{{changeType.title}}</mat-option>
+      <mat-option *ngFor="let changeType of changeTypes" [value]="changeType.value" [attr.data-imx-identifier]="'search-form-change-type-' + changeType.name">{{
+        changeType.title
+      }}</mat-option>
     </mat-select>
   </mat-form-field>
 
   <mat-form-field *ngIf="isEnabledBackTo">
     <mat-label>{{ '#LDS#From' | translate }}</mat-label>
-    <input matInput [matDatepicker]="datepickerBackToDate" formControlName="backToDateFormControl" [attr.data-imx-identifier]="'back-to-date-date-picker'">
+    <input matInput [matDatepicker]="datepickerBackToDate" formControlName="backToDateFormControl" [attr.data-imx-identifier]="'back-to-date-date-picker'" />
     <mat-datepicker-toggle matSuffix [for]="datepickerBackToDate"></mat-datepicker-toggle>
     <mat-datepicker #datepickerBackToDate></mat-datepicker>
   </mat-form-field>
 
   <mat-form-field *ngIf="isEnabledBackFrom">
     <mat-label>{{ '#LDS#To' | translate }}</mat-label>
-    <input matInput [matDatepicker]="datepickerBackFromDate" formControlName="backFromDateFormControl" [attr.data-imx-identifier]="'back-from-date-date-picker'">
+    <input matInput [matDatepicker]="datepickerBackFromDate" formControlName="backFromDateFormControl" [attr.data-imx-identifier]="'back-from-date-date-picker'" />
     <mat-datepicker-toggle matSuffix [for]="datepickerBackFromDate"></mat-datepicker-toggle>
     <mat-datepicker #datepickerBackFromDate></mat-datepicker>
   </mat-form-field>
 
-  <button [attr.data-imx-identifier]="'search-form-submit-button'" mat-raised-button type="button" color="primary"
-    [disabled]="!searchForm.valid" (click)="loadHistoryOperationsData()">{{ '#LDS#Show operations' | translate }}</button>
+  <button
+    [attr.data-imx-identifier]="'search-form-submit-button'"
+    mat-raised-button
+    type="button"
+    color="primary"
+    [disabled]="!searchForm.valid"
+    (click)="loadHistoryOperationsData()"
+  >
+    {{ '#LDS#Show operations' | translate }}
+  </button>
 </form>
 <div class="search-result-table-container">
   <table *ngIf="columns" mat-table [dataSource]="dataSource">
@@ -62,9 +67,13 @@
         </ng-container>
       </td>
     </ng-container>
-    <tr mat-header-row *matHeaderRowDef="displayedColumns sticky: true"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="displayChangedPropertyListSidesheet(row)"></tr>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="displayChangedPropertyListSidesheet(row)"></tr>
   </table>
-  <mat-paginator [pageSize]="paginatorConfigurations.size" [pageSizeOptions]="paginatorConfigurations.sizeOptions" [showFirstLastButtons]="paginatorConfigurations.showFirstLastButtons">
+  <mat-paginator
+    [pageSize]="paginatorConfigurations.size"
+    [pageSizeOptions]="paginatorConfigurations.sizeOptions"
+    [showFirstLastButtons]="paginatorConfigurations.showFirstLastButtons"
+  >
   </mat-paginator>
 </div>

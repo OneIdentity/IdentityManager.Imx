@@ -123,6 +123,7 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
             this.logger.trace(this, 'Control set to new value');
             this.resetControlValue();
             this.valueHasChanged.emit({ value: this.control.value });
+            this.control.updateValueAndValidity({ onlySelf: true, emitEvent: true });
           }
         })
       );

@@ -28,18 +28,19 @@ import { Injectable } from '@angular/core';
 import { Route, Router } from '@angular/router';
 import { RoleExtendedDataWrite } from 'imx-api-qer';
 
+import { ProjectConfig } from 'imx-api-qbm';
 import { PortalAdminRoleEset, PortalPersonRolemembershipsEset, PortalRespEset, V2ApiClientMethodFactory } from 'imx-api-rms';
 import {
+  CollectionLoadParameters,
+  EntityCollectionData,
   EntitySchema,
   ExtendedTypedEntityCollection,
+  MethodDefinition,
+  MethodDescriptor,
   TypedEntity,
   WriteExtTypedEntity,
-  CollectionLoadParameters,
-  MethodDescriptor,
-  EntityCollectionData,
-  MethodDefinition,
 } from 'imx-qbm-dbts';
-import { DynamicMethodService, ImxTranslationProviderService, imx_SessionService, MenuService, HELP_CONTEXTUAL } from 'qbm';
+import { DynamicMethodService, HELP_CONTEXTUAL, ImxTranslationProviderService, MenuService, imx_SessionService } from 'qbm';
 import {
   DataExplorerRegistryService,
   IdentityRoleMembershipsService,
@@ -54,7 +55,6 @@ import { EsetDataModel } from './eset-data-model';
 import { EsetEntitlements } from './eset-entitlements';
 import { EsetMembership } from './eset-membership';
 import { RmsApiService } from './rms-api-client.service';
-import { ProjectConfig } from 'imx-api-qbm';
 
 export interface test {
   GetSchema(): EntitySchema;
@@ -142,6 +142,7 @@ export class InitService {
               search: parameter.search,
               risk: parameter.risk,
               esettype: parameter.esettype,
+              withProperties: parameter.withProperties,
             },
             { signal: this.abortController.signal }
           );

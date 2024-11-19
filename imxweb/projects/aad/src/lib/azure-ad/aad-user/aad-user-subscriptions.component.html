@@ -1,35 +1,48 @@
 <div class="imx-content">
-  <h1 class="mat-headline" translate>#LDS#Heading Azure Active Directory Subscriptions</h1>
+  <h2 class="mat-headline" translate>#LDS#Heading Azure Active Directory Subscriptions</h2>
   <mat-card class="imx-content-card">
-    <imx-data-source-toolbar #dst [settings]="dstSettings"
+    <imx-data-source-toolbar
+      #dst
+      [settings]="dstSettings"
       [options]="['search', 'filter']"
       [hiddenFilters]="['namespace']"
-      [searchBoxText]="'#LDS#Search' | translate" (navigationStateChanged)="onNavigationStateChanged($event)"
-      data-imx-identifier="aad-user-subscriptions-toolbar" [itemStatus]="itemStatus" (search)="onSearch($event)">
+      [searchBoxText]="'#LDS#Search' | translate"
+      (navigationStateChanged)="onNavigationStateChanged($event)"
+      data-imx-identifier="aad-user-subscriptions-toolbar"
+      [itemStatus]="itemStatus"
+      (search)="onSearch($event)"
+    >
     </imx-data-source-toolbar>
-    <imx-data-table #dataTable [dst]="dst" detailViewVisible="false" [selectable]="true"
-      (selectionChanged)="onUserSubSelected($event)" mode="manual"
-      data-imx-identifier="aad-user-subscriptions-tabledata-table">
-      <imx-data-table-column [entityColumn]="entitySchemaAadUser?.Columns.ObjectKeyAADSubSku">
-      </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchemaAadUser?.Columns.XOrigin">
-      </imx-data-table-column>
+    <imx-data-table
+      #dataTable
+      [dst]="dst"
+      detailViewVisible="false"
+      [selectable]="true"
+      (selectionChanged)="onUserSubSelected($event)"
+      mode="manual"
+      data-imx-identifier="aad-user-subscriptions-tabledata-table"
+    >
+      <imx-data-table-column [entityColumn]="entitySchemaAadUser?.Columns.ObjectKeyAADSubSku"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchemaAadUser?.Columns.XOrigin"> </imx-data-table-column>
     </imx-data-table>
-    <imx-data-source-paginator data-imx-identifier="aad-user-subscriptions-paginator" [dst]="dst">
-    </imx-data-source-paginator>
+    <imx-data-source-paginator data-imx-identifier="aad-user-subscriptions-paginator" [dst]="dst"> </imx-data-source-paginator>
   </mat-card>
 </div>
 <mat-card class="governance-sidesheet-action-buttons-container imx-card">
   <div class="governance-sidesheet-action-buttons">
-
-    <button class="justify-start" mat-stroked-button color="warn" [disabled]="selectedUserSubs.length === 0"
-      data-imx-identifier="delete-aad-user-subscription" (click)="removeUserSubscriptions()">
+    <button
+      class="justify-start"
+      mat-stroked-button
+      color="warn"
+      [disabled]="selectedUserSubs.length === 0"
+      data-imx-identifier="delete-aad-user-subscription"
+      (click)="removeUserSubscriptions()"
+    >
       <eui-icon icon="delete"></eui-icon>
       <span translate>#LDS#Remove</span>
     </button>
 
-    <button mat-raised-button color="primary" (click)="showCreateModal()"
-      data-imx-identifier="add-aad-user-subscription">
+    <button mat-raised-button color="primary" (click)="showCreateModal()" data-imx-identifier="add-aad-user-subscription">
       <span translate>#LDS#Add subscription</span>
     </button>
   </div>

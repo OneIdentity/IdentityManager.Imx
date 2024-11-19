@@ -1,12 +1,12 @@
-<h1 mat-dialog-title>
-  {{'#LDS#Heading Products Cannot Be Added to Product Bundle' | translate}}
-</h1>
+<h2 mat-dialog-title>
+  {{ '#LDS#Heading Products Cannot Be Added to Product Bundle' | translate }}
+</h2>
 <div mat-dialog-content>
   <div>
-    {{ description1 | translate}}
+    {{ description1 | translate }}
   </div>
   <div>
-    {{ description2 | translate}}
+    {{ description2 | translate }}
   </div>
   <table mat-table [dataSource]="data.duplicatePatternItems" data-imx-identifier="duplicate-pattern-items-table">
     <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column.name">
@@ -18,11 +18,11 @@
       </td>
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="columnNames"></tr>
-    <tr mat-row *matRowDef="let row; columns: columnNames;"></tr>
+    <tr mat-row *matRowDef="let row; columns: columnNames"></tr>
   </table>
 </div>
 <div mat-dialog-actions align="end">
   <button mat-button mat-dialog-close color="primary" data-imx-identifier="duplicate-pattern-items-button-close">
-    {{'#LDS#Close' | translate}}
+    {{ '#LDS#Close' | translate }}
   </button>
 </div>

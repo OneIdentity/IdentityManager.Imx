@@ -58,7 +58,7 @@
   line-height: 40px;
 }
 
-.imx-generic-tile-caption h1 {
+.imx-generic-tile-caption h3 {
   font-size: 1.15em;
   font-weight: 600;
   text-overflow: ellipsis;
@@ -67,7 +67,7 @@
   flex: 1 1 auto;
 }
 
-.imx-generic-tile-caption h1 > :last-child {
+.imx-generic-tile-caption h3 > :last-child {
   margin-left: 1ex;
 }
 
@@ -121,7 +121,7 @@
     display: flex;
     cursor: auto;
   }
-  
+
   .mat-card-subtitle {
     flex: 1;
     font-size: small;
@@ -130,7 +130,7 @@
     overflow-x: hidden;
     margin-bottom: 0;
   }
-  
+
   .mat-card-actions {
     margin-left: 0;
     margin-right: 0;
@@ -155,7 +155,7 @@
     background-color: $color-gray-10;
   }
 
-  .imx-generic-tile-caption h1 > :last-child {
+  .imx-generic-tile-caption h3 > :last-child {
     color: $color-gray-40;
   }
 
@@ -166,7 +166,7 @@
   .mat-card-subtitle {
     color: $color-gray-40;
   }
-  
+
 }
 
 

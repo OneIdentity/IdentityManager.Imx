@@ -1,16 +1,14 @@
-<imx-tile  size="Custom-Tile" [attr.data-imx-identifier]="'iconTile' + identifier"
-      [identifier]="identifier" [loadingState]="loadingState">
-      <ng-template #CustomTemplate>
-        <mat-card-title [matTooltip]="caption">
-            <eui-icon *ngIf="image" data-imx-identifier="iconTile-eui-icon" size="m" icon="{{image}}"></eui-icon>
-            <div>{{caption}}</div>
-          </mat-card-title>
-          <mat-card-subtitle>
-            <div>{{subtitle}}</div>
-          </mat-card-subtitle>
-          <mat-card-actions align="start" *ngIf="actionTemplate">
-            <ng-container *ngTemplateOutlet="actionTemplate">
-            </ng-container>
-          </mat-card-actions>
-      </ng-template>
+<imx-tile size="Custom-Tile" [attr.data-imx-identifier]="'iconTile' + identifier" [identifier]="identifier" [loadingState]="loadingState">
+  <ng-template #CustomTemplate>
+    <mat-card-title [matTooltip]="caption">
+      <eui-icon *ngIf="image" data-imx-identifier="iconTile-eui-icon" size="m" icon="{{ image }}"></eui-icon>
+      <h3>{{ caption }}</h3>
+    </mat-card-title>
+    <mat-card-subtitle>
+      <div>{{ subtitle }}</div>
+    </mat-card-subtitle>
+    <mat-card-actions align="start" *ngIf="actionTemplate">
+      <ng-container *ngTemplateOutlet="actionTemplate"> </ng-container>
+    </mat-card-actions>
+  </ng-template>
 </imx-tile>

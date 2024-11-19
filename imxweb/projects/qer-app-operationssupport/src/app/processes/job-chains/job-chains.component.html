@@ -1,6 +1,6 @@
-<h1  class="mat-headline">
-  {{'#LDS#Heading Process Steps per Process' | translate}}
-</h1>
+<h2 class="mat-headline">
+  {{ '#LDS#Heading Process Steps per Process' | translate }}
+</h2>
 <div class="imx-table-container">
   <imx-data-source-toolbar [alwaysVisible]="true" #dst [settings]="dstSettings" [options]="['filter', 'groupBy']">
     <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
@@ -12,10 +12,10 @@
       </ng-template>
     </imx-data-table-column>
     <imx-data-table-column [entityColumn]="entitySchemaJobChains?.Columns.Count" [align]="'center'" [columnLabel]="'#LDS#Process steps' | translate">
-    <ng-template let-data>
-      {{ data.Count.Column.GetDisplayValue() }}
-    </ng-template>
-  </imx-data-table-column>
+      <ng-template let-data>
+        {{ data.Count.Column.GetDisplayValue() }}
+      </ng-template>
+    </imx-data-table-column>
   </imx-data-table>
 </div>
 

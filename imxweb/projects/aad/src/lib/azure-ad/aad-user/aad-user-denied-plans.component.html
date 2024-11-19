@@ -1,37 +1,49 @@
 <div class="imx-content">
-  <h1 class="mat-headline" translate>#LDS#Heading Disabled Azure Active Directory Service Plans</h1>
+  <h2 class="mat-headline" translate>#LDS#Heading Disabled Azure Active Directory Service Plans</h2>
   <mat-card class="imx-content-card">
-    <imx-data-source-toolbar #dst [settings]="dstSettings"
+    <imx-data-source-toolbar
+      #dst
+      [settings]="dstSettings"
       [options]="['search', 'filter']"
       [hiddenFilters]="['namespace']"
-      [searchBoxText]="'#LDS#Search' | translate" (navigationStateChanged)="onNavigationStateChanged($event)"
-      data-imx-identifier="aad-user-disabled-plans-toolbar" (search)="onSearch($event)">
+      [searchBoxText]="'#LDS#Search' | translate"
+      (navigationStateChanged)="onNavigationStateChanged($event)"
+      data-imx-identifier="aad-user-disabled-plans-toolbar"
+      (search)="onSearch($event)"
+    >
     </imx-data-source-toolbar>
 
-    <imx-data-table #dataTable [dst]="dst" detailViewVisible="false" [selectable]="true"
-      (selectionChanged)="onDeniedPlanSelected($event)" mode="manual"
-      data-imx-identifier="aad-user-disabled-plans-tabledata-table">
-      <imx-data-table-column [entityColumn]="entitySchemaAadUserDeniedPlan?.Columns.UID_AADDeniedServicePlan">
-      </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchemaAadUserDeniedPlan?.Columns.XOrigin">
-      </imx-data-table-column>
+    <imx-data-table
+      #dataTable
+      [dst]="dst"
+      detailViewVisible="false"
+      [selectable]="true"
+      (selectionChanged)="onDeniedPlanSelected($event)"
+      mode="manual"
+      data-imx-identifier="aad-user-disabled-plans-tabledata-table"
+    >
+      <imx-data-table-column [entityColumn]="entitySchemaAadUserDeniedPlan?.Columns.UID_AADDeniedServicePlan"> </imx-data-table-column>
+      <imx-data-table-column [entityColumn]="entitySchemaAadUserDeniedPlan?.Columns.XOrigin"> </imx-data-table-column>
     </imx-data-table>
 
-    <imx-data-source-paginator data-imx-identifier="aad-user-disabled-plans-paginator" [dst]="dst">
-    </imx-data-source-paginator>
+    <imx-data-source-paginator data-imx-identifier="aad-user-disabled-plans-paginator" [dst]="dst"> </imx-data-source-paginator>
   </mat-card>
 </div>
 <mat-card class="governance-sidesheet-action-buttons-container imx-card">
   <div class="governance-sidesheet-action-buttons">
-
-    <button class="justify-start" mat-stroked-button color="warn" [disabled]="selectedUserDeniedPlans.length === 0"
-      data-imx-identifier="delete-aad-user-disabled-plans" (click)="removeUserDeniedPlans()">
+    <button
+      class="justify-start"
+      mat-stroked-button
+      color="warn"
+      [disabled]="selectedUserDeniedPlans.length === 0"
+      data-imx-identifier="delete-aad-user-disabled-plans"
+      (click)="removeUserDeniedPlans()"
+    >
       <eui-icon icon="delete"></eui-icon>
       <span translate>#LDS#Remove</span>
     </button>
 
-    <button mat-raised-button color="primary" (click)="showCreateModal()"
-      data-imx-identifier="add-aad-user-disabled-plans">
+    <button mat-raised-button color="primary" (click)="showCreateModal()" data-imx-identifier="add-aad-user-disabled-plans">
       <span translate>#LDS#Assign disabled service plan</span>
     </button>
   </div>
