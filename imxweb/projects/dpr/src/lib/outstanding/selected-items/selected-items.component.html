@@ -1,13 +1,23 @@
-<div eui-sidesheet-content>
+<div class="imx-sidesheet-content__overflow">
   <mat-card class="imx-sidesheet-content">
-    <imx-data-source-toolbar #dst [settings]="dstSettings" (navigationStateChanged)="getData($event)"
-      (search)="search($event)" [options]="['search', 'filter']">
+    <imx-data-source-toolbar
+      #dst
+      [settings]="dstSettings"
+      (navigationStateChanged)="getData($event)"
+      (search)="search($event)"
+      [options]="['search', 'filter']"
+    >
     </imx-data-source-toolbar>
 
     <div class="imx-table-container">
-      <imx-data-table #dataTable [dst]="dst" [detailViewVisible]="false" [selectable]="false"
-        mode="manual" data-imx-identifier="outstanding-objects-table">
-
+      <imx-data-table
+        #dataTable
+        [dst]="dst"
+        [detailViewVisible]="false"
+        [selectable]="false"
+        mode="manual"
+        data-imx-identifier="outstanding-objects-table"
+      >
         <imx-data-table-generic-column columnName="Display" columnLabel="{{ '#LDS#Display name' | translate }}">
           <ng-template let-data>
             {{ data.Display.value }}
@@ -16,7 +26,6 @@
         </imx-data-table-generic-column>
       </imx-data-table>
     </div>
-    <imx-data-source-paginator [dst]="dst" data-imx-identifier="typed-entity-candidates-paginator">
-    </imx-data-source-paginator>
+    <imx-data-source-paginator [dst]="dst" data-imx-identifier="typed-entity-candidates-paginator"> </imx-data-source-paginator>
   </mat-card>
 </div>

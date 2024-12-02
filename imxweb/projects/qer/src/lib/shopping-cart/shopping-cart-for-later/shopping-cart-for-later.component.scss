@@ -1,46 +1,24 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
+@import 'base/mixins';
 
 :host {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    height: 100%;
+  @include flex-column-container($overflow: hidden, $height: 100%);
+}
+
+.imx-itshop-content{
+  @include flex-column-container-fill();
+  margin-top: 16px;
+}
+
+.imx-toolbar-info {
+  margin-right: 10px;
+}
+
+.imx-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+
+  button {
+    margin-left: 10px;
   }
-
-
-  .mat-card {
-    overflow: hidden;
-    display: flex;
-  }
-
-  .imx-itshop-content{
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    flex-grow: 1;
-    margin-top: 16px;
-
-    .mat-card {
-     flex-grow: 1;
-    }
-   }
-
-   .imx-toolbar-info {
-    margin-right: 10px;
-  }
-
-  .imx-toolbar {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 20px;
-
-    button {
-      margin-left: 10px;
-
-      eui-icon{
-        font-size: 14px;
-        margin-right: 4px;
-      }
-    }
-
-  }
+}

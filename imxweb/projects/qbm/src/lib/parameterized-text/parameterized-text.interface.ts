@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,6 +26,6 @@
 
 export interface ParameterizedText {
   value: string;
-  marker: { start: string; end: string; };
+  marker: { start: string; end: string };
   getParameterValue: (name: string) => string;
 }

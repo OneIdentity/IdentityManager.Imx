@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,112 +25,88 @@
  */
 
 import { Injectable } from '@angular/core';
-import {
-  CollectionLoadParameters,
-  CompareOperator,
-  DataModel,
-  EntityCollectionData,
-  EntitySchema,
-  ExtendedEntityCollectionData,
-  ExtendedTypedEntityCollection,
-  FilterType,
-  GroupInfo,
-  MethodDefinition,
-} from 'imx-qbm-dbts';
-import {
-  PortalAttestationPolicygroups,
-  PolicyFilter
-} from 'imx-api-att';
-import { ApiService } from '../api.service';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { OverlayRef } from '@angular/cdk/overlay';
+import { PolicyFilter, PortalAttestationPolicygroups } from '@imx-modules/imx-api-att';
+import { CollectionLoadParameters, EntityCollectionData, EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
 import { AppConfigService, ClassloggerService } from 'qbm';
+import { ApiService } from '../api.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PolicyGroupService {
-  private busyIndicator: OverlayRef;
   constructor(
     private api: ApiService,
-    private busyService: EuiLoadingService, 
+    private busyService: EuiLoadingService,
     private readonly translator: TranslateService,
     private readonly config: AppConfigService,
-    private readonly logger: ClassloggerService
-  ) { }
+    private readonly logger: ClassloggerService,
+  ) {}
 
   public get AttestationPolicyGroupSchema(): EntitySchema {
     return this.api.typedClient.PortalAttestationPolicygroups.GetSchema();
   }
 
-
   public async get(parameters: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<PortalAttestationPolicygroups, unknown>> {
     return this.api.typedClient.PortalAttestationPolicygroups.Get(parameters);
   }
 
-
-  public async deleteAttestationPolicyGroup(uidAttestationpolicygroup: string): Promise<EntityCollectionData> {    
+  public async deleteAttestationPolicyGroup(uidAttestationpolicygroup: string): Promise<EntityCollectionData> {
     return this.api.client.portal_attestation_policygroups_delete(uidAttestationpolicygroup);
   }
 
-  public async getPolicyGroupEdit(uid: string):
-  Promise<ExtendedTypedEntityCollection<PortalAttestationPolicygroups, {}>> {
+  public async getPolicyGroupEdit(uid: string): Promise<ExtendedTypedEntityCollection<PortalAttestationPolicygroups, unknown>> {
     return this.api.typedClient.PortalAttestationPolicygroupsInteractive.Get_byid(uid);
   }
 
-  public async buildNewEntity(reference?: PortalAttestationPolicygroups, filter?: PolicyFilter):
-  Promise<PortalAttestationPolicygroups> {
-  const entities = await this.api.typedClient.PortalAttestationPolicygroupsInteractive.Get();
-  if (reference == null) {
+  public async buildNewEntity(reference?: PortalAttestationPolicygroups, filter?: PolicyFilter): Promise<PortalAttestationPolicygroups> {
+    const entities = await this.api.typedClient.PortalAttestationPolicygroupsInteractive.Get();
+    if (reference == null) {
+      return entities.Data[0];
+    }
+    await this.copyPropertiesFrom(entities.Data[0], reference, filter);
     return entities.Data[0];
   }
-  await this.copyPropertiesFrom(entities.Data[0], reference, filter);
-  return entities.Data[0];
-}
 
-public async copyPropertiesFrom(
-  entity: PortalAttestationPolicygroups,
-  reference: PortalAttestationPolicygroups, filter: PolicyFilter): Promise<void> {
-
-  for (const key in this.api.typedClient.PortalAttestationPolicyEditInteractive.GetSchema().Columns) {
-    if (!key.startsWith('__') && entity[key].GetMetadata().CanEdit()) {
-      await entity[key].Column.PutValueStruct({
-        DataValue: reference[key].value,
-        DisplayValue: reference[key].Column.GetDisplayValue()
-      });
+  public async copyPropertiesFrom(
+    entity: PortalAttestationPolicygroups,
+    reference: PortalAttestationPolicygroups,
+    filter?: PolicyFilter,
+  ): Promise<void> {
+    for (const key in this.api.typedClient.PortalAttestationPolicyEditInteractive.GetSchema().Columns) {
+      if (!key.startsWith('__') && entity[key].GetMetadata().CanEdit()) {
+        await entity[key].Column.PutValueStruct({
+          DataValue: reference[key].value,
+          DisplayValue: reference[key].Column.GetDisplayValue(),
+        });
+      }
     }
+
+    entity.Ident_AttestationPolicyGroup.value = `${reference.Ident_AttestationPolicyGroup.value} (${await this.translator
+      .get('#LDS#New')
+      .toPromise()})`;
+
+    this.logger.trace(this, 'properties copied from policy', reference, filter);
   }
 
-  entity.Ident_AttestationPolicyGroup.value =
-    `${reference.Ident_AttestationPolicyGroup.value} (${(await this.translator.get('#LDS#New').toPromise())})`;
-
-  this.logger.trace(this, 'properties copied from policy', reference, filter);
-}
-
-public async getPolicyGroups(parameters: CollectionLoadParameters):
-Promise<ExtendedTypedEntityCollection<PortalAttestationPolicygroups, {}>> {
-const collection = await this.api.typedClient.PortalAttestationPolicygroups.Get(parameters);
-return {
-  tableName: collection.tableName,
-  totalCount: collection.totalCount,
-  Data: collection.Data.map((element, index) =>
-    new PortalAttestationPolicygroups(element.GetEntity())
-  )
-};
-}
+  public async getPolicyGroups(
+    parameters: CollectionLoadParameters,
+  ): Promise<ExtendedTypedEntityCollection<PortalAttestationPolicygroups, {}>> {
+    const collection = await this.api.typedClient.PortalAttestationPolicygroups.Get(parameters);
+    return {
+      tableName: collection.tableName,
+      totalCount: collection.totalCount,
+      Data: collection.Data.map((element, index) => new PortalAttestationPolicygroups(element.GetEntity())),
+    };
+  }
   public handleOpenLoader(): void {
-    if (!this.busyIndicator) {
-      setTimeout(() => this.busyIndicator = this.busyService.show());
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
     }
   }
 
   public handleCloseLoader(): void {
-    if (this.busyIndicator) {
-      setTimeout(() => {
-        this.busyService.hide(this.busyIndicator);
-        this.busyIndicator = undefined;
-      });
-    }
+    this.busyService.hide();
   }
 }

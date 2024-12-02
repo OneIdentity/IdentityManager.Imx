@@ -1,4 +1,5 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
+@import 'base/mixins';
 @import '../new-request-global.scss';
 
 @include Layout-Styles;
@@ -16,7 +17,7 @@
     }
 
     .imx-info-button-caption {
-      @include imx-text();
+      @include new-request-text();
     }
   }
 }

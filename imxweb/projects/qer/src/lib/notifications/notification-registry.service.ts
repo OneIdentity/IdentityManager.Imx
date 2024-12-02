@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,47 +24,50 @@
  *
  */
 
-import { OverlayRef } from "@angular/cdk/overlay";
-import { Injectable, NgZone } from "@angular/core";
-import { NavigationExtras, Params, Router } from "@angular/router";
-import { EuiLoadingService } from "@elemental-ui/core";
-import { AuthenticationService, ClassloggerService, ConfirmationService } from "qbm";
+import { OverlayRef } from '@angular/cdk/overlay';
+import { Injectable, NgZone } from '@angular/core';
+import { NavigationExtras, Params, Router } from '@angular/router';
+import { EuiLoadingService } from '@elemental-ui/core';
+import { TranslateService } from '@ngx-translate/core';
+import { AuthenticationService, ClassloggerService, ConfirmationService, ISessionState } from 'qbm';
 
-type NotificationHandler = { message: string, activate: () => void };
+type NotificationHandler = { message: string; activate: () => void };
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NotificationRegistryService {
-
+  private isLoggedIn = false;
   constructor(
     private readonly logger: ClassloggerService,
     private readonly busyService: EuiLoadingService,
     private readonly confirmationService: ConfirmationService,
     private readonly authentication: AuthenticationService,
     private readonly router: Router,
-    private readonly zone: NgZone
+    private readonly translate: TranslateService,
+    private readonly zone: NgZone,
   ) {
-
     // register default notifications for QER
     this.registerRedirectNotificationHandler({
       id: 'OpenPWO',
       message: '#LDS#There are new requests that you can approve or deny.',
-      route: 'requesthistory'
+      route: 'requesthistory',
     });
 
     this.registerRedirectNotificationHandler({
       id: 'OpenInquiries',
       message: '#LDS#There are new request inquiries.',
       route: 'itshop/approvals',
-      routeParameters: { inquiries: true }
+      routeParameters: { inquiries: true },
     });
 
     this.register('PermissionChangeNotificationPlugin', {
       message: '#LDS#Your permissions have changed. Log out and log in again for the new permissions to take effect.',
       activate: () => {
         this.logout();
-      }
+      },
     });
+
+    this.authentication.onSessionResponse.subscribe((session: ISessionState) => (this.isLoggedIn = session.IsLoggedIn ?? false));
   }
 
   private registry: Map<string, NotificationHandler> = new Map();
@@ -76,51 +79,60 @@ export class NotificationRegistryService {
   public get(id: string) {
     if (this.registry.has(id)) {
       return this.registry.get(id);
-    }
-    else {
-      this.logger.warn(this, "Unknown notification type: " + id);
+    } else {
+      this.logger.warn(this, 'Unknown notification type: ' + id);
       return null;
     }
   }
 
-  registerRedirectNotificationHandler(data: {
-    id: string,
-    message: string,
-    route: string,
-    routeParameters?: Params
-  }) {
-    this.register(data.id,
-      {
-        message: data.message,
-        activate: () => {
-          // apply extra route parameters
-          const extras: NavigationExtras = data.routeParameters ? {
-            queryParams: data.routeParameters
-          } : null;
-          this.router.navigate([data.route], extras);
-        }
-      });
+  registerRedirectNotificationHandler(data: { id: string; message: string; route: string; routeParameters?: Params }) {
+    this.register(data.id, {
+      message: data.message,
+      activate: () => {
+        // apply extra route parameters
+        const extras: NavigationExtras | undefined = data.routeParameters
+          ? {
+              queryParams: data.routeParameters,
+            }
+          : undefined;
+        this.router.navigate([data.route], extras);
+      },
+    });
   }
 
   /**
-   * Logs out and kills the session.
+   * Logs out and ends the session.
    */
   private async logout() {
-    if (await this.confirmationService.confirm({
-      Title: '#LDS#Heading Log Out',
-      Message: '#LDS#Are you sure you want to log out?',
-      identifier: 'confirm-logout-'
-    })) {
+    if (!this.isLoggedIn) {
+      await this.confirmationService.showMessageBox(
+        this.translate.instant('#LDS#Heading Log Out'),
+        this.translate.instant('#LDS#You are already logged out.'),
+        '',
+        async () => {},
+      );
+      return;
+    }
+
+    if (
+      await this.confirmationService.confirm({
+        Title: '#LDS#Heading Log Out',
+        Message: '#LDS#Are you sure you want to log out?',
+        identifier: 'confirm-logout-',
+      })
+    ) {
       let overlayRef: OverlayRef;
 
       this.zone.run(() => {
-        setTimeout(() => (overlayRef = this.busyService.show()));
+        if (this.busyService.overlayRefs.length === 0) {
+          this.busyService.show();
+        }
       });
 
       try {
         await this.authentication.logout();
       } finally {
-        setTimeout(() => this.busyService.hide(overlayRef));
+        this.busyService.hide();
       }
     }
   }

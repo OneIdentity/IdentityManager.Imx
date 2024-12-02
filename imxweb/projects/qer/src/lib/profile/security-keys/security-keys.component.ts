@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,20 +24,25 @@
  *
  */
 
-import { Component, OnDestroy, OnInit } from "@angular/core";
-import { SecurityKeysService } from "./security-keys.service";
-import { BusyService, ClassloggerService, ConfirmationService, DataSourceToolbarSettings, SettingsService } from "qbm";
-import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, ValType } from "imx-qbm-dbts";
-import { TranslateService } from "@ngx-translate/core";
-import { EuiSidesheetService } from "@elemental-ui/core";
-import { SecurityKeysSidesheetComponent } from "./security-keys-sidesheet/security-keys-sidesheet.component";
-import { PortalWebauthnkey } from "imx-api-qer";
-import { Subscription } from "rxjs";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { EuiSidesheetService } from '@elemental-ui/core';
+import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, TypedEntity, ValType } from '@imx-modules/imx-qbm-dbts';
+import { TranslateService } from '@ngx-translate/core';
+import {
+  BusyService,
+  ClassloggerService,
+  ConfirmationService,
+  DataSourceToolbarSettings,
+  SettingsService,
+  calculateSidesheetWidth,
+} from 'qbm';
+import { Subscription } from 'rxjs';
+import { SecurityKeysSidesheetComponent } from './security-keys-sidesheet/security-keys-sidesheet.component';
+import { SecurityKeysService } from './security-keys.service';
 
 @Component({
   selector: 'imx-security-keys',
   templateUrl: './security-keys.component.html',
-  styleUrls: ['./security-keys.component.scss']
 })
 export class SecurityKeysComponent implements OnInit, OnDestroy {
   public readonly DisplayColumns = DisplayColumns;
@@ -57,7 +62,7 @@ export class SecurityKeysComponent implements OnInit, OnDestroy {
     private readonly logger: ClassloggerService,
     private readonly translate: TranslateService,
     private readonly confirmation: ConfirmationService,
-  ) { }
+  ) {}
 
   public async ngOnInit(): Promise<void> {
     this.entitySchema = this.securityKeysService.getSchema();
@@ -69,7 +74,7 @@ export class SecurityKeysComponent implements OnInit, OnDestroy {
       this.entitySchema.Columns.DateRegistered,
       {
         ColumnName: 'buttons',
-        Type: ValType.String
+        Type: ValType.String,
       },
     ];
     await this.navigate();
@@ -104,7 +109,7 @@ export class SecurityKeysComponent implements OnInit, OnDestroy {
 
     try {
       const data = await this.securityKeysService.get(this.navigationState);
-      this.newKeyUrl = data.extendedData.NewKeyUrl;
+      this.newKeyUrl = data.extendedData?.NewKeyUrl ?? '';
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
         dataSource: data,
@@ -120,7 +125,7 @@ export class SecurityKeysComponent implements OnInit, OnDestroy {
    * Sends the user to the registry URL
    */
   public createSecurityKey() {
-    window.open(this.newKeyUrl, "_blank");
+    window.open(this.newKeyUrl, '_blank');
   }
 
   /**
@@ -136,18 +141,25 @@ export class SecurityKeysComponent implements OnInit, OnDestroy {
    * Opens sidesheet, when the user clicks on a row
    * @param selectedKey The key, that was selected by the user
    */
-  public async onSelectedKey(selectedKey: PortalWebauthnkey): Promise<void> {
-    this.subscriptions.push(this.sideSheet.open(SecurityKeysSidesheetComponent, {
-      title: await this.translate.get('#LDS#Heading Edit Security Key').toPromise(),
-      subTitle: selectedKey.GetEntity().GetDisplay(),
-      padding: '0px',
-      width: 'max(700px, 40%)',
-      disableClose: true,
-      data: selectedKey
-    }).afterClosed().subscribe(async (data) => {if (data === 'delete') await this.navigate();}));
+  public async onSelectedKey(selectedKey: TypedEntity): Promise<void> {
+    this.subscriptions.push(
+      this.sideSheet
+        .open(SecurityKeysSidesheetComponent, {
+          title: await this.translate.get('#LDS#Heading Edit Security Key').toPromise(),
+          subTitle: selectedKey.GetEntity().GetDisplay(),
+          padding: '0px',
+          width: calculateSidesheetWidth(700, 0.4),
+          disableClose: true,
+          data: selectedKey,
+        })
+        .afterClosed()
+        .subscribe(async (data) => {
+          if (data === 'delete') await this.navigate();
+        }),
+    );
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  public ngOnDestroy(): void {
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 }

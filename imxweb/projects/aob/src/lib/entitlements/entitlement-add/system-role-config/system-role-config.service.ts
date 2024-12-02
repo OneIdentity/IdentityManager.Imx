@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,27 +25,25 @@
  */
 
 import { Injectable } from '@angular/core';
-import { PortalEntitlementSystemrole } from 'imx-api-aob';
+import { PortalEntitlementSystemrole } from '@imx-modules/imx-api-aob';
 
-import { CollectionLoadParameters, EntitySchema, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, EntitySchema, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { AobApiService } from '../../../aob-api-client.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SystemRoleConfigService {
-
-  constructor(
-    private readonly aobClient: AobApiService,
-  ) {
-  }
+  constructor(private readonly aobClient: AobApiService) {}
 
   public get roleSchema(): EntitySchema {
     return this.aobClient.typedClient.PortalEntitlementcandidatesEset.GetSchema();
   }
 
-  public async getExistingRoles(application: string, parameters: CollectionLoadParameters):
-    Promise<TypedEntityCollectionData<PortalEntitlementSystemrole>> {
+  public async getExistingRoles(
+    application: string,
+    parameters: CollectionLoadParameters,
+  ): Promise<TypedEntityCollectionData<PortalEntitlementSystemrole>> {
     return this.aobClient.typedClient.PortalEntitlementSystemrole.Get(application, parameters);
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -32,15 +32,11 @@ import { HeatmapSidesheetService } from '../heatmap-sidesheet/heatmap-sidesheet.
   selector: 'imx-heatmap-chart',
   templateUrl: './heatmap-chart.component.html',
   styleUrls: ['./heatmap-chart.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class HeatmapChartComponent {
   @Input() public blocks: Block[];
   @Input() public isCurrent: boolean;
 
-  constructor(
-    public heatmapsService: HeatmapSidesheetService
-  ) { }
-
-
+  constructor(public heatmapsService: HeatmapSidesheetService) {}
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,13 +24,23 @@
  *
  */
 
-import { Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PortalResourcesApplicationsMembership } from 'imx-api-apc';
-import { CollectionLoadParameters, DbObjectKey, DisplayColumns, IClientProperty, ValType, XOrigin } from 'imx-qbm-dbts';
-import { BusyService, ConfirmationService, DataSourceToolbarSettings, DataTableComponent, SnackBarService } from 'qbm';
+import { PortalResourcesApplicationsMembership } from '@imx-modules/imx-api-apc';
+import {
+  CollectionLoadParameters,
+  DbObjectKey,
+  DisplayColumns,
+  EntitySchema,
+  IClientProperty,
+  TypedEntity,
+  TypedEntityCollectionData,
+  ValType,
+  XOrigin,
+} from '@imx-modules/imx-qbm-dbts';
+import { BusyService, calculateSidesheetWidth, ConfirmationService, DataViewInitParameters, DataViewSource, SnackBarService } from 'qbm';
 import { SourceDetectiveSidesheetComponent, SourceDetectiveSidesheetData, SourceDetectiveType } from 'qer';
 import { SoftwareService } from '../../software.service';
 
@@ -38,11 +48,11 @@ import { SoftwareService } from '../../software.service';
   selector: 'imx-software-memberships',
   templateUrl: './software-memberships.component.html',
   styleUrls: ['./software-memberships.component.scss'],
+  providers: [DataViewSource],
 })
 export class SoftwareMembershipsComponent implements OnChanges {
-  public dstSettings: DataSourceToolbarSettings;
   public DisplayColumns = DisplayColumns;
-  public entitySchema = this.softwareService.membershipSchema;
+  public entitySchema: EntitySchema;
   public selections: PortalResourcesApplicationsMembership[] = [];
 
   public showUnsubscribeWarning = false;
@@ -54,16 +64,13 @@ export class SoftwareMembershipsComponent implements OnChanges {
   };
 
   private displayColumns: IClientProperty[];
-  private navigationState: CollectionLoadParameters = {};
   public busyService = new BusyService();
 
   @Input() public uidSoftware: string;
 
-  @ViewChild('membersTable') public membersTable: DataTableComponent<any>;
-
   public membershipHint =
-    '#LDS#Here you can manage the memberships of the software application. You can remove memberships and view the assignment analysis for each membership.';
-    public LdsNotUnsubscribableHint =
+    '#LDS#Here you can specify which identities have access to the software application. You can remove memberships and view the assignment analysis for each membership.';
+  public LdsNotUnsubscribableHint =
     '#LDS#There is at least one membership you cannot unsubscribe. You can only unsubscribe memberships you have requested.';
 
   public get canDeleteSelected(): boolean {
@@ -71,7 +78,7 @@ export class SoftwareMembershipsComponent implements OnChanges {
   }
 
   public get canUnsubscribeSelected(): boolean {
-    return this.selections.length > 0 && this.selections.every((item) =>  (item.UID_PersonWantsOrg?.value ?? '') !== '');
+    return this.selections.length > 0 && this.selections.every((item) => (item.UID_PersonWantsOrg?.value ?? '') !== '');
   }
 
   constructor(
@@ -79,11 +86,13 @@ export class SoftwareMembershipsComponent implements OnChanges {
     private readonly sideSheet: EuiSidesheetService,
     private readonly translate: TranslateService,
     private readonly confirmationService: ConfirmationService,
-    private readonly snackBarService: SnackBarService
+    private readonly snackBarService: SnackBarService,
+    public dataSource: DataViewSource,
   ) {
+    this.entitySchema = this.softwareService.membershipSchema;
     this.displayColumns = [
       this.entitySchema.Columns.UID_Person,
-      this.entitySchema.Columns.XOrigin,
+      this.entitySchema.Columns?.XOrigin,
       this.entitySchema.Columns.XDateInserted,
       this.entitySchema.Columns.ValidUntil,
       { ColumnName: 'badges', Type: ValType.String },
@@ -92,22 +101,18 @@ export class SoftwareMembershipsComponent implements OnChanges {
 
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
     if (changes.uidSoftware && changes.uidSoftware.currentValue) {
-      return this.getData({});
+      return this.getData();
     }
   }
 
-  public async onSearch(keyword: string): Promise<void> {
-    this.getData({ search: keyword, StartIndex: 0 });
+  public onSelectionChanged(selection: readonly TypedEntity[]): void {
+    this.selections = selection as PortalResourcesApplicationsMembership[];
   }
 
-  public onSelectionChanged(selection: PortalResourcesApplicationsMembership[]): void {
-    this.selections = selection;
-  }
+  public async showDetails(item: TypedEntity): Promise<void> {
+    const uidPerson = item.GetEntity().GetColumn('UID_Person').GetValue();
 
-  public async showDetails(item: PortalResourcesApplicationsMembership): Promise<void> {
-    const uidPerson = item.UID_Person.value;
-
-    const objectKey = DbObjectKey.FromXml(item.XObjectKey.value);
+    const objectKey = DbObjectKey.FromXml(item.GetEntity().GetColumn('XObjectKey').GetValue());
 
     const data: SourceDetectiveSidesheetData = {
       UID_Person: uidPerson,
@@ -119,27 +124,26 @@ export class SoftwareMembershipsComponent implements OnChanges {
       title: await this.translate.get('#LDS#Heading View Assignment Analysis').toPromise(),
       subTitle: item.GetEntity().GetDisplay(),
       padding: '0px',
-      width: 'max(60%,600px)',
+      width: calculateSidesheetWidth(),
       disableClose: false,
       testId: 'software-memberships-assingment-analysis',
       data,
     });
   }
 
-  public async getData(navigationState: CollectionLoadParameters): Promise<void> {
-    this.navigationState = navigationState;
-
-    const isBusy = this.busyService.beginBusy();
-    try {
-      this.dstSettings = {
-        dataSource: await this.softwareService.getMemberShips(this.uidSoftware, this.navigationState),
-        entitySchema: this.entitySchema,
-        navigationState: this.navigationState,
-        displayedColumns: this.displayColumns,
-      };
-    } finally {
-      isBusy.endBusy();
-    }
+  public async getData(): Promise<void> {
+    this.dataSource.itemStatus = this.status;
+    const dataViewInitParameters: DataViewInitParameters<TypedEntity> = {
+      execute: (params: CollectionLoadParameters): Promise<TypedEntityCollectionData<TypedEntity>> =>
+        this.softwareService.getMemberShips(this.uidSoftware, params),
+      schema: this.entitySchema,
+      columnsToDisplay: this.displayColumns,
+      highlightEntity: (entity: TypedEntity) => {
+        this.showDetails(entity);
+      },
+      selectionChange: (selection) => this.onSelectionChanged(selection),
+    };
+    this.dataSource.init(dataViewInitParameters);
   }
 
   public async deleteSelected(): Promise<void> {
@@ -155,11 +159,11 @@ export class SoftwareMembershipsComponent implements OnChanges {
       try {
         await this.softwareService.deleteGroupMembers(
           this.uidSoftware,
-          this.selections.map((i) => i.GetEntity().GetColumn('UID_Person').GetValue())
+          this.selections.map((i) => i.GetEntity().GetColumn('UID_Person').GetValue()),
         );
-        this.membersTable.clearSelection();
+        this.dataSource.selection.clear();
         this.snackBarService.open({ key: '#LDS#The memberships have been successfully removed.' }, '#LDS#Close');
-        await this.getData({ search: this.navigationState.search });
+        await this.dataSource.updateState();
       } finally {
         isBusy.endBusy();
       }
@@ -175,7 +179,7 @@ export class SoftwareMembershipsComponent implements OnChanges {
     const notSubscribable = this.selections.some((entity) => entity.GetEntity().GetColumn('IsRequestCancellable').GetValue() === false);
     if (notSubscribable) {
       this.showUnsubscribeWarning = true;
-      this.membersTable.clearSelection();
+      this.dataSource.selection.clear();
       return;
     }
     if (
@@ -193,8 +197,8 @@ export class SoftwareMembershipsComponent implements OnChanges {
         });
       } finally {
         isBusy.endBusy();
-        this.membersTable.clearSelection();
-        await this.getData({ search: this.navigationState.search });
+        this.dataSource.selection.clear();
+        await this.dataSource.updateState();
       }
     }
   }

@@ -1,6 +1,5 @@
-@use '@angular/material' as mat;
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
-@import '@angular/material/theming';
+@import 'base/mixins';
 
 :host {
   display: flex;
@@ -11,30 +10,19 @@
 }
 
 .imx-entitlements-site {
+  &.imx-hidden{
+    display:none;
+  }
   padding: 16px 40px;
   height: 100%;
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-}
-
-.imx-badge-container {
-  > div {
-    display: table-cell;
-
-    > .eui-badge {
-      margin: 0 5px;
-
-      ::ng-deep .eui-badge-content {
-        white-space: nowrap;
-      }
-    }
+  .imx-entitlements-row-actions{
+    display: flex;
+    gap: 8px;
   }
 }
-
-
-// Create a config with the default typography levels.
-$config: mat.define-typography-config();
 
 imx-data-source-toolbar-custom button {
   margin-right: 5px;
@@ -56,10 +44,6 @@ imx-data-source-toolbar-custom button {
     margin-top: 30px;
   }
 
-  > .eui-icon {
-    color: $color-gray-30;
-  }
-
   .imx-aob-entitlements-empty-description {
     margin-bottom: 10px;
   }
@@ -68,41 +52,13 @@ imx-data-source-toolbar-custom button {
     display: flex;
     flex-direction: column;
 
-    > .mat-raised-button {
+    > .mat-mdc-unelevated-button {
       margin-bottom: 15px;
     }
     > :last-child {
       justify-self: center;
     }
   }
-}
-
-.imx-aob-entitlements-header {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 10px 0 8px 0;
-
-  > h3 {
-    font-size: 18px;
-    margin-right: 10px;
-    font-weight: normal;
-    line-height: 36px;
-  }
-
-  > button {
-    text-transform: uppercase;
-  }
-
-  > span {
-    line-height: 36px;
-    font-size: mat.font-size($config, button);
-  }
-}
-
-.imx-mat-card-title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .imx-aob-data-container {
@@ -115,20 +71,8 @@ div[subtitle] {
   color: $color-gray-40;
 }
 
-.eui-dark-theme {
-  :host {
-    .imx-aob-entitlements-empty > .eui-icon {
-      color: $color-gray-60;
-    }
-  }
-}
-
 .eui-contrast-theme {
   :host {
-    .imx-aob-entitlements-empty > .eui-icon {
-      color: $color-gray-40;
-    }
-
     .imx-entitlements-site {
       background-color: $color-gray-100;
     }

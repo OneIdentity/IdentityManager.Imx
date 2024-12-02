@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,35 +26,30 @@
 
 import { Component, OnInit } from '@angular/core';
 
-import { PasswordresetPasswordquestions } from 'imx-api-qer';
+import { PasswordresetPasswordquestions } from '@imx-modules/imx-api-qer';
 import { PasswordService } from './password.service';
 
 @Component({
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  styleUrls: ['./dashboard.component.scss'],
 })
 export class PasswordDashboardComponent implements OnInit {
-
   public qaProfileVisible: boolean;
   public securityKeysVisible: boolean;
 
   public qQuestions: PasswordresetPasswordquestions[] = [];
   public get hasAnyUnlockedQuestion(): boolean {
-    return this.qQuestions && 0 < this.qQuestions.filter(i => !i.IsLocked.value).length;
+    return this.qQuestions && 0 < this.qQuestions.filter((i) => !i.IsLocked.value).length;
   }
 
-  constructor(
-    private readonly passwordSvc: PasswordService
-  ) { }
-
+  constructor(private readonly passwordSvc: PasswordService) {}
 
   public async ngOnInit(): Promise<void> {
     // ToDo Later
     // this.qaProfileVisible = config.PasswordConfig.VI_MyData_MyPassword_Visibility;
-    // this.securityKeysVisible = config.AuthenticationConfig.VI_Common_AccessControl_Webauthn_2FA_VisibleControls 
+    // this.securityKeysVisible = config.AuthenticationConfig.VI_Common_AccessControl_Webauthn_2FA_VisibleControls
     // && Exists("Person",variable(format(getconfig("VI_Employee_QERWebAuthnKey_Filter"), GetUser())))
 
     this.qQuestions = await this.passwordSvc.getQuestions();
-
   }
 }

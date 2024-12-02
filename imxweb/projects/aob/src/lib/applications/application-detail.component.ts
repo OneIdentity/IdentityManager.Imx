@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,21 +30,21 @@ import { SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 
+import { PortalApplication } from '@imx-modules/imx-api-aob';
 import { Base64ImageService, ClassloggerService } from 'qbm';
 import { UserModelService } from 'qer';
-import { PortalApplication } from 'imx-api-aob';
-import { ApplicationsService } from './applications.service';
-import { ApplicationContent } from './application-content.interface';
 import { AobPermissionsService } from '../permissions/aob-permissions.service';
+import { ApplicationContent } from './application-content.interface';
+import { ApplicationsService } from './applications.service';
 
 @Component({
   templateUrl: './application-detail.component.html',
   styleUrls: ['./application-detail.component.scss'],
 })
 export class ApplicationDetailComponent implements ApplicationContent, OnInit, OnDestroy {
-  @Input() public application: PortalApplication;
-   
-  @Input() public  loadingSubject: Subject<boolean>;
+  @Input() public application: PortalApplication | undefined;
+
+  @Input() public loadingSubject: Subject<boolean>;
 
   public totalCount: number;
   public keywords: string;
@@ -52,7 +52,10 @@ export class ApplicationDetailComponent implements ApplicationContent, OnInit, O
   public selectedTabIndex = 0;
   public showHelper = true;
   public isLoading = false;
-
+  public hyperviewTableName = 'AOBApplication';
+  public ldsIdentitiesWithAccessInfoText =
+    '#LDS#Here you can get an overview of identities that have access to at least one application entitlement of this application. Additionally, you can view which application entitlements the respective identities have access to.';
+  
   private subscription: Subscription;
 
   constructor(
@@ -60,21 +63,20 @@ export class ApplicationDetailComponent implements ApplicationContent, OnInit, O
     private readonly logger: ClassloggerService,
     private readonly applicationsProvider: ApplicationsService,
     public readonly userService: UserModelService,
-    public route:ActivatedRoute,
-    private readonly aobPermissionsService: AobPermissionsService
+    public route: ActivatedRoute,
+    private readonly aobPermissionsService: AobPermissionsService,
   ) {
     this.route.queryParams.subscribe(async (params) => {
-      if (Object.keys(params).length === 0) this.application = null;
+      if (Object.keys(params).length === 0) this.application = undefined;
     });
   }
-  
+
   public ngOnDestroy(): void {
     this.subscription?.unsubscribe();
   }
 
   public async ngOnInit(): Promise<void> {
-
-    this.subscription = this.loadingSubject.subscribe(elem=> this.isLoading = elem);
+    this.subscription = this.loadingSubject.subscribe((elem) => (this.isLoading = elem));
     this.isAdmin = await this.aobPermissionsService.isAobApplicationAdmin();
   }
 
@@ -89,7 +91,7 @@ export class ApplicationDetailComponent implements ApplicationContent, OnInit, O
   }
 
   public async reloadApplication(): Promise<void> {
-    this.application = await this.applicationsProvider.reload(this.application.UID_AOBApplication.value);
+    this.application = await this.applicationsProvider.reload(this.application?.UID_AOBApplication.value || '');
   }
 
   public createApplication(): void {

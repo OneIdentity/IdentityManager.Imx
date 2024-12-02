@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,23 +25,22 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { PwoData } from 'imx-api-qer';
-import { EntityData } from 'imx-qbm-dbts';
+import { PwoData } from '@imx-modules/imx-api-qer';
+import { EntityData } from '@imx-modules/imx-qbm-dbts';
 
 @Component({
   selector: 'imx-workflow-violation-details',
   templateUrl: './workflow-violation-details.component.html',
-  styleUrls: ['./workflow-violation-details.component.scss']
+  styleUrls: ['./workflow-violation-details.component.scss'],
 })
 export class WorkflowViolationDetailsComponent implements OnInit {
   public violations: EntityData[] = [];
 
   @Input() public pwoData: PwoData;
 
-  constructor() { }
+  constructor() {}
 
   public ngOnInit(): void {
-    this.violations = this.pwoData.WorkflowHistory.Entities.filter(item => item.Columns['UID_ComplianceRule'].Value);
+    this.violations = this.pwoData.WorkflowHistory?.Entities?.filter((item) => item.Columns?.['UID_ComplianceRule'].Value) || [];
   }
-
 }

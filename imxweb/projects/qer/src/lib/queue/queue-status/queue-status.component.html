@@ -1,0 +1,40 @@
+<!-- Queue finished -->
+@if (isFinished && hasTasks) {
+  <button
+    mat-icon-button
+    (click)="openSidesheet()"
+    [matTooltip]="
+      errorCount == 1
+        ? ('#LDS#Background processes completed with one error' | translate)
+        : ('#LDS#Background processes completed with {0} errors' | translate | ldsReplace: errorCount)
+    "
+  >
+    <!-- For some reason the matbadge is not working on this particular euiicon, create a separate div for it -->
+    <div [matBadge]="errorCount" [matBadgeHidden]="!hasErrors" matBadgeColor="warn"></div>
+    <eui-icon icon="setdefault" />
+  </button>
+} @else if (!hasTasks) {
+  <!-- Queue empty -->
+  <button mat-icon-button (click)="openSidesheet()" [matTooltip]="'#LDS#Background processes pending' | translate">
+    <!-- For some reason the matbadge is not working on this particular euiicon, create a separate div for it -->
+    <div [matBadge]="errorCount" [matBadgeHidden]="!hasErrors" matBadgeColor="warn"></div>
+    <eui-icon icon="job-queue" />
+  </button>
+} @else {
+  <!-- Queue processing -->
+  <mat-spinner class="spinner" diameter="36" strokeWidth="3"></mat-spinner>
+  <button
+    mat-icon-button
+    class="imx-masthead--icon-button"
+    (click)="openSidesheet()"
+    [matTooltip]="
+      errorCount == 1
+        ? ('#LDS#Background processes still running with one error' | translate)
+        : ('#LDS#Background processes still running with {0} errors' | translate | ldsReplace: errorCount)
+    "
+  >
+    <!-- For some reason the matbadge is not working on this particular euiicon, create a separate div for it -->
+    <div [matBadge]="errorCount" [matBadgeHidden]="!hasErrors" matBadgeColor="warn"></div>
+    <eui-icon icon="job-queue" />
+  </button>
+}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Observable, from } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { TranslateLoader} from '@ngx-translate/core';
+import { TranslateLoader } from '@ngx-translate/core';
 import { imx_SessionService } from '../session/imx-session.service';
 
 @Injectable()
@@ -40,7 +40,7 @@ export class ImxTranslateLoader implements TranslateLoader {
   private async getCaptionsLds(culture: string): Promise<{ [key: string]: string }> {
     const translations = await this.session.Client.imx_multilanguage_getcaptions_get({ cultureName: culture });
     const translationsLds: { [key: string]: string } = {};
-    Object.keys(translations).forEach((key: string) => translationsLds['#LDS#' + key] = translations[key]);
+    Object.keys(translations).forEach((key: string) => (translationsLds['#LDS#' + key] = translations[key]));
     return translationsLds;
   }
 }

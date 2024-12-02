@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,35 +26,46 @@
 
 import { Injectable } from '@angular/core';
 
+import {
+  DisplayBuilder,
+  FkCandidateProvider,
+  IClientProperty,
+  MetaTableRelationData,
+  ReadWriteEntity,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
 import { BaseCdr, BaseReadonlyCdr, ImxTranslationProviderService } from 'qbm';
-import { MetaTableRelationData, FkCandidateProvider, IClientProperty, ValType, ReadWriteEntity, DisplayBuilder } from 'imx-qbm-dbts';
 import { QerApiService } from '../qer-api-client.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class OwnerControlService {
-  constructor(private readonly qerClient: QerApiService, private readonly translate: ImxTranslationProviderService) {}
+  constructor(
+    private readonly qerClient: QerApiService,
+    private readonly translate: ImxTranslationProviderService,
+  ) {}
 
   public createGroupOwnerPersonCdr(readonly: boolean): BaseCdr {
     const columnProperties = {};
 
-    const property = this.createGroupOwnerPersonProperty();
-    columnProperties[property.ColumnName] = property;
+    const columnName = 'PersonColumnName';
+    const property = this.createGroupOwnerPersonProperty(columnName);
+    columnProperties[columnName] = property;
     const entityColumn = new ReadWriteEntity(
       { Columns: columnProperties },
       {},
       this.createGroupOwnerPersonFkProvider(property.FkRelation),
       undefined,
-      new DisplayBuilder(this.translate)
-    ).GetColumn(property.ColumnName);
+      new DisplayBuilder(this.translate),
+    ).GetColumn(columnName);
 
     return readonly ? new BaseReadonlyCdr(entityColumn, '#LDS#Identity') : new BaseCdr(entityColumn, '#LDS#Identity');
   }
 
-  private createGroupOwnerPersonProperty(): IClientProperty {
+  private createGroupOwnerPersonProperty(columnName: string): IClientProperty {
     const fkRelation = {
-      ChildColumnName: 'PersonColumnName',
+      ChildColumnName: columnName,
       ParentTableName: 'Person',
       ParentColumnName: 'UID_Person',
       IsMemberRelation: false,
@@ -66,11 +77,11 @@ export class OwnerControlService {
     };
   }
 
-  private createGroupOwnerPersonFkProvider(fkRelation: MetaTableRelationData): FkCandidateProvider {
+  private createGroupOwnerPersonFkProvider(fkRelation: MetaTableRelationData | undefined): FkCandidateProvider {
     return new FkCandidateProvider([
       {
-        columnName: fkRelation.ChildColumnName,
-        fkTableName: fkRelation.ParentTableName,
+        columnName: fkRelation?.ChildColumnName || '',
+        fkTableName: fkRelation?.ParentTableName || '',
         parameterNames: ['OrderBy', 'StartIndex', 'PageSize', 'filter', 'search'],
         load: async (_, parameters = {}) => this.qerClient.client.portal_candidates_Person_get(parameters),
         getDataModel: async () => ({}),

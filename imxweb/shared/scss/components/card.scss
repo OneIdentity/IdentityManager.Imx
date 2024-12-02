@@ -1,0 +1,160 @@
+@import 'base/mixins';
+@import 'components/icon';
+
+/* Elemental UI */
+
+/* Angular Material */
+.mat-mdc-card {
+  padding: 16px;
+  .mat-mdc-card-content,
+  .mat-mdc-card-header {
+    padding: 0 16px 0 0 !important;
+  }
+}
+
+/* Imx */
+.mat-mdc-card.imx-card,
+div.imx-card {
+  @include flex-column-container($overflow: hidden);
+
+  &-border {
+    border: 1px solid $color-gray-20;
+  }
+
+  &-fill {
+    @include flex-column-container-fill();
+  }
+
+  &-fill-sidesheet-margin {
+    @include flex-column-container-fill();
+    margin: 20px;
+  }
+
+  &-sidesheet {
+    height: 100%;
+    overflow: auto;
+  }
+
+  &-data-explorer {
+    &-header {
+      background-color: $color-gray-0;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+      z-index: 100;
+      border: 1px solid rgba($color-blue-60, 0.6);
+      margin-bottom: 20px;
+
+      &-bg {
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+        background-color: $color-blue-20;
+        padding: 10px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        height: 45px;
+
+        & > h3 {
+          font-size: 20px;
+          font-weight: 400;
+        }
+      }
+    }
+  }
+
+  &-select {
+    box-shadow: none;
+    border: 3px solid transparent;
+    cursor: pointer;
+
+    &.selected {
+      border: 3px solid $color-blue-60;
+    }
+  }
+
+  &-title {
+    font-weight: 600;
+
+    &-s {
+      font-size: 16px;
+    }
+
+    &-m {
+      font-size: 20px;
+    }
+
+    &-l {
+      font-size: 24px;
+    }
+
+    &-xl {
+      font-size: 28px;
+    }
+  }
+
+  &-scroll-content {
+    @include flex-column-container($overflow: hidden);
+    .mat-mdc-card-content {
+      overflow: auto;
+    }
+  }
+}
+
+.mat-mdc-card.imx-centered-filled-card {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin: 3px;
+  display: flex;
+}
+
+.imx-padding-for-cards {
+  padding-left: 3px;
+  padding-bottom: 3px;
+}
+
+/* Dark theme */
+.eui-dark-theme {
+  .mat-mdc-card.imx-card,
+  div.imx-card {
+    &-border {
+      border: 1px solid $color-gray-60;
+    }
+  }
+}
+
+/* High-contrast theme */
+.eui-contrast-theme {
+  .mat-mdc-card.imx-card,
+  div.imx-card {
+    &-border {
+      border: 1px solid $color-gray-0;
+    }
+  }
+}
+
+/* Dark theme + High-contrast theme */
+.eui-dark-theme,
+.eui-contrast-theme {
+  .mat-mdc-card.imx-card,
+  div.imx-card {
+    &-data-explorer {
+      &-header {
+        &-bg {
+          background-color: $color-blue-80;
+        }
+
+        .eui-icon {
+          color: $color-gray-0;
+        }
+      }
+    }
+
+    &-select {
+      &.selected {
+        border: 3px solid $color-blue-40;
+      }
+    }
+  }
+}

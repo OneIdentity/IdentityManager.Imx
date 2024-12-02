@@ -1,9 +1,10 @@
 <div class="admin-config-apply-sidesheet">
-
-  <mat-card>
+  <div eui-sidesheet-content>
     <eui-alert type="info" [condensed]="true" [colored]="true">
-      <span>{{'#LDS#You have changed the following configuration settings.' | translate}}
-        {{'#LDS#Select how the configuration changes should be applied.' | translate}}</span>
+      <span
+        >{{ '#LDS#You have changed the following configuration settings.' | translate }}
+        {{ '#LDS#Select how the configuration changes should be applied.' | translate }}</span
+      >
     </eui-alert>
 
     <ul>
@@ -14,18 +15,19 @@
 
     <mat-radio-group [(ngModel)]="isGlobal">
       <mat-radio-button [value]="false" [disabled]="!supportsLocalCustomizations">
-        {{ '#LDS#Apply locally' | translate}}
+        {{ '#LDS#Apply locally' | translate }}
       </mat-radio-button>
-      <p class="description">{{ (supportsLocalCustomizations ? LdsApplyLocally : LdsApplyLocallyNotPossible) | translate}}</p>
+      <p class="description">{{ (supportsLocalCustomizations ? LdsApplyLocally : LdsApplyLocallyNotPossible) | translate }}</p>
       <mat-radio-button [value]="true">
-        {{'#LDS#Apply globally' | translate}}
+        {{ '#LDS#Apply globally' | translate }}
       </mat-radio-button>
-      <p class="description">{{LdsApplyGlobally | translate}}</p>
+      <p class="description">{{ LdsApplyGlobally | translate }}</p>
     </mat-radio-group>
-  </mat-card>
+  </div>
 
-  <mat-card class="admin-config-apply-sidesheet__action-buttons">
-    <button data-imx-identifier="admin-config-apply-submit-button" mat-raised-button (click)="submit()">
-      {{'#LDS#Apply' | translate}}</button>
-  </mat-card>
+  <div eui-sidesheet-actions>
+    <button color="primary" data-imx-identifier="admin-config-apply-submit-button" mat-flat-button (click)="submit()">
+      {{ '#LDS#Apply' | translate }}
+    </button>
+  </div>
 </div>

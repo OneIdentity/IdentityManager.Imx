@@ -1,0 +1,19 @@
+<div class="imx-data-view-controls">
+  <imx-data-view-search [dataSource]="dataSource" *ngIf="showSearch" (onSearchChange)="onSearchChange.emit($event)"></imx-data-view-search>
+  <imx-data-view-group [dataSource]="dataSource" *ngIf="!!dataSource.groupOptions.length && showGrouping"></imx-data-view-group>
+  <imx-data-view-filter [dataSource]="dataSource" *ngIf="dataSource.showFilters()"></imx-data-view-filter>
+  <imx-data-view-settings
+    [dataSource]="dataSource"
+    (updateConfig)="updateConfig.emit($event)"
+    (deleteConfigById)="deleteConfigById.emit($event)"
+    *ngIf="showSettings"
+  ></imx-data-view-settings>
+  <eui-icon
+    icon="warning"
+    class="imx-icon-warning"
+    *ngIf="dataSource.isLimitReached()"
+    matTooltip="{{ '#LDS#There are too many results for this search. Narrow the search query with more specific keywords.' | translate }}"
+  >
+  </eui-icon>
+</div>
+<imx-data-view-chipbar [dataSource]="dataSource"></imx-data-view-chipbar>

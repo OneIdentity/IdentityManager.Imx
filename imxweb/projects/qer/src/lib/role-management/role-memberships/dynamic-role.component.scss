@@ -1,18 +1,10 @@
+@import 'base/mixins';
+
 :host {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
   overflow: hidden;
-
-  .imx-tab-content-body {
-    padding: 0;
-    gap: 20px;
-  }
-}
-
-.helper-alert {
-  display: flex;
-  margin: 20px 20px 0 20px;
 }
 
 .margin {
@@ -26,26 +18,14 @@ imx-sqlwizard {
   overflow: auto;
 }
 
-.imx-main-content{
+.imx-main-content {
   flex: 1 1 auto;
-  overflow:auto;
+  overflow: auto;
   display: flex;
   flex-direction: column;
 
-  .mat-card {
-    height: 100%;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+  .mat-mdc-card {
+    @include flex-column-container-fill();
     margin: 0 20px 20px 20px;
-  }
-
-  div {
-    button {
-      eui-icon {
-        font-size: 14px;
-        margin-right: 4px;
-      }
-    }
   }
 }

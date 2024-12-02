@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,44 +27,49 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import {
+  BusyIndicatorModule,
   CdrModule,
   ClassloggerService,
   DataSourceToolbarModule,
   DataTableModule,
   DataTilesModule,
+  HelpContextualModule,
+  InfoModalDialogModule,
   LdsReplaceModule,
   MenuItem,
   MenuService,
-  SidenavTreeModule,
   QbmModule,
-  BusyIndicatorModule,
-  InfoModalDialogModule,
-  HelpContextualModule,
+  SelectedElementsModule,
+  SidenavTreeComponent,
 } from 'qbm';
 
-import { NewRequestRoutingModule } from './new-request-routing.module';
-import { NewRequestComponent } from './new-request.component';
-import { NewRequestHeaderComponent } from './new-request-header/new-request-header.component';
-import { NewRequestContentComponent } from './new-request-content/new-request-content.component';
-import { NewRequestRecipientsComponent } from './new-request-header/new-request-recipients/new-request-recipients.component';
-import { TranslateModule } from '@ngx-translate/core';
-import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NewRequestHeaderToolbarComponent } from './new-request-header/new-request-header-toolbar/new-request-header-toolbar.component';
-import { NewRequestProductComponent } from './new-request-product/new-request-product.component';
-import { NewRequestPeerGroupComponent } from './new-request-peer-group/new-request-peer-group.component';
-import { NewRequestReferenceUserComponent } from './new-request-reference-user/new-request-reference-user.component';
-import { NewRequestProductBundleComponent } from './new-request-product-bundle/new-request-product-bundle.component';
-import { ProductDetailsSidesheetComponent } from './new-request-product/product-details-sidesheet/product-details-sidesheet.component';
-import { ProductEntitlementsComponent } from './new-request-product/product-entitlements/product-entitlements.component';
-import { ProductBundleListComponent } from './new-request-product-bundle/product-bundle-list/product-bundle-list.component';
-import { ProductBundleItemsComponent } from './new-request-product-bundle/product-bundle-items/product-bundle-items.component';
-import { NewRequestSelectedProductsComponent } from './new-request-selected-products/new-request-selected-products.component';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
-import { NewRequestReferenceUserCardComponent } from './new-request-header/new-request-reference-user-card/new-request-reference-user-card.component';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
+import { NEW_REQUEST_ROUTE } from './constants';
 import { ElementVisibilityDirective } from './element-visibility.directive';
+import { NewRequestContentComponent } from './new-request-content/new-request-content.component';
+import { NewRequestHeaderToolbarComponent } from './new-request-header/new-request-header-toolbar/new-request-header-toolbar.component';
+import { NewRequestHeaderComponent } from './new-request-header/new-request-header.component';
+import { NewRequestRecipientsComponent } from './new-request-header/new-request-recipients/new-request-recipients.component';
+import { NewRequestReferenceUserCardComponent } from './new-request-header/new-request-reference-user-card/new-request-reference-user-card.component';
+import { NewRequestPeerGroupComponent } from './new-request-peer-group/new-request-peer-group.component';
 import { PeerGroupDiscardSelectedComponent } from './new-request-peer-group/peer-group-discard-selected.component';
+import { NewRequestProductBundleComponent } from './new-request-product-bundle/new-request-product-bundle.component';
+import { ProductBundleItemsComponent } from './new-request-product-bundle/product-bundle-items/product-bundle-items.component';
+import { ProductBundleListComponent } from './new-request-product-bundle/product-bundle-list/product-bundle-list.component';
+import { NewRequestProductComponent } from './new-request-product/new-request-product.component';
+import { ProductDetailsSidesheetComponent } from './new-request-product/product-details-sidesheet/product-details-sidesheet.component';
+import { NewRequestProductEntitlementsComponent } from './new-request-product/product-entitlements/product-entitlements.component';
+import { NewRequestReferenceUserComponent } from './new-request-reference-user/new-request-reference-user.component';
+import { NewRequestRoutingModule } from './new-request-routing.module';
+import { NewRequestSelectedProductsComponent } from './new-request-selected-products/new-request-selected-products.component';
+import { NewRequestComponent } from './new-request.component';
+
 @NgModule({
   declarations: [
     NewRequestComponent,
@@ -77,7 +82,7 @@ import { PeerGroupDiscardSelectedComponent } from './new-request-peer-group/peer
     NewRequestReferenceUserComponent,
     NewRequestProductBundleComponent,
     ProductDetailsSidesheetComponent,
-    ProductEntitlementsComponent,
+    NewRequestProductEntitlementsComponent,
     ProductBundleListComponent,
     ProductBundleItemsComponent,
     NewRequestSelectedProductsComponent,
@@ -87,6 +92,7 @@ import { PeerGroupDiscardSelectedComponent } from './new-request-peer-group/peer
   ],
   imports: [
     CommonModule,
+    ClipboardModule,
     NewRequestRoutingModule,
     TranslateModule,
     BusyIndicatorModule,
@@ -94,7 +100,7 @@ import { PeerGroupDiscardSelectedComponent } from './new-request-peer-group/peer
     DataSourceToolbarModule,
     DataTableModule,
     DataTilesModule,
-    SidenavTreeModule,
+    SidenavTreeComponent,
     EuiCoreModule,
     EuiMaterialModule,
     FormsModule,
@@ -104,44 +110,43 @@ import { PeerGroupDiscardSelectedComponent } from './new-request-peer-group/peer
     QbmModule,
     MatSortModule,
     MatTableModule,
-    HelpContextualModule
+    MatChipsModule,
+    HelpContextualModule,
+    SelectedElementsModule,
   ],
   exports: [NewRequestComponent],
 })
 export class NewRequestModule {
-  constructor(private readonly menuService: MenuService, logger: ClassloggerService) {
+  constructor(
+    private readonly menuService: MenuService,
+    logger: ClassloggerService,
+  ) {
     logger.info(this, '▶️ NewRequestModule loaded');
     this.setupMenu();
   }
 
-
   private setupMenu(): void {
-    this.menuService.addMenuFactories(
-      (preProps: string[], features: string[]) => {
+    this.menuService.addMenuFactories((preProps: string[], features: string[]) => {
+      const items: MenuItem[] = [];
 
-        const items: MenuItem[] = [];
+      if (preProps.includes('ITSHOP')) {
+        items.push({
+          id: 'QER_Requests_NewRequest_V2',
+          route: NEW_REQUEST_ROUTE,
+          title: '#LDS#Menu Entry New request',
+          sorting: '10-11',
+        });
+      }
 
-        if (preProps.includes('ITSHOP')) {
-          items.push(
-            {
-              id: 'QER_Requests_NewRequest_V2',
-              route: 'newrequest',
-              title: '#LDS#Menu Entry New request',
-              sorting: '10-11',
-            },
-          );
-        }
-
-        if (items.length === 0) {
-          return null;
-        }
-        return {
-          id: 'ROOT_Request',
-          title: '#LDS#Requests',
-          sorting: '10',
-          items
-        };
-      },
-    );
+      if (items.length === 0) {
+        return undefined;
+      }
+      return {
+        id: 'ROOT_Request',
+        title: '#LDS#Requests',
+        sorting: '10',
+        items,
+      };
+    });
   }
 }

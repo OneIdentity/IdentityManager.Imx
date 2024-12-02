@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,7 +29,7 @@ import { MatButtonToggleChange } from '@angular/material/button-toggle';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PortalRolesExclusions, PortalShopConfigMembers } from 'imx-api-qer';
+import { PortalRolesExclusions, PortalShopConfigMembers } from '@imx-modules/imx-api-qer';
 import {
   CollectionLoadParameters,
   EntitySchema,
@@ -37,27 +37,28 @@ import {
   TypedEntity,
   TypedEntityCollectionData,
   ValType,
-} from 'imx-qbm-dbts';
+} from '@imx-modules/imx-qbm-dbts';
 
 import {
-  DataSourceToolbarSettings,
-  DataSourceToolbarFilter,
-  ClassloggerService,
-  DataTableComponent,
-  HELPER_ALERT_KEY_PREFIX,
-  StorageService,
-  SettingsService,
-  HELP_CONTEXTUAL,
   BaseCdr,
-  EntityService,
+  calculateSidesheetWidth,
+  ClassloggerService,
   ConfirmationService,
+  DataSourceToolbarFilter,
+  DataSourceToolbarSettings,
+  DataTableComponent,
+  EntityService,
+  HELP_CONTEXTUAL,
+  HELPER_ALERT_KEY_PREFIX,
+  isMobile,
+  SettingsService,
+  StorageService,
 } from 'qbm';
-import { ACTION_DISMISS, RequestsService } from '../requests.service';
-import { MemberSelectorComponent } from './member-selector/member-selector.component';
 import { JustificationType } from '../../justification/justification-type.enum';
 import { JustificationService } from '../../justification/justification.service';
+import { ACTION_DISMISS, RequestsService } from '../requests.service';
+import { MemberSelectorComponent } from './member-selector/member-selector.component';
 import { ReasonSidesheetComponent } from './reason-sidesheet/reason-sidesheet.component';
-
 
 const helperAlertKey = `${HELPER_ALERT_KEY_PREFIX}_requestShopAccess`;
 
@@ -79,8 +80,8 @@ export class RequestConfigMembersComponent implements OnInit {
   public navigationState: CollectionLoadParameters;
   public navigationStateExcludedMembers: CollectionLoadParameters;
   public filterOptions: DataSourceToolbarFilter[] = [];
-  public selectedMembers: PortalShopConfigMembers[] = [];
-  public selectedExclusions: PortalRolesExclusions[] = [];
+  public selectedMembers: TypedEntity[] = [];
+  public selectedExclusions: TypedEntity[] = [];
   public accessContextIds = HELP_CONTEXTUAL.ConfigurationRequestsAccess;
 
   public readonly itemStatus = {
@@ -115,7 +116,7 @@ export class RequestConfigMembersComponent implements OnInit {
   }
 
   get isMobile(): boolean {
-    return document.body.offsetWidth <= 768;
+    return isMobile();
   }
 
   get managedByDynamicGroup(): boolean {
@@ -124,8 +125,8 @@ export class RequestConfigMembersComponent implements OnInit {
 
   get managedByDynamicGroupSelected(): boolean {
     let result = false;
-    const selection = this.selectedMembers.find((member) => {
-      // tslint:disable-next-line:no-bitwise
+    const selection = this.selectedMembers.find((member: PortalShopConfigMembers) => {
+      // eslint-disable-next-line no-bitwise
       return (member.XOrigin?.value & 4) > 0;
     });
     result = !!selection;
@@ -174,13 +175,13 @@ export class RequestConfigMembersComponent implements OnInit {
     await this.navigateExcludedMembers();
   }
 
-  public onMemberSelected(selected: PortalShopConfigMembers[]): void {
+  public onMemberSelected(selected: TypedEntity[]): void {
     this.logger.debug(this, `Selected shop members changed`);
     this.logger.trace(`New shop member selections`, selected);
     this.selectedMembers = selected;
   }
 
-  public onExcusionSelected(selected: PortalRolesExclusions[]): void {
+  public onExcusionSelected(selected: TypedEntity[]): void {
     this.selectedExclusions = selected;
   }
 
@@ -206,17 +207,19 @@ export class RequestConfigMembersComponent implements OnInit {
     const newMember = this.requestsService.generateRequestConfigMemberEntity(this.customerNodeId);
     const property = this.entitySchemaShopConfigMembers.Columns.UID_Person;
     const entity = newMember.GetEntity();
-    const fk = entity.GetFkCandidateProvider().getProviderItem(property.FkRelation.ParentColumnName, property.FkRelation.ParentTableName);
+    const fk = entity
+      .GetFkCandidateProvider()
+      .getProviderItem(property.FkRelation?.ParentColumnName || '', property.FkRelation?.ParentTableName || '');
 
     const dialogRef = this.sidesheet.open(MemberSelectorComponent, {
       title: await this.translate.get('#LDS#Heading Add Members').toPromise(),
       subTitle: this.shopDisplay,
       padding: '0px',
-      width: 'max(55%,550px)',
+      width: calculateSidesheetWidth(),
       testId: 'request-config-members-add-membership',
       data: {
-        get: (parameters) => fk.load(entity, parameters),
-        GetFilterTree: (parentkey) => fk.getFilterTree(entity, parentkey),
+        get: (parameters) => fk?.load(entity, parameters),
+        GetFilterTree: (parentkey) => fk?.getFilterTree?.(entity, parentkey),
         isMultiValue: true,
       },
     });
@@ -237,20 +240,24 @@ export class RequestConfigMembersComponent implements OnInit {
       reason = await this.giveReason();
       if (reason === undefined) return;
     }
-    if (await this.confirmation.confirmDelete('#LDS#Heading Exclude Members', '#LDS#Are you sure you want to exclude the selected members?')) {
+    if (
+      await this.confirmation.confirmDelete('#LDS#Heading Exclude Members', '#LDS#Are you sure you want to exclude the selected members?')
+    ) {
       try {
         this.requestsService.handleOpenLoader();
         await this.requestsService.removeRequestConfigMembers(
           this.customerNodeId,
           this.requestDynamicGroup,
           this.selectedMembers,
-          reason.standard.DisplayValue + " - " + reason.freetext
+          reason.standard.DisplayValue + ' - ' + reason.freetext,
         );
         await this.navigate();
         // Remove any remaining items in memory that haven't yet been processed by backend
-        const data = this.removeSelectionsInMemory(this.selectedMembers, this.dstSettings.dataSource.Data);
-        this.dstSettings.dataSource.Data = data;
-        await this.navigate(this.dstSettings.dataSource);
+        if (!!this.dstSettings.dataSource?.Data.length) {
+          const data: TypedEntity[] | undefined = this.removeSelectionsInMemory(this.selectedMembers, this.dstSettings.dataSource?.Data);
+          this.dstSettings.dataSource.Data = data;
+          await this.navigate(this.dstSettings.dataSource);
+        }
         if (this.managedByDynamicGroupSelected) {
           // If adding an exclusion
           this.requestsService.openSnackbar(this.requestsService.LdsMembersRemoved, ACTION_DISMISS);
@@ -260,7 +267,7 @@ export class RequestConfigMembersComponent implements OnInit {
       } finally {
         this.requestsService.handleCloseLoader();
       }
-    };
+    }
   }
 
   /**
@@ -278,11 +285,11 @@ export class RequestConfigMembersComponent implements OnInit {
       title: await this.translate.get('#LDS#Heading Exclude Members').toPromise(),
       subTitle: this.shopDisplay,
       padding: '0px',
-      width: 'max(55%,550px)',
+      width: calculateSidesheetWidth(),
       testId: 'request-config-members-remove-membership',
       data: {
-        actionParameters
-      }
+        actionParameters,
+      },
     });
 
     const reason = await sidesheetRef.afterClosed().toPromise();
@@ -295,9 +302,14 @@ export class RequestConfigMembersComponent implements OnInit {
       await this.requestsService.removeRequestConfigMemberExclusions(this.requestDynamicGroup, this.selectedExclusions);
       await this.navigateExcludedMembers();
       // Remove any remaining items in memory that haven't yet been processed by backend
-      const data = this.removeSelectionsInMemory(this.selectedExclusions, this.dstSettingsExcludedMembers.dataSource.Data);
-      this.dstSettingsExcludedMembers.dataSource.Data = data;
-      await this.navigateExcludedMembers(this.dstSettingsExcludedMembers.dataSource);
+      const data: TypedEntity[] | undefined = this.removeSelectionsInMemory(
+        this.selectedExclusions,
+        this.dstSettingsExcludedMembers.dataSource?.Data || [],
+      );
+      if (this.dstSettingsExcludedMembers.dataSource) {
+        this.dstSettingsExcludedMembers.dataSource.Data = data;
+      }
+      await this.navigateExcludedMembers(this.dstSettingsExcludedMembers.dataSource || undefined);
       this.requestsService.openSnackbar(this.requestsService.LdsMembersAdded, ACTION_DISMISS);
       // Reset table selections (removing references to now deleted members)
       this.dataTableExclusions.clearSelection();
@@ -316,15 +328,27 @@ export class RequestConfigMembersComponent implements OnInit {
     return new BaseCdr(column, display || '#LDS#Reason for your decision');
   }
 
+  get showHelperAlert(): boolean {
+    return !this.storageService.isHelperAlertDismissed(helperAlertKey);
+  }
+
   public onHelperDismissed(): void {
     this.storageService.storeHelperAlertDismissal(helperAlertKey);
   }
 
   public clearData(): void {
-    this.dstSettingsExcludedMembers.dataSource.Data = [];
+    if (!this.dstSettings.dataSource) {
+      return;
+    }
+    if (this.dstSettingsExcludedMembers.dataSource != null) {
+      this.dstSettingsExcludedMembers.dataSource.Data = [];
+    }
   }
 
   public clearMembers(): void {
+    if (!this.dstSettings.dataSource) {
+      return;
+    }
     this.dstSettings.dataSource.Data = [];
   }
 
@@ -350,7 +374,7 @@ export class RequestConfigMembersComponent implements OnInit {
     }
   }
 
-  private async navigate(data?: TypedEntityCollectionData<TypedEntity>): Promise<void> {
+  private async navigate(data?: TypedEntityCollectionData<TypedEntity> | undefined | null): Promise<void> {
     this.requestsService.handleOpenLoader();
     const getParams: any = this.navigationState;
     try {
@@ -368,7 +392,7 @@ export class RequestConfigMembersComponent implements OnInit {
         navigationState: this.navigationState,
         filters: this.filterOptions,
       };
-      this.logger.debug(this, `Head at ${data.Data.length + this.navigationState.StartIndex} of ${data.totalCount} item(s)`);
+      this.logger.debug(this, `Head at ${data.Data.length + (this.navigationState?.StartIndex || 0)} of ${data.totalCount} item(s)`);
     } finally {
       this.requestsService.handleCloseLoader();
     }

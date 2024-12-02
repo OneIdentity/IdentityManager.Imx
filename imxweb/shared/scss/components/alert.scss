@@ -1,0 +1,88 @@
+@import 'base/mixins';
+
+/* Elemental UI */
+eui-alert {
+  display: flex;
+  width: auto;
+  margin-bottom: 16px;
+  max-height: max(50%, 200px);
+
+  .eui-alert-header {
+    width: 100%;
+  }
+
+  .eui-alert-content {
+    width: 100%;
+    overflow: auto;
+  }
+
+  span {
+    display: block;
+  }
+}
+
+/* Angular Material */
+
+/* Imx */
+.imx-alert {
+  &-start {
+    &-50 {
+      width: 50%;
+    }
+
+    &-70 {
+      width: 70%;
+    }
+
+    &-100 {
+      width: 100%;
+    }
+  }
+
+  &-end {
+    &-50 {
+      margin-left: auto;
+      width: 50%;
+    }
+
+    &-70 {
+      margin-left: auto;
+      width: 70%;
+    }
+  }
+
+  &-flex {
+    &-column {
+      @include flex-column-container();
+
+      &-end {
+        @extend .imx-alert-flex-column;
+        align-items: end;
+      }
+    }
+  }
+
+  &-grid {
+    &-first-row {
+      grid-column: 1/3;
+    }
+  }
+
+  &-shadow {
+    @include eui-elevation-1;
+  }
+
+  &-content {
+    &-font-small {
+      font-size: 14px;
+    }
+
+    &-end {
+      align-self: end;
+    }
+  }
+}
+
+/* Dark theme */
+
+/* High-contrast theme */

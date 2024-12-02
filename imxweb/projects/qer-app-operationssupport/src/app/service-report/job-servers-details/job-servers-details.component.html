@@ -1,16 +1,16 @@
-<mat-tab-group #tabs >
+<mat-tab-group mat-stretch-tabs="false" #tabs>
   <mat-tab [label]="'#LDS#Heading Machine Roles' | translate">
-    <div class="imx-mat-tab-container">
+    <div class="imx-tab-container">
       <mat-card *ngFor="let roles of machineRoles" class="imx-server-details-machine-roles">
-          {{roles.Display}}
+        {{ roles.Display }}
       </mat-card>
     </div>
   </mat-tab>
   <mat-tab [label]="'#LDS#Heading Server Functions' | translate">
-    <div class="imx-mat-tab-container">
+    <div class="imx-tab-container">
       <mat-card *ngFor="let tag of tags" class="imx-server-details-machine-roles">
-          <h6>{{tag.Display}}</h6>
-          <span>{{tag.Description}}</span>
+        <h6>{{ tag.Display }}</h6>
+        <span>{{ tag.Description }}</span>
       </mat-card>
     </div>
   </mat-tab>

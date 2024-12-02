@@ -1,7 +1,11 @@
-<p title>{{ modeFilter?.Description | translate }}</p>
+<p title>{{ modeFilter?.Description || '' | translate }}</p>
 <ng-container *ngIf="options">
   <div *ngFor="let option of options">
-    <mat-checkbox [(ngModel)]="option.checked" (change)="updateFilter($event)" [attr.data-imx-identifier]="'history-filter-option-' + option.initialValue">
+    <mat-checkbox
+      [(ngModel)]="option.checked"
+      (change)="updateFilter()"
+      [attr.data-imx-identifier]="'history-filter-option-' + option.initialValue"
+    >
       {{ option.display }}
     </mat-checkbox>
   </div>

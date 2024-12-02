@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { AfterViewInit, Component, EventEmitter, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { MatCalendar, MatCalendarUserEvent } from '@angular/material/datepicker';
-import { DbVal } from 'imx-qbm-dbts';
+import { DbVal } from '@imx-modules/imx-qbm-dbts';
 import moment from 'moment-timezone';
 import { Moment } from 'moment-timezone';
 
@@ -37,10 +37,9 @@ import { Moment } from 'moment-timezone';
 @Component({
   selector: 'imx-calendar',
   templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.scss']
+  styleUrls: ['./calendar.component.scss'],
 })
 export class CalendarComponent implements OnInit, AfterViewInit {
-
   /**
    * The input control holding a Moment value.
    *
@@ -133,5 +132,4 @@ export class CalendarComponent implements OnInit, AfterViewInit {
     event.stopPropagation();
     this.close.emit();
   }
-
 }

@@ -1,39 +1,29 @@
 <div *ngIf="!isEnteringPasscode" class="imx-loginInput">
-    <input placeholder="{{'#LDS#User name' | translate}}" type="text" [(ngModel)]="userName"
-        [attr.data-imx-identifier]="'pwd-username'" [required]="true">
+  <input
+    class="imx-input-login"
+    placeholder="{{ '#LDS#User' | translate }}"
+    type="text"
+    [(ngModel)]="userName"
+    [attr.data-imx-identifier]="'pwd-username'"
+    [required]="true"
+  />
 
-    <div class="alert-container">
-        <eui-alert type="info" [condensed]="true"><span>{{ LdsCaptchaInfo | translate }}</span>
-        </eui-alert>
-    </div>
-
-    <div class="captcha-container">
-        <imx-captcha></imx-captcha>
-
-        <input placeholder="{{'#LDS#Enter characters from the image' | translate}}" type="text"
-            [(ngModel)]="captchaSvc.Response" [attr.data-imx-identifier]="'captcha-code'" [required]="true">
-    </div>
-
-    <div class="buttonbar">
-        <button mat-raised-button (click)="captchaSvc.ReinitCaptcha()">{{
-            '#LDS#Refresh image' | translate}}</button>
-        <button mat-raised-button color="primary" class="imx-next-button" [disabled]="!userName || !captchaSvc.Response"
-            (click)="MoveToEnterPasscode()">
-            {{'#LDS#Next' | translate}}
-        </button>
-    </div>
+  <imx-captcha [disableButton]="!userName" (nextClick)="MoveToEnterPasscode()"></imx-captcha>
 </div>
 
 <div class="imx-loginInput" *ngIf="isEnteringPasscode">
+  <div class="passcode">
+    <input
+      class="imx-input-login"
+      placeholder="{{ '#LDS#Passcode' | translate }}"
+      type="password"
+      [(ngModel)]="passcode"
+      [attr.data-imx-identifier]="'passcode'"
+      [required]="true"
+    />
+  </div>
 
-    <div class="passcode">
-        <input placeholder="{{'#LDS#Passcode' | translate}}" type="password" [(ngModel)]="passcode"
-            [attr.data-imx-identifier]="'passcode'" [required]="true">
-    </div>
-
-    <div class="buttonbar">
-        <button mat-raised-button type="button" [disabled]="!passcode"
-            (click)="Login()">{{'#LDS#Submit' | translate}}</button>
-    </div>
-
+  <div class="buttonbar">
+    <button mat-flat-button type="button" [disabled]="!passcode" (click)="Login()">{{ '#LDS#Submit' | translate }}</button>
+  </div>
 </div>

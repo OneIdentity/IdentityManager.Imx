@@ -1,46 +1,23 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
-@import '../../../../../shared/scss/common-table.scss';
+@import 'base/mixins';
 
 :host {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-
-.mat-card {
- @include imx-flex-fill-control-hidden-overflow();
-}
-
-.imx-list {
-  overflow: auto;
-  margin-bottom: 10px;
-}
-
-.imx-list mat-list-option .imx-list-item-subtitle {
-  font-size: smaller;
-  font-style: italic;
-}
-
-.imx-button-bar {
-  @include imx-button-bar();
-}
-
-:host {
-  .imx-list mat-list-option .imx-list-item-subtitle {
-    color: $color-gray-40;
+  .imx-card-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .imx-list-container {
+    overflow: auto;
+    margin-bottom: 10px;
+    .mat-mdc-list-option{
+      min-height: 48px;
+      padding-left: 0;
+    }
   }
 }
 
-.eui-dark-theme {
-  .imx-list mat-list-option .imx-list-item-subtitle {
-    color: $color-gray-10;
-  }
-}
-
-.eui-contrast-theme {
-  .eui-dark-theme {
-  .imx-list mat-list-option .imx-list-item-subtitle {
-    color: $color-gray-0;
-  }
-}
-}

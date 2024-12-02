@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,33 +24,18 @@
  *
  */
 
-import { CommonModule } from "@angular/common";
-import { NgModule } from "@angular/core";
-import { MatButtonModule } from "@angular/material/button";
-import { MatCardModule } from "@angular/material/card";
-import { EuiCoreModule, EuiMaterialModule } from "@elemental-ui/core";
-import { TranslateModule } from "@ngx-translate/core";
-import { CdrModule, LdsReplaceModule } from "qbm";
-import { AttestationSnapshotComponent } from "./attestation-snapshot.component";
+import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
+import { CdrModule, LdsReplaceModule } from 'qbm';
+import { AttestationSnapshotComponent } from './attestation-snapshot.component';
 
 @NgModule({
-  declarations: [
-    AttestationSnapshotComponent
-  ],
-  imports: [
-    CommonModule,
-    CdrModule,
-    EuiCoreModule,
-    EuiMaterialModule,
-    LdsReplaceModule,
-    TranslateModule,
-    MatCardModule,
-    MatButtonModule,
-  ],
-  exports: [
-    AttestationSnapshotComponent
-  ]
+  declarations: [AttestationSnapshotComponent],
+  imports: [CommonModule, CdrModule, EuiCoreModule, EuiMaterialModule, LdsReplaceModule, TranslateModule, MatCardModule, MatButtonModule],
+  exports: [AttestationSnapshotComponent],
 })
-export class AttestationSnapshotModule {
-
-}
+export class AttestationSnapshotModule {}

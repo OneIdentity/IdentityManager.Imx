@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,10 +26,10 @@
 
 import { Injectable } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
-import { IWriteValue } from 'imx-qbm-dbts';
+import { IWriteValue } from '@imx-modules/imx-qbm-dbts';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class Base64ImageService {
   private readonly base64DataUrl = 'data:image/png;base64,';

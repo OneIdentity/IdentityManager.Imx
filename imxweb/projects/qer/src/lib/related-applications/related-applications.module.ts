@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,26 +30,26 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { RelatedApplicationsComponent } from './related-applications.component';
-import { RelatedApplicationsSidesheetComponent } from './related-applications-sidesheet/related-applications-sidesheet.component';
-import { ApplicationDetailsComponent } from './application-details/application-details.component';
 import { CdrModule, ClassloggerService, DataTreeWrapperModule, ExtService, RouteGuardService } from 'qbm';
+import { ApplicationDetailsComponent } from './application-details/application-details.component';
 import { ApplicationDialogComponent } from './application-dialog/application-dialog.component';
-import { RelatedApplicationsService } from './related-applications.service';
 import { RelatedApplicationMenuItemComponent } from './related-application-menu-item/related-application-menu-item.component';
+import { RelatedApplicationsSidesheetComponent } from './related-applications-sidesheet/related-applications-sidesheet.component';
+import { RelatedApplicationsComponent } from './related-applications.component';
 
 const routes: Routes = [
   {
     path: 'applications/relatedapplications',
     component: RelatedApplicationsComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
-  },{
+    resolve: [RouteGuardService],
+  },
+  {
     path: 'applicationdetails',
     component: ApplicationDetailsComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
-  }
+    resolve: [RouteGuardService],
+  },
 ];
 
 @NgModule({
@@ -58,7 +58,7 @@ const routes: Routes = [
     RelatedApplicationsSidesheetComponent,
     ApplicationDetailsComponent,
     ApplicationDialogComponent,
-    RelatedApplicationMenuItemComponent
+    RelatedApplicationMenuItemComponent,
   ],
   imports: [
     CdrModule,
@@ -69,16 +69,14 @@ const routes: Routes = [
     ReactiveFormsModule,
     RouterModule.forChild(routes),
     TranslateModule,
-  ]
+  ],
 })
 export class RelatedApplicationsModule {
-
   constructor(
     logger: ClassloggerService,
     private readonly extService: ExtService,
-    ) {
+  ) {
     logger.info(this, '▶️ RelatedApplicationsModule loaded');
-    this.extService.register('mastHead', { instance: RelatedApplicationMenuItemComponent});
+    this.extService.register('mastHead', { instance: RelatedApplicationMenuItemComponent });
   }
-
 }

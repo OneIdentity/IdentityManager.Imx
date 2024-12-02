@@ -1,9 +1,6 @@
-.mat-dialog-content{
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+@import 'base/mixins';
 
-  .mat-table {
-    margin-top: 20px;
-  }
+.mat-mdc-dialog-content {
+  @include flex-column-container($overflow: hidden);
+
 }

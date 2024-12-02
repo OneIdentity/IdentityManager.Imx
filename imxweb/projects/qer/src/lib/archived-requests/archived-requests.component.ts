@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,10 +25,10 @@
  */
 
 import { Component, OnDestroy } from '@angular/core';
-import { AuthenticationService, ColumnDependentReference } from 'qbm';
 import { AbstractControl, FormGroup } from '@angular/forms';
-import { ArchivedRequestsService } from './archived-requests.service';
+import { AuthenticationService, ColumnDependentReference, ISessionState } from 'qbm';
 import { Subscription } from 'rxjs';
+import { ArchivedRequestsService } from './archived-requests.service';
 
 @Component({
   templateUrl: './archived-requests.component.html',
@@ -43,9 +43,12 @@ export class ArchivedRequestsComponent implements OnDestroy {
 
   private sessionSubscription: Subscription;
 
-  constructor(private archived: ArchivedRequestsService, authService: AuthenticationService) {
-    this.sessionSubscription = authService.onSessionResponse.subscribe(async (session) => {
-      await this.initRecipientForm(session.UserUid, session.Username);
+  constructor(
+    private archived: ArchivedRequestsService,
+    authService: AuthenticationService,
+  ) {
+    this.sessionSubscription = authService.onSessionResponse.subscribe(async (session: ISessionState) => {
+      await this.initRecipientForm(session.UserUid || '', session.Username || '');
     });
   }
 

@@ -1,4 +1,4 @@
-<mat-tab-group *ngIf="data?.isMControlPerViolation; else singleElement">
+<mat-tab-group mat-stretch-tabs="false" *ngIf="data?.isMControlPerViolation; else singleElement">
   <mat-tab [label]="'#LDS#Heading Information' | translate">
     <ng-container *ngTemplateOutlet="singleContent"></ng-container>
     <ng-container *ngTemplateOutlet="actions"></ng-container>
@@ -6,15 +6,26 @@
 
   <mat-tab data-imx-identifier="policy-violations-tab-mig-controls">
     <ng-template mat-tab-label>
-      <span >{{'#LDS#Heading Mitigating Controls' | translate}}</span>
-      <eui-icon *ngIf="mitig?.isDirty" icon="save" class="imx-dirty-indicator" size="s" [attr.aria-label]="'#LDS#You have unsaved changes.' | translate"></eui-icon>
+      <span>{{ '#LDS#Heading Mitigating Controls' | translate }}</span>
+      <eui-icon
+        *ngIf="mitig?.isDirty"
+        icon="save"
+        class="imx-dirty-indicator"
+        size="s"
+        [attr.aria-label]="'#LDS#You have unsaved changes.' | translate"
+      ></eui-icon>
     </ng-template>
-    <imx-mitigating-controls #mitig [isMControlPerViolation]="data?.isMControlPerViolation" [isReadOnly]="data?.isReadOnly" [sidesheetRef]="sideSheetRef" [uidViolation]="data?.policyViolation?.GetEntity().GetKeys()[0]"></imx-mitigating-controls>
+    <imx-mitigating-controls
+      #mitig
+      [isMControlPerViolation]="data?.isMControlPerViolation"
+      [sidesheetRef]="sideSheetRef"
+      [uidViolation]="data?.policyViolation?.GetEntity()?.GetKeys()?.[0]"
+    ></imx-mitigating-controls>
   </mat-tab>
-  <mat-tab label="{{'#LDS#Heading Hyperview' | translate}}" *ngIf="this.relatedOptions?.length > 1">
+  <mat-tab label="{{ '#LDS#Heading Hyperview' | translate }}" *ngIf="this.relatedOptions.length > 1">
     <ng-template matTabContent>
       <div eui-sidesheet-content class="imx-policy-violations-hyperview">
-        <mat-form-field appearance="outline" >
+        <mat-form-field appearance="outline">
           <mat-label>{{ '#LDS#Related objects' | translate }}</mat-label>
           <mat-select required (selectionChange)="onHyperviewOptionSelected()" [(value)]="selectedOption">
             <mat-option *ngFor="let relatedOption of relatedOptions" [value]="relatedOption">
@@ -22,9 +33,7 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
-        <imx-object-hyperview *ngIf="!!selectedOption"
-          [objectType]="selectedHyperviewType"
-          [objectUid]="selectedHyperviewUID">
+        <imx-object-hyperview *ngIf="!!selectedOption" [objectType]="selectedHyperviewType" [objectUid]="selectedHyperviewUID">
         </imx-object-hyperview>
       </div>
     </ng-template>
@@ -37,13 +46,16 @@
 
 <ng-template #singleContent>
   <div eui-sidesheet-content>
-
     <mat-card>
       <div class="imx-state-caption">
         {{ data?.policyViolation?.State?.GetMetadata()?.GetDisplay() }}
       </div>
-      <eui-badge [color]="data?.policyViolation?.stateBadge?.color" *ngIf="data?.policyViolation?.State?.value">
-        {{ data?.policyViolation?.stateBadge?.caption | translate }}
+      <eui-badge
+        class="imx-margin-bottom-20"
+        [color]="data?.policyViolation?.stateBadge?.color"
+        *ngIf="data?.policyViolation?.State?.value"
+      >
+        {{ data.policyViolation.stateBadge.caption | translate }}
       </eui-badge>
       <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"></imx-cdr-editor>
     </mat-card>
@@ -51,12 +63,14 @@
 </ng-template>
 
 <ng-template #actions>
-  <div eui-sidesheet-actions *ngIf="isPending && !data?.isReadOnly">
-    <button mat-stroked-button (click)="approve()" data-imx-identifier="policy-violations-table-row-button-approve">
-      {{ '#LDS#Grant exception' | translate }}
-    </button>
-    <button mat-stroked-button (click)="deny()" data-imx-identifier="policy-violations-table-row-button-deny">
+  <div eui-sidesheet-actions *ngIf="!data?.isReadOnly">
+    <button mat-flat-button color="warn" (click)="deny()" data-imx-identifier="policy-violations-table-row-button-deny">
+      <eui-icon icon="ignore"></eui-icon>
       {{ '#LDS#Deny exception' | translate }}
+    </button>
+    <button mat-flat-button color="primary" (click)="approve()" data-imx-identifier="policy-violations-table-row-button-approve">
+      <eui-icon icon="check"></eui-icon>
+      {{ '#LDS#Grant exception' | translate }}
     </button>
   </div>
 </ng-template>

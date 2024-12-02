@@ -1,0 +1,216 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
+
+/* Elemental UI */
+/* https://elemental.dev.oneidentity.com/design/cadence-icons */
+/* size =
+  "s" => 16px
+  "m" => 24px (default)
+  "l" => 36px
+  "xl" => 48px */
+
+.eui-sidesheet-actions {
+  button:not(.mat-icon-button) {
+    .mat-mdc-icon,
+    eui-icon.medium {
+      font-size: 14px;
+      margin-right: 4px;
+    }
+  }
+}
+/* Angular Material */
+
+/* Imx */
+.imx-icon {
+  &-size {
+    @for $i from 1 through 100 {
+      &-#{$i} {
+        &.mat-mdc-icon {
+          font-size: #{$i}px;
+          width: #{$i}px;
+          height: #{$i}px;
+        }
+
+        &.eui-icon.small,
+        &.eui-icon.medium,
+        &.eui-icon.large,
+        &.eui-icon.x-large {
+          font-size: #{$i}px;
+        }
+      }
+    }
+  }
+
+  &-white {
+    color: $color-gray-0;
+  }
+
+  &-black {
+    color: $color-gray-100;
+  }
+
+  &-info {
+    color: $color-blue-60;
+  }
+
+  &-new {
+    color: $color-green-60;
+  }
+
+  &-warning {
+    color: $color-orange-60;
+  }
+
+  &-error {
+    color: $color-red-60;
+  }
+
+  &-disabled {
+    cursor: default;
+    color: $color-gray-30;
+  }
+
+  &-hidden {
+    visibility: hidden;
+  }
+
+  &-visible {
+    visibility: visible;
+  }
+
+  &-upload {
+    &.eui-icon.medium {
+      font-size: 200px;
+      line-height: 200px;
+    }
+  }
+
+  &-circle {
+    color: $color-gray-80;
+    background-color: $color-gray-20;
+    opacity: 0.6;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 35px;
+    min-width: 35px;
+    min-height: 35px;
+    margin-right: 12px;
+  }
+
+  &-table-container {
+    padding-right: 15px;
+
+    .imx-icon-table {
+      display: flex;
+      align-items: center;
+      color: $color-gray-60;
+      font-weight: 600;
+      height: 14px;
+
+      .mat-mdc-icon {
+        width: auto;
+      }
+
+      .mat-mdc-icon,
+      .eui-icon {
+        padding-right: 6px;
+      }
+
+      &:not(:first-of-type) {
+        margin-left: 8px;
+        border-left: 1px solid $color-gray-20;
+        padding-left: 8px;
+      }
+    }
+  }
+
+  &-selector-list {
+    @include flex-row-container;
+
+    eui-icon {
+      color: $color-gray-40;
+      user-select: none;
+    }
+  }
+
+  &-chip-remove {
+    color: $color-gray-60;
+    opacity: 0.3;
+    font-size: 18px;
+    margin-right: -10px;
+  }
+}
+
+.imx-no-results {
+  .eui-icon {
+    font-size: 100px !important;
+    line-height: 100px;
+    color: $color-gray-10;
+  }
+}
+
+/* Dark theme */
+.eui-dark-theme {
+  .imx-no-results {
+    .eui-icon {
+      color: $color-gray-20;
+    }
+  }
+
+  .imx-icon {
+    &-circle {
+      color: $color-gray-20;
+      background-color: $color-gray-80;
+    }
+  }
+}
+
+/* High-contrast theme */
+.eui-contrast-theme {
+  .imx-no-results {
+    .eui-icon {
+      color: $color-gray-10;
+    }
+  }
+
+  .imx-icon {
+    &-circle {
+      color: $color-gray-100;
+      background-color: $color-gray-0;
+      opacity: 1;
+    }
+  }
+}
+
+/* Dark + High-contrast theme */
+.eui-dark-theme,
+.eui-contrast-theme {
+  .imx-icon-table-container {
+    .imx-icon-table {
+      color: $color-gray-10;
+    }
+  }
+
+  .imx-icon {
+    &-info {
+      color: $color-blue-40;
+    }
+
+    &-new {
+      color: $color-green-40;
+    }
+
+    &-warning {
+      color: $color-orange-40;
+    }
+
+    &-error {
+      color: $color-red-40;
+    }
+
+    &-chip-remove {
+      opacity: unset;
+      color: $color-gray-0;
+    }
+  }
+}

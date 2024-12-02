@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,22 +34,20 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { ServiceItemTagsService } from './service-item-tags.service';
 import { ServiceItemTagsComponent } from './service-item-tags.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [
-    ServiceItemTagsComponent
-  ],
-  exports: [
-    ServiceItemTagsComponent
-  ],
+  declarations: [ServiceItemTagsComponent],
+  exports: [ServiceItemTagsComponent],
   imports: [
     CommonModule,
     MatFormFieldModule,
     MatChipsModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    TranslateModule
+    TranslateModule,
+    ReactiveFormsModule,
   ],
-  providers: [ServiceItemTagsService]
+  providers: [ServiceItemTagsService],
 })
-export class ServiceItemTagsModule { }
+export class ServiceItemTagsModule {}

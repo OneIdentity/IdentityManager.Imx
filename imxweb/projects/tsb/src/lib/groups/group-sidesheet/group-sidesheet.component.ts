@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,33 +24,29 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, OnInit, Inject, ViewChild } from '@angular/core';
-import { UntypedFormGroup, UntypedFormBuilder, UntypedFormArray } from '@angular/forms';
-import { EuiDownloadOptions, EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { EUI_SIDESHEET_DATA, EuiDownloadOptions, EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
 
+import { PortalTargetsystemUnsGroupServiceitem } from '@imx-modules/imx-api-tsb';
+import { TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import {
+  BaseCdr,
+  ClassloggerService,
   ColumnDependentReference,
-  BaseCdr, ClassloggerService,
-  SystemInfoService,
-  SnackBarService,
-  ElementalUiConfigService,
   ConfirmationService,
-  TabItem,
+  ElementalUiConfigService,
   ExtService,
+  SnackBarService,
+  SystemInfoService,
+  TabItem,
 } from 'qbm';
-import {
-  HelperAlertContent,
-  ProjectConfigurationService,
-  ServiceItemsEditFormComponent
-} from 'qer';
-import { PortalTargetsystemUnsGroupServiceitem } from 'imx-api-tsb';
-import { TypedEntity } from 'imx-qbm-dbts';
-import { GroupsService } from '../groups.service';
-import { GroupSidesheetData } from '../groups.models';
-import { GroupsReportsService } from '../groups-reports.service';
-import { GroupMembersComponent } from './group-members/group-members.component';
+import { HelperAlertContent, ProjectConfigurationService, ServiceItemsEditFormComponent } from 'qer';
 import { DbObjectKeyBase } from '../../target-system/db-object-key-wrapper.interface';
+import { GroupsReportsService } from '../groups-reports.service';
+import { GroupSidesheetData } from '../groups.models';
+import { GroupsService } from '../groups.service';
+import { GroupMembersComponent } from './group-members/group-members.component';
 
 @Component({
   selector: 'imx-group-sidesheet',
@@ -63,17 +59,17 @@ export class GroupSidesheetComponent implements OnInit {
   }
 
   public get isAdmin(): boolean {
-    return this.sidesheetData.isAdmin;
+    return this.sidesheetData?.isAdmin ?? false;
   }
 
   public readonly serviceItemFormGroup: UntypedFormGroup;
   public readonly detailsFormGroup: UntypedFormGroup;
   public cdrList: ColumnDependentReference[] = [];
   public isRequestable: boolean;
-  public parameters: { objecttable: string; objectuid: string; };
+  public parameters: { objecttable: string; objectuid: string; display: string };
   public unsGroupDbObjectKey: DbObjectKeyBase;
   public reportDownload: EuiDownloadOptions;
-  public buttonBarExtensionReferrer: { type: string, uidGroup: string, defaultDownloadOptions: EuiDownloadOptions };
+  public buttonBarExtensionReferrer: { type: string; uidGroup: string; defaultDownloadOptions?: EuiDownloadOptions };
   public readonly pendingAttestations: HelperAlertContent = { loading: false };
 
   public canCreateServiceItem = false;
@@ -86,7 +82,7 @@ export class GroupSidesheetComponent implements OnInit {
   constructor(
     formBuilder: UntypedFormBuilder,
     public groups: GroupsService,
-    @Inject(EUI_SIDESHEET_DATA) private readonly sidesheetData: GroupSidesheetData,
+    @Inject(EUI_SIDESHEET_DATA) public readonly sidesheetData: GroupSidesheetData,
     private readonly logger: ClassloggerService,
     private readonly busyService: EuiLoadingService,
     private readonly snackbar: SnackBarService,
@@ -98,7 +94,6 @@ export class GroupSidesheetComponent implements OnInit {
     private readonly tabService: ExtService,
     private readonly confirmation: ConfirmationService,
   ) {
-
     this.sidesheetRef.closeClicked().subscribe(async () => {
       if (!this.detailsFormGroup.dirty && !this.serviceItemFormGroup.dirty) {
         this.sidesheetRef.close();
@@ -116,7 +111,7 @@ export class GroupSidesheetComponent implements OnInit {
     this.isRequestable = sidesheetData.groupServiceItem != null && !sidesheetData.groupServiceItem.IsInActive.value;
 
     this.reportDownload = {
-      ... this.elementalUiConfigService.Config.downloadOptions,
+      ...this.elementalUiConfigService.Config.downloadOptions,
       url: this.reports.groupsByGroupReport(30, this.groupId),
     };
 
@@ -125,7 +120,8 @@ export class GroupSidesheetComponent implements OnInit {
     if (this.sidesheetData.unsGroupDbObjectKey) {
       this.parameters = {
         objecttable: this.unsGroupDbObjectKey.TableName,
-        objectuid: this.unsGroupDbObjectKey.Keys[0]
+        objectuid: this.unsGroupDbObjectKey.Keys[0],
+        display: this.sidesheetData.group.GetEntity().GetDisplay(),
       };
     }
     this.canCreateServiceItem = !sidesheetData.group.GetEntity().GetColumn('XReadOnlyMemberships')?.GetValue();
@@ -133,7 +129,7 @@ export class GroupSidesheetComponent implements OnInit {
     this.buttonBarExtensionReferrer = {
       type: this.sidesheetData.unsGroupDbObjectKey.TableName,
       uidGroup: this.sidesheetData.group.GetEntity().GetKeys()[0],
-      defaultDownloadOptions: this.elementalUiConfigService.Config.downloadOptions
+      defaultDownloadOptions: this.elementalUiConfigService.Config.downloadOptions,
     };
   }
 
@@ -166,7 +162,7 @@ export class GroupSidesheetComponent implements OnInit {
 
   public async createServiceItem(): Promise<void> {
     this.sidesheetData.group.extendedData = {
-      CreateServiceItem: true
+      CreateServiceItem: true,
     };
     await this.saveChanges(this.detailsFormGroup, this.sidesheetData.group, '#LDS#The service item has been successfully created.', true);
   }
@@ -186,7 +182,7 @@ export class GroupSidesheetComponent implements OnInit {
       };
       confirmMessage = '#LDS#The service item has been successfully saved. It may take some time for the changes to take effect.';
     } else {
-      this.groupServiceItem.extendedData = undefined;
+      this.groupServiceItem.extendedData = { CopyAllMembers: false };
     }
     this.saveChanges(this.serviceItemFormGroup, this.groupServiceItem, confirmMessage);
   }
@@ -216,33 +212,34 @@ export class GroupSidesheetComponent implements OnInit {
   }
 
   private async setup(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
     try {
       const systemInfo = await this.systemInfoService.get();
       const config = (await this.configService.getConfig()).OwnershipConfig;
       const type = this.parameters?.objecttable;
 
-      this.dynamicTabs = (await this.tabService.getFittingComponents<TabItem>('groupSidesheet',
-      (ext) =>  ext.inputData.checkVisibility(this.parameters)))
-      .sort((tab1: TabItem, tab2: TabItem) => tab1.sortOrder - tab2.sortOrder);
+      this.dynamicTabs = (
+        await this.tabService.getFittingComponents<TabItem>('groupSidesheet', (ext) => ext.inputData.checkVisibility(this.parameters))
+      ).sort((tab1: TabItem, tab2: TabItem) => tab1.sortOrder! - tab2.sortOrder!);
 
-      const cols = this.sidesheetData.group
-        .getColumns(systemInfo.PreProps.includes('RISKINDEX'), type == null ? [] : config.EditableFields[type]);
+      const cols = this.sidesheetData.group.getColumns(
+        systemInfo?.PreProps?.includes('RISKINDEX') ?? false,
+        config?.EditableFields?.[type] ?? [],
+      );
 
-      this.cdrList = cols
-        .map(column => new BaseCdr(column));
+      this.cdrList = cols.map((column) => new BaseCdr(column));
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
   }
-
 
   private async saveChanges(
     formGroup: UntypedFormGroup,
     objectToSave: TypedEntity,
     confirmationText: string,
-    reloadServiceItem: boolean = false
+    reloadServiceItem: boolean = false,
   ): Promise<void> {
     if (formGroup.valid) {
       this.logger.debug(this, `Saving group changes`);

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,6 @@
  *
  */
 
-
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -33,44 +32,45 @@ import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
 import {
+  BusyIndicatorModule,
   CdrModule,
   ClassloggerModule,
   ClassloggerService,
   DataSourceToolbarModule,
   DataTableModule,
+  DataViewModule,
   DateModule,
+  HelpContextualModule,
   InfoModalDialogModule,
   MenuItem,
   MenuService,
   ParameterizedTextModule,
   QbmModule,
-  BusyIndicatorModule,
   RouteGuardService,
   SelectedElementsModule,
-  HelpContextualModule
 } from 'qbm';
 
-import { DefaultRequestDisplayComponent } from './request-display/default-request-display.component';
+import { ItshopModule } from '../itshop/itshop.module';
+import { JustificationModule } from '../justification/justification.module';
+import { RequestsFeatureGuardService } from '../requests-feature-guard.service';
 import { RequestActionComponent } from './request-action/request-action.component';
 import { RequestDetailComponent } from './request-detail/request-detail.component';
+import { DefaultRequestDisplayComponent } from './request-display/default-request-display.component';
 import { RequestDisplayComponent } from './request-display/request-display.component';
 import { RequestDisplayService } from './request-display/request-display.service';
-import { RequestFilterComponent } from './requestfilter.component';
+import { RequestHistoryFilterComponent } from './request-history-filter/request-history-filter.component';
 import { RequestHistoryComponent } from './request-history.component';
 import { RequestHistoryService } from './request-history.service';
 import { RequestTableComponent } from './request-table.component';
-import { ItshopModule } from '../itshop/itshop.module';
-import { RequestsFeatureGuardService } from '../requests-feature-guard.service';
-import { JustificationModule } from '../justification/justification.module';
-import { RequestHistoryFilterComponent } from './request-history-filter/request-history-filter.component';
+import { RequestFilterComponent } from './requestfilter.component';
 
 const routes: Routes = [
   {
     path: 'requesthistory',
     component: RequestHistoryComponent,
     canActivate: [RouteGuardService, RequestsFeatureGuardService],
-    resolve: [RouteGuardService]
-  }
+    resolve: [RouteGuardService],
+  },
 ];
 
 @NgModule({
@@ -94,6 +94,7 @@ const routes: Routes = [
     TranslateModule,
     SelectedElementsModule,
     HelpContextualModule,
+    DataViewModule,
   ],
   declarations: [
     DefaultRequestDisplayComponent,
@@ -105,52 +106,40 @@ const routes: Routes = [
     RequestHistoryFilterComponent,
     RequestTableComponent,
   ],
-  exports: [
-    RequestDisplayComponent,
-    RequestHistoryFilterComponent,
-    RequestTableComponent
-  ],
-  providers: [
-    RequestDisplayService,
-    RequestHistoryService
-  ]
+  exports: [RequestDisplayComponent, RequestHistoryFilterComponent, RequestTableComponent],
+  providers: [RequestDisplayService, RequestHistoryService],
 })
 export class RequestHistoryModule {
   constructor(
     private readonly menuService: MenuService,
-    logger: ClassloggerService
+    logger: ClassloggerService,
   ) {
     logger.info(this, '▶️ RequestHistoryModule loaded');
     this.setupMenu();
   }
 
   private setupMenu(): void {
-    this.menuService.addMenuFactories(
-      (preProps: string[], features: string[]) => {
+    this.menuService.addMenuFactories((preProps: string[], features: string[]) => {
+      const items: MenuItem[] = [];
 
-        const items: MenuItem[] = [];
+      if (preProps.includes('ITSHOP')) {
+        items.push({
+          id: 'QER_Request_RequestHistory',
+          route: 'requesthistory',
+          title: '#LDS#Menu Entry Request history',
+          sorting: '10-40',
+        });
+      }
 
-        if (preProps.includes('ITSHOP')) {
-          items.push(
-            {
-              id: 'QER_Request_RequestHistory',
-              route: 'requesthistory',
-              title: '#LDS#Menu Entry Request history',
-              sorting: '10-40',
-            }
-          );
-        }
-
-        if (items.length === 0) {
-          return null;
-        }
-        return {
-          id: 'ROOT_Request',
-          title: '#LDS#Requests',
-          sorting: '10',
-          items
-        };
-      },
-    );
+      if (items.length === 0) {
+        return;
+      }
+      return {
+        id: 'ROOT_Request',
+        title: '#LDS#Requests',
+        sorting: '10',
+        items,
+      };
+    });
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,5 +31,5 @@
 export { RpsConfigModule } from './lib/rps-config.module';
 export { SubscriptionsModule } from './lib/subscriptions/subscriptions.module';
 export { SubscriptionsComponent } from './lib/subscriptions/subscriptions.component';
-export { ReportButtonModule} from './lib/report-button/report-button.module';
-export { ReportButtonComponent} from './lib/report-button/report-button.component';
+export { ReportButtonModule } from './lib/report-button/report-button.module';
+export { ReportButtonComponent } from './lib/report-button/report-button.component';

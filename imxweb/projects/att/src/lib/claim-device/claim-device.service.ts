@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,15 +26,18 @@
 
 import { Injectable } from '@angular/core';
 
-import { CollectionLoadParameters, EntityCollectionData, IEntityColumn, MetaTableRelationData, ValType } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, EntityCollectionData, IEntityColumn, MetaTableRelationData, ValType } from '@imx-modules/imx-qbm-dbts';
 import { BaseCdr, EntityService } from 'qbm';
 import { ApiService } from '../api.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ClaimDeviceService {
-  constructor(private readonly apiService: ApiService, private readonly entityService: EntityService) { }
+  constructor(
+    private readonly apiService: ApiService,
+    private readonly entityService: EntityService,
+  ) {}
 
   public async canClaimDevice(): Promise<boolean> {
     return (await this.apiService.client.portal_attestation_userconfig_get()).CanClaimDevice;
@@ -50,9 +53,9 @@ export class ClaimDeviceService {
         ChildColumnName: 'UID_Hardware',
         IsMemberRelation: false,
         ParentTableName: 'Hardware',
-        ParentColumnName: 'XObjectKey'
+        ParentColumnName: 'XObjectKey',
       },
-      parameters => this.apiService.client.portal_claimdevice_devices_get(parameters),
+      (parameters) => this.apiService.client.portal_claimdevice_devices_get(parameters),
     );
 
     return new BaseCdr(column, '#LDS#Device' /* TODO: globalize */);
@@ -67,30 +70,22 @@ export class ClaimDeviceService {
         ColumnName: fkRelation.ChildColumnName,
         Type: ValType.String,
         MinLen: 1,
-        FkRelation: fkRelation
+        FkRelation: fkRelation,
       },
-      [{
-        columnName: fkRelation.ChildColumnName,
-        fkTableName: fkRelation.ParentTableName,
-        parameterNames: [
-          'OrderBy',
-          'StartIndex',
-          'PageSize',
-          'filter',
-          'search',
-        ],
-        load: async (_, parameters: CollectionLoadParameters = {}) => loadFkCandidates(parameters),
-        getDataModel: async () => ({ Filters: [] }),
-        getFilterTree: async () => ({ Elements: [] })
-      }]
+      [
+        {
+          columnName: fkRelation.ChildColumnName || '',
+          fkTableName: fkRelation.ParentTableName || '',
+          parameterNames: ['OrderBy', 'StartIndex', 'PageSize', 'filter', 'search'],
+          load: async (_, parameters: CollectionLoadParameters = {}) => loadFkCandidates(parameters),
+          getDataModel: async () => ({ Filters: [] }),
+          getFilterTree: async () => ({ Elements: [] }),
+        },
+      ],
     );
   }
 
-
-
-  private async getOwnerCandidates(
-    parameters: CollectionLoadParameters = {}
-  ): Promise<EntityCollectionData> {
+  private async getOwnerCandidates(parameters: CollectionLoadParameters = {}): Promise<EntityCollectionData> {
     const collection = await this.apiService.client.portal_candidates_Person_get(parameters);
 
     return collection;

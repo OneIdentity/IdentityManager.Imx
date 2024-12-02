@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,24 +25,36 @@
  */
 
 import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
-import { MessageParameter } from './message-parameter.interface';
 import { MessageDialogResult } from './message-dialog-result.enum';
+import { MessageDialogService } from './message-dialog.service';
+import { MessageParameter } from './message-parameter.interface';
 
 @Component({
   selector: 'imx-message-dialog',
   templateUrl: './message-dialog.component.html',
-  styleUrls: ['./message-dialog.component.scss']
+  styleUrls: ['./message-dialog.component.scss'],
 })
 export class MessageDialogComponent {
   public readonly MessageDialogResult = MessageDialogResult; // Enables use of this Enum in Angular Templates.
 
   constructor(
     public dialogRef: MatDialogRef<MessageDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: MessageParameter) { }
+    public messageDialogService: MessageDialogService,
+    @Inject(MAT_DIALOG_DATA) public data: MessageParameter,
+  ) {}
 
   public click(state: MessageDialogResult): void {
     this.dialogRef.close(state);
+  }
+
+  public get messages(): (string | undefined)[] {
+    let messages = this.messageDialogService.errorMessages$.value;
+    if (!!messages && messages.length > 0) {
+      return messages.filter((message, index) => index == messages.indexOf(message));
+    } else {
+      return [this.data.Message];
+    }
   }
 }

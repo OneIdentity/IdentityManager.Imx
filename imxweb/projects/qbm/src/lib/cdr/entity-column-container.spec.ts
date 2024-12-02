@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { EntityColumnContainer } from './entity-column-container';
-import { IEntityColumn } from 'imx-qbm-dbts';
+import { IEntityColumn } from '@imx-modules/imx-qbm-dbts';
 
 describe('EntityColumnContainer', () => {
   [
@@ -33,7 +33,7 @@ describe('EntityColumnContainer', () => {
     { flags: { isReadOnly: false, canEdit: true }, expectedEdit: true },
     { flags: { isReadOnly: true, canEdit: false }, expectedEdit: false },
     { flags: { isReadOnly: false, canEdit: false }, expectedEdit: false },
-  ].forEach(testcase => {
+  ].forEach((testcase) => {
     it('determines canEdit', () => {
       const columnContainer = new EntityColumnContainer();
       columnContainer.init({
@@ -42,15 +42,14 @@ describe('EntityColumnContainer', () => {
           GetValue: () => undefined,
           GetMetadata: () => ({
             CanEdit: () => testcase.flags.canEdit,
-            GetLimitedValues: () => undefined
-          })
+            GetLimitedValues: () => undefined,
+          }),
         } as IEntityColumn,
-        isReadOnly: () => testcase.flags.isReadOnly
+        isReadOnly: () => testcase.flags.isReadOnly,
       });
 
       expect(columnContainer.canEdit).toEqual(testcase.expectedEdit);
-    }
-    );
+    });
   });
 
   it('provides displayValue', () => {
@@ -61,9 +60,9 @@ describe('EntityColumnContainer', () => {
       column: {
         GetValue: () => undefined,
         GetDisplayValue: () => displayValue,
-        GetMetadata: () => undefined
+        GetMetadata: () => undefined,
       } as IEntityColumn,
-      isReadOnly: () => false
+      isReadOnly: () => false,
     });
     expect(columnContainer.displayValue).toEqual(displayValue);
   });
@@ -76,9 +75,9 @@ describe('EntityColumnContainer', () => {
       column: {
         GetValue: () => value,
         GetDisplayValue: () => undefined,
-        GetMetadata: () => undefined
+        GetMetadata: () => undefined,
       } as IEntityColumn,
-      isReadOnly: () => false
+      isReadOnly: () => false,
     });
     expect(columnContainer.value).toEqual(value);
   });

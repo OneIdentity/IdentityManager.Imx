@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,19 +24,17 @@
  *
  */
 
-
 import { Component, Inject, OnDestroy } from '@angular/core';
 import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
-import { RequestDetailParameter } from './request-detail-parameter.interface';
 import { RequestActionService } from '../request-action/request-action.service';
+import { RequestDetailParameter } from './request-detail-parameter.interface';
 
 @Component({
   templateUrl: './request-detail.component.html',
   selector: 'imx-request-detail',
-  styleUrls: ['./request-detail.component.scss']
-
+  styleUrls: ['./request-detail.component.scss'],
 })
 export class RequestDetailComponent implements OnDestroy {
   public readonly allowedActionCount: number;
@@ -46,7 +44,7 @@ export class RequestDetailComponent implements OnDestroy {
   constructor(
     @Inject(EUI_SIDESHEET_DATA) public readonly data: RequestDetailParameter,
     public readonly actionService: RequestActionService,
-    private readonly sideSheetRef: EuiSidesheetRef
+    private readonly sideSheetRef: EuiSidesheetRef,
   ) {
     this.allowedActionCount =
       data.disableActions === true
@@ -55,20 +53,19 @@ export class RequestDetailComponent implements OnDestroy {
             // TODO Later: this.data.personWantsOrg.ResendRequestAllowed.value,
             this.data.personWantsOrg.canProlongate,
             this.data.personWantsOrg.CancelRequestAllowed.value,
-            this.data.personWantsOrg.canWithdrawDelegation && this.data.itShopConfig.VI_ITShop_OrderHistory_CancelOrder,
-            this.data.personWantsOrg.canWithdrawAdditionalApprover && this.data.itShopConfig.VI_ITShop_OrderHistory_CancelOrder,
+            this.data.personWantsOrg.canWithdrawDelegation && this.data.itShopConfig?.VI_ITShop_OrderHistory_CancelOrder,
+            this.data.personWantsOrg.canWithdrawAdditionalApprover && this.data.itShopConfig?.VI_ITShop_OrderHistory_CancelOrder,
             this.data.personWantsOrg.canRecallLastQuestion,
             this.data.personWantsOrg.canRevokeHoldStatus,
             this.data.personWantsOrg.canRecallDecision,
             this.data.personWantsOrg.canCopyItems,
-            this.data.personWantsOrg.UnsubscribeRequestAllowed.value,
           ].filter((condition) => condition).length;
 
     this.subscriptions.push(this.actionService.applied.subscribe(() => this.sideSheetRef.close(true)));
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   // ToDo later

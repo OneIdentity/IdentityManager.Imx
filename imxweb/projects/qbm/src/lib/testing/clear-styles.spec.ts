@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,11 +24,11 @@
  *
  */
 
-export function clearStylesFromDOM (): void {
+export function clearStylesFromDOM(): void {
   const head: HTMLHeadElement = document.getElementsByTagName('head')[0];
-  const styles : HTMLCollectionOf<HTMLStyleElement> | [] = head.getElementsByTagName('style');
+  const styles: HTMLCollectionOf<HTMLStyleElement> | [] = head.getElementsByTagName('style');
 
-  for (let i: number; i < styles.length; i++) {
+  for (let i: number = 0; i < styles.length; i++) {
     head.removeChild(styles[i]);
   }
 }

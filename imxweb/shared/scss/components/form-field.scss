@@ -1,0 +1,100 @@
+/* Elemental UI */
+/* Angular Material */
+
+mat-form-field:not(.eui-search, .eui-input--no-margin) {
+  &.mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      margin-top: 5px;
+    }
+    &-prefix {
+      .mat-mdc-spinner {
+        margin-right: 10px;
+      }
+
+      .mat-mdc-spinner,
+      .mat-mdc-spinner svg {
+        max-height: 16px;
+        max-width: 16px;
+      }
+    }
+
+    &-underline {
+      position: static;
+    }
+    &-subscript-wrapper {
+      position: static;
+    }
+    .input-hidden {
+      display: none;
+    }
+  }
+}
+.eui-date-picker, .eui-form-field{
+  .mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      margin-top: 0px !important;
+    }
+  }
+}
+.mat-mdc-autocomplete-panel {
+  .eui-time-picker-option {
+    padding: 8px 6px;
+  }
+}
+.mdc-notched-outline__trailing {
+  margin-right: 1px;
+}
+
+/* Imx */
+.imx-form-field {
+  &-width {
+    &-150 {
+      width: 150px;
+    }
+
+    &-full {
+      width: 100%;
+    }
+  }
+
+  &-flex.mat-mdc-form-field {
+    flex: 1;
+  }
+
+  &-matsuffix {
+    &.mat-mdc-form-field {
+      [matsuffix] {
+        display: flex;
+        margin-left: 10px; // set margin to infix
+
+        eui-icon {
+          margin-top: unset; // correct margin-top: -16px from _material_fixes.scss
+          display: block;
+        }
+
+        mat-spinner {
+          display: inline-flex;
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+}
+
+/* Dark theme */
+
+.eui-dark-theme {
+  .mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      background-color: inherit !important;
+    }
+  }
+}
+/* High-contrast theme */
+.eui-contrast-theme {
+  .mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      background-color: inherit !important;
+    }
+  }
+}

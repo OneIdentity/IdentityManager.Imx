@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,36 +28,30 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import { Injectable } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { RoleComplianceViolations } from 'imx-api-cpl';
+import { RoleComplianceViolations } from '@imx-modules/imx-api-cpl';
 import { ApiService } from '../api.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RoleComplianceViolationsService {
-
-  private busyIndicator: OverlayRef;
+  private busyIndicator: OverlayRef | undefined;
   constructor(
     private apiservice: ApiService,
-    private busyService: EuiLoadingService
-  ) { }
+    private busyService: EuiLoadingService,
+  ) {}
 
   public async getRoleComplianceViolations(table: string, uidRole: string): Promise<RoleComplianceViolations> {
     return this.apiservice.client.portal_roles_config_compliance_get(table, uidRole);
   }
 
   public handleOpenLoader(): void {
-    if (!this.busyIndicator) {
-      this.busyIndicator = this.busyService.show();
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
     }
   }
 
   public handleCloseLoader(): void {
-    if (this.busyIndicator) {
-      setTimeout(() => {
-        this.busyService.hide(this.busyIndicator);
-        this.busyIndicator = undefined;
-      });
-    }
+    this.busyService.hide();
   }
 }

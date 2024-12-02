@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,30 +24,30 @@
  *
  */
 
-import { Component, OnInit } from "@angular/core";
-import { EuiLoadingService, EuiSidesheetRef } from "@elemental-ui/core";
-import { SnackBarService } from "../snackbar/snack-bar.service";
-import { KeyData } from "./config-section";
-import { ConfigService } from "./config.service";
+import { Component, OnInit } from '@angular/core';
+import { EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
+import { SnackBarService } from '../snackbar/snack-bar.service';
+import { KeyData } from './config-section';
+import { ConfigService } from './config.service';
 
 @Component({
   templateUrl: './add-config-sidesheet.component.html',
-  styleUrls: ['./add-config-sidesheet.component.scss']
+  styleUrls: ['./add-config-sidesheet.component.scss'],
 })
 export class AddConfigSidesheetComponent implements OnInit {
-
-  constructor(private readonly configSvc: ConfigService,
+  constructor(
+    private readonly configSvc: ConfigService,
     private readonly sideSheetRef: EuiSidesheetRef,
     private readonly busySvc: EuiLoadingService,
-    private readonly snackbar: SnackBarService
-  ) { }
+    private readonly snackbar: SnackBarService,
+  ) {}
 
   keyData: KeyData[];
   selectedKey: KeyData;
   newKey: string;
 
   ngOnInit(): void {
-    this.keyData = this.configSvc.sections.map(s => s.SettingsSupportingAdd).reduce((a, b) => a.concat(b), []);
+    this.keyData = this.configSvc.sections.map((s) => s.SettingsSupportingAdd).reduce((a, b) => a.concat(b), []);
   }
 
   public isGlobal: boolean = false;
@@ -55,10 +55,10 @@ export class AddConfigSidesheetComponent implements OnInit {
   public async submit(): Promise<void> {
     const overlay = this.busySvc.show();
     try {
-      await this.configSvc.addKey(this.selectedKey.Path + "/" + this.newKey);
+      await this.configSvc.addKey(this.selectedKey.Path + '/' + this.newKey);
       await this.configSvc.load();
-      const key = "#LDS#The configuration key has been successfully created.";
-      this.snackbar.open({key});
+      const key = '#LDS#The configuration key has been successfully created.';
+      this.snackbar.open({ key });
     } finally {
       this.busySvc.hide(overlay);
     }

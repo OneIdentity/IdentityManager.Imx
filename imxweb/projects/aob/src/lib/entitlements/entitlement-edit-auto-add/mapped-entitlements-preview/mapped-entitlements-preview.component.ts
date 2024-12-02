@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,21 +25,20 @@
  */
 
 import { Component, Inject, OnInit } from '@angular/core';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 
-import { CollectionLoadParameters, DisplayColumns, EntitySchema, TypedEntityCollectionData } from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings } from 'qbm';
+import { DisplayColumns, EntitySchema, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
+import { DataViewSource } from 'qbm';
 import { EntitlementToAddTyped } from '../entitlement-to-add-typed';
 
 @Component({
   templateUrl: './mapped-entitlements-preview.component.html',
   styleUrls: ['./mapped-entitlements-preview.component.scss'],
+  providers: [DataViewSource],
 })
 export class MappedEntitlementsPreviewComponent implements OnInit {
-  public settings: DataSourceToolbarSettings;
   public readonly DisplayColumns = DisplayColumns;
   public entitySchema: EntitySchema;
-  public navigationState: CollectionLoadParameters = {StartIndex:0, PageSize:20};
 
   public alertText =
     '#LDS#Here you can get an overview of application entitlements that will be added to this application by the conditions. Application entitlements that are already assigned to an application will be skipped.';
@@ -52,7 +51,8 @@ export class MappedEntitlementsPreviewComponent implements OnInit {
       withSave: boolean;
       entitlementToAdd: TypedEntityCollectionData<EntitlementToAddTyped>;
     },
-    private readonly sidesheetRef: EuiSidesheetRef
+    private readonly sidesheetRef: EuiSidesheetRef,
+    public dataSource: DataViewSource<EntitlementToAddTyped>,
   ) {}
 
   public apply(map: boolean): void {
@@ -72,29 +72,19 @@ export class MappedEntitlementsPreviewComponent implements OnInit {
     return this.data.entitlementToAdd.totalCount;
   }
 
-  public navigate(source: CollectionLoadParameters): void {
-    this.entitySchema = EntitlementToAddTyped.GetEntitySchema();
-    this.navigationState = { ...this.navigationState, ...source };
-   
-    const data = this.data.entitlementToAdd.Data.slice(this.navigationState.StartIndex, this.navigationState.StartIndex + this.navigationState.PageSize);
-     const displayedColumns = [
-       this.entitySchema.Columns.DisplayName,
-       this.entitySchema.Columns.IsAssignedToMe,
-       this.entitySchema.Columns.UID_AOBApplicationConflicted,
-     ];
-    this.settings = {
-      displayedColumns: displayedColumns,
-      dataSource: {
-        Data: data,
-        totalCount: this.data.entitlementToAdd.totalCount,
-      },
-      entitySchema: this.entitySchema,
-      navigationState: this.navigationState,
-    };
-  }
-
   public async ngOnInit(): Promise<void> {
+    this.entitySchema = EntitlementToAddTyped.GetEntitySchema();
 
-   this.navigate({});
+    const displayedColumns = [
+      this.entitySchema.Columns.DisplayName,
+      this.entitySchema.Columns.IsAssignedToMe,
+      this.entitySchema.Columns.UID_AOBApplicationConflicted,
+    ];
+    this.dataSource.init({
+      execute: (): Promise<TypedEntityCollectionData<EntitlementToAddTyped>> => Promise.resolve(this.data.entitlementToAdd),
+      schema: this.entitySchema,
+      columnsToDisplay: displayedColumns,
+      localSource: true,
+    });
   }
 }

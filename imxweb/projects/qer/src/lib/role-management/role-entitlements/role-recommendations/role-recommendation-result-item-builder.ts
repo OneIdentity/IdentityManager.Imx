@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,8 @@
  *
  */
 
-import { RoleRecommendationItem } from 'imx-api-qer';
-import { DbObjectKey, EntityCollectionData, EntityData, TypedEntityBuilder, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { RoleRecommendationItem } from '@imx-modules/imx-api-qer';
+import { DbObjectKey, EntityCollectionData, EntityData, TypedEntityBuilder, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { RoleRecommendationResultItem } from './role-recommendation-result-item';
 
 export class RoleRecommendationResultBuilder {
@@ -43,7 +43,7 @@ export class RoleRecommendationResultBuilder {
   }
 
   public buildEntityData(item: RoleRecommendationItem): EntityData {
-    const keys = DbObjectKey.FromXml(item.ObjectKey).Keys
+    const keys = item.ObjectKey == null ? [] : DbObjectKey.FromXml(item.ObjectKey).Keys;
     return {
       Columns: {
         ObjectTypeDisplay: { Value: item.ObjectTypeDisplay },
@@ -53,7 +53,7 @@ export class RoleRecommendationResultBuilder {
         Type: { Value: item.Type },
       },
       Keys: [...keys],
-      Display: item.Display
+      Display: item.Display,
     };
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,147 +24,149 @@
  *
  */
 
-import { MethodDefinition, MethodDescriptor, ApiClient, Globals } from 'imx-qbm-dbts';
-import { ServerExceptionError } from '../base/server-exception-error';
-import { ServerError } from '../base/server-error';
-import { ClassloggerService } from '../classlogger/classlogger.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { isDevMode } from '@angular/core';
+import { ApiClient, Globals, MethodDefinition, MethodDescriptor } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
 import { defer, of, throwError } from 'rxjs';
-import { delay, concatMap, retryWhen } from 'rxjs/operators';
-import { isDevMode } from '@angular/core';
+import { concatMap, delay, retryWhen } from 'rxjs/operators';
+import { ServerError } from '../base/server-error';
+import { ServerExceptionError } from '../base/server-exception-error';
+import { ClassloggerService } from '../classlogger/classlogger.service';
 
 export class ApiClientFetch implements ApiClient {
-    constructor(
-        private readonly baseUrl: string = '',
-        private readonly logger: ClassloggerService,
-        private readonly translation: TranslateService,
-        private readonly http: { fetch(input: RequestInfo, init?: RequestInit): Promise<Response> } = window) {
+  constructor(
+    private readonly baseUrl: string = '',
+    private readonly logger: ClassloggerService,
+    private readonly translation: TranslateService,
+    private readonly http: { fetch(input: RequestInfo, init?: RequestInit): Promise<Response | undefined> } = window,
+  ) {}
+  private readonly maxRetries = 5;
+  private readonly delayMilli = 1000;
+
+  private get UnexpectedErrorText(): string {
+    return this.translation.instant('#LDS#An unexpected server error occurred.');
+  }
+
+  private get UnexpectedTypeErrorText(): string {
+    return this.translation.instant('#LDS#The server returned an unexpected data type.');
+  }
+
+  public async processRequest<T>(methodDescriptor: MethodDescriptor<T>, opts: { signal?: AbortSignal } = {}): Promise<T> {
+    const method = new MethodDefinition(methodDescriptor);
+    const headers = new Headers(method.headers);
+
+    if (isDevMode()) {
+      headers.set('X-FORWARDED-PROTO', 'https');
     }
-    private readonly maxRetries = 5;
-    private readonly delayMilli = 1000;
 
-    public async processRequest<T>(methodDescriptor: MethodDescriptor<T>,
-         opts: { signal?: AbortSignal } = {}): Promise<T> {
-        const method = new MethodDefinition(methodDescriptor);
-        const headers = new Headers(method.headers);
+    this.addXsrfProtectionHeader<T>(headers, method);
+    this.addVersionHeader(headers);
 
-        if (isDevMode()) {
-          headers.set("X-FORWARDED-PROTO", 'https');
+    const observable = defer(() => {
+      return this.http.fetch(this.baseUrl + method.path, {
+        method: method.httpMethod,
+        credentials: method.credentials,
+        headers: headers,
+        signal: opts?.signal,
+        body: method.body,
+      });
+    })
+      .pipe(
+        retryWhen((error) =>
+          error.pipe(
+            concatMap((error, count) => {
+              if (count <= this.maxRetries && (error.status == 0 /* connection error */ || error.status == 503) /* service unavailable */) {
+                return of(error);
+              }
+              return throwError(error);
+            }),
+            delay(this.delayMilli),
+          ),
+        ),
+      )
+      .toPromise();
+
+    var response: Response | undefined;
+    try {
+      response = (await observable)!;
+    } catch (e) {
+      if (opts?.signal?.aborted) {
+        this.logger.info(this, 'Request was aborted', opts.signal);
+        // Use 419 status code because it's unique
+        throw new HttpErrorResponse({ status: 419 });
+      }
+
+      throw new ServerError(this.UnexpectedErrorText);
+    }
+
+    if (response) {
+      if (response.status == 0) {
+        // server API connection error
+      }
+
+      // empty response, but success
+      if (response.status === 204) {
+        return undefined as T;
+      }
+
+      const actualContentType = response.headers.get('Content-Type');
+
+      function getFirstContentType() {
+        return actualContentType?.split(';')?.[0];
+      }
+
+      if (response.status >= 200 && response.status <= 299) {
+        if (method.responseType === 'blob') return <any>response.blob();
+
+        if (actualContentType && 'application/json' != getFirstContentType()) {
+          throw new Error(this.append(this.UnexpectedTypeErrorText, response.statusText));
         }
 
-        this.addXsrfProtectionHeader<T>(headers, method);
-        this.addVersionHeader(headers);
+        return response.json();
+      }
 
-        const observable = defer(() => {
-            return this.http.fetch(this.baseUrl + method.path, {
-                method: method.httpMethod,
-                credentials: method.credentials,
-                headers: headers,
-                signal: opts?.signal,
-                body: method.body
-            });
-        }).pipe(
-            retryWhen(error =>
-                error.pipe(
-                    concatMap((error, count) => {
-                        if (count <= this.maxRetries &&
-                            (error.status == 0 /* connection error */
-                                || error.status == 503 /* service unavailable */)) {
-                            return of(error);
-                        }
-                        return throwError(error);
-                    }),
-                    delay(this.delayMilli)
-                )
-            )
-        );
+      if (actualContentType && 'application/json' != getFirstContentType()) {
+        throw new Error(this.append(this.UnexpectedTypeErrorText, response.statusText));
+      }
 
-        var response: Response;
-        try {
-            response = await observable.toPromise();
-        } catch (e) {
-          if (opts?.signal?.aborted) {
-            this.logger.info(this, 'Request was aborted', opts.signal);
-            return;
-          }
-            throw new ServerError(await this.GetUnexpectedErrorText());
-        }
-
-        if (response) {
-
-            if (response.status == 0) {
-                // server API connection error
-            }
-
-            // empty response, but success
-            if (response.status === 204) {
-                return null;
-            }
-
-            const actualContentType = response.headers.get('Content-Type');
-
-            function getFirstContentType() { return actualContentType.split(';')[0]; }
-
-            if (response.status >= 200 && response.status <= 299) {
-                if (method.responseType === 'blob')
-                    return <any>response.blob();
-
-                if (actualContentType && 'application/json' != getFirstContentType()) {
-                    throw new Error(this.append(await this.GetError(), response.statusText));
-                }
-
-                return response.json();
-            }
-
-            if (actualContentType && 'application/json' != getFirstContentType()) {
-                throw new Error(this.append(await this.GetError(), response.statusText));
-            }
-
-            throw new ServerExceptionError(await response.json());
-        }
-
-        throw new ServerError(await this.GetUnexpectedErrorText());
+      throw new ServerExceptionError(await response.json());
     }
 
-    private append(input: string, statusText: string): string {
-        if (statusText)
-            return input + " (" + statusText + ")";
-        return input;
+    throw new ServerError(this.UnexpectedErrorText);
+  }
+
+  private append(input: string, statusText: string): string {
+    if (statusText) return input + ' (' + statusText + ')';
+    return input;
+  }
+
+  private addXsrfProtectionHeader<T>(headers: Headers, method: MethodDefinition<T>) {
+    // Sending XSRF-TOKEN as an additional header, if:
+    // - there is one
+    // - the request is not a GET or HEAD request (which does not require XSRF protection)
+
+    if (document.cookie && !['GET', 'HEAD'].includes(method.httpMethod.toUpperCase())) {
+      const token = this.getCookie('XSRF-TOKEN');
+      if (token) {
+        headers.set('X-XSRF-TOKEN', token);
+      }
     }
+  }
 
-    private async GetError(): Promise<string> {
-        return await this.translation.get('#LDS#The server returned an unexpected data type.').toPromise();
+  private addVersionHeader(headers: Headers) {
+    // The (.NET assembly) version is added as a request header
+    // so that the server can verify that the client and server
+    // versions match.
+
+    headers.set('imx-version', Globals.AssemblyVersion);
+  }
+
+  private getCookie(name) {
+    function escape(s) {
+      return s.replace(/([.*+?\^$(){}|\[\]\/\\])/g, '\\$1');
     }
-
-    private async GetUnexpectedErrorText(): Promise<string> {
-        return await this.translation.get('#LDS#An unexpected server error occurred.').toPromise();
-    }
-
-    private addXsrfProtectionHeader<T>(headers: Headers, method: MethodDefinition<T>) {
-        // Sending XSRF-TOKEN as an additional header, if:
-        // - there is one
-        // - the request is not a GET or HEAD request (which does not require XSRF protection)
-
-        if (document.cookie && !["GET", "HEAD"].includes(method.httpMethod.toUpperCase())) {
-            const token = this.getCookie("XSRF-TOKEN");
-            if (token) {
-                headers.set("X-XSRF-TOKEN", token);
-            }
-        }
-    }
-
-    private addVersionHeader(headers: Headers) {
-        // The (.NET assembly) version is added as a request header
-        // so that the server can verify that the client and server
-        // versions match.
-
-        headers.set("imx-version", Globals.AssemblyVersion);
-
-    }
-
-    private getCookie(name) {
-        function escape(s) { return s.replace(/([.*+?\^$(){}|\[\]\/\\])/g, '\\$1'); }
-        var match = document.cookie.match(RegExp('(?:^|;\\s*)' + escape(name) + '=([^;]*)'));
-        return match ? match[1] : null;
-    }
+    var match = document.cookie.match(RegExp('(?:^|;\\s*)' + escape(name) + '=([^;]*)'));
+    return match ? match[1] : null;
+  }
 }

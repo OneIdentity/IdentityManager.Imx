@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,28 +26,34 @@
 
 import { Injectable } from '@angular/core';
 
-import { PasswordData, PasswordItemsData, PasswordresetPasswordquestions, PolicyValidationResult } from 'imx-api-qer';
+import {
+  PasswordApiConfig,
+  PasswordData,
+  PasswordItemsData,
+  PasswordresetPasswordquestions,
+  PolicyValidationResult,
+} from '@imx-modules/imx-api-qer';
+import { AuthConfigProvider, AuthenticationService } from 'qbm';
 import { QerApiService } from '../qer-api-client.service';
+import { PasscodeLoginFlow } from './passcode-login/passcode-login-flow';
+import { QaLoginFlow } from './qa-login/qa-login-flow';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PasswordService {
-
   constructor(
-    private readonly qerApiService: QerApiService
-  ) { }
+    private readonly qerApiService: QerApiService,
+    private readonly authentication: AuthenticationService,
+  ) {}
 
   public async getPasswordItems(uidPerson?: string): Promise<PasswordItemsData> {
-
-    if (uidPerson)
-      return this.qerApiService.client.opsupport_passwords_get(uidPerson);
+    if (uidPerson) return this.qerApiService.client.opsupport_passwords_get(uidPerson);
     return this.qerApiService.client.passwordreset_passwords_get();
   }
 
   public async postOrCheckPassword(data: PasswordData, uidPerson?: string): Promise<PolicyValidationResult[]> {
-    if(uidPerson)
-      return this.qerApiService.client.opsupport_passwords_post(uidPerson, data);
+    if (uidPerson) return this.qerApiService.client.opsupport_passwords_post(uidPerson, data);
     return this.qerApiService.client.passwordreset_passwords_post(data);
   }
 
@@ -56,4 +62,28 @@ export class PasswordService {
     return (await this.qerApiService.typedClient.PasswordresetPasswordquestions.Get()).Data;
   }
 
+  /** Registers custom authentication flows for passcode login and Q&A login,
+   * if these features are enabled in the API configuration.
+   */
+  public async registerCustomAuthFlows(featureConfig: PasswordApiConfig) {
+    if (featureConfig.EnablePasswordProfileLogin) {
+      const passwordQuestionsProvider: AuthConfigProvider = {
+        display: '#LDS#Log in by answering your password questions',
+        name: 'CustomPasswordQuestions',
+        authProps: [],
+        customAuthFlow: new QaLoginFlow(),
+      };
+      this.authentication.registerAuthConfigProvider(passwordQuestionsProvider);
+    }
+
+    if (featureConfig.EnablePasscodeLogin) {
+      const passCodeLoginProvider: AuthConfigProvider = {
+        display: '#LDS#Log in with passcode',
+        name: 'CustomPasscode',
+        authProps: [],
+        customAuthFlow: new PasscodeLoginFlow(),
+      };
+      this.authentication.registerAuthConfigProvider(passCodeLoginProvider);
+    }
+  }
 }

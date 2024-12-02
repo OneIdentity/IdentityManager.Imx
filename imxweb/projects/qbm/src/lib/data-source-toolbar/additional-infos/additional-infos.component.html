@@ -1,39 +1,47 @@
-<h2 mat-dialog-title>{{(data.type === 'list' ? '#LDS#Heading Additional Information per Entry' : '#LDS#Heading Additional Columns') | translate}}</h2>
+<h2 mat-dialog-title>
+  {{ (data.type === 'list' ? '#LDS#Heading Additional Information per Entry' : '#LDS#Heading Additional Columns') | translate }}
+</h2>
 <mat-dialog-content class="imx-dialog-content">
-  <eui-alert class="imx-helper-alert" type="info" [condensed]="true" [colored]="true" [dismissable]="true">
+  <eui-alert class="imx-alert-grid-first-row" type="info" [condensed]="true" [colored]="true" [dismissable]="true">
     <eui-alert-header>
-      <span translate>{{infoText}}</span>
+      <span translate>{{ infoText }}</span>
     </eui-alert-header>
     <eui-alert-content>
-      <span class="imx-info-content" translate>{{infoTextLong}}</span>
+      <span class="imx-alert-content-font-small" translate>{{ infoTextLong }}</span>
     </eui-alert-content>
   </eui-alert>
   <mat-card class="imx-element-chooser">
-    <mat-card-title>{{'#LDS#Columns that can be added' | translate}}</mat-card-title>
+    <mat-card-title>{{ '#LDS#Columns that can be added' | translate }}</mat-card-title>
     <mat-selection-list class="imx-item-list" (selectionChange)="updateSelected($event)">
-      <mat-list-option [ngClass]="{'disabled-list': !isRemoveable(property)}" [value]="property"
-        [selected]="isChecked(property)" [disabled]="!isRemoveable(property)"
+      <mat-list-option
+        [ngClass]="{ 'disabled-list': !isRemoveable(property) }"
+        [value]="property"
+        [selected]="isChecked(property)"
+        [disabled]="!isRemoveable(property)"
         [attr.data-imx-identifier]="'additional-infos-option-' + (property?.Display || property?.ColumnName)"
-        *ngFor="let property of possibleProperties">
-        {{property?.Display ?? (property?.untranslatedDisplay | translate) ?? property?.ColumnName}}
+        *ngFor="let property of possibleProperties"
+      >
+        {{ property?.Display ?? (property?.untranslatedDisplay ?? '' | translate) ?? property?.ColumnName }}
       </mat-list-option>
     </mat-selection-list>
   </mat-card>
   <mat-card class="dragDropContainer">
-    <mat-card-title>{{'#LDS#Columns that are displayed' | translate}}</mat-card-title>
+    <mat-card-title>{{ '#LDS#Columns that are displayed' | translate }}</mat-card-title>
     <div cdkDropList cdkDropListOrientation="vertical" class="example-list" (cdkDropListDropped)="drop($event)">
       <div class="example-box" *ngFor="let property of data?.preselectedProperties" cdkDrag>
-        <span> {{property?.Display ?? (property?.untranslatedDisplay | translate) ?? property?.ColumnName}}</span>
-        <button mat-icon-button *ngIf="isRemoveable(property)" (click)="remove(property)"
-          [attr.data-imx-identifier]="'additional-infos-remove-' + (property?.Display || property?.ColumnName)">
-          <eui-icon class="remove" icon="close">
-          </eui-icon>
+        <span> {{ property?.Display ?? (property?.untranslatedDisplay ?? '' | translate) ?? property?.ColumnName }}</span>
+        <button
+          mat-icon-button
+          *ngIf="isRemoveable(property)"
+          (click)="remove(property)"
+          [attr.data-imx-identifier]="'additional-infos-remove-' + (property?.Display || property?.ColumnName)"
+        >
+          <eui-icon class="remove" icon="close"> </eui-icon>
         </button>
         <div class="imx-drag-handle" cdkDragHandle>
           <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
             <defs>
-              <pattern id="pattern_M8jsqQ" patternUnits="userSpaceOnUse" width="2.5" height="2.5"
-                patternTransform="rotate(45)">
+              <pattern id="pattern_M8jsqQ" patternUnits="userSpaceOnUse" width="2.5" height="2.5" patternTransform="rotate(45)">
                 <line x1="0" y="0" x2="0" y2="2.5" stroke="#000000" stroke-width="1" />
               </pattern>
             </defs>
@@ -44,10 +52,9 @@
     </div>
   </mat-card>
 </mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button data-imx-identifier="additional-infos-button-cancel" mat-stroked-button mat-dialog-close>{{'#LDS#Cancel' |
-    translate}}</button>
-  <button color="primary" data-imx-identifier="additional-infos-button-apply" mat-raised-button
-    [mat-dialog-close]="result" cdkFocusInitial>{{'#LDS#Apply' |
-    translate}}</button>
+<mat-dialog-actions>
+  <button data-imx-identifier="additional-infos-button-cancel" mat-stroked-button mat-dialog-close>{{ '#LDS#Cancel' | translate }}</button>
+  <button color="primary" data-imx-identifier="additional-infos-button-apply" mat-flat-button [mat-dialog-close]="result" cdkFocusInitial>
+    {{ '#LDS#Apply' | translate }}
+  </button>
 </mat-dialog-actions>

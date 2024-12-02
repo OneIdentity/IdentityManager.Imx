@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,21 +25,21 @@
  */
 
 import { ErrorHandler, Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 
-import { AuthenticationService } from './authentication.service';
+import { QueryParametersHandler } from '../base/query-parameters-handler';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 import { imx_SessionService } from '../session/imx-session.service';
-import { UserMessageService } from '../user-message/user-message.service';
 import { Message } from '../user-message/message.interface';
-import { QueryParametersHandler } from '../base/query-parameters-handler';
+import { UserMessageService } from '../user-message/user-message.service';
+import { AuthenticationService } from './authentication.service';
 import { OAuthService } from './oauth.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-export class AuthenticationGuardService implements CanActivate {
-  private message: Message;
+export class AuthenticationGuardService {
+  private message: Message | undefined;
 
   constructor(
     private readonly session: imx_SessionService,
@@ -50,7 +50,7 @@ export class AuthenticationGuardService implements CanActivate {
     private readonly logger: ClassloggerService,
     messageService: UserMessageService,
   ) {
-    messageService.subject.subscribe(message => {
+    messageService.subject.subscribe((message) => {
       this.logger.trace(this, 'message received:', message);
       this.message = message;
     });
@@ -79,20 +79,15 @@ export class AuthenticationGuardService implements CanActivate {
         }
       }
 
-      if (this.message == null &&
+      if (this.message == null && sessionState && sessionState.configurationProviders && sessionState.configurationProviders.length === 1
         // do not shortcut to OAuth if there is at least one authConfigProvider (i.e. passcode login)
-        this.authentication.authConfigProviders.length == 0 &&
-        sessionState &&
-        sessionState.configurationProviders &&
-        sessionState.configurationProviders.length === 1) {
+        && this.authentication.authConfigProviders.length == 0) {
         const authConfigProvider = sessionState.configurationProviders[0];
         this.logger.trace(this, 'canActivate configProvider', authConfigProvider);
         if (authConfigProvider.isOAuth2) {
           this.logger.debug(this, 'canActivate oauth redirect');
           this.logger.trace(this, 'canActivate oauth redirect URL', this.router.url);
-          await this.authentication.oauthRedirect(
-            authConfigProvider.name
-          );
+          await this.authentication.oauthRedirect(authConfigProvider.name);
           return false;
         }
       }

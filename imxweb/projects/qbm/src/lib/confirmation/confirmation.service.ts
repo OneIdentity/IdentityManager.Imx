@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,13 +26,17 @@
 
 import { Injectable, NgZone } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { EuiLoadingService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { MessageDialogResult } from '../message-dialog/message-dialog-result.enum';
 import { MessageDialogComponent } from '../message-dialog/message-dialog.component';
+import { MessageDialogService } from '../message-dialog/message-dialog.service';
 import { MessageParameter } from '../message-dialog/message-parameter.interface';
 
+import { AuthenticationService } from '../authentication/authentication.service';
 import { LdsReplacePipe } from '../lds-replace/lds-replace.pipe';
+import { ISessionState } from '../session/session-state';
 
 @Injectable({
   providedIn: 'root',
@@ -43,7 +47,15 @@ export class ConfirmationService {
     private readonly translate: TranslateService,
     private readonly pipe: LdsReplacePipe,
     private readonly zone: NgZone,
-  ) {}
+    private readonly messageDialogService: MessageDialogService,
+    private readonly authentication: AuthenticationService,
+    private readonly busyService: EuiLoadingService,
+  ) {
+    authentication.onSessionResponse.subscribe((session) => (this.currentSession = session));
+  }
+
+  private showErrorDialogState = true;
+  private currentSession: ISessionState;
 
   public async confirmLeaveWithUnsavedChanges(title?: string, message?: string, disableClose?: boolean): Promise<boolean> {
     const dialogRef = this.dialogService.open(MessageDialogComponent, {
@@ -93,7 +105,8 @@ export class ConfirmationService {
       },
       panelClass: 'imx-messageDialog',
     });
-    return (await dialogRef.afterClosed().toPromise()) === MessageDialogResult.YesResult;
+    const result =await dialogRef.afterClosed().toPromise();
+    return result === MessageDialogResult.YesResult || result === MessageDialogResult.OkResult;
   }
 
   // Damit es bis "Pull Request 38432: 299557-imxweb-confirmdialogs-with-yes-no-buttons" funktioniert
@@ -101,6 +114,55 @@ export class ConfirmationService {
     return this.confirm({
       Title: title || '#LDS#Heading Delete Object',
       Message: message || '#LDS#Are you sure you want to delete the object?',
+    });
+  }
+
+  public async showErrorMessage(data: MessageParameter): Promise<void> {
+    let message = data?.Message ? this.translate.instant(data.Message) : '';
+    message = data?.Parameter ? this.pipe.transform(message, ...data.Parameter) : message;
+    const title = this.translate.instant('#LDS#Error');
+    if (this.showErrorDialogState) {
+      this.showErrorDialogState = false;
+      this.messageDialogService.errorMessages$.next([message]);
+      await this.showMessageBox(title, message, 'error', async () => {
+        this.showErrorDialogState = true;
+        this.messageDialogService.errorMessages$.next([]);
+      });
+    } else {
+      this.messageDialogService.errorMessages$.next([...this.messageDialogService.errorMessages$.value, message]);
+    }
+  }
+
+  public async handleExpiredSession(): Promise<void> {
+    await this.showMessageBox(
+      this.translate.instant('#LDS#Heading Session Expired'),
+      this.translate.instant('#LDS#Your session has expired. You will now be redirected to the login page where you can log in again.'),
+      'clock',
+      async () => {
+        const ref = this.busyService.show();
+        try {
+          await this.authentication.update(true);
+        } finally {
+          this.busyService.hide(ref);
+        }
+      },
+    );
+  }
+
+  public async showMessageBox(translatedTitle: string, translatedText, icon: string, callback: () => Promise<void>): Promise<void> {
+    this.zone.run(() => {
+      this.dialogService
+        .open(MessageDialogComponent, {
+          data: {
+            Title: translatedTitle,
+            Message: translatedText,
+            ShowOk: true,
+            icon: icon,
+          },
+          panelClass: 'imx-messageDialog-error',
+        })
+        .afterClosed()
+        .subscribe(callback);
     });
   }
 }

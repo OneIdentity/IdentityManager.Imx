@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,11 +26,11 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { AbstractControl, UntypedFormGroup } from '@angular/forms';
-import { IEntity } from 'imx-qbm-dbts';
+import { IEntity } from '@imx-modules/imx-qbm-dbts';
 import { BaseCdr, BaseReadonlyCdr, ColumnDependentReference } from 'qbm';
 import { Approval } from '../../approval';
-import { WorkflowActionEdit } from '../workflow-action-edit.interface';
 import { DecisionStepSevice } from '../../decision-step.service';
+import { WorkflowActionEdit } from '../workflow-action-edit.interface';
 
 /**
  * @ignore since this is only an internal component.
@@ -70,7 +70,7 @@ export class WorkflowSingleActionComponent implements OnInit {
    * @ignore since this is only public because of databinding to the template
    * the display value of the current step
    */
-  public currentStepCdr: ColumnDependentReference;
+  public currentStepCdr: ColumnDependentReference | undefined;
 
   /**
    * @ignore since this is only public because of databinding to the template
@@ -89,15 +89,19 @@ export class WorkflowSingleActionComponent implements OnInit {
 
   constructor(private stepService: DecisionStepSevice) {}
 
+  public;
+
   /**
    * @ignore since this is only an internal component
    *
    * Sets up the {@link columns} to be displayed/edited during OnInit lifecycle hook.
    */
   public ngOnInit(): void {
-    this.request = this.data.requests[0];
+    this.request = this.data.requests[0] as Approval;
 
-    this.columns.push(new BaseReadonlyCdr(this.request.OrderState.Column));
+    if (this.request?.OrderState?.Column) {
+      this.columns.push(new BaseReadonlyCdr(this.request.OrderState.Column));
+    }
 
     if (this.data.actionParameters.uidPerson) {
       this.columns.push(this.data.actionParameters.uidPerson);
@@ -113,11 +117,13 @@ export class WorkflowSingleActionComponent implements OnInit {
 
     if (this.request.parameterColumns) {
       this.request.parameterColumns.forEach((pCol) =>
-        this.requestParameterColumns.push(this.data.approve ? new BaseCdr(pCol) : new BaseReadonlyCdr(pCol))
+        this.requestParameterColumns.push(this.data.approve ? new BaseCdr(pCol) : new BaseReadonlyCdr(pCol)),
       );
     }
 
-    this.currentStepCdr = this.stepService.getCurrentStepCdr(this.request, this.request.pwoData, '#LDS#Current approval step');
+    if (this.request.pwoData) {
+      this.currentStepCdr = this.stepService.getCurrentStepCdr(this.request, this.request.pwoData, '#LDS#Current approval step');
+    }
   }
 
   /**

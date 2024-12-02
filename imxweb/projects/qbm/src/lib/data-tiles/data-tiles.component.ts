@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,14 +24,14 @@
  *
  */
 
-import { Component, Input, EventEmitter, Output, TemplateRef, OnDestroy, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { SelectionChange } from '@angular/cdk/collections';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, TemplateRef } from '@angular/core';
 import { Subscription } from 'rxjs';
 
+import { IClientProperty, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarComponent } from '../data-source-toolbar/data-source-toolbar.component';
-import { TypedEntity, IClientProperty } from 'imx-qbm-dbts';
-import { DataTileMenuItem } from './data-tile-menu-item.interface';
 import { DataTileBadge } from '../data-source-toolbar/data-tile-badge.interface';
+import { DataTileMenuItem } from './data-tile-menu-item.interface';
 
 /**
  * A list component containing {@link SingleTileComponent| tiles}.
@@ -130,7 +130,13 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
   /**
    * The height of a tile.
    */
-  @Input() public height: '140px';
+  @Input()
+  get height(): string {
+    return this._height;
+  }
+  set height(value: string) {
+    this._height = value || '140px';
+  }
 
   @Input() public useActionMenu = true;
 
@@ -151,7 +157,7 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
   /**
    * Event, that will fire when the user clicks on the badge.
    */
-  @Output() public badgeClicked = new EventEmitter<DataTileBadge>();
+  @Output() public badgeClicked = new EventEmitter<{ entity: TypedEntity; badge: DataTileBadge }>();
 
   /**
    * @ignore
@@ -162,7 +168,7 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
   /**
    * Keeps track of the selected item in single select mode
    */
-  private selectedItem: TypedEntity;
+  private selectedItem: TypedEntity | undefined;
 
   /**
    * @ignore
@@ -170,7 +176,9 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
    */
   private subscriptions: Subscription[] = [];
 
-  constructor(private readonly changeDetector: ChangeDetectorRef){}
+  private _height: string;
+
+  constructor(private readonly changeDetector: ChangeDetectorRef) {}
 
   /**
    * @ignore Used internally.
@@ -180,19 +188,20 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes['dst'] && changes['dst'].currentValue) {
       this.subscriptions.push(
-        this.dst.selectionChanged.subscribe((event: SelectionChange<TypedEntity>) => this.selectionChanged.emit(event.source.selected))
+        this.dst.selectionChanged.subscribe((event: SelectionChange<TypedEntity>) => this.selectionChanged.emit(event.source.selected)),
       );
 
       this.additionalSubtitleObjects = this.dst?.additionalListElements;
 
       if (this.dst.busyService) {
-        this.subscriptions.push(this.dst.busyService.busyStateChanged.subscribe((value:boolean)=>{
-          this.isLoading = value;
-          this.changeDetector.detectChanges()
-        }));
+        this.subscriptions.push(
+          this.dst.busyService.busyStateChanged.subscribe((value: boolean) => {
+            this.isLoading = value;
+            this.changeDetector.detectChanges();
+          }),
+        );
       }
       this.isLoading = this.dst?.busyService?.isBusy ?? false;
-
     }
   }
 
@@ -213,7 +222,7 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
       this.selectedItem = this.selectedEntity;
     }
 
-    return this.selectedItem && this.selectedItem.GetEntity().GetKeys().join() === item.GetEntity().GetKeys().join();
+    return this.selectedItem?.GetEntity().GetKeys().join() === item.GetEntity().GetKeys().join();
   }
 
   /**
@@ -245,7 +254,7 @@ export class DataTilesComponent implements OnChanges, OnDestroy {
     this.dst.selectAllOnPage();
   }
 
-  public onBadgeClicked(badge: DataTileBadge): void {
+  public onBadgeClicked(badge: { entity: TypedEntity; badge: DataTileBadge }): void {
     this.badgeClicked.emit(badge);
   }
 }

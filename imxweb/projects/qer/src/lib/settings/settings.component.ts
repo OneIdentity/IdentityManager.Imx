@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,15 +24,23 @@
  *
  */
 
-import { Component, ErrorHandler, Inject, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, ErrorHandler, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { EuiLoadingService, EuiTheme, EuiThemeService, EuiThemeSwitcherComponent } from '@elemental-ui/core';
-import { ProfileSettings} from 'imx-api-qer';
-import { CollectionLoadParameters, CompareOperator, EntityCollectionData, FilterType, IEntityColumn, MetaTableRelationData, ValType, ValueStruct } from 'imx-qbm-dbts';
+import { ProfileSettings } from '@imx-modules/imx-api-qer';
+import {
+  CollectionLoadParameters,
+  CompareOperator,
+  EntityCollectionData,
+  FilterType,
+  IEntityColumn,
+  MetaTableRelationData,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
 import { AppConfigService, BaseCdr, CustomThemeService, EntityService, SnackBarService, SystemInfoService } from 'qbm';
 import { Subscription } from 'rxjs';
 import { QerApiService } from '../qer-api-client.service';
-import { DOCUMENT } from '@angular/common';
 
 const portalApp = 'PORTAL';
 const passwordResetApp = 'PASSWORDRESET';
@@ -41,18 +49,18 @@ const opsupportApp = 'OPSUPPORT';
 @Component({
   selector: 'imx-settings',
   templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.scss']
+  styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent implements OnInit, OnDestroy {
   @ViewChild('themeSwitcherControl') themeSwitcherControl: EuiThemeSwitcherComponent;
 
   public timeZoneCdr: BaseCdr;
   public timeZoneEntityCollectionData: EntityCollectionData;
-  public profileSettings : ProfileSettings;
+  public profileSettings: ProfileSettings;
   public serverProfileSettings: ProfileSettings;
   private app: string;
   private readonly subscriptions: Subscription[] = [];
-  private userCulture: string;
+  public userCulture: string | undefined;
   private defaultTheme: EuiTheme;
   private previousTheme: EuiTheme;
 
@@ -67,25 +75,23 @@ export class SettingsComponent implements OnInit, OnDestroy {
     private readonly entityService: EntityService,
     private readonly config: AppConfigService,
     private readonly systemInfoService: SystemInfoService,
-    public dialogRef: MatDialogRef<SettingsComponent>
-    ) {
-      this.subscriptions.push(this.dialogRef.backdropClick().subscribe(() => this.resetThemeToDefault()));
-    }
+    public dialogRef: MatDialogRef<SettingsComponent>,
+  ) {
+    this.subscriptions.push(this.dialogRef.backdropClick().subscribe(() => this.resetThemeToDefault()));
+  }
 
   public async ngOnInit() {
     this.app = this.config.Config.WebAppIndex.toUpperCase();
     await this.loadProfileSettings();
   }
 
-  public get customThemes() : {name: string, class: string}[] {
+  public get customThemes(): { name: string; class: string }[] {
     return this.customThemeSvc.customThemes;
   }
 
-  public async loadProfileSettings()
-  {
+  public async loadProfileSettings() {
     let overlayRef = this.euiLoadingService.show();
-    try
-    {
+    try {
       switch (this.app) {
         case portalApp:
           this.profileSettings = await this.qerClient.client.portal_profile_get();
@@ -104,53 +110,48 @@ export class SettingsComponent implements OnInit, OnDestroy {
       this.serverProfileSettings = JSON.parse(JSON.stringify(this.profileSettings));
       this.defaultTheme = <EuiTheme>(await this.systemInfoService.getImxConfig()).DefaultHtmlTheme;
       this.timeZoneCdr = await this.createCdrForTimeZone();
-    }
-    catch (error) {
+    } catch (error) {
       this.errorHandler.handleError(error);
-    }
-    finally{
+    } finally {
       this.previousTheme = <EuiTheme>localStorage.getItem('eui-theme');
       this.euiLoadingService.hide(overlayRef);
     }
   }
 
-  public async saveProfileSettings()
-  {
-      let overlayRef = this.euiLoadingService.show();
+  public async saveProfileSettings() {
+    let overlayRef = this.euiLoadingService.show();
 
-      if(this.timeZoneCdr.column.GetValue()) {
-        this.profileSettings.TimeZoneId = this.timeZoneCdr.column.GetValue();
-      } else {
-        this.profileSettings.TimeZoneId = "";
+    if (this.timeZoneCdr.column.GetValue()) {
+      this.profileSettings.TimeZoneId = this.timeZoneCdr.column.GetValue();
+    } else {
+      this.profileSettings.TimeZoneId = '';
+    }
+
+    this.profileSettings.PreferredAppThemes = <EuiTheme>localStorage.getItem('eui-theme');
+
+    try {
+      switch (this.app) {
+        case portalApp:
+          await this.qerClient.client.portal_profile_post(this.profileSettings);
+          break;
+        case passwordResetApp:
+          await this.qerClient.client.passwordreset_profile_post(this.profileSettings);
+          break;
+        case opsupportApp:
+          await this.qerClient.client.opsupport_profile_post(this.profileSettings);
+          break;
       }
 
-      this.profileSettings.PreferredAppThemes = <EuiTheme>localStorage.getItem('eui-theme');
+      this.snackBarService.open({ key: '#LDS#The settings have been successfully saved.' });
+      this.dialogRef.close();
 
-      try
-      {
-        switch (this.app) {
-          case portalApp:
-            await this.qerClient.client.portal_profile_post(this.profileSettings);
-            break;
-          case passwordResetApp:
-            await this.qerClient.client.passwordreset_profile_post(this.profileSettings);
-            break;
-          case opsupportApp:
-            await this.qerClient.client.opsupport_profile_post(this.profileSettings);
-            break;
-        }
-
-        this.snackBarService.open({ key: '#LDS#The settings have been successfully saved.' });
-        this.dialogRef.close();
-
-        if(this.serverProfileSettings.UseProfileLanguage !== this.profileSettings.UseProfileLanguage) this.document.defaultView.location.reload();
-      }
-      catch (error) {
-        this.errorHandler.handleError(error);
-      }
-      finally{
-        this.euiLoadingService.hide(overlayRef);
-      }
+      if (this.serverProfileSettings.UseProfileLanguage !== this.profileSettings.UseProfileLanguage)
+        this.document.defaultView?.location.reload();
+    } catch (error) {
+      this.errorHandler.handleError(error);
+    } finally {
+      this.euiLoadingService.hide(overlayRef);
+    }
   }
 
   private resetThemeToDefault() {
@@ -161,13 +162,11 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.resetThemeToDefault();
   }
 
-  public async resetProfileSettings()
-  {
+  public async resetProfileSettings() {
     this.themeService.setTheme(this.defaultTheme);
 
     let overlayRef = this.euiLoadingService.show();
-    try
-    {
+    try {
       switch (this.app) {
         case portalApp:
           await this.qerClient.client.portal_profile_delete();
@@ -182,20 +181,18 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
       this.snackBarService.open({ key: '#LDS#The settings have been successfully reset.' });
       this.dialogRef.close();
-    }
-    catch (error) {
+    } catch (error) {
       this.errorHandler.handleError(error);
-    }
-    finally{
+    } finally {
       this.euiLoadingService.hide(overlayRef);
     }
   }
 
   public async createCdrForTimeZone(): Promise<BaseCdr> {
-    let DataValue = undefined;
-    let DisplayValue = undefined;
+    let DataValue: string | undefined = undefined;
+    let DisplayValue: string | undefined = undefined;
 
-    if (this.profileSettings?.TimeZoneId) {
+    if (this.profileSettings?.TimeZoneId != null) {
       DataValue = this.profileSettings?.TimeZoneId;
       DisplayValue = await this.getTimezoneDisplay(DataValue);
     }
@@ -220,9 +217,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
         ParentTableName: 'DialogTimeZone',
         ParentColumnName: 'UID_DialogTimeZone',
       },
-      parameters => getDialogTimeZoneFunction(parameters),
+      (parameters) => getDialogTimeZoneFunction(parameters),
       DataValue,
-      DisplayValue
+      DisplayValue,
     );
     return new BaseCdr(column, '#LDS#Time zone');
   }
@@ -231,29 +228,25 @@ export class SettingsComponent implements OnInit, OnDestroy {
     fkRelation: MetaTableRelationData,
     loadFkCandidates: (parameters: CollectionLoadParameters) => Promise<EntityCollectionData>,
     DataValue: string | undefined,
-    DisplayValue: string | undefined
+    DisplayValue: string | undefined,
   ): IEntityColumn {
     return this.entityService.createLocalEntityColumn(
       {
         ColumnName: fkRelation.ParentColumnName,
         Type: ValType.String,
-        FkRelation: fkRelation
+        FkRelation: fkRelation,
       },
-      [{
-        columnName: fkRelation.ParentColumnName,
-        fkTableName: fkRelation.ParentTableName,
-        parameterNames: [
-          'OrderBy',
-          'StartIndex',
-          'PageSize',
-          'filter',
-          'search',
-        ],
-        load: async (_, parameters: CollectionLoadParameters = {}) => loadFkCandidates(parameters),
-        getDataModel: async () => ({ Filters: [] }),
-        getFilterTree: async () => ({ Elements: [] })
-      }],
-      DataValue && DisplayValue ? {Value: DataValue, DisplayValue: DisplayValue} : undefined
+      [
+        {
+          columnName: fkRelation.ParentColumnName || '',
+          fkTableName: fkRelation.ParentTableName || '',
+          parameterNames: ['OrderBy', 'StartIndex', 'PageSize', 'filter', 'search'],
+          load: async (_, parameters: CollectionLoadParameters = {}) => loadFkCandidates(parameters),
+          getDataModel: async () => ({ Filters: [] }),
+          getFilterTree: async () => ({ Elements: [] }),
+        },
+      ],
+      DataValue && DisplayValue ? { Value: DataValue, DisplayValue: DisplayValue } : undefined,
     );
   }
 
@@ -269,7 +262,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
       ],
     };
 
-    let timezone = undefined;
+    let timezone: EntityCollectionData | undefined = undefined;
 
     switch (this.app) {
       case portalApp:
@@ -283,14 +276,14 @@ export class SettingsComponent implements OnInit, OnDestroy {
         break;
     }
 
-    if (timezone && timezone.TotalCount) {
-      return timezone.Entities[0].Display;
+    if (timezone != null && timezone.TotalCount) {
+      return timezone.Entities?.[0].Display || '';
     }
     return uid;
   }
 
   public async ngOnDestroy(): Promise<void> {
     await this.loadProfileSettings();
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 }

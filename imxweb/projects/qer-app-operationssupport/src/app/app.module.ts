@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,54 +24,55 @@
  *
  */
 
+import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, APP_INITIALIZER, ErrorHandler } from '@angular/core';
 
-import { HttpClientModule } from '@angular/common/http';
-import { TranslateModule, TranslateLoader, MissingTranslationHandler, TranslateService } from '@ngx-translate/core';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
+import { MissingTranslationHandler, TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 
+import { OutstandingModule } from 'dpr';
+import { RECAPTCHA_V3_SITE_KEY } from 'ng-recaptcha-2';
 import {
-  ImxTranslateLoader,
-  ImxMissingTranslationHandler,
-  GlobalErrorHandler,
-  Paginator,
-  OpsupportDbObjectService,
-  LdsReplacePipe,
-  MenuModule,
-  MastHeadModule,
-  UserMessageModule,
   AuthenticationModule,
-  RouteGuardService,
   CustomThemeModule,
+  GlobalErrorHandler,
+  ImxMissingTranslationHandler,
+  ImxTranslateLoader,
+  LdsReplacePipe,
+  MastHeadModule,
+  OpsupportDbObjectService,
+  Paginator,
+  RouteGuardService,
   SqlWizardApiService,
   SqlWizardModule,
+  UserMessageModule,
 } from 'qbm';
-import { OutstandingModule } from 'dpr';
+import { OpsModule } from 'qer';
+import appConfigJson from '../appconfig.json';
+import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
-import { SyncModule } from './sync/sync.module';
-import { ObjectOverviewModule } from './object-overview/object-overview.module';
-import { WebApplicationsModule } from './web-applications/web-applications.module';
-import { JournalModule } from './journal/journal.module';
-import { UnresolvedRefsModule } from './unresolved-refs/unresolved-refs.module';
-import { DashboardModule } from './dashboard/dashboard.module';
-import { SystemOverviewModule } from './information/system-overview/system-overview.module';
-import { SystemStatusModule } from './information/system-status/system-status.module';
-import { ProcessesModule } from './processes/processes.module';
 import { AppComponent } from './app.component';
 import { AppService } from './app.service';
-import { environment } from '../environments/environment';
-import appConfigJson from '../appconfig.json';
+import { OpsSqlWizardApiService } from './base/ops-sql-wizard-api.service';
+import { DashboardModule } from './dashboard/dashboard.module';
 import { DataChangesModule } from './data-changes/data-changes.module';
 import { DbQueueModule } from './db-queue/db-queue.module';
-import { OpsSqlWizardApiService } from './base/ops-sql-wizard-api.service';
-import { QerModule } from 'qer';
+import { SystemOverviewModule } from './information/system-overview/system-overview.module';
+import { SystemStatusModule } from './information/system-status/system-status.module';
+import { JournalModule } from './journal/journal.module';
+import { ObjectOverviewModule } from './object-overview/object-overview.module';
+import { ProcessesModule } from './processes/processes.module';
+import { SyncModule } from './sync/sync.module';
+import { UnresolvedRefsModule } from './unresolved-refs/unresolved-refs.module';
+import { WebApplicationsModule } from './web-applications/web-applications.module';
 
 @NgModule({
   declarations: [AppComponent],
+  bootstrap: [AppComponent],
   imports: [
     AppRoutingModule,
     AuthenticationModule,
@@ -79,10 +80,8 @@ import { QerModule } from 'qer';
     BrowserModule,
     EuiCoreModule,
     EuiMaterialModule,
-    HttpClientModule,
     LoggerModule.forRoot({ level: NgxLoggerLevel.DEBUG, serverLogLevel: NgxLoggerLevel.OFF }),
     MastHeadModule,
-    MenuModule,
     DbQueueModule,
     TranslateModule.forRoot({
       loader: {
@@ -107,8 +106,8 @@ import { QerModule } from 'qer';
     ProcessesModule,
     OutstandingModule,
     DataChangesModule,
-    QerModule,
-    SqlWizardModule
+    OpsModule,
+    SqlWizardModule,
   ],
   providers: [
     { provide: 'environment', useValue: environment },
@@ -134,7 +133,14 @@ import { QerModule } from 'qer';
       provide: SqlWizardApiService,
       useClass: OpsSqlWizardApiService,
     },
+    {
+      provide: RECAPTCHA_V3_SITE_KEY,
+      useFactory: (config: AppService) => {
+        return config.recaptchaSiteKeyV3;
+      },
+      deps: [AppService],
+    },
+    provideHttpClient(withInterceptorsFromDi()),
   ],
-  bootstrap: [AppComponent],
 })
 export class AppModule {}

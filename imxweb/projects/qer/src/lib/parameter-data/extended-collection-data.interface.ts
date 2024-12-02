@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,12 +24,13 @@
  *
  */
 
-import { ParameterData } from 'imx-qbm-dbts';
+import { EntityCollectionData, ParameterData } from '@imx-modules/imx-qbm-dbts';
 import { ParameterDataContainer } from './parameter-data-container';
 
 export interface ExtendedCollectionData<TData> {
   Data?: TData[];
-  Parameters?: { [key: string]: ParameterData[][]; };
+  Parameters?: { [key: string]: ParameterData[][] };
+  WorkflowSteps?: EntityCollectionData;
   index: number;
 }
 

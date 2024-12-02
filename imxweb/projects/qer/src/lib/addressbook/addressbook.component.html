@@ -1,31 +1,15 @@
-<h1 class="mat-headline">
-  <span>{{ '#LDS#Heading Address Book' | translate }}</span>
-  <imx-help-contextual></imx-help-contextual>
-</h1>
-
-<mat-card>
-  <imx-data-source-toolbar
-    #dst
-    data-imx-identifier="addressbook-dst"
-    [settings]="dstSettings"
-    [busyService]="busyService"
-    [options]="['search', 'filter', 'groupBy', 'settings']"
-    (navigationStateChanged)="onNavigationStateChanged($event)"
-    (search)="onSearch($event)"
-    data-imx-identifier="addressbook-data-source-toolbar"
-  >
-  </imx-data-source-toolbar>
-  <div class="imx-addressbook-table">
-    <imx-data-table
-      data-imx-identifier="addressbook-table"
-      [dst]="dst"
-      (highlightedEntityChanged)="onHighlightedEntityChanged($event)"
-      [detailViewVisible]="false"
-      [groupData]="groupData"
-      (groupDataChanged)="onGroupingChange($event)"
-      data-imx-identifier="addressbook-table"
-    >
-    </imx-data-table>
-  </div>
-  <imx-data-source-paginator data-imx-identifier="addressbook-paginator" [dst]="dst"></imx-data-source-paginator>
+<div class="imx-header-toolbar">
+  <h2 class="mat-headline-5">
+    <span>{{ '#LDS#Heading Address Book' | translate }}</span>
+    <imx-help-contextual></imx-help-contextual>
+  </h2>
+  <imx-data-view-toolbar
+    [dataSource]="dataSource"
+    (updateConfig)="updateConfig($event)"
+    (deleteConfigById)="deleteConfigById($event)"
+  ></imx-data-view-toolbar>
+</div>
+<mat-card class="imx-card-fill">
+  <imx-data-view-auto-table [dataSource]="dataSource"></imx-data-view-auto-table>
+  <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
 </mat-card>

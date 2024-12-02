@@ -1,20 +1,23 @@
 <div eui-sidesheet-content>
-  <eui-alert *ngIf="showHelperAlert" class="imx-helper-alert" type="info" [condensed]="true" [colored]="true"
-    [dismissable]="true" (dismissed)="onHelperDismissed()">
-    <div translate>
-      #LDS#Select a target system. All user accounts of this target system will be included in the report.
-    </div>
+  <eui-alert *ngIf="showHelperAlert" type="info" [condensed]="true" [colored]="true" [dismissable]="true" (dismissed)="onHelperDismissed()">
+    <div translate>#LDS#Select a target system. All user accounts of this target system will be included in the report.</div>
   </eui-alert>
   <mat-card class="imx-content-card">
-    <imx-data-tree [withSelectedNodeHighlight]="true" data-imx-identifier="target-system-report-data-tree" #tree
-      [hideSelection]="true" *ngIf="database"
+    <imx-data-tree
+      [withSelectedNodeHighlight]="true"
+      data-imx-identifier="target-system-report-data-tree"
+      #tree
+      [hideSelection]="true"
+      *ngIf="database"
       [withMultiSelect]="false"
-      [database]="database" (nodeSelected)="onNodeSelected($event)">
+      [database]="database"
+      (nodeSelected)="onNodeSelected($event)"
+    >
     </imx-data-tree>
   </mat-card>
 </div>
-<div eui-sidesheet-actions >
-  <button [disabled]="selectedEntity == null" color="primary" mat-raised-button (click)="loadReport()">
-    {{'#LDS#Download report' |translate}}
+<div eui-sidesheet-actions>
+  <button [disabled]="selectedEntity == null" color="primary" mat-flat-button (click)="loadReport()">
+    {{ '#LDS#Download report' | translate }}
   </button>
 </div>

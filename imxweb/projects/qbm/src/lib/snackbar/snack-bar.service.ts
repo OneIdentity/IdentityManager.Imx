@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,12 +33,12 @@ import { LdsReplacePipe } from '../lds-replace/lds-replace.pipe';
 import { TextContainer } from '../translation/text-container';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SnackBarService {
   private readonly defaultConfig: MatSnackBarConfig = {
     duration: 5000,
-    verticalPosition: 'top'
+    verticalPosition: 'top',
   };
   private message = '';
   private action = '';
@@ -47,16 +47,20 @@ export class SnackBarService {
   constructor(
     private readonly snackbar: MatSnackBar,
     private readonly translationProvider: TranslateService,
-    private readonly ldsReplace: LdsReplacePipe
-  ) { }
+    private readonly ldsReplace: LdsReplacePipe,
+  ) {}
 
-  public open(messageText: TextContainer, actionText: string = this.actionDismissCaption, config?: MatSnackBarConfig)
-    : MatSnackBarRef<TextOnlySnackBar> {
-    this.translationProvider.get(messageText.key)
-      .pipe(map((value: string) => messageText.parameters ? this.ldsReplace.transform(value, ...messageText.parameters) : value))
-      .subscribe((value: string) => this.message = value);
+  public open(
+    messageText: TextContainer,
+    actionText: string = this.actionDismissCaption,
+    config?: MatSnackBarConfig,
+  ): MatSnackBarRef<TextOnlySnackBar> {
+    this.translationProvider
+      .get(messageText.key)
+      .pipe(map((value: string) => (messageText.parameters ? this.ldsReplace.transform(value, ...messageText.parameters) : value)))
+      .subscribe((value: string) => (this.message = value));
 
-    this.translationProvider.get(actionText).subscribe((value: string) => this.action = value);
+    this.translationProvider.get(actionText).subscribe((value: string) => (this.action = value));
 
     return this.snackbar.open(this.message, this.action, { ...this.defaultConfig, ...config });
   }

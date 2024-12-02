@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { Component, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { ValType } from 'imx-qbm-dbts';
+import { ValType } from '@imx-modules/imx-qbm-dbts';
 import { EntityColumnContainer } from '../entity-column-container';
 import { ImxTranslationProviderService } from '../../translation/imx-translation-provider.service';
 

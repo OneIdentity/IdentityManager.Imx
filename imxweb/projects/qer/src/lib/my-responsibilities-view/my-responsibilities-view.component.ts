@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,12 +25,12 @@
  */
 
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { SideNavigationExtension, SystemInfoService, HELP_CONTEXTUAL } from 'qbm';
+import { ProjectConfig } from '@imx-modules/imx-api-qbm';
+import { QerProjectConfig } from '@imx-modules/imx-api-qer';
+import { HELP_CONTEXTUAL, SideNavigationExtension, SystemInfoService } from 'qbm';
+import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
 import { UserModelService } from '../user/user-model.service';
 import { MyResponsibilitiesRegistryService } from './my-responsibilities-registry.service';
-import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
-import { ProjectConfig } from 'imx-api-qbm';
-import { QerProjectConfig } from 'imx-api-qer';
 
 @Component({
   selector: 'imx-my-responsibilities-view',
@@ -43,7 +43,7 @@ export class MyResponsibilitiesViewComponent implements OnInit {
   public componentName = 'my-responsibilities-view';
   public componentTitle = '#LDS#Heading My Responsibilities';
   public contextId = HELP_CONTEXTUAL.MyResponsibilities;
-  public navItems: SideNavigationExtension[] = [];
+  public navItems: (SideNavigationExtension | undefined)[] = [];
   constructor(
     private readonly systemInfoService: SystemInfoService,
     private readonly myResponsibilitiesRegistryService: MyResponsibilitiesRegistryService,
@@ -61,8 +61,13 @@ export class MyResponsibilitiesViewComponent implements OnInit {
     const userConfig = await this.userModelService.getUserConfig();
     const config: QerProjectConfig & ProjectConfig = await this.projectConfig.getConfig();
     this.navItems = this.myResponsibilitiesRegistryService
-      .getNavItems(systemInfo.PreProps, features, config)
-      .filter((elem) => elem.name === 'identities' || elem.name === 'devices' || userConfig.Ownerships.find(own => own.TableName === elem.name)?.Count > 0);
+      .getNavItems(systemInfo.PreProps ?? [], features, config)
+      .filter(
+        (elem) =>
+          elem?.name === 'identities' ||
+          elem?.name === 'devices' ||
+          !!userConfig.Ownerships?.find((own) => own.TableName === elem?.name)?.Count,
+      );
     this.cdref.detectChanges();
   }
 }

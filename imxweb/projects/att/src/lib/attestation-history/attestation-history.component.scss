@@ -1,98 +1,20 @@
-@import '../../../../../shared/scss/common-table.scss';
-@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
 
 :host {
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.imx-icons-container {
-  padding-right: 15px;
-  .table-icon {
-    display: flex;
-    align-items: center;
-    color: $color-gray-60;
-    font-weight: 600;
-    height: 14px;
-    &--warning {
-      .eui-icon {
-        color: $color-orange-60;
-      }
-    }
-    &--new {
-      .eui-icon {
-        color: $color-green-60;
-      }
-    }
-    &--alert {
-      .eui-icon,
-      span {
-        color: $color-red-60;
-      }
-    }
-    &--primary {
-      .eui-icon,
-      span {
-        color: $color-blue-60;
-      }
-    }
-    &:not(:first-of-type) {
-      margin-left: 8px;
-      border-left: 1px solid $color-gray-20;
-      padding-left: 8px;
-    }
-    .mat-icon,
-    .eui-icon {
-      padding-right: 6px;
-    }
-  }
+  @include flex-column-container($overflow: hidden);
 }
 
 imx-data-table {
   flex-grow: 2;
 }
+.imx-history-card {
+  @include flex-column-container-fill();
 
+}
 .imx-display-column {
   display: flex;
   :last-child {
     flex-grow: 1;
-  }
-}
-
-.imx-button-column {
-  @include imx-button-column-right();
-}
-
-.eui-dark-theme,
-.eui-contrast-theme {
-  :host {
-    .imx-icons-container {
-      .table-icon {
-        color: $color-gray-10;
-        &--warning {
-          .eui-icon {
-            color: $color-orange-40;
-          }
-        }
-        &--new {
-          .mat-icon {
-            color: $color-green-40;
-          }
-        }
-        &--alert {
-          .eui-icon,
-          span {
-            color: $color-red-40;
-          }
-        }
-        &--primary {
-          .eui-icon,
-          span {
-            color: $color-blue-60;
-          }
-        }
-      }
-    }
+    display:block;
   }
 }

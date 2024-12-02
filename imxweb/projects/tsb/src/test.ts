@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,27 +26,16 @@
 
 // This file is required by karma.conf.js and loads recursively all the .spec and framework files
 
-import 'core-js/es7/reflect';
-import 'zone.js/dist/zone';
-import 'zone.js/dist/zone-testing';
+// Zone must be imported first. Be careful with prettier import organizing
+import 'zone.js';
+import 'zone.js/testing';
+
 import { getTestBed } from '@angular/core/testing';
-import {
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting
-} from '@angular/platform-browser-dynamic/testing';
+import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
+import 'core-js/es/reflect';
 import { TestHelperModule } from 'qbm';
 
-declare const require: any;
-
 // First, initialize the Angular testing environment.
-getTestBed().initTestEnvironment(
-  [BrowserDynamicTestingModule, TestHelperModule],
-  platformBrowserDynamicTesting(),
-  {
-    teardown: { destroyAfterEach: false }
-  }
-);
-// Then we find all the tests.
-const context = require.context('./', true, /\.spec\.ts$/);
-// And load the modules.
-context.keys().map(context);
+getTestBed().initTestEnvironment([BrowserDynamicTestingModule, TestHelperModule], platformBrowserDynamicTesting(), {
+  teardown: { destroyAfterEach: false },
+});

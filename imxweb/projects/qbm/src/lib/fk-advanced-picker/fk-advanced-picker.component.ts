@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,20 +24,16 @@
  *
  */
 
-import { Component, Inject, ViewChild, OnInit, ElementRef, OnDestroy } from '@angular/core';
+import { Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 
-import {
-  TypedEntity,
-  IEntity,
-  IForeignKeyInfo,
-} from 'imx-qbm-dbts';
-import { ClassloggerService } from '../classlogger/classlogger.service';
+import { IEntity, IForeignKeyInfo, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { MetadataService } from '../base/metadata.service';
-import { ForeignKeyPickerData } from './foreign-key-picker-data.interface';
-import { FkSelectorComponent } from './fk-selector.component';
+import { ClassloggerService } from '../classlogger/classlogger.service';
 import { ConfirmationService } from '../confirmation/confirmation.service';
+import { FkSelectorComponent } from './fk-selector.component';
+import { ForeignKeyPickerData } from './foreign-key-picker-data.interface';
 
 @Component({
   templateUrl: './fk-advanced-picker.component.html',
@@ -58,7 +54,7 @@ export class FkAdvancedPickerComponent implements OnInit, OnDestroy {
     public readonly metadataProvider: MetadataService,
     private readonly logger: ClassloggerService,
     private readonly confirmation: ConfirmationService,
-    private readonly elementRef: ElementRef
+    private readonly elementRef: ElementRef,
   ) {
     this.closeClickSubscription = this.sidesheetRef.closeClicked().subscribe(async () => {
       if (!this.isChanged || (await this.confirmation.confirmLeaveWithUnsavedChanges())) {
@@ -103,8 +99,10 @@ export class FkAdvancedPickerComponent implements OnInit, OnDestroy {
       table: this.selector.selectedTable,
       candidates: entityList.map((typedEntity) => {
         const entity = typedEntity.GetEntity();
+        const columnName = this.selectedTable.fkColumnName ?? this.selectedTable.ColumnName;
+        const data = entity.GetColumn(columnName)?.GetValue();
         return {
-          DataValue: this.getKey(entity),
+          DataValue: data !== '' ? data : this.getKey(entity),
           DisplayValue: entity.GetDisplay(),
           displayLong: entity.GetDisplayLong(),
         };
@@ -113,10 +111,10 @@ export class FkAdvancedPickerComponent implements OnInit, OnDestroy {
   }
 
   public onSelectedCandidatesChanges(): void {
-    this.isChanged = this.data.isMultiValue;
+    this.isChanged = this.data.isMultiValue ?? false;
   }
 
-  private getKey(entity: IEntity): string {
+  private getKey(entity: IEntity): string | undefined {
     if (this.data.fkRelations && this.data.fkRelations.length > 1) {
       this.logger.trace(this, 'Dynamic foreign key');
       const xObjectKeyColumn = entity.GetColumn('XObjectKey');
@@ -126,10 +124,10 @@ export class FkAdvancedPickerComponent implements OnInit, OnDestroy {
     this.logger.trace(this, 'Foreign key');
 
     try {
-      const parentColumn = entity.GetColumn(this.data.fkRelations[0].ColumnName);
-      if (parentColumn) {
+      const parentColumnValue = entity.GetColumn(this.data.fkRelations[0].ColumnName)?.GetValue() ?? '';
+      if (parentColumnValue !== '') {
         this.logger.trace(this, 'Use value from explicit parent column');
-        return parentColumn.GetValue();
+        return parentColumnValue;
       }
     } catch (error) {
       this.logger.trace(this, 'tried to get parent column but failed', error);

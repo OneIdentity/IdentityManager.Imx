@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,15 +25,15 @@
  */
 
 import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, ViewChild } from '@angular/core';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { Component } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { PageEvent } from '@angular/material/paginator';
 import { MatRadioChange } from '@angular/material/radio';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { FormControl } from '@angular/forms';
 
-import { HistoryOperation } from 'imx-api-qbm';
-import { TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { HistoryOperation } from '@imx-modules/imx-api-qbm';
+import { TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { SettingsService } from 'qbm';
 import { ObjectByIdService } from './object-by-id.service';
 
@@ -58,7 +58,7 @@ export class ObjectsByIdComponent {
   ];
   public selectedType = this.filterOptions[0].value;
   public processId: string;
-  public searchControl = new FormControl('');
+  public searchControl = new FormControl('', { nonNullable: true });
   public isShowGraph = false;
   public historyData: HistoryOperation[] = [];
 
@@ -66,7 +66,6 @@ export class ObjectsByIdComponent {
 
   public dataCollection: TypedEntityCollectionData<HistoryOperation>;
   private stateCached: { page: number; pageSize: number; skip: number };
-  @ViewChild(MatPaginator) private paginator: MatPaginator;
   public paginatorConfig = {
     index: 0,
     size: 5,
@@ -75,11 +74,15 @@ export class ObjectsByIdComponent {
     hidden: false,
   };
 
-  constructor(private busyService: EuiLoadingService, private objectByIdService: ObjectByIdService, private settings: SettingsService) {
+  constructor(
+    private busyService: EuiLoadingService,
+    private objectByIdService: ObjectByIdService,
+    private settings: SettingsService,
+  ) {
     this.paginatorConfig.size = this.settings.DefaultPageSize;
     this.searchControl.valueChanges
       .pipe(distinctUntilChanged(), debounceTime(300))
-      .subscribe(async () => await this.search(this.searchControl.value));
+      .subscribe(async () => await this.onSearch(this.searchControl.value));
   }
 
   public async typeChanged(evt: MatRadioChange) {
@@ -93,7 +96,7 @@ export class ObjectsByIdComponent {
     let overlayRef: OverlayRef;
     setTimeout(() => (overlayRef = this.busyService.show()));
     try {
-      this.historyData = (await this.objectByIdService.getChangeOperation(this.processId)).Events;
+      this.historyData = (await this.objectByIdService.getChangeOperation(this.processId)).Events ?? [];
     } catch {
       this.historyData = [];
     } finally {
@@ -103,7 +106,7 @@ export class ObjectsByIdComponent {
     }
   }
 
-  private async search(term: string): Promise<void> {
+  private async onSearch(term: string): Promise<void> {
     this.processId = term;
     await this.getChangeOperation();
   }

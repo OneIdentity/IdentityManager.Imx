@@ -8,23 +8,17 @@ $imx-component-width: 400px;
   height: inherit;
   max-width: $imx-component-width;
 
-  h1 {
-    font-size: 24px;
+  h2 {
     font-weight: 600;
   }
 
-  .mat-checkbox {
+  .mat-mdc-checkbox {
     margin-top: 10px;
     font-size: 12px;
   }
 
   imx-data-tiles {
     flex-grow: 1;
-  }
-
-  imx-data-source-paginator {
-    margin-top: 10px;
-    min-width: $imx-component-width;
   }
 
   .imx-main-container {
@@ -49,7 +43,6 @@ $imx-component-width: 400px;
   }
 
   .imx-icon-button {
-    line-height: 27px;
     background-color: $color-gray-0;
     margin-left: 15px;
   }
@@ -66,10 +59,6 @@ $imx-component-width: 400px;
     }
   }
 
-  ::ng-deep .mat-badge-warn .mat-badge-content {
-    background-color: $color-gray-60;
-  }
-
   ::ng-deep .badgeContainer {
     width: 355px;
   }
@@ -78,10 +67,10 @@ $imx-component-width: 400px;
     margin-left: 0px;
   }
 
-  ::ng-deep .mat-card.imx-data-tile-container {
+  ::ng-deep .mat-mdc-card.imx-data-tile-container {
     padding: 35px 50px 0 25px;
 
-    .imx-data-tile-subtitle.mat-subheading-1 {
+    .imx-data-tile-subtitle.mat-body-2 {
       align-self: baseline;
       top: 10px;
       white-space: normal;
@@ -92,7 +81,7 @@ $imx-component-width: 400px;
       line-height: 18px;
     }
 
-    .imx-data-tile-subtitle.mat-subheading-1:after {
+    .imx-data-tile-subtitle.mat-body-2:after {
       content: '';
       text-align: right;
       position: absolute;
@@ -105,14 +94,14 @@ $imx-component-width: 400px;
 
     // If line-clamp is supported, use it instead (Firefox 68+, Chrome 14+, Edge 17+)
     @supports (-webkit-line-clamp: 3) {
-      .imx-data-tile-subtitle.mat-subheading-1 {
+      .imx-data-tile-subtitle.mat-body-2 {
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         height: auto;
         top: 0px;
       }
-      .imx-data-tile-subtitle.mat-subheading-1:after {
+      .imx-data-tile-subtitle.mat-body-2:after {
         display: none;
       }
     }
@@ -125,12 +114,8 @@ $imx-component-width: 400px;
       background-color: $color-gray-90;
     }
 
-    ::ng-deep .mat-badge-warn .mat-badge-content {
-      background-color: $color-gray-40;
-    }
-
     .imx-icon-button {
-      background-color: $color-gray-80;
+      background-color: $color-gray-70;
     }
 
     ::ng-deep .imx-selected-icon-container {
@@ -145,24 +130,12 @@ $imx-component-width: 400px;
       background-color: $color-gray-90;
     }
 
-    ::ng-deep .mat-badge-warn .mat-badge-content {
-      background-color: $color-gray-40;
-    }
-
     .imx-icon-button {
       background-color: $color-gray-80;
     }
 
     ::ng-deep .imx-selected-icon-container {
       background-color: $color-green-40;
-    }
-  }
-}
-
-.eui-dark-theme {
-  :host {
-    .mat-icon-button{
-      background-color: $color-gray-70;
     }
   }
 }

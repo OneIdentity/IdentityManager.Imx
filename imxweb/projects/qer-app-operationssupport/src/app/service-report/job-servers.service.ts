@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,9 +26,9 @@
 
 import { Injectable } from '@angular/core';
 
-import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 import { imx_SessionService } from 'qbm';
-import { OpsupportJobservers } from 'imx-api-qbm';
+import { OpsupportJobservers } from '@imx-modules/imx-api-qbm';
 
 export interface JobServersParameters extends CollectionLoadParameters {
   withconnection?: boolean;
@@ -37,24 +37,21 @@ export interface JobServersParameters extends CollectionLoadParameters {
 
 @Injectable()
 export class JobServersService {
-
   public get OpsupportJobserversSchema(): EntitySchema {
     return this.session.TypedClient.OpsupportJobservers.GetSchema();
   }
 
-  constructor(private readonly session: imx_SessionService) {
-  }
+  constructor(private readonly session: imx_SessionService) {}
 
   public async get(parameters?: JobServersParameters): Promise<ExtendedTypedEntityCollection<OpsupportJobservers, unknown>> {
     return this.session.TypedClient.OpsupportJobservers.Get(parameters);
   }
 
-  public async checkServerConnection(uid){
+  public async checkServerConnection(uid) {
     return this.session.Client.opsupport_jobservers_check_post(uid);
   }
 
-  public async getProjectConfig(){
+  public async getProjectConfig() {
     return this.session.Client.opsupport_projectconfig_get();
   }
-
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,19 +26,17 @@
 
 import { Component, Inject, OnInit } from '@angular/core';
 import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 
-import { PortalShopConfigStructure } from 'imx-api-qer';
-import { TypedEntityCollectionData } from 'imx-qbm-dbts';
-import { BaseCdr, ClassloggerService, ColumnDependentReference, StorageService, HELPER_ALERT_KEY_PREFIX, ConfirmationService, HELP_CONTEXTUAL } from 'qbm';
+import { PortalShopConfigStructure } from '@imx-modules/imx-api-qer';
+import { TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
+import { BaseCdr, ClassloggerService, ColumnDependentReference, ConfirmationService, HELP_CONTEXTUAL } from 'qbm';
 import { ACTION_DISMISS, RequestsService } from '../requests.service';
 
 export interface RequestConfigSidesheetData {
   requestConfig: PortalShopConfigStructure;
   isNew?: boolean;
 }
-
-const helperAlertKey = `${HELPER_ALERT_KEY_PREFIX}_requestShopDetails`;
 
 @Component({
   selector: 'imx-request-config-sidesheet',
@@ -52,16 +50,15 @@ export class RequestConfigSidesheetComponent implements OnInit {
   public detailsContextIds = HELP_CONTEXTUAL.ConfigurationRequestsDetail;
   private shelfCount: number;
   private memberCount: number;
-  private reload= false;
+  private reload = false;
 
   constructor(
     formBuilder: UntypedFormBuilder,
     public requestsService: RequestsService,
     @Inject(EUI_SIDESHEET_DATA) public data: RequestConfigSidesheetData,
-    private readonly storageService: StorageService,
     private readonly logger: ClassloggerService,
     private readonly sidesheetRef: EuiSidesheetRef,
-    confirm: ConfirmationService
+    confirm: ConfirmationService,
   ) {
     this.detailsFormGroup = new UntypedFormGroup({ formArray: formBuilder.array([]) });
     sidesheetRef.closeClicked().subscribe(async () => {
@@ -74,7 +71,7 @@ export class RequestConfigSidesheetComponent implements OnInit {
 
   get selectedRequestConfigKey(): string {
     const keys = this.data?.requestConfig?.GetEntity()?.GetKeys();
-    return keys?.length ? keys[0] : undefined;
+    return !!keys?.length ? keys[0] : '';
   }
 
   get requestConfigContainsShelves(): boolean {
@@ -91,10 +88,6 @@ export class RequestConfigSidesheetComponent implements OnInit {
       display = '#LDS#To enable deletion, remove all shelves and access members.';
     }
     return display;
-  }
-
-  get showHelperAlert(): boolean {
-    return !this.storageService.isHelperAlertDismissed(helperAlertKey);
   }
 
   get formArray(): UntypedFormArray {
@@ -135,10 +128,6 @@ export class RequestConfigSidesheetComponent implements OnInit {
       }
       this.reload = true;
     }
-  }
-
-  public onHelperDismissed(): void {
-    this.storageService.storeHelperAlertDismissal(helperAlertKey);
   }
 
   private async createNew(): Promise<void> {

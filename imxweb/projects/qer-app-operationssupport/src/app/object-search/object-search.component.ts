@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,12 +26,12 @@
 
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { imx_QBM_SearchService, MetadataService, DbObjectInfo } from 'qbm';
+import { DbObjectInfo, imx_QBM_SearchService, MetadataService } from 'qbm';
 
 @Component({
   selector: 'imx-object-search',
   templateUrl: './object-search.component.html',
-  styleUrls: ['./object-search.component.scss']
+  styleUrls: ['./object-search.component.scss'],
 })
 export class ObjectSearchComponent {
   public get SearchService(): imx_QBM_SearchService {
@@ -45,14 +45,21 @@ export class ObjectSearchComponent {
   constructor(
     private objectSearchService: imx_QBM_SearchService,
     private router: Router,
-    private metadataService: MetadataService) { }
+    private metadataService: MetadataService,
+  ) {}
 
   public itemSelected(event: any): void {
     const dataItem = event as DbObjectInfo;
-    this.router.navigate([`/object/${dataItem.Key.TableName}/${dataItem.Key.Keys[0]}`]);
+    if (dataItem.Key?.TableName && dataItem.Key?.Keys?.[0]) {
+      this.router.navigate([`/object/${dataItem.Key.TableName}/${dataItem.Key.Keys[0]}`]);
+    } else {
+      throw Error('DataItem has missing properties - cannot navigate.');
+    }
   }
 
   public async setCurrentItem(dataItem: DbObjectInfo): Promise<void> {
-    this.currentMetadataItem = await this.MetadataService.GetTableMetadata(dataItem.Key.TableName);
+    if (dataItem.Key?.TableName) {
+      this.currentMetadataItem = await this.MetadataService.GetTableMetadata(dataItem.Key.TableName);
+    }
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,61 +24,55 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
-import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
-import { PwoExtendedData, ViewConfigData } from 'imx-api-qer';
+import { PwoExtendedData, ViewConfigData } from '@imx-modules/imx-api-qer';
 import {
-  ValType,
-  ExtendedTypedEntityCollection,
-  TypedEntity,
-  EntitySchema,
-  DataModel,
   CollectionLoadParameters,
-  FilterType,
   CompareOperator,
-} from 'imx-qbm-dbts';
+  DataModel,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  FilterType,
+  TypedEntityCollectionData,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
 import {
-  DataSourceToolbarSettings,
-  ClassloggerService,
   AuthenticationService,
-  DataTableComponent,
-  SettingsService,
-  SnackBarService,
-  UserMessageService,
-  ClientPropertyForTableColumns,
   BusyService,
+  calculateSidesheetWidth,
+  ClientPropertyForTableColumns,
   DataSourceToolbarViewConfig,
+  DataViewInitParameters,
+  DataViewSource,
+  UserMessageService,
 } from 'qbm';
+import { ViewConfigService } from 'qer';
+import { AttestationActionService } from '../../attestation-action/attestation-action.service';
+import { AttestationFeatureGuardService } from '../../attestation-feature-guard.service';
+import { Approvers } from '../approvers.interface';
 import { AttestationCase } from '../attestation-case';
 import { AttestationCaseComponent } from '../attestation-case.component';
 import { AttestationCasesService } from '../attestation-cases.service';
-import { AttestationActionService } from '../../attestation-action/attestation-action.service';
-import { Approvers } from '../approvers.interface';
-import { AttestationFeatureGuardService } from '../../attestation-feature-guard.service';
 import { LossPreview } from '../loss-preview.interface';
 import { AttestationInquiry } from './attestation-inquiry.model';
-import { ViewConfigService } from 'qer';
 
 @Component({
   templateUrl: './attestation-inquiries.component.html',
   selector: 'imx-attestation-inquiries',
   styleUrls: ['./attestation-inquiries.component.scss'],
+  providers: [DataViewSource],
 })
 export class AttestationInquiriesComponent implements OnInit, OnDestroy {
-  public dstSettings: DataSourceToolbarSettings;
   public readonly entitySchema: EntitySchema;
   public attestationCasesCollection: ExtendedTypedEntityCollection<AttestationCase, PwoExtendedData>;
   public hasData = false;
   public isUserEscalationApprover = false;
   public mitigatingControlsPerViolation: boolean;
-  @ViewChild(DataTableComponent) private readonly table: DataTableComponent<TypedEntity>;
   public lossPreview: LossPreview;
-
-  private navigationState: CollectionLoadParameters;
   private displayedColumns: ClientPropertyForTableColumns[];
   private readonly subscriptions: Subscription[] = [];
   private dataModel: DataModel;
@@ -95,14 +89,11 @@ export class AttestationInquiriesComponent implements OnInit, OnDestroy {
     private viewConfigService: ViewConfigService,
     private readonly sidesheet: EuiSidesheetService,
     private readonly messageService: UserMessageService,
-    private readonly logger: ClassloggerService,
     private readonly busyServiceElemental: EuiLoadingService,
     private readonly translate: TranslateService,
-    snackbar: SnackBarService,
-    settingsService: SettingsService,
-    authentication: AuthenticationService
+    authentication: AuthenticationService,
+    public dataSource: DataViewSource<AttestationCase>,
   ) {
-    this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
     this.entitySchema = attestationCasesService.attestationApproveSchema;
     (this.displayedColumns = [
       {
@@ -130,18 +121,16 @@ export class AttestationInquiriesComponent implements OnInit, OnDestroy {
       this.subscriptions.push(
         this.actionService.applied.subscribe(async () => {
           this.getData();
-          this.table.clearSelection();
-        })
+        }),
       );
     this.attFeatureService.getAttestationConfig().then((config) => {
       this.isUserEscalationApprover = config.IsUserInChiefApprovalTeam;
       this.mitigatingControlsPerViolation = config.MitigatingControlsPerViolation;
     });
-    this.subscriptions.push(authentication.onSessionResponse.subscribe((session) => (this.userUid = session.UserUid)));
+    this.subscriptions.push(authentication.onSessionResponse.subscribe((session) => (this.userUid = session.UserUid || '')));
   }
 
   public async ngOnInit(): Promise<void> {
-    this.navigationState.forinquiry = true;
     const isBusy = this.busyService.beginBusy();
 
     try {
@@ -168,32 +157,32 @@ export class AttestationInquiriesComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
-  public async getData(parameters?: CollectionLoadParameters): Promise<void> {
-    if (parameters) {
-      this.navigationState = parameters;
-    }
-
-    const isBusy = this.busyService.beginBusy();
-
-    try {
-      this.attestationCasesCollection = await this.attestationCasesService.get(this.navigationState);
-      this.hasData = this.attestationCasesCollection.totalCount > 0 || (this.navigationState.search ?? '') !== '';
-      this.updateTable();
-    } finally {
-      isBusy.endBusy();
-    }
+  public async getData(): Promise<void> {
+    const dataViewInitParameters: DataViewInitParameters<AttestationCase> = {
+      execute: (params: CollectionLoadParameters, signal: AbortSignal): Promise<TypedEntityCollectionData<AttestationCase>> =>
+        this.attestationCasesService.get({ ...params, forinquiry: true }),
+      schema: this.entitySchema,
+      columnsToDisplay: this.displayedColumns,
+      dataModel: this.dataModel,
+      exportFunction: this.attestationCasesService.exportData(this.dataSource.state()),
+      viewConfig: this.viewConfig,
+      highlightEntity: (identity: AttestationCase) => {
+        this.editCase(identity);
+      },
+    };
+    await this.dataSource.init(dataViewInitParameters);
   }
 
   public async updateConfig(config: ViewConfigData): Promise<void> {
     await this.viewConfigService.putViewConfig(config);
     this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
-    this.dstSettings.viewConfig = this.viewConfig;
+    this.dataSource.viewConfig.set(this.viewConfig);
   }
 
   public async deleteConfigById(id: string): Promise<void> {
     await this.viewConfigService.deleteViewConfig(id);
     this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
-    this.dstSettings.viewConfig = this.viewConfig;
+    this.dataSource.viewConfig.set(this.viewConfig);
   }
 
   /**
@@ -203,10 +192,10 @@ export class AttestationInquiriesComponent implements OnInit, OnDestroy {
    */
   public async editCase(attestationCase: AttestationCase): Promise<void> {
     let attestationCaseWithPolicy: AttestationCase;
-    let approvers: Approvers;
-
-    let busyIndicator: OverlayRef;
-    setTimeout(() => (busyIndicator = this.busyServiceElemental.show()));
+    let approvers: Approvers | undefined;
+    if (this.busyServiceElemental.overlayRefs.length === 0) {
+      this.busyServiceElemental.show();
+    }
 
     try {
       attestationCaseWithPolicy = (
@@ -226,17 +215,19 @@ export class AttestationInquiriesComponent implements OnInit, OnDestroy {
       ).Data[0];
 
       // Add additional violation data to this case
-      attestationCaseWithPolicy.data.CanSeeComplianceViolations = attestationCase.data.CanSeeComplianceViolations;
-      attestationCaseWithPolicy.data.ComplianceViolations = attestationCase.data.ComplianceViolations;
-      attestationCaseWithPolicy.data.CanSeePolicyViolations = attestationCase.data.CanSeePolicyViolations;
-      attestationCaseWithPolicy.data.PolicyViolations = attestationCase.data.PolicyViolations;
+      if (attestationCaseWithPolicy.data) {
+        attestationCaseWithPolicy.data.CanSeeComplianceViolations = !!attestationCase.data?.CanSeeComplianceViolations;
+        attestationCaseWithPolicy.data.ComplianceViolations = attestationCase.data?.ComplianceViolations || [];
+        attestationCaseWithPolicy.data.CanSeePolicyViolations = !!attestationCase.data?.CanSeePolicyViolations;
+        attestationCaseWithPolicy.data.PolicyViolations = attestationCase.data?.PolicyViolations || [];
+      }
 
       if (attestationCaseWithPolicy && !['approved', 'denied'].includes(attestationCaseWithPolicy.AttestationState.value)) {
         approvers = await this.attestationCasesService.getApprovers(attestationCaseWithPolicy);
       }
       this.lossPreview.LossPreviewItems = await this.attestationCasesService.getLossPreviewEntities(attestationCase);
     } finally {
-      setTimeout(() => this.busyServiceElemental.hide(busyIndicator));
+      this.busyServiceElemental.hide();
     }
 
     if (attestationCaseWithPolicy) {
@@ -244,7 +235,7 @@ export class AttestationInquiriesComponent implements OnInit, OnDestroy {
         title: await this.translate.get('#LDS#Heading View Attestation Case Details').toPromise(),
         subTitle: attestationCaseWithPolicy.GetEntity().GetDisplay(),
         padding: '0px',
-        width: 'max(60%,700px)',
+        width: calculateSidesheetWidth(1000),
         testId: 'attestation-case-sidesheet',
         data: {
           case: attestationCaseWithPolicy,
@@ -264,43 +255,12 @@ export class AttestationInquiriesComponent implements OnInit, OnDestroy {
   }
 
   public getInquiryText(pwo: AttestationCase): string {
-    return this.actionService.getCaseData(pwo).Columns.ReasonHead.Value;
+    return this.actionService.getCaseData(pwo)?.Columns?.ReasonHead.Value || '';
   }
   public getInquirer(pwo: AttestationCase): string {
-    return this.actionService.getCaseData(pwo).Columns.DisplayPersonHead.Value;
+    return this.actionService.getCaseData(pwo)?.Columns?.DisplayPersonHead.Value || '';
   }
-  public getQueryDate(pwo: AttestationCase): Date {
-    return new Date(this.actionService.getCaseData(pwo).Columns.DateHead.Value);
-  }
-
-  public onSearch(keywords: string): Promise<void> {
-    const navigationState = {
-      ...this.navigationState,
-      ...{
-        StartIndex: 0,
-        search: keywords,
-      },
-    };
-
-    return this.getData(navigationState);
-  }
-
-  private updateTable(): void {
-    if (this.attestationCasesCollection) {
-      const exportMethod = this.attestationCasesService.exportData(this.navigationState);
-      exportMethod.initialColumns = this.displayedColumns.map((col) => col.ColumnName);
-      this.dstSettings = {
-        dataSource: this.attestationCasesCollection,
-        extendedData: this.attestationCasesCollection?.extendedData?.Data,
-        entitySchema: this.entitySchema,
-        navigationState: this.navigationState,
-        displayedColumns: this.displayedColumns,
-        dataModel: this.dataModel,
-        viewConfig: this.viewConfig,
-        exportMethod,
-      };
-    } else {
-      this.dstSettings = undefined;
-    }
+  public getQueryDate(pwo: AttestationCase): string {
+    return this.actionService.getCaseData(pwo)?.Columns?.DateHead.Value || '';
   }
 }

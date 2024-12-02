@@ -3,15 +3,14 @@
     display: flex;
     align-items: flex-start;
     flex-direction: column;
-    min-height: 230px;
 
     imx-cdr-editor {
       width: 100%;
     }
   }
 
-  .auto-space{
-    flex:auto
+  .auto-space {
+    flex: auto;
   }
 }
 
@@ -19,7 +18,7 @@
   eui-theme-switcher {
     width: 100%;
 
-    .mat-form-field {
+    .mat-mdc-form-field {
       width: 100%;
     }
   }

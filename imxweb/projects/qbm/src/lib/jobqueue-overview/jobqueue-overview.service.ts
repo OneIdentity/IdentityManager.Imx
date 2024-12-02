@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,12 +28,12 @@ import { ErrorHandler, Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { interval, Subscription } from 'rxjs';
 
-import { ClassloggerService } from '../classlogger/classlogger.service';
-import { AppConfigService } from '../appConfig/appConfig.service';
-import { imx_SessionService } from '../session/imx-session.service';
-import { EventStreamConfig } from 'imx-api-qbm';
-import { EntityCollectionChangeData, EntityData } from 'imx-qbm-dbts';
+import { EventStreamConfig } from '@imx-modules/imx-api-qbm';
+import { EntityCollectionChangeData, EntityData } from '@imx-modules/imx-qbm-dbts';
 import _ from 'lodash';
+import { AppConfigService } from '../appConfig/appConfig.service';
+import { ClassloggerService } from '../classlogger/classlogger.service';
+import { imx_SessionService } from '../session/imx-session.service';
 
 export interface JobQueueGroups {
   Error?: number;
@@ -77,7 +77,7 @@ export class JobQueueOverviewService {
     public session: imx_SessionService,
     public translateService: TranslateService,
     private logger: ClassloggerService,
-    private errorHandler: ErrorHandler
+    private errorHandler: ErrorHandler,
   ) {
     this.translateService.get('#LDS#All queues').subscribe((trans: string) => (this.totalStreamName = trans));
     this.isAvailablePromise = new Promise((resolve, reject) => {
@@ -124,8 +124,8 @@ export class JobQueueOverviewService {
     if (changeData.New) {
       // Loop over each entity to add to the queues
       changeData.New.forEach((entity) => {
-        name = entity.Columns['QueueName'].Value;
-        uid = entity.Columns['UID_QBMJobqueueOverview'].Value;
+        name = entity.Columns?.['QueueName']?.Value;
+        uid = entity.Columns?.['UID_QBMJobqueueOverview']?.Value;
         this.addEntity(name, entity);
         this.uidToName[uid] = name;
       });
@@ -154,9 +154,11 @@ export class JobQueueOverviewService {
   public addEntity(name: string, entity: EntityData, isTotal: boolean = false): void {
     // Add this entity to the list
     this.entities[name] = {};
-    for (const [key, value] of Object.entries(entity.Columns)) {
-      if (key.includes('Count')) {
-        this.entities[name][key] = isTotal ? 0 : value.Value;
+    if (entity.Columns) {
+      for (const [key, value] of Object.entries(entity.Columns)) {
+        if (key.includes('Count')) {
+          this.entities[name][key] = isTotal ? 0 : value.Value;
+        }
       }
     }
     // Check if name is already in queue list, prevents total queue from being duped
@@ -211,7 +213,7 @@ export class JobQueueOverviewService {
   }
 
   public pushTable(): void {
-    const currentTable: object[] = this.table.pop();
+    const currentTable: object[] | undefined = this.table.pop();
     const incomingTable: object[] = [];
     // Replace popped table, if not empty (faster as easier to pop)
     if (currentTable) {
@@ -269,12 +271,14 @@ export class JobQueueOverviewService {
       return slice;
     }
     this.axisTimes.forEach((e, timeIndex) => {
-      for (const [name, value] of Object.entries(this.table[timeIndex][queueIndex])) {
-        // Append to array or initialize
-        if (slice[name]) {
-          slice[name].push(value);
-        } else {
-          slice[name] = [value];
+      if (this.table[timeIndex][queueIndex]) {
+        for (const [name, value] of Object.entries(this.table[timeIndex][queueIndex])) {
+          // Append to array or initialize
+          if (slice[name]) {
+            slice[name].push(value);
+          } else {
+            slice[name] = [value];
+          }
         }
       }
     });

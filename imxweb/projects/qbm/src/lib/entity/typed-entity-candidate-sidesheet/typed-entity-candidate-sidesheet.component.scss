@@ -1,33 +1,9 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 :host {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   height: 100%;
-}
-
-.eui-sidesheet-content{
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  height:100%
-}
-
-.imx-sidesheet-content {
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  height:100%
-}
-
-
-.imx-table-container {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  height: inherit;
-  max-width: 100%;
-  flex-direction: 1 1 auto;
 }
 

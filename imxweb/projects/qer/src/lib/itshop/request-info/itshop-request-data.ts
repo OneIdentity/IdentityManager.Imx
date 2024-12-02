@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,8 @@
  *
  */
 
-import { PwoData, PwoExtendedData } from 'imx-api-qer';
-import { ParameterData } from 'imx-qbm-dbts';
+import { PwoData, PwoExtendedData } from '@imx-modules/imx-api-qer';
+import { ParameterData } from '@imx-modules/imx-qbm-dbts';
 
 export class ItshopRequestData {
   public readonly parameters: ParameterData[] = [];
@@ -33,10 +33,10 @@ export class ItshopRequestData {
 
   constructor(extendedCollectionData: { index: number } & PwoExtendedData) {
     if (extendedCollectionData.Parameters) {
-      Object.keys(extendedCollectionData.Parameters).forEach(parameterCategoryName => {
-        const parameterCategory = extendedCollectionData.Parameters[parameterCategoryName];
+      Object.keys(extendedCollectionData.Parameters).forEach((parameterCategoryName) => {
+        const parameterCategory = extendedCollectionData.Parameters?.[parameterCategoryName];
         if (parameterCategory && parameterCategory[extendedCollectionData.index]) {
-          parameterCategory[extendedCollectionData.index].forEach(parameterData => this.parameters.push(parameterData));
+          parameterCategory[extendedCollectionData.index].forEach((parameterData) => this.parameters.push(parameterData));
         }
       });
     }

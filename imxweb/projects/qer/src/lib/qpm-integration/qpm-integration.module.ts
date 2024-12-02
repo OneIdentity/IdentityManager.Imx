@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -39,22 +39,12 @@ const routes: Routes = [
     path: 'qpmintegration',
     component: QpmIntegrationComponent,
     canActivate: [RouteGuardService],
-    resolve: [RouteGuardService]
-  }
+    resolve: [RouteGuardService],
+  },
 ];
 
-
 @NgModule({
-  imports: [
-    CommonModule,
-    EuiCoreModule,
-    MatButtonModule,
-    MatCardModule,
-    RouterModule.forChild(routes),
-    TranslateModule
-  ],
-  declarations: [
-    QpmIntegrationComponent
-  ]
+  imports: [CommonModule, EuiCoreModule, MatButtonModule, MatCardModule, RouterModule.forChild(routes), TranslateModule],
+  declarations: [QpmIntegrationComponent],
 })
-export class QpmIntegrationModule { }
+export class QpmIntegrationModule {}

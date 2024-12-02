@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,23 +25,23 @@
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { AppConfigService, AuthenticationService, ISessionState } from 'qbm';
-import { Observable, Subscription } from 'rxjs';
 import { FeatureConfigService } from 'qer';
+import { Observable, Subscription } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-export class SystemStatusRouteGuardService implements CanActivate, OnDestroy {
+export class SystemStatusRouteGuardService implements OnDestroy {
   private onSessionResponse: Subscription;
 
   constructor(
     private readonly authentication: AuthenticationService,
     private readonly appConfig: AppConfigService,
     private readonly router: Router,
-    private readonly featureService: FeatureConfigService
-  ) { }
+    private readonly featureService: FeatureConfigService,
+  ) {}
 
   public canActivate(): Observable<boolean> {
     return new Observable<boolean>((observer) => {
@@ -49,7 +49,7 @@ export class SystemStatusRouteGuardService implements CanActivate, OnDestroy {
         if (sessionState.IsLoggedIn) {
           const conf = await this.featureService.getFeatureConfig();
           if (!conf.EnableSystemStatus) {
-            this.router.navigate([this.appConfig.Config.routeConfig.start], { queryParams: {} });
+            this.router.navigate([this.appConfig.Config?.routeConfig?.start], { queryParams: {} });
           }
           observer.next(conf.EnableSystemStatus);
           observer.complete();
@@ -64,4 +64,3 @@ export class SystemStatusRouteGuardService implements CanActivate, OnDestroy {
     }
   }
 }
-

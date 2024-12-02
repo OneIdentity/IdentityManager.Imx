@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,6 @@
  *
  */
 
-
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthenticationService } from '../authentication/authentication.service';
@@ -35,10 +34,9 @@ import { ElementalUiConfig } from './elemental-ui-config.interface';
  * A service that helps configure Element UI
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ElementalUiConfigService {
-
   private readonly config: ElementalUiConfig = {
     downloadOptions: {
       url: '',
@@ -49,9 +47,9 @@ export class ElementalUiConfigService {
       loaderConfig: {
         helperText: '',
         buttonText: '',
-        spinnerAriaLabel: ''
-      }
-    }
+        spinnerAriaLabel: '',
+      },
+    },
   };
 
   /**
@@ -63,15 +61,24 @@ export class ElementalUiConfigService {
 
   constructor(
     private readonly translate: TranslateService,
-    authentication: AuthenticationService
+    authentication: AuthenticationService,
   ) {
     authentication.onSessionResponse.subscribe(() => {
-      this.translate.get('#LDS#File download in progress').
-        subscribe((trans: string) => this.config.downloadOptions.loaderConfig.helperText = trans);
-      this.translate.get('#LDS#Cancel download').
-        subscribe((trans: string) => this.config.downloadOptions.loaderConfig.buttonText = trans);
-      this.translate.get('#LDS#Loading...').
-        subscribe((trans: string) => this.config.downloadOptions.loaderConfig.spinnerAriaLabel = trans);
+      this.translate.get('#LDS#File download in progress').subscribe((trans: string) => {
+        if (this.config?.downloadOptions?.loaderConfig) {
+          this.config.downloadOptions.loaderConfig.helperText = trans;
+        }
+      });
+      this.translate.get('#LDS#Cancel download').subscribe((trans: string) => {
+        if (this.config?.downloadOptions?.loaderConfig) {
+          this.config.downloadOptions.loaderConfig.buttonText = trans;
+        }
+      });
+      this.translate.get('#LDS#Loading...').subscribe((trans: string) => {
+        if (this.config?.downloadOptions?.loaderConfig) {
+          this.config.downloadOptions.loaderConfig.spinnerAriaLabel = trans;
+        }
+      });
     });
   }
 }

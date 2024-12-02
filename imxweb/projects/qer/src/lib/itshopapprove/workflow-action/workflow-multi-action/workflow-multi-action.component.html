@@ -35,10 +35,11 @@
     </div>
   </mat-card-content>
 </mat-card>
-<eui-alert type="info" dismissable="true" colored="true" condensed="true">
+<eui-alert type="info" [dismissable]="true" [colored]="true" [condensed]="true">
   <eui-alert-header>{{ '#LDS#Heading Individual Settings' | translate }}</eui-alert-header>
   <eui-alert-content>{{
-    '#LDS#Here you can see all products you have selected. You can make individual settings for specific products if applicable.' | translate
+    '#LDS#Here you can see all products you have selected. You can make individual settings for specific products if applicable.'
+      | translate
   }}</eui-alert-content>
 </eui-alert>
 

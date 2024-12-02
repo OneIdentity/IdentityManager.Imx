@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,9 +24,9 @@
  *
  */
 
-import { DbObjectKey } from 'imx-qbm-dbts';
+import { DbObjectKey } from '@imx-modules/imx-qbm-dbts';
 
 export class DbObjectInfo {
-    public Display: string;
-    public Key: DbObjectKey;
+  public Display: string;
+  public Key?: DbObjectKey;
 }

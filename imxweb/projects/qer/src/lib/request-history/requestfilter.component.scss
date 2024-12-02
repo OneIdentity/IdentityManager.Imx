@@ -1,14 +1,15 @@
-@import "variables.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/variables';
 
 $propertyeditortextboxwidth: 370;
 
 .imx-textbox {
-  font-family: $baseFontFamily;
+  font-family: $IMX_Base_FontFamily;
   font-size: inherit !important;
   width: $propertyeditortextboxwidth + px;
   padding: 2px 4px !important;
   outline: none;
-  color: $VI_Common_Color_Font !important;
+  color: $color-gray-80 !important;
 }
 
 textarea.imx-textbox {

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,27 +24,34 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LdsReplaceModule, DataSourceToolbarModule, DataTableModule, CdrModule, ClassloggerModule, HelpContextualModule } from 'qbm';
-import { PolicyGroupListComponent } from './policy-group-list/policy-group-list.component';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatRadioModule } from '@angular/material/radio';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import {
+  CdrModule,
+  ClassloggerModule,
+  DataSourceToolbarModule,
+  DataTableModule,
+  DataViewModule,
+  HelpContextualModule,
+  LdsReplaceModule,
+} from 'qbm';
+import { PolicyGroupListComponent } from './policy-group-list/policy-group-list.component';
 
 import { UserModule } from 'qer';
-import { PolicyGroupService } from './policy-group.service';
 import { EditPolicyGroupSidesheetComponent } from './edit-policy-group-sidesheet/edit-policy-group-sidesheet.component';
-
+import { PolicyGroupService } from './policy-group.service';
 
 @NgModule({
   imports: [
@@ -70,17 +77,10 @@ import { EditPolicyGroupSidesheetComponent } from './edit-policy-group-sidesheet
     UserModule,
     ClassloggerModule,
     HelpContextualModule,
+    DataViewModule,
   ],
-  declarations: [
-    PolicyGroupListComponent,
-    EditPolicyGroupSidesheetComponent,
-  ],
-  providers: [
-    PolicyGroupService
-  ],
-  exports: [
-    PolicyGroupListComponent,
-    EditPolicyGroupSidesheetComponent,
-  ]
+  declarations: [PolicyGroupListComponent, EditPolicyGroupSidesheetComponent],
+  providers: [PolicyGroupService],
+  exports: [PolicyGroupListComponent, EditPolicyGroupSidesheetComponent],
 })
-export class PolicyGroupModule { }
+export class PolicyGroupModule {}

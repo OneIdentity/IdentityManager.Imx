@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,10 @@
  *
  */
 
-import { Injectable } from "@angular/core";
-import { CollectionLoadParameters, EntityCollectionData, FilterProperty } from "imx-qbm-dbts";
-import { SqlWizardApiService } from "qbm";
-import { QerApiService } from "../qer-api-client.service";
+import { Injectable } from '@angular/core';
+import { CollectionLoadParameters, EntityCollectionData, FilterProperty } from '@imx-modules/imx-qbm-dbts';
+import { SqlWizardApiService } from 'qbm';
+import { QerApiService } from '../qer-api-client.service';
 
 @Injectable()
 export class DynamicRoleSqlWizardService extends SqlWizardApiService {
@@ -36,7 +36,7 @@ export class DynamicRoleSqlWizardService extends SqlWizardApiService {
   }
 
   public async getFilterProperties(table: string): Promise<FilterProperty[]> {
-    return (await this.api.client.portal_dynamicgroup_sqlwizard_tables_columns_get(table)).Properties;
+    return (await this.api.client.portal_dynamicgroup_sqlwizard_tables_columns_get(table)).Properties || [];
   }
 
   public async getCandidates(parentTable: string, options?: CollectionLoadParameters): Promise<EntityCollectionData> {

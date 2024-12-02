@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -40,14 +40,14 @@ export class ErrorMessageSidesheetComponent implements OnInit {
     @Inject(EUI_SIDESHEET_DATA) public readonly data: string,
     private sidesheetRef: EuiSidesheetRef,
     private clipboard: Clipboard,
-    private readonly snackbar: SnackBarService
+    private readonly snackbar: SnackBarService,
   ) {}
 
   public ngOnInit(): void {}
 
   public copyToClipboard(): void {
     this.clipboard.copy(this.data);
-    this.snackbar.open({ key: '#LDS#The error message has been successfully copied to the clipboard.'});
+    this.snackbar.open({ key: '#LDS#The error message has been successfully copied to the clipboard.' });
     this.sidesheetRef.close();
   }
 }

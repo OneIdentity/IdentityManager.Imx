@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,22 +24,23 @@
  *
  */
 
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ConfigSettingType, ConfigSettingValidValue } from '@imx-modules/imx-api-qbm';
 import { imx_SessionService } from '../session/imx-session.service';
 import { KeyData } from './config-section';
-import { ConfigSettingType, ConfigSettingValidValue } from 'imx-api-qbm';
 import { ConfigService } from './config.service';
 
 @Component({
-  selector: "imx-list-setting",
+  selector: 'imx-list-setting',
   templateUrl: './list-setting.component.html',
-  styleUrls: ['./list-setting.component.scss']
+  styleUrls: ['./list-setting.component.scss'],
 })
 export class ListSettingComponent implements OnInit, OnChanges {
-
-  constructor(private readonly session: imx_SessionService, private readonly configSvc: ConfigService) {
-  }
+  constructor(
+    private readonly session: imx_SessionService,
+    private readonly configSvc: ConfigService,
+  ) {}
 
   @Input() public setting: KeyData;
 
@@ -60,7 +61,7 @@ export class ListSettingComponent implements OnInit, OnChanges {
     this.hasLimitedValues = this.setting.Type == ConfigSettingType.LimitedValues;
     if (this.hasLimitedValues) {
       this.validvalues = await this.session.Client.admin_apiconfig_values_get(this.configSvc.appId, this.setting.Path);
-    };
+    }
   }
 
   drop(event: CdkDragDrop<string[]>) {

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,15 +25,15 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Router, Route } from '@angular/router';
+import { Route, Router } from '@angular/router';
 
+import { ProjectConfig, QerProjectConfig } from '@imx-modules/imx-api-qer';
 import { ExtService, MenuItem, MenuService, TabItem } from 'qbm';
 import { NotificationRegistryService } from 'qer';
 import { canSeeAttestationPolicies, isAttestationAdmin } from './admin/permissions-helper';
 import { PermissionsService } from './admin/permissions.service';
 import { DashboardPluginComponent } from './dashboard-plugin/dashboard-plugin.component';
 import { AttestationWrapperComponent } from './runs/attestation/attestation-wrapper/attestation-wrapper.component';
-import { ProjectConfig, QerProjectConfig } from 'imx-api-qer';
 
 @Injectable({ providedIn: 'root' })
 export class InitService {
@@ -42,7 +42,7 @@ export class InitService {
     private readonly router: Router,
     private readonly menuService: MenuService,
     private readonly notificationService: NotificationRegistryService,
-    private readonly permissions: PermissionsService
+    private readonly permissions: PermissionsService,
   ) {
     this.setupMenu();
   }
@@ -65,7 +65,17 @@ export class InitService {
       inputData: {
         id: 'attestations',
         label: '#LDS#Attestation',
-        checkVisibility: async (_) => (await this.permissions.isAttestationAdmin()),
+        checkVisibility: async (_) => await this.permissions.isAttestationAdmin(),
+      },
+      sortOrder: 0,
+    } as TabItem);
+
+    this.extService.register('dugSidesheet',{
+      instance: AttestationWrapperComponent,
+      inputData: {
+        id: 'attestations',
+        label: '#LDS#Attestation',
+        checkVisibility: async (_) => true,
       },
       sortOrder: 0,
     } as TabItem);
@@ -94,10 +104,11 @@ export class InitService {
   }
 
   private setupMenu(): void {
-    this.menuService.addMenuFactories((preProps: string[], features: string[]) => {
-      if (!preProps.includes('ATTESTATION')) {
-        return null;
-      }
+    this.menuService.addMenuFactories(
+      (preProps: string[], features: string[]) => {
+        if (!preProps.includes('ATTESTATION')) {
+          return undefined;
+        }
 
         const menu: MenuItem = {
           id: 'ROOT_Attestation',
@@ -126,7 +137,7 @@ export class InitService {
         };
 
         if (canSeeAttestationPolicies(features)) {
-          menu.items.push({
+          menu.items?.push({
             id: 'ATT_Attestation_AttestationRuns',
             route: 'attestation/runs',
             title: '#LDS#Menu Entry Attestation runs',
@@ -134,7 +145,7 @@ export class InitService {
             sorting: '20-40',
           });
 
-          menu.items.push({
+          menu.items?.push({
             id: 'ATT_Attestation_AttestationPolicies',
             route: 'attestation/policies',
             title: '#LDS#Menu Entry Attestation policies',
@@ -142,7 +153,7 @@ export class InitService {
             sorting: '20-50',
           });
 
-          menu.items.push({
+          menu.items?.push({
             id: 'ATT_Attestation_AttestationPolicyGroup',
             route: 'attestation/policy-group',
             title: '#LDS#Menu Entry Policy collections',
@@ -151,22 +162,22 @@ export class InitService {
           });
         }
 
-      if (isAttestationAdmin(features)) {
-        menu.items.push({
-          id: 'ATT_Attestation_AttestationPreselection',
-          route: 'attestation/preselection',
-          title: '#LDS#Menu Entry Sample data',
-          description: '#LDS#Shows an overview of samples.',
-          sorting: '20-50',
-        });
-      }
+        if (isAttestationAdmin(features)) {
+          menu.items?.push({
+            id: 'ATT_Attestation_AttestationPreselection',
+            route: 'attestation/preselection',
+            title: '#LDS#Menu Entry Sampling data',
+            description: '#LDS#Shows an overview of samples.',
+            sorting: '20-50',
+          });
+        }
 
         return menu;
       },
       function (preProps: string[], __: string[], projectConfig: QerProjectConfig & ProjectConfig) {
-        const deviceEnabled = projectConfig.DeviceConfig.VI_Hardware_Enabled;
-        if (!preProps.includes('MAC') || !preProps.includes('ITSHOP') || ! deviceEnabled) {
-          return null;
+        const deviceEnabled = !!projectConfig.DeviceConfig?.VI_Hardware_Enabled;
+        if (!preProps.includes('MAC') || !preProps.includes('ITSHOP') || !deviceEnabled) {
+          return undefined;
         }
 
         return {
@@ -182,7 +193,7 @@ export class InitService {
             },
           ],
         };
-      }
+      },
     );
   }
 }

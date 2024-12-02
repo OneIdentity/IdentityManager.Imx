@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,29 +24,25 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
+// eslint-disable-next-line max-classes-per-file
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { EuiLoadingService } from '@elemental-ui/core';
+import { EuiLoadingService, EuiSelectOption } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { UntypedFormControl } from '@angular/forms';
-import { HistoryComparisonData } from 'imx-api-qbm';
-import { IStateOverviewItem, ObjectHistoryEvent } from 'imx-qbm-dbts';
+import { FormControl, UntypedFormControl, Validators } from '@angular/forms';
+import { HistoryComparisonData } from '@imx-modules/imx-api-qbm';
+import { IStateOverviewItem, ObjectHistoryEvent } from '@imx-modules/imx-qbm-dbts';
 import { ObjectHistoryParameters, ObjectHistoryService } from './object-history.service';
 
 import { DateAdapter } from '@angular/material/core';
-import moment from 'moment-timezone';
+import moment, { Moment } from 'moment-timezone';
 import { Subscription } from 'rxjs';
 import { ExtendedObjectHistoryEvent, TimelineDateTimeFilter } from '../timeline/timeline';
-
-class ViewMode {
-  public value: string;
-  public display: string;
-}
+import { EventChangeType, EventChangeTypes, HistoryEventChangeType } from '../timeline/timeline.model';
 
 // TODO: One class per file.
-// tslint:disable-next-line: max-classes-per-file
+// eslint-disable-next-line max-classes-per-file
 @Component({
   selector: 'imx-object-history',
   templateUrl: './object-history.component.html',
@@ -80,19 +76,27 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
     return this.timelineTo.date + ' ' + this.timelineTo.time;
   }
 
+  public get timelineToDateMoment(): moment.Moment {
+    return this.timelineTo.date !== 'Invalid date' ? moment(this.timelineTo.date) : this.momentToday;
+  }
+
   public lookIcons: string[] = ['attributes', 'table'];
   public selectedLook: string = 'timeline';
   public viewModeValue: string;
-  public historyData: ObjectHistoryEvent[] = [];
-  public filteredHistoryData: ObjectHistoryEvent[] | ExtendedObjectHistoryEvent[] = [];
+  public historyData: ExtendedObjectHistoryEvent[] = [];
+  public filteredHistoryData: ExtendedObjectHistoryEvent[] = [];
   public stateOverviewItems: IStateOverviewItem[] = [];
   public historyComparisonData: HistoryComparisonData[] = [];
-  public viewModes: ViewMode[] = [];
-  public compareDateFormControl = new UntypedFormControl();
-  public timelineFromDateFormControl = new UntypedFormControl();
-  public timelineFromTimeFormControl = new UntypedFormControl();
-  public timelineToDateFormControl = new UntypedFormControl();
-  public timelineToTimeFormControl = new UntypedFormControl();
+  public viewModes: EuiSelectOption[] = [];
+  public momentToday = moment();
+  public compareDateFormControl = new UntypedFormControl(new Date(new Date().setHours(23, 59, 59, 999)), {
+    nonNullable: true,
+    validators: Validators.required,
+  });
+  public timelineFromDateFormControl: FormControl<Moment> = new FormControl();
+  public timelineFromTimeFormControl: FormControl<Moment> = new FormControl();
+  public timelineToDateFormControl: FormControl<Moment> = new FormControl();
+  public timelineToTimeFormControl: FormControl<Moment> = new FormControl();
   public timelineFrom: TimelineDateTimeFilter = {
     date: 'Invalid date',
     time: 'Invalid date',
@@ -101,7 +105,9 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
     date: 'Invalid date',
     time: 'Invalid date',
   };
-  public momentToday = moment();
+  public viewModeControl: FormControl<string> = new FormControl(this.viewModeGrid, { nonNullable: true });
+  public eventChangeTypes = EventChangeTypes;
+  public selectedEventChangeTypes: EventChangeType[] = [];
 
   private subscriptions: Subscription[] = [];
 
@@ -110,7 +116,7 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private busyService: EuiLoadingService,
     private historyService: ObjectHistoryService,
-    private dateAdapter: DateAdapter<any>
+    private dateAdapter: DateAdapter<any>,
   ) {}
 
   public async ngOnInit(): Promise<void> {
@@ -122,7 +128,6 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
     this.addViewMode(this.viewModeStateComparison, '#LDS#State comparison');
 
     this.viewModeValue = this.viewModeGrid;
-    this.compareDateFormControl.setValue(new Date(new Date().setHours(23, 59, 59, 999)));
     await this.refresh(true);
   }
 
@@ -139,7 +144,7 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.timelineFromDateFormControl.valueChanges.subscribe((date) => {
         this.timelineFrom.date = moment(date).format('YYYY-MM-DD');
-        this.getFilteredHistoryData();
+        this.timelineFromTimeFormControl.setValue(date || moment().startOf('day'));
       }),
       this.timelineFromTimeFormControl.valueChanges.subscribe((time) => {
         this.timelineFrom.time = moment(time).format('HH:mm:ss');
@@ -147,18 +152,17 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
       }),
       this.timelineToDateFormControl.valueChanges.subscribe((date) => {
         this.timelineTo.date = moment(date).format('YYYY-MM-DD');
-        this.getFilteredHistoryData();
+        this.timelineToTimeFormControl.setValue(date || moment().startOf('day'));
       }),
       this.timelineToTimeFormControl.valueChanges.subscribe((time) => {
         this.timelineTo.time = moment(time).format('HH:mm:ss');
         this.getFilteredHistoryData();
-      })
+      }),
     );
   }
 
   private getFilteredHistoryData() {
-    if (this.historyData && this.viewModeValue === this.viewModeGrid)
-      this.filteredHistoryData = this.filterByTime(this.historyData);
+    if (this.historyData && this.viewModeValue === this.viewModeGrid) this.filteredHistoryData = this.filterByTime(this.historyData);
   }
 
   public async onViewModeChange(): Promise<void> {
@@ -172,23 +176,26 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
   }
 
   public async refresh(fetchRemote: boolean): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => (overlayRef = this.busyService.show()));
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
 
     try {
       this.historyData = [];
       this.stateOverviewItems = [];
       this.historyComparisonData = [];
 
-      const table = this.objectType || this.activatedRoute.snapshot.paramMap.get('table');
-      const uid = this.objectUid || this.activatedRoute.snapshot.paramMap.get('uid');
+      const table = (this.objectType || this.activatedRoute.snapshot.paramMap.get('table')) ?? '';
+      const uid = (this.objectUid || this.activatedRoute.snapshot.paramMap.get('uid')) ?? '';
 
       if (this.viewModeValue === this.viewModeGrid) {
         const parameters: ObjectHistoryParameters = {
           table,
           uid,
         };
-        this.filteredHistoryData = this.historyData = await this.historyService.get(parameters, fetchRemote);
+        const fetched = await this.historyService.get(parameters, fetchRemote);
+        this.historyData = fetched.map((elem) => ({ ...elem, Time: '00:00:00' }));
+        this.getFilteredHistoryData();
       } else if (this.viewModeValue === this.viewModeStateOverview) {
         const stateOverviewItems = await this.historyService.getStateOverviewItems(table, uid);
         if (stateOverviewItems) {
@@ -199,8 +206,6 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
 
         if (date) {
           this.historyComparisonData = await this.historyService.getHistoryComparisonData(table, uid, { CompareDate: date });
-        } else {
-          this.historyComparisonData = await this.historyService.getHistoryComparisonData(table, uid);
         }
       }
     } catch {
@@ -208,15 +213,32 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
       this.stateOverviewItems = [];
       this.historyComparisonData = [];
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
   }
 
+  /**
+   * Updates the selected change types and call getFilterHistoryData() function on user checkbox change event.
+   * @param type Type of event change type.
+   */
+  public onFilterTypeChanged(type: EventChangeType): void {
+    if (this.selectedEventChangeTypes.indexOf(type) === -1) {
+      this.selectedEventChangeTypes.push(type);
+    } else {
+      this.selectedEventChangeTypes = this.selectedEventChangeTypes.filter((selectedType) => selectedType !== type);
+    }
+    this.getFilteredHistoryData();
+  }
+
+  /**
+   * Checks the event change type is selected or not.
+   */
+  public getFilterTypeValue(type: EventChangeType): boolean {
+    return this.selectedEventChangeTypes.indexOf(type) > -1;
+  }
+
   private async addViewMode(value: string, displayKey: string): Promise<void> {
-    const viewMode = new ViewMode();
-    viewMode.value = value;
-    viewMode.display = await this.translate.get(displayKey).toPromise();
-    this.viewModes.push(viewMode);
+    this.viewModes.push({ display: this.translate.instant(displayKey), value });
   }
 
   private resetTimelineForm(): void {
@@ -229,23 +251,34 @@ export class ObjectHistoryComponent implements OnInit, OnDestroy {
   /**
    * Handles from and to filtering and loads the result after filtering
    */
-  private filterByTime(data: ObjectHistoryEvent[]): ObjectHistoryEvent[] | ExtendedObjectHistoryEvent[] {
+  private filterByTime(data: ObjectHistoryEvent[]): ExtendedObjectHistoryEvent[] {
     if (this.timelineFromString === 'Invalid date' && this.timelineToString === 'Invalid date') {
-      return data;
+      return this.filterByType(data).map((elem) => ({ ...elem, Time: '00:00:00' }));
     }
-
     const isFromValid = this.timelineFromString !== 'Invalid date';
     const isToValid = this.timelineToString !== 'Invalid date';
+    return this.filterByType(data)
+      .filter((elem) => {
+        const momentElemTime = moment(elem.ChangeTime);
+        const fromValidation = momentElemTime.isAfter(moment(this.timelineFromString), 'second');
+        const toValidation = momentElemTime.isBefore(moment(this.timelineToString), 'second');
+        if (isFromValid && !isToValid) return fromValidation;
+        if (!isFromValid && isToValid) return toValidation;
+        return fromValidation && toValidation;
+      })
+      .map((elem) => ({ ...elem, Time: '00:00:00' }));
+  }
 
+  /**
+   * Handles filtering events by change type.
+   */
+  private filterByType(data: ObjectHistoryEvent[]): ObjectHistoryEvent[] {
     return data.filter((elem) => {
-      const momentElemTime = moment(elem.ChangeTime);
-      const fromValidation = momentElemTime.isAfter(moment(this.timelineFromString), 'second');
-      const toValidation = momentElemTime.isBefore(moment(this.timelineToString), 'second');
-
-      if (isFromValid && !isToValid) return fromValidation;
-      if (!isFromValid && isToValid) return toValidation;
-
-      return fromValidation && toValidation;
+      if (!!this.selectedEventChangeTypes.length) {
+        return this.selectedEventChangeTypes.indexOf(HistoryEventChangeType[elem.ChangeTypeId || '']) > -1;
+      } else {
+        return true;
+      }
     });
   }
 }

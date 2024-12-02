@@ -1,9 +1,15 @@
 <ng-container *ngIf="snapshot">
   <mat-accordion class="imx-snapshots" multi="false">
-    <mat-expansion-panel class="mat-expansion-panel-spacing" *ngFor="let obj of snapshot.Objects" [attr.data-imx-identifier]="'attestation_snapshot_' + obj.Data.Display">
+    <mat-expansion-panel
+      class="mat-expansion-panel-spacing"
+      *ngFor="let obj of snapshot.Objects"
+      [attr.data-imx-identifier]="'attestation_snapshot_' + obj.Data?.Display"
+    >
       <mat-expansion-panel-header>
         <mat-panel-title>
-          <span><strong>{{ obj.Data.Display }}</strong> - {{'#LDS#Object type' | translate}}: {{ obj.TableDisplay }}</span>
+          <span
+            ><strong>{{ obj.Data?.Display }}</strong> - {{ '#LDS#Object type' | translate }}: {{ obj.TableDisplay }}</span
+          >
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div>
@@ -19,8 +25,8 @@
       <ul>
         <li *ngFor="let col of obj.Data.Columns | keyvalue">
           <div class="property" readonly>
-            <span class="column-display">{{ col.value.Caption }}</span>
-            <span class="column-value">{{ col.value.DisplayValue }}</span>
+            <span class="column-display">{{ getColumnCaption(col.value) }}</span>
+            <span class="column-value">{{ getColumnDisplayValue(col.value) }}</span>
           </div>
         </li>
       </ul>

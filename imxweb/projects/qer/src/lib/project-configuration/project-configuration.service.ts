@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { Injectable } from '@angular/core';
 
 import { ClassloggerService, SettingsService } from 'qbm';
-import { ProjectConfig, QerProjectConfig } from 'imx-api-qer';
+import { ProjectConfig, QerProjectConfig } from '@imx-modules/imx-api-qer';
 import { QerApiService } from '../qer-api-client.service';
 
 /**
@@ -35,21 +35,23 @@ import { QerApiService } from '../qer-api-client.service';
  * The configuration contains among other things information which fields of the returned object types are visible to a user.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProjectConfigurationService {
   private projectConfig: QerProjectConfig & ProjectConfig;
 
-  constructor(private qerClient: QerApiService,
+  constructor(
+    private qerClient: QerApiService,
     private readonly settings: SettingsService,
-    private readonly logger: ClassloggerService) { }
+    private readonly logger: ClassloggerService,
+  ) {}
 
   public async getConfig(): Promise<QerProjectConfig & ProjectConfig> {
     if (this.projectConfig == null) {
       this.logger.info(this, 'Project configuration is undefined. Retrieving...');
       this.projectConfig = {
-        ...await this.qerClient.client.portal_qer_projectconfig_get(),
-        ...await this.qerClient.client.portal_config_get()
+        ...(await this.qerClient.client.portal_qer_projectconfig_get()),
+        ...(await this.qerClient.client.portal_config_get()),
       };
 
       this.logger.info(this, 'Received project configuration.');
@@ -60,5 +62,4 @@ export class ProjectConfigurationService {
 
     return this.projectConfig;
   }
-
 }

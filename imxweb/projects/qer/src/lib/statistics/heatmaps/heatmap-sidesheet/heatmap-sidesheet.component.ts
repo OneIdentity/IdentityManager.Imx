@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,13 +26,20 @@
 
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { EuiSelectOption, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSelectOption, EuiSidesheetRef } from '@elemental-ui/core';
+import { HeatmapData, HeatmapDto } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, IEntity, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
-import { hierarchy, HierarchyNode } from 'd3-hierarchy';
+import { HierarchyNode, hierarchy } from 'd3-hierarchy';
 import { ScaleQuantile, scaleQuantile } from 'd3-scale';
-import { HeatmapData, HeatmapDto } from 'imx-api-qer';
-import { CollectionLoadParameters, IEntity, TypedEntityCollectionData } from 'imx-qbm-dbts';
-import { DataSourceToolbarFilter, DataSourceToolbarSettings, LdsReplacePipe, ShortDatePipe } from 'qbm';
+import {
+  CdrFactoryService,
+  ColumnDependentReference,
+  DataSourceToolbarFilter,
+  DataSourceToolbarSettings,
+  LdsReplacePipe,
+  ShortDatePipe,
+} from 'qbm';
 import { Subscription } from 'rxjs';
 import { HeatmapInfoTyped } from '../../statistics-home-page/heatmap-info-typed';
 import { StatisticsSidesheetResponse } from '../../statistics-home-page/statistics-cards-visuals/statistics-cards-visuals.component';
@@ -57,7 +64,7 @@ export class HeatmapSidesheetComponent implements OnInit, OnDestroy {
   public showHeatmap = true;
   public presentIndex = -1;
   public chosenDateIndex = this.presentIndex;
-  public dateControl = new FormControl(null);
+  public dateControl = new FormControl<string>('', { nonNullable: true });
   public dateOptions: EuiSelectOption[];
 
   // Data containers
@@ -72,6 +79,7 @@ export class HeatmapSidesheetComponent implements OnInit, OnDestroy {
     };
   } = {};
   public nodesOnScreen: HeatmapDataTyped[] = [];
+  public descriptionCdr: ColumnDependentReference | undefined;
 
   // Parameters
   public rowDefaultSize = 5;
@@ -97,7 +105,8 @@ export class HeatmapSidesheetComponent implements OnInit, OnDestroy {
     private sidesheetRef: EuiSidesheetRef,
     private translate: TranslateService,
     private replacePipe: LdsReplacePipe,
-    private shortDate: ShortDatePipe
+    private shortDate: ShortDatePipe,
+    private cdrService: CdrFactoryService,
   ) {}
 
   public get hasData(): boolean {
@@ -137,6 +146,7 @@ export class HeatmapSidesheetComponent implements OnInit, OnDestroy {
     });
     await this.setupConstants();
     this.setupValues();
+    this.descriptionCdr = this.cdrService.buildCdr(this.data.heatmapInfo.GetEntity(), 'Description', true);
   }
 
   public ngOnDestroy(): void {
@@ -166,24 +176,24 @@ export class HeatmapSidesheetComponent implements OnInit, OnDestroy {
         Delimiter: ',',
         Options: [
           {
-            Value: this.heatmapsService.stateThresholds.ok.properties.state,
-            Display: this.heatmapsService.stateThresholds.ok.properties.stateDisplay,
+            Value: this.heatmapsService.stateThresholds.ok?.properties?.state,
+            Display: this.heatmapsService.stateThresholds.ok?.properties?.stateDisplay,
           },
           {
-            Value: this.heatmapsService.stateThresholds.lightWarn.properties.state,
-            Display: this.heatmapsService.stateThresholds.lightWarn.properties.stateDisplay,
+            Value: this.heatmapsService.stateThresholds.lightWarn?.properties?.state,
+            Display: this.heatmapsService.stateThresholds.lightWarn?.properties?.stateDisplay,
           },
           {
-            Value: this.heatmapsService.stateThresholds.warn.properties.state,
-            Display: this.heatmapsService.stateThresholds.warn.properties.stateDisplay,
+            Value: this.heatmapsService.stateThresholds.warn?.properties?.state,
+            Display: this.heatmapsService.stateThresholds.warn?.properties?.stateDisplay,
           },
           {
-            Value: this.heatmapsService.stateThresholds.severeWarn.properties.state,
-            Display: this.heatmapsService.stateThresholds.severeWarn.properties.stateDisplay,
+            Value: this.heatmapsService.stateThresholds.severeWarn?.properties?.state,
+            Display: this.heatmapsService.stateThresholds.severeWarn?.properties?.stateDisplay,
           },
           {
-            Value: this.heatmapsService.stateThresholds.error.properties.state,
-            Display: this.heatmapsService.stateThresholds.error.properties.stateDisplay,
+            Value: this.heatmapsService.stateThresholds.error?.properties?.state,
+            Display: this.heatmapsService.stateThresholds.error?.properties?.stateDisplay,
           },
         ],
         Column: 'State',
@@ -256,21 +266,21 @@ export class HeatmapSidesheetComponent implements OnInit, OnDestroy {
     if (this.isHistoryView) {
       // Sort initially by size desc, if ties, then sort by history value
       this.dynamicBlocks.sort((a, b) => {
-        const objA = a.object.GetEntity();
-        const objB = b.object.GetEntity();
+        const objA = a.object?.GetEntity();
+        const objB = b.object?.GetEntity();
         return (
-          objB.GetColumn('ValueZ').GetValue() - objA.GetColumn('ValueZ').GetValue() ||
-          objB.GetColumn('CurrentHistory').GetValue() - objA.GetColumn('CurrentHistory').GetValue()
+          objB?.GetColumn('ValueZ').GetValue() - objA?.GetColumn('ValueZ').GetValue() ||
+          objB?.GetColumn('CurrentHistory').GetValue() - objA?.GetColumn('CurrentHistory').GetValue()
         );
       });
     } else {
       // Sort initially by size desc, if ties, then sort by stat desc
       this.dynamicBlocks.sort((a, b) => {
-        const objA = a.object.GetEntity();
-        const objB = b.object.GetEntity();
+        const objA = a.object?.GetEntity();
+        const objB = b.object?.GetEntity();
         return (
-          objB.GetColumn('ValueZ').GetValue() - objA.GetColumn('ValueZ').GetValue() ||
-          objB.GetColumn('Value').GetValue() - objA.GetColumn('Value').GetValue()
+          objB?.GetColumn('ValueZ').GetValue() - objA?.GetColumn('ValueZ').GetValue() ||
+          objB?.GetColumn('Value').GetValue() - objA?.GetColumn('Value').GetValue()
         );
       });
     }
@@ -282,12 +292,12 @@ export class HeatmapSidesheetComponent implements OnInit, OnDestroy {
       this.uniformBlocks
         .sort(
           (a, b) =>
-            a.object.GetEntity().GetColumn('CurrentHistory').GetValue() - b.object.GetEntity().GetColumn('CurrentHistory').GetValue()
+            a.object?.GetEntity().GetColumn('CurrentHistory').GetValue() - b.object?.GetEntity().GetColumn('CurrentHistory').GetValue(),
         )
         .reverse();
     } else {
       this.uniformBlocks
-        .sort((a, b) => a.object.GetEntity().GetColumn('Value').GetValue() - b.object.GetEntity().GetColumn('Value').GetValue())
+        .sort((a, b) => a.object?.GetEntity().GetColumn('Value').GetValue() - b.object?.GetEntity().GetColumn('Value').GetValue())
         .reverse();
     }
   }
@@ -337,8 +347,10 @@ export class HeatmapSidesheetComponent implements OnInit, OnDestroy {
     };
   }
 
-  public getDeltas(change: EuiSelectOption): void {
-    this.chosenDateIndex = Number.parseInt(change.value as string);
+  public getDeltas(change: EuiSelectOption | EuiSelectOption[]): void {
+    if ('value' in change) {
+      this.chosenDateIndex = Number.parseInt(change.value as string);
+    }
     // Check if we have already calculated this
     if (!this.savedData[this.chosenDateIndex]) {
       this.computeHistory();
@@ -363,9 +375,9 @@ export class HeatmapSidesheetComponent implements OnInit, OnDestroy {
     const nNodes = filteredNodes.length;
     if (nNodes > 0) {
       // If we actually have non-zero values, get the blocks in largest to lowest order
-      filteredNodes.sort((a, b) => a.data.CurrentHistory - b.data.CurrentHistory).reverse();
-      const maxValue = filteredNodes[0].data.CurrentHistory;
-      const minValue = filteredNodes[nNodes - 1].data.CurrentHistory;
+      filteredNodes.sort((a, b) => (a.data.CurrentHistory ?? 0) - (b.data.CurrentHistory ?? 0)).reverse();
+      const maxValue = filteredNodes[0].data.CurrentHistory ?? 0;
+      const minValue = filteredNodes[nNodes - 1].data.CurrentHistory ?? 0;
       this.savedData[this.chosenDateIndex] = {
         data: this.heatmapsService.getHistoryBlocks(filteredNodes, { maxValue, minValue }),
         minValue,
@@ -385,11 +397,11 @@ export class HeatmapSidesheetComponent implements OnInit, OnDestroy {
   }
 
   public onSettingsChanged(settings: DataSourceToolbarSettings): void {
-    const nodes = settings.dataSource.Data as HeatmapDataTyped[];
-    if (nodes.length > settings.navigationState.PageSize) {
+    const nodes = settings.dataSource?.Data as HeatmapDataTyped[];
+    if (nodes.length > (settings.navigationState.PageSize ?? 0)) {
       this.nodesOnScreen = nodes.slice(
         settings.navigationState.StartIndex,
-        settings.navigationState.StartIndex + settings.navigationState.PageSize
+        (settings.navigationState.StartIndex || 0) + (settings.navigationState.PageSize || 0),
       );
     } else {
       this.nodesOnScreen = nodes;

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,16 +25,18 @@
  */
 
 import { Injectable } from '@angular/core';
-import { CollectionLoadParameters, TypedEntityCollectionData } from 'imx-qbm-dbts';
-import { PortalTargetsystemUnsGroup } from 'imx-api-tsb';
+import { CollectionLoadParameters, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
+import { PortalTargetsystemUnsGroup } from '@imx-modules/imx-api-tsb';
 import { AppConfigService, SettingsService } from 'qbm';
 import { TsbApiService } from '../tsb-api-client.service';
 
 @Injectable({ providedIn: 'root' })
 export class GroupsReportsService {
-  constructor(private tsbClient: TsbApiService,
+  constructor(
+    private tsbClient: TsbApiService,
     private readonly settings: SettingsService,
-    private appConfig: AppConfigService) { }
+    private appConfig: AppConfigService,
+  ) {}
 
   public groupsByGroupReport(historyDays: number, groupId: string): string {
     const path = `targetsystem/uns/group/${groupId}/report?historydays=${historyDays}`;

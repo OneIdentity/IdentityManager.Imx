@@ -1,0 +1,78 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "att",
+  "sourceRoot": "projects/att/src",
+  "implicitDependencies": [
+    "qer"
+  ],
+  "projectType": "library",
+  "prefix": "imx",
+  "generators": {
+    "@schematics/angular:component": {
+      "style": "scss"
+    }
+  },
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:ng-packagr",
+      "options": {
+        "tsConfig": "projects/att/tsconfig.lib.json",
+        "project": "projects/att/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "projects/att/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "projects/att/tsconfig.lib.json"
+        },
+        "dynamic": {
+          "project": "projects/att/ng-package.dynamic.json"
+        },
+        "dynamic-pwd": {
+          "project": "projects/att/ng-package.dynamic-pwd.json"
+        },
+        "remote-dev": {
+          "tsConfig": "projects/att/tsconfig.lib.json"
+        },
+        "remote-qs": {
+          "tsConfig": "projects/att/tsconfig.lib.json"
+        }
+      },
+      "outputs": [
+        "{workspaceRoot}/dist/att"
+      ]
+    },
+    "test": {
+      "executor": "@angular-devkit/build-angular:karma",
+      "options": {
+        "main": "projects/att/src/test.ts",
+        "tsConfig": "projects/att/tsconfig.spec.json",
+        "karmaConfig": "projects/att/karma.conf.js",
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "./shared/assets",
+            "./shared/scss",
+            "./node_modules",
+            "./node_modules/@elemental-ui/cadence-icon",
+            "./node_modules/@elemental-ui/core"
+          ]
+        }
+      }
+    },
+    "lint": {
+      "executor": "@angular-devkit/build-angular:tslint",
+      "options": {
+        "tsConfig": [
+          "projects/att/tsconfig.lib.json",
+          "projects/att/tsconfig.spec.json"
+        ],
+        "exclude": [
+          "**/node_modules/**",
+          "**/*.spec.ts",
+          "**/*.json"
+        ]
+      }
+    }
+  }
+}

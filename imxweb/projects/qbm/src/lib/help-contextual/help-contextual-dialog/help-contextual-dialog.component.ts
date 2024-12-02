@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,9 +24,9 @@
  *
  */
 
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ChapterLink, ContextualHelpItem } from 'imx-api-qbm';
+import { ChapterLink, ContextualHelpItem } from '@imx-modules/imx-api-qbm';
 import { HelpContextualService } from '../help-contextual.service';
 
 /**
@@ -41,7 +41,7 @@ export class HelpContextualDialogComponent {
   constructor(
     private readonly helpContextService: HelpContextualService,
     public matDialogRef: MatDialogRef<HelpContextualDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ContextualHelpItem
+    @Inject(MAT_DIALOG_DATA) public data: ContextualHelpItem,
   ) {}
 
   /**
@@ -67,8 +67,8 @@ export class HelpContextualDialogComponent {
    */
   getHelpLink(link: ChapterLink): string {
     if (link.IsExternal) {
-      return link.Url;
+      return link.Url ?? '';
     }
-    return this.helpContextService.getHelpLink(link.Url);
+    return link.Url ? this.helpContextService.getHelpLink(link.Url) : '';
   }
 }

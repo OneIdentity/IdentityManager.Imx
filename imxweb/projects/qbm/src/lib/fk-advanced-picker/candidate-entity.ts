@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,19 +24,26 @@
  *
  */
 
-import { TypedEntity, EntitySchema, DisplayColumns, ValType } from 'imx-qbm-dbts';
+import { DisplayColumns, EntitySchema, TypedEntity, ValType } from '@imx-modules/imx-qbm-dbts';
 
 export class CandidateEntity extends TypedEntity {
-    public static GetEntitySchema(): EntitySchema {
-        const columns = {
-            XObjectKey: {
-                Type: ValType.String,
-                ColumnName: 'XObjectKey'
-            }
-        };
+  public static GetEntitySchema(parentColumnName?: string, tablename?: string): EntitySchema {
+    const columns = {
+      XObjectKey: {
+        Type: ValType.String,
+        ColumnName: 'XObjectKey',
+      },
+    };
 
-        columns[DisplayColumns.DISPLAY_PROPERTYNAME] = DisplayColumns.DISPLAY_PROPERTY;
-
-        return { Columns: columns };
+    if (parentColumnName) {
+      columns[parentColumnName] = {
+        Type: ValType.String,
+        ColumnName: parentColumnName,
+      };
     }
+
+    columns[DisplayColumns.DISPLAY_PROPERTYNAME] = DisplayColumns.DISPLAY_PROPERTY;
+
+    return { Columns: columns, TypeName: tablename };
+  }
 }

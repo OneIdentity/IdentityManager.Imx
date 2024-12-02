@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,25 +26,24 @@
 
 import { Component } from '@angular/core';
 
-import { CartItemLogic } from './cart-item-logic.interface';
-import { PortalCartitem } from 'imx-api-qer';
-import { CartItemsService } from '../cart-items.service';
+import { PortalCartitem } from '@imx-modules/imx-api-qer';
 import { ParameterizedText } from 'qbm';
+import { CartItemsService } from '../cart-items.service';
+import { CartItemLogic } from './cart-item-logic.interface';
 
 /** Default display component for cart items; simply displaying the service item. */
 @Component({
   template: `<div data-imx-identifier="default-cart-item-display">{{ cartItem.GetEntity().GetDisplay() }}</div>
-        <div subtitle>
-          <span>{{'#LDS#Recipient' | translate}}: </span>
-          <span data-imx-identifier="default-cart-item-recipient">{{ cartItem.UID_PersonOrdered?.Column?.GetDisplayValue() }}</span>
-        </div>
-        <div *ngIf="parameterizedText">
-          <imx-parameterized-text [parameterizedText]="parameterizedText"></imx-parameterized-text>
-        </div>`,
-  styleUrls: ['./default-cart-item-display.component.scss']
+    <div subtitle>
+      <span>{{ '#LDS#Recipient' | translate }}: </span>
+      <span data-imx-identifier="default-cart-item-recipient">{{ cartItem.UID_PersonOrdered?.Column?.GetDisplayValue() }}</span>
+    </div>
+    <div *ngIf="parameterizedText">
+      <imx-parameterized-text [parameterizedText]="parameterizedText"></imx-parameterized-text>
+    </div>`,
+  styleUrls: ['./default-cart-item-display.component.scss'],
 })
 export class DefaultCartItemDisplayComponent implements CartItemLogic {
-
   private _cartItem: PortalCartitem;
   public get cartItem(): PortalCartitem {
     return this._cartItem;
@@ -54,19 +53,18 @@ export class DefaultCartItemDisplayComponent implements CartItemLogic {
     this.setPText();
   }
 
-  public parameterizedText: ParameterizedText;
+  public parameterizedText: ParameterizedText | null;
 
-  constructor(public readonly cartItemSvc: CartItemsService) { }
+  constructor(public readonly cartItemSvc: CartItemsService) {}
 
   private setPText() {
     if (this.cartItem.Assignment?.value) {
       this.parameterizedText = {
         value: this.cartItem.Assignment.value,
         marker: { start: '"%', end: '%"' },
-        getParameterValue: columnName => this.cartItem.GetEntity().GetColumn(columnName).GetDisplayValue()
+        getParameterValue: (columnName) => this.cartItem.GetEntity().GetColumn(columnName).GetDisplayValue(),
       };
-    }
-    else {
+    } else {
       this.parameterizedText = null;
     }
   }

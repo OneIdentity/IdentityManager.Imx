@@ -1,16 +1,22 @@
 <ng-container *ngIf="selectedServiceCategory != null">
-  <div >
-    {{ '#LDS#Showing service items in category' | translate}}
+  <div>
+    {{ '#LDS#Showing service items in category' | translate }}
   </div>
 
   <div>
     <mat-form-field class="imx-select-category">
-      <mat-select [(ngModel)]="selectedServiceCategory" (ngModelChange)="onServiceCategoryChanged($event)"
-        data-imx-identifier="servicecategory-list-mat-select-select-category">
-        <mat-option *ngFor="let category of selectedServiceCategoryTree" [value]="category"
-          matTooltip="{{category?.FullPath?.Column?.GetDisplayValue()}}"
-          data-imx-identifier="servicecategory-list-mat-option-select-category">
-          {{category?.FullPath?.Column?.GetDisplayValue()}}
+      <mat-select
+        [(ngModel)]="selectedServiceCategory"
+        (ngModelChange)="onServiceCategoryChanged($event)"
+        data-imx-identifier="servicecategory-list-mat-select-select-category"
+      >
+        <mat-option
+          *ngFor="let category of selectedServiceCategoryTree"
+          [value]="category"
+          matTooltip="{{ category?.FullPath?.Column?.GetDisplayValue() }}"
+          data-imx-identifier="servicecategory-list-mat-option-select-category"
+        >
+          {{ category?.FullPath?.Column?.GetDisplayValue() }}
         </mat-option>
       </mat-select>
     </mat-form-field>
@@ -18,7 +24,7 @@
 
   <div *ngIf="selectedServiceCategoryTree.length > 1">
     <mat-checkbox (change)="onIncludeChilds($event.checked)">
-      {{'#LDS#Show products from child categories' | translate}}
+      {{ '#LDS#Show products from child categories' | translate }}
     </mat-checkbox>
   </div>
 </ng-container>

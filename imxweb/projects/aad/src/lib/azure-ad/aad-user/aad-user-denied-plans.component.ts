@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,15 +27,15 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
-import { PortalTargetsystemAaduserDeniedserviceplans } from 'imx-api-aad';
-import { CollectionLoadParameters, DbObjectKey, DisplayColumns, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
+import { PortalTargetsystemAaduserDeniedserviceplans } from '@imx-modules/imx-api-aad';
+import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import {
   ClassloggerService,
   DataSourceToolbarFilter,
   DataSourceToolbarSettings,
   DataTableComponent,
   DynamicTabDataProviderDirective,
-  SettingsService
+  SettingsService,
 } from 'qbm';
 import { AzureAdService } from '../azure-ad.service';
 import { AadUserCreateDialogComponent } from './aad-user-create-dialog.component';
@@ -43,11 +43,10 @@ import { AadUserCreateDialogComponent } from './aad-user-create-dialog.component
 @Component({
   selector: 'imx-aad-user-denied-plans',
   templateUrl: './aad-user-denied-plans.component.html',
-  styleUrls: ['../azure-ad-common.scss']
+  styleUrls: ['../azure-ad-common.scss'],
 })
 export class AadUserDeniedPlansComponent implements OnInit {
-
-  @Input() public referrer: { objecttable: string; objectuid: string; };
+  @Input() public referrer: { objecttable: string; objectuid: string };
   @ViewChild('dataTable', { static: false }) public dataTable: DataTableComponent<PortalTargetsystemAaduserDeniedserviceplans>;
 
   public dstSettings: DataSourceToolbarSettings;
@@ -64,7 +63,7 @@ export class AadUserDeniedPlansComponent implements OnInit {
     private readonly logger: ClassloggerService,
     private readonly aadService: AzureAdService,
     settings: SettingsService,
-    dataProvider: DynamicTabDataProviderDirective
+    dataProvider: DynamicTabDataProviderDirective,
   ) {
     this.navigationState = { PageSize: settings.DefaultPageSize, StartIndex: 0 };
     this.entitySchemaAadUserDeniedPlan = this.aadService.aadUserDeniedPlansSchema;
@@ -73,8 +72,8 @@ export class AadUserDeniedPlansComponent implements OnInit {
 
   public async ngOnInit(): Promise<void> {
     this.displayedColumns = [
-      this.entitySchemaAadUserDeniedPlan.Columns.UID_AADDeniedServicePlan,
-      this.entitySchemaAadUserDeniedPlan.Columns.XOrigin,
+      this.entitySchemaAadUserDeniedPlan.Columns?.UID_AADDeniedServicePlan,
+      this.entitySchemaAadUserDeniedPlan.Columns?.XOrigin,
     ];
     await this.navigate();
   }
@@ -93,21 +92,20 @@ export class AadUserDeniedPlansComponent implements OnInit {
     await this.navigate();
   }
 
-  public onDeniedPlanSelected(selected: PortalTargetsystemAaduserDeniedserviceplans[]): void {
+  public onDeniedPlanSelected(selected: TypedEntity[]): void {
     this.logger.debug(this, `Selected aad user disabled plans changed`);
     this.logger.trace(`New aad user disabled plan selections`, selected);
-    this.selectedUserDeniedPlans = selected;
+    this.selectedUserDeniedPlans = selected as PortalTargetsystemAaduserDeniedserviceplans[];
   }
 
   public async showCreateModal(): Promise<void> {
-    const aadDeniedPlan: PortalTargetsystemAaduserDeniedserviceplans =
-      this.aadService.generateAadUserDeniedPlanEntity(this.getUserKey());
+    const aadDeniedPlan: PortalTargetsystemAaduserDeniedserviceplans = this.aadService.generateAadUserDeniedPlanEntity(this.getUserKey());
     const dialogRef = this.dialog.open(AadUserCreateDialogComponent, {
       width: '600px',
       data: {
         property: aadDeniedPlan.UID_AADDeniedServicePlan,
-        title: '#LDS#Heading Assign Disabled Service Plan'
-      }
+        title: '#LDS#Heading Assign Disabled Service Plan',
+      },
     });
 
     dialogRef.afterClosed().subscribe(async (result) => {
@@ -135,7 +133,6 @@ export class AadUserDeniedPlansComponent implements OnInit {
   }
 
   private async navigate(): Promise<void> {
-
     this.aadService.handleOpenLoader();
     try {
       const data = await this.aadService.getAadUserDeniedPlans(this.getUserKey(), this.navigationState);
@@ -146,7 +143,7 @@ export class AadUserDeniedPlansComponent implements OnInit {
         navigationState: this.navigationState,
         filters: this.filterOptions,
       };
-      this.logger.debug(this, `Head at ${data.Data.length + this.navigationState.StartIndex} of ${data.totalCount} item(s)`);
+      this.logger.debug(this, `Head at ${data.Data.length + (this.navigationState.StartIndex ?? 0)} of ${data.totalCount} item(s)`);
     } finally {
       this.aadService.handleCloseLoader();
     }
@@ -155,5 +152,4 @@ export class AadUserDeniedPlansComponent implements OnInit {
   private getUserKey(): string {
     return this.referrer.objectuid;
   }
-
 }

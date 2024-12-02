@@ -1,4 +1,4 @@
-import { ProjectConfig } from 'imx-api-qbm';
+import { ProjectConfig } from '@imx-modules/imx-api-qbm';
 import { NavigationCommandsMenuItem } from './navigation-commands-menu-item.interface';
 
 /*
@@ -12,7 +12,7 @@ import { NavigationCommandsMenuItem } from './navigation-commands-menu-item.inte
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,7 +33,7 @@ export interface MenuItem {
   readonly id?: string;
 
   /** Display name. */
-  readonly title: string;
+  readonly title?: string;
 
   /** Returns a descriptive text, intended for tooltips. */
   readonly description?: string;
@@ -52,7 +52,11 @@ export interface MenuItem {
 
   /** Submenu items. */
   items?: MenuItem[];
-
 }
 
-export type MenuFactory = (preProps: string[], features: string[], projectConfig?: ProjectConfig, groups?: string[]) => MenuItem;
+export type MenuFactory = (
+  preProps: string[],
+  features: string[],
+  projectConfig?: ProjectConfig,
+  groups?: string[],
+) => MenuItem | undefined;

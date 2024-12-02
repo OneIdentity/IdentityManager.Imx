@@ -1,5 +1,5 @@
-<div eui-sidesheet-content>
-  <eui-alert *ngIf="data.description" class="imx-top-alert" [condensed]="true" [colored]="true" type="info">
+<div class="imx-sidesheet-content__overflow imx-padding-20">
+  <eui-alert *ngIf="data.description" [condensed]="true" [colored]="true" type="info">
     {{ data.description | translate }}
   </eui-alert>
   <mat-card class="imx-decision-card">
@@ -32,7 +32,7 @@
       (controlCreated)="formGroup.addControl('attestation-parameters', $event)"
     >
     </imx-bulk-editor>
-    <mat-card *ngIf="data.attestationCases.length === 1"  class="imx-decision-card">
+    <mat-card *ngIf="data.attestationCases.length === 1" class="imx-decision-card">
       <div class="imx-additional-elements" *ngIf="data.additionalInfo != null">
         <imx-cdr-editor
           *ngFor="let cdr of data.additionalInfo; let i = index"
@@ -42,7 +42,7 @@
         >
         </imx-cdr-editor>
         <mat-divider></mat-divider>
-      </div>     
+      </div>
       <imx-cdr-editor
         *ngFor="let cdr of attestationParameter; let i = index"
         [cdr]="cdr"
@@ -57,7 +57,7 @@
 <div eui-sidesheet-actions>
   <button
     data-imx-identifier="attestation-action-button-save"
-    mat-raised-button
+    mat-flat-button
     color="primary"
     (click)="sideSheetRef.close(true)"
     *ngIf="formGroup"

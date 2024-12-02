@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,18 +25,18 @@
  */
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 
 import { EuiLoadingService } from '@elemental-ui/core';
-import { PortalApplication } from 'imx-api-aob';
+import { PortalApplication } from '@imx-modules/imx-api-aob';
+import { TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { ClassloggerService, SnackBarService } from 'qbm';
-import { TypedEntityCollectionData } from 'imx-qbm-dbts';
 
-import { ApplicationsService } from './applications.service';
-import { ApplicationNavigationComponent } from './application-navigation/application-navigation.component';
-import { ApplicationDetailComponent } from './application-detail.component';
 import { ApplicationContent } from './application-content.interface';
+import { ApplicationDetailComponent } from './application-detail.component';
+import { ApplicationNavigationComponent } from './application-navigation/application-navigation.component';
+import { ApplicationsService } from './applications.service';
 
 @Component({
   selector: 'imx-applications',
@@ -44,7 +44,7 @@ import { ApplicationContent } from './application-content.interface';
   styleUrls: ['./applications.component.scss'],
 })
 export class ApplicationsComponent implements OnDestroy, OnInit {
-  private selectedApplication: PortalApplication;
+  private selectedApplication: PortalApplication | undefined;
   private dataSource: TypedEntityCollectionData<PortalApplication>;
   private applicationNavigation: ApplicationNavigationComponent;
   private applicationContent: ApplicationContent;
@@ -57,7 +57,7 @@ export class ApplicationsComponent implements OnDestroy, OnInit {
     private readonly busyService: EuiLoadingService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
-    private readonly snackbar: SnackBarService
+    private readonly snackbar: SnackBarService,
   ) {
     this.subscriptions.push(
       this.applicationsProvider.onApplicationCreated.subscribe(async (uidApplication: string) => {
@@ -75,19 +75,23 @@ export class ApplicationsComponent implements OnDestroy, OnInit {
         this.applicationContent.application = this.selectedApplication;
 
         return this.redirectToAppDetails(this.selectedApplication.UID_AOBApplication.value);
-      })
+      }),
     );
     this.subscriptions.push(
       this.applicationsProvider.onApplicationDeleted.subscribe(async (uidApplication: string) => {
-        const index = this.dataSource.Data.findIndex(elem => elem.UID_AOBApplication.value === uidApplication);
+        const index = this.dataSource.Data.findIndex((elem) => elem.UID_AOBApplication.value === uidApplication);
         if (index < 0) {
-          return this.redirectToAppDetails(null);
+          return this.redirectToAppDetails('');
         }
         const removed = this.dataSource.Data.splice(index, 1);
-        this.applicationContent.application = null;
-        this.snackbar.open({ key: '#LDS#The application "{0}" has been successfully deleted.', parameters: [removed[0].GetEntity().GetDisplay()] });
-        return this.redirectToAppDetails(null);
-      }));
+        this.applicationContent.application = undefined;
+        this.snackbar.open({
+          key: '#LDS#The application "{0}" has been successfully deleted.',
+          parameters: [removed[0].GetEntity().GetDisplay()],
+        });
+        return this.redirectToAppDetails('');
+      }),
+    );
   }
 
   public ngOnInit(): void {
@@ -102,8 +106,9 @@ export class ApplicationsComponent implements OnDestroy, OnInit {
       if (params.id) {
         this.selectedApplication = await this.applicationsProvider.reload(params.id);
       }
-
-      this.applicationContent.application = this.selectedApplication;
+      if (this.selectedApplication) {
+        this.applicationContent.application = this.selectedApplication;
+      }
 
       if (!this.selectedApplication) {
         this.applicationNavigation.clearSelection();
@@ -126,18 +131,17 @@ export class ApplicationsComponent implements OnDestroy, OnInit {
     this.applicationNavigation.loadingSubject = this.loadingSubject;
 
     this.subscriptions.push(
-      this.applicationNavigation.applicationSelected.subscribe((uidApplication: string) =>
-        this.redirectToAppDetails(uidApplication)
-      )
+      this.applicationNavigation.applicationSelected.subscribe((uidApplication: string) => this.redirectToAppDetails(uidApplication)),
     );
 
     this.subscriptions.push(
-      this.applicationNavigation.dataSourceChanged.subscribe((changeSet:
-        { keywords: string; dataSource: TypedEntityCollectionData<PortalApplication> }) => {
-        this.dataSource = changeSet?.dataSource;
-        this.applicationContent.totalCount = this.dataSource?.totalCount ?? 0;
-        this.applicationContent.keywords = changeSet?.keywords;
-      })
+      this.applicationNavigation.dataSourceChanged.subscribe(
+        (changeSet: { keywords: string; dataSource: TypedEntityCollectionData<PortalApplication> }) => {
+          this.dataSource = changeSet?.dataSource;
+          this.applicationContent.totalCount = this.dataSource?.totalCount ?? 0;
+          this.applicationContent.keywords = changeSet?.keywords;
+        },
+      ),
     );
   }
 
@@ -151,7 +155,7 @@ export class ApplicationsComponent implements OnDestroy, OnInit {
     }
 
     // reload app:
-    this.selectedApplication = await this.applicationsProvider.reload(this.selectedApplication.UID_AOBApplication.value)
+    this.selectedApplication = await this.applicationsProvider.reload(this.selectedApplication.UID_AOBApplication.value);
 
     if (applicationContent instanceof ApplicationDetailComponent) {
       this.applicationContent.application = this.selectedApplication;
@@ -162,16 +166,17 @@ export class ApplicationsComponent implements OnDestroy, OnInit {
     return (
       route.children &&
       route.children.length > 1 &&
-      route.children[1].routeConfig.outlet.toLowerCase() === 'content' &&
-      route.children[1].routeConfig.path.toLowerCase() === 'edit'
+      route.children[1].routeConfig?.outlet?.toLowerCase() === 'content' &&
+      route.children[1].routeConfig?.path?.toLowerCase() === 'edit'
     );
   }
 
   private async redirectToAppDetails(uidApplication: string): Promise<boolean> {
     this.logger.trace(this, 'Redirecting to details view.');
 
-     return this.router.navigate(
-        ['applications', { outlets: { content: ['detail'] } }],
-        uidApplication ? { queryParams: { id: uidApplication } } : undefined)
+    return this.router.navigate(
+      ['applications', { outlets: { content: ['detail'] } }],
+      uidApplication ? { queryParams: { id: uidApplication } } : undefined,
+    );
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,14 +35,14 @@ import { FormDataService } from '../form-data.service';
 @Component({
   selector: 'imx-approval-level-form',
   templateUrl: './approval-level-form.component.html',
-  styleUrls: ['./approval-level-form.component.scss']
+  styleUrls: ['./approval-level-form.component.scss'],
 })
 export class ApprovalLevelFormComponent implements OnInit, OnDestroy {
   public readonly formGroup: FormGroup;
   public cdrList: ColumnDependentReference[] = [];
   public isInActiveFormControl = new FormControl();
   public initialState: {
-    [key: string]: any
+    [key: string]: any;
   };
 
   private readonly subscriptions: Subscription[] = [];
@@ -58,7 +58,7 @@ export class ApprovalLevelFormComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.sidesheetRef.closeClicked().subscribe(async () => {
         await this.formService.cancelChanges(this.formGroup, this.sidesheetRef, this.requestData);
-      })
+      }),
     );
   }
   get formArray(): FormArray {
@@ -68,8 +68,8 @@ export class ApprovalLevelFormComponent implements OnInit, OnDestroy {
   public async ngOnInit(): Promise<void> {
     const columnConstraints: ColumnConstraints = {
       LevelDisplay: {
-        minLength: 1
-      }
+        minLength: 1,
+      },
     };
     this.cdrList = await this.formService.setup(this.requestData, columnConstraints);
   }

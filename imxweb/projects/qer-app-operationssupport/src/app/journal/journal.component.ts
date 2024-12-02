@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,17 +24,17 @@
  *
  */
 
-import { Component, ViewChildren, QueryList, OnInit } from '@angular/core';
-import { EuiLoadingService } from '@elemental-ui/core';
 import { OverlayRef } from '@angular/cdk/overlay';
+import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { EuiLoadingService } from '@elemental-ui/core';
 
-import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
-import { FilterTileComponent, DataSourceToolbarSettings, DataSourceToolbarFilter, SettingsService } from 'qbm';
+import { CollectionLoadParameters, DataModel, DisplayColumns, EntitySchema, IClientProperty } from '@imx-modules/imx-qbm-dbts';
+import { DataSourceToolbarFilter, DataSourceToolbarSettings, FilterTileComponent, SettingsService } from 'qbm';
 import { JournalService } from './journal.service';
 
 @Component({
   templateUrl: './journal.component.html',
-  styleUrls: ['./journal.component.scss']
+  styleUrls: ['./journal.component.scss'],
 })
 export class JournalComponent implements OnInit {
   @ViewChildren(FilterTileComponent) public filterTiles: QueryList<FilterTileComponent>;
@@ -50,14 +50,15 @@ export class JournalComponent implements OnInit {
   constructor(
     public journalService: JournalService,
     private readonly settingsService: SettingsService,
-    private busyService: EuiLoadingService) {
+    private busyService: EuiLoadingService,
+  ) {
     this.entitySchemaJournal = journalService.OpsupportJournalEntitySchema;
     this.displayedColumns = [
       this.entitySchemaJournal.Columns.MessageDate,
       this.entitySchemaJournal.Columns.ApplicationName,
       this.entitySchemaJournal.Columns.MessageString,
       this.entitySchemaJournal.Columns.MessageType,
-      this.entitySchemaJournal.Columns.HostName
+      this.entitySchemaJournal.Columns.HostName,
     ];
   }
 
@@ -78,7 +79,7 @@ export class JournalComponent implements OnInit {
     this.navigationState = navigationState;
 
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
       const journalEntries = await this.journalService.getItems(navigationState);
 
@@ -90,19 +91,17 @@ export class JournalComponent implements OnInit {
         navigationState: this.navigationState,
         dataModel: this.dataModel,
       };
-
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }
   }
 
   private async initFilters(): Promise<void> {
-
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
       this.dataModel = await this.journalService.getDataModel();
-      this.filterOptions = this.dataModel.Filters;
+      this.filterOptions = this.dataModel.Filters ?? [];
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }

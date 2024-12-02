@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,42 +24,42 @@
  *
  */
 
-import { Component, OnInit, Input } from "@angular/core";
-import { EuiSidesheetService } from "@elemental-ui/core";
-import { TranslateService } from "@ngx-translate/core";
-import { HistoryOperation, ChangeType } from "imx-api-qbm";
-import { ChangeOperationSidesheetComponent } from "./change-operation-sidesheet/change-operation-sidesheet.component";
+import { Component, Input, OnInit } from '@angular/core';
+import { EuiSidesheetService } from '@elemental-ui/core';
+import { ChangeType, HistoryOperation } from '@imx-modules/imx-api-qbm';
+import { TranslateService } from '@ngx-translate/core';
+import { calculateSidesheetWidth } from 'qbm';
+import { ChangeOperationSidesheetComponent } from './change-operation-sidesheet/change-operation-sidesheet.component';
 
 interface IColumn {
   id: string;
   title: string;
-  getValue: (row: HistoryOperation) => string;
+  getValue: (row: HistoryOperation) => string | undefined;
 }
 class Column implements IColumn {
   public id: string;
   public getTitle: () => string;
-  public getValue: (row: HistoryOperation) => string;
+  public getValue: (row: HistoryOperation) => string | undefined;
   public title: string;
 }
 
 @Component({
   templateUrl: './change-operation-table.component.html',
   selector: 'imx-change-operation-table',
-  styleUrls: ['./change-operation-table.component.scss']
+  styleUrls: ['./change-operation-table.component.scss'],
 })
 export class ChangeOperationTableComponent implements OnInit {
-
-  constructor(private translationProvider: TranslateService,
+  constructor(
+    private translationProvider: TranslateService,
     private sidesheet: EuiSidesheetService,
-  ) {
-  }
+  ) {}
 
   @Input() public data: HistoryOperation[] = [];
 
   public columnDefs: Column[] = [];
 
   public get columns(): string[] {
-    return this.columnDefs.map(c => c.id);
+    return this.columnDefs.map((c) => c.id);
   }
 
   ngOnInit(): void {
@@ -75,51 +75,49 @@ export class ChangeOperationTableComponent implements OnInit {
     this.columnDefs.push(column);
   }
 
-  private async changeTypeTableColumn(){
+  private async changeTypeTableColumn() {
     await this.addColumnDef({
       id: 'ChangeTime',
       title: '#LDS#Operation performed on',
-      getValue: (row: HistoryOperation) => new Date(row.ChangeTime).toLocaleString(this.translationProvider.currentLang)
+      getValue: (row: HistoryOperation) => new Date(row.ChangeTime).toLocaleString(this.translationProvider.currentLang),
     });
     await this.addColumnDef({
       id: 'ChangeType',
       title: '#LDS#Type of operation',
-      getValue: (row: HistoryOperation) => Object.values(ChangeType)[row.ChangeType].toString()
+      getValue: (row: HistoryOperation) => Object.values(ChangeType)[row.ChangeType].toString(),
     });
     await this.addColumnDef({
       id: 'ObjectDisplay',
       title: '#LDS#Object name',
-      getValue: (row: HistoryOperation) => row.ObjectDisplay
+      getValue: (row: HistoryOperation) => row.ObjectDisplay,
     });
     await this.addColumnDef({
       id: 'DisplayType',
       title: '#LDS#Object type',
-      getValue: (row: HistoryOperation) => row.DisplayType
+      getValue: (row: HistoryOperation) => row.DisplayType,
     });
     await this.addColumnDef({
       id: 'User',
       title: '#LDS#Operation performed by',
-      getValue: (row: HistoryOperation) => row.User
+      getValue: (row: HistoryOperation) => row.User,
     });
   }
 
   public async displayChangedPropertyListSidesheet(row: HistoryOperation) {
     if (row.Columns && row.Columns.length > 0) {
       let title = await this.translationProvider.get('#LDS#Heading View Operation Details').toPromise();
-      let subtitle = await this.translationProvider.get('#LDS#Type of operation').toPromise() + Object.values(ChangeType)[row.ChangeType].toString();
+      let subtitle =
+        (await this.translationProvider.get('#LDS#Type of operation').toPromise()) + Object.values(ChangeType)[row.ChangeType].toString();
 
-      if( row.ObjectDisplay)
-        subtitle += await this.translationProvider.get('#LDS#Object').toPromise() + row.ObjectDisplay
+      if (row.ObjectDisplay) subtitle += (await this.translationProvider.get('#LDS#Object').toPromise()) + row.ObjectDisplay;
 
-      this.sidesheet.open(ChangeOperationSidesheetComponent,
-        {
-          title: title,
-          subTitle: subtitle ,
-          width: 'max(400px, 40%)',
-          data: row,
-          testId: 'data-change-details-sidesheet'
-        }
-      );
+      this.sidesheet.open(ChangeOperationSidesheetComponent, {
+        title: title,
+        subTitle: subtitle,
+        width: calculateSidesheetWidth(700, 0.4),
+        data: row,
+        testId: 'data-change-details-sidesheet',
+      });
     }
   }
 }

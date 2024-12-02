@@ -1,28 +1,11 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import 'base/mixins';
 
 :host {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  height: 100%;
-  max-width: 100%;
-}
-
-.mat-card {
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  @include flex-column-container($overflow: hidden, $height: 100%, $max-width: 100%);
 }
 
 .imx-itshop-content {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  flex-grow: 1;
-
-  .mat-card {
-    flex-grow: 1;
-  }
+  @include flex-column-container-fill();
 }
 
 .imx-toolbar {
@@ -37,10 +20,6 @@
 
 .imx-toolbar-info {
   margin-right: 10px;
-}
-
-.mat-radio-button {
-  margin-right: 1em;
 }
 
 .imx-shoppingcart-top-container {

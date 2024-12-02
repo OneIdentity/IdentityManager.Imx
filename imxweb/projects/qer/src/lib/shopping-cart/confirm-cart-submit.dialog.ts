@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,7 +29,7 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'imx-confirm-cart-submit',
   templateUrl: './confirm-cart-submit.dialog.html',
-  styleUrls: ['./confirm-cart-submit.dialog.scss']
+  styleUrls: ['./confirm-cart-submit.dialog.scss'],
 })
-// tslint:disable-next-line: component-class-suffix
-export class ConfirmCartSubmitDialog { }
+// eslint-disable-next-line @angular-eslint/component-class-suffix
+export class ConfirmCartSubmitDialog {}

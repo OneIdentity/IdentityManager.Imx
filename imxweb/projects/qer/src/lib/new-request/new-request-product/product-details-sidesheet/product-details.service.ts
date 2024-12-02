@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,48 +29,41 @@ import { SafeUrl } from '@angular/platform-browser';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PortalShopServiceitems, QerProjectConfig } from 'imx-api-qer';
-import { IWriteValue, MultiValue } from 'imx-qbm-dbts';
-import { LdsReplacePipe } from 'qbm';
-import { ProductDetailsSidesheetComponent } from './product-details-sidesheet.component';
+import { IWriteValue, MultiValue, TypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { LdsReplacePipe, calculateSidesheetWidth } from 'qbm';
 import { ImageService } from '../../../itshop/image.service';
 import { ProjectConfigurationService } from '../../../project-configuration/project-configuration.service';
+import { ProductDetailsSidesheetComponent } from './product-details-sidesheet.component';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductDetailsService {
-
-  private projectConfig: QerProjectConfig;
-
   constructor(
     private readonly image: ImageService,
     private readonly ldsReplace: LdsReplacePipe,
     private readonly sidesheetService: EuiSidesheetService,
-    private readonly translateService: TranslateService,    
+    private readonly translateService: TranslateService,
     private readonly projectConfigService: ProjectConfigurationService,
-  ) { }
+  ) {}
 
-  public async showProductDetails(item: PortalShopServiceitems, recipients: IWriteValue<string>): Promise<void> {
+  public async showProductDetails(item: TypedEntity, recipients: IWriteValue<string>): Promise<void> {
+    const projectConfig = await this.projectConfigService.getConfig();
 
-    if (!this.projectConfig)      {
-      this.projectConfig = await this.projectConfigService.getConfig();
-    }
-        
     const orderStatus = await this.getOrderStatus(item, recipients);
     await this.sidesheetService
       .open(ProductDetailsSidesheetComponent, {
         title: await this.translateService.get('#LDS#Heading View Product Details').toPromise(),
         subTitle: item.GetEntity().GetDisplay(),
         icon: 'info',
-        width: 'min(60%, 600px)',
+        width: calculateSidesheetWidth(),
         padding: '0px',
         testId: 'product-details-sidesheet',
         data: {
           item,
           orderStatus: orderStatus,
           imageUrl: this.getProductImage(item),
-          projectConfig: this.projectConfig
+          projectConfig,
         },
       })
       .afterClosed()
@@ -85,19 +78,19 @@ export class ProductDetailsService {
     return inputValues.findIndex((i) => values.includes(i)) !== -1;
   }
 
-  public getProductImage(node: PortalShopServiceitems): SafeUrl {
+  public getProductImage(node: TypedEntity): SafeUrl | undefined {
     try {
       return this.image.getPath(node);
-    } catch(e) {
-
-    }
+    } catch (e) {}
   }
 
-  private async getOrderStatus(item: PortalShopServiceitems, recipients: IWriteValue<string>): 
-  Promise<{ statusIcon: string; statusDisplay: string } | null> {
+  private async getOrderStatus(
+    item: TypedEntity,
+    recipients: IWriteValue<string>,
+  ): Promise<{ statusIcon: string; statusDisplay: string } | undefined> {
     const orderableStatus = item.GetEntity().GetColumn('OrderableStatus').GetValue();
     if (!orderableStatus || orderableStatus.length === 0) {
-      return null;
+      return undefined;
     }
 
     switch (true) {

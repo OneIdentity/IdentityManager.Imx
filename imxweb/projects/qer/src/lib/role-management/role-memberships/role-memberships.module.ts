@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -52,7 +52,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     RemoveMembershipComponent,
     DynamicRoleComponent,
     ExcludedMembershipsComponent,
-    NotRequestableMembershipsComponent
+    NotRequestableMembershipsComponent,
   ],
   imports: [
     CommonModule,
@@ -71,10 +71,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     DataTreeModule,
     SourceDetectiveModule,
     SqlWizardModule,
-    SelectedElementsModule
+    SelectedElementsModule,
   ],
-  exports: [
-    RoleMembershipsComponent
-  ]
+  exports: [RoleMembershipsComponent],
 })
-export class RoleMembershipsModule { }
+export class RoleMembershipsModule {}

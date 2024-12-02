@@ -1,42 +1,11 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
+@import 'base/mixins.scss';
 
-.imx-helper-alert {
-  margin: 10px 0 20px auto;
-  width: 100%;
+.eui-sidesheet-content{
+  @include flex-column-container()
 }
-
-.imx-selected-entitlements {
-  margin: 0;
-  line-height: 36px;
-  flex: auto;
-
-  ::ng-deep .imx-badge.eui-badge .eui-badge-content {
-    font-size: 14px;
-    line-height: 14px;
-  }
-}
-
-.imx-badge {
-  background-color: inherit;
-}
-
-.eui-sidesheet-content {
-  display: flex;
-  flex-direction: column;
-  .imx-sidesheet-content {
-    flex: 1 1 auto;
-    height: inherit;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-}
-
 .eui-sidesheet-actions {
   > * {
     align-self: center;
-  }
-  > *:not(:last-child) {
-    margin-right: 10px;
   }
 }

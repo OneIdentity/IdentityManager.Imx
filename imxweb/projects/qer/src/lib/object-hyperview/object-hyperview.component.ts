@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,12 +26,12 @@
 
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 
-import { ShapeData } from 'imx-api-qer';
+import { ShapeData } from '@imx-modules/imx-api-qer';
+import { DbObjectKey } from '@imx-modules/imx-qbm-dbts';
 import { BusyService, HyperViewNavigation, HyperViewNavigationEnum, ShapeClickArgs } from 'qbm';
-import { ObjectHyperviewService } from './object-hyperview.service';
 import { Subscription } from 'rxjs';
-import { ObjectHyperview } from './object-hyperview-interface';
-import { DbObjectKey } from 'imx-qbm-dbts';
+import { ObjectHyperview } from './object-hyperview.interface';
+import { ObjectHyperviewService } from './object-hyperview.service';
 
 @Component({
   selector: 'imx-object-hyperview',
@@ -68,7 +68,9 @@ export class ObjectHyperviewComponent implements OnInit, OnChanges, OnDestroy {
     return this.busy.isBusy;
   }
   public hyperviewShapes: ShapeData[] = [];
+
   public navigation: HyperViewNavigation = { navigation: false, back: false, forward: false, first: false };
+
   private busy = new BusyService();
 
   /** Cache for shape data, using the hyperviewName as key. */
@@ -76,9 +78,7 @@ export class ObjectHyperviewComponent implements OnInit, OnChanges, OnDestroy {
   private navigationSubscriptions: Subscription;
   private hyperviewStates: ObjectHyperview[] = [];
 
-  constructor(
-    private readonly objectHyperviewService: ObjectHyperviewService,
-  ) {}
+  constructor(private readonly objectHyperviewService: ObjectHyperviewService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!(changes.objectUid?.isFirstChange() || changes.hyperviewName?.isFirstChange()) && (changes.hyperviewName || changes.objectUid)) {
@@ -88,7 +88,7 @@ export class ObjectHyperviewComponent implements OnInit, OnChanges, OnDestroy {
         this.navigation = { navigation: true, back: false, forward: false, first: false };
       }
       if (changes.hyperviewName && this.cached.has(this.hyperviewName)) {
-        this.hyperviewShapes = this.cached.get(this.hyperviewName);
+        this.hyperviewShapes = this.cached.get(this.hyperviewName) || [];
       } else {
         this.reload();
       }
@@ -98,8 +98,8 @@ export class ObjectHyperviewComponent implements OnInit, OnChanges, OnDestroy {
   public async ngOnInit(): Promise<void> {
     if (await this.objectHyperviewService.getNavigationPermission()) {
       // If the user has navigation permission: subscribe to the selected event emitter and set hyperviewStates to initial state.
-      this.activateNavigation();      
-    } 
+      this.activateNavigation();
+    }
     await this.reload();
   }
 
@@ -121,6 +121,7 @@ export class ObjectHyperviewComponent implements OnInit, OnChanges, OnDestroy {
 
   // Subscribe to the selected event emitter and set hyperviewStates to initial state.
   private activateNavigation(): void {
+    this.hyperviewStates = [{ type: this.objectType, uid: this.objectUid, selected: true }];
     this.navigation.navigation = true;
     this.navigationSubscriptions = this.selected.subscribe((shape) => {
       const hyperviewObject = DbObjectKey.FromXml(shape.objectKey);
@@ -137,10 +138,8 @@ export class ObjectHyperviewComponent implements OnInit, OnChanges, OnDestroy {
     try {
       const name = this.hyperviewName;
       const shapes = await this.objectHyperviewService.get(hyperviewType, hyperviewUid, name);
-
       // put in the cache
       this.cached.set(name, shapes);
-
       // is it still the one we need?
       this.hyperviewShapes = shapes || [];
       if (this.navigation.navigation) {
@@ -177,7 +176,9 @@ export class ObjectHyperviewComponent implements OnInit, OnChanges, OnDestroy {
     this.hyperviewStates.map((hyperview) => (hyperview.selected = false));
     this.hyperviewStates[index].selected = true;
     const selectedState = this.selectedHyperview;
-    this.reload(selectedState.type, selectedState.uid);
+    if (selectedState) {
+      this.reload(selectedState.type, selectedState.uid);
+    }
   }
 
   /**
@@ -190,7 +191,7 @@ export class ObjectHyperviewComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * Returns the selected hyperview.
    */
-  private get selectedHyperview(): ObjectHyperview {
+  private get selectedHyperview(): ObjectHyperview | undefined {
     return this.hyperviewStates.find((hyperview) => hyperview.selected);
   }
 }

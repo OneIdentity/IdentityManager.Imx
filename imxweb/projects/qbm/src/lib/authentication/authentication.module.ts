@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,12 +31,7 @@ import { AuthenticationService } from './authentication.service';
 import { OAuthService } from './oauth.service';
 
 @NgModule({
-  imports: [
-    CommonModule
-  ],
-  providers: [
-    AuthenticationService,
-    OAuthService
-  ]
+  imports: [CommonModule],
+  providers: [AuthenticationService, OAuthService],
 })
-export class AuthenticationModule { }
+export class AuthenticationModule {}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,15 +31,8 @@ import { EuiCoreModule } from '@elemental-ui/core';
 import { ApplicationPropertyComponent } from './application-property.component';
 
 @NgModule({
-  declarations: [
-    ApplicationPropertyComponent
-  ],
-  exports: [
-    ApplicationPropertyComponent,
-  ],
-  imports: [
-    CommonModule,
-    EuiCoreModule
-  ]
+  declarations: [ApplicationPropertyComponent],
+  exports: [ApplicationPropertyComponent],
+  imports: [CommonModule, EuiCoreModule],
 })
-export class ApplicationPropertyModule { }
+export class ApplicationPropertyModule {}

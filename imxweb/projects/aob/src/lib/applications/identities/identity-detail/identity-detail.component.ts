@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,16 +25,16 @@
  */
 
 import { Component, Inject, OnInit } from '@angular/core';
-import { EuiLoadingService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { PortalApplicationIdentitiesbyidentity } from 'imx-api-aob';
+import { EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { PortalApplicationIdentitiesbyidentity } from '@imx-modules/imx-api-aob';
 import {
   CollectionLoadParameters,
   DisplayColumns,
   EntitySchema,
   ExtendedTypedEntityCollection,
   IClientProperty,
-} from 'imx-qbm-dbts';
-import { DataSourceToolbarSettings, ImxTranslationProviderService } from 'qbm';
+} from '@imx-modules/imx-qbm-dbts';
+import { DataSourceToolbarSettings, DataViewSource, ImxTranslationProviderService } from 'qbm';
 import { IdentityDetailData } from '../identity-detail-data';
 import { IdentityService } from '../identity.service';
 
@@ -42,6 +42,7 @@ import { IdentityService } from '../identity.service';
   selector: 'imx-identity-detail',
   templateUrl: './identity-detail.component.html',
   styleUrls: ['./identity-detail.component.scss'],
+  providers: [DataViewSource],
 })
 export class IdentityDetailComponent implements OnInit {
   public dstSettings: DataSourceToolbarSettings;
@@ -53,15 +54,10 @@ export class IdentityDetailComponent implements OnInit {
   constructor(
     @Inject(EUI_SIDESHEET_DATA) public data: IdentityDetailData,
     private readonly identityService: IdentityService,
-    private readonly busyService: EuiLoadingService,
     public readonly translateProvider: ImxTranslationProviderService,
+    public dataSource: DataViewSource<PortalApplicationIdentitiesbyidentity>,
   ) {
     this.entitySchema = this.identityService.getByIdentitySchema();
-    this.navigationState = {
-      PageSize: 25,
-      StartIndex: 0,
-      search: null,
-    };
     this.displayedColumns = [
       this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
       this.entitySchema.Columns['OrderState'],
@@ -70,35 +66,15 @@ export class IdentityDetailComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    await this.setDst();
-  }
-
-  public async onNavigationStateChanged(navigationState: CollectionLoadParameters): Promise<void> {
-    this.navigationState = navigationState;
-    this.setDst();
-  }
-
-  public async onSearch(keywords: string): Promise<void> {
-    this.navigationState.StartIndex = 0;
-    this.navigationState.search = keywords;
-    this.setDst();
-  }
-
-  private async setDst(): Promise<void> {
-    this.dstSettings = {
-      dataSource: await this.getData(),
-      entitySchema: this.entitySchema,
-      navigationState: this.navigationState,
-      displayedColumns: this.displayedColumns,
-    };
-  }
-
-  private async getData(): Promise<ExtendedTypedEntityCollection<PortalApplicationIdentitiesbyidentity, unknown>> {
-    this.busyService.show();
-    try {
-      return await this.identityService.getByIdentity(this.data.application.GetEntity().GetKeys()[0], this.data.selectedItem.GetEntity().GetKeys()[0], this.navigationState);
-    } finally {
-      this.busyService.hide();
-    }
+    this.dataSource.init({
+      execute: (params: CollectionLoadParameters): Promise<ExtendedTypedEntityCollection<PortalApplicationIdentitiesbyidentity, unknown>> =>
+        this.identityService.getByIdentity(
+          this.data.application.GetEntity().GetKeys()[0],
+          this.data.selectedItem?.GetEntity().GetKeys()[0] || '',
+          params,
+        ),
+      schema: this.entitySchema,
+      columnsToDisplay: this.displayedColumns,
+    });
   }
 }

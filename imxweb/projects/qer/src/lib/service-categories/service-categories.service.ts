@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,26 +26,25 @@
 
 import { Injectable } from '@angular/core';
 
+import { PortalServicecategories } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, EntityCollectionData, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { ApiClientService } from 'qbm';
-import { CollectionLoadParameters, EntityCollectionData, TypedEntityCollectionData } from 'imx-qbm-dbts';
-import { PortalServicecategories } from 'imx-api-qer';
 import { QerApiService } from '../qer-api-client.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ServiceCategoriesService {
-
   constructor(
     private readonly apiClient: QerApiService,
-    private readonly apiProvider: ApiClientService
-  ) { }
+    private readonly apiProvider: ApiClientService,
+  ) {}
 
-  public async get(parameters: CollectionLoadParameters = {}): Promise<TypedEntityCollectionData<PortalServicecategories>> {
+  public async get(parameters: CollectionLoadParameters = {}): Promise<TypedEntityCollectionData<PortalServicecategories> | undefined> {
     return this.apiProvider.request(() =>
       this.apiClient.typedClient.PortalServicecategories.Get({
-        ...parameters
-      })
+        ...parameters,
+      }),
     );
   }
 

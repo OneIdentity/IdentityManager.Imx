@@ -1,12 +1,7 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
-@import '@elemental-ui/core/src/styles/_eui_palette.scss';
-
+@import 'base/mixins';
 
 :host {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  height: 100%;
+  @include flex-column-container($overflow: hidden, $height: 100%);
 }
 
 h2 {
@@ -14,11 +9,9 @@ h2 {
   margin-top: 20px;
 }
 
-.mat-card {
+.mat-mdc-card {
+  @include flex-column-container($overflow: hidden);
   width: max-content;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
   align-self: center;
   background-color: inherit;
 
@@ -27,21 +20,13 @@ h2 {
   }
 
   .mat-divider-horizontal {
-    position: inherit;
     margin: 20px 0;
-    border-top-style: dashed;
   }
 }
-.mat-card-content {
+.mat-mdc-card-content {
   display: flex;
 }
 
-.mat-card-avatar {
+.mat-mdc-card-avatar {
   align-self: center;
-}
-
-.mat-card-avatar > .mat-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
 }

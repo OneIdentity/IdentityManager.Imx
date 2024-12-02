@@ -1,7 +1,8 @@
 <imx-data-tree-wrapper
-  [selectedEntities]="selectedServiceCategory == null  ? [] : [selectedServiceCategory]"
+  [selectedEntities]="selectedServiceCategory == null ? [] : [selectedServiceCategory.GetEntity()]"
   [database]="treeDatabase"
   defaultIcon="partition"
   (nodeSelected)="onServiceCategorySelected($event)"
-  data-imx-identifier="category-tree">
+  data-imx-identifier="category-tree"
+>
 </imx-data-tree-wrapper>

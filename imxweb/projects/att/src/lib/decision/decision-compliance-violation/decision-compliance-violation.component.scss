@@ -1,47 +1,15 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
-
-@mixin imx-flex-row-container {
-  display: flex;
-  flex-direction: row;
-}
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
 
 .heading-wrapper {
-  @include imx-flex-row-container();
+  @include flex-row-container();
   flex: 0 0 auto;
-
-  .helper-alert {
-    display: flex;
-    margin-bottom: 15px;
-  }
-
-  .alert-wrapper {
-    width: 100%;
-    margin: 0 0 0 auto;
-    align-self: flex-end;
-  }
 }
 
-.mat-card-title {
+.mat-mdc-card-title {
   display: flex;
   align-items: center;
   margin-bottom: 17px;
-}
-
-.mat-expansion-panel {
-  margin-bottom: 20px;
-
-  &-header-title {
-    font-size: 24px;
-    font-weight: 500;
-  }
-
-  ::ng-deep .eui-alert {
-    width: auto;
-  }
-}
-
-.eui-badge {
-  padding-left: 10px;
 }
 
 .imx-container > * {
@@ -53,11 +21,13 @@
   margin-top: 5px;
   margin-bottom: 5px;
 }
-.imx-entitlement-subtitle, .imx-source-subtitle {
+.imx-entitlement-subtitle,
+.imx-source-subtitle {
   color: $color-gray-40;
 }
 
-.imx-risk-reduction-item, .imx-source-item {
+.imx-risk-reduction-item,
+.imx-source-item {
   list-style-type: circle;
   margin-left: 20px;
 }

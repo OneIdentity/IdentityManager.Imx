@@ -7,22 +7,11 @@
   overflow: hidden;
   height: 100%;
 
-  ::ng-deep .mat-tab-group {
-    height: 100%;
-    flex: 1 1 auto;
-    overflow: auto;
-
-    ::ng-deep .mat-tab-body-wrapper {
-      height: 100%;
-    }
-
-    ::ng-deep .mat-tab-body-active {
-      position: unset;
-    }
+  ::ng-deep .eui-search.mat-mdc-form-field.mat-form-field-appearance-outline {
+    margin-bottom: 0px;
   }
 
   .tab-wrapper {
-    padding: 20px;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -30,8 +19,9 @@
 
   .point-status-container {
     display: flex;
+    flex-direction: row;
     margin-bottom: 20px;
-    @include EUI-Elevation-1;
+    @include eui-elevation-1;
   }
 
   .status-wrapper {
@@ -45,30 +35,6 @@
     > :last-child {
       padding-right: 0;
     }
-  }
-
-  .chart-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-    @include EUI-Elevation-1;
-  }
-
-  .chart-title {
-    font-weight: 400;
-    margin-bottom: 10px;
-  }
-
-  .chart-wrapper {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    margin: auto;
-  }
-
-  .chart-zoomable {
-    cursor: crosshair;
   }
 
   .imx-no-data {
@@ -99,21 +65,13 @@
       }
     }
   }
-
-  .below-tabs {
+  .under-card {
     display: flex;
-    padding: 0 20px 20px;
+    align-items: center;
     justify-content: space-between;
-    
-    button {
-      display: flex;
-      @include EUI-Elevation-1;
-      @include Ease-Transition;
-      eui-icon {
-        margin-left: 24px;
-      }
-    }
+    padding: 0 20px 20px 20px;
   }
+
 }
 
 // Theming
@@ -121,16 +79,11 @@
   @include Stat-Colors;
   @include Point-Stat-Colors;
 
-  ::ng-deep .mat-tab-labels {
-    background-color: $color-gray-0;
-  }
-
   .status-title {
     color: $color-gray-40;
   }
 
-  .point-status-container,
-  .chart-container {
+  .point-status-container {
     border: 1px solid $color-gray-10;
   }
 
@@ -151,11 +104,11 @@
   ::ng-deep .bb-zoom-reset {
     background-color: $color-gray-0;
     border-color: $color-gray-20;
-    @include EUI-Elevation-1;
+    @include eui-elevation-1;
 
     &:hover {
       background-color: $color-orange-20;
-      @include Ease-Transition;
+      @include ease-transition;
     }
   }
 
@@ -169,12 +122,10 @@
     }
   }
 
-  .colored-org-icon,
   .colored-org-text {
     color: $color-blue-60;
   }
 
-  .colored-favorite-icon,
   .colored-favorite-text {
     color: $color-orange-60;
   }
@@ -185,12 +136,7 @@
     @include Stat-Colors(eui-dark-theme);
     @include Point-Stat-Colors(eui-dark-theme);
 
-    ::ng-deep .mat-tab-labels {
-      background-color: $color-gray-70;
-    }
-
-    .point-status-container,
-    .chart-container {
+    .point-status-container {
       border: 1px solid $color-gray-50;
     }
 
@@ -207,7 +153,7 @@
       border-color: $color-gray-60;
 
       &:hover {
-        @include Ease-Transition;
+        @include ease-transition;
         background-color: $color-orange-80;
       }
     }
@@ -232,12 +178,10 @@
       }
     }
 
-    .colored-org-icon,
     .colored-org-text {
       color: $color-blue-40;
     }
 
-    .colored-favorite-icon,
     .colored-favorite-text {
       color: $color-orange-40;
     }
@@ -246,15 +190,10 @@
 
 .eui-contrast-theme {
   :host {
-   
-    ::ng-deep .mat-tab-labels {
-      background-color: $color-gray-80;
-    }
     @include Stat-Colors(eui-dark-theme);
     @include Point-Stat-Colors(eui-dark-theme);
 
-    .point-status-container,
-    .chart-container {
+    .point-status-container {
       border: 1px solid $color-gray-70;
     }
 
@@ -271,7 +210,7 @@
       border-color: $color-gray-80;
 
       &:hover {
-        @include Ease-Transition;
+        @include ease-transition;
         background-color: $color-orange-90;
       }
     }
@@ -315,12 +254,10 @@
       }
     }
 
-    .colored-org-icon,
     .colored-org-text {
       color: $color-blue-40;
     }
 
-    .colored-favorite-icon,
     .colored-favorite-text {
       color: $color-orange-40;
     }

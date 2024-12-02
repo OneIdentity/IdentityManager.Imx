@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,18 +26,20 @@
 
 import { Component, ElementRef, ErrorHandler, Input, OnInit, ViewChild } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
+import { PortalRequestsWorkflowsSubmethods } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, DisplayColumns, EntitySchema, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
-import { PortalRequestsWorkflowsSubmethods, PortalRequestsWorkflowsSubmethodsInteractive } from 'imx-api-qer';
-import { CollectionLoadParameters, DisplayColumns, EntitySchema } from 'imx-qbm-dbts';
 import {
+  BusyService,
+  calculateSidesheetWidth,
+  ConfirmationService,
   DataSourceToolbarSettings,
   DataSourceWrapper,
   DataTableComponent,
-  ConfirmationService,
-  LdsReplacePipe, BusyService,
+  HELP_CONTEXTUAL,
   HelpContextualComponent,
   HelpContextualService,
-  HELP_CONTEXTUAL
+  LdsReplacePipe,
 } from 'qbm';
 import { QerPermissionsService } from '../../admin/qer-permissions.service';
 import { ApprovalWorkflowDataService } from '../approval-workflow-data.service';
@@ -55,10 +57,10 @@ export class ApprovalWorkflowHomeComponent implements OnInit {
   @ViewChild('dataTable', { static: false }) public dataTable: DataTableComponent<PortalRequestsWorkflowsSubmethods>;
 
   public readonly dstWrapper: DataSourceWrapper<PortalRequestsWorkflowsSubmethods>;
-  public dstSettings: DataSourceToolbarSettings;
-  public selectedWorkFlows: PortalRequestsWorkflowsSubmethods[] = [];
+  public dstSettings: DataSourceToolbarSettings | undefined;
+  public selectedWorkFlows: TypedEntity[] = [];
 
-  public standbyWorkFlowInteractive: PortalRequestsWorkflowsSubmethodsInteractive;
+  public standbyWorkFlowInteractive: PortalRequestsWorkflowsSubmethods | undefined;
   public standbyPromise: Promise<any>;
   public busyService = new BusyService();
   public entitySchema: EntitySchema;
@@ -76,14 +78,14 @@ export class ApprovalWorkflowHomeComponent implements OnInit {
     private elementRef: ElementRef,
     private readonly helpContextualService: HelpContextualService,
     private confirmation: ConfirmationService,
-    private ldsReplace: LdsReplacePipe
+    private ldsReplace: LdsReplacePipe,
   ) {
     const entityWorkFlowSchema = this.approvalWorkFlowDataService.approvalworkflowSchema;
     this.entitySchema = entityWorkFlowSchema;
     this.dstWrapper = new DataSourceWrapper(
       (state) => this.approvalWorkFlowDataService.getWorkFlows(state),
       [entityWorkFlowSchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME], entityWorkFlowSchema.Columns.DaysToAbort],
-      entityWorkFlowSchema
+      entityWorkFlowSchema,
     );
   }
 
@@ -103,23 +105,26 @@ export class ApprovalWorkflowHomeComponent implements OnInit {
     }
   }
 
-  public onSelectionChanged(workflows: PortalRequestsWorkflowsSubmethods[]): void {
+  public onSelectionChanged(workflows: TypedEntity[]): void {
     this.selectedWorkFlows = workflows;
   }
 
   public async deleteMultiple(): Promise<void> {
-    if (!await this.confirmation.confirm({
-      Title: '#LDS#Heading Delete Workflow',
-      Message: this.selectedWorkFlows.length > 1
-        ? this.ldsReplace.transform('#LDS#Are you sure you want to delete {0} workflows?', this.selectedWorkFlows.length)
-        : '#LDS#Are you sure you want to delete the workflow?'
-    })) {
+    if (
+      !(await this.confirmation.confirm({
+        Title: '#LDS#Heading Delete Workflow',
+        Message:
+          this.selectedWorkFlows.length > 1
+            ? this.ldsReplace.transform('#LDS#Are you sure you want to delete {0} workflows?', this.selectedWorkFlows.length)
+            : '#LDS#Are you sure you want to delete the workflow?',
+      }))
+    ) {
       return;
     }
     this.approvalWorkFlowDataService.handleOpenLoader();
     try {
       await Promise.all(
-        this.selectedWorkFlows.map((workFlow) => this.approvalWorkFlowDataService.workFlowDelete(workFlow.GetEntity().GetKeys().join(',')))
+        this.selectedWorkFlows.map((workFlow) => this.approvalWorkFlowDataService.workFlowDelete(workFlow.GetEntity().GetKeys().join(','))),
       );
       await this.getData();
       this.selectedWorkFlows = [];
@@ -130,7 +135,7 @@ export class ApprovalWorkflowHomeComponent implements OnInit {
   }
 
   public async getNextWorkFlow(): Promise<void> {
-    if (Promise.all([this.standbyPromise])) {
+    if (await Promise.all([this.standbyPromise])) {
       this.standbyWorkFlowInteractive = undefined;
       this.standbyPromise = this.approvalWorkFlowDataService.getNewWorkFlow().then((workflow) => {
         this.standbyWorkFlowInteractive = workflow;
@@ -158,7 +163,7 @@ export class ApprovalWorkflowHomeComponent implements OnInit {
     }
     this.helpContextualService.setHelpContextId(HELP_CONTEXTUAL.ApprovalWorkflowManagerCreate);
     const requestData: RequestWorkflowData = {
-      Object: this.standbyWorkFlowInteractive,
+      Object: this.standbyWorkFlowInteractive as PortalRequestsWorkflowsSubmethods,
       Data: this.approvalWorkFlowDataService.approvalWorkFlowRequestColumns,
       SaveBeforeClosing: true,
     };
@@ -167,11 +172,11 @@ export class ApprovalWorkflowHomeComponent implements OnInit {
         title: await this.translate.get('#LDS#Heading Create Approval Workflow').toPromise(),
         icon: 'add',
         padding: '0',
-        width: 'max(700px, 70%)',
+        width: calculateSidesheetWidth(1000),
         disableClose: true,
         testId: 'approval-workflow-create-sidesheet',
         data: requestData,
-        headerComponent: HelpContextualComponent
+        headerComponent: HelpContextualComponent,
       })
       .afterClosed()
       .toPromise();
@@ -197,26 +202,26 @@ export class ApprovalWorkflowHomeComponent implements OnInit {
     };
   }
 
-  public async viewDetails(args: { workFlow?: PortalRequestsWorkflowsSubmethods; isNew?: boolean }): Promise<void> {
+  public async viewDetails(args: { workFlow?: TypedEntity; isNew?: boolean }): Promise<void> {
     this.approvalWorkFlowDataService.handleOpenLoader();
     try {
       let sideSheetData: EditorData;
       if (args.isNew) {
         sideSheetData = {
-          WorkFlowKey: this.standbyWorkFlowInteractive.GetEntity().GetKeys()[0],
+          WorkFlowKey: this.standbyWorkFlowInteractive?.GetEntity().GetKeys()[0],
           WorkFlow: this.standbyWorkFlowInteractive,
           WorkFlowSteps: [],
         };
       } else {
         // Make API call for details, throw an error if we fail
-        sideSheetData = await this.grabInteractive(args.workFlow.GetEntity().GetKeys()[0]);
+        sideSheetData = await this.grabInteractive(args.workFlow?.GetEntity().GetKeys()[0] || '');
       }
       const result = await this.sidesheetService
         .open(ApprovalWorkflowEditComponent, {
           title: await this.translate.get('#LDS#Heading Edit Approval Workflow').toPromise(),
           icon: 'workflow',
           padding: '0',
-          width: 'max(700px, 70%)',
+          width: calculateSidesheetWidth(1000),
           disableClose: true,
           testId: 'approval-workflow-edit-sidesheet',
           data: sideSheetData,

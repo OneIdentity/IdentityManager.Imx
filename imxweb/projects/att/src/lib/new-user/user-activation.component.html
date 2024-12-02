@@ -1,23 +1,20 @@
 <imx-mast-head></imx-mast-head>
 
 <div class="pagecontent">
+  <h2 class="mat-headline-5">{{ '#LDS#Heading Confirm Email Address' | translate }}</h2>
 
-	<h1 class="mat-headline">{{ '#LDS#Heading Confirm Email Address' | translate }}</h1>
+  <mat-spinner *ngIf="busy"></mat-spinner>
 
-	<imx-usermessage></imx-usermessage>
+  <ng-container *ngIf="!busy">
+    <eui-alert>{{ ldsText | translate }}</eui-alert>
+    <div class="imx-button-bar-transparent">
+      <button mat-flat-button *ngIf="hasFormat && !hasProblems" (click)="resendMail()">
+        {{ '#LDS#Send confirmation email again' | translate }}
+      </button>
 
-	<mat-spinner *ngIf="busy"></mat-spinner>
-
-	<ng-container *ngIf="!busy">
-    <eui-alert>{{ldsText| translate}}</eui-alert>
-		<div class="button-bar">
-			<button mat-raised-button *ngIf="hasFormat && !hasProblems" (click)="resendMail()">{{'#LDS#Send confirmation email again' |
-				translate}}
-			</button>
-
-			<button mat-raised-button color="primary" *ngIf="data?.ApprovalState == 1" (click)="confirmEMail()">
-				{{'#LDS#Confirm email address' | translate}}
-			</button>
-		</div>
-	</ng-container>
+      <button mat-flat-button color="primary" *ngIf="data?.ApprovalState == 1" (click)="confirmEMail()">
+        {{ '#LDS#Confirm email address' | translate }}
+      </button>
+    </div>
+  </ng-container>
 </div>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,19 +26,17 @@
 
 import { Component, Inject, OnDestroy } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
-import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
-import { OverlayRef } from '@angular/cdk/overlay';
 
 import { ColumnDependentReference, ConfirmationService } from 'qbm';
 import { ReportSubscription } from '../report-subscription/report-subscription';
 
 @Component({
   templateUrl: './subscription-details.component.html',
-  styleUrls: ['./subscription-details.component.scss']
+  styleUrls: ['./subscription-details.component.scss'],
 })
 export class SubscriptionDetailsComponent implements OnDestroy {
-
   public readonly formGroup = new UntypedFormGroup({});
   public readonly cdrList: ColumnDependentReference[];
   public closeClickSubscription: Subscription;
@@ -48,11 +46,10 @@ export class SubscriptionDetailsComponent implements OnDestroy {
     @Inject(EUI_SIDESHEET_DATA) public readonly subscription: ReportSubscription,
     public readonly sidesheetRef: EuiSidesheetRef,
     private readonly busyService: EuiLoadingService,
-    private readonly confirmation: ConfirmationService
+    private readonly confirmation: ConfirmationService,
   ) {
     this.closeClickSubscription = this.sidesheetRef.closeClicked().subscribe(async () => {
-      if (!this.formGroup.dirty
-        || await this.confirmation.confirmLeaveWithUnsavedChanges()) {
+      if (!this.formGroup.dirty || (await this.confirmation.confirmLeaveWithUnsavedChanges())) {
         this.sidesheetRef.close(this.reload);
       }
     });
@@ -63,12 +60,13 @@ export class SubscriptionDetailsComponent implements OnDestroy {
   }
 
   public async submit(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
     try {
       await this.subscription.submit(true);
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
       this.reload = true;
       this.formGroup.markAsPristine();
     }

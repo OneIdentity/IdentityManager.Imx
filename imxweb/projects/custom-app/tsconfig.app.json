@@ -1,14 +1,13 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "strictNullChecks": true,
     "outDir": "../../out-tsc/app",
     "types": []
   },
-  "files": [
-    "src/main.ts",
-    "src/polyfills.ts"
-  ],
-  "include": [
-    "projects/custom-app/src/**/*.d.ts"
-  ]
+  "angularCompilerOptions": {
+    "strictTemplates": true
+  },
+  "files": ["src/main.ts", "src/polyfills.ts"],
+  "include": ["projects/custom-app/src/**/*.d.ts"]
 }

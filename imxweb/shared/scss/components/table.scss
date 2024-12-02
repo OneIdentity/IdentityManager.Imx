@@ -1,0 +1,337 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
+
+/* Elemental UI */
+
+/* Angular Material */
+
+/* Angular Material - table*/
+
+.mat-mdc-table {
+  tbody {
+    .mat-mdc-row {
+      .mat-mdc-cell {
+        .imx-table-column-ellipsis {
+          width: 120px;
+          display: block;
+          white-space: nowrap;
+          overflow-x: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }
+}
+
+table.mat-mdc-table {
+  box-shadow: none;
+  padding: 1px;
+}
+/* Angular Material - cell */
+
+td.mat-mdc-cell {
+  padding-right: 10px;
+  .mdc-button {
+    white-space: nowrap;
+  }
+}
+td.imx-table-cell {
+  div {
+    @include flex-row-container($height: fit-content, $width: fit-content);
+  }
+}
+
+// Handle cursor icons, make sure divs are minimal so we don't have the text icon too much
+.imx-data-table-highlightedActive {
+  .mat-mdc-row {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+  .mat-mdc-cell {
+    // Make sure to exclude checkboxes and class imx-progress-column as they behave differently with content fitting
+    *:not(
+        .mat-mdc-checkbox,
+        .imx-progress-column,
+        .imx-progress-column *,
+        .mdc-button,
+        .mdc-button *,
+        .mdc-icon-button,
+        imx-info-badge,
+        imx-info-badge *
+      ) {
+      &:hover {
+        cursor: text;
+      }
+      &:only-child {
+        @include flex-row-container($height: fit-content, $width: fit-content);
+      }
+    }
+
+    > .mdc-button,
+    .mat-mdc-stroked-button,
+    .mat-mdc-raised-button,
+    .mat-mdc-flat-button,
+    .mat-icon-button {
+      &:hover {
+        cursor: pointer;
+      }
+      & *:hover {
+        cursor: inherit !important;
+      }
+    }
+  }
+}
+
+/* Imx */
+
+.mat-mdc-card.imx-table-container,
+.div.imx-table-container,
+.imx-table-container {
+  @include flex-column-container-fill();
+  height: inherit;
+
+  > imx-data-table {
+    flex-grow: 2;
+  }
+}
+
+.imx-table-container.overflow-auto {
+  overflow: auto;
+}
+
+.imx-table-container-for-simple-table {
+  @include flex-column-container-fill();
+  overflow: auto;
+}
+
+.imx-simple-table {
+  width: 100%;
+  max-height: 100%;
+  box-shadow: none;
+  overflow: auto;
+}
+
+/* Imx - table */
+.imx-data-table-grouped {
+  @include flex-column-container-fill();
+
+  .spaced-left {
+    margin-left: 5px;
+  }
+
+  td.mat-mdc-cell {
+    padding-top: 6px;
+    padding-bottom: 6px;
+
+    div {
+      overflow: hidden;
+
+      &.group-row-expanded {
+        margin-bottom: 15px;
+      }
+    }
+    table {
+      td.mat-mdc-cell {
+        div {
+          overflow: unset;
+        }
+      }
+    }
+  }
+
+  .imx-data-table-grouped-content {
+    flex: 1 1 auto;
+    overflow: auto;
+  }
+}
+
+.imx-table-action-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+/* Imx - row*/
+.imx-hidden-header.mat-mdc-header-row {
+  display: none;
+}
+
+.mat-mdc-row.imx_MatTableRow {
+  min-height: 60px;
+}
+
+/* Imx - column*/
+
+.imx-table-column.mat-mdc-column-select {
+  overflow: initial;
+  max-width: 50px;
+  min-width: 50px;
+  width: 50px;
+  margin-right: 15px;
+}
+
+.imx-table-column {
+  padding-right: 15px;
+  .mat-mdc-checkbox {
+    &:hover {
+      cursor: pointer;
+    }
+    & *:hover {
+      cursor: inherit !important;
+    }
+  }
+}
+
+.imx-long-title-table .mat-mdc-row .mat-mdc-cell {
+  padding: 0 10px;
+  div[imxTitle] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    .button-row {
+      border-top-style: solid;
+      border-top-width: 0px;
+      @include flex-row-container();
+      justify-content: flex-end;
+    }
+  }
+}
+
+.imx-table-column {
+  padding-right: 15px;
+}
+
+td.mat-mdc-cell div[subtitle] {
+  font-size: smaller;
+  color: $color-gray-40;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 500px;
+}
+
+.mat-mdc-cell.imx_ColumnCell {
+  text-overflow: ellipsis;
+}
+
+.imx_ColumnHeader {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mat-mdc-header-cell.imx_CheckableCell {
+  flex: 0 0 45px;
+}
+
+.mat-mdc-cell.imx_CheckableCell {
+  flex: 0 0 45px;
+}
+
+/* Media Screens*/
+
+@media screen and (max-width: 768px) {
+  td.mat-mdc-cell div[subtitle] {
+    max-width: 250px;
+  }
+}
+
+/* Default theme */
+
+.imx-data-table-row-highlighted {
+  background-color: $color-gray-5;
+}
+
+.imx-data-table-row-conditional {
+  background-color: $color-red-20;
+}
+
+.imx-data-table-highlightedActive .mat-mdc-row:hover,
+.mat-mdc-row:hover {
+  background-color: $color-blue-10;
+}
+
+/* Dark theme */
+
+.eui-dark-theme {
+  .mat-mdc-header-cell {
+    color: $color-gray-10;
+    border-bottom-color: $color-gray-60;
+  }
+  .mat-mdc-table {
+    background-color: $color-gray-70;
+  }
+
+  .custom-row td {
+    border-bottom-color: $color-gray-60;
+  }
+
+  .imx-data-table-row-highlighted,
+  .imx-data-table-highlightedActive.mat-mdc-row:hover,
+  .mat-mdc-row:hover {
+    background-color: $color-gray-60;
+  }
+
+  .custom-row:hover {
+    background-color: $color-gray-60 !important;
+  }
+
+  .imx-data-table-row-conditional {
+    background-color: $color-red-80;
+  }
+}
+
+/* High-contrast theme */
+
+.eui-contrast-theme {
+  .mat-mdc-header-cell {
+    color: $color-gray-0;
+    border-bottom-color: $color-gray-60;
+  }
+
+  .mat-mdc-table {
+    background-color: $color-gray-90;
+  }
+
+  .imx-data-table-row-highlighted,
+  .imx-data-table-highlightedActive .mat-mdc-row:hover,
+  .mat-mdc-row:hover {
+    background-color: $color-gray-0 !important;
+
+    td.mat-mdc-cell {
+      color: $color-gray-100;
+    }
+
+    .mat-mdc-checkbox-frame {
+      border-color: $color-gray-100;
+    }
+  }
+
+  table {
+    border-top: none;
+  }
+
+  th:after,
+  th:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+  }
+  th:before {
+    top: 0;
+    border-top: 1px solid white;
+  }
+  th:after {
+    bottom: 0;
+    border-bottom: 1px solid white;
+  }
+
+  .imx-data-table-row-conditional {
+    background-color: $color-red-80;
+  }
+
+  .imx-data-table-selection-info {
+    color: $color-blue-40;
+  }
+}

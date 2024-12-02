@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,7 +28,7 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { CollectionLoadParameters, EntitySchema, IClientProperty, DisplayColumns } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, DisplayColumns, EntitySchema, IClientProperty } from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarSettings } from 'qbm';
 import { DbQueueService } from './db-queue.service';
 
@@ -38,7 +38,6 @@ import { DbQueueService } from './db-queue.service';
   styleUrls: ['./db-queue.component.scss'],
 })
 export class DbQueueComponent implements OnInit {
-
   public dstSettings: DataSourceToolbarSettings;
   public readonly entitySchema: EntitySchema;
   public readonly DisplayColumns = DisplayColumns;
@@ -46,19 +45,21 @@ export class DbQueueComponent implements OnInit {
   private navigationState: CollectionLoadParameters;
   private readonly displayedColumns: IClientProperty[];
 
-  constructor(private readonly dbService: DbQueueService, private readonly busyService: EuiLoadingService) {
+  constructor(
+    private readonly dbService: DbQueueService,
+    private readonly busyService: EuiLoadingService,
+  ) {
     this.entitySchema = dbService.DbSchema;
     this.displayedColumns = [
       this.entitySchema.Columns.UID_Task,
       this.entitySchema.Columns.CountProcessing,
-      this.entitySchema.Columns.CountWaiting
+      this.entitySchema.Columns.CountWaiting,
     ];
   }
 
   public async ngOnInit(): Promise<void> {
     await this.getData({});
   }
-
 
   public onSearch(keywords: string): Promise<void> {
     return this.getData({ StartIndex: 0, search: keywords });
@@ -75,9 +76,11 @@ export class DbQueueComponent implements OnInit {
 
       dbQueue.Data = dbQueue.Data.filter((row) => {
         for (const column of this.displayedColumns) {
-          const cellValue = row.GetEntity().GetColumn(column.ColumnName).GetDisplayValue().toLowerCase();
-          if (cellValue.includes(searchKeyword.toLowerCase())) {
-            return true;
+          if (column.ColumnName) {
+            const cellValue = row.GetEntity().GetColumn(column.ColumnName).GetDisplayValue().toLowerCase();
+            if (cellValue.includes(searchKeyword.toLowerCase())) {
+              return true;
+            }
           }
         }
         return false;

@@ -1,14 +1,14 @@
 <ng-container *ngIf="hasKpis() || isLoading; else nonExisting">
-<div class="imx-kpi-site">
-  <h3>
-    {{ '#LDS#KPIs That Affect This Application' | translate }}
-  </h3>
-  <imx-busy-indicator *ngIf="isLoading"></imx-busy-indicator>
-  <div *ngIf="!isLoading">
-    <h4 *ngIf="chartDataFail.length > 0">{{ '#LDS#Failed' | translate }}</h4>
-    <ul class="imx-kpi-list">
-      <li *ngFor="let chart of chartDataFail">
-        <mat-card>
+  <div class="imx-kpi-site">
+    <h3>
+      {{ '#LDS#KPIs That Affect This Application' | translate }}
+    </h3>
+    <imx-busy-indicator *ngIf="isLoading"></imx-busy-indicator>
+    <div *ngIf="!isLoading">
+      <h4 *ngIf="chartDataFail.length > 0">{{ '#LDS#Failed' | translate }}</h4>
+      <ul class="imx-kpi-list">
+        <li *ngFor="let chart of chartDataFail">
+          <mat-card>
             <div mat-card-avatar class="imx-fail">
               <eui-icon icon="ignore" size="m"></eui-icon>
             </div>
@@ -16,47 +16,61 @@
               <div class="imx-kpi-text" [matTooltip]="chart.Display">{{ chart.Display }}</div>
             </mat-card-content>
             <div class="imx-spacer"></div>
-            <mat-card-actions class ="imx-kpi-tile-actions">
-              <button *ngIf="hasDetails(chart)" mat-stroked-button data-imx-identifier="KPI_overview_showFailedShowDetails"
-              (click)="showDetails(chart, true)">{{ '#LDS#Details' | translate }}</button>
+            <mat-card-actions class="imx-kpi-tile-actions">
+              <button
+                *ngIf="hasDetails(chart)"
+                mat-stroked-button
+                data-imx-identifier="KPI_overview_showFailedShowDetails"
+                (click)="showDetails(chart, true)"
+              >
+                {{ '#LDS#Details' | translate }}
+              </button>
             </mat-card-actions>
-        </mat-card>
-      </li>
-    </ul>
-    <h4 *ngIf="chartDataPass.length > 0">{{ '#LDS#Passed' | translate }}</h4>
-    <ul class="imx-kpi-list">
-      <li *ngFor="let chart of chartDataPass">
-        <mat-card>
+          </mat-card>
+        </li>
+      </ul>
+      <h4 *ngIf="chartDataPass.length > 0">{{ '#LDS#Passed' | translate }}</h4>
+      <ul class="imx-kpi-list">
+        <li *ngFor="let chart of chartDataPass">
+          <mat-card>
             <div mat-card-avatar class="imx-pass">
               <eui-icon icon="check" size="m"></eui-icon>
             </div>
-          <mat-card-content class="imx-kpi-content">
-            <div class="imx-kpi-text" [matTooltip]="chart.Display">{{ chart.Display }}</div>
-          </mat-card-content>
-          <div class="imx-spacer"></div>
-          <mat-card-actions class ="imx-kpi-tile-actions">
-            <button *ngIf="hasDetails(chart)" mat-stroked-button data-imx-identifier="KPI_overview_showPassedShowDetails"
-            (click)="showDetails(chart, false)">{{ '#LDS#Details' | translate }}</button>
-          </mat-card-actions>
-        </mat-card>
-      </li>
-    </ul>
+            <mat-card-content class="imx-kpi-content">
+              <div class="imx-kpi-text" [matTooltip]="chart.Display">{{ chart.Display }}</div>
+            </mat-card-content>
+            <div class="imx-spacer"></div>
+            <mat-card-actions class="imx-kpi-tile-actions">
+              <button
+                *ngIf="hasDetails(chart)"
+                mat-stroked-button
+                data-imx-identifier="KPI_overview_showPassedShowDetails"
+                (click)="showDetails(chart, false)"
+              >
+                {{ '#LDS#Details' | translate }}
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </li>
+      </ul>
+    </div>
   </div>
-</div>
 </ng-container>
 
 <!-- Template for a chart dialog -->
 <ng-template #chartdialog let-data>
-  <div mat-dialog-title>
-    <div [ngClass]="data.failed? 'imx-fail imx-title-text':'imx-pass imx-title-text'">{{ (data.failed ? '#LDS#Failed': '#LDS#Passed') | translate }}</div>
-    <button mat-icon-button  class="mat-button imx-close-dialog-button" data-imx-identifier="KPI_overview_closeChartDialog" mat-dialog-close>
+  <div mat-dialog-title class="imx-dialog-title-closable">
+    <div [ngClass]="data.failed ? 'imx-fail imx-title-text' : 'imx-pass imx-title-text'">
+      {{ (data.failed ? '#LDS#Failed' : '#LDS#Passed') | translate }}
+    </div>
+    <button mat-icon-button class="mat-button imx-button-close-dialog" data-imx-identifier="KPI_overview_closeChartDialog" mat-dialog-close>
       <eui-icon icon="close" size="large"></eui-icon>
     </button>
   </div>
   <div mat-dialog-content>
     <h2 class="imx-title-text">{{ data.chart.display }}</h2>
     <p class="imx-title-text">{{ data.chart.description }}</p>
-    <div class="imx-chart">
+    <div class="imx-chart-container-center">
       <eui-billboard [options]="data.chart.options"></eui-billboard>
     </div>
   </div>
@@ -64,8 +78,8 @@
 
 <!-- Template for non existing entitlements -->
 <ng-template #nonExisting>
-  <div class="imx-aob-kpi-empty">
-    <eui-icon icon="areachart" size="100px"></eui-icon>
+  <div class="imx-no-results">
+    <eui-icon icon="areachart"></eui-icon>
     <h2>
       {{ '#LDS#There are no KPIs affecting this application.' | translate }}
     </h2>

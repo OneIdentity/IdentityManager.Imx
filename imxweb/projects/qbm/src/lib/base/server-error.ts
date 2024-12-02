@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,15 +24,15 @@
  *
  */
 
-import { MethodDescriptor } from 'imx-qbm-dbts';
+import { MethodDescriptor } from '@imx-modules/imx-qbm-dbts';
 
 export class ServerError extends Error {
-    protected messageUserFriendly: string;
+  protected messageUserFriendly: string;
 
-    constructor(message: string, endpoint?: MethodDescriptor<any>) {
-        super(message + (endpoint ? '\n' + JSON.stringify(endpoint) : ''));
-        this.messageUserFriendly = message;
-    }
+  constructor(message: string, endpoint?: MethodDescriptor<any>) {
+    super(message + (endpoint ? '\n' + JSON.stringify(endpoint) : ''));
+    this.messageUserFriendly = message;
+  }
 
-    public toString = (): string => this.messageUserFriendly;
+  public toString = (): string => this.messageUserFriendly;
 }

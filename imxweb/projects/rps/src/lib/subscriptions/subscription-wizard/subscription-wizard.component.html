@@ -5,8 +5,14 @@
       <div class="imx-report-table">
         <imx-report-selector [controlHeigth]="500" formControlName="reportTable"></imx-report-selector>
       </div>
-      <div class="imx-step-button">
-        <button [disabled]="!reportFormGroup.dirty" mat-stroked-button color="primary" matStepperNext data-imx-identifier="subscription-wizard-nextTo-step-2">
+      <div class="imx-button-stepper">
+        <button
+          [disabled]="!reportFormGroup.dirty"
+          mat-stroked-button
+          color="primary"
+          matStepperNext
+          data-imx-identifier="subscription-wizard-nextTo-step-2"
+        >
           {{ '#LDS#Next' | translate }}
         </button>
       </div>
@@ -23,11 +29,17 @@
           [subscription]="newSubscription"
         ></imx-subscription-properties>
       </div>
-      <div class="imx-step-button">
+      <div class="imx-button-stepper">
         <button mat-stroked-button matStepperPrevious data-imx-identifier="subscription-wizard-backtTo-step-1">
           {{ '#LDS#Back' | translate }}
         </button>
-        <button [disabled]="reportParameterFormGroup.invalid" mat-stroked-button color="primary" matStepperNext data-imx-identifier="subscription-wizard-nextTo-step-3">
+        <button
+          [disabled]="reportParameterFormGroup.invalid"
+          mat-stroked-button
+          color="primary"
+          matStepperNext
+          data-imx-identifier="subscription-wizard-nextTo-step-3"
+        >
           {{ '#LDS#Next' | translate }}
         </button>
       </div>
@@ -46,7 +58,7 @@
         formControlName="additionalSubscribers"
       >
       </imx-multi-select-formcontrol>
-      <div class="imx-step-button">
+      <div class="imx-button-stepper">
         <button mat-stroked-button matStepperPrevious data-imx-identifier="subscription-wizard-backTo-step-2">
           {{ '#LDS#Back' | translate }}
         </button>
@@ -58,12 +70,18 @@
   </mat-step>
   <mat-step data-imx-identifier="subscription-wizard-step-4-overview">
     <ng-template matStepLabel>{{ '#LDS#Check and create subscription' | translate }}</ng-template>
-    <imx-subscription-overview [isWaitingForLoad]="isLoadingOverview" [subscription]="newSubscription" [subscribersChanged]="subscribersChangedSubject"></imx-subscription-overview>
-    <div class="imx-step-button">
+    <imx-subscription-overview
+      [isWaitingForLoad]="isLoadingOverview"
+      [subscription]="newSubscription"
+      [subscribersChanged]="subscribersChangedSubject"
+    ></imx-subscription-overview>
+    <div class="imx-button-stepper">
       <button mat-stroked-button matStepperPrevious data-imx-identifier="subscription-wizard-backTo-step-3">
         {{ '#LDS#Back' | translate }}
       </button>
-      <button color="primary" mat-stroked-button (click)="submit()" data-imx-identifier="subscription-wizard-create-subscription">{{ '#LDS#Create' | translate }}</button>
+      <button color="primary" mat-stroked-button (click)="submit()" data-imx-identifier="subscription-wizard-create-subscription">
+        {{ '#LDS#Create' | translate }}
+      </button>
     </div>
   </mat-step>
 </mat-stepper>

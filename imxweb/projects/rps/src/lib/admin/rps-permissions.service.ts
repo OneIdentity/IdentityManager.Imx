@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,13 +30,12 @@ import { UserModelService } from 'qer';
 import { isRpsAdmin } from './permissions-helper';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RpsPermissionsService {
-  constructor(private readonly userService: UserModelService) { }
+  constructor(private readonly userService: UserModelService) {}
 
   public async isRpsAdmin(): Promise<boolean> {
-    return isRpsAdmin((await this.userService.getGroups()).map(group => group.Name));
+    return isRpsAdmin((await this.userService.getGroups()).map((group) => group.Name));
   }
-
 }

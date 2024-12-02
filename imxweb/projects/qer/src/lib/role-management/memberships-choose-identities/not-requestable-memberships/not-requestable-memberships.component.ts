@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,45 +27,43 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
-import { PortalPersonAll } from 'imx-api-qer';
-import { DisplayColumns, EntitySchema, ValType } from 'imx-qbm-dbts';
+import { PortalPersonAll } from '@imx-modules/imx-api-qer';
+import { DisplayColumns, EntitySchema, ValType } from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarSettings } from 'qbm';
 import { NotRequestableMembershipsEntity } from './not-requestable-memberships-entity';
 
 @Component({
   selector: 'imx-not-requestable-memberships',
   templateUrl: './not-requestable-memberships.component.html',
-  styleUrls: ['./not-requestable-memberships.component.scss']
+  styleUrls: ['./not-requestable-memberships.component.scss'],
 })
 export class NotRequestableMembershipsComponent {
-
   public readonly DisplayColumns = DisplayColumns; // Enables use of this static class in Angular Templates.
   public dstSettings: DataSourceToolbarSettings;
   constructor(
-    @Inject(MAT_DIALOG_DATA) public readonly data: {
-      notRequestableMemberships: NotRequestableMembershipsEntity[],
-      entitySchema: EntitySchema,
-      membershipName: string
+    @Inject(MAT_DIALOG_DATA)
+    public readonly data: {
+      notRequestableMemberships: NotRequestableMembershipsEntity[];
+      entitySchema: EntitySchema;
+      membershipName: string;
     },
   ) {
-
     const displayedColumns = [
       data.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME],
       {
         ColumnName: 'errorMessage',
-        Type: ValType.String
-      }
+        Type: ValType.String,
+      },
     ];
 
     this.dstSettings = {
       displayedColumns,
       dataSource: {
         Data: data.notRequestableMemberships,
-        totalCount: data.notRequestableMemberships.length
+        totalCount: data.notRequestableMemberships.length,
       },
       entitySchema: data.entitySchema,
-      navigationState: {}
+      navigationState: {},
     };
   }
-
 }

@@ -1,0 +1,67 @@
+/* Elemental UI */
+
+/* Angular Material */
+.mat-mdc-checkbox-disabled {
+  cursor: not-allowed;
+}
+
+/* Imx */
+.imx-checkbox {
+  &-info {
+    .mat-mdc-checkbox-frame {
+      color: $color-blue-60;
+    }
+  }
+
+  &-new {
+    .mat-mdc-checkbox-frame {
+      color: $color-green-60;
+    }
+  }
+
+  &-warning {
+    .mat-mdc-checkbox-frame {
+      color: $color-orange-60;
+    }
+  }
+
+  &-error {
+    .mat-mdc-checkbox-frame {
+      color: $color-red-60;
+    }
+  }
+}
+
+/* Dark theme */
+
+/* High-contrast theme */
+
+/* Dark theme + High-contrast theme */
+.eui-dark-theme,
+.eui-contrast-theme {
+  .imx-checkbox {
+    &-info {
+      .mat-mdc-checkbox-frame {
+        color: $color-blue-40;
+      }
+    }
+
+    &-new {
+      .mat-mdc-checkbox-frame {
+        color: $color-green-40;
+      }
+    }
+
+    &-warning {
+      .mat-mdc-checkbox-frame {
+        color: $color-orange-40;
+      }
+    }
+
+    &-error {
+      .mat-mdc-checkbox-frame {
+        color: $color-red-40;
+      }
+    }
+  }
+}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,26 +26,24 @@
 
 import { Injectable } from '@angular/core';
 
-import { IEntity, IEntityColumn } from 'imx-qbm-dbts';
+import { IEntity, IEntityColumn } from '@imx-modules/imx-qbm-dbts';
 import { EntityService } from 'qbm';
 import { TsbApiService } from '../../tsb-api-client.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductOwnerSidesheetService {
-
   constructor(
     private readonly entityService: EntityService,
-    private readonly api: TsbApiService
-  ) { }
+    private readonly api: TsbApiService,
+  ) {}
 
   public buildOrgRulerColumn(ref: IEntity): IEntityColumn {
     const provider = ref.GetFkCandidateProvider().getProviderItem('UID_OrgRuler', 'AERole');
     return this.entityService.createLocalEntityColumn(
       this.api.typedClient.PortalTargetsystemUnsGroupServiceitem.GetSchema().Columns.UID_OrgRuler,
-      [provider]
+      provider ? [provider] : undefined,
     );
   }
-
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,6 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiLoadingService } from '@elemental-ui/core';
 
 import {
@@ -35,28 +34,27 @@ import {
   IEntity,
   IForeignKeyInfo,
   TypedEntityBuilder,
-  ValType
-} from 'imx-qbm-dbts';
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
 import { TreeDatabase } from '../data-tree/tree-database';
 import { TreeNodeResultParameter } from '../data-tree/tree-node-result-parameter.interface';
 import { HierarchicalCandidate } from './hierarchical-candidate';
 
 export class HierarchicalFkDatabase extends TreeDatabase {
-
   public fkTable: IForeignKeyInfo;
 
   private readonly builder = new TypedEntityBuilder(HierarchicalCandidate);
 
-  constructor(
-    private busyLoadingService: EuiLoadingService
-  ) {
+  constructor(private busyLoadingService: EuiLoadingService) {
     super();
     this.canSearch = true;
   }
 
   /** implements the getData methode of TreeDataBase */
-  public async getData(showLoading: boolean, parameters: CollectionLoadParameters = { ParentKey: '' /* first level */ })
-    : Promise<TreeNodeResultParameter> {
+  public async getData(
+    showLoading: boolean,
+    parameters: CollectionLoadParameters = { ParentKey: '' /* first level */ },
+  ): Promise<TreeNodeResultParameter> {
     if (!this.fkTable) {
       return { entities: [], canLoadMore: false, totalCount: 0 };
     }
@@ -64,12 +62,11 @@ export class HierarchicalFkDatabase extends TreeDatabase {
     const opts = {
       PageSize: 25,
       StartIndex: 0,
-      ...parameters
+      ...parameters,
     };
 
-    let over: OverlayRef;
-    if (showLoading) {
-      setTimeout(() => over = this.busyLoadingService.show());
+    if (showLoading && this.busyLoadingService.overlayRefs.length === 0) {
+      this.busyLoadingService.show();
     }
 
     let data: EntityCollectionData;
@@ -78,14 +75,16 @@ export class HierarchicalFkDatabase extends TreeDatabase {
       data = await this.fkTable.Get(opts);
     } finally {
       if (showLoading) {
-        setTimeout(() => this.busyLoadingService.hide(over));
+        this.busyLoadingService.hide();
       }
     }
 
     if (data) {
-      const nodeEntities = await Promise.all(data.Entities.map(async (elem): Promise<IEntity> => {
-        return (await this.buildEntityWithHasChilderen(elem, data.Hierarchy)).GetEntity();
-      }));
+      const nodeEntities = await Promise.all(
+        data.Entities?.map(async (elem): Promise<IEntity> => {
+          return (await this.buildEntityWithHasChilderen(elem, data?.Hierarchy)).GetEntity();
+        }) ?? [],
+      );
       this.dataChanged.emit(nodeEntities);
       return { entities: nodeEntities, canLoadMore: opts.StartIndex + opts.PageSize < data.TotalCount, totalCount: data.TotalCount };
     }
@@ -93,20 +92,22 @@ export class HierarchicalFkDatabase extends TreeDatabase {
   }
 
   /** adds a hasChildren column to the entity */
-  public async buildEntityWithHasChilderen(entityData: EntityData, data: HierarchyData): Promise<HierarchicalCandidate> {
-
+  public async buildEntityWithHasChilderen(entityData: EntityData, data: HierarchyData | undefined): Promise<HierarchicalCandidate> {
     const entity = this.builder.buildReadWriteEntity({ entitySchema: HierarchicalCandidate.GetEntitySchema(), entityData });
-    entity.GetEntity().AddColumns([{
-      Type: ValType.Bool,
-      IsMultiValued: true,
-      ColumnName: 'HasChildren',
-      MinLen: 0,
-      Display: ''
-    }]);
-    await entity.GetEntity().GetColumn('HasChildren')
-      .PutValue(data ? data.EntitiesWithHierarchy.some(elem => entityData.Keys.some(key => key === elem)) : false);
+    entity.GetEntity().AddColumns([
+      {
+        Type: ValType.Bool,
+        IsMultiValued: true,
+        ColumnName: 'HasChildren',
+        MinLen: 0,
+        Display: '',
+      },
+    ]);
+    await entity
+      .GetEntity()
+      .GetColumn('HasChildren')
+      .PutValue(data ? data.EntitiesWithHierarchy?.some((elem) => entityData.Keys?.some((key) => key === elem)) : false);
 
     return entity;
   }
-
 }

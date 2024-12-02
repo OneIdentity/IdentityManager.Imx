@@ -1,66 +1,13 @@
-@import "../pick-category-common.scss";
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import 'base/mixins';
+@import '../pick-category-common.scss';
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   background-color: $color-gray-2;
 
   .eui-sidesheet-content {
-    > .mat-card {
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
     .imx-dst-selected-identities {
       display: none;
-    }
-
-    div.imx-table-container {
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      height: inherit;
-      margin-bottom: 20px;
-    }
-
-    .mat-stepper-vertical {
-      @include imx-flex-column-container();
-      max-height: 100%;
-
-      ::ng-deep .mat-step {
-        @include imx-flex-column-container();
-        max-height: calc(100% - 144px);
-        flex: 1 1 auto;
-
-        .mat-vertical-content-container {
-          @include imx-flex-column-container();
-          height: calc(100% - 72px);
-
-          .mat-vertical-content {
-            @include imx-flex-column-container();
-            height: 100%;
-            flex: 1 1 auto;
-
-            imx-pick-category-select-identities {
-              @include imx-flex-column-container();
-              max-height: calc(100% - 36px);
-
-              imx-data-source-toolbar {
-                background-color: $color-gray-0;
-              }
-            }
-
-            .imx-stepper-button-container {
-              @include imx-flex-row-container();
-              gap: 20px;
-            }
-          }
-        }
-      }
-
-      .imx-summary-intro {
-        margin: 15px 0;
-      }
     }
   }
 }
@@ -68,43 +15,11 @@
 .eui-dark-theme {
   :host {
     background-color: $color-gray-80;
-
-    .eui-sidesheet-content {
-      .mat-stepper-vertical {
-        ::ng-deep .mat-step {
-          .mat-vertical-content-container {
-            .mat-vertical-content {
-              imx-pick-category-select-identities {
-                imx-data-source-toolbar {
-                  background-color: $color-gray-80;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
   }
 }
 
 .eui-contrast-theme {
   :host {
     background-color: $color-gray-100;
-
-    .eui-sidesheet-content {
-      .mat-stepper-vertical {
-        ::ng-deep .mat-step {
-          .mat-vertical-content-container {
-            .mat-vertical-content {
-              imx-pick-category-select-identities {
-                imx-data-source-toolbar {
-                  background-color: $color-gray-100;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
   }
 }

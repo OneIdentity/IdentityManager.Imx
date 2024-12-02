@@ -1,3 +1,9 @@
-<eui-select (selectionChange)="onSelectionChange($event.value)" label="{{ '#LDS#Identity' | translate }}"
-  [filterFunction]="filter" [options]="options" [inputControl]="control" [hideClearButton]="true">
+<eui-select
+  (selectionChange)="onSelectionChange($event.values)"
+  label="{{ '#LDS#Identity' | translate }}"
+  [filterFunction]="filter"
+  [options]="options"
+  [inputControl]="control"
+  [hideClearButton]="true"
+>
 </eui-select>

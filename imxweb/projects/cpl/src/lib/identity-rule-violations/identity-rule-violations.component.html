@@ -1,10 +1,14 @@
-<div class="imx-content">
+<div eui-sidesheet-content class="imx-content">
   <mat-card class="imx-rule-violation-table-container">
-    <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['search']"
-      (navigationStateChanged)="onNavigationStateChanged($event)" (search)="onSearch($event)"></imx-data-source-toolbar>
+    <imx-data-source-toolbar
+      #dst
+      [settings]="dstSettings"
+      [options]="['search']"
+      (navigationStateChanged)="onNavigationStateChanged($event)"
+      (search)="onSearch($event)"
+    ></imx-data-source-toolbar>
     <div class="imx-rule-violation-table">
-      <imx-data-table [dst]="dst" detailViewVisible="false" data-imx-identifier="identity-rule-violations-table"
-        mode="manual">
+      <imx-data-table [dst]="dst" [detailViewVisible]="false" data-imx-identifier="identity-rule-violations-table" mode="manual">
         <imx-data-table-column [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
           <ng-template let-item>
             <div>{{ item.GetEntity().GetDisplay() }}</div>
@@ -13,14 +17,23 @@
             </div>
           </ng-template>
         </imx-data-table-column>
-        <imx-data-table-column *ngFor="let displayColumn of displayedColumns | excludedColumns:['__Display', 'actions']" [entityColumn]="displayColumn">
+        <imx-data-table-column
+          *ngFor="let displayColumn of displayedColumns | excludedColumns: ['__Display', 'actions']"
+          [entityColumn]="displayColumn"
+        >
         </imx-data-table-column>
 
         <imx-data-table-generic-column columnName="actions">
           <ng-template let-dataItem>
-            <button mat-button color="primary" [disabled]="!dataItem.HasMitigation.value"
+            <button
+              mat-button
+              color="primary"
+              [disabled]="!dataItem.HasMitigation.value"
               [attr.data-imx-identifier]="'identity-rule-violations-' + dataItem.GetEntity().GetKeys().join(',')"
-              (click)="onShowDetails(dataItem)">{{'#LDS#View mitigating controls' |translate}}</button>
+              (click)="onShowDetails(dataItem)"
+            >
+              {{ '#LDS#View mitigating controls' | translate }}
+            </button>
           </ng-template>
         </imx-data-table-generic-column>
       </imx-data-table>

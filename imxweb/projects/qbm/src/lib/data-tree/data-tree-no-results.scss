@@ -1,6 +1,6 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
-.imx-data-tree-no-results {
+.imx-no-results {
   text-align: center;
   display: flex;
   margin: 20px 0;
@@ -8,11 +8,6 @@
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  
-  .eui-icon {
-    font-size: 100px;
-    color: rgba($black-c, 0.55);
-  }
 
   p {
     margin: 0;

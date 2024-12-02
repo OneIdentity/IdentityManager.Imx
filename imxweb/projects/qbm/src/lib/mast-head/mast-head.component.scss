@@ -1,6 +1,3 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
-@import '@elemental-ui/core/src/styles/_eui_palette.scss';
-
 :host {
   .imx-masthead-app-name {
     display: inline-block;
@@ -13,6 +10,8 @@
   }
 
   .imx-masthead--controls {
+    display: flex;
+
     button[mat-button] {
       &:not(.imx-masthead-user-button) {
         padding: 0;
@@ -31,68 +30,9 @@
   }
 }
 
-/* hide the logo inside the masthead if needed */
-::ng-deep eui-masthead.no-logo eui-logo {
-  display: none;
-}
-
 .custom-logo {
   margin-left: -16px;
   max-height: 50px;
   max-width: 300px;
   cursor: pointer;
-}
-
-@media only screen and (max-width: 768px) {
-  :host {
-    eui-masthead {
-      .mat-toolbar {
-        .mat-toolbar-row {
-          width: unset !important;
-          justify-content: center;
-        }
-
-        .imx-masthead-space,
-        .imx-masthead--controls {
-          display: none;
-        }
-      }
-    }
-
-    .eui-top-navigation-mobile {
-      .eui-top-navigation-mobile-footer {
-        .mat-button {
-          &.imx-masthead--icon-button {
-            width: 100%;
-
-            .mat-button-wrapper span {
-              display: inline-block;
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-.eui-dark-theme {
-  :host {
-    .mat-toolbar.mat-primary {
-      background-color: $color-blue-80;
-      color: $color-gray-5;
-    }
-  }
-}
-
-.eui-contrast-theme {
-  :host {
-    ::ng-deep .eui-masthead {
-      background-color: $color-blue-80;
-    }
-
-    .mat-toolbar.mat-primary {
-      background-color: $color-blue-80;
-      color: $color-gray-0;
-    }
-  }
 }

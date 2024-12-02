@@ -1,0 +1,85 @@
+<button
+  type="button"
+  mat-icon-button
+  matTooltip="{{ '#LDS#Settings' | translate }}"
+  data-imx-identifier="dataview-button-settings"
+  [matMenuTriggerFor]="settingsMenu"
+  color="primary"
+>
+  <eui-icon icon="settings"></eui-icon>
+</button>
+<mat-menu #settingsMenu="matMenu">
+  <button *ngIf="!!dataSource.exportFunction" mat-menu-item (click)="openExportSidesheet()" data-imx-identifier="dst-menu-button-export">
+    {{ '#LDS#Export data' | translate }}
+  </button>
+  <button
+    mat-menu-item
+    *ngIf="!!dataSource.optionalColumns()?.length"
+    (click)="updateAdditionalColumns()"
+    data-imx-identifier="dst-menu-button-additional-table-columns"
+  >
+    {{ '#LDS#Additional columns' | translate }}
+  </button>
+  <button mat-menu-item *ngIf="dataSource.viewConfig()" (click)="saveConfig()" data-imx-identifier="dst-menu-button-save-view">
+    <span>{{ '#LDS#Save current view' | translate }}</span>
+  </button>
+  <button
+    mat-menu-item
+    *ngIf="dataSource.viewConfig()"
+    [disabled]="!hasSavedConfigs()"
+    #savedConfigsTrigger="matMenuTrigger"
+    [matMenuTriggerFor]="savedConfigs"
+    data-imx-identifier="dst-menu-button-load-view"
+  >
+    <span>{{ '#LDS#Saved views' | translate }}</span>
+  </button>
+  <button mat-menu-item (click)="onResetViewAndTree()" *ngIf="dataSource.viewConfig()" data-imx-identifier="dst-menu-button-reset-view">
+    <span>{{ '#LDS#Reset view' | translate }}</span>
+  </button>
+</mat-menu>
+
+<mat-menu #savedConfigs="matMenu" class="imx-config-menu">
+  <button
+    mat-menu-item
+    *ngFor="let config of dataSource.viewConfig()?.viewConfigs; index as i"
+    (click)="this.dataSource.applyConfig(config)"
+    [attr.aria-label]="config?.DisplayName"
+    [attr.data-imx-identifier]="'menu-button-load-item-' + i"
+  >
+    <span>{{ config?.DisplayName }}</span>
+    <div *ngIf="!isDefaultId(config)">
+      <button
+        mat-icon-button
+        [attr.aria-label]="(isConfigDefault(config) ? '#LDS#Remove as default view' : '#LDS#Set as default view') | translate"
+        matTooltip="{{ (isConfigDefault(config) ? '#LDS#Remove as default view' : '#LDS#Set as default view') | translate }}"
+        matTooltipShowDelay="1000"
+        matTooltipPosition="before"
+        [ngClass]="{ 'imx-info': isConfigDefault(config) }"
+        (click)="toggleDefaultConfig(config); $event.stopPropagation()"
+        [attr.data-imx-identifier]="'menu-button-load-item-toggle-default-' + i"
+      >
+        <eui-icon [icon]="isConfigDefault(config) ? 'star' : 'openstar'"></eui-icon>
+      </button>
+      <button
+        [disabled]="config?.IsReadOnly"
+        mat-icon-button
+        [attr.aria-label]="'#LDS#Edit name of view' | translate"
+        (click)="changeConfigName(config); $event.stopPropagation()"
+        [attr.data-imx-identifier]="'menu-button-load-item-set-name-' + i"
+      >
+        <eui-icon icon="edit"></eui-icon>
+      </button>
+      <button
+        [disabled]="config?.IsReadOnly"
+        mat-icon-button
+        color="warn"
+        class="saved-config-delete"
+        [attr.aria-label]="'#LDS#Delete view' | translate"
+        (click)="removeConfigIndex(config.Id); $event.stopPropagation()"
+        [attr.data-imx-identifier]="'menu-button-load-item-remove-' + i"
+      >
+        <eui-icon icon="delete"></eui-icon>
+      </button>
+    </div>
+  </button>
+</mat-menu>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -65,7 +65,7 @@ export class TableAccessiblilityDirective implements AfterViewChecked, AfterView
     });
   }
   // Set tabindex for the first cell on the first row if there is not another tabindex set already
-  private setTabindex():void{
+  private setTabindex(): void {
     const selectables = this.el.nativeElement.querySelectorAll('tbody td:not(.mat-column-select)');
     const tabIndexes = this.el.nativeElement.querySelectorAll('tbody td[tabindex="0"]');
     if (tabIndexes.length === 0) {
@@ -107,7 +107,7 @@ export class TableAccessiblilityDirective implements AfterViewChecked, AfterView
           this.moveFocusTo(row - 1, col);
           break;
         case 'Home': {
-          this.moveHome(event, row)
+          this.moveHome(event, row);
           break;
         }
         case 'End': {
@@ -126,19 +126,19 @@ export class TableAccessiblilityDirective implements AfterViewChecked, AfterView
     });
   }
   // Focus the cell right to the current cell, if its the last selectable cell then move to the next rows last cell
-  private moveArrowRight(row:number, col: number):void{
+  private moveArrowRight(row: number, col: number): void {
     const newRow = col === this.maxcol ? row + 1 : row;
     const newcol = col === this.maxcol ? 0 : col + 1;
     this.moveFocusTo(newRow, newcol);
   }
   // Focus the cell left to the current cell, if its the first selectable cell then move to the previous rows last cell
-  private moveArrowLeft(row:number, col: number):void{
+  private moveArrowLeft(row: number, col: number): void {
     const newRow = col === 0 ? row - 1 : row;
     const newcol = col === 0 ? this.maxcol : col - 1;
     this.moveFocusTo(newRow, newcol);
   }
   // If you click CTRL + Home than focus the first cell of the first column, else first cell of the current column
-  private moveHome(event: KeyboardEvent, row:number):void{
+  private moveHome(event: KeyboardEvent, row: number): void {
     if (event.ctrlKey) {
       let newRow = 0;
       let result;
@@ -156,7 +156,7 @@ export class TableAccessiblilityDirective implements AfterViewChecked, AfterView
     event.preventDefault();
   }
   // If you click CTRL + End than focus the last cell of the last column, else last cell of the current column
-  private moveEnd(event: KeyboardEvent, row:number):void{
+  private moveEnd(event: KeyboardEvent, row: number): void {
     if (event.ctrlKey) {
       let newRow = this.maxrow;
       let result;
@@ -169,15 +169,12 @@ export class TableAccessiblilityDirective implements AfterViewChecked, AfterView
         newRow--;
       } while (!result);
     } else {
-      this.moveFocusTo(
-        row,
-        this.maxcol
-      );
+      this.moveFocusTo(row, this.maxcol);
     }
     event.preventDefault();
   }
   // Focus the first cell of the current column
-  private movePageUp(col: number):void{
+  private movePageUp(col: number): void {
     let newRow = 0;
     let result;
     do {
@@ -186,7 +183,7 @@ export class TableAccessiblilityDirective implements AfterViewChecked, AfterView
     } while (!result);
   }
   // Focus the last cell of the current column
-  private movePageDown(col: number):void{
+  private movePageDown(col: number): void {
     let newRow = this.maxrow;
     let result;
     do {

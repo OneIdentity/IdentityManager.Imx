@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,13 +26,13 @@
 
 import { EventEmitter, Injector } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { DataModel, DataModelViewConfig, EntitySchema, IClientProperty, ValType } from 'imx-qbm-dbts';
+import { DataModel, DataModelViewConfig, EntitySchema, IClientProperty, ValType } from '@imx-modules/imx-qbm-dbts';
+import _ from 'lodash';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 import { StorageService } from '../storage/storage.service';
 import { AdditionalInfosComponent } from './additional-infos/additional-infos.component';
-import { DataSourceToolbarSettings } from './data-source-toolbar-settings';
 import { ClientPropertyForTableColumns } from './client-property-for-table-columns';
-import _ from 'lodash';
+import { DataSourceToolbarSettings } from './data-source-toolbar-settings';
 import { DSTViewConfig } from './data-source-toolbar-view-config.interface';
 
 export interface ShownClientPropertiesArg {
@@ -48,7 +48,7 @@ export class ColumnOptions {
   /**
    * List of possible addable columns
    */
-  public optionalColumns: IClientProperty[] = [];
+  public optionalColumns: (IClientProperty | undefined)[] = [];
 
   /**
    * A list of client properties, that should be shown in the main column
@@ -60,7 +60,7 @@ export class ColumnOptions {
   /**
    * currently used view settings
    */
-  public currentViewSettings: DataModelViewConfig | DSTViewConfig;
+  public currentViewSettings: DataModelViewConfig | DSTViewConfig | undefined;
 
   /**
    * Event, that emits, when the shownClientProperies Property changes
@@ -76,14 +76,14 @@ export class ColumnOptions {
    * Indicates whether there are optional columns or not
    */
   public get hasOptionalColumns(): boolean {
-    return this.currentViewSettings && this.optionalColumns?.length > 0;
+    return (this.currentViewSettings && this.optionalColumns?.length > 0) ?? false;
   }
 
   // Additional columns are set to null if we are using a config so that we can still edit the columns
   public get additionalColumns(): IClientProperty[] {
     return (
       this.currentViewSettings?.AdditionalTableColumns?.map((elem) =>
-        ColumnOptions.getClientProperty(ColumnOptions.findKey(elem, this.entitySchema), this.dataModel, this.entitySchema)
+        ColumnOptions.getClientProperty(ColumnOptions.findKey(elem, this.entitySchema), this.dataModel, this.entitySchema),
       ) ?? []
     );
   }
@@ -99,19 +99,23 @@ export class ColumnOptions {
   private logger: ClassloggerService;
 
   // getter for settings
-  private get dataModel(): DataModel {
+  private get dataModel(): DataModel | undefined {
     return this.settings.dataModel;
   }
   private entitySchema: EntitySchema;
   private get displayedColumns(): IClientProperty[] {
-    return this.settings.displayedColumns;
+    return this.settings?.displayedColumns ?? [];
   }
 
   private originalEntitySchema;
 
-  constructor(public settings: DataSourceToolbarSettings, injector: Injector, public viewConfig?: DSTViewConfig) {
+  constructor(
+    public settings: DataSourceToolbarSettings,
+    injector: Injector,
+    public viewConfig?: DSTViewConfig,
+  ) {
     // Use the injected viewConfig if available
-    this.currentViewSettings = viewConfig ?? this.dataModel.Configurations?.find((elem) => elem.Id === this.dataModel.DefaultConfigId);
+    this.currentViewSettings = viewConfig ?? this.dataModel?.Configurations?.find((elem) => elem.Id === this.dataModel?.DefaultConfigId);
 
     if (this.currentViewSettings) {
       // Clean up settings, if there are null or empty columnsnames attached
@@ -120,7 +124,7 @@ export class ColumnOptions {
         this.currentViewSettings.AdditionalListColumns.some((elem) => elem == null || elem === '')
       ) {
         (this.currentViewSettings.AdditionalListColumns as any) = this.currentViewSettings.AdditionalListColumns.filter(
-          (elem) => elem != null && elem !== ''
+          (elem) => elem != null && elem !== '',
         );
       }
 
@@ -129,7 +133,7 @@ export class ColumnOptions {
         this.currentViewSettings.AdditionalTableColumns.some((elem) => elem == null || elem === '')
       ) {
         (this.currentViewSettings.AdditionalTableColumns as any) = this.currentViewSettings.AdditionalTableColumns.filter(
-          (elem) => elem != null && elem !== ''
+          (elem) => elem != null && elem !== '',
         );
       }
     }
@@ -145,7 +149,7 @@ export class ColumnOptions {
   public getPropertiesForNavigation(): string[] {
     return this.shownClientProperties
       .filter((elem) => this.displayedColumns.findIndex((disp) => disp.ColumnName === elem.ColumnName) === -1)
-      .map((elem) => elem.ColumnName);
+      .map((elem) => elem.ColumnName ?? '');
   }
 
   /**
@@ -199,9 +203,9 @@ export class ColumnOptions {
     }
 
     // We will reset by grabbing the default Id
-    this.currentViewSettings = this.dataModel.Configurations?.find((elem) => elem.Id === 'Default');
+    this.currentViewSettings = this.dataModel?.Configurations?.find((elem) => elem.Id === 'Default');
 
-    const addition = this.additionalColumns;
+    const addition: IClientProperty[] = this.additionalColumns ?? [];
     this.selectedOptionals = [];
 
     this.shownClientProperties = [...this.displayedColumns];
@@ -232,7 +236,9 @@ export class ColumnOptions {
       // hack for adding the new columns to to entitySchema
       elements.forEach((element) => {
         const key = ColumnOptions.findKey(element, this.entitySchema);
-        (this.entitySchema.Columns[key] as any) = ColumnOptions.getClientProperty(key, this.dataModel, this.entitySchema);
+        if (key) {
+          (this.entitySchema.Columns[key] as any) = ColumnOptions.getClientProperty(key, this.dataModel, this.entitySchema);
+        }
       });
     }
 
@@ -256,16 +262,17 @@ export class ColumnOptions {
   }
 
   private initOptionalColumns(): void {
-    const optional = this.dataModel.Properties?.filter((elem) => elem.IsAdditionalColumn).map((elem) => elem.Property);
+    const optional = this.dataModel?.Properties?.filter((elem) => elem.IsAdditionalColumn).map((elem) => elem.Property);
 
     // Check if this isAdditional or if its already in the additionalColumns, both are needed to not lose the option from config selection
-    this.optionalColumns = optional?.filter((value, index, categoryArray) => {
-      const isAdditional =
-        this.isAdditional(value.ColumnName) ||
-        this.additionalColumns.find((ele) => ele.ColumnName.toLocaleLowerCase() == value.ColumnName.toLocaleLowerCase()) != null;
-      const indexMatch = categoryArray.indexOf(value) === index;
-      return isAdditional && indexMatch;
-    });
+    this.optionalColumns =
+      optional?.filter((value, index, categoryArray) => {
+        const isAdditional =
+          this.isAdditional(value?.ColumnName) ||
+          this.additionalColumns.find((ele) => ele.ColumnName?.toLocaleLowerCase() == value?.ColumnName?.toLocaleLowerCase()) != null;
+        const indexMatch = categoryArray.indexOf(value) === index;
+        return isAdditional && indexMatch;
+      }) ?? [];
 
     this.logger.trace(this, 'optional columns', this.optionalColumns);
   }
@@ -273,7 +280,7 @@ export class ColumnOptions {
   private initShownClientProperties(): void {
     const current =
       this.currentViewSettings?.AdditionalTableColumns?.filter((element) =>
-        this.displayedColumns.every((elem) => elem.ColumnName !== element)
+        this.displayedColumns.every((elem) => elem.ColumnName !== element),
       ).map((elem) => ColumnOptions.getClientProperty(elem, this.dataModel)) ?? [];
     this.shownClientProperties = [...this.displayedColumns];
     const index = this.shownClientProperties.findIndex((elem) => elem.afterAdditionals);
@@ -284,32 +291,37 @@ export class ColumnOptions {
 
   private initAdditionalListElements(): void {
     const lists = this.currentViewSettings?.AdditionalListColumns;
-    if (lists?.length > 0) {
-      this.additionalListElements = lists.map((elem) =>
-        ColumnOptions.getClientProperty(ColumnOptions.findKey(elem, this.entitySchema), this.dataModel, this.entitySchema)
-      );
-      this.additionalListElementsChanged.emit(this.additionalListElements);
+    if (!!lists?.length) {
+      this.additionalListElements =
+        lists?.map((elem) =>
+          ColumnOptions.getClientProperty(ColumnOptions.findKey(elem, this.entitySchema), this.dataModel, this.entitySchema),
+        ) ?? [];
+      this.additionalListElementsChanged.emit(this.additionalListElements ?? []);
       this.logger.trace(this, 'additional list elements from viewSettings', this.additionalListElements);
     }
   }
 
-  private isAdditional(key: string): boolean {
+  private isAdditional(key: string | undefined): boolean {
     return (
-      this.displayedColumns.find((elem) => elem.ColumnName.toLocaleLowerCase() === key.toLocaleLowerCase()) == null &&
-      this.currentViewSettings?.AdditionalListColumns?.find((elem) => elem.toLocaleLowerCase() === key.toLocaleLowerCase()) == null &&
-      this.currentViewSettings?.AdditionalTableColumns?.find((elem) => elem.toLocaleLowerCase() === key.toLocaleLowerCase()) == null
+      this.displayedColumns.find((elem) => elem.ColumnName?.toLocaleLowerCase() === key?.toLocaleLowerCase()) == null &&
+      this.currentViewSettings?.AdditionalListColumns?.find((elem) => elem.toLocaleLowerCase() === key?.toLocaleLowerCase()) == null &&
+      this.currentViewSettings?.AdditionalTableColumns?.find((elem) => elem.toLocaleLowerCase() === key?.toLocaleLowerCase()) == null
     );
   }
 
-  public static getClientProperty(name: string, dataModel: DataModel, entitySchema?: EntitySchema): IClientProperty {
-    let property: IClientProperty;
+  public static getClientProperty(
+    name: string | undefined,
+    dataModel: DataModel | undefined,
+    entitySchema?: EntitySchema,
+  ): IClientProperty {
+    let property: IClientProperty | null | undefined = null;
     if (entitySchema) {
       const key = ColumnOptions.findKey(name, entitySchema);
       property = key != null ? entitySchema.Columns[key] : null;
     }
     if (property == null) {
       property = dataModel?.Properties?.find(
-        (elem) => elem?.Property?.ColumnName?.toLocaleLowerCase() === name?.toLocaleLowerCase()
+        (elem) => elem?.Property?.ColumnName?.toLocaleLowerCase() === name?.toLocaleLowerCase(),
       )?.Property;
     }
     if (property == null) {
@@ -318,8 +330,8 @@ export class ColumnOptions {
     return property;
   }
 
-  public static findKey(key: string, schema: EntitySchema): string {
-    const keyVariant = Object.keys(schema.Columns).find((elem) => elem.toLocaleLowerCase() === key.toLocaleLowerCase());
+  public static findKey(key: string | undefined, schema: EntitySchema): string | undefined {
+    const keyVariant = Object.keys(schema.Columns).find((elem) => elem.toLocaleLowerCase() === key?.toLocaleLowerCase());
     return keyVariant ?? key;
   }
 }

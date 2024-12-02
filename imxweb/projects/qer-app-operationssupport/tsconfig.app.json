@@ -1,18 +1,14 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "strictNullChecks": true,
     "outDir": "../../out-tsc/app",
     "types": []
   },
   "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
-    "strictInjectionParameters": true,
+    "strictTemplates": true,
+    "strictInjectionParameters": true
   },
-  "files": [
-    "src/main.ts",
-    "src/polyfills.ts"
-  ],
-  "include": [
-    "projects/qer-app-operationssupport/src/**/*.d.ts"
-  ]
+  "files": ["src/main.ts", "src/polyfills.ts"],
+  "include": ["projects/qer-app-operationssupport/src/**/*.d.ts"]
 }

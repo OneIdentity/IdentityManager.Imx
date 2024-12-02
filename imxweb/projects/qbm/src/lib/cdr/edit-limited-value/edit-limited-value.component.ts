@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,14 +27,14 @@
 import { Component } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 
-import { EditorBase } from '../editor-base';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
+import { EditorBase } from '../editor-base';
 
 /**
  * Provides a {@link CdrEditor | CDR editor} for editing / viewing limited value columns.
- * 
+ *
  * To change the value it uses an Angular Material select component.
- * When set to read-only, it uses a {@link ViewPropertyComponent | view property component} to display the content. 
+ * When set to read-only, it uses a {@link ViewPropertyComponent | view property component} to display the content.
  */
 @Component({
   selector: 'imx-edit-limited-value',

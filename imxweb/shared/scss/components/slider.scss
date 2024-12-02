@@ -1,0 +1,55 @@
+/* Elemental UI */
+
+/* Angular Material */
+
+/* Imx */
+.imx-risk-slider {
+  .mat-mdc-slider-thumb-container {
+    .mat-mdc-slider-thumb-label {
+      transform: rotate(45deg);
+      border-radius: 50% 50% 0;
+    }
+    .mat-mdc-slider-thumb {
+      transform: scale(0);
+    }
+    .mat-mdc-slider-thumb-label-text {
+      opacity: 1;
+    }
+  }
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+
+  .mat-mdc-slider {
+    width: 300px;
+    flex-grow: 2;
+  }
+
+  .slider-label {
+    &__main {
+      display: block;
+    }
+    &__prefix {
+      font-size: 14px;
+      margin-right: 8px;
+    }
+    &__suffix {
+      font-size: 14px;
+      margin-left: 8px;
+    }
+  }
+}
+
+@media only screen and (max-width: 320px) {
+  .slider-container {
+    .mat-mdc-slider-horizontal {
+      min-width: unset;
+    }
+  }
+}
+
+/* Dark theme */
+
+/* High-contrast theme */

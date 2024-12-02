@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,7 +33,6 @@ import { QerPermissionsService } from '../admin/qer-permissions.service';
 import { MockBuilder, MockRender } from 'ng-mocks';
 import { Router, RouterModule } from '@angular/router';
 import { QbmDefaultMocks } from '../../../../qbm/src/default-mocks.spec';
-
 
 describe('PersonAdminGuardService', () => {
   let service: PersonAdminGuardService;

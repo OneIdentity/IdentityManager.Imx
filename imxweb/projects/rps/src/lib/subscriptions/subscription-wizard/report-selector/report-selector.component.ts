@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,18 +24,16 @@
  *
  */
 
-import { ListRange } from '@angular/cdk/collections';
-import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { AfterViewInit, ChangeDetectorRef, Component, forwardRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ControlValueAccessor, UntypedFormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { AfterViewInit, ChangeDetectorRef, Component, forwardRef, Input, OnDestroy, OnInit } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR, UntypedFormControl } from '@angular/forms';
 import { MatSelectionListChange } from '@angular/material/list';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
-import { PortalReports } from 'imx-api-rps';
-import { CollectionLoadParameters } from 'imx-qbm-dbts';
-import { ReportSubscriptionService } from '../../report-subscription/report-subscription.service';
+import { PortalReports } from '@imx-modules/imx-api-rps';
+import { CollectionLoadParameters } from '@imx-modules/imx-qbm-dbts';
 import { SettingsService } from 'qbm';
+import { ReportSubscriptionService } from '../../report-subscription/report-subscription.service';
 
 @Component({
   selector: 'imx-report-selector',
@@ -68,7 +66,7 @@ export class ReportSelectorComponent implements ControlValueAccessor, OnInit, On
   constructor(
     private readonly changeDetectorRef: ChangeDetectorRef,
     private readonly settings: SettingsService,
-    private readonly reportSubscriptionService: ReportSubscriptionService
+    private readonly reportSubscriptionService: ReportSubscriptionService,
   ) {}
 
   public async ngOnInit(): Promise<void> {
@@ -107,8 +105,10 @@ export class ReportSelectorComponent implements ControlValueAccessor, OnInit, On
   public updateSelected(elem: MatSelectionListChange): void {
     // Only one can be selected
     const chosenElem = elem.options.find((ele) => ele.selected);
-    this.writeValue(chosenElem.value.GetEntity().GetKeys()[0]);
-    this.onChange(chosenElem.value.GetEntity().GetKeys()[0]);
+    if (chosenElem) {
+      this.writeValue(chosenElem.value.GetEntity().GetKeys()[0]);
+      this.onChange(chosenElem.value.GetEntity().GetKeys()[0]);
+    }
   }
 
   private async loadReports(newState?: CollectionLoadParameters): Promise<void> {
@@ -128,7 +128,7 @@ export class ReportSelectorComponent implements ControlValueAccessor, OnInit, On
       this.searchControl.valueChanges.pipe(distinctUntilChanged(), debounceTime(300)).subscribe(async (value) => {
         await this.loadReports({ StartIndex: 0, PageSize: this.settings.PageSizeForAllElements, search: value });
         this.changeDetectorRef.detectChanges();
-      })
+      }),
     );
   }
 }

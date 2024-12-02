@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,11 +31,7 @@ import { ProjectConfigurationService } from './project-configuration.service';
 
 @NgModule({
   declarations: [],
-  imports: [
-    CommonModule
-  ],
-  providers: [
-    ProjectConfigurationService
-  ]
+  imports: [CommonModule],
+  providers: [ProjectConfigurationService],
 })
-export class ProjectConfigurationModule { }
+export class ProjectConfigurationModule {}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,20 +25,26 @@
  */
 
 import { Component, Inject, ViewChild } from '@angular/core';
-import { ServiceCategoryService } from './service-category.service';
 import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
-import { PortalApplication } from 'imx-api-aob';
+import { PortalApplication } from '@imx-modules/imx-api-aob';
 import { TranslateService } from '@ngx-translate/core';
+import { ServiceCategoryService } from './service-category.service';
 
-import { IEntity } from 'imx-qbm-dbts';
-import { SettingsService, DataTreeWrapperComponent, SnackBarService, TreeDatabase, ConfirmationService } from 'qbm';
-import { ServiceCategoryTreeDatabase } from './service-category-tree-database';
+import { IEntity } from '@imx-modules/imx-qbm-dbts';
+import {
+  calculateSidesheetWidth,
+  ConfirmationService,
+  DataTreeWrapperComponent,
+  SettingsService,
+  SnackBarService,
+  TreeDatabase,
+} from 'qbm';
 import { EditServiceCategoryInformationComponent } from './edit-service-category-information/edit-service-category-information.component';
+import { ServiceCategoryTreeDatabase } from './service-category-tree-database';
 
 @Component({
   selector: 'imx-service-category',
   templateUrl: './service-category.component.html',
-  styleUrls: ['./service-category.component.scss'],
 })
 export class ServiceCategoryComponent {
   public treeDatabase: ServiceCategoryTreeDatabase;
@@ -53,7 +59,7 @@ export class ServiceCategoryComponent {
     private readonly sidesheet: EuiSidesheetService,
     private readonly translate: TranslateService,
     private readonly confirm: ConfirmationService,
-    @Inject(EUI_SIDESHEET_DATA) public application: PortalApplication
+    @Inject(EUI_SIDESHEET_DATA) public application: PortalApplication,
   ) {
     this.initializeTree();
   }
@@ -65,17 +71,19 @@ export class ServiceCategoryComponent {
       const overlay = this.busyService.show();
       try {
         await entity.Commit(true);
-      } catch(exception){
+      } catch (exception) {
         await entity.DiscardChanges();
         throw exception;
-      }
-        finally {
+      } finally {
         this.busyService.hide(overlay);
       }
       this.treeDatabase.updateNodeItem(entity);
       if (oldParent !== entity.GetColumn('UID_AccProductGroupParent').GetValue()) {
         this.tryToMoveElement(entity, entity.GetColumn('UID_AccProductGroupParent').GetValue());
-        this.snackbar.open({ key: '#LDS#The changes have been successfully saved.' });
+        this.snackbar.open({
+          key: '#LDS#The parent of the service category "{0}" has been successfully changed.',
+          parameters: [entity.GetDisplay()],
+        });
       }
     } else {
       await entity.DiscardChanges();
@@ -85,7 +93,12 @@ export class ServiceCategoryComponent {
   public async onDelete(evt: Event, entity: IEntity): Promise<void> {
     evt.stopPropagation();
 
-    if(!(await this.confirm.confirmDelete('#LDS#Heading Delete Service Category', '#LDS#Are you sure you want to delete the service category?'))){
+    if (
+      !(await this.confirm.confirmDelete(
+        '#LDS#Heading Delete Service Category',
+        '#LDS#Are you sure you want to delete the service category?',
+      ))
+    ) {
       return;
     }
 
@@ -97,7 +110,7 @@ export class ServiceCategoryComponent {
     }
 
     this.dataTreeWrapper.deleteNode(entity, false);
-    this.snackbar.open({ key: '#LDS#The changes have been successfully saved.' });
+    this.snackbar.open({ key: '#LDS#The service category "{0}" has been successfully deleted.', parameters: [entity.GetDisplay()] });
   }
 
   public async addChildCategory(evt: Event, entity: IEntity): Promise<void> {
@@ -115,7 +128,7 @@ export class ServiceCategoryComponent {
       } finally {
         this.busyService.hide(overlay);
       }
-      this.snackbar.open({ key: '#LDS#The changes have been successfully saved.' });
+      this.snackbar.open({ key: '#LDS#The service category "{0}" has been successfully created.', parameters: [newEntity.GetDisplay()] });
       this.add(entity, newEntity);
     } else {
       await entity.DiscardChanges();
@@ -162,7 +175,7 @@ export class ServiceCategoryComponent {
       this.busyService,
       this.settingsService,
       this.categoryService,
-      this.application.UID_AccProductGroup.value
+      this.application.UID_AccProductGroup.value,
     );
 
     this.treeDatabase.initialized.subscribe(async () => {
@@ -176,12 +189,12 @@ export class ServiceCategoryComponent {
   private async editServiceCategory(serviceCategory: IEntity, mode: 'edit' | 'create'): Promise<boolean> {
     return await this.sidesheet
       .open(EditServiceCategoryInformationComponent, {
-        title: await this.translate
-          .get(mode === 'edit' ? '#LDS#Heading Edit Service Category' : '#LDS#Heading Create Service Category')
-          .toPromise(),
+        title: await this.translate.instant(
+          mode === 'edit' ? '#LDS#Heading Edit Service Category' : '#LDS#Heading Create Service Category',
+        ),
         subTitle: mode === 'edit' ? serviceCategory.GetDisplay() : '',
         padding: '0px',
-        width: 'max(650px, 65%)',
+        width: calculateSidesheetWidth(1000),
         disableClose: true,
         testId: mode === 'edit' ? 'edit-service-category' : 'create-service-category',
         data: { serviceCategory, isNew: mode === 'create' },

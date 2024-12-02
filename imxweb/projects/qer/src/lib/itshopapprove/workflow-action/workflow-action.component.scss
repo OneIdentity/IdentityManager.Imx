@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   display: flex;
@@ -12,32 +12,9 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-
-  .mat-tab-group {
-    flex-grow: 1;
-    overflow: auto;
-  }
-
-  ::ng-deep .mat-tab-body-wrapper {
-    height: 100%;
-  }
-
-  ::ng-deep .mat-tab-body-content {
-    display: flex;
-    flex-direction: column;
-  }
-
-  ::ng-deep .mat-tab-group {
-    height: 100%;
-
-    .mat-tab-header {
-      padding: 0 32px;
-    }
-  }
 }
 
 .imx-tab-content {
-
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -55,9 +32,6 @@
   :host {
     background-color: $color-gray-80;
     color: $color-gray-2;
-    .eui-sidesheet-actions{
-      background-color: $color-gray-70;
-    }
   }
 }
 
@@ -65,8 +39,5 @@
   :host {
     background-color: $color-gray-100;
     color: $color-gray-0;
-    .eui-sidesheet-actions{
-      background-color: $color-gray-90;
-    }
   }
 }

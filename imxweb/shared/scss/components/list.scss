@@ -1,0 +1,103 @@
+/* Elemental UI */
+
+/* Angular Material */
+.mat-mdc-list.mat-mdc-list-base {
+  .mat-mdc-list-option,
+  .mat-mdc-list-item {
+    height: auto;
+  }
+}
+
+/* Imx */
+.imx-list {
+  &-subtitle {
+    color: $color-gray-40;
+    font-size: smaller;
+    font-style: italic;
+  }
+
+  &-multi-action.mat-mdc-list-base {
+    overflow: auto;
+
+    mat-list-item {
+      &.mat-mdc-2-line {
+        font-size: 14px;
+        margin-bottom: 10px;
+        height: auto;
+      }
+
+      .mat-mdc-line {
+        white-space: normal;
+      }
+
+      .imx-list-item-subtitle {
+        &.mat-mdc-line:nth-child(n + 2) {
+          @extend .imx-list-subtitle;
+        }
+      }
+    }
+
+    mat-list-option {
+      font-size: smaller;
+
+      .mat-mdc-list-text {
+        .imx-list-option-subtitle {
+          @extend .imx-list-subtitle;
+          font-size: 11px;
+          font-style: italic;
+          margin-bottom: 10px;
+        }
+      }
+    }
+  }
+
+  &-data-tree {
+    .mat-mdc-list-option {
+      background-color: transparent;
+
+      &:hover {
+        background-color: $color-gray-2;
+      }
+    }
+  }
+}
+.imx-list-container-reverse{
+  .mat-mdc-list-option{
+    flex-direction: row-reverse;
+    .mdc-list-item__end{
+      margin-left: 0;
+    }
+  }
+}
+
+/* Dark theme */
+.eui-dark-theme {
+  .imx-list {
+    &-subtitle {
+      color: $color-gray-10;
+    }
+
+    &-data-tree {
+      .mat-mdc-list-option:hover {
+        background-color: $color-gray-60;
+      }
+    }
+  }
+}
+
+/* High-contrast theme */
+.eui-contrast-theme {
+  .imx-list {
+    &-subtitle {
+      color: $color-gray-0;
+    }
+
+    &-data-tree {
+      .mat-mdc-list-option:hover {
+        background-color: $color-gray-80;
+      }
+    }
+  }
+}
+
+/* Dark + High-contrast theme */

@@ -1,0 +1,61 @@
+@import 'base/mixins';
+@import 'base/margins-paddings';
+
+/* Elemental UI */
+.eui-sidesheet {
+  .eui-sidesheet-actions {
+    &--flex {
+      display: flex;
+      flex-direction: row;
+    }
+    .justify-start {
+      margin-right: auto;
+    }
+    button:not(:last-child):not(.justify-start) {
+      margin-right: 10px;
+    }
+    .mat-mdc-button-base + .mat-mdc-button-base {
+      margin-left: 0;
+    }
+  }
+}
+
+.eui-sidesheet {
+  max-width: 90% !important;
+  &__content {
+    width: 100% !important;
+  }
+}
+
+/* Angular Material */
+
+/* Imx */
+.imx-sidesheet {
+  &-content {
+    &-padding-0.eui-sidesheet-content {
+      padding: 0;
+    }
+
+    &-flex-container.eui-sidesheet-content {
+      @include flex-column-container();
+    }
+
+    &-flex-container-row.eui-sidesheet-content {
+      @include flex-row-container();
+    }
+
+    &__overflow {
+      @include flex-column-container($overflow: hidden, $height: inherit);
+    }
+
+    &__flex {
+      flex: 1 1 auto;
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .eui-sidesheet {
+    max-width: 100% !important;
+  }
+}

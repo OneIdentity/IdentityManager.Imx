@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,16 +24,16 @@
  *
  */
 
-import { ApiClient, EntitySchema, TypedEntity } from "imx-qbm-dbts";
-import { DynamicMethodService, GenericTypedEntity } from "qbm";
-import { IRequestableEntitlementType } from "./irequestable-entitlement-type";
+import { ApiClient, EntitySchema, TypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { DynamicMethodService, GenericTypedEntity } from 'qbm';
+import { IRequestableEntitlementType } from './irequestable-entitlement-type';
 
 export class RequestableEntitlementType implements IRequestableEntitlementType {
-
-  constructor(private readonly tableName: string,
+  constructor(
+    private readonly tableName: string,
     private readonly apiClient: ApiClient,
     private readonly fkColumnName: string,
-    private readonly dynamicMethodService: DynamicMethodService
+    private readonly dynamicMethodService: DynamicMethodService,
   ) {
     this.schema = this.createAssignmentEntity('dummy').GetEntity().GetSchema();
   }
@@ -53,27 +53,35 @@ export class RequestableEntitlementType implements IRequestableEntitlementType {
   }
 
   public addEntitlementSelections(shelfId: string, values: string[]): Promise<any> {
-    const promises = [];
-    values.forEach(value => {
+    const promises: Promise<any>[] = [];
+    values.forEach((value) => {
       const e = this.createAssignmentEntity(shelfId).GetEntity();
-      promises.push(e.GetColumn(this.fkColumnName).PutValue(value)
-        .then(() => e.Commit()));
+      promises.push(
+        e
+          .GetColumn(this.fkColumnName)
+          .PutValue(value)
+          .then(() => e.Commit()),
+      );
     });
     return Promise.all(promises);
   }
 
   public createAssignmentEntity(shelfId: string): TypedEntity {
-    const entityColl = this.dynamicMethodService.createEntity(this.apiClient, {
-      path: '/portal/shop/config/entitlements/' + shelfId + '/' + this.tableName,
-      type: GenericTypedEntity,
-      schemaPath: 'portal/shop/config/entitlements/{UID_ITShopOrg}/' + this.tableName,
-    }, {
-      Columns: {
-        "UID_ITShopOrg": {
-          Value: shelfId
-        }
-      }
-    });
+    const entityColl = this.dynamicMethodService.createEntity(
+      this.apiClient,
+      {
+        path: '/portal/shop/config/entitlements/' + shelfId + '/' + this.tableName,
+        type: GenericTypedEntity,
+        schemaPath: 'portal/shop/config/entitlements/{UID_ITShopOrg}/' + this.tableName,
+      },
+      {
+        Columns: {
+          UID_ITShopOrg: {
+            Value: shelfId,
+          },
+        },
+      },
+    );
     return entityColl.Data[0];
   }
 }

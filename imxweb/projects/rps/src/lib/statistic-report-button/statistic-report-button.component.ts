@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,9 +28,10 @@ import { Component } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { StatisticReportButtonService } from './statistic-report-button.service';
-import { ListReportViewerSidesheetComponent } from '../subscriptions/list-report-viewer-sidesheet/list-report-viewer-sidesheet.component';
+import { calculateSidesheetWidth } from 'qbm';
 import { ChartInfoTyped } from 'qer';
+import { ListReportViewerSidesheetComponent } from '../subscriptions/list-report-viewer-sidesheet/list-report-viewer-sidesheet.component';
+import { StatisticReportButtonService } from './statistic-report-button.service';
 
 @Component({
   selector: 'imx-statistic-report-button',
@@ -43,7 +44,7 @@ export class StatisticReportButtonComponent {
   constructor(
     private readonly statisticService: StatisticReportButtonService,
     private readonly sideSheet: EuiSidesheetService,
-    private readonly translate: TranslateService
+    private readonly translate: TranslateService,
   ) {}
 
   /**
@@ -51,12 +52,12 @@ export class StatisticReportButtonComponent {
    */
   public viewReport(): void {
     this.statisticService.setIdStatistic(this.referrer.Id.value);
-    const data = { dataService: this.statisticService};
+    const data = { dataService: this.statisticService };
     this.sideSheet.open(ListReportViewerSidesheetComponent, {
-      title: this.translate.instant('#LDS#Heading View Report'),
+      title: this.translate.instant('#LDS#Heading View Source Data'),
       subTitle: this.referrer.GetDisplay(),
       padding: '0',
-      width: 'max(550px,55%)',
+      width: calculateSidesheetWidth(),
       testId: 'statistic-report-button-report-viewer',
       data,
     });

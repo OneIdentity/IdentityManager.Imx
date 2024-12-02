@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 :host {
   flex: 1;
@@ -8,16 +8,6 @@
 
 .report-selector-eui-search {
   display: flex;
-
-  .eui-search {
-    width: 100%;
-  }
-
-  ::ng-deep .eui-search.mat-form-field.mat-form-field-appearance-outline {
-    min-width: 280px;
-    flex: 1;
-    margin-bottom: 10px;
-  }
 }
 
 .imx-candidate {
@@ -53,15 +43,9 @@
   }
 }
 
-
 .imx-report-listing {
   flex: 1;
   display: grid;
   grid-template-columns: 1fr 21px;
   margin-right: -21px;
-}
-
-.mat-spinner {
-  margin-top: 15px;
-  margin-left: 5px;
 }

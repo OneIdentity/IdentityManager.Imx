@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,6 @@
  *
  */
 
-
 import { IConnectorProvider, ConnectorProvider } from './connector-provider';
 import { toPixelString, HvElement, HvCell, Size, HyperViewLayout, LayoutResult } from './hyperview-types';
 import { ClassloggerService } from '../classlogger/classlogger.service';
@@ -33,7 +32,6 @@ import { ClassloggerService } from '../classlogger/classlogger.service';
  * Hyperview layouter that arranges the elements hierarchical.
  */
 export class HyperviewLayoutHierarchical implements HyperViewLayout {
-
   /**
    * Returns a list of all possible positions for a shape in a hyperview.
    */
@@ -46,21 +44,21 @@ export class HyperviewLayoutHierarchical implements HyperViewLayout {
     'MiddleRight',
     'BottomLeft',
     'BottomCenter',
-    'BottomRight'
+    'BottomRight',
   ];
 
   // waiting for https://github.com/Microsoft/TypeScript/issues/13042
   private vLayoutElements: {
-    [id: string /* should be keyof Positions*/]: HvCell
+    [id: string /* should be keyof Positions*/]: HvCell;
   };
 
   constructor(
     private readonly elements: HvElement[],
-    private logger: ClassloggerService
+    private logger: ClassloggerService,
   ) {
     this.elements = elements;
     const elems = this.elements;
-    const centerElement = elems.findIndex(e => e.position === 'MiddleCenter');
+    const centerElement = elems.findIndex((e) => e.position === 'MiddleCenter');
     if (centerElement === -1) {
       throw new Error('A shape with MiddleCenter position is required for hierarchical layout.');
     } else if (centerElement !== 0) {
@@ -70,7 +68,6 @@ export class HyperviewLayoutHierarchical implements HyperViewLayout {
       elems[centerElement] = elems[0];
       elems[0] = swap;
     }
-
   }
 
   /**
@@ -108,9 +105,8 @@ export class HyperviewLayoutHierarchical implements HyperViewLayout {
     const finalSize = this.getSumSizeOfElements(this.elements);
 
     return {
-      size: finalSize
+      size: finalSize,
     };
-
   }
 
   /**
@@ -120,14 +116,17 @@ export class HyperviewLayoutHierarchical implements HyperViewLayout {
     return new ConnectorProvider(true /* hierarchical layout */);
   }
 
-  private layoutTopShapes(sCenter: Size, elems: { [id: string]: HvCell; }): Size {
+  private layoutTopShapes(sCenter: Size, elems: { [id: string]: HvCell }): Size {
     // layout top left shapes
     sCenter = this.getMaxSize(elems['MiddleCenter'].size, elems['TopCenter'].size.width, elems['MiddleLeft'].size.height);
     this.layoutElements(elems['TopLeft'], sCenter, -2, -1, false, false);
 
     // layout top center shapes
-    sCenter = this.getMaxSize(elems['MiddleCenter'].size, elems['TopCenter'].size.width,
-      Math.max(elems['MiddleLeft'].size.height, elems['MiddleRight'].size.height));
+    sCenter = this.getMaxSize(
+      elems['MiddleCenter'].size,
+      elems['TopCenter'].size.width,
+      Math.max(elems['MiddleLeft'].size.height, elems['MiddleRight'].size.height),
+    );
     this.layoutElements(elems['TopCenter'], sCenter, 0, -1, true, false);
 
     // layout top right shapes
@@ -136,14 +135,17 @@ export class HyperviewLayoutHierarchical implements HyperViewLayout {
     return sCenter;
   }
 
-  private layoutBottomShapes(sCenter: Size, elems: { [id: string]: HvCell; }): Size {
+  private layoutBottomShapes(sCenter: Size, elems: { [id: string]: HvCell }): Size {
     // layout bottom left shapes
     sCenter = this.getMaxSize(elems['MiddleCenter'].size, elems['BottomCenter'].size.width, elems['MiddleLeft'].size.height);
     this.layoutElements(elems['BottomLeft'], sCenter, -2, 1, false, false);
 
     // layout bottom center shapes
-    sCenter = this.getMaxSize(elems['MiddleCenter'].size, elems['BottomCenter'].size.width,
-      Math.max(elems['MiddleLeft'].size.height, elems['MiddleRight'].size.height));
+    sCenter = this.getMaxSize(
+      elems['MiddleCenter'].size,
+      elems['BottomCenter'].size.width,
+      Math.max(elems['MiddleLeft'].size.height, elems['MiddleRight'].size.height),
+    );
     this.layoutElements(elems['BottomCenter'], sCenter, 0, 1, true, false);
 
     // layout bottom right shapes
@@ -152,7 +154,7 @@ export class HyperviewLayoutHierarchical implements HyperViewLayout {
     return sCenter;
   }
 
-  private layoutMiddleShapes(sCenter: Size, elems: { [id: string]: HvCell; }): Size {
+  private layoutMiddleShapes(sCenter: Size, elems: { [id: string]: HvCell }): Size {
     // layout middle left shapes
     sCenter = this.getMaxSize(elems['MiddleCenter'].size, 0, elems['MiddleLeft'].size.height);
     this.layoutElements(elems['MiddleLeft'], sCenter, -1, 0, false, true);
@@ -168,7 +170,7 @@ export class HyperviewLayoutHierarchical implements HyperViewLayout {
 
   private clearVLayoutElements(): void {
     this.vLayoutElements = {};
-    this.positions.forEach(p => {
+    this.positions.forEach((p) => {
       this.vLayoutElements[p] = { elements: [], size: { width: 0, height: 0 } };
     });
   }
@@ -177,7 +179,6 @@ export class HyperviewLayoutHierarchical implements HyperViewLayout {
    * Normalizes the view by moving all components into the visible area.
    */
   private normalize(): void {
-
     // the control should now be placed in the edge
     const clientcenter = { X: 0, Y: 0 };
 
@@ -195,15 +196,15 @@ export class HyperviewLayoutHierarchical implements HyperViewLayout {
     miny = -miny;
 
     minx = Math.max(minx, clientcenter.X);
-    miny = Math.max(miny, clientcenter.Y * 3 / 5);
+    miny = Math.max(miny, (clientcenter.Y * 3) / 5);
 
     // move elements
     this.elements.forEach((node, index) => {
       const oldLeft = node.element.style.left;
       const oldTop = node.element.style.top;
 
-      const left = toPixelString((node.element.offsetLeft + minx));
-      const top = toPixelString((node.element.offsetTop + miny));
+      const left = toPixelString(node.element.offsetLeft + minx);
+      const top = toPixelString(node.element.offsetTop + miny);
 
       node.element.style.left = left;
       node.element.style.top = top;
@@ -230,7 +231,7 @@ export class HyperviewLayoutHierarchical implements HyperViewLayout {
    * @param bY taken from the class
    */
   private layoutElements(regElements: HvCell, centerSize: Size, dx: number, dy: number, bX: boolean, bY: boolean): void {
-    const padding = 50;
+    const padding = 20;
     const regSize = regElements.size;
     let cX = 0;
     let cY = 0;
@@ -260,8 +261,8 @@ export class HyperviewLayoutHierarchical implements HyperViewLayout {
         cY -= regElement.element.offsetHeight + padding;
       }
 
-      regElement.element.style.left = toPixelString((cX - (bX ? regSize.width / 2 : 0)));
-      regElement.element.style.top = toPixelString((cY - (bY ? regSize.height / 2 : 0)));
+      regElement.element.style.left = toPixelString(cX - (bX ? regSize.width / 2 : 0));
+      regElement.element.style.top = toPixelString(cY - (bY ? regSize.height / 2 : 0));
 
       // AutoReset in Outer regions
       if (Math.abs(dx) > 1) {
@@ -274,12 +275,14 @@ export class HyperviewLayoutHierarchical implements HyperViewLayout {
         cY = regElement.element.offsetTop;
       }
 
+      // translate the following shapes by this shape's width
       if (dx > 0) {
-        cX += regSize.width + padding;
+        cX += regElement.element.offsetWidth + padding;
       }
 
+      // translate the following shapes by this shape's height
       if (dy > 0) {
-        cY += regSize.height + padding;
+        cY += regElement.element.offsetHeight + padding;
       }
     }
   }
@@ -290,14 +293,14 @@ export class HyperviewLayoutHierarchical implements HyperViewLayout {
   private getMaxSizeOfElements(vElements: HvElement[]): Size {
     let layoutSize: Size = {
       width: 0,
-      height: 0
+      height: 0,
     };
 
     for (const node of vElements) {
       const shape = node.element;
       layoutSize = {
         width: Math.max(layoutSize.width, shape.offsetWidth),
-        height: Math.max(layoutSize.height, shape.offsetHeight)
+        height: Math.max(layoutSize.height, shape.offsetHeight),
       };
     }
 
@@ -307,14 +310,14 @@ export class HyperviewLayoutHierarchical implements HyperViewLayout {
   private getSumSizeOfElements(vElements: HvElement[]): Size {
     let layoutSize: Size = {
       width: 0,
-      height: 0
+      height: 0,
     };
 
     for (const node of vElements) {
       const shape = node.element;
       layoutSize = {
         width: Math.max(layoutSize.width, shape.offsetLeft + shape.offsetWidth),
-        height: Math.max(layoutSize.height, shape.offsetTop + shape.offsetHeight)
+        height: Math.max(layoutSize.height, shape.offsetTop + shape.offsetHeight),
       };
     }
 

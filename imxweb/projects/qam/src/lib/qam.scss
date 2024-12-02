@@ -1,0 +1,50 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
+
+.trusteetype {
+  font-style: italic;
+}
+
+.imx-no-results {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+
+  p {
+    margin: 0;
+    font-size: 18px;
+  }
+}
+
+.imx-flex-line {
+  @include flex-row-container();
+}
+
+.eui-light-theme {
+  :host {
+    .qam-tree-content {
+      background-color: $color-blue-10;
+      border: 1px solid $color-blue-20;
+    }
+  }
+}
+
+.eui-dark-theme {
+  :host {
+    .qam-tree-content {
+      background-color: $color-blue-90;
+      border: 1px solid $color-blue-80;
+    }
+  }
+}
+
+.eui-contrast-theme {
+  :host {
+    .qam-tree-content {
+      background-color: $color-gray-90;
+      border: 1px solid $color-gray-0;
+    }
+  }
+}

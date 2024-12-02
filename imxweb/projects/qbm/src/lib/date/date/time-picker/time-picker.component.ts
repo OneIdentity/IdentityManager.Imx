@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,8 @@
  *
  */
 
-import { Component, Input, EventEmitter, Output, HostListener } from '@angular/core';
-import { AbstractControl, FormControl } from '@angular/forms';
+import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { Moment } from 'moment-timezone';
 
 /**
@@ -34,10 +34,9 @@ import { Moment } from 'moment-timezone';
 @Component({
   selector: 'imx-time-picker',
   templateUrl: './time-picker.component.html',
-  styleUrls: ['./time-picker.component.scss']
+  styleUrls: ['./time-picker.component.scss'],
 })
 export class TimePickerComponent {
-
   /**
    * The input control for the time.
    *
@@ -45,7 +44,7 @@ export class TimePickerComponent {
    */
 
   // TODO: Check Upgrade
-  @Input() public control: AbstractControl;
+  @Input() public control: FormControl<moment.Moment>;
 
   /**
    * This event will be emitted when the user clicks on the close button.
@@ -71,5 +70,4 @@ export class TimePickerComponent {
     event.stopPropagation();
     this.close.emit();
   }
-
 }

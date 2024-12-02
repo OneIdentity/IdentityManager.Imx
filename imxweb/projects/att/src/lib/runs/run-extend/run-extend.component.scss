@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   display: flex;
@@ -18,28 +18,4 @@
 .attestationRuns-extend-form {
   display: flex;
   flex-direction: column;
-}
-
-.mat-form-field {
-  width: 100%;
-}
-
-.imx-button-bar {
-  display: flex;
-  justify-content: flex-end;
-  border-top: $color-gray-20 1px solid;
-  padding: 0px 20px 20px 8px;
-  > * {
-    margin-left: 10px;
-    margin-top: 20px;
-  }
-}
-
-.helper-alert {
-  display: flex;
-  padding-bottom: 20px;
-  flex-direction: column;
-  span {
-    display: block;
-  }
 }

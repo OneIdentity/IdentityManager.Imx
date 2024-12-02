@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,12 +26,20 @@
 
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
-import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 
-import { OwnershipInformation } from 'imx-api-qer';
-import { TypedEntity } from 'imx-qbm-dbts';
-import { AuthenticationService, CdrFactoryService, ColumnDependentReference, ConfirmationService, GlobalErrorHandler, SnackBarService } from 'qbm';
+import { OwnershipInformation } from '@imx-modules/imx-api-qer';
+import { TypedEntity } from '@imx-modules/imx-qbm-dbts';
+import {
+  AuthenticationService,
+  CdrFactoryService,
+  ColumnDependentReference,
+  ConfirmationService,
+  GlobalErrorHandler,
+  ISessionState,
+  SnackBarService,
+} from 'qbm';
 import { RoleService } from '../role.service';
 
 @Component({
@@ -41,7 +49,7 @@ import { RoleService } from '../role.service';
 })
 export class NewRoleComponent implements OnInit, OnDestroy {
   public readonly formGroup = new FormGroup({});
-  public cdrList: ColumnDependentReference[];
+  public cdrList: (ColumnDependentReference | undefined)[];
   public errorState = false;
 
   private currentUser: string;
@@ -62,20 +70,22 @@ export class NewRoleComponent implements OnInit, OnDestroy {
     private roleService: RoleService,
     private errorhandler: GlobalErrorHandler,
     authentication: AuthenticationService,
-    confirmation: ConfirmationService
+    confirmation: ConfirmationService,
   ) {
-    this.subscriptions.push(authentication.onSessionResponse.subscribe((session) => (this.currentUser = session.UserUid)));
+    this.subscriptions.push(
+      authentication.onSessionResponse.subscribe((session: ISessionState) => (this.currentUser = session.UserUid || '')),
+    );
     this.subscriptions.push(
       this.sidesheetRef.closeClicked().subscribe(async (result) => {
         if (this.formGroup?.dirty) {
           const closeConfirmation = await confirmation.confirmLeaveWithUnsavedChanges();
-          if(closeConfirmation){
+          if (closeConfirmation) {
             this.sidesheetRef.close(false);
           }
-        }else{
-          this.sidesheetRef.close(result)
+        } else {
+          this.sidesheetRef.close(result);
         }
-      })
+      }),
     );
   }
 
@@ -89,8 +99,10 @@ export class NewRoleComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
-  public addControl(name: string, control: AbstractControl): void {
-    this.formGroup.addControl(name, control);
+  public addControl(name: string | undefined, control: AbstractControl): void {
+    if (name != null) {
+      this.formGroup.addControl(name, control);
+    }
   }
 
   public async save(): Promise<void> {
@@ -103,7 +115,7 @@ export class NewRoleComponent implements OnInit, OnDestroy {
       }
       await this.data.typedEntity.GetEntity().Commit();
       success = true;
-    }catch (error){
+    } catch (error) {
       this.errorState = true;
       throw new Error(error);
     } finally {
@@ -112,7 +124,7 @@ export class NewRoleComponent implements OnInit, OnDestroy {
       if (success) {
         this.sidesheetRef.close(true);
         this.snackbar.open({
-          key: this.roleService.getRoleTranslateKeys(this.data.info.TableName).createSnackbar,
+          key: this.roleService.getRoleTranslateKeys(this.data.info.TableName).createSnackbar || '',
         });
       }
     }

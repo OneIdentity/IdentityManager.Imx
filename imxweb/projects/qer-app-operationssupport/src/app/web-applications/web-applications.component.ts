@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { OverlayRef } from '@angular/cdk/overlay';
 import { Component, OnInit } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { CollectionLoadParameters, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, EntitySchema, IClientProperty } from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarSettings, SettingsService } from 'qbm';
 import { WebApplicationsService } from './web-applications.service';
 
@@ -37,17 +37,15 @@ import { WebApplicationsService } from './web-applications.service';
   styleUrls: ['./web-applications.component.scss'],
 })
 export class WebApplicationsComponent implements OnInit {
-
   public dstSettings: DataSourceToolbarSettings;
   public readonly entitySchemaWebApplications: EntitySchema;
   private navigationState: CollectionLoadParameters;
   private readonly displayedColumns: IClientProperty[];
 
-
   constructor(
     private webApplicationsService: WebApplicationsService,
     private busyService: EuiLoadingService,
-    private readonly settings: SettingsService
+    private readonly settings: SettingsService,
   ) {
     this.entitySchemaWebApplications = webApplicationsService.schema;
     this.displayedColumns = [
@@ -75,17 +73,15 @@ export class WebApplicationsComponent implements OnInit {
     this.navigationState = navigationState;
 
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    setTimeout(() => (overlayRef = this.busyService.show()));
     try {
-
       const applications = await this.webApplicationsService.get(navigationState);
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
         dataSource: applications,
         entitySchema: this.entitySchemaWebApplications,
-        navigationState: this.navigationState
+        navigationState: this.navigationState,
       };
-
     } finally {
       setTimeout(() => this.busyService.hide(overlayRef));
     }

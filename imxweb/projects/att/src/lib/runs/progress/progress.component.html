@@ -1,9 +1,9 @@
 <div class="imx-progress-bar-container">
-    <mat-progress-bar mode="determinate" [value]="progress * 100"
-        color="primary">
-        <!-- TODO Later: evtl wieder eine Farbunterscheidung einbauen-->
-    </mat-progress-bar>
-    <span>{{ percentage }}&nbsp;%</span>
+ <div class="imx-progress-bar-line">
+    <mat-progress-bar mode="determinate" [value]="progress * 100" color="primary"></mat-progress-bar>
+    <div class="imx-progress-bar-texts imx-margin-left-15">{{percentage}}</div>
+  </div>
+
     <!-- TODO Later: Add tooltip ?
         {{ '#LDS#Progress so far: {0} of {1} attestation cases ({2}%)' | translate |
         ldsReplace:attestationRun.ClosedCases.value:totalNumberOfCases:percentage }}

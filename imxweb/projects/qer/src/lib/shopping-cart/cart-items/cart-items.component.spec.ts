@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,21 +28,20 @@ import { SimpleChange } from '@angular/core';
 import { fakeAsync, flush, tick } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateFakeLoader, TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { EuiSidesheetService } from '@elemental-ui/core';
 import { MockBuilder, MockedComponentFixture, MockRender, ngMocks } from 'ng-mocks';
 
-import { ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
-import { clearStylesFromDOM } from 'qbm';
-import { CartItemsComponent } from './cart-items.component';
-import { CartItemsService } from '../cart-items.service';
-import { PortalCartitem, CartItemDataRead } from 'imx-api-qer';
-import { ShoppingCart } from '../shopping-cart';
-import { CartItemCheckStatus } from './cart-item-check-status.enum';
-import { CartItemEditComponent } from '../cart-item-edit/cart-item-edit.component';
-import { CartItemCloneService } from '../cart-item-edit/cart-item-clone.service';
-import { ShoppingCartModule } from '../shopping-cart.module';
+import { CartItemDataRead, PortalCartitem } from '@imx-modules/imx-api-qer';
+import { ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
+import { clearStylesFromDOM, DataViewSource, FakeDataViewSource } from 'qbm';
 import { QerDefaultMocks } from '../../../default-mocks.spec';
+import { CartItemCloneService } from '../cart-item-edit/cart-item-clone.service';
+import { CartItemEditComponent } from '../cart-item-edit/cart-item-edit.component';
+import { CartItemsService } from '../cart-items.service';
+import { ShoppingCart } from '../shopping-cart';
+import { ShoppingCartModule } from '../shopping-cart.module';
+import { CartItemsComponent } from './cart-items.component';
 
 describe('CartItemsComponent', () => {
   let component: CartItemsComponent;
@@ -75,7 +74,7 @@ describe('CartItemsComponent', () => {
         typedEntity: this.cartItem,
         Parameters: {},
         index: 0,
-      })
+      }),
     );
   })();
 
@@ -91,6 +90,10 @@ describe('CartItemsComponent', () => {
     cloneItemForPersons: jasmine.createSpy(),
   };
 
+  const euiLoadingServiceStud = {
+    overlayRefs: [],
+  };
+
   beforeEach(() => {
     return MockBuilder(
       [
@@ -104,12 +107,14 @@ describe('CartItemsComponent', () => {
           },
         }),
       ],
-      ShoppingCartModule
+      ShoppingCartModule,
     )
       .mock(Router, { export: true })
       .mock(EuiSidesheetService)
+      .mock(EuiLoadingService, euiLoadingServiceStud)
       .mock(CartItemCloneService, cartitemCloneService)
-      .mock(CartItemsService, cartItemsServiceStub);
+      .mock(CartItemsService, cartItemsServiceStub)
+      .mock(DataViewSource, FakeDataViewSource);
   });
 
   beforeEach(() => {
@@ -261,8 +266,8 @@ describe('CartItemsComponent', () => {
         });
         component.onSelectionChanged(testcase.itemsSelected);
         expect(component.itemsCanBeDeleted()).toEqual(testcase.canBeDeleted);
-      }
-    )
+      },
+    ),
   );
 
   [
@@ -294,20 +299,19 @@ describe('CartItemsComponent', () => {
       warnings: false,
     },
   ].forEach((testcase) => {
-    it('ngOnChanges updates cart', () => {
+    it('ngOnChanges updates cart', async () => {
       component.shoppingCart = testcase.shoppingCartData
         ? new ShoppingCart(testcase.shoppingCartData as ExtendedTypedEntityCollection<PortalCartitem, CartItemDataRead>)
         : undefined;
 
-      component.ngOnChanges({
+      await component.ngOnChanges({
         shoppingCart: new SimpleChange(null, 'gesetzt', false),
       });
-
       fixture.detectChanges();
       if (testcase.shoppingCartData != null) {
-        expect(component.dstSettings.dataSource.totalCount).toEqual(testcase.shoppingCartData.totalCount);
+        expect(component.dataSource.collectionData().totalCount).toEqual(testcase.shoppingCartData.totalCount);
       } else {
-        expect(component.dstSettings).toBeUndefined();
+        expect(component.dataSource.dataModel()).toBeUndefined();
       }
     });
   });
@@ -315,7 +319,7 @@ describe('CartItemsComponent', () => {
   it('ngOnChanges should do nothing, when there is no shoppingcart-change', () => {
     component.ngOnChanges({});
 
-    expect(component.dstSettings).toBeUndefined();
+    expect(component.dataSource.dataModel()).toBeUndefined();
   });
 
   for (const testcase of [
@@ -361,7 +365,7 @@ describe('CartItemsComponent', () => {
         jasmine.objectContaining({
           subTitle: `${cartitemInteractive.GetEntity().GetDisplay()} - ${cartitemInteractive.UID_PersonOrdered.Column.GetDisplayValue()}`,
           data: jasmine.objectContaining({ cloneItem: testcase.isForLater ? undefined : jasmine.any(Function) }),
-        })
+        }),
       );
 
       const cloneItemFunction = QerDefaultMocks.sidesheetServiceStub.open.calls.mostRecent().args[1].data.cloneItem;
@@ -481,8 +485,8 @@ describe('CartItemsComponent', () => {
         });
         component.onSelectionChanged(testcase.items);
         expect(component.itemsCanBeMoved()).toEqual(testcase.canBeMoved);
-      }
-    )
+      },
+    ),
   );
 
   [
@@ -494,21 +498,6 @@ describe('CartItemsComponent', () => {
       var evt = { item: testcase.item, selectableRows: [] };
       component.itemSelectable(evt);
       expect(evt.selectableRows[0]).toEqual(testcase.expected);
-    })
+    }),
   );
-
-  [
-    { description: 'ok', cartItem: { CheckResult: { value: CartItemCheckStatus.ok } } as PortalCartitem, expected: 'check' },
-    {
-      description: 'not checked',
-      cartItem: { CheckResult: { value: CartItemCheckStatus.notChecked } } as PortalCartitem,
-      expected: 'question',
-    },
-    { description: 'error', cartItem: { CheckResult: { value: CartItemCheckStatus.error } } as PortalCartitem, expected: 'error' },
-    { description: 'warning', cartItem: { CheckResult: { value: CartItemCheckStatus.warning } } as PortalCartitem, expected: 'warning' },
-  ].forEach((testcase) => {
-    it(`get the right icon for status: ${testcase.description}`, () => {
-      expect(component.getCheckStatusIcon(testcase.cartItem)).toEqual(testcase.expected);
-    });
-  });
 });

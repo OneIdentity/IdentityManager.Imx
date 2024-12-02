@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,19 +25,21 @@
  */
 
 import { Injectable } from '@angular/core';
-import { ComplianceFeatureConfig, PortalPersonMitigatingcontrols, PortalPersonRolemembershipsNoncompliance, PortalRulesMitigatingcontrols } from 'imx-api-cpl';
-import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+import {
+  ComplianceFeatureConfig,
+  PortalPersonMitigatingcontrols,
+  PortalPersonRolemembershipsNoncompliance,
+  PortalRulesMitigatingcontrols,
+} from '@imx-modules/imx-api-cpl';
+import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 
 import { ApiService } from '../api.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class IdentityRuleViolationService {
-
-
-  constructor(private readonly api: ApiService) {
-  }
+  constructor(private readonly api: ApiService) {}
 
   public get nonComplianceSchema(): EntitySchema {
     return this.api.typedClient.PortalPersonRolemembershipsNoncompliance.GetSchema();
@@ -51,8 +53,10 @@ export class IdentityRuleViolationService {
     return this.api.typedClient.PortalRulesMitigatingcontrols.GetSchema();
   }
 
-  public async getNonCompliance(uidPerson: string, parameter: CollectionLoadParameters)
-    : Promise<ExtendedTypedEntityCollection<PortalPersonRolemembershipsNoncompliance, unknown>> {
+  public async getNonCompliance(
+    uidPerson: string,
+    parameter: CollectionLoadParameters,
+  ): Promise<ExtendedTypedEntityCollection<PortalPersonRolemembershipsNoncompliance, unknown>> {
     return this.api.typedClient.PortalPersonRolemembershipsNoncompliance.Get(uidPerson, parameter);
   }
 
@@ -60,13 +64,18 @@ export class IdentityRuleViolationService {
     return this.api.client.portal_compliance_config_get();
   }
 
-  public async getPersonMitigatingcontrols(uidComplianceRule: string, uidPerson: string, param: CollectionLoadParameters)
-    : Promise<ExtendedTypedEntityCollection<PortalPersonMitigatingcontrols, unknown>> {
+  public async getPersonMitigatingcontrols(
+    uidComplianceRule: string,
+    uidPerson: string,
+    param: CollectionLoadParameters,
+  ): Promise<ExtendedTypedEntityCollection<PortalPersonMitigatingcontrols, unknown>> {
     return this.api.typedClient.PortalPersonMitigatingcontrols.Get(uidPerson, uidComplianceRule, param);
   }
 
-  public async getRulesMitigatingcontrols(uidComplianceRule: string, param: CollectionLoadParameters)
-    : Promise<ExtendedTypedEntityCollection<PortalRulesMitigatingcontrols, unknown>> {
+  public async getRulesMitigatingcontrols(
+    uidComplianceRule: string,
+    param: CollectionLoadParameters,
+  ): Promise<ExtendedTypedEntityCollection<PortalRulesMitigatingcontrols, unknown>> {
     return this.api.typedClient.PortalRulesMitigatingcontrols.Get(uidComplianceRule, param);
   }
 }

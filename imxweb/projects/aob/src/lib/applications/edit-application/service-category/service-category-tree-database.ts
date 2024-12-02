@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,10 +27,10 @@
 import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiLoadingService } from '@elemental-ui/core';
 
-import { CollectionLoadParameters, IEntity, TypedEntityCollectionData } from 'imx-qbm-dbts';
-import { PortalServicecategories } from 'imx-api-qer';
+import { PortalServicecategories } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 
-import { TreeDatabase, TreeNodeResultParameter, SettingsService } from 'qbm';
+import { SettingsService, TreeDatabase, TreeNodeResultParameter } from 'qbm';
 import { ServiceCategoryService } from './service-category.service';
 
 /** Provider of servicecategory-data for the imx-data-tree */
@@ -39,7 +39,7 @@ export class ServiceCategoryTreeDatabase extends TreeDatabase {
     private readonly loadingServiceElemental: EuiLoadingService,
     private readonly settings: SettingsService,
     private readonly serviceCategoriesProvider: ServiceCategoryService,
-    private readonly uidRootElement: string
+    private readonly uidRootElement: string,
   ) {
     super();
     this.identifierColumnName = 'FullPath';
@@ -56,10 +56,9 @@ export class ServiceCategoryTreeDatabase extends TreeDatabase {
 
   private async loadRoot(showLoading: boolean) {
     let entities: TreeNodeResultParameter;
-    let overlayRef: OverlayRef;
 
-    if (showLoading) {
-      setTimeout(() => (overlayRef = this.loadingServiceElemental.show()));
+    if (showLoading && this.loadingServiceElemental.overlayRefs.length === 0) {
+      this.loadingServiceElemental.show();
     }
     try {
       const opts: CollectionLoadParameters = {
@@ -81,7 +80,7 @@ export class ServiceCategoryTreeDatabase extends TreeDatabase {
       };
     } finally {
       if (showLoading) {
-        setTimeout(() => this.loadingServiceElemental.hide(overlayRef));
+        this.loadingServiceElemental.hide();
       }
     }
 
@@ -92,8 +91,8 @@ export class ServiceCategoryTreeDatabase extends TreeDatabase {
     let entities: TreeNodeResultParameter;
     let overlayRef: OverlayRef;
 
-    if (showLoading) {
-      setTimeout(() => (overlayRef = this.loadingServiceElemental.show()));
+    if (showLoading && this.loadingServiceElemental.overlayRefs.length === 0) {
+      this.loadingServiceElemental.show();
     }
     try {
       const opts = {
@@ -110,7 +109,7 @@ export class ServiceCategoryTreeDatabase extends TreeDatabase {
       };
     } finally {
       if (showLoading) {
-        setTimeout(() => this.loadingServiceElemental.hide(overlayRef));
+        this.loadingServiceElemental.hide();
       }
     }
 

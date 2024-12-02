@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,23 +24,22 @@
  *
  */
 
-import { ColumnDependentReference } from './column-dependent-reference.interface';
+import { ComponentRef, ViewContainerRef } from '@angular/core';
 import { CdrEditor } from './cdr-editor.interface';
-import { ViewContainerRef, ComponentRef } from '@angular/core';
+import { ColumnDependentReference } from './column-dependent-reference.interface';
 
 /**
  * Defines an interface that can provide an UI component to display and/or edit a column dependent reference,
  * namely a CDR "editor".
  */
 export interface CdrEditorProvider {
-
-    /**
-     * Creates an editor for a given column dependent reference.
-     *
-     * If the column dependent reference does not suite any of the editors
-     * the provider can provide, it should return null.
-     *
-     * @param cdref The column dependent reference.
-     */
-    createEditor(parent: ViewContainerRef, cdref: ColumnDependentReference): ComponentRef<CdrEditor>;
+  /**
+   * Creates an editor for a given column dependent reference.
+   *
+   * If the column dependent reference does not suite any of the editors
+   * the provider can provide, it should return null.
+   *
+   * @param cdref The column dependent reference.
+   */
+  createEditor(parent: ViewContainerRef, cdref: ColumnDependentReference): ComponentRef<CdrEditor> | null;
 }

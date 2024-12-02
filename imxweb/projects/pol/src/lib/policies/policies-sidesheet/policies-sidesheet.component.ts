@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,18 +25,17 @@
  */
 
 import { Component, Inject, OnDestroy } from '@angular/core';
-import { EuiDownloadOptions, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiDownloadOptions, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
-import { PortalPolicies } from 'imx-api-pol';
-import { DisplayColumns } from 'imx-qbm-dbts';
+import { PortalPolicies } from '@imx-modules/imx-api-pol';
+import { DisplayColumns } from '@imx-modules/imx-qbm-dbts';
 import { BaseReadonlyCdr, ColumnDependentReference, ElementalUiConfigService } from 'qbm';
 import { PoliciesService } from '../policies.service';
 
 @Component({
   selector: 'imx-policies-sidesheet',
   templateUrl: './policies-sidesheet.component.html',
-  styleUrls: ['./policies-sidesheet.component.scss'],
 })
 export class PoliciesSidesheetComponent implements OnDestroy {
   public reportDownload: EuiDownloadOptions;
@@ -55,7 +54,7 @@ export class PoliciesSidesheetComponent implements OnDestroy {
     },
     public sidesheetRef: EuiSidesheetRef,
     private readonly policiesProvider: PoliciesService,
-    elementalUiConfigService: ElementalUiConfigService
+    elementalUiConfigService: ElementalUiConfigService,
   ) {
     this.uidCompliance = data.selectedPolicy.GetEntity().GetKeys().join(',');
     this.cdrList = [
@@ -63,13 +62,16 @@ export class PoliciesSidesheetComponent implements OnDestroy {
       new BaseReadonlyCdr(this.data.selectedPolicy.Description.Column),
       new BaseReadonlyCdr(this.data.selectedPolicy.IsExceptionAllowed.Column),
       new BaseReadonlyCdr(this.data.selectedPolicy.IsInActive.Column),
-      data.hasRiskIndex ? new BaseReadonlyCdr(this.data.selectedPolicy.RiskIndex.Column) : null,
       new BaseReadonlyCdr(this.data.selectedPolicy.RuleSeverity.Column),
       new BaseReadonlyCdr(this.data.selectedPolicy.RuleViolationThreshold.Column),
       new BaseReadonlyCdr(this.data.selectedPolicy.SignificancyClass.Column),
       new BaseReadonlyCdr(this.data.selectedPolicy.TransparencyIndex.Column),
       new BaseReadonlyCdr(this.data.selectedPolicy.UID_QERPolicyGroup.Column),
-    ].filter((elem) => elem != null);
+    ];
+    if (data.hasRiskIndex) {
+      // Stick this in position 4
+      this.cdrList.splice(4, 0, new BaseReadonlyCdr(this.data.selectedPolicy.RiskIndex.Column));
+    }
 
     this.reportDownload = {
       ...elementalUiConfigService.Config.downloadOptions,

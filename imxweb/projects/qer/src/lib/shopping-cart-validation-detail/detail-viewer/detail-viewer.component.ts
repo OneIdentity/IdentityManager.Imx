@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,24 +25,24 @@
  */
 
 import { AfterViewInit, Component, ComponentRef, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
-import { ICartItemCheck } from 'imx-api-qer';
+import { ICartItemCheck } from '@imx-modules/imx-api-qer';
 import { ShoppingCartValidationDetailService } from '../shopping-cart-validation-detail.service';
 
 @Component({
   selector: 'imx-detail-viewer',
-  templateUrl: './detail-viewer.component.html'
+  templateUrl: './detail-viewer.component.html',
 })
 export class DetailViewerComponent implements AfterViewInit {
   @Input() public check: ICartItemCheck;
   @Input() public cartItemDisplay: string;
   @ViewChild('detailContainer', { read: ViewContainerRef }) public container: ViewContainerRef;
 
-  constructor(private readonly detailService: ShoppingCartValidationDetailService) { }
+  constructor(private readonly detailService: ShoppingCartValidationDetailService) {}
 
   public ngAfterViewInit(): void {
     setTimeout(() => {
       if (this.check) {
-        this.detailService.viewers.forEach(item => {
+        this.detailService.viewers.forEach((item) => {
           if (item.id === this.check.Id) {
             const componentRef: ComponentRef<any> = this.container.createComponent(item.factory);
 

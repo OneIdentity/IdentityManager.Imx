@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,4 +36,4 @@ export { AadUserDeniedPlansComponent } from './lib/azure-ad/aad-user/aad-user-de
 export { AadGroupSubscriptionsComponent } from './lib/azure-ad/aad-group/aad-group-subscriptions.component';
 export { AadGroupDeniedPlansComponent } from './lib/azure-ad/aad-group/aad-group-denied-plans.component';
 export { AzureAdModule } from './lib/azure-ad/azure-ad.module';
-export { LicenceOverviewButtonComponent} from './lib/aad-extension/licence-overview-button/licence-overview-button.component'
+export { LicenceOverviewButtonComponent } from './lib/aad-extension/licence-overview-button/licence-overview-button.component';

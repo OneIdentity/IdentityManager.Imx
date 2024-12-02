@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,18 +26,18 @@
 
 import { Overlay } from '@angular/cdk/overlay';
 import { HttpClient } from '@angular/common/http';
-import { Component, Injector, OnDestroy, OnInit } from '@angular/core';
-import { EuiDownloadDirective, EuiDownloadOptions, EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
+import { Component, ElementRef, Injector, OnDestroy, OnInit } from '@angular/core';
+import { EuiDownloadDirective, EuiDownloadOptions, EuiDownloadService, EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { V2ApiClientMethodFactory } from 'imx-api-rps';
-import { MethodDefinition } from 'imx-qbm-dbts';
-import { AppConfigService, ElementalUiConfigService, SystemInfoService } from 'qbm';
+import { V2ApiClientMethodFactory } from '@imx-modules/imx-api-rps';
+import { MethodDefinition } from '@imx-modules/imx-qbm-dbts';
+import { AppConfigService, ElementalUiConfigService, SystemInfoService, calculateSidesheetWidth } from 'qbm';
 import { UserModelService } from 'qer';
 import { ReportSubscription } from '../subscriptions/report-subscription/report-subscription';
 import { ReportSubscriptionService } from '../subscriptions/report-subscription/report-subscription.service';
-import { ReportButtonParameter } from './report-button-parameter';
 import { ParameterSidesheetComponent } from './parameter-sidesheet/parameter-sidesheet.component';
+import { ReportButtonParameter } from './report-button-parameter';
 
 @Component({
   selector: 'imx-report-button',
@@ -51,7 +51,7 @@ export class ReportButtonComponent implements OnInit, OnDestroy {
   public isButtonRendered = true;
   public referrer: any;
 
-  private subscription: ReportSubscription;
+  private subscription: ReportSubscription | undefined;
 
   private readonly apiMethodFactory: V2ApiClientMethodFactory = new V2ApiClientMethodFactory();
 
@@ -66,7 +66,8 @@ export class ReportButtonComponent implements OnInit, OnDestroy {
     private readonly system: SystemInfoService,
     private readonly sideSheet: EuiSidesheetService,
     private readonly translator: TranslateService,
-    private readonly userModelService: UserModelService
+    private readonly userModelService: UserModelService,
+    private readonly downloadService: EuiDownloadService,
   ) {}
 
   public ngOnDestroy(): void {
@@ -74,25 +75,22 @@ export class ReportButtonComponent implements OnInit, OnDestroy {
   }
 
   public async ngOnInit(): Promise<void> {
-    if (this.inputData.groups == null && this.inputData.preprop == null) {
+    if (this.inputData.groups && this.inputData.preprop) {
       this.isButtonRendered = true;
       return;
     }
     const over = this.busy.show();
     try {
-      const info = await this.system.get();
-      const user = (await this.userModelService.getGroups()).map((elem) => elem.Name);
-      const userFeatures = (await this.userModelService.getFeatures()).Features;
+      const preprops = (await this.system.get())?.PreProps?.map((elem) => elem?.toUpperCase() ?? '') ?? [];
+      const user = (await this.userModelService.getGroups()).map((elem) => elem?.Name?.toUpperCase() ?? '');
+      const userFeatures = (await this.userModelService.getFeatures()).Features ?? [];
 
-      const pre =
-        this.inputData.preprop == null ||
-        this.inputData.preprop.some((elem) => info.PreProps.find((item) => item.toUpperCase() === elem.toUpperCase()) != null);
+      const pre = !this.inputData.preprop || this.inputData.preprop.some((elem) => preprops.find((item) => item === elem.toUpperCase()));
       const groups =
-        this.inputData.groups == null ||
-        this.inputData.groups.some((elem) => user.find((item) => item.toUpperCase() === elem.toUpperCase()) != null);
-      const features = this.inputData?.features.some(feature => userFeatures.find(userFeature => feature === userFeature) != null);
+        !this.inputData.groups || this.inputData.groups.some((elem) => user.find((item) => item.toUpperCase() === elem.toUpperCase()));
+      const features = this.inputData?.features?.some((feature) => userFeatures.find((userFeature) => feature === userFeature));
 
-      this.isButtonRendered = pre && (groups || features);
+      this.isButtonRendered = pre && (groups || !!features);
     } finally {
       this.busy.hide(over);
     }
@@ -100,18 +98,15 @@ export class ReportButtonComponent implements OnInit, OnDestroy {
 
   public async viewReport(): Promise<void> {
     const over = this.busy.show();
+    if (this.subscription) {
+      this.subscription.unsubscribeEvents();
+      this.subscription = undefined;
+    }
 
     try {
-      if (this.subscription != null) {
-        this.subscription.unsubscribeEvents();
-        this.subscription = null;
-      }
       this.subscription = await this.reportSubscriptionService.createNewSubscription(this.inputData.uidReport);
     } finally {
       this.busy.hide(over);
-    }
-    if (!this.subscription) {
-      return;
     }
 
     this.subscription.subscription.ExportFormat.value = 'PDF';
@@ -122,7 +117,7 @@ export class ReportButtonComponent implements OnInit, OnDestroy {
           title: await this.translator.get('#LDS#Heading Specify Parameters').toPromise(),
           subTitle: await this.translator.get(this.inputData.caption).toPromise(),
           padding: '0px',
-          width: 'max(600px,60%)',
+          width: calculateSidesheetWidth(),
           testId: 'report-button-view-parameter-sidesheet',
           data: { subscription: this.subscription },
         })
@@ -138,7 +133,13 @@ export class ReportButtonComponent implements OnInit, OnDestroy {
     const def = new MethodDefinition(this.apiMethodFactory.portal_subscription_interactive_report_get(parameters.entityid, parameters));
 
     // not pretty, but the download directive does not support dynamic URLs
-    const directive = new EuiDownloadDirective(null /* no element */, this.http, this.overlay, this.injector);
+    const directive = new EuiDownloadDirective(
+      new ElementRef('') /* no element */,
+      this.http,
+      this.overlay,
+      this.injector,
+      this.downloadService,
+    );
     directive.downloadOptions = {
       ...this.elementalUiConfigService.Config.downloadOptions,
       fileMimeType: '', // override elementalUiConfigService; get mime type from server

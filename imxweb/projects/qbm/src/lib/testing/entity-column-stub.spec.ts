@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,21 +24,30 @@
  *
  */
 
-import { IEntityColumn, DataState, ValType, IValueMetadata, ValueStruct, IEntity, IColumnChangeArgs, IEvent } from 'imx-qbm-dbts';
+import {
+  DataState,
+  IColumnChangeArgs,
+  IEntity,
+  IEntityColumn,
+  IEvent,
+  IValueMetadata,
+  ValType,
+  ValueStruct,
+} from '@imx-modules/imx-qbm-dbts';
 
 export class EntityColumnStub<T> implements IEntityColumn {
   GetEntity(): IEntity {
-    return null;
+    return {} as IEntity;
   }
   ColumnName = 'someColumnName';
-  ExtendedProperties: { [id: string]: any; };
+  ExtendedProperties: { [id: string]: any };
 
   constructor(
     private value?: T,
     private displayValue?: string,
-    private metadata = { CanEdit: () => true } as IValueMetadata
+    private metadata = { CanEdit: () => true } as IValueMetadata,
   ) {}
-  
+
   ColumnChanged: IEvent<IColumnChangeArgs>;
 
   GetDataState(): DataState {
@@ -53,16 +62,16 @@ export class EntityColumnStub<T> implements IEntityColumn {
     return this.metadata;
   }
 
-  GetValue(): T {
+  GetValue(): T | undefined {
     return this.value;
   }
 
   GetDisplayValue(): string {
-    return this.displayValue;
+    return this.displayValue ?? '';
   }
 
   async PutValue(value: T): Promise<void> {
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     this.value = value;
   }
 

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,28 +24,21 @@
  *
  */
 
-import { Injectable } from "@angular/core";
-import { QerApiService } from "../qer-api-client.service";
-import { IRequestableEntitlementType } from "./irequestable-entitlement-type";
-import { ResourceEntitlementType } from "./resource-entitlement-type";
+import { Injectable } from '@angular/core';
+import { QerApiService } from '../qer-api-client.service';
+import { IRequestableEntitlementType } from './irequestable-entitlement-type';
+import { ResourceEntitlementType } from './resource-entitlement-type';
 
 @Injectable({ providedIn: 'root' })
 export class RequestableEntitlementTypeService {
-
   constructor(qerApi: QerApiService) {
     const types = [
-      new ResourceEntitlementType("QERResource",
-        qerApi.typedClient.PortalShopConfigEntitlementsQerresource),
-      new ResourceEntitlementType("QERReuse",
-        qerApi.typedClient.PortalShopConfigEntitlementsQerreuse),
-      new ResourceEntitlementType("QERReuseUS",
-        qerApi.typedClient.PortalShopConfigEntitlementsQerreuseus),
-      new ResourceEntitlementType("QERAssign",
-        qerApi.typedClient.PortalShopConfigEntitlementsQerassign)
+      new ResourceEntitlementType('QERResource', qerApi.typedClient.PortalShopConfigEntitlementsQerresource),
+      new ResourceEntitlementType('QERReuse', qerApi.typedClient.PortalShopConfigEntitlementsQerreuse),
+      new ResourceEntitlementType('QERReuseUS', qerApi.typedClient.PortalShopConfigEntitlementsQerreuseus),
+      new ResourceEntitlementType('QERAssign', qerApi.typedClient.PortalShopConfigEntitlementsQerassign),
     ];
-    this.typeProviders = [
-      () => Promise.resolve(this.enableResourceTypes ? types : [])
-    ];
+    this.typeProviders = [() => Promise.resolve(this.enableResourceTypes ? types : [])];
   }
   private typeProviders: (() => Promise<IRequestableEntitlementType[]>)[];
 
@@ -55,12 +48,11 @@ export class RequestableEntitlementTypeService {
   public enableResourceTypes: boolean = true;
 
   async GetTypes(): Promise<IRequestableEntitlementType[]> {
-    const all = await Promise.all(this.typeProviders.map(x => x()));
+    const all = await Promise.all(this.typeProviders.map((x) => x()));
     return all.reduce((x, y) => x.concat(y));
   }
 
   Register(typeProvider: () => Promise<IRequestableEntitlementType[]>) {
     this.typeProviders.push(typeProvider);
   }
-
 }

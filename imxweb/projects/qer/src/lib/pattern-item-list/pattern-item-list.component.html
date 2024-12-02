@@ -11,7 +11,7 @@
   [initalView]="dataSourceView?.selected"
   [itemStatus]="status"
 >
-<imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
+  <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
 </imx-data-source-toolbar>
 
 <div class="imx-table-container" *ngIf="!isLoading">
@@ -25,8 +25,8 @@
     fallbackIcon="request"
     [selectable]="true"
     [actions]="itemActions"
-    [titleObject]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
-    [subtitleObject]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
+    [titleObject]="entitySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]"
+    [subtitleObject]="entitySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]"
     (actionSelected)="emitAction($event)"
   >
   </imx-data-tiles>
@@ -42,7 +42,7 @@
     [showSelectedItemsMenu]="false"
   >
     <imx-data-table-column
-      [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"
+      [entityColumn]="entitySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]"
       columnLabel="{{ '#LDS#Product bundle' | translate }}"
       data-imx-identifier="pattern-item-list-datatable-table"
     >
@@ -53,19 +53,24 @@
     <imx-data-table-generic-column columnName="badges" [columnLabel]="''">
       <ng-template let-prod>
         <eui-badge *ngIf="prod.IsPublicPattern.value">
-          {{badgeContent.isPublic | translate}}
+          {{ badgeContent.isPublic | translate }}
         </eui-badge>
-        <eui-badge color="orange" *ngIf="!(prod.IsPublicPattern.value)">
-          {{badgeContent.isPrivate | translate}}
+        <eui-badge color="orange" *ngIf="!prod.IsPublicPattern.value">
+          {{ badgeContent.isPrivate | translate }}
         </eui-badge>
       </ng-template>
     </imx-data-table-generic-column>
 
     <imx-data-table-generic-column columnName="actions" [columnLabel]="''">
       <ng-template let-prod>
-        <button mat-stroked-button class="imx-margin-right" *ngFor="let action of itemActions" (click)="emitAction(action, prod)"
-          [attr.data-imx-identifier]="'pattern-item-list-datatable-row-button-' + action.name">
-          {{ action.description | translate }}
+        <button
+          mat-stroked-button
+          class="imx-margin-right-10"
+          *ngFor="let action of itemActions"
+          (click)="emitAction(action, prod)"
+          [attr.data-imx-identifier]="'pattern-item-list-datatable-row-button-' + action.name"
+        >
+          {{ action.description || '' | translate }}
         </button>
         <!-- <button mat-button color="primary" (click)="bubbleShowDetails(prod)" data-imx-identifier="pattern-item-list-datatable-row-button-show-details">
           {{ '#LDS#Details' | translate }}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,11 +25,11 @@
  */
 
 import { Injectable } from '@angular/core';
-import { bar, ChartOptions, donut, line, zoom } from 'billboard.js';
-import { ChartData, ChartDto } from 'imx-api-qer';
-import { StatisticsConstantsService } from '../statistics-home-page/statistics-constants.service';
+import { ChartData, ChartDto } from '@imx-modules/imx-api-qer';
+import { ChartOptions, bar, donut, line, zoom } from 'billboard.js';
 import { chain, uniqBy } from 'lodash';
 import { ShortDatePipe } from 'qbm';
+import { StatisticsConstantsService } from '../statistics-home-page/statistics-constants.service';
 
 export interface ChartNamesValues {
   names?: string[];
@@ -43,10 +43,6 @@ export interface DisplayOptions {
   dataLimit?: number;
   pointLimit?: number;
   nXTicks?: number;
-  size?: {
-    height?: number;
-    width?: number;
-  };
   enableZoom?: boolean;
   hasUniqueObjectDisplay?: boolean;
 }
@@ -55,20 +51,23 @@ export interface DisplayOptions {
   providedIn: 'root',
 })
 export class StatisticsChartHandlerService {
-  constructor(private constantsService: StatisticsConstantsService, private shortDate: ShortDatePipe) {}
+  constructor(
+    private constantsService: StatisticsConstantsService,
+    private shortDate: ShortDatePipe,
+  ) {}
 
   public dataHasNonZero(chart: ChartDto): boolean {
     // This will check the data to see if we have all 0 values and should display text instead of a chart
-    return chart.Data.map((data) => data.Points[0].Value > 0).some((value) => value);
+    return chart.Data?.map((data) => (data.Points?.[0].Value ?? 0) > 0)?.some((value) => value) ?? false;
   }
 
   public getNamesValues(data: ChartData[], options?: { includeZero: boolean }): ChartNamesValues {
     const names: string[] = [];
     const values: number[] = [];
     data.forEach((datum) => {
-      const value = datum.Points[0].Value;
+      const value = datum?.Points?.[0].Value ?? 0;
       if (value > 0 || options?.includeZero) {
-        names.push(datum.Name);
+        names.push(datum?.Name ?? '');
         values.push(value);
       }
     });
@@ -77,7 +76,7 @@ export class StatisticsChartHandlerService {
   }
 
   public getGroupedNamesValues(data: ChartData[], options?: { includeZero: boolean }): ChartNamesValues {
-    const uniqueNames = uniqBy(data, (datum) => datum.Name).map((datum) => datum.Name);
+    const uniqueNames = uniqBy(data, (datum) => datum.Name).map((datum) => datum.Name ?? '');
     const groupedData: { groupName: string | undefined; data: ChartData[] }[] = chain(data)
       .groupBy((datum) => datum.ObjectDisplay)
       .map((value, key) => ({ groupName: key, data: value }))
@@ -88,10 +87,10 @@ export class StatisticsChartHandlerService {
     const outputData: (string | number)[][] = [['x', ...uniqueNames]];
     groupedData.forEach((group) => {
       const row: number[] = [...Array(nNames).fill(null)];
-      const rowName: string = group.groupName === 'undefined' ? this.constantsService.defaultDataText : group.groupName;
+      const rowName: string = group.groupName === 'undefined' ? this.constantsService.defaultDataText : group.groupName ?? '';
       group.data.forEach((datum: ChartData) => {
         const index = uniqueNames.findIndex((name) => name === datum.Name);
-        row[index] = datum.Points[0].Value;
+        row[index] = !!datum?.Points?.length ? datum.Points[0].Value : 0;
       });
       outputData.push([rowName, ...row]);
     });
@@ -100,7 +99,7 @@ export class StatisticsChartHandlerService {
   }
 
   public getOtherValue(data: ChartData[], chartNamesValues: ChartNamesValues): void {
-    const otherValue = data.map((datum) => datum.Points[0].Value).reduce((a, b) => a + b, 0);
+    const otherValue = data.map((datum) => (!!datum?.Points?.length ? datum.Points[0].Value : 0)).reduce((a, b) => a + b, 0);
     if (otherValue === 0) {
       return;
     }
@@ -113,14 +112,14 @@ export class StatisticsChartHandlerService {
       row[nBars - 1] = otherValue;
       chartNamesValues.groupedData.push(row);
     } else {
-      chartNamesValues.names.push(this.constantsService.otherDataText);
-      chartNamesValues.values.push(otherValue);
+      chartNamesValues.names?.push(this.constantsService.otherDataText);
+      chartNamesValues.values?.push(otherValue);
     }
   }
 
   public convertNamesValuesToColumns(data: ChartNamesValues): (string | number)[][] {
-    const names = data.names;
-    const values = data.values;
+    const names = data.names ?? [];
+    const values = data.values ?? [];
     const columns: (string | number)[][] = [];
     names.forEach((name, index) => {
       columns.push([name, values[index]]);
@@ -138,27 +137,27 @@ export class StatisticsChartHandlerService {
 
   public getBarData(chart: ChartDto, displayOptions: DisplayOptions): ChartOptions {
     // If we have a data limit, we will take limit - 1 raw values, then combine the rest into a single bar
-    const dataLength = chart.Data.length;
+    const dataLength = chart.Data?.length ?? 0;
     const limitLessThanData = displayOptions.dataLimit && displayOptions.dataLimit < dataLength;
-    const cutoff = limitLessThanData ? displayOptions.dataLimit - 1 : dataLength;
+    const cutoff = limitLessThanData ? (displayOptions.dataLimit ?? 0) - 1 : dataLength;
 
     let chartValues: ChartNamesValues;
     let columns: (string | number)[][];
     if (displayOptions?.hasUniqueObjectDisplay) {
-      chartValues = this.getGroupedNamesValues(chart.Data.slice(0, cutoff), { includeZero: true });
+      chartValues = this.getGroupedNamesValues(chart.Data?.slice(0, cutoff) || [], { includeZero: true });
     } else {
-      chartValues = this.getNamesValues(chart.Data.slice(0, cutoff), { includeZero: true });
+      chartValues = this.getNamesValues(chart.Data?.slice(0, cutoff) || [], { includeZero: true });
     }
     if (limitLessThanData) {
-      this.getOtherValue(chart.Data.slice(cutoff), chartValues);
+      this.getOtherValue(chart.Data?.slice(cutoff) || [], chartValues);
     }
 
     if (chartValues.groupedData) {
       columns = chartValues.groupedData;
     } else {
       columns = [
-        ['x', ...chartValues.names],
-        [this.constantsService.defaultDataText, ...chartValues.values],
+        ['x', ...(chartValues.names || [])],
+        [this.constantsService.defaultDataText, ...(chartValues.values || [])],
       ];
     }
     return {
@@ -186,12 +185,17 @@ export class StatisticsChartHandlerService {
           show: false,
         },
       },
-      size: displayOptions?.size,
       resize: {
         auto: true,
       },
       legend: {
         hide: true,
+      },
+      interaction: {
+        inputType: {
+          mouse: true,
+          touch: false,
+        },
       },
       padding: {
         bottom: 1,
@@ -204,16 +208,16 @@ export class StatisticsChartHandlerService {
 
   public getPieData(chart: ChartDto, displayOptions: DisplayOptions): ChartOptions {
     // If we have a data limit, we will take limit - 1 raw values, then combine the rest into a single bar
-    const dataLength = chart.Data.length;
+    const dataLength = chart.Data?.length ?? 0;
     const limitLessThanData = displayOptions.dataLimit && displayOptions.dataLimit < dataLength;
     let chartNamesValues: ChartNamesValues;
     if (limitLessThanData) {
       // We will sort by highest value, and sum past the data limit
-      chart.Data.sort((a, b) => a.Points[0].Value - b.Points[0].Value).reverse();
-      chartNamesValues = this.getNamesValues(chart.Data.slice(0, displayOptions.dataLimit - 1));
-      this.getOtherValue(chart.Data.slice(displayOptions.dataLimit - 1), chartNamesValues);
+      chart.Data?.sort((a, b) => (a.Points?.[0].Value ?? 0) - (b.Points?.[0].Value ?? 0)).reverse();
+      chartNamesValues = this.getNamesValues(chart.Data?.slice(0, (displayOptions.dataLimit ?? 0) - 1) || []);
+      this.getOtherValue(chart.Data?.slice((displayOptions.dataLimit ?? 0) - 1) ?? [], chartNamesValues);
     } else {
-      chartNamesValues = this.getNamesValues(chart.Data);
+      chartNamesValues = this.getNamesValues(chart.Data ?? []);
     }
     const columns = this.convertNamesValuesToColumns(chartNamesValues);
     return {
@@ -236,7 +240,6 @@ export class StatisticsChartHandlerService {
           show: false,
         },
       },
-      size: displayOptions?.size,
       resize: {
         auto: true,
       },
@@ -245,6 +248,12 @@ export class StatisticsChartHandlerService {
         show: true,
         item: {
           onclick: () => false,
+        },
+      },
+      interaction: {
+        inputType: {
+          mouse: true,
+          touch: false,
         },
       },
       padding: {
@@ -257,17 +266,19 @@ export class StatisticsChartHandlerService {
   }
 
   public getLineData(chart: ChartDto, displayOptions: DisplayOptions): ChartOptions {
-    const nDataStreams = chart.Data.length;
-    const nTimeLength = chart.Data[0].Points.length;
+    const nDataStreams = chart.Data?.length ?? 0;
+    const nTimeLength = chart.Data?.[0].Points?.length ?? 0;
     const cutoff = displayOptions.dataLimit && displayOptions.dataLimit < nDataStreams ? displayOptions.dataLimit : nDataStreams;
     const timecutoff = displayOptions.pointLimit && displayOptions.pointLimit < nTimeLength ? displayOptions.pointLimit : nTimeLength;
 
-    const slicedData = chart.Data.slice(0, cutoff);
+    const slicedData = chart.Data?.slice(0, cutoff);
     // Stash the time axis
-    const columns: (string | number)[][] = [['x', ...slicedData[0].Points.slice(0, timecutoff).map((datum) => datum.Date.toString())]];
+    const columns: (string | number)[][] = [
+      ['x', ...(slicedData?.[0].Points?.slice(0, timecutoff).map((datum) => datum.Date.toString()) || [])],
+    ];
 
-    slicedData.forEach((data) => {
-      columns.push([data.Name, ...data.Points.slice(0, timecutoff).map((datum) => datum.Value)]);
+    slicedData?.forEach((data) => {
+      columns.push([data.Name ?? '', ...(data.Points?.slice(0, timecutoff).map((datum) => datum.Value) || [])]);
     });
     return {
       data: {
@@ -306,13 +317,17 @@ export class StatisticsChartHandlerService {
           text: this.constantsService.resetZoomText,
         },
       },
-
-      size: displayOptions?.size,
       resize: {
         auto: true,
       },
       legend: {
         show: false,
+      },
+      interaction: {
+        inputType: {
+          mouse: true,
+          touch: false,
+        },
       },
     };
   }

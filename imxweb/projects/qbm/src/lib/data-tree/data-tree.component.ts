@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -41,13 +41,14 @@ import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
-import { CollectionLoadParameters, IEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, IEntity } from '@imx-modules/imx-qbm-dbts';
+import { calculateSidesheetWidth } from '../base/sidesheet-helper';
 import { ClassloggerService } from '../classlogger/classlogger.service';
 import { CheckableTreeComponent } from './checkable-tree/checkable-tree.component';
 import { DataTreeSearchResultsComponent } from './data-tree-search-results/data-tree-search-results.component';
 import { TreeDatabase } from './tree-database';
-import { TreeSelectionListComponent } from './tree-selection-list/tree-selection-list.component';
 import { TreeNodeInfo } from './tree-node';
+import { TreeSelectionListComponent } from './tree-selection-list/tree-selection-list.component';
 
 @Component({
   selector: 'imx-data-tree',
@@ -74,7 +75,7 @@ export class DataTreeComponent implements OnChanges, OnDestroy {
   @Input() public withSelectedNodeHighlight: boolean;
 
   /** currently selected entities */
-  @Input() public selectedEntities: IEntity[] = [];
+  @Input() public selectedEntities: (IEntity | undefined)[] = [];
 
   /** the service providing the data for the {@link TreeDatasource| TreeDatasource} */
   @Input() public database: TreeDatabase;
@@ -119,6 +120,7 @@ export class DataTreeComponent implements OnChanges, OnDestroy {
   @ViewChild(DataTreeSearchResultsComponent) public searchResults: DataTreeSearchResultsComponent;
 
   @ContentChild(TemplateRef, { static: true }) public templateRef: TemplateRef<any>;
+  @ContentChild('customDisplay') public customDisplay: TemplateRef<any>;
 
   private subscriptions: Subscription[] = [];
 
@@ -126,7 +128,7 @@ export class DataTreeComponent implements OnChanges, OnDestroy {
     public sidesheet: EuiSidesheetService,
     private readonly logger: ClassloggerService,
     private readonly translator: TranslateService,
-    private readonly changeDetector: ChangeDetectorRef
+    private readonly changeDetector: ChangeDetectorRef,
   ) {}
 
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
@@ -138,7 +140,7 @@ export class DataTreeComponent implements OnChanges, OnDestroy {
             this.database.busyService.busyStateChanged.subscribe((value: boolean) => {
               this.isLoading = value;
               this.changeDetector.detectChanges();
-            })
+            }),
           );
         }
         this.isLoading = this.database?.busyService?.isBusy ?? false;
@@ -182,7 +184,7 @@ export class DataTreeComponent implements OnChanges, OnDestroy {
     return this.simpleTree?.hasChildren(entity);
   }
 
-  public getEntityById(id: string): IEntity {
+  public getEntityById(id: string): IEntity | undefined {
     return this.simpleTree?.getEntityById(id);
   }
 
@@ -217,7 +219,7 @@ export class DataTreeComponent implements OnChanges, OnDestroy {
    * @param entity entity, for identifying the node
    */
   public deleteNode(entity: IEntity, withDescendants: boolean) {
-    this.simpleTree?.deleteNode(entity,withDescendants);
+    this.simpleTree?.deleteNode(entity, withDescendants);
   }
 
   /** @ignore opens a side sheet containing the  {@link TreeSelectionListComponent|selected elements} */
@@ -226,19 +228,19 @@ export class DataTreeComponent implements OnChanges, OnDestroy {
       title: await this.translator.get('#LDS#Heading Selected Items').toPromise(),
       panelClass: 'imx-sidesheet',
       padding: '0',
-      width: '50%',
+      width: calculateSidesheetWidth(800, 0.5),
       testId: 'data-tree-selected-elements-sidesheet',
       data: this.selectedEntities,
     });
 
     this.subscriptions.push(
       sidesheetRef.afterClosed().subscribe((result) => {
-        this.logger.log(this, 'The side sheet was closed', result);
-      })
+        this.logger.log(this, 'The sidesheet was closed', result);
+      }),
     );
   }
 
   public hasSearchResults(): boolean {
-    return this.navigationState?.search && this.navigationState?.search !== null && this.navigationState?.search !== '';
+    return (this.navigationState?.search ?? '') !== '';
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,10 +26,10 @@
 
 import { Injectable } from '@angular/core';
 
-import { ShapeData } from 'imx-api-qer';
+import { ShapeData } from '@imx-modules/imx-api-qer';
 
 import { ApiClientService } from 'qbm';
-import { ObjectHyperviewService, ProjectConfigurationService, QerApiService } from 'qer';
+import { ObjectHyperviewService, ProjectConfigurationService, QerApiService, QerPermissionsService } from 'qer';
 
 @Injectable({
   providedIn: 'root',
@@ -38,15 +38,15 @@ export class PortalHyperviewService implements ObjectHyperviewService {
   constructor(
     private readonly apiClient: QerApiService,
     private readonly apiProvider: ApiClientService,
-    private readonly configService: ProjectConfigurationService
+    private readonly configService: ProjectConfigurationService,
+    private readonly qerPermissionsService: QerPermissionsService,
   ) {}
 
-  public async get(tableName: string, uid: string, nodeName?: string): Promise<ShapeData[]> {
-    return this.apiProvider.request(() => this.apiClient.client.portal_hyperview_get(tableName, uid, { node: nodeName }));
+  public async get(tableName: string, uid: string, node?: string): Promise<ShapeData[]> {
+    return this.apiProvider.request(() => this.apiClient.client.portal_hyperview_get(tableName, uid, { node })) as Promise<ShapeData[]>;
   }
-
   public async getNavigationPermission(): Promise<boolean> {
     const projectConfig = await this.configService.getConfig();
-    return !projectConfig?.DisableHyperViewNavigation;
+    return projectConfig.EnableHyperViewNavigation && this.qerPermissionsService.isHyperviewNavigation();
   }
 }

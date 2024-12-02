@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -41,7 +41,7 @@ export class IeWarningService {
     private readonly alertBanner: EuiAlertBannerService,
     private readonly translate: TranslateService,
     private readonly ldsReplace: LdsReplacePipe,
-    private readonly mastHeadService: MastHeadService
+    private readonly mastHeadService: MastHeadService,
   ) {}
 
   public async showIe11Banner(): Promise<void> {
@@ -58,10 +58,10 @@ export class IeWarningService {
           message: this.ldsReplace.transform(
             await this.translate
               .get(
-                '#LDS#Internet Explorer is no longer supported and the application may not work properly. Please use a browser from the following list: {0}.'
+                '#LDS#Internet Explorer is no longer supported and the application may not work properly. Please use a browser from the following list: {0}.',
               )
               .toPromise(),
-            docLink
+            docLink,
           ),
         });
         this.alertBanner.userDismissed.subscribe(() => this.storageService.storeHelperAlertDismissal(alertKey));

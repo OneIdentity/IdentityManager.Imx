@@ -1,5 +1,6 @@
 <imx-data-source-toolbar
   #dst
+  *ngIf="database?.canSearch"
   data-imx-identifier="data-tree-wrapper-data-source-toolbar-for-tree"
   [alwaysVisible]="true"
   [busyService]="database?.busyService"
@@ -31,5 +32,8 @@
 >
   <ng-template let-entity>
     <ng-container *ngTemplateOutlet="templateRef; context: { $implicit: entity }"> </ng-container>
+  </ng-template>
+  <ng-template let-entity>
+    <ng-container *ngTemplateOutlet="customDisplay; context: { $implicit: entity }"> </ng-container>
   </ng-template>
 </imx-data-tree>

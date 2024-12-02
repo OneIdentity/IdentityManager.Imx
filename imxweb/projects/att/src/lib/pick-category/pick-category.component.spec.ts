@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,9 +27,9 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EuiSidesheetService } from '@elemental-ui/core';
-import { IClientProperty } from 'imx-qbm-dbts';
+import { IClientProperty } from '@imx-modules/imx-qbm-dbts';
 
-import { ClassloggerService, ConfirmationService, HelpContextualService, UserMessageService } from 'qbm';
+import { ClassloggerService, ConfirmationService, HelpContextualService, SqlWizardApiService, UserMessageService } from 'qbm';
 import { Subject } from 'rxjs';
 
 import { PickCategoryComponent } from './pick-category.component';
@@ -39,71 +39,70 @@ describe('PickCategoryComponent', () => {
   let component: PickCategoryComponent;
   let fixture: ComponentFixture<PickCategoryComponent>;
 
-
   const sidesheetServiceStub = {
-    open: jasmine.createSpy('open')
+    open: jasmine.createSpy('open'),
   };
 
   let confirm = true;
   const mockConfirmationService = {
-    confirm: jasmine.createSpy('confirm')
-      .and.callFake(() => Promise.resolve(confirm))
-  }
+    confirm: jasmine.createSpy('confirm').and.callFake(() => Promise.resolve(confirm)),
+  };
 
   const deletePickCategoriesSpy = jasmine.createSpy('deletePickCategories').and.returnValue(Promise.resolve({}));
   const mockHelpContextualService = {
-    setHelpContextId: jasmine.createSpy('setHelpContextId')
-      .and.callFake(() => Promise.resolve())
-  }
+    setHelpContextId: jasmine.createSpy('setHelpContextId').and.callFake(() => Promise.resolve()),
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        PickCategoryComponent
-      ],
-      schemas: [
-        CUSTOM_ELEMENTS_SCHEMA
-      ],
+      declarations: [PickCategoryComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
           provide: PickCategoryService,
           useValue: {
-            pickcategorySchema: { Columns: { __Display: { ColumnName: '__Display' } as IClientProperty } },
+            pickcategorySchema: {
+              Columns: {
+                __Display: { ColumnName: '__Display' } as IClientProperty,
+                IsManual: { ColumnName: 'IsManual' } as IClientProperty,
+                DisplayName: { ColumnName: 'DisplayName' } as IClientProperty,
+              },
+            },
             getPickCategories: jasmine.createSpy('getPickCategories').and.returnValue({}),
             deletePickCategories: deletePickCategoriesSpy,
             createPickCategory: jasmine.createSpy('createPickCategory').and.returnValue({}),
             handleOpenLoader: jasmine.createSpy('handleOpenLoader').and.callThrough(),
             handleCloseLoader: jasmine.createSpy('handleCloseLoader').and.callThrough(),
-          }
+          },
         },
         {
           provide: EuiSidesheetService,
-          useValue: sidesheetServiceStub
+          useValue: sidesheetServiceStub,
         },
         {
           provide: ConfirmationService,
-          useValue: mockConfirmationService
+          useValue: mockConfirmationService,
         },
         {
           provide: UserMessageService,
           useValue: {
-            subject: new Subject()
-          }
+            subject: new Subject(),
+          },
         },
         {
           provide: ClassloggerService,
           useValue: {
             debug: jasmine.createSpy('debug').and.callThrough(),
-            trace: jasmine.createSpy('trace').and.callThrough()
-          }
+            trace: jasmine.createSpy('trace').and.callThrough(),
+          },
         },
         {
           provide: HelpContextualService,
-          useValue: mockHelpContextualService
-        }
-      ]
-    })
-    .compileComponents();
+          useValue: mockHelpContextualService,
+        },
+        { provide: SqlWizardApiService, useValue: {} },
+      ],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -118,15 +117,12 @@ describe('PickCategoryComponent', () => {
   });
 
   describe('delete() tests', () => {
-    for (const testcase of [
-      { confirm: true },
-      { confirm: false }
-    ]) {
+    for (const testcase of [{ confirm: true }, { confirm: false }]) {
       it('should make a call to delete the PickCategories, if the user confirm the dialog', async () => {
         confirm = testcase.confirm;
         await component.delete();
 
-        if(testcase.confirm) {
+        if (testcase.confirm) {
           expect(deletePickCategoriesSpy).toHaveBeenCalled();
         } else {
           expect(deletePickCategoriesSpy).not.toHaveBeenCalled();

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,19 +25,18 @@
  */
 
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
-import { AttestationConfig } from 'imx-api-att';
+import { Router } from '@angular/router';
+import { AttestationConfig } from '@imx-modules/imx-api-att';
 import { ApiService } from './api.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-export class AttestationFeatureGuardService implements CanActivate {
-
+export class AttestationFeatureGuardService {
   constructor(
     private attService: ApiService,
-    private readonly router: Router
-  ) { }
+    private readonly router: Router,
+  ) {}
 
   public async getAttestationConfig(): Promise<AttestationConfig> {
     return this.attService.client.portal_attestation_config_get();

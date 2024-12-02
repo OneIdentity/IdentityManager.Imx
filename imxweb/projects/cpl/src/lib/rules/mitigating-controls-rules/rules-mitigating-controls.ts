@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,38 +24,29 @@
  *
  */
 
-import { IWriteValue } from 'imx-qbm-dbts';
+import { IWriteValue } from '@imx-modules/imx-qbm-dbts';
 import { BaseCdr, ColumnDependentReference } from 'qbm';
-import { PortalRulesMitigatingcontrols } from 'imx-api-cpl';
+import { PortalRulesMitigatingcontrols } from '@imx-modules/imx-api-cpl';
 
 /**
  * Class thats extends the {@link PortalRulesMitigatingcontrols} with some additional properties that are needed for
  * the components in the approval context.
  */
 export class RulesMitigatingControls extends PortalRulesMitigatingcontrols {
-
   /**
    * The property list depending on the value of the state of a {@link PortalRulesMitigatingcontrols}.
    */
   public readonly propertyInfo: ColumnDependentReference[];
 
-
-  constructor(
-    readonly baseObject: PortalRulesMitigatingcontrols
-  ) {
+  constructor(readonly baseObject: PortalRulesMitigatingcontrols) {
     super(baseObject.GetEntity());
 
     this.propertyInfo = this.initPropertyInfo();
   }
 
   private initPropertyInfo(): ColumnDependentReference[] {
-    const properties: IWriteValue<any>[] =
-      [
-        this.UID_MitigatingControl,
-      ];
+    const properties: IWriteValue<any>[] = [this.UID_MitigatingControl];
 
-    return properties
-      .map(property => new BaseCdr(property.Column));
+    return properties.map((property) => new BaseCdr(property.Column));
   }
-
 }

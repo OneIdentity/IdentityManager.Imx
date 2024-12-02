@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -37,7 +37,6 @@ import { StartPageComponent } from './start-page.component';
 import { AobUserModule } from '../user/user.module';
 import { GlobalKpiModule } from '../global-kpi/global-kpi.module';
 
-
 @NgModule({
   declarations: [StartPageComponent],
   imports: [
@@ -51,10 +50,8 @@ import { GlobalKpiModule } from '../global-kpi/global-kpi.module';
     AobUserModule,
     QbmModule,
     RouterModule,
-    GlobalKpiModule
+    GlobalKpiModule,
   ],
-  exports: [
-    StartPageComponent
-  ],
+  exports: [StartPageComponent],
 })
-export class StartPageModule { }
+export class StartPageModule {}

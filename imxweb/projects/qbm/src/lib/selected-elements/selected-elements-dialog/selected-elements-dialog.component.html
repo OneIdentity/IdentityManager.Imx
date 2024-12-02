@@ -1,6 +1,6 @@
-<h1 mat-dialog-title>{{ data.header }}</h1>
+<h2 mat-dialog-title>{{ data.header }}</h2>
 <div mat-dialog-content>
-  <mat-card>
+  <mat-card class="imx-card-fill">
     <imx-data-source-toolbar
       #dst
       [settings]="dstSettings"
@@ -11,8 +11,14 @@
     >
     </imx-data-source-toolbar>
     <div class="imx-table-container">
-      <imx-data-table [dst]="dst" mode="manual" [detailViewVisible]="false" [selectable]="false" data-imx-identifier="typed-entity-candidates-datatable">
-        <imx-data-table-column [entityColumn]="entitySchemaCandidates?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" columnLabel="">
+      <imx-data-table
+        [dst]="dst"
+        mode="manual"
+        [detailViewVisible]="false"
+        [selectable]="false"
+        data-imx-identifier="typed-entity-candidates-datatable"
+      >
+        <imx-data-table-column [entityColumn]="entitySchemaCandidates?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]" columnLabel="">
           <ng-template let-item>
             <div>{{ item.GetEntity().GetDisplay() }}</div>
             <div *ngIf="this.data.tables && this.data.tables.length > 1" subtitle>{{ getTable(item) }}</div>

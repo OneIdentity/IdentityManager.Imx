@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,6 +35,8 @@ import { EuiCoreModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableModule } from '@angular/material/table';
+import { ProjectConfig } from '@imx-modules/imx-api-qbm';
 import {
   BusyIndicatorModule,
   CdrModule,
@@ -42,6 +44,7 @@ import {
   ConfirmationModule,
   DataSourceToolbarModule,
   DataTableModule,
+  DataViewModule,
   HELP_CONTEXTUAL,
   HelpContextualModule,
   LdsReplaceModule,
@@ -50,14 +53,13 @@ import {
   SideNavigationExtension,
   SideNavigationFactory,
 } from 'qbm';
-import { ObjectHyperviewModule } from '../object-hyperview/object-hyperview.module';
 import { isAuditor, isResourceAdmin } from '../admin/qer-permissions-helper';
 import { DataExplorerRegistryService } from '../data-explorer-view/data-explorer-registry.service';
 import { MyResponsibilitiesRegistryService } from '../my-responsibilities-view/my-responsibilities-registry.service';
+import { ObjectHyperviewModule } from '../object-hyperview/object-hyperview.module';
 import { ResourceSidesheetComponent } from './resource-sidesheet/resource-sidesheet.component';
 import { ResourcesComponent } from './resources.component';
 import { ResourcesService } from './resources.service';
-import { ProjectConfig } from 'imx-api-qbm';
 
 const routes: Routes = [
   {
@@ -103,7 +105,9 @@ const routes: Routes = [
     LdsReplaceModule,
     TranslateModule,
     EuiCoreModule,
-    HelpContextualModule
+    MatTableModule,
+    HelpContextualModule,
+    DataViewModule,
   ],
 })
 export class ResourcesModule {
@@ -112,7 +116,7 @@ export class ResourcesModule {
     private readonly menuService: MenuService,
     private readonly router: Router,
     private readonly myResponsibilitiesRegistryService: MyResponsibilitiesRegistryService,
-    logger: ClassloggerService
+    logger: ClassloggerService,
   ) {
     logger.info(this, '▶️ resources module loaded');
     const config = this.router.config;
@@ -142,7 +146,7 @@ export class ResourcesModule {
           ],
         };
       }
-      return null;
+      return;
     });
   }
 
@@ -191,7 +195,7 @@ export class ResourcesModule {
         sortOrder: 12,
         name: ResourcesService.QERAssign,
         caption: '#LDS#Assignment resources',
-      })
+      }),
     );
     this.myResponsibilitiesRegistryService.registerFactory(
       this.myResponsibilitiesBuildFactory({
@@ -199,29 +203,29 @@ export class ResourcesModule {
         sortOrder: 9,
         name: ResourcesService.QERResource,
         caption: '#LDS#Resources',
-        contextId: HELP_CONTEXTUAL.MyResponsibilitiesQERResource
+        contextId: HELP_CONTEXTUAL.MyResponsibilitiesQERResource,
       }),
       this.myResponsibilitiesBuildFactory({
         instance: ResourcesComponent,
         sortOrder: 11,
         name: ResourcesService.QERReuse,
         caption: '#LDS#Multi-request resources',
-        contextId: HELP_CONTEXTUAL.MyResponsibilitiesQERReuse
+        contextId: HELP_CONTEXTUAL.MyResponsibilitiesQERReuse,
       }),
       this.myResponsibilitiesBuildFactory({
         instance: ResourcesComponent,
         sortOrder: 12,
         name: ResourcesService.QERAssign,
         caption: '#LDS#Assignment resources',
-        contextId: HELP_CONTEXTUAL.MyResponsibilitiesQERAssign
+        contextId: HELP_CONTEXTUAL.MyResponsibilitiesQERAssign,
       }),
       this.myResponsibilitiesBuildFactory({
         instance: ResourcesComponent,
         sortOrder: 10,
         name: ResourcesService.QERReuseUS,
         caption: '#LDS#Multi requestable/unsubscribable resources',
-        contextId: HELP_CONTEXTUAL.MyResponsibilitiesQERReuseUS
-      })
+        contextId: HELP_CONTEXTUAL.MyResponsibilitiesQERReuseUS,
+      }),
     );
   }
 

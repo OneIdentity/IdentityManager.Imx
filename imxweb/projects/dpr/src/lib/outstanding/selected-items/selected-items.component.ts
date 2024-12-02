@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,17 +27,16 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 
-import { CollectionLoadParameters, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, EntitySchema, IClientProperty } from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarSettings } from 'qbm';
 import { OutstandingObjectEntity } from '../outstanding-object-entity';
 
 @Component({
   selector: 'imx-selected-items',
   templateUrl: './selected-items.component.html',
-  styleUrls: ['./selected-items.component.scss']
+  styleUrls: ['./selected-items.component.scss'],
 })
 export class SelectedItemsComponent implements OnInit {
-
   public sortedEntities: OutstandingObjectEntity[];
 
   public displayedColumns?: IClientProperty[];
@@ -45,14 +44,9 @@ export class SelectedItemsComponent implements OnInit {
   private searchedEntities: OutstandingObjectEntity[];
 
   private navigationState: CollectionLoadParameters = {};
-  constructor(
-    @Inject(EUI_SIDESHEET_DATA) public readonly data: { objects: OutstandingObjectEntity[]; schema: EntitySchema },
-  ) {
-    this.displayedColumns = [
-      data.schema.Columns.Display
-    ];
-    this.sortedEntities = data.objects.sort(
-      (a, b) => a.Display.value.localeCompare(b.Display.value));
+  constructor(@Inject(EUI_SIDESHEET_DATA) public readonly data: { objects: OutstandingObjectEntity[]; schema: EntitySchema }) {
+    this.displayedColumns = [data.schema.Columns.Display];
+    this.sortedEntities = data.objects.sort((a, b) => a.Display.value.localeCompare(b.Display.value));
     this.searchedEntities = [...this.sortedEntities];
   }
 
@@ -64,26 +58,30 @@ export class SelectedItemsComponent implements OnInit {
     if (key === '') {
       this.searchedEntities = [...this.sortedEntities];
     } else {
-      this.searchedEntities = this.sortedEntities.filter(elem =>
-        elem.Display.value.toLocaleLowerCase().includes(key.toLocaleLowerCase()));
+      this.searchedEntities = this.sortedEntities.filter((elem) =>
+        elem.Display.value.toLocaleLowerCase().includes(key.toLocaleLowerCase()),
+      );
     }
     this.getData({ StartIndex: 0, search: key });
   }
 
   public getData(state: CollectionLoadParameters): void {
     this.navigationState = { ...this.navigationState, ...state };
-    const data = this.searchedEntities
-      .slice(this.navigationState.StartIndex, this.navigationState.StartIndex + this.navigationState.PageSize);
+    const data = this.searchedEntities.slice(
+      this.navigationState.StartIndex,
+      this.navigationState?.StartIndex && this.navigationState?.PageSize
+        ? this.navigationState.StartIndex + this.navigationState?.PageSize
+        : 0,
+    );
 
     this.dstSettings = {
       navigationState: this.navigationState,
       dataSource: {
         Data: data,
-        totalCount: this.searchedEntities.length
+        totalCount: this.searchedEntities.length,
       },
       entitySchema: this.data.schema,
-      displayedColumns: this.displayedColumns
+      displayedColumns: this.displayedColumns,
     };
   }
-
 }

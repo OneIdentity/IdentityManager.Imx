@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,15 +26,25 @@
 
 import { Injectable } from '@angular/core';
 
-import { CollectionLoadParameters, DbObjectKey, EntityCollectionData, IEntityColumn, MetaTableRelationData, ValType } from 'imx-qbm-dbts';
+import {
+  CollectionLoadParameters,
+  DbObjectKey,
+  EntityCollectionData,
+  IEntityColumn,
+  MetaTableRelationData,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
 import { BaseCdr, EntityService } from 'qbm';
 import { TsbApiService } from '../tsb-api-client.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ClaimGroupService {
-  constructor(private readonly apiService: TsbApiService, private readonly entityService: EntityService) { }
+  constructor(
+    private readonly apiService: TsbApiService,
+    private readonly entityService: EntityService,
+  ) {}
 
   public async hasSuggestedOwners(tableName: string, key: string): Promise<boolean> {
     const collection = await this.getOwnerCandidates(tableName, key);
@@ -45,11 +55,11 @@ export class ClaimGroupService {
     return this.apiService.client.portal_claimgroup_post(uidOwner, tableName, key);
   }
 
-  public getFkValue(column: IEntityColumn): { table?: string, key?: string; } {
+  public getFkValue(column: IEntityColumn): { table: string; key: string } {
     const dbObjectKey = DbObjectKey.FromXml(column.GetValue());
     return {
       table: dbObjectKey.TableName,
-      key: dbObjectKey.Keys[0]
+      key: dbObjectKey.Keys[0],
     };
   }
 
@@ -59,9 +69,9 @@ export class ClaimGroupService {
         ChildColumnName: 'UID_UNSGroup',
         IsMemberRelation: false,
         ParentTableName: 'UNSGroup',
-        ParentColumnName: 'XObjectKey'
+        ParentColumnName: 'XObjectKey',
       },
-      parameters => this.apiService.client.portal_claimgroup_group_get(parameters)
+      (parameters) => this.apiService.client.portal_claimgroup_group_get(parameters),
     );
 
     return new BaseCdr(column, '#LDS#System entitlement' /* TODO: globalize */);
@@ -72,58 +82,47 @@ export class ClaimGroupService {
       ChildColumnName: 'UID_Owner',
       IsMemberRelation: false,
       ParentTableName: tableName,
-      ParentColumnName: 'XObjectKey'
+      ParentColumnName: 'XObjectKey',
     };
 
-    return this.createColumn(
-      fkRelation,
-      parameters => this.getOwnerCandidates(fkRelation.ParentTableName, key, parameters)
-    );
+    return this.createColumn(fkRelation, (parameters) => this.getOwnerCandidates(fkRelation.ParentTableName, key, parameters));
   }
 
   private createColumn(
     fkRelation: MetaTableRelationData,
-    loadFkCandidates: (parameters: CollectionLoadParameters) => Promise<EntityCollectionData>
+    loadFkCandidates: (parameters: CollectionLoadParameters) => Promise<EntityCollectionData>,
   ): IEntityColumn {
     return this.entityService.createLocalEntityColumn(
       {
-        ColumnName: fkRelation.ChildColumnName,
+        ColumnName: fkRelation.ChildColumnName!,
         Type: ValType.String,
         MinLen: 1,
-        FkRelation: fkRelation
+        FkRelation: fkRelation,
       },
-      [{
-        columnName: fkRelation.ChildColumnName,
-        fkTableName: fkRelation.ParentTableName,
-        parameterNames: [
-          'OrderBy',
-          'StartIndex',
-          'PageSize',
-          'filter',
-          'search',
-        ],
-        load: async (_, parameters: CollectionLoadParameters = {}) => loadFkCandidates(parameters),
-        getDataModel: async () => ({}),
-        getFilterTree: async () => ({ Elements: [] })
-      }]
+      [
+        {
+          columnName: fkRelation.ChildColumnName!,
+          fkTableName: fkRelation.ParentTableName!,
+          parameterNames: ['OrderBy', 'StartIndex', 'PageSize', 'filter', 'search'],
+          load: async (_, parameters: CollectionLoadParameters = {}) => loadFkCandidates(parameters),
+          getDataModel: async () => ({}),
+          getFilterTree: async () => ({ Elements: [] }),
+        },
+      ],
     );
   }
 
   private async getOwnerCandidates(
-    tableName: string, uid: string, parameters: CollectionLoadParameters = {}
+    tableName: string,
+    uid: string,
+    parameters: CollectionLoadParameters = {},
   ): Promise<EntityCollectionData> {
-    const collection = await this.apiService.client.portal_claimgroup_suggestedowner_get(
-      tableName,
-      uid,
-      parameters);
+    const collection = await this.apiService.client.portal_claimgroup_suggestedowner_get(tableName, uid, parameters);
 
     if (collection.Entities && collection.Entities.length > 0) {
       return collection;
     }
 
-    return this.apiService.client.portal_claimgroup_suggestedowner2_get(
-      tableName,
-      uid,
-      parameters);
+    return this.apiService.client.portal_claimgroup_suggestedowner2_get(tableName, uid, parameters);
   }
 }

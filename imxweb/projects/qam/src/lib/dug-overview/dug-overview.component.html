@@ -1,0 +1,47 @@
+<mat-card class="imx-card-fill">
+  <div class="imx-card-data-explorer-header">
+    <div class="imx-card-data-explorer-header-bg">
+      <h3 translate>#LDS#Heading Governed Data</h3>
+      <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
+    </div>
+  </div>
+  <mat-tab-group mat-stretch-tabs="false">
+    <mat-tab [label]="'#LDS#Heading My Resources' | translate">
+      <div class="imx-table-container">
+        <mat-card class="imx-card-fill">
+          <imx-data-source-toolbar
+            #dst
+            [settings]="dstSettings"
+            [options]="['search']"
+            [busyService]="busyService"
+            (navigationStateChanged)="onNavigationStateChanged($event)"
+            (search)="onSearch($event)"
+          >
+          </imx-data-source-toolbar>
+          <imx-data-table [dst]="dst" (highlightedEntityChanged)="showDugResource($event)" [detailViewVisible]="false" mode="manual">
+            <imx-data-table-column [entityColumn]="entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
+              <ng-template let-item>
+                <div>{{ item.GetEntity().GetDisplay() }}</div>
+                <div subtitle>{{ item.GetEntity().GetDisplayLong() }}</div>
+              </ng-template>
+            </imx-data-table-column>
+            <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_QAMResourceType"></imx-data-table-column>
+            <imx-data-table-column [entityColumn]="entitySchema.Columns.RiskIndexCalculated"></imx-data-table-column>
+          </imx-data-table>
+          <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+        </mat-card>
+      </div>
+    </mat-tab>
+    <mat-tab [label]="'#LDS#Dashboards' | translate">
+      <ng-template matTabContent>
+        <imx-dug-dashboards></imx-dug-dashboards>
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab [label]="'#LDS#Activities' | translate">
+      <ng-template matTabContent>
+        <imx-dug-activities></imx-dug-activities>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</mat-card>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,9 +24,8 @@
  *
  */
 
-import { Component, Input, ViewChild } from '@angular/core';
-import { MatSort } from '@angular/material/sort';
-import { ByAbilityResult, SAPUserFunctionSrcFLD } from 'imx-api-sac';
+import { Component, Input } from '@angular/core';
+import { ByAbilityResult, SAPUserFunctionSrcFLD } from '@imx-modules/imx-api-sac';
 import {
   CollectionLoadParameters,
   EntitySchema,
@@ -35,11 +34,11 @@ import {
   GroupInfoData,
   TypedEntityCollectionData,
   ValType,
-} from 'imx-qbm-dbts';
+} from '@imx-modules/imx-qbm-dbts';
+import { TranslateService } from '@ngx-translate/core';
 import { DataSourceToolBarGroup, DataSourceToolbarGroupData, DataSourceToolbarSettings, DataTableGroupedData } from 'qbm';
 import { SapComplianceByAbilityBuilder } from './sap-compliance-violation-views-by-ability-builder';
 import { SapComplianceByAbilityEntity } from './sap-compliance-violation-views-by-ability-entity';
-import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'imx-sap-compliance-violation-views-by-ability',
   templateUrl: './sap-compliance-violation-views-by-ability.component.html',
@@ -71,19 +70,26 @@ export class SapComplianceViolationViewsByAbilityComponent {
    * Called when search action is emitted.
    * @param searchValue current search param
    */
-  public onSearch(searchValue: string): void {
-    if (!!searchValue) {
+  public onSearch(searchValue: string | undefined): void {
+    if (searchValue) {
       searchValue = searchValue.toLocaleLowerCase();
-      this.dstSettings.dataSource.Data = this.defaultData.filter(
+      const Data = this.defaultData.filter(
         (profile) =>
-          profile.Ident_SAPProfile.value.toLocaleLowerCase().includes(searchValue) ||
-          profile.Ident_SAPAuthObject.value.toLocaleLowerCase().includes(searchValue) ||
-          profile.Ident_SAPField.value.toLocaleLowerCase().includes(searchValue) ||
-          profile.LowerLimit.value.toLocaleLowerCase().includes(searchValue) ||
-          profile.UpperLimit.value.toLocaleLowerCase().includes(searchValue)
+          profile.Ident_SAPProfile.value.toLocaleLowerCase().includes(searchValue!) ||
+          profile.Ident_SAPAuthObject.value.toLocaleLowerCase().includes(searchValue!) ||
+          profile.Ident_SAPField.value.toLocaleLowerCase().includes(searchValue!) ||
+          profile.LowerLimit.value.toLocaleLowerCase().includes(searchValue!) ||
+          profile.UpperLimit.value.toLocaleLowerCase().includes(searchValue!),
       );
+      this.dstSettings.dataSource = {
+        Data,
+        totalCount: Data.length,
+      };
     } else {
-      this.dstSettings.dataSource.Data = this.defaultData;
+      this.dstSettings.dataSource = {
+        Data: this.defaultData,
+        totalCount: this.defaultData.length,
+      };
     }
     this.dstSettings = { ...this.dstSettings, navigationState: { ...this.dstSettings.navigationState, search: searchValue } };
   }
@@ -94,8 +100,9 @@ export class SapComplianceViolationViewsByAbilityComponent {
    */
   public onGroupingChange(groupKey: string): void {
     const groupedData = this.groupData[groupKey];
-    let filter = groupedData.navigationState?.filter;
-    groupedData.data = this.getFilteredData(filter[0]);
+    if (groupedData.navigationState?.filter) {
+      groupedData.data = this.getFilteredData(groupedData.navigationState.filter[0]);
+    }
     groupedData.settings = {
       displayedColumns: this.dstSettings.displayedColumns,
       dataModel: this.dstSettings.dataModel,
@@ -104,7 +111,7 @@ export class SapComplianceViolationViewsByAbilityComponent {
         totalCount: groupedData.data.length,
       },
       entitySchema: this.dstSettings.entitySchema,
-      navigationState: groupedData.navigationState,
+      navigationState: groupedData.navigationState ?? {},
     };
   }
 
@@ -149,8 +156,8 @@ export class SapComplianceViolationViewsByAbilityComponent {
           Property: {
             Type: ValType.String,
             ColumnName: 'DisplaySapFunctionInstance',
-            Display: this.translateService.instant('#LDS#SAP function instance'),
           },
+          Display: this.translateService.instant('#LDS#SAP function instance'),
         },
         getData: async () => await this.groupingData('DisplaySapFunctionInstance'),
       },
@@ -159,8 +166,8 @@ export class SapComplianceViolationViewsByAbilityComponent {
           Property: {
             Type: ValType.String,
             ColumnName: 'DisplaySapTransaction',
-            Display: this.translateService.instant('#LDS#SAP transaction'),
           },
+          Display: this.translateService.instant('#LDS#SAP transaction'),
         },
         getData: async () => await this.groupingData('DisplaySapTransaction'),
       },
@@ -176,7 +183,7 @@ export class SapComplianceViolationViewsByAbilityComponent {
   public async groupingData(groupColumn: string): Promise<GroupInfoData> {
     const Groups: GroupInfo[] = [];
     this.dataSource.Data?.map((item, index) => {
-      if (Groups.every((groupItem) => item[groupColumn].value !== groupItem.Display[0].Display)) {
+      if (Groups.every((groupItem) => item[groupColumn].value !== (groupItem?.Display?.[0]?.Display ?? ''))) {
         const groupItems = this.dataSource.Data.filter((row) => row[groupColumn].value === item[groupColumn].value);
         Groups.push({
           Display: [{ Display: item[groupColumn].value }],
@@ -197,6 +204,6 @@ export class SapComplianceViolationViewsByAbilityComponent {
    * @returns Filtered data source.
    */
   private getFilteredData(filter: FilterData): SapComplianceByAbilityEntity[] {
-    return this.dataSource.Data.filter((dataRow) => filter.Values.indexOf(dataRow[filter.ColumnName].value) >= 0);
+    return this.dataSource.Data.filter((dataRow) => (filter?.Values?.indexOf(dataRow?.[filter.ColumnName ?? '']?.value) ?? -1) >= 0);
   }
 }

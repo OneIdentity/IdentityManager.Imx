@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,7 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TableImageService {
   private readonly cssPrefix = 'imx-table-';
@@ -41,12 +41,10 @@ export class TableImageService {
 
     const cssClass = `${this.cssPrefix}${imgId}`;
 
-    return (largeImg ? `${cssClass}${this.cssLargeSuffix}` : cssClass);
+    return largeImg ? `${cssClass}${this.cssLargeSuffix}` : cssClass;
   }
 
   public getDefaultCss(largeImg: boolean = false): string {
-    return (largeImg ? `${this.defaultCssPrefix}${this.cssLargeSuffix}` : this.defaultCssPrefix);
+    return largeImg ? `${this.defaultCssPrefix}${this.cssLargeSuffix}` : this.defaultCssPrefix;
   }
-
 }
-

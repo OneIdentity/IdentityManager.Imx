@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,18 +26,17 @@
 
 import { Component, Inject, OnInit } from '@angular/core';
 import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { ApiLogEntry } from 'imx-api-qbm';
+import { ApiLogEntry } from '@imx-modules/imx-api-qbm';
 
 @Component({
   selector: 'imx-log-details-sidesheet',
   templateUrl: './log-details-sidesheet.component.html',
-  styleUrls: ['./log-details-sidesheet.component.scss']
+  styleUrls: ['./log-details-sidesheet.component.scss'],
 })
 export class LogDetailsSidesheetComponent implements OnInit {
-
-  constructor(@Inject(EUI_SIDESHEET_DATA) public readonly data: ApiLogEntry,
-    public readonly sidesheetRef: EuiSidesheetRef) { }
-    ngOnInit(): void {
-    
-    }
+  constructor(
+    @Inject(EUI_SIDESHEET_DATA) public readonly data: ApiLogEntry,
+    public readonly sidesheetRef: EuiSidesheetRef,
+  ) {}
+  ngOnInit(): void {}
 }

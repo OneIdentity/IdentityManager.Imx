@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { MethodDescriptor, TimeZoneInfo } from 'imx-qbm-dbts';
+import { MethodDescriptor, TimeZoneInfo } from '@imx-modules/imx-qbm-dbts';
 
 interface INodeAppInfo {
   Name?: string;
@@ -48,7 +48,7 @@ export class ApiClientMethodFactoryMock {
       },
       credentials: null,
       observe: 'response',
-      responseType: 'json'
+      responseType: 'json',
     };
   }
 
@@ -59,8 +59,8 @@ export class ApiClientMethodFactoryMock {
         {
           name: 'appId',
           value: appId,
-          in: 'path'
-        }
+          in: 'path',
+        },
       ],
       method: 'get',
       headers: {
@@ -68,19 +68,19 @@ export class ApiClientMethodFactoryMock {
       },
       credentials: 'include',
       observe: 'response',
-      responseType: 'json'
+      responseType: 'json',
     };
   }
 
-  imx_multilanguage_getcaptions_get(cultureName: string): MethodDescriptor<{ [key: string]: string; }> {
+  imx_multilanguage_getcaptions_get(cultureName: string): MethodDescriptor<{ [key: string]: string }> {
     return {
       path: '/imx/multilanguage/getcaptions',
       parameters: [
         {
           name: 'cultureName',
           value: cultureName,
-          in: 'query'
-        }
+          in: 'query',
+        },
       ],
       method: 'get',
       headers: {
@@ -88,23 +88,23 @@ export class ApiClientMethodFactoryMock {
       },
       credentials: 'include',
       observe: 'response',
-      responseType: 'json'
+      responseType: 'json',
     };
   }
 
-  imx_login_post(appId: string, inputParameterName: { [key: string]: string; }): MethodDescriptor<ISessionResponse> {
+  imx_login_post(appId: string, inputParameterName: { [key: string]: string }): MethodDescriptor<ISessionResponse> {
     return {
       path: '/imx/login/{appId}',
       parameters: [
         {
           name: 'appId',
           value: appId,
-          in: 'path'
+          in: 'path',
         },
         {
           name: 'inputParameterName',
           value: inputParameterName,
-          in: 'body'
+          in: 'body',
         },
       ],
       method: 'post',
@@ -113,7 +113,7 @@ export class ApiClientMethodFactoryMock {
       },
       credentials: 'include',
       observe: 'response',
-      responseType: 'json'
+      responseType: 'json',
     };
   }
 }
@@ -132,18 +132,20 @@ export function createTestMethods(): Method<any>[] {
       path: '/imx/applications',
       type: 'GET',
       onInvoke: (client: any) => client.imx_applications_get(),
-      value: [{
-        Name: 'somename',
-        DisplayName: 'somedisplayname',
-        Description: 'somedescription',
-        Path: 'somepath'
-      }]
+      value: [
+        {
+          Name: 'somename',
+          DisplayName: 'somedisplayname',
+          Description: 'somedescription',
+          Path: 'somepath',
+        },
+      ],
     },
     {
       path: '/imx/sessions/someAppId',
       type: 'GET',
       onInvoke: (client: any) => client.imx_sessions_get('someAppId'),
-      value: {}
+      value: {},
     },
     {
       path: '/imx/multilanguage/getcaptions',
@@ -151,8 +153,8 @@ export function createTestMethods(): Method<any>[] {
       onInvoke: (client: any) => client.imx_multilanguage_getcaptions_get(null),
       value: {
         caption1: 'value1',
-        caption2: 'value2'
-      }
+        caption2: 'value2',
+      },
     },
     {
       path: '/imx/multilanguage/getcaptions?cultureName=someCultureName',
@@ -160,15 +162,15 @@ export function createTestMethods(): Method<any>[] {
       onInvoke: (client: any) => client.imx_multilanguage_getcaptions_get('someCultureName'),
       value: {
         caption1: 'value1',
-        caption2: 'value2'
-      }
+        caption2: 'value2',
+      },
     },
     {
       path: '/imx/login/someAppId',
       type: 'POST',
       onInvoke: (client: any) => client.imx_login_post('someAppId', {}),
       value: {},
-      body: JSON.stringify({})
-    }
+      body: JSON.stringify({}),
+    },
   ];
 }

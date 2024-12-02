@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -49,7 +49,7 @@ export class Test extends ImxDataSource<any> {
 
   itemsProvider = () => {
     return this.buildTree(this.startUid);
-  }
+  };
 
   childItemsProvider = (item: any) => {
     const val1 = this.buildTree(item.UID_JobError);
@@ -59,14 +59,13 @@ export class Test extends ImxDataSource<any> {
       return [].concat.apply([], arrayOfArrays);
     });
     return ret;
-  }
+  };
 
   hasChildrenProvider = (data: any) => {
-    return (data.UID_JobError !== null && data.UID_JobError !== '')
-      && (data.UID_JobSuccess != null && data.UID_JobSuccess !== '');
-  }
+    return data.UID_JobError !== null && data.UID_JobError !== '' && data.UID_JobSuccess != null && data.UID_JobSuccess !== '';
+  };
 
-  private buildTree(uidstart: string): Promise<{ [key: string]: any; }[]> {
+  private buildTree(uidstart: string): Promise<{ [key: string]: any }[]> {
     return Promise.resolve(this.uids.map((uid: string) => Test.buildSingleObject(uid + uidstart)));
   }
 }

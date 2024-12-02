@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,18 +24,15 @@
  *
  */
 
-import * as TypeMoq from 'typemoq';
-
-import { EntityData, IEntity, IEntityColumn, IReadValue, TypedEntity } from 'imx-qbm-dbts';
-import { OpsupportSyncJournal, OpsupportSyncShell } from 'imx-api-dpr';
+import { OpsupportSyncJournal, OpsupportSyncShell } from '@imx-modules/imx-api-dpr';
 import {
-  OpsupportQueueJobchains,
-  OpsupportQueueTree,
   OpsupportQueueFrozenjobs,
-  OpsupportQueueJobs,
+  OpsupportQueueJobchains,
   OpsupportQueueJobperformance,
-} from 'imx-api-qbm';
-import { BaseImxApiDtoMock, BaseImxApiDataMock, CreateIEntityColumn, CreateIReadValue, CreateIEntity } from 'qbm';
+  OpsupportQueueJobs,
+} from '@imx-modules/imx-api-qbm';
+import { EntityData, IEntity, IEntityColumn } from '@imx-modules/imx-qbm-dbts';
+import { BaseImxApiDataMock, BaseImxApiDtoMock, CreateIEntity, CreateIEntityColumn, CreateIReadValue } from 'qbm';
 
 export interface JobChainsMock {
   JobChainName: string;
@@ -117,38 +114,32 @@ export class ImxApiDtoMock extends BaseImxApiDtoMock {
     const jobChainName = CreateIEntityColumn(properties.JobChainName);
     const count = CreateIEntityColumn(properties.Count.toString());
 
-    const mock = TypeMoq.Mock.ofType<OpsupportQueueJobchains>();
-    mock.setup((property) => property.JobChainName).returns(() => CreateIReadValue(properties.JobChainName, jobChainName));
-    mock.setup((property) => property.Count).returns(() => CreateIReadValue(properties.Count, count));
-
-    mock
-      .setup((property) => property.GetEntity())
-      .returns(() =>
+    return {
+      JobChainName: CreateIReadValue(properties.JobChainName, jobChainName),
+      Count: CreateIReadValue(properties.Count, count),
+      GetEntity: () =>
         CreateIEntity((name: string) => {
           if (name === 'JobChainName') {
             return jobChainName;
           }
 
           return count;
-        })
-      );
-
-    return mock.object;
+        }),
+    } as OpsupportQueueJobchains;
   }
 
   public static CreateOpsupportSyncJournalCollection(propertiesCollection: OpsupportSyncJournalMock[]): OpsupportSyncJournal[] {
-    return propertiesCollection.map((properties) => {
-      const mock = TypeMoq.Mock.ofType<OpsupportSyncJournal>();
-      mock
-        .setup((property) => property.CreationTime)
-        .returns(() => CreateIReadValue(properties.CreationTime, CreateIEntityColumn(properties.CreationTime.toLocaleString())));
-      mock.setup((property) => property.ProjectionConfigDisplay).returns(() => CreateIReadValue(properties.ProjectionConfigDisplay));
-      mock.setup((property) => property.ProjectionStartInfoDisplay).returns(() => CreateIReadValue(properties.ProjectionStartInfoDisplay));
-      mock.setup((property) => property.ProjectionState).returns(() => CreateIReadValue(properties.ProjectionState));
-      mock.setup((property) => property.UID_DPRJournal).returns(() => CreateIReadValue(properties.UID_DPRJournal));
-      mock.setup((property) => property.UID_DPRProjectionConfig).returns(() => CreateIReadValue(properties.UID_DPRProjectionConfig));
-      return mock.object;
-    });
+    return propertiesCollection.map(
+      (properties) =>
+        ({
+          CreationTime: CreateIReadValue(properties.CreationTime, CreateIEntityColumn(properties.CreationTime.toLocaleString())),
+          ProjectionConfigDisplay: CreateIReadValue(properties.ProjectionConfigDisplay),
+          ProjectionStartInfoDisplay: CreateIReadValue(properties.ProjectionStartInfoDisplay),
+          ProjectionState: CreateIReadValue(properties.ProjectionState),
+          UID_DPRJournal: CreateIReadValue(properties.UID_DPRJournal),
+          UID_DPRProjectionConfig: CreateIReadValue(properties.UID_DPRProjectionConfig),
+        }) as OpsupportSyncJournal,
+    );
   }
 
   public static CreateSingleOpsupportQueueTreeBranch(properties: OpsupportQueueTreeParams): IEntity {
@@ -159,31 +150,6 @@ export class ImxApiDtoMock extends BaseImxApiDtoMock {
       }
     }
     return this.createEntity(columns);
-    // const mock = TypeMoq.Mock.ofType<OpsupportQueueTree>();
-    // mock.setup(obj => obj.UID_Job).returns(() => CreateIReadValue(properties.UID_Job ? properties.UID_Job : ''));
-    // mock.setup(obj => obj.BasisObjectKey).returns(() => CreateIReadValue(properties.BasisObjectKey ? properties.BasisObjectKey : ''));
-    // mock.setup(obj => obj.DeferOnError).returns(() => CreateIReadValue(properties.DeferOnError ? properties.DeferOnError : false));
-    // mock.setup(obj => obj.ErrorMessages).returns(() => CreateIReadValue(properties.ErrorMessages ? properties.ErrorMessages : ''));
-    // mock.setup(obj => obj.GenProcID).returns(() => CreateIReadValue(properties.GenProcID ? properties.GenProcID : ''));
-    // mock.setup(obj => obj.IsRootJob).returns(() => CreateIReadValue(properties.IsRootJob ? properties.IsRootJob : false));
-    // mock.setup(obj => obj.JobChainName).returns(() => CreateIReadValue(properties.JobChainName ? properties.JobChainName : ''));
-    // mock.setup(obj => obj.LimitationCount).returns(() => CreateIReadValue(properties.LimitationCount ? properties.LimitationCount : 0));
-    // mock.setup(obj => obj.Queue).returns(() => CreateIReadValue(properties.Queue ? properties.Queue : ''));
-    // mock.setup(obj => obj.Ready2EXE).returns(() => CreateIReadValue(properties.Ready2EXE ? properties.Ready2EXE : ''));
-    // mock.setup(obj => obj.TaskName).returns(() => CreateIReadValue(properties.TaskName ? properties.TaskName : ''));
-    // mock.setup(obj => obj.UID_JobError).returns(() => CreateIReadValue(properties.UID_JobError ? properties.UID_JobError : ''));
-    // mock.setup(obj => obj.UID_JobOrigin).returns(() => CreateIReadValue(properties.UID_JobOrigin ? properties.UID_JobOrigin : ''));
-    // mock.setup(obj => obj.UID_JobSameServer)
-    //   .returns(() => CreateIReadValue(properties.UID_JobSameServer ? properties.UID_JobSameServer : ''));
-    // mock.setup(obj => obj.UID_JobSuccess).returns(() => CreateIReadValue(properties.UID_JobSuccess ? properties.UID_JobSuccess : ''));
-    // mock.setup(obj => obj.UID_Tree).returns(() => CreateIReadValue(properties.UID_Tree ? properties.UID_Tree : ''));
-    // mock.setup(obj => obj.XDateInserted)
-    //   .returns(() => CreateIReadValue(properties.XDateInserted ? properties.XDateInserted : new Date(2001, 1, 1)));
-    // mock.setup(obj => obj.XDateUpdated)
-    //   .returns(() => CreateIReadValue(properties.XDateUpdated ? properties.XDateUpdated : new Date(2001, 1, 1)));
-    // mock.setup(obj => obj.XUserInserted).returns(() => CreateIReadValue(properties.XUserInserted ? properties.XUserInserted : ''));
-    // mock.setup(obj => obj.XUserUpdated).returns(() => CreateIReadValue(properties.XUserUpdated ? properties.XUserUpdated : ''));
-    // return mock.object;
   }
 
   public static createColumn(value?) {
@@ -213,81 +179,72 @@ export class ImxApiDtoMock extends BaseImxApiDtoMock {
   }
 
   public static CreateOpsupportQueueFrozenjobs(properties: IJobQueueParams): OpsupportQueueFrozenjobs {
-    const mock = TypeMoq.Mock.ofType<OpsupportQueueFrozenjobs>();
-    mock
-      .setup((property) => property.TaskName)
-      .returns(() => CreateIReadValue(properties.TaskName, CreateIEntityColumn(properties.TaskName)));
-    mock
-      .setup((property) => property.JobChainName)
-      .returns(() => CreateIReadValue(properties.JobChainName, CreateIEntityColumn(properties.JobChainName)));
-    mock.setup((property) => property.UID_Tree).returns(() => CreateIReadValue(properties.Uid_Tree));
-    mock.setup((property) => property.UID_Job).returns(() => CreateIReadValue(properties.Uid_Job));
-    mock.setup((property) => property.UID_JobSuccess).returns(() => CreateIReadValue(properties.Uid_JobSuccess));
-    mock.setup((property) => property.UID_JobError).returns(() => CreateIReadValue(properties.Uid_JobError));
-    mock
-      .setup((property) => property.ErrorMessages)
-      .returns(() => CreateIReadValue(properties.ErrorMessages ? properties.ErrorMessages : ''));
-    mock.setup((property) => property.Queue).returns(() => CreateIReadValue(properties.Queue));
-    mock.setup((property) => property.Retries).returns(() => CreateIReadValue(properties.Retries));
-    mock.setup((property) => property.Ready2EXE).returns(() => CreateIReadValue(properties.ReadyToExe));
-    mock.setup((property) => property.IsRootJob).returns(() => CreateIReadValue(properties.IsRootJob));
-    mock.setup((property) => property.XDateInserted).returns(() => CreateIReadValue(properties.XDateInserted));
-    return mock.object;
+    return {
+      TaskName: CreateIReadValue(properties.TaskName, CreateIEntityColumn(properties.TaskName)),
+      JobChainName: CreateIReadValue(properties.JobChainName, CreateIEntityColumn(properties.JobChainName)),
+      UID_Tree: CreateIReadValue(properties.Uid_Tree),
+      UID_Job: CreateIReadValue(properties.Uid_Job),
+      UID_JobSuccess: CreateIReadValue(properties.Uid_JobSuccess),
+      UID_JobError: CreateIReadValue(properties.Uid_JobError),
+      ErrorMessages: CreateIReadValue(properties.ErrorMessages ? properties.ErrorMessages : ''),
+      Retries: CreateIReadValue(properties.Retries),
+      Queue: CreateIReadValue(properties.Queue),
+      Ready2EXE: CreateIReadValue(properties.ReadyToExe),
+      IsRootJob: CreateIReadValue(properties.IsRootJob),
+      XDateInserted: CreateIReadValue(properties.XDateInserted),
+    } as OpsupportQueueFrozenjobs;
   }
 
   public static CreateOpsupportSyncShellCollection(propertiesCollection: IOpsupportSyncShell[]): OpsupportSyncShell[] {
-    return propertiesCollection.map((properties) => {
-      const mock = TypeMoq.Mock.ofType<OpsupportSyncShell>();
-      mock
-        .setup((property) => property.CountJournalFailure)
-        .returns(() => CreateIReadValue(properties.CountJournalFailure, CreateIEntityColumn(properties.CountJournalFailure.toString())));
-      mock
-        .setup((property) => property.Description)
-        .returns(() => CreateIReadValue(properties.Description, CreateIEntityColumn(properties.Description)));
-      mock
-        .setup((property) => property.DisplayName)
-        .returns(() => CreateIReadValue(properties.DisplayName, CreateIEntityColumn(properties.DisplayName)));
-      mock
-        .setup((property) => property.LastSyncCountObjects)
-        .returns(() => CreateIReadValue(properties.LastSyncCountObjects, CreateIEntityColumn(properties.LastSyncCountObjects.toString())));
-      mock
-        .setup((property) => property.NextSyncDate)
-        .returns(() => CreateIReadValue(properties.NextSyncDate, CreateIEntityColumn(properties.NextSyncDate.toLocaleString())));
-      mock
-        .setup((property) => property.UID_DPRShell)
-        .returns(() => CreateIReadValue(properties.UID_DPRShell, CreateIEntityColumn(properties.UID_DPRShell)));
-      return mock.object;
-    });
+    return propertiesCollection.map(
+      (properties) =>
+        ({
+          CountJournalFailure: CreateIReadValue(
+            properties.CountJournalFailure,
+            CreateIEntityColumn(properties.CountJournalFailure.toString()),
+          ),
+          Description: CreateIReadValue(properties.Description, CreateIEntityColumn(properties.Description)),
+          DisplayName: CreateIReadValue(properties.DisplayName, CreateIEntityColumn(properties.DisplayName)),
+          LastSyncCountObjects: CreateIReadValue(
+            properties.LastSyncCountObjects,
+            CreateIEntityColumn(properties.LastSyncCountObjects.toString()),
+          ),
+          NextSyncDate: CreateIReadValue(properties.NextSyncDate, CreateIEntityColumn(properties.NextSyncDate.toLocaleString())),
+          UID_DPRShell: CreateIReadValue(properties.UID_DPRShell, CreateIEntityColumn(properties.UID_DPRShell)),
+        }) as OpsupportSyncShell,
+    );
   }
 
   public static CreateOpsupportQueueJobsCollection(propertiesCollection: IJobQueueParams[]): OpsupportQueueJobs[] {
-    return propertiesCollection.map((properties) => {
-      const mock = TypeMoq.Mock.ofType<OpsupportQueueJobs>();
-      mock.setup((property) => property.TaskName).returns(() => CreateIReadValue(properties.TaskName));
-      mock.setup((property) => property.JobChainName).returns(() => CreateIReadValue(properties.JobChainName));
-      mock.setup((property) => property.UID_Tree).returns(() => CreateIReadValue(properties.Uid_Tree));
-      mock.setup((property) => property.UID_Job).returns(() => CreateIReadValue(properties.Uid_Job));
-      mock.setup((property) => property.UID_JobSuccess).returns(() => CreateIReadValue(properties.Uid_JobSuccess));
-      mock.setup((property) => property.UID_JobError).returns(() => CreateIReadValue(properties.Uid_JobError));
-      mock.setup((property) => property.Queue).returns(() => CreateIReadValue(properties.Queue));
-      mock.setup((property) => property.Retries).returns(() => CreateIReadValue(properties.Retries));
-      mock.setup((property) => property.Ready2EXE).returns(() => CreateIReadValue(properties.ReadyToExe));
-      mock.setup((property) => property.IsRootJob).returns(() => CreateIReadValue(properties.IsRootJob));
-      mock.setup((property) => property.XDateInserted).returns(() => CreateIReadValue(properties.XDateInserted));
-      mock.setup((property) => property.CombinedStatus).returns(() => CreateIReadValue(properties.CombinedStatus));
-      return mock.object;
-    });
+    return propertiesCollection.map(
+      (properties) =>
+        ({
+          TaskName: CreateIReadValue(properties.TaskName),
+          JobChainName: CreateIReadValue(properties.JobChainName),
+          UID_Tree: CreateIReadValue(properties.Uid_Tree),
+          UID_Job: CreateIReadValue(properties.Uid_Job),
+          UID_JobSuccess: CreateIReadValue(properties.Uid_JobSuccess),
+          UID_JobError: CreateIReadValue(properties.Uid_JobError),
+          Queue: CreateIReadValue(properties.Queue),
+          Retries: CreateIReadValue(properties.Retries),
+          Ready2EXE: CreateIReadValue(properties.ReadyToExe),
+          IsRootJob: CreateIReadValue(properties.IsRootJob),
+          XDateInserted: CreateIReadValue(properties.XDateInserted),
+          CombinedStatus: CreateIReadValue(properties.CombinedStatus),
+        }) as OpsupportQueueJobs,
+    );
   }
 
   public static CreateOpsupportQueueJobperformanceCollection(propertiesCollection: IJobQueueParams[]): OpsupportQueueJobperformance[] {
-    return propertiesCollection.map((properties) => {
-      const mock = TypeMoq.Mock.ofType<OpsupportQueueJobperformance>();
-      mock.setup((property) => property.TaskName).returns(() => CreateIReadValue(properties.TaskName));
-      mock.setup((property) => property.Queue).returns(() => CreateIReadValue(properties.Queue));
-      mock.setup((property) => property.ComponentClass).returns(() => CreateIReadValue('componentClassDummy'));
-      mock.setup((property) => property.CountPerMinute).returns(() => CreateIReadValue(23));
-      return mock.object;
-    });
+    return propertiesCollection.map(
+      (properties) =>
+        ({
+          TaskName: CreateIReadValue(properties.TaskName),
+          Queue: CreateIReadValue(properties.Queue),
+          ComponentClass: CreateIReadValue('componentClassDummy'),
+          CountPerMinute: CreateIReadValue(23),
+        }) as OpsupportQueueJobperformance,
+    );
   }
 }
 
@@ -300,8 +257,8 @@ export class ImxApiDataMock extends BaseImxApiDataMock {
           TaskName: `TaskName${i}`,
           JobChainName: `JobChainName${i}`,
         }),
-        numOfEntries
-      )
+        numOfEntries,
+      ),
     );
   }
 
@@ -322,7 +279,7 @@ export class ImxApiDataMock extends BaseImxApiDataMock {
           },
         },
       }),
-      numOfEntries
+      numOfEntries,
     );
   }
 
@@ -346,51 +303,38 @@ export class ImxApiDataMock extends BaseImxApiDataMock {
           },
         },
       }),
-      numOfEntries
+      numOfEntries,
     );
   }
 }
 
 export class DummyJobData {
   static getItem(params: IJobQueueParams): OpsupportQueueJobs {
-    const dummyTaskName = TypeMoq.Mock.ofType<IReadValue<string>>();
-    const dummyJobChainName = TypeMoq.Mock.ofType<IReadValue<string>>();
-    const dummyUidTree = TypeMoq.Mock.ofType<IReadValue<string>>();
-    const dummyUidJob = TypeMoq.Mock.ofType<IReadValue<string>>();
-    const dummyUidJobSuccess = TypeMoq.Mock.ofType<IReadValue<string>>();
-    const dummyUidJobError = TypeMoq.Mock.ofType<IReadValue<string>>();
-    const dummyQueue = TypeMoq.Mock.ofType<IReadValue<string>>();
-    const dummyRetries = TypeMoq.Mock.ofType<IReadValue<number>>();
-    const dummyIsRootJob = TypeMoq.Mock.ofType<IReadValue<boolean>>();
-    const dummyXDataInserted = TypeMoq.Mock.ofType<IReadValue<Date>>();
-    const dummyReadyToExe = TypeMoq.Mock.ofType<IReadValue<string>>();
+    const dummyTaskName = { value: params.TaskName ? params.TaskName : '' };
+    const dummyJobChainName = { value: params.JobChainName ? params.JobChainName : '' };
+    const dummyUidTree = { value: params.Uid_Tree };
+    const dummyUidJob = { value: params.Uid_Job };
+    const dummyUidJobSuccess = { value: params.Uid_JobSuccess ? params.Uid_JobSuccess : '' };
+    const dummyUidJobError = { value: params.Uid_JobError ? params.Uid_JobError : '' };
+    const dummyQueue = { value: params.Queue ? params.Queue : '' };
+    const dummyRetries = { value: params.Retries ? params.Retries : 0 };
+    const dummyIsRootJob = { value: params.IsRootJob ? params.IsRootJob : false };
+    const dummyXDataInserted = { value: params.XDateInserted ? params.XDateInserted : new Date(2001, 1, 1) };
+    const dummyReadyToExe = { value: params.ReadyToExe ? params.ReadyToExe : 'TRUE' };
 
-    dummyTaskName.setup((el) => el.value).returns(() => (params.TaskName ? params.TaskName : ''));
-    dummyJobChainName.setup((el) => el.value).returns(() => (params.JobChainName ? params.JobChainName : ''));
-    dummyUidTree.setup((el) => el.value).returns(() => params.Uid_Tree);
-    dummyUidJob.setup((el) => el.value).returns(() => params.Uid_Job);
-    dummyUidJobSuccess.setup((el) => el.value).returns(() => (params.Uid_JobSuccess ? params.Uid_JobSuccess : ''));
-    dummyUidJobError.setup((el) => el.value).returns(() => (params.Uid_JobError ? params.Uid_JobError : ''));
-    dummyQueue.setup((el) => el.value).returns(() => (params.Queue ? params.Queue : ''));
-    dummyRetries.setup((el) => el.value).returns(() => (params.Retries ? params.Retries : 0));
-    dummyIsRootJob.setup((el) => el.value).returns(() => (params.IsRootJob ? params.IsRootJob : false));
-    dummyXDataInserted.setup((el) => el.value).returns(() => (params.XDateInserted ? params.XDateInserted : new Date(2001, 1, 1)));
-    dummyReadyToExe.setup((el) => el.value).returns(() => (params.ReadyToExe ? params.ReadyToExe : 'TRUE'));
-
-    const dummy = TypeMoq.Mock.ofType<OpsupportQueueJobs>();
-    dummy.setup((obj) => obj.TaskName).returns(() => dummyTaskName.object);
-    dummy.setup((obj) => obj.JobChainName).returns(() => dummyJobChainName.object);
-    dummy.setup((obj) => obj.UID_Tree).returns(() => dummyUidTree.object);
-    dummy.setup((obj) => obj.UID_Job).returns(() => dummyUidJob.object);
-    dummy.setup((obj) => obj.UID_JobSuccess).returns(() => dummyUidJobSuccess.object);
-    dummy.setup((obj) => obj.UID_JobError).returns(() => dummyUidJobError.object);
-    dummy.setup((obj) => obj.Queue).returns(() => dummyQueue.object);
-    dummy.setup((obj) => obj.Retries).returns(() => dummyRetries.object);
-    dummy.setup((obj) => obj.IsRootJob).returns(() => dummyIsRootJob.object);
-    dummy.setup((obj) => obj.XDateInserted).returns(() => dummyXDataInserted.object);
-    dummy.setup((obj) => obj.Ready2EXE).returns(() => dummyReadyToExe.object);
-    dummy.setup((obj) => obj.CombinedStatus).returns(() => CreateIReadValue(params.CombinedStatus));
-
-    return dummy.object;
+    return {
+      TaskName: dummyTaskName,
+      JobChainName: dummyJobChainName,
+      UID_Tree: dummyUidTree,
+      UID_Job: dummyUidJob,
+      UID_JobSuccess: dummyUidJobSuccess,
+      UID_JobError: dummyUidJobError,
+      Queue: dummyQueue,
+      Retries: dummyRetries,
+      IsRootJob: dummyIsRootJob,
+      XDateInserted: dummyXDataInserted,
+      Ready2EXE: dummyReadyToExe,
+      CombinedStatus: CreateIReadValue(params.CombinedStatus),
+    } as OpsupportQueueJobs;
   }
 }

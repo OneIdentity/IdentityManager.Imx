@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,9 +24,9 @@
  *
  */
 
-import { ShapeData } from 'imx-api-qer';
+import { ShapeData } from '@imx-modules/imx-api-qer';
 
-export abstract class ObjectHyperviewService { 
+export abstract class ObjectHyperviewService {
   abstract get(tableName: string, uid: string, nodeName?: string): Promise<ShapeData[]>;
 
   abstract getNavigationPermission(): Promise<boolean>;

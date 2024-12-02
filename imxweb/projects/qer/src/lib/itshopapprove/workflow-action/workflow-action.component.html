@@ -7,17 +7,14 @@
   </div>
 </ng-container>
 
-
 <ng-template #tabView>
   <div class="workflow-action-sidesheet">
-    <mat-tab-group #tabs>
+    <mat-tab-group mat-stretch-tabs="false" #tabs>
       <mat-tab data-imx-identifier="workflowAction-tab-main" [label]="'#LDS#Heading Approval Decision' | translate">
         <ng-template matTabContent>
           <div class="imx-tab-content">
             <div class="imx-tab-content-body">
-              <mat-card>
-                <ng-container *ngTemplateOutlet="decisionContent"></ng-container>
-              </mat-card>
+              <ng-container *ngTemplateOutlet="decisionContent"></ng-container>
             </div>
             <div eui-sidesheet-actions>
               <ng-container *ngTemplateOutlet="decisionButtons"></ng-container>
@@ -29,7 +26,7 @@
         <ng-template matTabContent>
           <div class="imx-tab-content">
             <div class="imx-tab-content-body">
-                <imx-approval-history [approval]="data.requests[0]"></imx-approval-history>
+              <imx-approval-history [approval]="approval"></imx-approval-history>
             </div>
           </div>
         </ng-template>
@@ -39,7 +36,14 @@
 </ng-template>
 
 <ng-template #decisionButtons>
-  <button data-imx-identifier="workflow-action-button-save" mat-raised-button color="primary" (click)="sideSheetRef.close(true)" *ngIf="formGroup" [disabled]="formGroup.invalid">
+  <button
+    data-imx-identifier="workflow-action-button-save"
+    mat-flat-button
+    color="primary"
+    (click)="sideSheetRef.close(true)"
+    *ngIf="formGroup"
+    [disabled]="formGroup.invalid"
+  >
     {{ '#LDS#Save' | translate }}
   </button>
 </ng-template>

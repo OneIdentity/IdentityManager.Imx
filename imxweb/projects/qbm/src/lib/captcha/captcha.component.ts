@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,23 +24,62 @@
  *
  */
 
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AppConfigService } from '../appConfig/appConfig.service';
-import { CaptchaMode, CaptchaService } from './captcha.service';
+import { CaptchaService } from './captcha.service';
 
 @Component({
-    selector: 'imx-captcha',
-    templateUrl: './captcha.component.html',
-    styles: [`:host { display: block; } img { height: 100%; }`]
+  selector: 'imx-captcha',
+  templateUrl: './captcha.component.html',
+  styleUrls: ['./captcha.component.scss'],
 })
 export class CaptchaComponent {
+  /**
+   * Disable next button.
+   */
+  @Input() disableButton: boolean;
 
-    constructor(public readonly captchaSvc: CaptchaService, public readonly appConfig: AppConfigService) {
-    }
+  /**
+   * Show back button.
+   */
+  @Input() showBackButton = false;
 
-    @Input() builtInCaptchaUrl: string = 'passwordreset/captchaimage';
+  /**
+   * Show all buttons.
+   */
+  @Input() showAllButtons = true;
 
-    isBuiltIn(): boolean {
-        return this.captchaSvc.Mode == CaptchaMode.BuiltIn;
-    }
+  /**
+   * Event emitter for the next button, which should take the user to the next function.
+   */
+  @Output() nextClick: EventEmitter<boolean> = new EventEmitter();
+
+  @Output() onBackEvent: EventEmitter<void> = new EventEmitter();
+
+  /**
+   * Url for One Identity's ReCaptcha image
+   */
+  builtInCaptchaUrl: string;
+  public LdsCaptchaInfo: string = '#LDS#Enter the characters from the image.';
+
+  constructor(
+    public readonly captchaSvc: CaptchaService,
+    public readonly appConfig: AppConfigService,
+  ) {
+    this.builtInCaptchaUrl = this.captchaSvc.captchaImageUrl;
+  }
+
+  /**
+   * Emits an event to the parent component, when the Next button was clicked.
+   */
+  public onNext() {
+    this.nextClick.emit(true);
+  }
+
+  /**
+   * Emits an event to the parent component, when the Back button was clicked.
+   */
+  public onBack(): void {
+    this.onBackEvent.emit();
+  }
 }

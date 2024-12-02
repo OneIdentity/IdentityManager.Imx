@@ -1,5 +1,15 @@
-<button *ngIf="!isLoading" mat-stroked-button (click)="onOpenSelectionDialog()" [disabled]="!selectedElements?.length">
+<button
+  *ngIf="!isLoading"
+  mat-stroked-button
+  (click)="onOpenSelectionDialog()"
+  [disabled]="!selectedElements?.length"
+>
   <eui-icon icon="check"></eui-icon>
-  {{ caption }}
-  ({{ selectedElements?.length > 0 ? selectedElements?.length : 0 }})
+  <span>
+    {{ caption }}
+    ({{ selectedElements?.length ?? 0 }})
+  </span>
+</button>
+<button color="warn" *ngIf="!isLoading && showDeselectAll" mat-stroked-button (click)="deselectAll()">
+  <eui-icon icon="close"></eui-icon>&nbsp;<span translate>{{ deselectAllCaption }}</span>
 </button>

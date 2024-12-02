@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { OpsupportQueueJobperformance } from 'imx-api-qbm';
+import { OpsupportQueueJobperformance } from '@imx-modules/imx-api-qbm';
 import { JobPerformanceService } from './job-performance.service';
 import { testTypedEntityReadOnlyProvider } from '../../test-utilities/typed-entity-provider.spec';
 import { ImxApiDtoMock } from '../../test-utilities/imx-api-mock.spec';
@@ -39,8 +39,8 @@ describe('QueueJobPerformanceService', () => {
     typedClient: {
       OpsupportQueueJobperformance: jasmine.createSpyObj('OpsupportQueueJobperformance', {
         GetSchema: () => OpsupportQueueJobperformance.GetEntitySchema(),
-        Get: Promise.resolve({ Data: data, totalCount: data.length })
-      })
-    }
+        Get: Promise.resolve({ Data: data, totalCount: data.length }),
+      }),
+    },
   });
 });

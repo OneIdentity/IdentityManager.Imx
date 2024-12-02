@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 :host {
   display: flex;
@@ -7,30 +7,12 @@
   flex: 1 1 auto;
 }
 
-.multi-select-formcontrol-eui-search {
-  width: 100%;
-  display: flex;
-
-  .eui-search {
-    width: 100%;
-  }
-
-  ::ng-deep .eui-search.mat-form-field.mat-form-field-appearance-outline {
-    min-width: 280px;
-    flex: 1;
-    margin-bottom: 10px;
-  }
-}
-
-.mat-form-field {
-  flex: 1;
-}
-
 .imx-data-tree-content {
   flex: 1 1 auto;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  padding-left: 10px;
 }
 
 .imx-search-selection {
@@ -38,10 +20,6 @@
   flex-direction: column;
   flex: 1 1 auto;
   overflow-y: auto;
-}
-
-.mat-tree-node .mat-icon-button.mat-button-base {
-  flex: 0 0 40px;
 }
 
 .imx-selected-items-button-containter {

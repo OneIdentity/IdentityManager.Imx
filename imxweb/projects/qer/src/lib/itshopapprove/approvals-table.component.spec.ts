@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,19 +25,18 @@
  */
 
 import { EuiSidesheetService } from '@elemental-ui/core';
-import { of, Subject } from 'rxjs';
 import { MockBuilder, MockedComponentFixture, MockRender } from 'ng-mocks';
+import { of, Subject } from 'rxjs';
 
-import { IEntity, IEntityColumn } from 'imx-qbm-dbts';
+import { IEntity, IEntityColumn } from '@imx-modules/imx-qbm-dbts';
 
-import { clearStylesFromDOM, ExtService } from 'qbm';
-import { ApprovalsTableComponent } from './approvals-table.component';
+import { clearStylesFromDOM, DataViewSource, ExtService, FakeDataViewSource } from 'qbm';
 import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
-import { ApprovalsService } from './approvals.service';
-import { Approval } from './approval';
-import { WorkflowActionService } from './workflow-action/workflow-action.service';
 import { UserModelService } from '../user/user-model.service';
+import { Approval } from './approval';
+import { ApprovalsTableComponent } from './approvals-table.component';
 import { ApprovalsModule } from './approvals.module';
+import { WorkflowActionService } from './workflow-action/workflow-action.service';
 
 describe('ApprovalsTable', () => {
   let component: ApprovalsTableComponent;
@@ -62,7 +61,7 @@ describe('ApprovalsTable', () => {
     getConfig: jasmine.createSpy('getConfig').and.returnValue(
       Promise.resolve({
         ITShopConfig: {},
-      })
+      }),
     ),
   };
 
@@ -89,10 +88,10 @@ describe('ApprovalsTable', () => {
       .mock(ApprovalsModule)
       .mock(ExtService, extServiceStub as unknown)
       .mock(EuiSidesheetService, sideSheetTestHelper.servicestub)
-      .mock(UserModelService,{ getFeatures: () => Promise.resolve({}) })
-      .mock(WorkflowActionService, { applied: new Subject() })
+      .mock(UserModelService, { getFeatures: () => Promise.resolve({}) })
+      .mock(WorkflowActionService, { applied: new Subject<void>() })
       .mock(ProjectConfigurationService, projectConfigurationServiceStub)
-      .mock(ApprovalsService);
+      .mock(DataViewSource, FakeDataViewSource);
   });
 
   beforeEach(() => {
@@ -151,6 +150,6 @@ describe('ApprovalsTable', () => {
     component.onSelectionChanged([approval]);
 
     expect(component.selectedItems.length).toBe(1);
-    expect(component.selectedItems[0].DocumentNumber.value).toBe('123');
+    expect((component.selectedItems[0] as Approval).DocumentNumber.value).toBe('123');
   });
 });

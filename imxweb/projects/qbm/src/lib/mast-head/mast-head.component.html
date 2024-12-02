@@ -1,12 +1,25 @@
-<eui-masthead [ngClass]="logoUrl ? 'no-logo' : ''" data-imx-identifier="masthead" (logoClicked)="goHome()">
+<eui-masthead [ngClass]="{ 'no-logo': logoUrl }" data-imx-identifier="masthead" (logoClicked)="goHome()">
   <mat-toolbar color="primary" data-imx-identifier="masthead-toolbar">
     <mat-toolbar-row>
       <!-- custom logo-->
-      <img class="custom-logo" *ngIf="logoUrl" [src]="logoUrl" data-imx-identifier="masthead-custom-logo"
-        tabindex="0" (keydown.enter)="goHome()" (click)="goHome()">
+      <img
+        class="custom-logo"
+        *ngIf="logoUrl"
+        [src]="logoUrl"
+        data-imx-identifier="masthead-custom-logo"
+        tabindex="0"
+        (keydown.enter)="goHome()"
+        (click)="goHome()"
+      />
 
-      <h1 class="imx-masthead-app-name" data-imx-identifier="masthead-button-goHome"
-        tabindex="0" [ngStyle]="{'cursor': isAppOverview ? 'default' : 'pointer'}" (keydown.enter)="goHome()" (click)="goHome()">
+      <h1
+        class="imx-masthead-app-name"
+        data-imx-identifier="masthead-button-goHome"
+        tabindex="0"
+        [ngStyle]="{ cursor: isAppOverview ? 'default' : 'pointer' }"
+        (keydown.enter)="goHome()"
+        (click)="goHome()"
+      >
         {{ productName }} {{ appConfig?.Config?.Title }}
       </h1>
       <span class="imx-masthead-space"></span>
@@ -17,15 +30,22 @@
   </mat-toolbar>
 </eui-masthead>
 
-<eui-top-navigation *ngIf="isAuthenticated && menuItems?.length > 0" [items]="menuItems">
+<eui-top-navigation *ngIf="isAuthenticated && !!menuItems?.length" [items]="menuItems">
   <div eui-top-navigation-mobile-footer *ngIf="isMobile">
     <ng-template *ngIf="isAuthenticated" [ngTemplateOutlet]="mastHeadMenu"></ng-template>
   </div>
 </eui-top-navigation>
 
 <ng-template #mastHeadMenu>
-  <button mat-button class="imx-masthead-user-button" #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="imxUserMenu"
-    data-imx-identifier="user-menu">
+  <imx-ext id="queueMastButton" />
+  <imx-ext id="mastheadButton" />
+  <button
+    mat-button
+    class="imx-masthead-user-button"
+    #menuTrigger="matMenuTrigger"
+    [matMenuTriggerFor]="imxUserMenu"
+    data-imx-identifier="user-menu"
+  >
     <eui-icon icon="user"></eui-icon>
     <span>{{ sessionState?.Username }}</span>
   </button>
@@ -35,8 +55,7 @@
       <span translate>#LDS#Log out</span>
     </button>
   </mat-menu>
-  <button mat-button class="imx-masthead--icon-button" [matMenuTriggerFor]="helpMenu"
-    data-imx-identifier="help-menu-button">
+  <button mat-button class="imx-masthead--icon-button" [matMenuTriggerFor]="helpMenu" data-imx-identifier="help-menu-button">
     <eui-icon icon="help"></eui-icon>
     <span translate>#LDS#Menu Entry Help</span>
   </button>
@@ -44,8 +63,7 @@
     <button mat-menu-item data-imx-identifier="help-menu-connection" (click)="openConnection()">
       <span translate>#LDS#Menu Entry Connection</span>
     </button>
-    <button mat-menu-item data-imx-identifier="help-menu-documentation" *ngIf="hasDocumentationConfig"
-      (click)="navigateToDocumentation()">
+    <button mat-menu-item data-imx-identifier="help-menu-documentation" *ngIf="hasDocumentationConfig" (click)="navigateToDocumentation()">
       <span translate>#LDS#Menu Entry Documentation</span>
     </button>
     <ng-container *ngFor="let extension of extensions; let index">

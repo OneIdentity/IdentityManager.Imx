@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,15 +24,14 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
-import { Injectable, ErrorHandler } from '@angular/core';
+import { ErrorHandler, Injectable } from '@angular/core';
 import { EuiLoadingService, EuiSidesheetService, EuiTheme } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 
-import { PortalApplication, PortalApplicationInteractive, PortalApplicationNew } from 'imx-api-aob';
-import { TypedEntityCollectionData, CollectionLoadParameters, EntitySchema } from 'imx-qbm-dbts';
-import { ApiClientService, ClassloggerService, DataTileBadge, SnackBarService } from 'qbm';
+import { PortalApplication, PortalApplicationNew } from '@imx-modules/imx-api-aob';
+import { CollectionLoadParameters, EntitySchema, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
+import { ApiClientService, calculateSidesheetWidth, ClassloggerService, DataTileBadge, SnackBarService } from 'qbm';
 import { AobApiService } from '../aob-api-client.service';
 import { ApplicationCreateComponent } from './application-create/application-create.component';
 
@@ -65,10 +64,10 @@ export class ApplicationsService {
     return bodyClasses.contains(EuiTheme.LIGHT)
       ? EuiTheme.LIGHT
       : bodyClasses.contains(EuiTheme.DARK)
-      ? EuiTheme.DARK
-      : bodyClasses.contains(EuiTheme.CONTRAST)
-      ? EuiTheme.CONTRAST
-      : '';
+        ? EuiTheme.DARK
+        : bodyClasses.contains(EuiTheme.CONTRAST)
+          ? EuiTheme.CONTRAST
+          : '';
   }
 
   constructor(
@@ -79,7 +78,7 @@ export class ApplicationsService {
     private readonly translateService: TranslateService,
     private readonly sidesheet: EuiSidesheetService,
     private readonly snackbar: SnackBarService,
-    private readonly busyService: EuiLoadingService
+    private readonly busyService: EuiLoadingService,
   ) {
     this.translateService.get('#LDS#Published').subscribe((trans: string) => (this.publishedText = trans));
     this.translateService.get('#LDS#KPI issues').subscribe((trans: string) => (this.kpiErrorsText = trans));
@@ -89,16 +88,16 @@ export class ApplicationsService {
   /**
    * Encapsules the aob/applications GET endpoint and delivers a list of {@link PortalApplication[]|applications}.
    */
-  public async get(parameters: CollectionLoadParameters = {}): Promise<TypedEntityCollectionData<PortalApplication>> {
+  public async get(parameters: CollectionLoadParameters = {}): Promise<TypedEntityCollectionData<PortalApplication> | undefined> {
     if (this.aobClient.typedClient == null) {
-      return new Promise<TypedEntityCollectionData<PortalApplication>>((resolve) => resolve(null));
+      return new Promise<undefined>((resolve) => resolve(undefined));
     }
     return this.apiProvider.request(() => this.aobClient.typedClient.PortalApplication.Get(parameters));
   }
 
-  public async reload(uidApplication: string): Promise<PortalApplicationInteractive> {
+  public async reload(uidApplication: string): Promise<PortalApplication | undefined> {
     return await this.apiProvider.request(
-      async () => (await this.aobClient.typedClient.PortalApplicationInteractive.Get_byid(uidApplication)).Data[0]
+      async () => (await this.aobClient.typedClient.PortalApplicationInteractive.Get_byid(uidApplication)).Data[0],
     );
   }
 
@@ -187,7 +186,7 @@ export class ApplicationsService {
       .open(ApplicationCreateComponent, {
         title: await this.translateService.get('#LDS#Heading Create Application').toPromise(),
         padding: '0px',
-        width: 'max(600px, 60%)',
+        width: calculateSidesheetWidth(),
         disableClose: true,
         testId: 'create-aob-application',
         data: {
@@ -198,8 +197,9 @@ export class ApplicationsService {
       .toPromise();
 
     if (result) {
-      let overlayRef: OverlayRef;
-      setTimeout(() => (overlayRef = this.busyService.show()));
+      if (this.busyService.overlayRefs.length === 0) {
+        this.busyService.show();
+      }
 
       try {
         await application.GetEntity().Commit(true);
@@ -208,7 +208,7 @@ export class ApplicationsService {
       } catch (error) {
         this.errorHandler.handleError(error);
       } finally {
-        setTimeout(() => this.busyService.hide(overlayRef));
+        this.busyService.hide();
       }
     } else {
       this.snackbar.open({ key: '#LDS#The creation of the application has been canceled.' });
@@ -245,7 +245,7 @@ export class ApplicationsService {
 
   /**
    * Updates the badges, that are used on the application tiles, according to the used theme
-   * 
+   *
    * @param theme Currently used EuiTheme
    */
   private updateBadges(theme: string): void {

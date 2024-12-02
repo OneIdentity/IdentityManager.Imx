@@ -15,7 +15,7 @@ li.imx-event::before {
   background-color: $color-gray-0;
   height: 24px;
   width: 28px;
-  content: "";
+  content: '';
   float: left;
   margin-top: -2px;
 }
@@ -29,15 +29,14 @@ li.imx-event.imx-pending::before {
   font-family: Cadence-Icon;
   font-size: 24px;
   color: $color-gray-30;
-  content: "\e009";
+  content: '\e009';
 }
 
-.mat-card-header {
-  margin-left: -16px;
+.mat-mdc-card-header {
   margin-bottom: 10px;
 }
 
-.mat-card-header .mat-card-title {
+.mat-mdc-card-header .mat-mdc-card-title {
   font-size: 1.05em;
   margin-bottom: 0;
 }
@@ -48,13 +47,12 @@ li.imx-event.imx-pending::before {
 
 .eui-dark-theme {
   :host {
-    li.imx-event::before{
+    li.imx-event::before {
       background-color: $color-gray-70;
     }
 
-    li{
-      .mat-card
-      {
+    li {
+      .mat-mdc-card {
         background-color: $color-gray-60;
       }
     }
@@ -63,13 +61,12 @@ li.imx-event.imx-pending::before {
 
 .eui-contrast-theme {
   :host {
-    li.imx-event::before{
+    li.imx-event::before {
       background-color: $color-gray-90;
     }
 
-    li{
-      .mat-card
-      {
+    li {
+      .mat-mdc-card {
         background-color: $color-gray-80;
       }
     }

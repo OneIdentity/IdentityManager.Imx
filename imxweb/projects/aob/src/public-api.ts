@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,7 +28,7 @@
  * Hier kommen die zu exportierenden Komponenten hin
  */
 
-export { AobConfigModule } from './lib/aob-config.module'
+export { AobConfigModule } from './lib/aob-config.module';
 export { StartPageComponent } from './lib/start-page/start-page.component';
 export { ApplicationsComponent } from './lib/applications/applications.component';
 export { ApplicationsModule } from './lib/applications/applications.module';

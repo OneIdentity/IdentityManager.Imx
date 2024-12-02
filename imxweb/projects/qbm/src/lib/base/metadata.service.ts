@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,61 +24,85 @@
  *
  */
 
-import { Injectable } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { Injectable, OnDestroy } from '@angular/core';
+import { MetaTableData } from '@imx-modules/imx-qbm-dbts';
 
-import { MetaTableData } from 'imx-api-qbm';
-import { imx_SessionService } from '../session/imx-session.service';
-
+/**
+ * Abstract implementation for getting portal specific metadata.
+ */
 @Injectable({
   providedIn: 'root',
 })
-export class MetadataService {
-  public readonly tables: { [id: string]: MetaTableData } = {};
+export abstract class MetadataService implements OnDestroy {
+  public readonly tables: { [id: string]: MetaTableData | undefined } = {};
+  protected abortController: AbortController;
 
   /**
-   * @deprecated Use tables instead.
+   * @deprecated use tables instead
    */
-  private tableMetadata: { [id: string]: MetaTableData } = {};
+  private tableMetadata: { [id: string]: MetaTableData | undefined } = {};
 
-  constructor(
-    private sessionService: imx_SessionService,
-    private readonly translateService: TranslateService,
-  ) {}
+  constructor() {
+    this.abortController = new AbortController();
+  }
 
-  /**
-   * Updates meta data for the tables of the provided table names that are not already present in the tables map
-   * @param tableName The names of the tables to update
-   */
-  public async updateNonExisting(tableNames: string[]): Promise<void> {
-    // Use a Set to obtain unique values
-    const uniqueSet = Array.from(new Set(tableNames.filter((tableName) => this.tables[tableName] == null)));
-    return this.update(uniqueSet);
+  ngOnDestroy(): void {
+    this.abortCall();
   }
 
   /**
-   * Updates meta data for the tables of the provided table names
-   * @param tableName The names of the tables to update
+   * Fetches table metadata. Applications will provide authentication / methods to use.
+   * @param tableName The name of the table to fetch data for
+   * @param options Additional api options
    */
-  public async update(tableNames: string[]): Promise<void> {
+  protected abstract getTable(tableName: string, options?: unknown): Promise<MetaTableData | undefined>;
+
+  /**
+   * Handles aborting any current requests managed by this service.
+   */
+  public abortCall() {
+    this.abortController.abort();
+    this.abortController = new AbortController();
+  }
+
+  /**
+   * Fetches and updates metadata for the tables of the provided table names that are not already present in the tables map
+   * @param tableNames The names of the tables to update
+   * @param options Additional api options
+   */
+  public async updateNonExisting(tableNames: string[], options?: unknown): Promise<void> {
+    // Use a Set to obtain unique values
+    const uniqueSet = Array.from(new Set(tableNames.filter((tableName) => this.tables[tableName] == null)));
+    return this.update(uniqueSet, options);
+  }
+
+  /**
+   * Fetches and updates metadata for the tables of the provided table names
+   * @param tableNames The names of the tables to update
+   * @param options Additional api options
+   */
+  public async update(tableNames: string[], options?: unknown): Promise<void> {
     for (const tableName of tableNames) {
-      this.tables[tableName] = await this.sessionService.Client.imx_metadata_table_get(tableName, {
-        cultureName: this.translateService.currentLang,
-      });
+      const metaTableData = await this.getTable(tableName, options);
+      if (metaTableData) {
+        this.tables[tableName] = metaTableData;
+      }
     }
   }
 
   /**
    * @deprecated Use use the method update and the property tables instead. Will be removed.
-   * @param table The name of the table to update and get metadata for
+   * @param tableName The name of the table to update and get metadata for
+   * @param options Additional api options
    */
-  public async GetTableMetadata(table: string): Promise<MetaTableData> {
-    if (this.tableMetadata[table] == null) {
-      this.tableMetadata[table] = await this.sessionService.Client.imx_metadata_table_get(table, {
-        cultureName: this.translateService.currentLang,
-      });
+  public async GetTableMetadata(tableName: string, options?: unknown): Promise<any> {
+    if (this.tableMetadata[tableName] == null) {
+      const metaTableData = await this.getTable(tableName, options);
+      if (metaTableData) {
+        this.tableMetadata[tableName] = metaTableData;
+      }
     }
 
-    return this.tableMetadata[table];
+    return this.tableMetadata[tableName];
   }
 }

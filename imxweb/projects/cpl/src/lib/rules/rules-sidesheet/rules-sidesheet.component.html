@@ -1,4 +1,4 @@
-<mat-tab-group>
+<mat-tab-group mat-stretch-tabs="false">
   <mat-tab [label]="'#LDS#Heading Information' | translate">
     <ng-template matTabContent>
       <div eui-sidesheet-content>
@@ -8,7 +8,12 @@
       </div>
 
       <div eui-sidesheet-actions>
-        <button mat-stroked-button [euiDownload]="reportDownload" class="justify-start" data-imx-identifier="rules-sidesheet-button-download-report">
+        <button
+          mat-stroked-button
+          [euiDownload]="reportDownload"
+          class="justify-start"
+          data-imx-identifier="rules-sidesheet-button-download-report"
+        >
           {{ '#LDS#Download report' | translate }}
         </button>
       </div>
@@ -17,8 +22,8 @@
 
   <mat-tab *ngIf="data" [label]="'#LDS#Heading Rule Violations' | translate">
     <ng-template matTabContent>
-      <div class="imx-mat-tab-container">
-        <imx-violations-per-rule [uidRule]="data.selectedRule.GetEntity().GetKeys()[0]" [isMControlPerViolation]="data.isMControlPerViolation"> </imx-violations-per-rule>
+      <div class="imx-tab-container">
+        <imx-violations-per-rule [uidRule]="data.selectedRule.GetEntity().GetKeys()[0]"> </imx-violations-per-rule>
       </div>
     </ng-template>
   </mat-tab>
@@ -39,7 +44,11 @@
   <mat-tab label="{{ '#LDS#Heading Hyperview' | translate }}">
     <ng-template matTabContent>
       <div eui-sidesheet-content>
-        <imx-object-hyperview [objectType]="data?.selectedRule?.GetEntity()?.TypeName" [objectUid]="data?.selectedRule?.GetEntity()?.GetKeys()[0]"> </imx-object-hyperview>
+        <imx-object-hyperview
+          [objectType]="data?.selectedRule?.GetEntity()?.TypeName"
+          [objectUid]="data?.selectedRule?.GetEntity()?.GetKeys()?.[0] || ''"
+        >
+        </imx-object-hyperview>
       </div>
     </ng-template>
   </mat-tab>

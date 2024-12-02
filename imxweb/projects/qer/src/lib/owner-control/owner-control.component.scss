@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 .product-owner-datasource-container {
   margin: 10px 0 25px;
@@ -9,24 +9,15 @@
     color: $black-9;
     padding-bottom: 2px;
   }
-  mat-radio-button {
-    margin-right: 10px;
-  }
 
   .hidden {
     display: none;
   }
 
-  .help-icon {
-    color: $iris-blue;
-    font-size: 16px;
+  .imx-icon-info {
     margin-left: 5px;
   }
 
-  .mat-radio-group {
-    display: block;
-    margin-bottom: 10px;
-  }
 }
 
 .imx-readOnly-owner {

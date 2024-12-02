@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -35,20 +35,18 @@ describe('AttestationFeatureGuardService', () => {
   const attServiceStub = {
     client: {
       portal_attestation_config_get: jasmine.createSpy('portal_attestation_config_get').and.returnValue(Promise.resolve([{}])),
-    }
+    },
   };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule
-      ],
+      imports: [RouterTestingModule],
       providers: [
         {
           provide: ApiService,
-          useValue: attServiceStub
-        }
-      ]
+          useValue: attServiceStub,
+        },
+      ],
     });
     service = TestBed.inject(AttestationFeatureGuardService);
   });

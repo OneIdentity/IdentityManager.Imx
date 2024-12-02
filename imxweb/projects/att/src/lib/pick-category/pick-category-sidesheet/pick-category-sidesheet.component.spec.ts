@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,18 +24,17 @@
  *
  */
 
-
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { EUI_SIDESHEET_DATA, EuiSidesheetService } from '@elemental-ui/core';
 
-import { IClientProperty } from 'imx-qbm-dbts';
-import { ClassloggerService, ConfirmationService } from 'qbm';
+import { IClientProperty } from '@imx-modules/imx-qbm-dbts';
+import { ClassloggerService, ConfirmationService, SqlWizardApiService } from 'qbm';
 
-import { PickCategorySidesheetComponent } from './pick-category-sidesheet.component';
 import { PickCategoryService } from '../pick-category.service';
+import { PickCategorySidesheetComponent } from './pick-category-sidesheet.component';
 
 describe('PickCategorySidesheetComponent', () => {
   let component: PickCategorySidesheetComponent;
@@ -49,30 +48,21 @@ describe('PickCategorySidesheetComponent', () => {
         GetColumn: () => ({ GetValue: () => ({}) }),
       }),
     },
-    isNew: false
+    isNew: false,
   };
 
   let confirm = true;
   const mockConfirmationService = {
-    confirm: jasmine.createSpy('confirm')
-      .and.callFake(() => Promise.resolve(confirm))
-  }
+    confirm: jasmine.createSpy('confirm').and.callFake(() => Promise.resolve(confirm)),
+  };
 
   const deletePickedItemsSpy = jasmine.createSpy('deletePickedItems').and.returnValue(Promise.resolve({}));
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
-        PickCategorySidesheetComponent
-      ],
-      schemas: [
-        CUSTOM_ELEMENTS_SCHEMA
-      ],
-      imports: [
-        FormsModule,
-        ReactiveFormsModule,
-        MatSnackBarModule
-      ],
+      declarations: [PickCategorySidesheetComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [FormsModule, ReactiveFormsModule, MatSnackBarModule],
       providers: [
         {
           provide: EUI_SIDESHEET_DATA,
@@ -80,18 +70,18 @@ describe('PickCategorySidesheetComponent', () => {
         },
         {
           provide: EuiSidesheetService,
-          useValue: {}
+          useValue: {},
         },
         {
           provide: ConfirmationService,
-          useValue: mockConfirmationService
+          useValue: mockConfirmationService,
         },
         {
           provide: ClassloggerService,
           useValue: {
             debug: jasmine.createSpy('debug').and.callThrough(),
-            trace: jasmine.createSpy('trace').and.callThrough()
-          }
+            trace: jasmine.createSpy('trace').and.callThrough(),
+          },
         },
         {
           provide: PickCategoryService,
@@ -100,12 +90,12 @@ describe('PickCategorySidesheetComponent', () => {
             deletePickedItems: deletePickedItemsSpy,
             getPickCategoryItems: jasmine.createSpy('getPickCategoryItems').and.returnValue({}),
             handleOpenLoader: jasmine.createSpy('handleOpenLoader').and.callThrough(),
-            handleCloseLoader: jasmine.createSpy('handleCloseLoader').and.callThrough()
-          }
-        }
-      ]
-    })
-      .compileComponents();
+            handleCloseLoader: jasmine.createSpy('handleCloseLoader').and.callThrough(),
+          },
+        },
+        { provide: SqlWizardApiService, useValue: {} },
+      ],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -120,15 +110,12 @@ describe('PickCategorySidesheetComponent', () => {
   });
 
   describe('removePickedItems() tests', () => {
-    for (const testcase of [
-      { confirm: true },
-      { confirm: false }
-    ]) {
+    for (const testcase of [{ confirm: true }, { confirm: false }]) {
       it('should make a call to delete the picked items, if the user confirm the dialog', async () => {
         confirm = testcase.confirm;
         await component.removePickedItems();
 
-        if(testcase.confirm) {
+        if (testcase.confirm) {
           expect(deletePickedItemsSpy).toHaveBeenCalled();
         } else {
           expect(deletePickedItemsSpy).not.toHaveBeenCalled();

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,10 +31,9 @@ import { DashboardService, PendingItemsType, UserModelService } from 'qer';
 import { AttestationFeatureGuardService } from '../attestation-feature-guard.service';
 
 @Component({
-  templateUrl: './dashboard-plugin.component.html'
+  templateUrl: './dashboard-plugin.component.html',
 })
 export class DashboardPluginComponent implements OnInit {
-
   public pendingItems: PendingItemsType;
   public attEnabled: boolean;
 
@@ -42,11 +41,10 @@ export class DashboardPluginComponent implements OnInit {
     public readonly router: Router,
     private readonly dashboardSvc: DashboardService,
     private readonly userModelSvc: UserModelService,
-    private readonly attFeatureGuard: AttestationFeatureGuardService
-  ) { }
+    private readonly attFeatureGuard: AttestationFeatureGuardService,
+  ) {}
 
   public async ngOnInit(): Promise<void> {
-
     const busy = this.dashboardSvc.beginBusy();
 
     try {
@@ -58,6 +56,6 @@ export class DashboardPluginComponent implements OnInit {
   }
 
   public goToAttestationInquiries(): void {
-    this.router.navigate(['attestation', 'decision'], {queryParams: {inquiries:true}});
+    this.router.navigate(['attestation', 'decision'], { queryParams: { inquiries: true } });
   }
 }

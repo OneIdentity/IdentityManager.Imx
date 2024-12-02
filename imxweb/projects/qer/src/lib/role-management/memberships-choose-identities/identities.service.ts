@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { PortalPersonAll } from 'imx-api-qer';
+import { PortalPersonAll } from '@imx-modules/imx-api-qer';
 import {
   CollectionLoadParameters,
   DataModel,
@@ -33,8 +33,7 @@ import {
   EntitySchema,
   ExtendedTypedEntityCollection,
   TypedEntity,
-  TypedEntityBuilder,
-} from 'imx-qbm-dbts';
+} from '@imx-modules/imx-qbm-dbts';
 import { QerApiService } from '../../qer-api-client.service';
 import { RoleService } from '../role.service';
 import { NotRequestableMembershipsEntity } from './not-requestable-memberships/not-requestable-memberships-entity';
@@ -45,8 +44,8 @@ import { NotRequestableMembershipsEntity } from './not-requestable-memberships/n
 export class IdentitiesService {
   constructor(
     private readonly api: QerApiService,
-    private readonly roles: RoleService
-  ) { }
+    private readonly roles: RoleService,
+  ) {}
 
   public getSchema(): EntitySchema {
     return this.api.typedClient.PortalPersonAll.GetSchema();
@@ -60,27 +59,11 @@ export class IdentitiesService {
     return this.api.typedClient.PortalPersonUid.Get(id);
   }
 
-  public async getCandidates(
-    id: string,
-    navigationState?: CollectionLoadParameters
-  ): Promise<ExtendedTypedEntityCollection<TypedEntity, unknown>> {
-    const candidates = await this.api.client.portal_roles_config_membership_Locality_UID_Person_candidates_get(
-      id,
-      {
-        ...navigationState,
-        xorigin: 0,
-      }
-    );
-
-    const builder = new TypedEntityBuilder(PortalPersonAll);
-    return builder.buildReadWriteEntities(candidates, PortalPersonAll.GetEntitySchema());
-  }
-
   public async getDataModel(): Promise<DataModel> {
-    return this.api.client.portal_person_all_datamodel_get(null);
+    return this.api.client.portal_person_all_datamodel_get(undefined);
   }
   public async getFilterOptions(): Promise<DataModelFilter[]> {
-    return (await this.getDataModel()).Filters;
+    return (await this.getDataModel()).Filters ?? [];
   }
 
   public async addMemberships(tableName: string, members: TypedEntity[], id: string): Promise<TypedEntity[]> {
@@ -99,8 +82,7 @@ export class IdentitiesService {
 
       try {
         await this.api.typedClient.PortalCartitem.Post(entity);
-      }
-      catch (exception) {
+      } catch (exception) {
         // 6053005 == The membership cannot be requested for this identity.
         if (exception?.dataItems.length && exception.dataItems[0].Number === 6053005) {
           notRequestableMemberships.push(new NotRequestableMembershipsEntity(member.GetEntity(), exception.dataItems[0]));

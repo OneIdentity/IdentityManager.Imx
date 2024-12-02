@@ -1,6 +1,6 @@
 <ng-container *ngIf="types">
   <div eui-sidesheet-content>
-    <mat-form-field class="request-entitlement-type-selector">
+    <mat-form-field class="request-entitlement-type-selector" appearance="outline">
       <mat-label>{{ '#LDS#Select the type of entitlement to add' | translate }}</mat-label>
       <mat-select (selectionChange)="optionSelected($event.value)" [(ngModel)]="selectedType">
         <mat-option *ngFor="let pr of types" [value]="pr">
@@ -9,10 +9,12 @@
       </mat-select>
     </mat-form-field>
 
-    <mat-card>
+    <mat-card class="request-entitlement-type-card imx-sidesheet-content__overflow imx-sidesheet-content__flex">
       <imx-fk-candidates
         #fkSelector
         [data]="data"
+        [selectedFkTable]="selectedFkTable"
+        [showLongDisplay]="true"
         (itemPicked)="applySelection($event)"
         [noDataText]="GetLdsNoData() | translate"
         (selectionChanged)="selectionChanged($event)"
@@ -21,7 +23,6 @@
   </div>
 
   <div eui-sidesheet-actions>
-    <div class="imx-menu-spacer"></div>
     <button
       class="imx-clear-button"
       [disabled]="selectedItems?.length === 0"
@@ -34,13 +35,13 @@
     </button>
     <button
       *ngIf="data?.isMultiValue"
-      mat-raised-button
+      mat-flat-button
       color="primary"
       [disabled]="selectedItems?.length === 0"
       (click)="applySelection()"
       data-imx-identifier="requests-selector-apply-selection"
     >
-      <span translate>#LDS#Apply</span>
+      <span translate>#LDS#Add to cart</span>
     </button>
 
     <!--  -->

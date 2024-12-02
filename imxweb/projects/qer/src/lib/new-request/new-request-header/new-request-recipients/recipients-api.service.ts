@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,20 +25,16 @@
  */
 
 import { Injectable } from '@angular/core';
-import { IForeignKeyInfo } from 'imx-qbm-dbts';
+import { IForeignKeyInfo } from '@imx-modules/imx-qbm-dbts';
 import { QerApiService } from '../../../qer-api-client.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RecipientsApiService {
-
-  constructor(
-    private qerClient: QerApiService
-  ) { }
+  constructor(private qerClient: QerApiService) {}
 
   public getFKRelations(): readonly IForeignKeyInfo[] {
-    return this.qerClient.typedClient.PortalCartitem.createEntity().UID_PersonOrdered.GetMetadata().GetFkRelations()
+    return this.qerClient.typedClient.PortalCartitem.createEntity().UID_PersonOrdered.GetMetadata().GetFkRelations();
   }
-
 }

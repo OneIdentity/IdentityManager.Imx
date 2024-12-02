@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,16 +25,25 @@
  */
 
 import { Component, Input } from '@angular/core';
-import { PolicyViolation } from 'imx-api-att';
+import { PolicyViolation, ViolationState } from '@imx-modules/imx-api-att';
 
 @Component({
   selector: 'imx-decision-policy-violation',
   templateUrl: './decision-policy-violation.component.html',
-  styleUrls: ['./decision-policy-violation.component.scss']
+  styleUrls: ['./decision-policy-violation.component.scss'],
 })
 export class DecisionPolicyViolationComponent {
   @Input() public policyViolations: PolicyViolation[];
   @Input() public mitigatingControlsPerViolation: boolean;
 
   constructor() {}
+
+  public stateDisplay(violation: PolicyViolation) {
+    switch (violation.State){
+      case ViolationState.ExceptionApproved: return '#LDS#Exception granted';
+      case ViolationState.ExceptionDenied: return '#LDS#Exception denied';
+    }
+
+    return '#LDS#Approval decision pending';
+  }
 }

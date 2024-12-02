@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,9 +24,10 @@
  *
  */
 
+import { SqlWizardExpression } from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarSelectedFilter } from '../data-source-toolbar-filters.interface';
 import { DataSourceToolbarSettings } from '../data-source-toolbar-settings';
-import { SqlWizardExpression } from 'imx-qbm-dbts';
+import { FilterTreeParameterData, FilterTreeSelectionParameter } from './filter-tree-sidesheet/filter-tree-sidesheet.model';
 
 export interface FilterWizardSidesheetData {
   id: string;
@@ -34,6 +35,7 @@ export interface FilterWizardSidesheetData {
   settings: DataSourceToolbarSettings;
   selectedFilters: DataSourceToolbarSelectedFilter[];
   isDataSourceLocal: boolean;
+  filterTreeParameter: FilterTreeParameterData;
 }
 
 export interface FilterFormState {
@@ -46,4 +48,9 @@ export enum FilterTypeIdentifier {
   Predefined = 'Predefined',
   Custom = 'Custom',
   TargetSystem = 'TargetSystem',
+}
+
+export interface FilterWizardResult {
+  expression: SqlWizardExpression;
+  treeFilter?: FilterTreeSelectionParameter;
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -56,7 +56,11 @@ const routes: Routes = [
   providers: [MyResponsibilitiesRegistryService],
 })
 export class MyResponsibilitiesViewModule {
-  constructor(readonly router: Router, private readonly menuService: MenuService, logger: ClassloggerService) {
+  constructor(
+    readonly router: Router,
+    private readonly menuService: MenuService,
+    logger: ClassloggerService,
+  ) {
     const config = router.config;
     routes.forEach((route) => {
       config.splice(config.length - 1, 0, route);

@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
   .tool-bar {
@@ -12,28 +12,9 @@
       align-items: center;
       gap: 15px;
     }
-
-    .mat-radio-group {
-      display: inherit;
-      gap: 25px;
+    &-left {
+      align-items: baseline !important;
     }
-    .eui-select{
-      width: 110px;
-    }
-
-    ::ng-deep .mat-radio-label {
-      padding: 0;
-
-      .mat-radio-label-content {
-        display: flex;
-        flex-direction: column;
-      }
-    }
-  }
-
-  .eui-sidesheet-content {
-    display: flex;
-    flex-direction: column;
   }
 
   .card-container {
@@ -63,12 +44,6 @@
     justify-content: space-between;
     box-sizing: border-box;
   }
-
-
-  .export-column--field {
-    width: 100%;
-    margin: 0 10px;
-  }
 }
 
 // CDK drag styling
@@ -93,7 +68,6 @@
 .explort-column-container-container.cdk-drop-list-dragging .export-column:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
-
 
 // Theming
 .eui-light-theme {

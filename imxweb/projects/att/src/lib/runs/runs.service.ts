@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,8 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Injectable } from '@angular/core';
-import { EuiDownloadOptions } from '@elemental-ui/core';
-import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
+import { EuiDownloadOptions, EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import {
@@ -37,7 +35,7 @@ import {
   PortalAttestationRun,
   PortalAttestationRunApprovers,
   V2ApiClientMethodFactory,
-} from 'imx-api-att';
+} from '@imx-modules/imx-api-att';
 
 import {
   CollectionLoadParameters,
@@ -49,9 +47,9 @@ import {
   GroupInfoData,
   MethodDefinition,
   TypedEntityCollectionData,
-} from 'imx-qbm-dbts';
+} from '@imx-modules/imx-qbm-dbts';
 
-import { AppConfigService, ElementalUiConfigService, SnackBarService } from 'qbm';
+import { AppConfigService, calculateSidesheetWidth, ElementalUiConfigService, SnackBarService } from 'qbm';
 import { ApiService } from '../api.service';
 import { AttestationCaseLoadParameters } from '../attestation-history/attestation-case-load-parameters.interface';
 import { AttestationCasesService } from '../decision/attestation-cases.service';
@@ -72,7 +70,7 @@ export class RunsService {
     private readonly translate: TranslateService,
     private readonly busyService: EuiLoadingService,
     private readonly config: AppConfigService,
-    private readonly attestationApprove: AttestationCasesService
+    private readonly attestationApprove: AttestationCasesService,
   ) {}
 
   public async getDataModel(): Promise<DataModel> {
@@ -83,7 +81,7 @@ export class RunsService {
     const { withProperties, groupFilter, search, OrderBy, ...params } = parameters;
     return this.attService.client.portal_attestation_run_group_get({
       ...params,
-      filter: parameters.groupFilter,
+      filter: [...(parameters.groupFilter || []), ...(parameters.filter || [])],
       withcount: true,
     });
   }
@@ -108,23 +106,24 @@ export class RunsService {
         subTitle: runs.length === 1 ? runs[0].GetEntity().GetDisplay() : '',
         padding: '0px',
         testId: 'attestationruns-sendReminder-sidesheet',
-        width: '600px',
+        width: calculateSidesheetWidth(600, 0.4),
         data,
       })
       .afterClosed()
       .toPromise();
 
     if (result) {
-      let overlayRef: OverlayRef;
-      setTimeout(() => (overlayRef = this.busyService.show()));
+      if (this.busyService.overlayRefs.length === 0) {
+        this.busyService.show();
+      }
 
-      let success: boolean;
+      let success = false;
 
       try {
         if (approvers == null) {
           approvers = [];
           for (const run of runs) {
-            (await this.getApprovers(run)).Data.forEach((approver) => approvers.push(approver));
+            (await this.getApprovers(run)).Data.forEach((approver) => approvers?.push(approver));
           }
         }
 
@@ -140,7 +139,7 @@ export class RunsService {
           this.snackBar.open({ key: '#LDS#The reminder mails have been sent.' });
         }
 
-        setTimeout(() => this.busyService.hide(overlayRef));
+        this.busyService.hide();
       }
     }
   }
@@ -162,7 +161,7 @@ export class RunsService {
 
   public getCasesForRun(
     uidRun: string,
-    parameter: CollectionLoadParameters
+    parameter: CollectionLoadParameters,
   ): Promise<ExtendedTypedEntityCollection<PortalAttestationCase, AttCaseDataRead>> {
     return this.attService.typedClient.PortalAttestationCase.Get({
       ...parameter,

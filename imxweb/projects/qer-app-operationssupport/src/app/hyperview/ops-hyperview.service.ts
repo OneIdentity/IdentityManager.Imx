@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,22 +26,20 @@
 
 import { Injectable } from '@angular/core';
 
-import { ShapeData } from 'imx-api-qbm';
+import { ShapeData } from '@imx-modules/imx-api-qbm';
 import { imx_SessionService } from 'qbm';
 import { ObjectHyperviewService } from 'qer';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class OpsHyperviewService implements ObjectHyperviewService {
-  constructor(private session: imx_SessionService) { }
+  constructor(private session: imx_SessionService) {}
 
   public async get(tableName: string, uid: string, nodeName?: string): Promise<ShapeData[]> {
     return this.session.Client.opsupport_hyperview_get(tableName, uid, { node: nodeName });
   }
-
   public getNavigationPermission(): Promise<boolean> {
     return new Promise((resolve) => resolve(false));
   }
 }
-

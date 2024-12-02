@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,20 +27,21 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { ParmData } from 'imx-api-att';
-import { EntityColumnData, IEntityColumn, MultiValue, ValType } from 'imx-qbm-dbts';
+import { ParmData } from '@imx-modules/imx-api-att';
+import { EntityColumnData, FkProviderItem, IEntityColumn, MultiValue, ValType } from '@imx-modules/imx-qbm-dbts';
 import { EntityService } from 'qbm';
 import { PolicyService } from '../policy.service';
 import { FilterElementModel } from './filter-element-model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FilterElementColumnService {
   constructor(
     public readonly policyService: PolicyService,
     private readonly translateService: TranslateService,
-    private readonly entityService: EntityService) { }
+    private readonly entityService: EntityService,
+  ) {}
 
   public buildColumn(
     parmdata: ParmData,
@@ -48,52 +49,56 @@ export class FilterElementColumnService {
     value: string,
     caption: string,
     displays: string[],
-    withfk: boolean): IEntityColumn {
-
+    withfk: boolean,
+  ): IEntityColumn | undefined {
     if (parmdata == null) {
       return undefined;
     }
 
     const propertyName = parmdata.RequiredParameter;
-    return this.entityService.createLocalEntityColumn({
-      Type: ValType.String,
-      IsMultiValued: withfk,
-      ColumnName: parmdata.ColumnName || propertyName,
-      MinLen: withfk ? 1 : 0,
-      Display: caption ? this.translateService.instant(caption) : '',
-      FkRelation: withfk ? {
-        IsMemberRelation: false,
-        ParentTableName: parmdata.TableName,
-        ParentColumnName: parmdata.ColumnName
-      } : undefined
-    }, withfk ? [{
-      columnName: parmdata.ColumnName,
-      fkTableName: parmdata.TableName,
-      parameterNames: [
-        'OrderBy',
-        'StartIndex',
-        'PageSize',
-        'filter',
-        'search',
-      ],
-      load: async (__, parameters?) => {
-        return this.policyService.getFilterCandidates(parameters, uidParameter);
+    let fkProviderItem: FkProviderItem[] = [];
+    if (withfk) {
+      fkProviderItem.push({
+        columnName: parmdata.ColumnName || '',
+        fkTableName: parmdata.TableName || '',
+        parameterNames: ['OrderBy', 'StartIndex', 'PageSize', 'filter', 'search'],
+        load: async (__, parameters?) => {
+          return this.policyService.getFilterCandidates(parameters || {}, uidParameter);
+        },
+        getDataModel: async () => ({}),
+        getFilterTree: async () => ({}),
+      });
+    }
+    return this.entityService.createLocalEntityColumn(
+      {
+        Type: ValType.String,
+        IsMultiValued: withfk,
+        ColumnName: parmdata.ColumnName || propertyName,
+        MinLen: withfk ? 1 : 0,
+        Display: caption ? this.translateService.instant(caption) : '',
+        FkRelation: withfk
+          ? {
+              IsMemberRelation: false,
+              ParentTableName: parmdata.TableName,
+              ParentColumnName: parmdata.ColumnName,
+            }
+          : undefined,
       },
-      getDataModel: async () => ({}),
-      getFilterTree: async ()=>({})
-    }] : [], this.getValue(withfk, value, displays));
+      fkProviderItem,
+      this.getValue(withfk, value, displays),
+    );
   }
 
   private getValue(withfk: boolean, value: string, displays: string[]): EntityColumnData {
     if (withfk) {
       return {
         Value: FilterElementModel.buildMultiValueSeparatedList(value),
-        DisplayValue: displays ? new MultiValue(displays).GetStringValue() : ''
+        DisplayValue: displays ? new MultiValue(displays).GetStringValue() : '',
       };
     }
     return {
       Value: value,
-      DisplayValue: displays ? new MultiValue(displays).GetStringValue() : ''
+      DisplayValue: displays ? new MultiValue(displays).GetStringValue() : '',
     };
   }
 }

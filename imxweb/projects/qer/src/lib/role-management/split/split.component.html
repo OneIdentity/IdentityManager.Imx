@@ -5,7 +5,11 @@
         <mat-form-field appearance="outline" *ngIf="canChangeRoleType">
           <mat-label><span translate>#LDS#Type of the new object</span></mat-label>
           <mat-select [(value)]="newRoleType" data-imx-identifier="reports-select-options" (selectionChange)="roleTypeChanged()">
-            <mat-option *ngFor="let type of candidateTables" [value]="type.tableName" [attr.data-imx-identifier]="'split-options-' + type.tableName">
+            <mat-option
+              *ngFor="let type of candidateTables"
+              [value]="type.tableName"
+              [attr.data-imx-identifier]="'split-options-' + type.tableName"
+            >
               <span [translate]="type.display"></span>
             </mat-option>
           </mat-select>
@@ -14,16 +18,26 @@
         <ng-container *ngIf="newRoleType">
           <eui-alert [condensed]="true" [colored]="true" type="info">{{ ldsInfoMessage | translate }} </eui-alert>
 
-          <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="addControl(newRoleFormGroup, cdr.column.ColumnName, $event)"></imx-cdr-editor>
+          <imx-cdr-editor
+            *ngFor="let cdr of cdrList"
+            [cdr]="cdr"
+            (controlCreated)="addControl(newRoleFormGroup, cdr?.column?.ColumnName, $event)"
+          ></imx-cdr-editor>
         </ng-container>
         <div class="imx-step-button">
-          <button mat-stroked-button color="primary" data-imx-identifier="split-step-1-next" matStepperNext [disabled]="newRoleFormGroup.invalid">
+          <button
+            mat-stroked-button
+            color="primary"
+            data-imx-identifier="split-step-1-next"
+            matStepperNext
+            [disabled]="newRoleFormGroup.invalid"
+          >
             {{ '#LDS#Next' | translate }}
           </button>
         </div>
       </mat-step>
       <mat-step label="{{ '#LDS#Select assignments that should be copied or moved to the new object' | translate }}">
-        <eui-alert class="imx-top-alert" type="info" [condensed]="true" [colored]="true" *ngIf="splitItems.length === 0 && !isLoading">
+        <eui-alert type="info" [condensed]="true" [colored]="true" *ngIf="splitItems.length === 0 && !isLoading">
           {{ noRoleText | translate }}
         </eui-alert>
         <div *ngFor="let item of splitItems" class="splititem">
@@ -50,7 +64,7 @@
       </mat-step>
 
       <mat-step label="{{ '#LDS#Verify actions' | translate }}">
-        <eui-alert class="imx-top-alert" type="info" [condensed]="true" [colored]="true" *ngIf="actions.length === 0 && !isLoading">
+        <eui-alert type="info" [condensed]="true" [colored]="true" *ngIf="actions.length === 0 && !isLoading">
           <eui-alert-header>
             {{ noChangesText | translate }}
           </eui-alert-header>

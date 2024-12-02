@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,27 +25,28 @@
  */
 
 export class SelectionContainer<T> {
-    public selected: T[] = [];
+  public selected: T[] = [];
 
-    private assigned: T[] = [];
+  private assigned: T[] = [];
 
-    constructor(private getKey: (item: T) => string) { }
+  constructor(private getKey: (item: T) => string) {}
 
-    public init(assigned: T[]): void {
-        this.assigned = assigned;
-        this.selected = assigned.slice();
-    }
+  public init(assigned: T[]): void {
+    this.assigned = assigned;
+    this.selected = assigned.slice();
+  }
 
-    public getChangeSet(): { add: T[], remove: T[] } {
-      return {
-        add: this.selected.filter(item => this.assigned.find(itemAssigned => this.equals(item, itemAssigned)) == null),
-        remove: this.selected == null || this.selected.length === 0 ?
-            this.assigned :
-            this.assigned.filter(itemAssigned => this.selected.find(item => this.equals(item, itemAssigned)) == null)
-      };
-    }
+  public getChangeSet(): { add: T[]; remove: T[] } {
+    return {
+      add: this.selected.filter((item) => this.assigned.find((itemAssigned) => this.equals(item, itemAssigned)) == null),
+      remove:
+        this.selected == null || this.selected.length === 0
+          ? this.assigned
+          : this.assigned.filter((itemAssigned) => this.selected.find((item) => this.equals(item, itemAssigned)) == null),
+    };
+  }
 
-    private equals(item1: T, item2: T): boolean {
-        return this.getKey(item1) === this.getKey(item2);
-    }
+  private equals(item1: T, item2: T): boolean {
+    return this.getKey(item1) === this.getKey(item2);
+  }
 }

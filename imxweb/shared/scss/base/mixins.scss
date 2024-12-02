@@ -1,0 +1,237 @@
+@import '@elemental-ui/core/src/styles/_palette.scss';
+
+@mixin eui-elevation-1 {
+  box-shadow:
+    0px 1px 1px rgba(0, 0, 0, 0.14),
+    0px 2px 1px rgba(0, 0, 0, 0.12),
+    0px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+@mixin eui-elevation-2 {
+  box-shadow:
+    0px 4px 5px rgba(0, 0, 0, 0.14),
+    0px 1px 10px rgba(0, 0, 0, 0.12),
+    0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+@mixin eui-elevation-3 {
+  box-shadow:
+    0px 24px 38px rgba(0, 0, 0, 0.14),
+    0px 9px 46px rgba(0, 0, 0, 0.12),
+    0px 11px 15px rgba(0, 0, 0, 0.2);
+}
+
+@mixin ease-transition($duration: 0.4s) {
+  transition: all $duration ease;
+}
+
+@mixin flex-column-container($overflow: null, $height: null, $width: null, $max-height: null, $max-width: null) {
+  display: flex;
+  flex-direction: column;
+  overflow: $overflow;
+  height: $height;
+  width: $width;
+  max-height: $max-height;
+  max-width: $max-width;
+}
+
+@mixin flex-row-container($overflow: null, $height: null, $width: null, $max-height: null, $max-width: null) {
+  display: flex;
+  flex-direction: row;
+  overflow: $overflow;
+  height: $height;
+  width: $width;
+  max-height: $max-height;
+  max-width: $max-width;
+}
+
+@mixin flex-column-container-fill {
+  @include flex-column-container($overflow: hidden);
+  flex: 1 1 auto;
+}
+
+@mixin flex-row-container-fill {
+  @include flex-row-container();
+  flex: 1 1 auto;
+}
+
+@mixin align-button-content($text-color) {
+  color: $text-color;
+
+  ::ng-deep .mat-mdc-button-wrapper {
+    display: flex;
+    align-items: center;
+  }
+}
+
+@mixin image-button-icon {
+  eui-icon {
+    font-size: 14px;
+    margin-right: 4px;
+  }
+}
+
+@mixin button-bar {
+  @include flex-row-container();
+  justify-content: flex-end;
+  margin-top: 16px;
+
+  > button:not(:last-of-type) {
+    margin-right: 16px;
+  }
+
+  .imx-menu-spacer {
+    flex: 1 1 auto;
+  }
+
+  .mat-mdc-stroked-button,
+  .mat-mdc-raised-button {
+    @include image-button-icon;
+  }
+}
+
+@mixin button-column-right {
+  @include flex-row-container();
+  justify-content: flex-end;
+
+  .mat-mdc-stroked-button {
+    @include image-button-icon;
+    margin-right: 16px;
+  }
+}
+
+@mixin text-overflow-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin transform-enlarge($scale: 1.03) {
+  transform: translate3D(0, -1px, 0) scale($scale);
+}
+
+@mixin transform-shrink($scale: 0.97) {
+  transform: translate3D(0, -1px, 0) scale($scale);
+}
+
+// $header-type: Values: body, title, label, emphasize, description
+// $primary: Sets the text color, Values: Boolean, default: false
+@mixin new-request-text($header-type: body, $primary: false) {
+  font-size: 14px;
+  font-weight: 600;
+
+  @if $header-type == title {
+    font-size: 26px;
+    line-height: 33px;
+  } @else if $header-type == emphasize {
+    font-size: 20px;
+    line-height: 25px;
+  } @else if $header-type == label {
+    line-height: 18px;
+  } @else if $header-type == description {
+    color: $color-gray-40;
+    font-weight: 400;
+    line-height: 18px;
+    margin-left: 5px;
+  }
+}
+
+@mixin new-request-orange-border($theme: eui-light-theme) {
+  border-radius: 4px;
+  border-width: 1px;
+  border-style: solid;
+  outline-width: 1px;
+  outline-style: solid;
+
+  @if $theme == eui-light-theme {
+    outline-color: $color-orange-40;
+    border-color: $color-orange-40;
+  } @else if $theme == eui-dark-theme {
+    outline-color: $color-orange-60;
+    border-color: $color-orange-60;
+  } @else if $theme == eui-contrast-theme {
+    outline-color: $color-orange-60;
+    border-color: $color-orange-60;
+  }
+}
+
+@mixin eui-sidesheet-actions__mixin_01(
+  $align-items: null,
+  $overflow-y: null,
+  $flex-wrap: null,
+  $padding: null,
+  $margin: null,
+  $margin-top: null,
+  $margin-right: null,
+  $margin-bottom: null,
+  $margin-left: null
+) {
+  display: flex;
+  justify-content: flex-end;
+  align-items: $align-items;
+  overflow-y: $overflow-y;
+  flex-wrap: $flex-wrap;
+  padding: $padding;
+  margin: $margin;
+  > * {
+    margin-top: $margin-top;
+    margin-right: $margin-right;
+    margin-bottom: $margin-bottom;
+    margin-left: $margin-left;
+  }
+}
+
+// Approval-workflow styles
+@mixin Awm-Colors($theme: eui-light-theme) {
+  @if $theme == eui-light-theme {
+    --awm-node-level: #{$color-gray-20};
+    --awm-node-step: #{$color-gray-2};
+    --awm-edge-root: #{$color-gray-100};
+    --awm-edge-approval: #{$color-green-60};
+    --awm-edge-reject: #{$color-red-60};
+    --awm-edge-escalation: #{$color-orange-60};
+    --awm-edge-redirect: #{$color-blue-80};
+    --awm-text: #{$color-gray-80};
+    --awm-selected: #{$color-blue-40};
+  } @else if $theme == eui-dark-theme {
+    --awm-node-level: #{$color-gray-50};
+    --awm-node-step: #{$color-gray-70};
+    --awm-edge-root: #{$color-gray-10};
+    --awm-edge-approval: #{$color-green-40};
+    --awm-edge-reject: #{$color-red-40};
+    --awm-edge-escalation: #{$color-orange-40};
+    --awm-edge-redirect: #{$color-blue-40};
+    --awm-text: #{$color-gray-2};
+    --awm-selected: #{$color-blue-60};
+  } @else if $theme == eui-contrast-theme {
+    --awm-node-level: #{$color-gray-70};
+    --awm-node-step: #{$color-gray-90};
+    --awm-edge-root: #{$color-gray-0};
+    --awm-edge-approval: #{$color-green-40};
+    --awm-edge-reject: #{$color-red-40};
+    --awm-edge-escalation: #{$color-orange-40};
+    --awm-edge-redirect: #{$color-blue-40};
+    --awm-text: #{$color-gray-0};
+    --awm-selected: #{$color-blue-60};
+  } @else {
+    @error "#{$theme} is not defined in approval-workflow-styles: Awm-Colors";
+  }
+}
+
+@mixin Awm-Form-Sidesheet {
+  :host {
+    .form-wrapper {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+      .mat-mdc-card {
+        @include eui-elevation-1;
+      }
+    }
+
+    .eui-sidesheet-actions {
+      column-gap: 15px;
+    }
+  }
+}

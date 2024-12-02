@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,9 +29,8 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'imx-container-dom',
   templateUrl: './container-dom.component.html',
-  styleUrls: ['./container-dom.component.scss']
+  styleUrls: ['./container-dom.component.scss'],
 })
-export class ContainerDomComponent  {
+export class ContainerDomComponent {
   // This element is purely for keyboard selection, not intended to show anything on screen
-
 }

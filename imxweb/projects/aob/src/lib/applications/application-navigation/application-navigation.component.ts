@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,18 +24,25 @@
  *
  */
 
-import { Component, Output, EventEmitter, OnInit, ViewChild } from '@angular/core';
 import { Overlay } from '@angular/cdk/overlay';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 
-import { PortalApplication, PortalApplicationNew } from 'imx-api-aob';
-import { CollectionLoadParameters, TypedEntityCollectionData, TypedEntity } from 'imx-qbm-dbts';
-import { BusyService, ClassloggerService, DataSourceToolbarSettings, DataTileBadge, DataTilesComponent, SettingsService } from 'qbm';
-import { ApplicationsService } from '../applications.service';
+import { PortalApplication, PortalApplicationNew } from '@imx-modules/imx-api-aob';
+import { CollectionLoadParameters, TypedEntity, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
+import {
+  BusyService,
+  ClassloggerService,
+  DataSourceItemStatus,
+  DataSourceToolbarSettings,
+  DataTileBadge,
+  DataTilesComponent,
+  SettingsService,
+} from 'qbm';
 import { UserModelService } from 'qer';
 import { AobPermissionsService } from '../../permissions/aob-permissions.service';
-
+import { ApplicationsService } from '../applications.service';
 
 /**
  * This component shows a  list of {@link PortalApplication[]|applications} each in an
@@ -47,7 +54,7 @@ import { AobPermissionsService } from '../../permissions/aob-permissions.service
   styleUrls: ['./application-navigation.component.scss'],
 })
 export class ApplicationNavigationComponent implements OnInit {
-  public dstSettings: DataSourceToolbarSettings;
+  public dstSettings: DataSourceToolbarSettings | undefined;
   public readonly entitySchema = PortalApplication.GetEntitySchema();
   public selectable = true;
   public multiselect = false;
@@ -64,7 +71,7 @@ export class ApplicationNavigationComponent implements OnInit {
    */
   @Output() public readonly dataSourceChanged = new EventEmitter<{
     keywords?: string;
-    dataSource: TypedEntityCollectionData<PortalApplication>;
+    dataSource?: TypedEntityCollectionData<PortalApplication>;
   }>();
 
   /**
@@ -75,9 +82,10 @@ export class ApplicationNavigationComponent implements OnInit {
   /**
    * a status that defines, how badges are calculated
    */
-  public readonly status = {
+  public readonly status: DataSourceItemStatus = {
     getBadges: (application: PortalApplication | PortalApplicationNew): DataTileBadge[] =>
       this.appService.getApplicationBadges(application),
+    enabled: (item: TypedEntity) => true,
   };
 
   private navigationState: CollectionLoadParameters & {
@@ -94,13 +102,11 @@ export class ApplicationNavigationComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly applicationsProvider: ApplicationsService,
     private readonly aobPermissionsService: AobPermissionsService,
-    public overlay: Overlay
+    public overlay: Overlay,
   ) {}
 
-
   public async ngOnInit(): Promise<void> {
-
-    this.isAdmin =  await this.aobPermissionsService.isAobApplicationAdmin();
+    this.isAdmin = await this.aobPermissionsService.isAobApplicationAdmin();
 
     this.applicationsProvider.applicationRefresh.subscribe((res) => {
       if (res) {
@@ -114,10 +120,10 @@ export class ApplicationNavigationComponent implements OnInit {
    * Emits the applicationSelected event, if the selected tile changes
    * @param selection the {@link PortalApplication | application} that is selected
    */
-  public async onSelectionChanged(selection: PortalApplication[]): Promise<void> {
+  public async onSelectionChanged(selection: TypedEntity[]): Promise<void> {
     const app = selection[0];
     if (app) {
-      this.applicationSelected.emit(app.UID_AOBApplication.value);
+      this.applicationSelected.emit(app.GetEntity().GetColumn('UID_AOBApplication').GetValue());
     }
   }
   /**
@@ -156,9 +162,9 @@ export class ApplicationNavigationComponent implements OnInit {
 
       this.dataSourceChanged.emit({ keywords, dataSource });
       this.route.queryParams.subscribe(async (params) => {
-        if (params.id) {
-          let app = dataSource.Data.find((x) => x.UID_AOBApplication.value == params.id);
-          this.selectedEntity = app;
+        const selectedEntity = dataSource?.Data.find((x) => x.UID_AOBApplication.value == params.id);
+        if (params.id && selectedEntity) {
+          this.selectedEntity = selectedEntity;
         }
       });
     } finally {
@@ -181,7 +187,7 @@ export class ApplicationNavigationComponent implements OnInit {
 
     this.navigationState.StartIndex = 0;
     if (keywords == null || keywords.length === 0) {
-      this.navigationState.search = null;
+      this.navigationState.search = '';
     } else {
       this.navigationState.search = keywords;
     }

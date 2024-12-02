@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,18 +38,18 @@ describe('ChartsSidesheetComponent', () => {
 
   beforeEach(() => {
     return MockBuilder([ChartsSidesheetComponent])
-    .mock(EuiSidesheetRef, {
-      close: () => {},
-      closeClicked: () => new Subject(),
-    })
-    .mock(EUI_SIDESHEET_DATA, {
-      isFavorite: false
-    })
-    .beforeCompileComponents(testBed => {
-      testBed.configureTestingModule({
-        schemas: [CUSTOM_ELEMENTS_SCHEMA]
+      .mock(EuiSidesheetRef, {
+        close: () => {},
+        closeClicked: () => new Subject(),
+      })
+      .mock(EUI_SIDESHEET_DATA, {
+        isFavorite: false,
+      })
+      .beforeCompileComponents((testBed) => {
+        testBed.configureTestingModule({
+          schemas: [CUSTOM_ELEMENTS_SCHEMA],
+        });
       });
-    });
   });
 
   beforeEach(() => {
@@ -60,7 +60,7 @@ describe('ChartsSidesheetComponent', () => {
 
   afterAll(() => {
     clearStylesFromDOM();
-  })
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

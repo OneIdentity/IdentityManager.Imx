@@ -5,27 +5,11 @@
   flex-grow: 1;
 }
 
-  .mat-column-IsDebug,
-  .mat-column-IsPrivate {
-    max-width: 240px;
-  }
-
-  .mat-column-BaseURL {
-    min-width: 440px;
-  }
-
-.imx-table-container {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  max-height: calc(100% - 45px);
-
-  > :nth-child(2) {
-    flex: 1 1 auto;
-  }
+.mat-column-IsDebug,
+.mat-column-IsPrivate {
+  max-width: 240px;
 }
 
-.imx-refresh-button {
-  margin-right: 5px;
-  height: 50px;
+.mat-column-BaseURL {
+  min-width: 440px;
 }

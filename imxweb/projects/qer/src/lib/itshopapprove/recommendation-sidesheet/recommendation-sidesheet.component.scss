@@ -1,12 +1,8 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
 
 :host {
-  ::ng-deep .eui-alert {
-    margin-bottom: 20px;
-  }
-
-  .mat-card-avatar {
+  .mat-mdc-card-avatar {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -14,20 +10,6 @@
 
   .recommendation-item {
     margin-bottom: 20px;
-  }
-
-  .imx-icon-warning {
-    color: $corbin-orange;
-  }
-
-  .imx-icon-ok {
-    color: $aspen-green
-  }
-
-  .eui-sidesheet-actions {
-    > * {
-      margin-left: 5px;
-    }
   }
 }
 
@@ -38,7 +20,7 @@
       background-color: $color-gray-80;
     }
     .eui-sidesheet-content {
-      .recommendation-items , .eui-alert.eui-alert-condensed .eui-alert-header{
+      .recommendation-items {
         color: $color-gray-2;
       }
     }
@@ -52,7 +34,7 @@
       background-color: $color-gray-100;
     }
     .eui-sidesheet-content {
-      .recommendation-items , .eui-alert.eui-alert-condensed .eui-alert-header{
+      .recommendation-items {
         color: $color-gray-0;
       }
     }

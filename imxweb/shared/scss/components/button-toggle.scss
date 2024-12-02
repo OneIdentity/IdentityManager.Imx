@@ -1,0 +1,72 @@
+$icon-size: (14, 16, 24, 32, 36);
+
+/* Elemental UI */
+
+/* Angular Material */
+
+/* Imx */
+.imx-button-toggle {
+  &-group {
+    &-info {
+      &.mat-mdc-button-toggle-group {
+        .mat-mdc-button-toggle.mat-mdc-button-toggle-appearance-standard.mat-mdc-button-toggle-checked {
+          background-color: $color-blue-60;
+          color: $color-gray-0;
+        }
+      }
+    }
+
+    &-warning {
+      &.mat-mdc-button-toggle-group {
+        .mat-mdc-button-toggle.mat-mdc-button-toggle-appearance-standard.mat-mdc-button-toggle-checked {
+          background-color: $color-orange-60;
+          color: $color-gray-0;
+        }
+      }
+    }
+  }
+
+  @each $size in $icon-size {
+    &-icon-#{$size} {
+      &.mat-mdc-button-toggle-appearance-standard .mat-mdc-button-toggle-label-content {
+        padding: 0 calc(((#{$size}px - 24px) / -2) + 12px);
+      }
+    }
+  }
+}
+body {
+  .mat-button-toggle-group {
+    .mat-button-toggle-label-content {
+      .eui-icon {
+        vertical-align: middle;
+      }
+    }
+  }
+}
+
+/* Dark theme */
+.eui-dark-theme {
+  .imx-button-toggle {
+    &-group {
+      &-info {
+        &.mat-mdc-button-toggle-group {
+          .mat-mdc-button-toggle.mat-mdc-button-toggle-appearance-standard.mat-mdc-button-toggle-checked {
+            background-color: $color-blue-40;
+            color: $color-gray-80;
+          }
+        }
+      }
+
+      &-warning {
+        &.mat-mdc-button-toggle-group {
+          .mat-mdc-button-toggle.mat-mdc-button-toggle-appearance-standard.mat-mdc-button-toggle-checked {
+            background-color: $color-orange-40;
+            color: $color-gray-80;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* High-contrast theme */

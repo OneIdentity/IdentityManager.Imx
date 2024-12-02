@@ -1,7 +1,13 @@
-<eui-select *ngIf="options && !loading" (selectionChange)="selectionChanged.emit($event.value)"
+<eui-select
+  *ngIf="options && !loading"
+  (selectionChange)="selectionUpdated($event)"
   label="{{ '#LDS#Table' | translate }}"
-  [filterFunction]="filter" [options]="options" [inputControl]="control" [hideClearButton]="true"
-  data-imx-identifier="fk-table-select">
+  [filterFunction]="filter"
+  [options]="options"
+  [inputControl]="control"
+  [hideClearButton]="true"
+  data-imx-identifier="fk-table-select"
+>
 </eui-select>
 
 <mat-spinner diameter="30" *ngIf="loading"></mat-spinner>

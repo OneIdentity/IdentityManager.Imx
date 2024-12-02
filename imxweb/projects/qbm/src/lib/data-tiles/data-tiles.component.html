@@ -1,5 +1,4 @@
-
-<div class="imx-data-container" [ngClass]="{ 'hidden': isLoading }">
+<div class="imx-data-container" [ngClass]="{ hidden: isLoading }">
   <imx-data-tile
     *ngFor="let item of dst?.settings?.dataSource?.Data"
     [typedEntity]="item"
@@ -25,10 +24,13 @@
   >
   </imx-data-tile>
 </div>
-  <imx-busy-indicator *ngIf="isLoading"></imx-busy-indicator>
+<imx-busy-indicator *ngIf="isLoading"></imx-busy-indicator>
 
-  <div  [ngClass]="{ 'hidden': isLoading }" class="imx-data-tiles-no-results" *ngIf="dst?.settings?.dataSource == null || dst?.settings?.dataSource.totalCount == 0">
-    <eui-icon [icon]="dst?.searchCurrenltyApplied || dst?.filtersCurrentlyApplied ? noMatchingDataIcon : noDataIcon"></eui-icon>
-    <p [translate]="dst?.searchCurrenltyApplied || dst?.filtersCurrentlyApplied ? noItemsMatchText : noItemsFoundText"></p>
-  </div>
-
+<div
+  [ngClass]="{ hidden: isLoading }"
+  class="imx-no-results"
+  *ngIf="dst?.settings?.dataSource == null || (dst?.settings?.dataSource?.totalCount ?? 0) == 0"
+>
+  <eui-icon [icon]="dst?.searchCurrenltyApplied || dst?.filtersCurrentlyApplied ? noMatchingDataIcon : noDataIcon"></eui-icon>
+  <p [translate]="dst?.searchCurrenltyApplied || dst?.filtersCurrentlyApplied ? noItemsMatchText : noItemsFoundText"></p>
+</div>

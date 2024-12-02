@@ -1,35 +1,49 @@
-<div class="imx-parameter-grid" *ngIf="withSeparateParameterList;else singleMode" >
+<div class="imx-parameter-grid" *ngIf="withSeparateParameterList; else singleMode">
   <div>
     <h4>
-      {{'#LDS#Heading Subscription Details' | translate}}
+      {{ '#LDS#Heading Subscription Details' | translate }}
     </h4>
-    <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (valueChange)="valueHasChanged(cdr.column.ColumnName)"
-      (controlCreated)="addFormControl(subscriptionPropertiesFormArray, $event)">
+    <imx-cdr-editor
+      *ngFor="let cdr of cdrList"
+      [cdr]="cdr"
+      (valueChange)="valueHasChanged(cdr.column.ColumnName)"
+      (controlCreated)="addFormControl(subscriptionPropertiesFormArray, $event)"
+    >
     </imx-cdr-editor>
   </div>
 
   <div>
     <h4>
-      {{'#LDS#Heading Parameters' | translate}}
+      {{ '#LDS#Heading Parameters' | translate }}
     </h4>
     <div *ngIf="parameterCdrList.length > 0">
-      <imx-cdr-editor *ngFor="let cdr of parameterCdrList" [cdr]="cdr"
-        (controlCreated)="addFormControl(subscriptionParameterFormArray, $event)">
+      <imx-cdr-editor
+        *ngFor="let cdr of parameterCdrList"
+        [cdr]="cdr"
+        (controlCreated)="addFormControl(subscriptionParameterFormArray, $event)"
+      >
       </imx-cdr-editor>
     </div>
     <div *ngIf="parameterCdrList.length === 0 && withTitles">
-      {{'#LDS#There are no parameters for this subscription.' | translate}}
+      {{ '#LDS#There are no parameters for this subscription.' | translate }}
     </div>
   </div>
 </div>
 
 <ng-template #singleMode>
   <div class="imx-parameter-grid">
-    <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (valueChange)="valueHasChanged(cdr.column.ColumnName)"
-      (controlCreated)="addFormControl(subscriptionPropertiesFormArray, $event)">
+    <imx-cdr-editor
+      *ngFor="let cdr of cdrList"
+      [cdr]="cdr"
+      (valueChange)="valueHasChanged(cdr.column.ColumnName)"
+      (controlCreated)="addFormControl(subscriptionPropertiesFormArray, $event)"
+    >
     </imx-cdr-editor>
-    <imx-cdr-editor *ngFor="let cdr of parameterCdrList" [cdr]="cdr"
-      (controlCreated)="addFormControl(subscriptionParameterFormArray, $event)">
+    <imx-cdr-editor
+      *ngFor="let cdr of parameterCdrList"
+      [cdr]="cdr"
+      (controlCreated)="addFormControl(subscriptionParameterFormArray, $event)"
+    >
     </imx-cdr-editor>
   </div>
 </ng-template>

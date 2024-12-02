@@ -3,6 +3,6 @@
   "dest": "../../dist/apc",
   "lib": {
     "entryFile": "src/public_api.ts",
-    "styleIncludePaths": ["../../shared/assets"]
+    "styleIncludePaths": ["../../shared/scss"]
   }
 }

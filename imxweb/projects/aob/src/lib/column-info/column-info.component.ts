@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,12 +26,12 @@
 
 import { Component, Input } from '@angular/core';
 
-import { EntityValue } from 'imx-qbm-dbts';
+import { EntityValue } from '@imx-modules/imx-qbm-dbts';
 
 @Component({
   selector: 'imx-column-info',
   templateUrl: './column-info.component.html',
-  styleUrls: ['./column-info.component.scss']
+  styleUrls: ['./column-info.component.scss'],
 })
 export class ColumnInfoComponent<T> {
   @Input() public property: EntityValue<T>;

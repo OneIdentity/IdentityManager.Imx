@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -39,26 +39,31 @@ export class RoleMembershipsComponent {
   constructor(
     private readonly roleService: RoleService,
     private dataManagementService: DataManagementService,
-    ) {
+  ) {
     this.dataManagementService.autoMembershipDirty$.subscribe((flag) => {
       this.autoMembershipsValid = !flag;
-    })
+    });
   }
 
   public get canBeDynamic(): boolean {
-    return this.roleService.canHaveDynamicMemberships(this.dataManagementService.entityInteractive.GetEntity().TypeName);
+    return this.roleService.canHaveDynamicMemberships(this.dataManagementService.entityInteractive?.GetEntity().TypeName);
   }
 
   public get isDynamic(): boolean {
-    return this.dataManagementService.entityInteractive.GetEntity().GetSchema().Columns['UID_DynamicGroup'] && this.dataManagementService.entityInteractive.GetEntity().GetColumn('UID_DynamicGroup').GetValue();
+    return (
+      this.dataManagementService.entityInteractive?.GetEntity().GetSchema().Columns['UID_DynamicGroup'] &&
+      this.dataManagementService.entityInteractive.GetEntity().GetColumn('UID_DynamicGroup').GetValue()
+    );
   }
 
-  public get uidDynamicGroup(): boolean {
-    return this.dataManagementService.entityInteractive.GetEntity().GetColumn('UID_DynamicGroup').GetValue();
+  public get uidDynamicGroup(): string {
+    return this.dataManagementService.entityInteractive?.GetEntity().GetColumn('UID_DynamicGroup').GetValue();
   }
 
   public canHavePrimaryMemberships(): boolean {
-    return this.roleService.ownershipInfo && this.roleService.targetMap.get(this.roleService.ownershipInfo.TableName).membership.hasPrimaryMemberships();
+    return (
+      this.roleService.ownershipInfo.TableName != null &&
+      (this.roleService.targetMap.get(this.roleService.ownershipInfo.TableName)?.membership?.hasPrimaryMemberships() ?? false)
+    );
   }
-
 }

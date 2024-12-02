@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Component, OnInit } from '@angular/core';
 
-import { DisplayColumns, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
+import { DisplayColumns, EntitySchema, IClientProperty } from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarSettings, DynamicTabDataProviderDirective, MetadataService } from 'qbm';
 import { RoleComplianceViolationsWrapperService } from './role-compliance-violations-wrapper';
 import { RoleComplianceViolationsService } from './role-compliance-violations.service';
@@ -56,7 +56,7 @@ export class RoleComplianceViolationsComponent implements OnInit {
     this.entitySchema = this.entityService.roleComplianceEntitySchema;
     this.displayedColumns = [this.entitySchema.Columns.RuleName, this.entitySchema.Columns.ObjectDisplay];
 
-    // tslint:disable:max-line-length
+    /* eslint-disable max-len */
     switch ((this.tablename ?? '').toLowerCase()) {
       case 'aerole':
         this.keyDescription =
@@ -87,7 +87,7 @@ export class RoleComplianceViolationsComponent implements OnInit {
           '#LDS#Here you can get an overview of all entitlements assigned to this object that may violate a compliance rule.';
         break;
     }
-    // tslint:enable:max-line-length
+    /* eslint-enable max-len */
   }
 
   public async ngOnInit(): Promise<void> {
@@ -101,7 +101,7 @@ export class RoleComplianceViolationsComponent implements OnInit {
       const data = await this.roleComplianceViolationService.getRoleComplianceViolations(this.tablename, this.uidRole);
       this.dstSettings = {
         displayedColumns: this.displayedColumns,
-        dataSource: this.entityService.build(data.Violations),
+        dataSource: this.entityService.build(data.Violations || []),
         entitySchema: this.entityService.roleComplianceEntitySchema,
         navigationState: {},
       };

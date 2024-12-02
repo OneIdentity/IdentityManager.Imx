@@ -1,48 +1,73 @@
-<div class="imx-risk-config-page">
-  <div class="heading-wrapper">
-    <h1 class="mat-headline">
-      <span>{{ '#LDS#Heading Risk Index Functions' | translate }}</span>
-      <imx-help-contextual></imx-help-contextual>
-    </h1>
-  </div>
-  <mat-card>
-    <div class="imx-table-container">
-      <imx-data-source-toolbar
-        #dst
-        [options]="['search', 'settings', 'filter']"
-        [settings]="dstSettings"
-        [busyService]="busyService"
-        (search)="getData({ search: $event })"
-        (navigationStateChanged)="getData($event)"
-        data-imx-identifier="risk-config-dst"
-      >
-      </imx-data-source-toolbar>
-      <imx-data-table
-        #dataTable
-        [dst]="dst"
-        class="imx-pickcategory-table"
-        [detailViewVisible]="false"
-        mode="manual"
-        [showSelectedItemsMenu]="false"
-        data-imx-identifier="risk-config-datatable"
-        (highlightedEntityChanged)="onHighlightedEntityChanged($event)"
-      >
-        <imx-data-table-column data-imx-identifier="risk-config-table-column-display" [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"> </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns.TargetTable"></imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns.Description"></imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns.IsInActive"></imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns.IsExecuteImmediate"></imx-data-table-column>
-        <imx-data-table-column [entityColumn]="entitySchema?.Columns.Weight"></imx-data-table-column>
-      </imx-data-table>
-      <imx-data-source-paginator data-imx-identifier="risk-config-paginator" [dst]="dst"> </imx-data-source-paginator>
-    </div>
-  </mat-card>
-  <div class="imx-risk-config-page-actions" >
-    <button data-imx-identifier="risk-config-recalculate-button" mat-raised-button color="primary" (click)="onRecalculate()" [disabled]="recalculatingInProcess">
-      {{ '#LDS#Recalculate risk index' | translate }}
-    </button>
-    <div class="spinner" *ngIf="recalculatingInProcess">
-      <mat-spinner diameter="30"></mat-spinner>
-    </div>
+<div class="imx-header-toolbar">
+  <h2 class="mat-headline-5">
+    <span>{{ '#LDS#Heading Risk Index Functions' | translate }}</span>
+    <imx-help-contextual></imx-help-contextual>
+  </h2>
+  <imx-data-view-toolbar [dataSource]="dataSource" [showSettings]="false"></imx-data-view-toolbar>
+</div>
+<mat-card class="imx-card-fill">
+  <imx-data-view-auto-table
+    [dataSource]="dataSource"
+    mode="manual"
+    matSort
+    (matSortChange)="dataSource?.sortChange($event)"
+    [matSortActive]="dataSource.sortId()"
+    [matSortDirection]="dataSource.sortDirection()"
+  >
+    <ng-container [matColumnDef]="DisplayColumns.DISPLAY_PROPERTYNAME">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <span>{{ item.GetEntity().GetDisplay() }}</span>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.TargetTable.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.TargetTable?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.TargetTable.Column.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.Description.ColumnName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ entitySchema?.Columns?.Description?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.entity.columns.Description.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.IsInActive.ColumnName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ entitySchema?.Columns?.IsInActive?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.entity.columns.IsInActive.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.Weight.ColumnName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ entitySchema?.Columns?.Weight?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.entity.columns.Weight.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+  </imx-data-view-auto-table>
+  <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
+</mat-card>
+<div class="imx-button-bar-transparent">
+  <button
+    data-imx-identifier="risk-config-recalculate-button"
+    mat-flat-button
+    color="primary"
+    (click)="onRecalculate()"
+    [disabled]="recalculatingInProcess"
+  >
+    {{ '#LDS#Recalculate risk index' | translate }}
+  </button>
+  <div class="spinner" *ngIf="recalculatingInProcess">
+    <mat-spinner diameter="30"></mat-spinner>
   </div>
 </div>

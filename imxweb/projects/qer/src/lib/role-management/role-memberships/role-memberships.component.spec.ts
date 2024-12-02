@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -38,10 +38,8 @@ describe('RoleMembershipsComponent', () => {
   let component: RoleMembershipsComponent;
   let fixture: ComponentFixture<RoleMembershipsComponent>;
   const mockQerApiService = {
-    typedClient: {
-    },
-    client: {
-    },
+    typedClient: {},
+    client: {},
   };
 
   beforeEach(() => {
@@ -50,27 +48,33 @@ describe('RoleMembershipsComponent', () => {
       providers: [
         {
           provide: QerApiService,
-          useValue: mockQerApiService
+          useValue: mockQerApiService,
         },
         {
           provide: imx_SessionService,
-          useValue: {}
+          useValue: {},
         },
         {
           provide: ImxTranslationProviderService,
           useValue: {
-            init: jasmine.createSpy('init').and.returnValue(Promise.resolve())
-          }
+            init: jasmine.createSpy('init').and.returnValue(Promise.resolve()),
+          },
         },
         {
           provide: ProjectConfigurationService,
-          useValue: {}
+          useValue: {},
         },
         {
           provide: RoleService,
           useValue: {
-            canHavePrimaryMemberships: _ => true,
-            canHaveDynamicMemberships: _ => false,
+            canHavePrimaryMemberships: (_) => true,
+            canHaveDynamicMemberships: (_) => false,
+            ownershipInfo: {
+              TableName: '',
+              TableNameDisplay: ',',
+              Count: 0,
+            },
+            targetMap: new Map(),
           },
         },
         {
@@ -83,17 +87,16 @@ describe('RoleMembershipsComponent', () => {
                   GetColumn: (name: string) => {},
                   GetSchema: () => {
                     return {
-                      Columns: {}
-                    }
-                  }
-                }
+                      Columns: {},
+                    };
+                  },
+                };
               },
-            }
-          }
-        }
-      ]
-    })
-      .compileComponents();
+            },
+          },
+        },
+      ],
+    }).compileComponents();
   });
 
   beforeEach(() => {

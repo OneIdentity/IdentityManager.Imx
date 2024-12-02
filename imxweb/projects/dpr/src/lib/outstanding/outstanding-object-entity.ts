@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -23,16 +23,14 @@
  * THIS SOFTWARE OR ITS DERIVATIVES.
  *
  */
-import { IReadValue, TypedEntity } from 'imx-qbm-dbts';
+import { IReadValue, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 
 export class OutstandingObjectEntity extends TypedEntity {
-
   public readonly ObjectType: IReadValue<string> = this.GetEntityValue('ObjectType');
   public readonly ObjectKey: IReadValue<string> = this.GetEntityValue('ObjectKey');
   public readonly Display: IReadValue<string> = this.GetEntityValue('Display');
   public readonly CanPublish: IReadValue<boolean> = this.GetEntityValue('CanPublish');
   public readonly CanDelete: IReadValue<boolean> = this.GetEntityValue('CanDelete');
-  public readonly CanDeleteRestrictionReason: IReadValue<string> = this.GetEntityValue("CanDeleteRestrictionReason");
-  public readonly CanPublishRestrictionReason: IReadValue<string> = this.GetEntityValue("CanPublishRestrictionReason");
-
+  public readonly CanDeleteRestrictionReason: IReadValue<string> = this.GetEntityValue('CanDeleteRestrictionReason');
+  public readonly CanPublishRestrictionReason: IReadValue<string> = this.GetEntityValue('CanPublishRestrictionReason');
 }

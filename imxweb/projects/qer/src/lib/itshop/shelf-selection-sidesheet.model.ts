@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,21 +25,20 @@
  */
 
 export interface ShelfObject {
-  uidItShopOrg: string;
-  displayShelf: string;
+  uidItShopOrg?: string;
+  displayShelf?: string;
 }
 
 export interface PersonForProduct {
   uidItShopOrg?: string;
-  uidPerson: string;
-  displayPerson: string;
+  uidPerson?: string;
+  displayPerson?: string;
   shelfsObjects: ShelfObject[];
 }
 
 export interface ShelfSelectionObject {
-  uidAccproduct: string;
-  displayAccProduct: string;
+  uidAccproduct?: string;
+  displayAccProduct?: string;
   personsForProduct: PersonForProduct[];
   possibleShelfObjects: ShelfObject[];
 }
-

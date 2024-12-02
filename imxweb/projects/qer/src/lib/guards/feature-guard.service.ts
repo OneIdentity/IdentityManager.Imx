@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,23 +25,23 @@
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { Observable, Subscription, of } from 'rxjs';
 
-import { QerPermissionsService } from '../admin/qer-permissions.service';
 import { AppConfigService, AuthenticationService, ISessionState } from 'qbm';
+import { QerPermissionsService } from '../admin/qer-permissions.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class FeatureGuardService implements CanActivate, OnDestroy {
+export class FeatureGuardService implements OnDestroy {
   private onSessionResponse: Subscription;
 
   constructor(
     private readonly qerPermissionService: QerPermissionsService,
     private readonly authentication: AuthenticationService,
     private readonly appConfig: AppConfigService,
-    private readonly router: Router
+    private readonly router: Router,
   ) {}
 
   public canActivate(route: ActivatedRouteSnapshot): Observable<boolean> {
@@ -51,7 +51,7 @@ export class FeatureGuardService implements CanActivate, OnDestroy {
           if (sessionState.IsLoggedIn) {
             const hasFeature = await this.qerPermissionService.hasFeatures(route.data.features);
             if (!hasFeature) {
-              this.router.navigate([this.appConfig.Config.routeConfig.start], { queryParams: {} });
+              this.router.navigate([this.appConfig.Config?.routeConfig?.start], { queryParams: {} });
             }
             observer.next(hasFeature);
             observer.complete();

@@ -1,39 +1,15 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
+
 :host {
-
-  eui-alert {
-    margin-bottom: 10px;
-  }
-
   ::ng-deep imx-data-tiles {
     padding-left: 10px;
-  }
-
-  ::ng-deep .mat-tab-body-content {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .eui-sidesheet-content {
-    display: flex;
-    flex-direction: column;
-
-    >.mat-card {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
   }
 
   .eui-sidesheet-actions {
     button:not(:last-of-type) {
       margin-right: 10px;
     }
-  }
-  .mat-radio-button {
-    height: 70px;
-    margin-right: 20px;
   }
 
   .imx-recipients {
@@ -49,20 +25,14 @@
   }
 }
 
-.eui-dark-theme{
-  :host{
+.eui-dark-theme {
+  :host {
     background-color: $color-gray-80;
-    .eui-sidesheet-actions{
-      background-color: $color-gray-70;
-    }
   }
 }
 
-.eui-contrast-theme{
-  :host{
+.eui-contrast-theme {
+  :host {
     background-color: $color-gray-100;
-    .eui-sidesheet-actions{
-      background-color: $color-gray-90;
-    }
   }
 }

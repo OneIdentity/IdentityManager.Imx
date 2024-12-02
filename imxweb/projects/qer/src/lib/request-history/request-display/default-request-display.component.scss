@@ -1,9 +1,7 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
-
-mat-chip {
-  font-size: smaller;
+:host {
+  display: block !important;
 }
-
 .imx-main-container {
   display: flex;
   align-items: center;
@@ -19,11 +17,20 @@ mat-chip {
   font-style: italic;
 }
 
-.imx-product-detail {
+@mixin product-details() {
   font-size: smaller;
   color: $black-9;
   text-overflow: ellipsis;
   overflow: hidden;
-  white-space: nowrap;
-  max-width: 450px;
+  width: fit-content;
+  max-width: 50vw;
+}
+
+.imx-product-detail {
+  @include product-details();
+
+  &-block {
+    @include product-details();
+    display: block;
+  }
 }

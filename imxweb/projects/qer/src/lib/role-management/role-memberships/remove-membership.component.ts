@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,14 +26,14 @@
 
 import { Component, Inject, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
 
-import { TypedEntity, XOrigin } from 'imx-qbm-dbts';
+import { TypedEntity, XOrigin } from '@imx-modules/imx-qbm-dbts';
 
 import { SnackBarService } from 'qbm';
 import { QerApiService } from '../../qer-api-client.service';
-import { RoleService } from '../role.service';
 import { DataManagementService } from '../data-management.service';
+import { RoleService } from '../role.service';
 
 @Component({
   templateUrl: './remove-membership.component.html',
@@ -49,7 +49,7 @@ export class RemoveMembershipComponent implements OnInit {
   public formAbortRequested: UntypedFormControl;
   public formExcludeDynamic: UntypedFormControl;
   public formDeleteDirect: UntypedFormControl;
-  public withCheckboxes: boolean
+  public withCheckboxes: boolean;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -66,12 +66,10 @@ export class RemoveMembershipComponent implements OnInit {
     private readonly qerApiClient: QerApiService,
     private readonly roleService: RoleService,
     private dataManagementService: DataManagementService,
-    private readonly snackbar: SnackBarService
+    private readonly snackbar: SnackBarService,
   ) {
-    this.withCheckboxes = [data.countDirect,data.countDynamic, data.countRequested].filter(elem=>elem >0).length > 1
+    this.withCheckboxes = [data.countDirect, data.countDynamic, data.countRequested].filter((elem) => elem > 0).length > 1;
   }
-
-
 
   public ngOnInit(): void {
     this.formExcludeDynamic = new UntypedFormControl(this.data.countDynamic > 0);
@@ -88,7 +86,7 @@ export class RemoveMembershipComponent implements OnInit {
   }
 
   public async save(): Promise<void> {
-    const entity = this.dataManagementService.entityInteractive.GetEntity();
+    const entity = this.dataManagementService.entityInteractive?.GetEntity();
     this.busyService.show();
     try {
       for (const selectedEntity of this.data.selectedEntities) {
@@ -99,15 +97,15 @@ export class RemoveMembershipComponent implements OnInit {
           // is it a direct assignment?
           (XOrigin.Direct & xorigin) === XOrigin.Direct
         ) {
-          await this.roleService.removeMembership(selectedEntity, entity.GetKeys()[0]);
+          await this.roleService.removeMembership(selectedEntity, entity?.GetKeys()[0]);
         }
 
         // If the member is managed by a dynamic group, add an exclusion
         if (this.formExcludeDynamic.value && (xorigin & XOrigin.Dynamic) > 0) {
-          const uidDynamicGroup = entity.GetColumn('UID_DynamicGroup').GetValue();
+          const uidDynamicGroup = entity?.GetColumn('UID_DynamicGroup').GetValue();
           const exclusionData = this.qerApiClient.typedClient.PortalRolesExclusions.createEntity();
           exclusionData.UID_Person.value = selectedEntity.GetEntity().GetColumn('UID_Person').GetValue();
-          exclusionData.Description.value = this.dynamicExclusionForm.get('description').value || '';
+          exclusionData.Description.value = this.dynamicExclusionForm.get('description')?.value || '';
           await this.qerApiClient.typedClient.PortalRolesExclusions.Post(uidDynamicGroup, exclusionData);
         }
       }
@@ -121,7 +119,7 @@ export class RemoveMembershipComponent implements OnInit {
 
         await this.qerApiClient.client.portal_itshop_unsubscribe_post({
           UidPwo: requested,
-          Reason: this.dynamicExclusionForm.get('descriptionRequests').value || '',
+          Reason: this.dynamicExclusionForm.get('descriptionRequests')?.value || '',
         });
       }
 

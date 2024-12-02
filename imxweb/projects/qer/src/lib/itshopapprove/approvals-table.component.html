@@ -13,119 +13,143 @@
     >
       {{ '#LDS#Show requests to be approved by chief approval team' | translate }}
     </mat-slide-toggle>
+    <imx-data-view-toolbar
+      [dataSource]="dataSource"
+      *ngIf="!hideToolbar"
+      (updateConfig)="updateConfig($event)"
+      (deleteConfigById)="deleteConfigById($event)"
+    ></imx-data-view-toolbar>
   </div>
-  <imx-data-source-toolbar
-    #dst
-    [busyService]="busyService"
-    [options]="['search', 'sort', 'settings', 'filter']"
-    [settings]="dstSettings"
-    data-imx-identifier="approvals-table-dst"
-    (search)="onSearch($event)"
-    (navigationStateChanged)="getData($event)"
-    (updateConfig)="updateConfig($event)"
-    (deleteConfigById)="deleteConfigById($event)"
+  <imx-data-view-auto-table
+    [dataSource]="dataSource"
+    mode="manual"
+    [selectable]="true"
+    matSort
+    (matSortChange)="dataSource?.sortChange($event)"
+    [matSortActive]="dataSource.sortId()"
+    [matSortDirection]="dataSource.sortDirection()"
   >
-  </imx-data-source-toolbar>
-
-  <div class="imx-table-container">
-    <imx-data-table
-      #dataTable
-      [dst]="dst"
-      [detailViewVisible]="false"
-      (highlightedEntityChanged)="editPwo($event)"
-      mode="manual"
-      [showSelectionInfo]="false"
-      [showSelectedItemsMenu]="false"
-      [selectable]="true"
-      (selectionChanged)="onSelectionChanged($event)"
-      data-imx-identifier="approvals-tabledata-table"
-    >
-      <imx-data-table-column [entityColumn]="entitySchema?.Columns.DisplayOrg" data-imx-identifier="approvals-tabledata-table-column-displayorg">
-        <ng-template let-pwo>
-          <imx-request-display
-            [additionalText]="getAdditionalText(pwo, dst.additionalListElements)"
-            [personWantsOrg]="pwo"
-            data-imx-identifier="approvals-tabledata-display"
-          ></imx-request-display>
-        </ng-template>
-      </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema?.Columns.UiOrderState">
-        <ng-template let-pwo>
-          <span>
-            {{ pwo.UiOrderState.value === 'OrderProduct' ? ('#LDS#Requested' | translate) : '' }}
-            {{
-              pwo.UiOrderState.value === 'OrderProlongate'
-                ? ('#LDS#Renewed' | translate) +
-                  ' ' +
-                  (pwo.ValidUntilProlongation.value ? ('#LDS#Until' | translate) + ' ' + (pwo.ValidUntilProlongation.value | shortDate) : ('#LDS#unlimited' | translate))
-                : ''
-            }}
-            {{ ['OrderProduct', 'OrderProlongate'].includes(pwo.UiOrderState.value) ? '' : pwo.UiOrderState.Column.GetDisplayValue() }}
-          </span>
-        </ng-template>
-      </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema?.Columns.OrderDate" data-imx-identifier="approvals-tabledata-table-column-orderDate"> </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema?.Columns.PWOPriority" data-imx-identifier="approvals-tabledata-table-column-priority" columnLabel="">
-        <ng-template let-pwo>
-          <div class="imx-icons-container">
-            <div *ngIf="pwo.PWOPriority.value !== 0" data-imx-identifier="approvals-span-priority" class="table-icon table-icon--warning">
-              <eui-icon icon="piechart"></eui-icon>
-              {{ '#LDS#Priority' | translate }}: {{ pwo.PWOPriority.Column.GetDisplayValue() }}
-            </div>
-            <div *ngIf="pwo.complianceRuleViolation" class="table-icon table-icon--warning">
-              <eui-icon icon="warning" size="m"></eui-icon>
-              {{ '#LDS#Rule violation' | translate }}
-            </div>
-            <div *ngIf="pwo.IsReserved.value" class="table-icon table-icon">
-              <eui-icon icon="clock" size="m"></eui-icon>
-              {{ '#LDS#Reserved' | translate }}
-            </div>
+    <ng-container [matColumnDef]="entitySchema?.Columns?.DisplayOrg?.ColumnName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ entitySchema?.Columns?.DisplayOrg?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let pwo" role="gridcell">
+        <imx-request-display
+          [additionalText]="getAdditionalText(pwo)"
+          [personWantsOrg]="pwo"
+          data-imx-identifier="approvals-tabledata-display"
+        ></imx-request-display>
+        <imx-data-view-status *ngIf="dataSource.itemStatus.status" [status]="dataSource.itemStatus.status(pwo)" />
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema?.Columns?.UiOrderState?.ColumnName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ entitySchema?.Columns?.UiOrderState?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let pwo" role="gridcell">
+        <span>
+          {{ pwo.UiOrderState.value === 'OrderProduct' ? ('#LDS#Requested' | translate) : '' }}
+          {{
+            pwo.UiOrderState.value === 'OrderProlongate'
+              ? ('#LDS#Renewed' | translate) +
+                ' ' +
+                (pwo.ValidUntilProlongation.value
+                  ? ('#LDS#Until' | translate) + ' ' + (pwo.ValidUntilProlongation.value | shortDate)
+                  : ('#LDS#unlimited' | translate))
+              : ''
+          }}
+          {{ ['OrderProduct', 'OrderProlongate'].includes(pwo.UiOrderState.value) ? '' : pwo.UiOrderState.Column.GetDisplayValue() }}
+        </span>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema?.Columns?.OrderDate?.ColumnName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ entitySchema?.Columns?.OrderDate?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let pwo" role="gridcell">
+        <div>{{ pwo.OrderDate?.Column.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema?.Columns?.PWOPriority?.ColumnName">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let pwo" role="gridcell">
+        <div class="imx-icon-table-container">
+          <div *ngIf="pwo.PWOPriority.value !== 0" data-imx-identifier="approvals-span-priority" class="imx-icon-table">
+            <eui-icon class="imx-icon-error" icon="piechart"></eui-icon>
+            {{ '#LDS#Priority' | translate }}: {{ pwo.PWOPriority.Column.GetDisplayValue() }}
           </div>
-        </ng-template>
-      </imx-data-table-column>
-      <imx-data-table-generic-column columnName="decision" data-imx-identifier="approvals-tabledata-table-column-decision">
-        <ng-template let-item>
-          <div class="imx-decision">
-            <button mat-stroked-button color="warn" (click)="actionService.deny([item])" data-imx-identifier="approvals-table-row-button-deny">
-              <eui-icon icon="ignore"></eui-icon>
-              {{ '#LDS#Deny' | translate }}
-            </button>
-            <button mat-stroked-button color="primary" (click)="actionService.approve([item])" data-imx-identifier="approvals-table-row-button-approve">
-              <eui-icon icon="check"></eui-icon>
-              {{ '#LDS#Approve' | translate }}
-            </button>
+          <div *ngIf="pwo.complianceRuleViolation" class="imx-icon-table">
+            <eui-icon class="imx-icon-warning" icon="warning"></eui-icon>
+            {{ '#LDS#Rule violation' | translate }}
           </div>
-        </ng-template>
-      </imx-data-table-generic-column>
-      <imx-data-table-generic-column columnName="recommendations">
-        <ng-template let-item>
-          <div *ngIf="item.pwoData?.Recommendation">
-            <button mat-stroked-button (click)="viewRecommendationDetails(item)" data-imx-identifier="approvals-table-row-button-view-recommendations">
-              <eui-icon
-                *ngIf="item.pwoData.Recommendation.Recommendation === recApprove"
-                class="recommendation-approve-icon"
-                icon="setdefault"
-                [matTooltip]="'#LDS#Based on an analysis with currently available data, it is recommended you approve this request.' | translate"
-              ></eui-icon>
-              <eui-icon
-                *ngIf="item.pwoData.Recommendation.Recommendation === recDeny"
-                class="recommendation-deny-icon"
-                icon="error"
-                [matTooltip]="'#LDS#Based on an analysis with currently available data, it is recommended you deny this request.' | translate"
-              ></eui-icon>
-              {{ '#LDS#Recommendation' | translate }}
-            </button>
+          <div *ngIf="pwo.IsReserved.value" class="imx-icon-table">
+            <eui-icon class="imx-icon-info" icon="clock"></eui-icon>
+            {{ '#LDS#Reserved' | translate }}
           </div>
-        </ng-template>
-      </imx-data-table-generic-column>
-    </imx-data-table>
-  </div>
-  <imx-data-source-paginator [dst]="dst" data-imx-identifier="approvals-table-paginator"></imx-data-source-paginator>
+        </div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="'decision'">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div class="imx-button-column">
+          <button
+            mat-stroked-button
+            [disabled]="!dataSource.itemStatus.enabled(item)"
+            color="warn"
+            (click)="actionService.deny([item])"
+            data-imx-identifier="approvals-table-row-button-deny"
+          >
+            <eui-icon icon="ignore"></eui-icon>
+            {{ '#LDS#Deny' | translate }}
+          </button>
+          <button
+            mat-stroked-button
+            [disabled]="!dataSource.itemStatus.enabled(item)"
+            color="primary"
+            (click)="actionService.approve([item])"
+            data-imx-identifier="approvals-table-row-button-approve"
+          >
+            <eui-icon icon="check"></eui-icon>
+            {{ '#LDS#Approve' | translate }}
+          </button>
+        </div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="'recommendations'">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div *ngIf="item.pwoData?.Recommendation">
+          <button
+            mat-stroked-button
+            (click)="viewRecommendationDetails(item)"
+            data-imx-identifier="approvals-table-row-button-view-recommendations"
+          >
+            <eui-icon
+              *ngIf="item.pwoData.Recommendation.Recommendation === recApprove"
+              class="recommendation-approve-icon"
+              icon="setdefault"
+              [matTooltip]="
+                '#LDS#Based on an analysis with currently available data, it is recommended you approve this request.' | translate
+              "
+            ></eui-icon>
+            <eui-icon
+              *ngIf="item.pwoData.Recommendation.Recommendation === recDeny"
+              class="recommendation-deny-icon"
+              icon="error"
+              [matTooltip]="'#LDS#Based on an analysis with currently available data, it is recommended you deny this request.' | translate"
+            ></eui-icon>
+            {{ '#LDS#Recommendation' | translate }}
+          </button>
+        </div>
+      </td>
+    </ng-container>
+  </imx-data-view-auto-table>
+  <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
 </mat-card>
 
-<div class="imx-button-bar" *ngIf="hasData">
-  <imx-selected-elements [selectedElements]="selectedItems" [isLoading]="busyService.isBusy"></imx-selected-elements>
-  <div class="imx-menu-spacer"></div>
+<div class="imx-button-bar-transparent">
+  <imx-data-view-selection [dataSource]="dataSource" class="justify-start"></imx-data-view-selection>
   <button
     mat-stroked-button
     data-imx-identifier="approvals-table-button-actions"
@@ -138,7 +162,7 @@
   </button>
 
   <button
-    mat-raised-button
+    mat-flat-button
     color="warn"
     data-imx-identifier="approvals-table-button-deny"
     title="{{ '#LDS#Denies the selected requests' | translate }}"
@@ -149,7 +173,7 @@
     {{ '#LDS#Deny' | translate }}
   </button>
   <button
-    mat-raised-button
+    mat-flat-button
     color="primary"
     data-imx-identifier="approvals-table-button-approve"
     title="{{ '#LDS#Approves the selected requests' | translate }}"
@@ -205,13 +229,40 @@
     >
       {{ '#LDS#Withdraw additional approver' | translate }}
     </button>
-    <button mat-menu-item data-imx-identifier="approvals-table-button-escalate-approvals" *ngIf="canEscalateDecision" (click)="actionService.escalateDecisions(selectedItems)">
+    <button
+      mat-menu-item
+      data-imx-identifier="approvals-table-button-escalate-approvals"
+      *ngIf="canEscalateDecision"
+      title="{{ '#LDS#Escalates the approval for the selected requests' | translate }}"
+      (click)="actionService.escalateDecisions(selectedItems)"
+    >
       {{ '#LDS#Escalate approval' | translate }}
     </button>
-    <button mat-menu-item data-imx-identifier="approvals-table-button-withdraw-inquiry" *ngIf="canRecallInquiry" (click)="actionService.recallInquiry(selectedItems)">
+    <button
+      mat-menu-item
+      data-imx-identifier="approvals-table-button-send-inquiry"
+      *ngIf="canSendInquiry"
+      title="{{ '#LDS#Sends an inquiry about the selected requests to an identity' | translate }}"
+      (click)="actionService.askForHelp(selectedItems, currentUserId)"
+    >
+      {{ '#LDS#Send inquiry' | translate }}
+    </button>
+    <button
+      mat-menu-item
+      data-imx-identifier="approvals-table-button-withdraw-inquiry"
+      *ngIf="canRecallInquiry"
+      title="{{ '#LDS#Withdraws the inquiry about the selected requests' | translate }}"
+      (click)="actionService.recallInquiry(selectedItems)"
+    >
       {{ '#LDS#Withdraw inquiry' | translate }}
     </button>
-    <button mat-menu-item data-imx-identifier="approvals-table-button-reset-reservation" *ngIf="canResetReservation" (click)="actionService.resetReservation(selectedItems)">
+    <button
+      mat-menu-item
+      data-imx-identifier="approvals-table-button-reset-reservation"
+      *ngIf="canResetReservation"
+      title="{{ '#LDS#Cancels the reservation for the selected requests' | translate }}"
+      (click)="actionService.resetReservation(selectedItems)"
+    >
       {{ '#LDS#Cancel reservation' | translate }}
     </button>
   </mat-menu>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -39,11 +39,11 @@ describe('ItshopPatternAddProductsComponent', () => {
 
   beforeEach(() => {
     return MockBuilder([ItshopPatternAddProductsComponent, TranslateModule.forRoot()])
-    .mock(ItshopPatternModule)
+      .mock(ItshopPatternModule)
       .mock(EuiSidesheetRef, {
         close: jasmine.createSpy('close'),
         closeClicked: jasmine.createSpy('closeClicked').and.returnValue(of(undefined)),
-      })
+      });
   });
 
   beforeEach(() => {

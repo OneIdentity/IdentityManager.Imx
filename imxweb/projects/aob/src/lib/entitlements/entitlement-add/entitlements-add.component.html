@@ -1,75 +1,89 @@
 <div eui-sidesheet-content>
-  <eui-alert *ngIf="showHelperAlert" class="imx-helper-alert" type="info" [condensed]="true" [colored]="true"
-    [dismissable]="true" (dismissed)="onHelperDismissed()">
-    {{LdsInfoAlert | translate}}
+  <eui-alert *ngIf="showHelperAlert" type="info" [condensed]="true" [colored]="true" [dismissable]="true" (dismissed)="onHelperDismissed()">
+    {{ LdsInfoAlert | translate }}
   </eui-alert>
-  <mat-card class="imx-sidesheet-content">
-    <div class="imx-type-selection">
-      <mat-form-field appearance="outline" class="flex-field">
-        <mat-label class="imx-info-text-light">{{'#LDS#Application entitlement type' | translate }}</mat-label>
-        <mat-select [(ngModel)]="selectedSourceType" (selectionChange)="toggleView($event)"
-          data-imx-identifier="imx-entitlments-add-type-select">
-          <mat-option *ngFor="let entitlementSourceType of entitlementSourceTypes"
-            [value]="entitlementSourceType.entitlementsType"
-            [attr.data-imx-identifier]="'imx-entitlments-add-type-select' + entitlementSourceType.entitlementsType">
-            {{entitlementSourceType.display}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-
-    <ng-container *ngIf="settings?.dataSource">
-      <imx-data-source-toolbar
-        #dst
-        [settings]="settings"
-        (navigationStateChanged)="onNavigationStateChanged($event)"
-        [options]="['search', 'filter', 'filterTree']"
-        (search)="onSearch($event)"
-        (filterTreeSelectionChanged)="onFilterByTree($event)"
-      >
-      </imx-data-source-toolbar>
-      <imx-data-table [dst]="dst" [selectable]="true" (selectionChanged)="onSelectionChanged($event)"
-        (highlightedEntityChanged)="onHighlightedEntityChanged($event)" [detailViewVisible]="false" mode="manual">
-        <ng-container *ngIf="selectedSourceType !== EntitlementsType.UnsGroup">
-          <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]"></imx-data-table-column>
+  <mat-card class="imx-sidesheet-content__overflow imx-sidesheet-content__flex">
+    <ng-container>
+      <div class="imx-table-action-row">
+        <mat-form-field appearance="outline" class="flex-field">
+          <mat-label class="imx-info-text-light">{{ '#LDS#Application entitlement type' | translate }}</mat-label>
+          <mat-select
+            [(ngModel)]="selectedSourceType"
+            (selectionChange)="toggleView($event)"
+            data-imx-identifier="imx-entitlments-add-type-select"
+          >
+            <mat-option
+              *ngFor="let entitlementSourceType of entitlementSourceTypes"
+              [value]="entitlementSourceType.entitlementsType"
+              [attr.data-imx-identifier]="'imx-entitlments-add-type-select' + entitlementSourceType.entitlementsType"
+            >
+              {{ entitlementSourceType.display }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <imx-data-view-toolbar [dataSource]="dataSource"></imx-data-view-toolbar>
+      </div>
+      <imx-data-view-auto-table [dataSource]="dataSource" mode="manual" [selectable]="true">
+        <ng-container [matColumnDef]="DisplayColumns.DISPLAY_PROPERTYNAME">
+          <th mat-header-cell *matHeaderCellDef>{{ entitySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]?.Display }}</th>
+          <td mat-cell *matCellDef="let item" role="gridcell" class="imx-table-cell">
+            <ng-container *ngIf="selectedSourceType !== EntitlementsType.UnsGroup">
+              <div>{{ item?.GetEntity().GetDisplay() }}</div>
+            </ng-container>
+            <ng-container *ngIf="selectedSourceType === EntitlementsType.UnsGroup">
+              <div>{{ item?.GetEntity().GetDisplay() }}</div>
+              <div subtitle>{{ item?.Description?.Column.GetDisplayValue() }}</div>
+            </ng-container>
+          </td>
         </ng-container>
-        <ng-container *ngIf="selectedSourceType === EntitlementsType.UnsGroup">
-          <imx-data-table-column [entityColumn]="entitySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
-            <ng-template let-data>
-              <div>{{ data?.GetEntity().GetDisplay() }}</div>
-              <div subtitle>{{ data?.Description.Column.GetDisplayValue()}}</div>
-            </ng-template>
-          </imx-data-table-column>
-          <imx-data-table-column [entityColumn]="entitySchema?.Columns['CanonicalName']">
-          </imx-data-table-column>
-          <imx-data-table-column [entityColumn]="entitySchema?.Columns['Description']">
-          </imx-data-table-column>
-          <imx-data-table-column [entityColumn]="entitySchema?.Columns['UID_UNSRoot']">
-          </imx-data-table-column>
+        <ng-container
+          [matColumnDef]="entitySchema.Columns.CanonicalName.ColumnName"
+          *ngIf="selectedSourceType === EntitlementsType.UnsGroup"
+        >
+          <th mat-header-cell *matHeaderCellDef>{{ entitySchema?.Columns?.CanonicalName?.Display }}</th>
+          <td mat-cell *matCellDef="let item" role="gridcell">
+            <div>{{ item.CanonicalName?.Column.GetDisplayValue() }}</div>
+          </td>
         </ng-container>
-      </imx-data-table>
-      <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+        <ng-container [matColumnDef]="entitySchema.Columns.UID_UNSRoot.ColumnName" *ngIf="selectedSourceType === EntitlementsType.UnsGroup">
+          <th mat-header-cell *matHeaderCellDef>{{ entitySchema?.Columns?.UID_UNSRoot?.Display }}</th>
+          <td mat-cell *matCellDef="let item" role="gridcell">
+            <div>{{ item.UID_UNSRoot?.Column.GetDisplayValue() }}</div>
+          </td>
+        </ng-container>
+      </imx-data-view-auto-table>
+      <div class="imx-table-action-row imx-margin-top-16">
+        <imx-data-view-selection [dataSource]="dataSource"></imx-data-view-selection>
+        <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
+      </div>
     </ng-container>
   </mat-card>
 </div>
-<div eui-sidesheet-actions >
-  <p class="imx-selected-entitlements">
-    <eui-badge class="imx-badge" color="orange" data-imx-identifier="imx-entitlements-add-selected-items-badge">
-      {{selections?.length || 0}}</eui-badge>
-    <span>{{'#LDS#Selected application entitlements' | translate }}</span>
-  </p>
-  <button *ngIf="isSystemRolesEnabled"
-    mat-raised-button (click)="onCreateRole()"
-    data-imx-identifier="imx-entitlements-create-role-button">
-    {{ '#LDS#Create new system role' | translate }}
+<div eui-sidesheet-actions>
+  <button
+    *ngIf="isSystemRolesEnabled"
+    mat-stroked-button
+    (click)="onCreateRole()"
+    data-imx-identifier="imx-entitlements-create-role-button"
+  >
+    {{ '#LDS#Create empty system role' | translate }}
   </button>
-  <button *ngIf="isSystemRolesEnabled"
-    mat-raised-button (click)="onAddToRole()" [disabled]="!selections || selections?.length === 0"
-    data-imx-identifier="imx-entitlements-add-to-role-button">
+  <button
+    *ngIf="isSystemRolesEnabled"
+    mat-stroked-button
+    (click)="onAddToRole()"
+    [disabled]="!selections?.length"
+    data-imx-identifier="imx-entitlements-add-to-role-button"
+  >
     {{ '#LDS#Merge into system role' | translate }}
   </button>
-  <button mat-raised-button (click)="onOk()" [disabled]="selections?.length === 0" color="primary"
-    data-imx-identifier="imx-entitlements-add-assig-button">
+  <button
+    mat-flat-button
+    (click)="onOk()"
+    [disabled]="!selections?.length"
+    color="primary"
+    data-imx-identifier="imx-entitlements-add-assig-button"
+  >
     {{ '#LDS#Assign' | translate }}
   </button>
 </div>

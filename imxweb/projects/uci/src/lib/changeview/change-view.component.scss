@@ -1,18 +1,10 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 :host {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   flex-grow: 1;
-
-} 
-
-.imx-table-container {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
 }
 
 .subtitle {
@@ -23,17 +15,12 @@
   white-space: nowrap;
 }
 
-.state-badge {
-  vertical-align: middle;
-}
-
 .imx-table-container,
 .imx-table-card {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   height: inherit;
-  flex: 1 1 auto; 
+  flex: 1 1 auto;
   margin: 2px;
 }
-

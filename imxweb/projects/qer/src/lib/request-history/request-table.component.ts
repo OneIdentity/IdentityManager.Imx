@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,50 +24,48 @@
  *
  */
 
-import { Component, Input, OnDestroy, OnInit, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
+import { ITShopConfig, PwoExtendedData, ViewConfigData } from '@imx-modules/imx-api-qer';
 import {
+  CollectionLoadParameters,
   DataModel,
   DisplayColumns,
   EntitySchema,
   ExtendedTypedEntityCollection,
   IClientProperty,
-  TypedEntity,
   ValType,
-} from 'imx-qbm-dbts';
-import { ITShopConfig, PwoExtendedData, ViewConfigData } from 'imx-api-qer';
+} from '@imx-modules/imx-qbm-dbts';
 
 import {
-  DataSourceToolbarSettings,
+  BusyService,
   DataSourceToolbarFilter,
-  DataSourceToolbarExportMethod,
-  imx_SessionService,
-  ImxTranslationProviderService,
-  DataTableComponent,
-  SettingsService,
+  DataSourceToolbarSettings,
+  DataSourceToolbarViewConfig,
+  DataViewInitParameters,
+  DataViewSource,
   ExtService,
   IExtension,
-  DataSourceToolbarComponent,
-  BusyService,
-  DataSourceToolbarViewConfig,
+  ImxTranslationProviderService,
+  calculateSidesheetWidth,
+  imx_SessionService,
 } from 'qbm';
+import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
+import { ViewConfigService } from '../view-config/view-config.service';
+import { ItshopRequest } from './itshop-request';
+import { RequestActionService } from './request-action/request-action.service';
 import { RequestDetailComponent } from './request-detail/request-detail.component';
 import { RequestHistoryService } from './request-history.service';
-import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
-import { RequestActionService } from './request-action/request-action.service';
-import { ItshopRequest } from './itshop-request';
-import { RequestHistoryLoadParameters } from './request-history-load-parameters.interface';
-import { RequestHistoryFilterComponent } from './request-history-filter/request-history-filter.component';
-import { ViewConfigService } from '../view-config/view-config.service';
 
 @Component({
   templateUrl: './request-table.component.html',
   styleUrls: ['./request-table.component.scss'],
   selector: 'imx-request-table',
+  providers: [DataViewSource],
 })
 export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
   public additional: IClientProperty[] = [];
@@ -76,43 +74,43 @@ export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
   }
   public get canWithdrawAdditionalApprover(): boolean {
     return (
-      this.itShopConfig &&
-      this.itShopConfig.VI_ITShop_OrderHistory_CancelOrder &&
-      this.selectedItems.every((item) => item.canWithdrawAdditionalApprover)
+      this.itShopConfig != null &&
+      this.itShopConfig?.VI_ITShop_OrderHistory_CancelOrder &&
+      this.selectedItems.every((item: ItshopRequest) => item.canWithdrawAdditionalApprover)
     );
   }
   public get canWithdrawDelegation(): boolean {
     return (
-      this.itShopConfig &&
+      this.itShopConfig != null &&
       this.itShopConfig.VI_ITShop_OrderHistory_CancelOrder &&
-      this.selectedItems.every((item) => item.canWithdrawDelegation)
+      this.selectedItems.every((item: ItshopRequest) => item.canWithdrawDelegation)
     );
   }
   public get canRecallLastQuestion(): boolean {
-    return this.selectedItems.every((item) => item.canRecallLastQuestion);
+    return this.selectedItems.every((item: ItshopRequest) => item.canRecallLastQuestion);
   }
   public get canRevokeHoldStatus(): boolean {
-    return this.selectedItems.every((item) => item.canRevokeHoldStatus);
+    return this.selectedItems.every((item: ItshopRequest) => item.canRevokeHoldStatus);
   }
   public get canProlongateRequest(): boolean {
-    return this.selectedItems.every((item) => item.canProlongate);
+    return this.selectedItems.every((item: ItshopRequest) => item.canProlongate);
   }
   public get canWithdrawRequest(): boolean {
-    return this.selectedItems.every((item) => item.CancelRequestAllowed.value);
+    return this.selectedItems.every((item: ItshopRequest) => item.CancelRequestAllowed.value);
   }
   public get canUnsubscribeRequest(): boolean {
-    return this.selectedItems.every((item) => item.UnsubscribeRequestAllowed.value);
+    return this.selectedItems.every((item: ItshopRequest) => item.UnsubscribeRequestAllowed.value);
   }
   public get canEscalateDecision(): boolean {
-    return this.selectedItems.every((item) => item.canEscalateDecision);
+    return this.selectedItems.every((item: ItshopRequest) => item.canEscalateDecision);
   }
   public get canCopyItems(): boolean {
-    return this.selectedItems.every((item) => item.canCopyItems);
+    return this.selectedItems.every((item: ItshopRequest) => item.canCopyItems);
   }
 
   public get canPerformActions(): boolean {
     return (
-      this.selectedItems.length > 0 &&
+      !!this.selectedItems.length &&
       !this.isReadOnly &&
       (this.canWithdrawAdditionalApprover ||
         this.canWithdrawDelegation ||
@@ -130,16 +128,13 @@ export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
   @Input() public uidRecipientRequester: string;
   @Input() public isArchivedRequests: boolean;
   @Input() public uidRecipient: string;
-
-  @ViewChild('requestHistoryFilter', { static: false }) public requestHistoryFilters: RequestHistoryFilterComponent;
-
-  public dstSettings: DataSourceToolbarSettings;
+  @Input() public filterByDelegations: boolean;
+  @Input() public filterMyPendings: boolean;
   public selectedItems: ItshopRequest[] = [];
 
   public readonly DisplayColumns = DisplayColumns;
 
-  private navigationState: RequestHistoryLoadParameters;
-  private itShopConfig: ITShopConfig;
+  private itShopConfig: ITShopConfig | undefined;
   private filterOptions: DataSourceToolbarFilter[] = [];
   private dataModel: DataModel;
   private viewConfig: DataSourceToolbarViewConfig;
@@ -151,10 +146,9 @@ export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
   private readonly UID_ComplianceRuleId = 'cpl.UID_ComplianceRule';
   private displayedColumns: IClientProperty[];
   private readonly subscriptions: Subscription[] = [];
-  private readonly filterPresets = { ShowEndingSoon: undefined, ShowMyPending: undefined };
+  public uidpwo: string;
   public readonly busyService = new BusyService();
-  @ViewChild(DataTableComponent) private readonly table: DataTableComponent<TypedEntity>;
-  @ViewChild(DataSourceToolbarComponent) private readonly dataToolbar: DataSourceToolbarComponent;
+  public uniqueTableConfig = false;
 
   constructor(
     public readonly actionService: RequestActionService,
@@ -164,26 +158,27 @@ export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
     private readonly requestHistoryService: RequestHistoryService,
     private viewConfigService: ViewConfigService,
     private readonly session: imx_SessionService,
-    private readonly settingsService: SettingsService,
     private readonly projectConfig: ProjectConfigurationService,
     private readonly activatedRoute: ActivatedRoute,
-    private readonly ext: ExtService
+    private readonly ext: ExtService,
+    public dataSource: DataViewSource<ItshopRequest, PwoExtendedData>,
   ) {
     this.extensions = this.ext.Registry[this.UID_ComplianceRuleId];
 
     if (this.extensions && this.extensions.length > 0) {
-      this.extensions[0].subject.subscribe((dstSettings: DataSourceToolbarSettings) => {
-        this.dstSettings = dstSettings;
+      this.extensions[0].subject?.subscribe((dstSettings: DataSourceToolbarSettings) => {
+        this.dataSource.collectionData.update((collectionData) => ({
+          ...collectionData,
+          Data: dstSettings.dataSource?.Data as ItshopRequest[],
+        }));
       });
     }
 
-    this.navigationState = { PageSize: settingsService.DefaultPageSize, StartIndex: 0 };
-
     this.subscriptions.push(
       this.actionService.applied.subscribe(async () => {
-        this.getData();
-        this.table.clearSelection();
-      })
+        this.dataSource.selection.clear();
+        this.dataSource.updateState();
+      }),
     );
   }
 
@@ -207,14 +202,14 @@ export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
 
     const busy = this.busyService.beginBusy();
     try {
-      this.userUid = (await this.session.getSessionState()).UserUid;
+      this.userUid = (await this.session.getSessionState()).UserUid || '';
       this.dataModel = await this.requestHistoryService.getDataModel(this.userUid);
       this.viewConfig = await this.viewConfigService.getInitialDSTExtension(this.dataModel, this.viewConfigPath);
       this.activatedRoute.queryParams.subscribe((params) => this.updateFiltersFromRouteParams(params));
-      this.filterOptions = await this.requestHistoryService.getFilterOptions(this.userUid, this.filterPresets);
+      this.filterOptions = await this.requestHistoryService.getFilterOptions(this.dataModel);
       this.itShopConfig = (await this.projectConfig.getConfig()).ITShopConfig;
 
-      await this.getData(null, true);
+      await this.getData();
     } finally {
       busy.endBusy();
     }
@@ -236,120 +231,73 @@ export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
     }
     // Case: VI_BuildITShopLink_Show_for_Requester
     if (result['uid_personwantsorg']) {
-      this.navigationState.uidpwo = result['uid_personwantsorg'];
+      this.uidpwo = result['uid_personwantsorg'];
     }
-
-    Object.keys(this.filterPresets).forEach(
-      (filterName) => (this.filterPresets[filterName] = this.activatedRoute.snapshot.queryParamMap.get(filterName))
-    );
-
-    this.navigationState.ShowEndingSoon = this.filterPresets.ShowEndingSoon;
-    this.navigationState.ShowMyPending = this.filterPresets.ShowMyPending;
-  }
-
-  public onSelectionChanged(items: ItshopRequest[]): void {
-    this.selectedItems = items;
   }
 
   public async updateConfig(config: ViewConfigData): Promise<void> {
     await this.viewConfigService.putViewConfig(config);
     this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
-    this.dstSettings.viewConfig = this.viewConfig;
+    this.dataSource.viewConfig.set(this.viewConfig);
   }
 
   public async deleteConfigById(id: string): Promise<void> {
     await this.viewConfigService.deleteViewConfig(id);
     this.viewConfig = await this.viewConfigService.getDSTExtensionChanges(this.viewConfigPath);
-    this.dstSettings.viewConfig = this.viewConfig;
+    this.dataSource.viewConfig.set(this.viewConfig);
   }
 
-  public onSearch(keywords: string): Promise<void> {
-    const navigationState = {
-      ...this.navigationState,
-      ...{
-        StartIndex: 0,
-        search: keywords,
+  public getAdditionalText(entity: ItshopRequest): string {
+    return (
+      this.dataSource
+        .additionalListColumns()
+        ?.map((elem: IClientProperty) => {
+          return `${elem?.Display || elem?.ColumnName}: ${elem?.ColumnName == null ? '-' : entity.GetEntity().GetColumn(elem.ColumnName).GetDisplayValue() || '-'}`;
+        })
+        .filter((elem) => !!elem)
+        .join('; ') || ''
+    );
+  }
+
+  public async getData(): Promise<void> {
+    this.updateCollectionParameters();
+    const dataViewInitParameters: DataViewInitParameters<ItshopRequest> = {
+      execute: this.isArchivedRequests
+        ? (): Promise<ExtendedTypedEntityCollection<ItshopRequest, PwoExtendedData>> =>
+            this.requestHistoryService.getArchivedRequests(this.userUid, this.uidRecipient)
+        : async (
+            params: CollectionLoadParameters,
+            signal: AbortSignal,
+          ): Promise<ExtendedTypedEntityCollection<ItshopRequest, PwoExtendedData>> => {
+            return Promise.resolve(
+              this.sortChildrenAfterParents(
+                await this.requestHistoryService.getRequests(
+                  this.userUid,
+                  {
+                    ...params,
+                    UID_Person: this.uidRecipientRequester,
+                    uidpersonordered: this.uidRecipient,
+                    uidpersoninserted: this.uidRecipient ? this.userUid : undefined,
+                  },
+                  signal,
+                ),
+              ),
+            );
+          },
+      schema: this.entitySchema,
+      columnsToDisplay: this.displayedColumns,
+      dataModel: this.dataModel,
+      exportFunction: !this.isArchivedRequests ? this.requestHistoryService.exportRequests(this.dataSource.state()) : undefined,
+      viewConfig: this.viewConfig,
+      uniqueConfig: this.uniqueTableConfig,
+      highlightEntity: (entity: ItshopRequest) => {
+        this.viewDetails(entity);
+      },
+      selectionChange: (selection: ItshopRequest[]) => {
+        this.selectedItems = selection;
       },
     };
-
-    return this.getData(navigationState);
-  }
-
-  public getAdditionalText(entity: ItshopRequest, additional: IClientProperty[]): string {
-    return additional
-      .map((elem) => `${elem.Display || elem.ColumnName}: ${entity.GetEntity().GetColumn(elem.ColumnName).GetDisplayValue() || '-'}`)
-      .join(';');
-  }
-
-  public async getData(newState?: RequestHistoryLoadParameters, isInit = false): Promise<void> {
-    const busy = this.busyService.beginBusy();
-
-    if (newState) {
-      this.navigationState = newState;
-    }
-
-    try {
-      const personUid = this.uidRecipientRequester || this.requestHistoryFilters?.selectedUid;
-      if (personUid) {
-        this.navigationState.UID_Person = personUid;
-
-        const personFilter = this.filterOptions.find((elem) => elem.Name === 'person')?.CurrentValue;
-        this.navigationState.person = personFilter ?? '7';
-      }
-      if (this.uidRecipient) {
-        this.navigationState.uidpersonordered = this.uidRecipient;
-        this.navigationState.uidpersoninserted = this.userUid;
-      }
-
-      // We check here if we have a default config, if so then we will skip the init data to save time
-      let data: ExtendedTypedEntityCollection<ItshopRequest, PwoExtendedData>;
-      if (isInit && this.viewConfigService.isDefaultConfigSet()) {
-        // We don't waste time on the call as the view config hasn't been set yet.
-        data = {
-          totalCount: 0,
-          Data: [],
-        };
-      } else {
-        data = this.isArchivedRequests
-          ? await this.requestHistoryService.getArchivedRequests(this.userUid, this.uidRecipient)
-          : await this.requestHistoryService.getRequests(this.userUid, this.navigationState);
-      }
-      let exportMethod: DataSourceToolbarExportMethod;
-      // TODO 409926: Api needs to allow exporting of archived requests
-      if (!this.isArchivedRequests) {
-        exportMethod = this.requestHistoryService.exportRequests(this.navigationState);
-        exportMethod.initialColumns = this.displayedColumns.map((col) => col.ColumnName);
-      }
-      if (data) {
-        const dstSettings: DataSourceToolbarSettings = {
-          dataSource: {
-            totalCount: data.totalCount,
-            Data: data.Data ? this.sortChildrenAfterParents(data.Data) : undefined,
-          },
-          filters: this.filterOptions,
-          displayedColumns: this.displayedColumns,
-          entitySchema: this.requestHistoryService.PortalItshopRequestsSchema,
-          navigationState: this.navigationState,
-          extendedData: data.extendedData ? data.extendedData.Data : undefined,
-          dataModel: this.dataModel,
-          viewConfig: this.viewConfig,
-          exportMethod,
-        };
-        if (this.extensions && this.extensions[0]) {
-          this.extensions[0].inputData = dstSettings;
-        } else {
-          this.dstSettings = dstSettings;
-        }
-      } else {
-        this.dstSettings = undefined;
-      }
-    } finally {
-      busy.endBusy();
-    }
-  }
-
-  public async onHighlightedEntityChanged(pwo: ItshopRequest): Promise<void> {
-    await this.viewDetails(pwo);
+    this.dataSource.init(dataViewInitParameters);
   }
 
   public async viewDetails(pwo: ItshopRequest): Promise<void> {
@@ -358,7 +306,7 @@ export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
         title: await this.translator.get('#LDS#Heading View Request Details').toPromise(),
         subTitle: pwo.GetEntity().GetDisplay(),
         padding: '0px',
-        width: 'max(700px, 60%)',
+        width: calculateSidesheetWidth(),
         testId: 'request-table-view-request-details',
         data: {
           isReadOnly: this.isReadOnly,
@@ -371,23 +319,57 @@ export class RequestTableComponent implements OnInit, OnDestroy, OnChanges {
       .toPromise();
   }
 
-  private sortChildrenAfterParents(requests: ItshopRequest[]): ItshopRequest[] {
-    const sorted = [];
+  private updateCollectionParameters(): void {
+    if (this.uidRecipientRequester) {
+      const personFilter = this.filterOptions.find((elem) => elem.Name === 'person')?.CurrentValue;
+      this.filterOptions.map((filter) => {
+        if (filter.Name === 'person') {
+          filter.CurrentValue = personFilter ?? '7';
+        }
+      });
+      this.dataSource.state.update((state) => ({ ...state, person: personFilter ?? '7' }));
+      this.uniqueTableConfig = true;
+    }
+    if (this.filterByDelegations) {
+      this.filterOptions.map((filter) => {
+        if (filter.Name === 'MyDelegations') {
+          filter.CurrentValue = '1';
+        }
+      });
+      this.dataSource.state.update((state) => ({ ...state, MyDelegations: '1' }));
+      this.uniqueTableConfig = true;
+    }
+    if (this.filterMyPendings) {
+      this.filterOptions.map((filter) => {
+        if (filter.Name === 'ShowMyPending') {
+          filter.CurrentValue = '1';
+        }
+      });
+      this.dataSource.state.update((state) => ({ ...state, ShowMyPending: '1' }));
+      this.uniqueTableConfig = true;
+    }
+    this.dataSource.predefinedFilters.set(this.filterOptions);
+  }
 
-    for (const request of requests) {
+  private sortChildrenAfterParents(
+    requests: ExtendedTypedEntityCollection<ItshopRequest, PwoExtendedData>,
+  ): ExtendedTypedEntityCollection<ItshopRequest, PwoExtendedData> {
+    const sorted: ItshopRequest[] = requests.Data;
+
+    for (const request of requests.Data) {
       if (!sorted.find((item) => this.getUid(item) === this.getUid(request))) {
         const parentIndex = sorted.findIndex((item) => this.getUid(item) === request.UID_PersonWantsOrgParent.value);
         if (parentIndex > -1) {
           sorted.splice(parentIndex + 1, 0, request);
         } else {
-          for (const item of this.reorder(request, requests)) {
+          for (const item of this.reorder(request, requests.Data)) {
             sorted.push(item);
           }
         }
       }
     }
 
-    return sorted;
+    return { ...requests, Data: sorted };
   }
 
   private reorder(request: ItshopRequest, requests: ItshopRequest[]): ItshopRequest[] {

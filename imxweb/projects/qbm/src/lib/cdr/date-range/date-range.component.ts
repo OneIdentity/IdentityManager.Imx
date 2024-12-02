@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,19 +26,19 @@
 
 import { Component, ErrorHandler, EventEmitter, OnDestroy } from '@angular/core';
 import { UntypedFormControl, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
 import moment from 'moment-timezone';
+import { Subscription } from 'rxjs';
 
-import { DateRangeType, DateRangeTypeLabels, ValType, ValueRange } from 'imx-qbm-dbts';
+import { EuiSelectOption } from '@elemental-ui/core';
+import { DateRangeType, DateRangeTypeLabels, ValType, ValueRange } from '@imx-modules/imx-qbm-dbts';
+import { ImxTranslationProviderService } from '../../translation/imx-translation-provider.service';
 import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
 import { EntityColumnContainer } from '../entity-column-container';
-import { EuiSelectOption } from '@elemental-ui/core';
-import { ImxTranslationProviderService } from '../../translation/imx-translation-provider.service';
 
 /**
  * Provides a {@link CdrEditor | CDR editor} for editing / viewing date range columns.
- * 
+ *
  * The user can choose between these two options:
  * It displays either two {@link DateComponent | date components} or a dynamic time frame like 'two weeks ago'.
  * When set to read-only, it uses a {@link ViewPropertyComponent | view property component} to display the content.
@@ -104,7 +104,10 @@ export class DateRangeComponent implements CdrEditor, OnDestroy {
 
   private required = false;
 
-  public constructor(private readonly errorHandler: ErrorHandler, private translateProviderService: ImxTranslationProviderService) {
+  public constructor(
+    private readonly errorHandler: ErrorHandler,
+    private translateProviderService: ImxTranslationProviderService,
+  ) {
     this.translateProviderService.GetCultures().then(() => this.updateOptions());
   }
 
@@ -138,7 +141,7 @@ export class DateRangeComponent implements CdrEditor, OnDestroy {
               this.dateFrom.setValidators(null);
               this.dateUntil.setValidators(null);
             }
-          })
+          }),
         );
       }
 
@@ -147,7 +150,7 @@ export class DateRangeComponent implements CdrEditor, OnDestroy {
           if (!!value) {
             this.writeValue({ from: value?.toDate(), until: this.dateUntil.value?.toDate() });
           }
-        })
+        }),
       );
 
       this.subscribers.push(
@@ -155,7 +158,7 @@ export class DateRangeComponent implements CdrEditor, OnDestroy {
           if (!!value) {
             this.writeValue({ from: this.dateFrom.value?.toDate(), until: value?.toDate() });
           }
-        })
+        }),
       );
 
       this.subscribers.push(
@@ -167,7 +170,7 @@ export class DateRangeComponent implements CdrEditor, OnDestroy {
             this.updateControlValues();
           }
           this.valueHasChanged.emit({ value: this.control.value });
-        })
+        }),
       );
 
       this.subscribers.push(
@@ -175,7 +178,7 @@ export class DateRangeComponent implements CdrEditor, OnDestroy {
           if (!!value) {
             this.writeValue(value);
           }
-        })
+        }),
       );
     }
   }
@@ -238,8 +241,8 @@ export class DateRangeComponent implements CdrEditor, OnDestroy {
     }
     const valueRange = ValueRange.Parse(value);
     if (valueRange.success) {
-      const from = valueRange.result.Start ? moment(valueRange.result.Start) : null;
-      const until = valueRange.result.End ? moment(valueRange.result.End) : null;
+      const from = valueRange.result?.Start ? moment(valueRange.result.Start) : null;
+      const until = valueRange.result?.End ? moment(valueRange.result.End) : null;
       this.dateFrom.setValue(from, { emitEvent: true });
       this.dateUntil.setValue(until, { emitEvent: true });
       if (this.required) {

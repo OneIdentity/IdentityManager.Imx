@@ -1,0 +1,12 @@
+<div class="chart-container">
+  <mat-card class="stat-card" *ngFor="let stat of stats; let index = index">
+    <mat-card-header [matTooltip]="stat?.Description" matTooltipPosition="above">
+      {{ stat?.Display }}
+    </mat-card-header>
+    <mat-card-content class="card-content center-content">
+      <div>
+        <imx-chart-tile [summaryStat]="stat" [chartInfo]="info[index]"></imx-chart-tile>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

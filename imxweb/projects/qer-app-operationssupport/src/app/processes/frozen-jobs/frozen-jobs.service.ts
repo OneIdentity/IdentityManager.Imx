@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,16 +26,16 @@
 
 import { Injectable } from '@angular/core';
 
-import { TypedEntityCollectionData, EntitySchema, CollectionLoadParameters, TypedEntity } from 'imx-qbm-dbts';
+import { TypedEntityCollectionData, EntitySchema, CollectionLoadParameters, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 import { imx_SessionService } from 'qbm';
-import { OpsupportQueueFrozenjobs } from 'imx-api-qbm';
+import { OpsupportQueueFrozenjobs } from '@imx-modules/imx-api-qbm';
 
 export interface JobQueueParameters extends CollectionLoadParameters {
   queueName: string;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FrozenJobsService {
   public get EntitySchema(): EntitySchema {

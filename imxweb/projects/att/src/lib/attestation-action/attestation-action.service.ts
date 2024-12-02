@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,29 +25,47 @@
  */
 
 import { Injectable, Type } from '@angular/core';
-import { OverlayRef } from '@angular/cdk/overlay';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 
-import { PortalAttestationApprove } from 'imx-api-att';
-import { CompareOperator, EntityData, FilterType, ValType } from 'imx-qbm-dbts';
-import { SnackBarService, EntityService, ColumnDependentReference, BaseCdr, ExtService, BaseReadonlyCdr, CdrFactoryService } from 'qbm';
+import { PortalAttestationApprove } from '@imx-modules/imx-api-att';
+import {
+  CollectionLoadParameters,
+  CompareOperator,
+  EntityData,
+  FilterData,
+  FilterType,
+  FkProviderItem,
+  MetaTableRelationData,
+  ValType,
+} from '@imx-modules/imx-qbm-dbts';
+import {
+  Action,
+  BaseCdr,
+  BaseReadonlyCdr,
+  calculateSidesheetWidth,
+  CdrFactoryService,
+  ColumnDependentReference,
+  EntityService,
+  ExtService,
+  ProcessingQueueService,
+  SnackBarService,
+} from 'qbm';
 import { JustificationService, JustificationType, PersonService, UserModelService } from 'qer';
-import { AttestationCasesService } from '../decision/attestation-cases.service';
-import { AttestationActionComponent } from './attestation-action.component';
-import { AttestationCase } from '../decision/attestation-case';
-import { AttestationWorkflowService } from './attestation-workflow.service';
-import { AttestationCaseAction } from './attestation-case-action.interface';
 import { ApiService } from '../api.service';
+import { AttestationCase } from '../decision/attestation-case';
+import { AttestationCasesService } from '../decision/attestation-cases.service';
 import { AttestationInquiry } from '../decision/attestation-inquiries/attestation-inquiry.model';
+import { AttestationActionComponent } from './attestation-action.component';
+import { AttestationCaseAction } from './attestation-case-action.interface';
+import { AttestationWorkflowService } from './attestation-workflow.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AttestationActionService {
-  public readonly applied = new Subject();
-
+  public readonly applied = new Subject<void>();
   constructor(
     private readonly apiService: ApiService,
     private readonly justification: JustificationService,
@@ -58,9 +76,10 @@ export class AttestationActionService {
     private readonly snackBar: SnackBarService,
     private readonly entityService: EntityService,
     private readonly person: PersonService,
-    private readonly workflow: AttestationWorkflowService,    
+    private readonly workflow: AttestationWorkflowService,
+    private readonly extService: ExtService,
     private readonly userService: UserModelService,
-    private readonly extService: ExtService
+    private readonly queueService: ProcessingQueueService,
   ) {}
 
   public async directDecision(attestationCases: AttestationCase[], userUid: string): Promise<void> {
@@ -74,20 +93,19 @@ export class AttestationActionService {
       data: {},
     };
 
-    let busyIndicator: OverlayRef;
-    setTimeout(() => (busyIndicator = this.busyService.show()));
+    this.showBusyIndicator();
 
     try {
       for (const attestationCase of attestationCases) {
         const levelNumbers = attestationCase.getLevelNumbers(userUid);
         workflow.data[attestationCase.key] = (await this.workflow.get(attestationCase.key)).Data.filter((item) =>
-          levelNumbers.includes(item.LevelNumber.value)
+          levelNumbers.includes(item.LevelNumber.value),
         )
           .filter((item, index, array) => array.map((mapObj) => mapObj.LevelNumber.value).indexOf(item.LevelNumber.value) === index)
           .map((item) => item.GetEntity());
       }
     } finally {
-      setTimeout(() => this.busyService.hide(busyIndicator));
+      this.busyService.hide();
     }
 
     return this.editAction({
@@ -144,7 +162,7 @@ export class AttestationActionService {
     });
   }
 
-  public async escalateDecisions(attestationCases: PortalAttestationApprove[]): Promise<void> {
+  public async escalateDecision(attestationCases: PortalAttestationApprove[]): Promise<void> {
     const actionParameters = {
       reason: this.createCdrReason({ mandatory: true }),
     };
@@ -196,7 +214,7 @@ export class AttestationActionService {
   public async checkForViolations(attestationCases: AttestationCase[]): Promise<void> {
     let isApprovable = true;
     for (const attestationCase of attestationCases) {
-      const isAllAllowable = attestationCase.data.ComplianceViolations.every((item) => item.IsExceptionAllowed);
+      const isAllAllowable = attestationCase.data?.ComplianceViolations?.every((item) => item.IsExceptionAllowed);
       if (!isAllAllowable) {
         // Found a case that has an unexceptional violation, break early
         isApprovable = false;
@@ -222,12 +240,12 @@ export class AttestationActionService {
 
   public async checkMFA(uidCases: string[]): Promise<boolean> {
     this.busyService.show();
-    let workflowActionId: string;
-    let mfaComponent: Type<any>;
+    let workflowActionId: string | undefined;
+    let mfaComponent: Type<any> | undefined;
     let response: boolean;
     try {
       workflowActionId = await this.apiService.client.portal_attestation_stepup_post({ UidCases: uidCases });
-      mfaComponent = (await this.extService.getFittingComponent('mfaComponent')).instance;
+      mfaComponent = (await this.extService.getFittingComponent('mfaComponent'))?.instance;
     } catch {
       throw Error('The OLG module is not configured correctly');
     } finally {
@@ -237,7 +255,7 @@ export class AttestationActionService {
           title: await this.translate.get('#LDS#Heading Authenticate Using OneLogin').toPromise(),
           padding: '0px',
           testId: 'imx-attestation-approval-mfa',
-          width: 'max(700px, 60%)',
+          width: calculateSidesheetWidth(1000),
           data: {
             workflowActionId,
           },
@@ -283,22 +301,22 @@ export class AttestationActionService {
         this.entityService.createLocalEntityColumn(
           { Type: ValType.Date, ColumnName: 'DateHead', Display: AttestationInquiry.queryDate },
           undefined,
-          pwo.Columns.DateHead
-        )
+          pwo?.Columns?.DateHead,
+        ),
       ),
       new BaseReadonlyCdr(
         this.entityService.createLocalEntityColumn(
           { Type: ValType.String, ColumnName: 'ReasonHead', Display: AttestationInquiry.queryCaption },
           undefined,
-          pwo.Columns.ReasonHead
-        )
+          pwo?.Columns?.ReasonHead,
+        ),
       ),
       new BaseReadonlyCdr(
         this.entityService.createLocalEntityColumn(
           { Type: ValType.String, ColumnName: 'DisplayPersonHead', Display: AttestationInquiry.headCaption },
           undefined,
-          pwo.Columns.DisplayPersonHead
-        )
+          pwo?.Columns?.DisplayPersonHead,
+        ),
       ),
     ];
 
@@ -316,11 +334,11 @@ export class AttestationActionService {
     });
   }
 
-  public getCaseData(pwo: AttestationCase): EntityData {
-    const questionHistory = pwo.data.WorkflowHistory.Entities.filter(
-      (entityData) => entityData.Columns.DecisionLevel.Value === pwo.DecisionLevel.value
-    ).sort((item1, item2) => this.ascendingDate(item1.Columns.XDateInserted?.Value, item2.Columns.XDateInserted?.Value));
-    return questionHistory[0];
+  public getCaseData(pwo: AttestationCase): EntityData | undefined {
+    const questionHistory = pwo.data?.WorkflowHistory?.Entities?.filter(
+      (entityData) => entityData.Columns?.DecisionLevel.Value === pwo.DecisionLevel.value,
+    ).sort((item1, item2) => this.ascendingDate(item1.Columns?.XDateInserted?.Value, item2.Columns?.XDateInserted?.Value));
+    return questionHistory?.[0];
   }
 
   public async recallInquiry(attestationCases: PortalAttestationApprove[]): Promise<void> {
@@ -384,9 +402,9 @@ export class AttestationActionService {
         ColumnName: 'ReasonHead',
         Type: ValType.Text,
         IsMultiLine: true,
-        MinLen:metadata.mandatory ? 1 : 0
+        MinLen: metadata.mandatory ? 1 : 0,
       }),
-      metadata.display || '#LDS#Reason for your decision'
+      metadata.display || '#LDS#Reason for your decision',
     );
   }
 
@@ -432,22 +450,21 @@ export class AttestationActionService {
         this.person.createFkProviderItem(fkRelation, [
           { ColumnName: 'UID_Person', CompareOp: CompareOperator.NotEqual, Type: FilterType.Compare, Value1: uidPerson },
         ]),
-      ]
+      ],
     );
 
     return new BaseCdr(column, '#LDS#Recipient of the inquiry');
   }
 
   private async makeDecisions(attestationCases: AttestationCaseAction[], approve: boolean): Promise<void> {
-    let justification: ColumnDependentReference;
+    let justification: BaseCdr | undefined;
 
-    let busyIndicator: OverlayRef;
-    setTimeout(() => (busyIndicator = this.busyService.show()));
+    this.showBusyIndicator();
 
     const maxReasonType = Math.max(
       ...attestationCases.map((elem) =>
-        CdrFactoryService.tryGetColumn(elem.typedEntity.GetEntity(), approve ? 'ApproveReasonType' : 'DenyReasonType')?.GetValue()
-      )
+        CdrFactoryService.tryGetColumn(elem.typedEntity.GetEntity(), approve ? 'ApproveReasonType' : 'DenyReasonType')?.GetValue(),
+      ),
     );
 
     try {
@@ -455,7 +472,7 @@ export class AttestationActionService {
         approve ? JustificationType.approveAttestation : JustificationType.denyAttestation,
       );
     } finally {
-      setTimeout(() => this.busyService.hide(busyIndicator));
+      this.busyService.hide();
     }
 
     const actionParameters = {
@@ -485,12 +502,14 @@ export class AttestationActionService {
   }
 
   private async editAction(config: any): Promise<void> {
+    const title = this.translate.instant(config.title);
+
     const result = await this.sideSheet
       .open(AttestationActionComponent, {
-        title: await this.translate.get(config.title).toPromise(),
+        title,
         subTitle: config.data.attestationCases.length === 1 ? config.data.attestationCases[0].GetEntity().GetDisplay() : '',
         padding: '0px',
-        width: 'max(40%,600px)',
+        width: calculateSidesheetWidth(),
         testId: 'attestation-action-sideSheet',
         data: config.data,
       })
@@ -498,25 +517,45 @@ export class AttestationActionService {
       .toPromise();
 
     if (result) {
-      let busyIndicator: OverlayRef;
-      setTimeout(() => (busyIndicator = this.busyService.show()));
-
-      let success: boolean;
-      try {
+      if (config.data.attestationCases.length > this.queueService.actionThreshold) {
+        const actions: Action[] = [];
         for (const attestationCase of config.data.attestationCases) {
-          await config.apply(attestationCase);
+          actions.push(
+            new Action(
+              attestationCase.GetEntity().GetDisplay(),
+              '',
+              async () => {
+                await config.apply(attestationCase);
+              },
+              attestationCase.typedEntity.GetEntity().GetKeys().join(','),
+            ),
+          );
         }
-        success = true;
-        await this.userService.reloadPendingItems();
-      } finally {
-        setTimeout(() => this.busyService.hide(busyIndicator));
-      }
+        this.queueService.submitGroupAction(title, actions, async () => {
+          // Once all actions are complete, reload the data
+          await this.userService.reloadPendingItems();
+          this.applied.next();
+        });
+      } else {
+        // Here is old method without queueing
+        let success: boolean;
+        this.showBusyIndicator();
+        try {
+          for (const attestationCase of config.data.attestationCases) {
+            await config.apply(attestationCase);
+          }
+          success = true;
+          await this.userService.reloadPendingItems();
+        } finally {
+          this.busyService.hide();
+        }
 
-      if (success) {
-        this.snackBar.open(
-          config.getMessage ? config.getMessage() : { key: config.message, parameters: [config.data.attestationCases.length] }
-        );
-        this.applied.next();
+        if (success) {
+          this.snackBar.open(
+            config.getMessage ? config.getMessage() : { key: config.message, parameters: [config.data.attestationCases.length] },
+          );
+          this.applied.next();
+        }
       }
     } else {
       this.snackBar.open({ key: '#LDS#You have canceled the action.' });
@@ -539,9 +578,27 @@ export class AttestationActionService {
           FkRelation: fkRelation,
           MinLen: 1,
         },
-        [this.person.createFkProviderItem(fkRelation)]
+        [this.createFkProviderItemAttestatorInstead(fkRelation)],
       ),
-      display || '#LDS#Identity'
+      display || '#LDS#Identity',
     );
+  }
+
+  private createFkProviderItemAttestatorInstead(fkRelation: MetaTableRelationData, filter?: FilterData[]): FkProviderItem {
+    return {
+      columnName: fkRelation.ChildColumnName || '',
+      fkTableName: fkRelation.ParentTableName || '',
+      parameterNames: ['OrderBy', 'StartIndex', 'PageSize', 'filter', 'withProperties', 'search', 'forattestationapprover'],
+      load: async (_, parameters: CollectionLoadParameters = {}) =>
+        this.apiService.client.portal_candidates_Person_get({ ...parameters, filter, forattestationapprover: true }),
+      getDataModel: async () => ({}),
+      getFilterTree: async () => ({ Elements: [] }),
+    };
+  }
+
+  private showBusyIndicator(): void {
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
   }
 }

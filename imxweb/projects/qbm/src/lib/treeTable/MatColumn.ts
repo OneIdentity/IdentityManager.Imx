@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,7 @@
  *
  */
 
-import {
-  Component, Input, OnDestroy, OnInit, Optional, ViewChild,
-  ContentChild, TemplateRef, ElementRef, Output, EventEmitter
-} from '@angular/core';
+import { Component, ContentChild, EventEmitter, Input, OnDestroy, OnInit, Optional, Output, TemplateRef, ViewChild } from '@angular/core';
 import { MatSortHeader } from '@angular/material/sort';
 import { MatColumnDef, MatTable } from '@angular/material/table';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
@@ -36,17 +33,19 @@ import { ImxExpandableItem } from './imx-data-source';
 @Component({
   selector: 'imx-column',
   templateUrl: './MatColumn.html',
-  styleUrls: ['./MatColumn.scss']
+  styleUrls: ['./MatColumn.scss'],
 })
 export class ImxMatColumnComponent<T> implements OnDestroy, OnInit {
   @Input()
-  get field(): string { return this.name; }
+  get field(): string {
+    return this.name;
+  }
   set field(name: string) {
     this.name = name;
   }
 
   @Input() public title: string;
-  @Input() public dataAccessor: ((data: T, index: number, name: string) => string);
+  @Input() public dataAccessor: (data: T, index: number, name: string) => string;
 
   @Input() public align: 'before' | 'after' = 'before';
 
@@ -54,30 +53,37 @@ export class ImxMatColumnComponent<T> implements OnDestroy, OnInit {
 
   @ViewChild(MatSortHeader) public sortHeader: MatSortHeader;
 
-  @ContentChild('imxCellTemplate', { static: true }) public cellTemplate: TemplateRef<ElementRef>;
-  @ContentChild('imxHeaderTemplate', { static: true }) public headerTemplate: TemplateRef<ElementRef>;
+  @ContentChild('imxCellTemplate', { static: true }) public cellTemplate: TemplateRef<any>;
+  @ContentChild('imxHeaderTemplate', { static: true }) public headerTemplate: TemplateRef<any>;
 
   @Input() public class = 'imx-normalCell';
   @Output() public itemExpanded = new EventEmitter<ImxExpandableItem<T>>();
   @Output() public itemCollapsed = new EventEmitter<ImxExpandableItem<T>>();
   @Input() public isFirstColumn = true;
 
-  public hasChildrenProvider: ((data: T) => boolean);
+  public hasChildrenProvider: (data: T) => boolean;
 
   private name: string;
 
-  constructor(private sanitizer: DomSanitizer, @Optional() public table: MatTable<any>) { }
+  constructor(
+    private sanitizer: DomSanitizer,
+    @Optional() public table: MatTable<any>,
+  ) {}
 
   public ButtonClass(data: ImxExpandableItem<T>): string {
-    if (data.data == null) { return 'k-icon k-i-collapse'; }
+    if (data.data == null) {
+      return 'k-icon k-i-collapse';
+    }
     const res = data.level === 0 || (this.hasChildrenProvider ? this.hasChildrenProvider(data.data) : false);
-    return !res ? 'imx-small-right-margin k-sprite' : data.isExpanded
-      ? 'imx-small-right-margin cux-icon cux-icon--caret-down'    // TODO replace cux-icon (TFS 806274)
-      : 'imx-small-right-margin cux-icon cux-icon--caret-right';   // TODO replace cux-icon (TFS 806274)
+    return !res
+      ? 'imx-small-right-margin k-sprite'
+      : data.isExpanded
+        ? 'imx-small-right-margin cux-icon cux-icon--caret-down' // TODO replace cux-icon (TFS 806274)
+        : 'imx-small-right-margin cux-icon cux-icon--caret-right'; // TODO replace cux-icon (TFS 806274)
   }
 
   public getMargin(data: any): SafeStyle {
-    return this.sanitizer.bypassSecurityTrustStyle((data.level ? data.level : .0) * 20 + 'px');
+    return this.sanitizer.bypassSecurityTrustStyle((data.level ? data.level : 0.0) * 20 + 'px');
   }
 
   public ngOnInit(): void {
@@ -96,7 +102,6 @@ export class ImxMatColumnComponent<T> implements OnDestroy, OnInit {
   public getData(data: ImxExpandableItem<T>, index: number): any {
     return this.dataAccessor ? this.dataAccessor(data.data, index, this.field) : (data.data as any)[this.field];
   }
-
 
   public buttonClicked(data: ImxExpandableItem<T>): void {
     data.isExpanded = !data.isExpanded;

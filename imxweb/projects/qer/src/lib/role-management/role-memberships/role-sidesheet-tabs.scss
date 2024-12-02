@@ -1,45 +1,16 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
 
-.imx-tab-content-body {
+.imx-sidesheet-content__overflow {
   flex: 1;
-  padding: 20px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
 }
 
 .eui-sidesheet-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  align-items: center;
-
-  > * {
-    margin-right: 5px;
-  }
+  @include eui-sidesheet-actions__mixin_01($align-items: center, $flex-wrap: wrap);
 }
+
 .imx-selected-items {
   justify-self: flex-start;
   margin: 0;
   line-height: 36px;
-}
-.imx-menu-spacer {
-  flex-grow: 1;
-}
-
-.eui-dark-theme {
-  :host {
-    .eui-sidesheet-actions {
-      background-color: $color-gray-70;
-    }
-  }
-}
-
-.eui-contrast-theme {
-  :host {
-    .eui-sidesheet-actions {
-      background-color: $color-gray-90;
-    }
-  }
 }

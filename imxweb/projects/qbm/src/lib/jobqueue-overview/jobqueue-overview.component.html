@@ -9,13 +9,7 @@
       </mat-option>
     </mat-select>
   </mat-form-field>
-  <mat-card *ngIf="chartOptions" class="imx-billboard-card">
-    <eui-billboard [options]="chartOptions"></eui-billboard>
-  </mat-card>
-  <mat-card *ngIf="!chartOptions" class="imx-empty-card">
-    <div class="imx-jobqueue-no-data">
-      <eui-icon [icon]="'job-queue'"></eui-icon>
-      <p>{{'#LDS#Currently, there is no data in any queues.' |translate}}</p>
-    </div>
+  <mat-card *ngIf="chartOptions" class="imx-card-fill">
+    <eui-billboard [options]="chartOptions" (chart)="onChart($event)"></eui-billboard>
   </mat-card>
 </div>

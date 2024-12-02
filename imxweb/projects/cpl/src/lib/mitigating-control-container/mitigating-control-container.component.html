@@ -1,10 +1,10 @@
 <div class="content">
-  <div class="mitigating-control" *ngFor="let mControl of mControls; index as i">
+  <div class="imx-mitigating-control bordered" *ngFor="let mControl of mControls; index as i">
     <!-- editable control-->
-    <div class="mitigating-control-properties" *ngIf="mControl?.editable">
+    <div class="imx-mitigating-control-properties" *ngIf="mControl?.editable">
       <eui-select
         *ngIf="mControl.editable"
-        (selectionChange)="onSelectionChange(mControl, $event.value)"
+        (selectionChange)="onSelectionChange(mControl, $event)"
         [label]="mitigatingCaption"
         [filterFunction]="filter"
         [enableFormFieldMargin]="true"
@@ -24,7 +24,7 @@
       <imx-cdr-editor [cdr]="mControl.cdrs[1]"></imx-cdr-editor>
     </div>
     <!-- read only control-->
-    <div class="mitigating-control-properties" *ngIf="!mControl.editable">
+    <div class="imx-mitigating-control-properties" *ngIf="!mControl.editable">
       <imx-cdr-editor *ngFor="let cdr of mControl.cdrs" [cdr]="cdr"></imx-cdr-editor>
     </div>
 
@@ -45,8 +45,7 @@
     [matTooltip]="'#LDS#Assigns a mitigating control' | translate"
     data-imx-identifier="mitigating-control-container-button-add"
     [attr.aria-label]="'#LDS#Assign mitigating control' | translate"
-    mat-button
-    class="mat-icon-button"
+    mat-icon-button
     (click)="onCreateControl()"
   >
     <eui-icon icon="add"></eui-icon>

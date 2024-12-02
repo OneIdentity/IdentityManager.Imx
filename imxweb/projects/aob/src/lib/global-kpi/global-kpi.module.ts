@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -39,16 +39,8 @@ import { TilesModule } from 'qer';
 
 @NgModule({
   declarations: [GlobalKpiComponent, KpiTileComponent],
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatButtonModule,
-    MatDialogModule,
-    EuiCoreModule,
-    TranslateModule,
-    TilesModule
-  ],
+  imports: [CommonModule, MatCardModule, MatButtonModule, MatDialogModule, EuiCoreModule, TranslateModule, TilesModule],
   providers: [GlobalKpiService],
-  exports: [GlobalKpiComponent]
+  exports: [GlobalKpiComponent],
 })
-export class GlobalKpiModule { }
+export class GlobalKpiModule {}

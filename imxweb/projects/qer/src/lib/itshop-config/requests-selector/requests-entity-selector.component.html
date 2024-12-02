@@ -22,7 +22,7 @@
 <div eui-sidesheet-actions class="request-config__action-buttons">
   <button
     class="justify-start"
-    *ngIf="selectedItems?.length > 0"
+    *ngIf="!!selectedItems?.length"
     mat-stroked-button
     type="button"
     (click)="fkSelector.clearSelection()"
@@ -32,7 +32,7 @@
   </button>
   <button
     *ngIf="data?.isMultiValue"
-    mat-raised-button
+    mat-flat-button
     color="primary"
     [disabled]="selectedItems?.length === 0"
     (click)="applySelection()"
@@ -41,4 +41,3 @@
     <span translate>#LDS#Apply</span>
   </button>
 </div>
-

@@ -1,13 +1,24 @@
-<mat-form-field appearance="outline">
-  <mat-label>{{ data?.valueWrapper?.display | translate }}</mat-label>
-  <input matInput type="text" [formControl]="control" [readonly]="true"
+<mat-form-field class="imx-form-field-width-full" appearance="outline">
+  <mat-label>{{ data?.valueWrapper?.display ?? '' | translate }}</mat-label>
+  <input
+    matInput
+    type="text"
+    [formControl]="control"
+    [readonly]="true"
     [attr.data-imx-identifier]="'imx-typed-entity-select-' + data?.valueWrapper?.name"
-    [required]="data?.valueWrapper?.isValueRequired">
+    [required]="data?.valueWrapper?.isValueRequired"
+  />
   <div matSuffix class="imx-suffix-container">
     <mat-spinner diameter="30" *ngIf="loading"></mat-spinner>
     <div class="imx-spacer"></div>
-    <button *ngIf="!loading && data?.valueWrapper?.canEdit" mat-button color="primary" type="button" (click)="editAssignment()"
-      [attr.data-imx-identifier]="'imx-typed-entity-select-button-' + data?.valueWrapper?.name">
+    <button
+      *ngIf="!loading && data?.valueWrapper?.canEdit"
+      mat-button
+      color="primary"
+      type="button"
+      (click)="editAssignment()"
+      [attr.data-imx-identifier]="'imx-typed-entity-select-button-' + data?.valueWrapper?.name"
+    >
       {{ control?.value?.length ? ('#LDS#Change' | translate) : ('#LDS#Select' | translate) }}
     </button>
   </div>

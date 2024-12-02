@@ -6,12 +6,12 @@
 		<ComponentDir>imxweb\build\imx-prepare-workspace</ComponentDir>
 		<Workspace>$(VI_PROJECTDIR)\imxweb</Workspace>
 		<Npm>$(VI_PROJECTDIR)\bin\npm</Npm>
-		<NpmOptions>--scripts-prepend-node-path=true</NpmOptions>				
+		<NpmOptions>--scripts-prepend-node-path=true</NpmOptions>
 	</PropertyGroup>
 
-	
-	<Target Name="NpmInstall">				
-		<Exec Command='$(Npm) install --no-audit --save=false --progress=false $(NpmOptions)' WorkingDirectory="$(Workspace)" />		
+
+	<Target Name="NpmInstall" Condition="'$(BUILD_WEB)' != 'no'">
+		<Exec Command='$(Npm) install --no-audit --save=false --progress=false $(NpmOptions) --skip-dialog' WorkingDirectory="$(Workspace)" />
 	</Target>
 
 

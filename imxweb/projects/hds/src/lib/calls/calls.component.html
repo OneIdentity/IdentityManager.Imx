@@ -1,60 +1,145 @@
-<h1 class="mat-headline">
-  <span>{{ '#LDS#Heading Tickets' | translate }}</span>
-  <imx-help-contextual></imx-help-contextual>
-</h1>
+<div class="imx-header-toolbar">
+  <h2 class="mat-headline-5">
+    <span>{{ '#LDS#Heading Tickets' | translate }}</span>
+    <imx-help-contextual></imx-help-contextual>
+  </h2>
+  <imx-data-view-toolbar [dataSource]="dataSource" [showSettings]="false"></imx-data-view-toolbar>
+</div>
 
-<mat-card>
-  <imx-data-source-toolbar
-    #dst
-    data-imx-identifier="calls-data-source-toolbar"
-    [settings]="dstSettings"
-    [busyService]="busyService"
-    [options]="['search', 'filter']"
-    [hiddenFilters]="['namespace']"
-    [searchBoxText]="'#LDS#Search' | translate"
-    (navigationStateChanged)="onNavigationStateChanged($event)"
-    (search)="onSearch($event)"
+<mat-card class="imx-card-fill">
+  <imx-data-view-auto-table
+    [dataSource]="dataSource"
+    mode="manual"
+    matSort
+    (matSortChange)="dataSource?.sortChange($event)"
+    [matSortActive]="dataSource.sortId()"
+    [matSortDirection]="dataSource.sortDirection()"
   >
-  </imx-data-source-toolbar>
-  <div class="calls-data-table">
-    <imx-data-table data-imx-identifier="calls-data-table" [dst]="dst" (highlightedEntityChanged)="onSelected($event)" [mode]="'manual'">
-      <imx-data-table-column [entityColumn]="entitySchema.Columns.CallNumber"> </imx-data-table-column>
-      <imx-data-table-generic-column columnName="description" data-imx-identifier="calls-table-column-ellipsis" [columnLabel]="entitySchema.Columns.DescriptionHotline.Display">
-        <ng-template let-item>
-          <div class="calls-table-column-ellipsis" title="{{ getTicketItemValue(item, 'DescriptionHotline') }}">
-            {{ getTicketItemValue(item, 'DescriptionHotline') }}
-          </div>
-        </ng-template>
-      </imx-data-table-generic-column>
-      <imx-data-table-column [entityColumn]="entitySchema.Columns.IsClosed"> </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema.Columns.IsHistory"> </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema.Columns.IsHold"> </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_PersonHotline"> </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_PersonInTrouble"> </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_PersonInTroubleAdditional"> </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_TroubleCallState"> </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_TroubleEscalationLevel_E"> </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_TroubleProduct"> </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_TroubleSeverity"> </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchema.Columns.UID_TroubleTypeHotline"> </imx-data-table-column>
-      <imx-data-table-generic-column columnName="actionHotLine" data-imx-identifier="calls-table-column-ellipsis" [columnLabel]="entitySchema.Columns.ActionHotline.Display">
-        <ng-template let-item>
-          <div class="calls-table-column-ellipsis" title="{{ getTicketItemValue(item, 'ActionHotline') }}">
-            {{ getTicketItemValue(item, 'ActionHotline') }}
-          </div>
-        </ng-template>
-      </imx-data-table-generic-column>
-    </imx-data-table>
-  </div>
-  <imx-data-source-paginator data-imx-identifier="calls-data-source-paginator" [dst]="dst"></imx-data-source-paginator>
+    <ng-container [matColumnDef]="entitySchema.Columns.DescriptionHotline.ColumnName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ entitySchema?.Columns?.DescriptionHotline?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div class="imx-table-column-ellipsis" title="{{ getTicketItemValue(item, 'DescriptionHotline') }}">
+          {{ getTicketItemValue(item, 'DescriptionHotline') }}
+        </div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.ActionHotline.ColumnName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ entitySchema?.Columns?.ActionHotline?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div class="imx-table-column-ellipsis" title="{{ getTicketItemValue(item, 'ActionHotline') }}">
+          {{ getTicketItemValue(item, 'ActionHotline') }}
+        </div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.CallNumber.ColumnName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ entitySchema?.Columns?.CallNumber?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.CallNumber.Column.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.IsClosed.ColumnName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ entitySchema?.Columns?.IsClosed?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.entity.columns.IsClosed.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.IsHistory.ColumnName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ entitySchema?.Columns?.IsHistory?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.entity.columns.IsHistory.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.IsHold.ColumnName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ entitySchema?.Columns?.IsHold?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.entity.columns.IsHold.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.UID_PersonHotline.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.UID_PersonHotline?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.entity.columns.UID_PersonHotline.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.UID_PersonInTrouble.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.UID_PersonInTrouble?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.UID_PersonInTrouble.Column.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.UID_PersonInTroubleAdditional.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.UID_PersonInTroubleAdditional?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.entity.columns.UID_PersonInTroubleAdditional.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.UID_TroubleCallState.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.UID_TroubleCallState?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.entity.columns.UID_TroubleCallState.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.UID_TroubleEscalationLevel_E.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.UID_TroubleEscalationLevel_E?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.entity.columns.UID_TroubleEscalationLevel_E.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.UID_TroubleProduct.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.UID_TroubleProduct?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.entity.columns.UID_TroubleProduct.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.UID_TroubleSeverity.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.UID_TroubleSeverity?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.UID_TroubleSeverity.Column.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+    <ng-container [matColumnDef]="entitySchema.Columns.UID_TroubleTypeHotline.ColumnName">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ entitySchema?.Columns?.UID_TroubleTypeHotline?.Display }}
+      </th>
+      <td mat-cell *matCellDef="let item" role="gridcell">
+        <div>{{ item.entity.columns.UID_TroubleTypeHotline.GetDisplayValue() }}</div>
+      </td>
+    </ng-container>
+  </imx-data-view-auto-table>
+  <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
 </mat-card>
-<div class="imx-button-bar">
-  <span class="imx-menu-spacer"></span>
+<div class="imx-button-bar-transparent">
   <button
     data-imx-identifier="create-help-desk-support-call"
-    mat-raised-button
+    mat-flat-button
     color="primary"
-    class="mat-focus-indicator mat-raised-button mat-button-base mat-primary create-ticket-button"
+    class="mat-focus-indicator mat-button-base mat-primary create-ticket-button"
     (click)="createTicket()"
   >
     <eui-icon icon="add"></eui-icon>

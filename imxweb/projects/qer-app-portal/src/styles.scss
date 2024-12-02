@@ -1,20 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
 @use '@angular/material' as mat;
-
-$material_icons_font_path: "~node_modules/@elemental-ui/core/assets/MaterialIcons";
-$cadence_font_path: "~node_modules/@elemental-ui/core/assets/Cadence";
-$source_sans_pro_font_path: "~node_modules/@elemental-ui/core/assets/Source_Sans_Pro";
-
 @import '@elemental-ui/core/src/styles/core.scss';
 
-
-.imx-dialog-panel-class > .mat-dialog-container {
-    background-color: mat.get-color-from-palette($asher-gray-palette, 200);
+.imx-dialog-panel-class > .mat-mdc-dialog-container {
+  background-color: mat.m2-get-color-from-palette($asher-gray-palette, 200);
 }
 
-.mat-snack-bar-container.mat-snack-bar-center.eui-alert-banner-panel {
-    position: fixed;
-    left: 0;
+.mat-mdc-snack-bar-container.mat-snack-bar-center.eui-alert-banner-panel {
+  position: fixed;
+  left: 0;
 }
 // ToDo (als Teil von 254128): später wieder einbinden, wenn wir den Styleguide soweit haben
 // .pageContent > :last-child > h1 {
@@ -26,93 +20,76 @@ $source_sans_pro_font_path: "~node_modules/@elemental-ui/core/assets/Source_Sans
 imx-data-explorer-groups,
 imx-data-explorer-identities,
 imx-data-explorer-accounts {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  > .data-explorer--groups,
+  .data-explorer--accounts {
     flex: 1 1 auto;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
+
+    > :nth-child(2) {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  .data-explorer--accounts {
+    > :nth-child(2) {
+      overflow: hidden;
+    }
+  }
+
+  .data-explorer-table {
+    flex: 1 1 auto;
     overflow: hidden;
-    > .data-explorer--groups,
-    .data-explorer--accounts {
-        flex: 1 1 auto;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
+    display: flex;
+    flex-direction: column;
+  }
 
-        > :nth-child(2) {
-            flex: 1 1 auto;
-            display: flex;
-            flex-direction: column;
-        }
-    }
-
-    .data-explorer--accounts {
-        > :nth-child(2) {
-            overflow: hidden;
-        }
-    }
-
-    .data-explorer-table {
-        flex: 1 1 auto;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .data-explorer-table .mat-sidenav-content {
-        overflow-y: auto !important;
-    }
 }
 
-.data-explorer.data-explorer--identities.identities--fullscreen
-{
-    display: flex !important;  // TODO: Task 268556 : Styling direkt in der Komponente umsetzen
-    flex-direction: column;
+.data-explorer.data-explorer--identities.identities--fullscreen {
+  display: flex !important; // TODO: Task 268556 : Styling direkt in der Komponente umsetzen
+  flex-direction: column;
 }
 
 .governance-sidesheet__tab-content {
-    height: calc(100% - 120px);
+  height: calc(100% - 120px);
 }
 
 .eui-dark-theme {
-    .loading-progress{
-        background-color: $color-gray-70;
+  .loading-progress {
+    background-color: $color-gray-70;
+  }
+
+  .eui-sidesheet {
+    background-color: $color-gray-80;
+    .background--asher-gray {
+      background-color: $color-gray-80;
     }
-    .mat-tab-group .mat-tab-header{
-        background-color:$color-gray-80;
-    }
-     .eui-sidesheet
-    {
-        background-color:$color-gray-80;
-        .mat-toolbar{
-            background-color: $color-blue-80;
-        }
-        .background--asher-gray{
-            background-color: $color-gray-80;
-        }
-    }
-    .eui-sidesheet-actions.mat-card.eui-sidesheet-actions--white{
-        background-color: $color-gray-70;
-    }
+  }
+  .eui-sidesheet-actions.mat-mdc-card.eui-sidesheet-actions--white {
+    background-color: $color-gray-70;
+  }
 }
 
 .eui-contrast-theme {
-  .loading-progress{
+  .loading-progress {
+    background-color: $color-gray-90;
+  }
+
+  .eui-sidesheet {
+    background-color: $color-gray-100;
+    .background--asher-gray {
       background-color: $color-gray-90;
+    }
   }
-  .mat-tab-group .mat-tab-header{
-      background-color:$color-gray-100;
-  }
-   .eui-sidesheet
-  {
-      background-color:$color-gray-100;
-      .mat-toolbar{
-          background-color: $color-blue-90;
-      }
-      .background--asher-gray{
-          background-color: $color-gray-90;
-      }
-  }
-  .eui-sidesheet-actions.mat-card.eui-sidesheet-actions--white{
-      background-color: $color-gray-90;
+  .eui-sidesheet-actions.mat-mdc-card.eui-sidesheet-actions--white {
+    background-color: $color-gray-90;
   }
 }
-

@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
@@ -8,22 +8,10 @@
   height: 100%;
 }
 
-.mat-card {
+.mat-mdc-card {
   margin-bottom: 10px;
 }
 
-.imx-helper-alert {
-  margin: 10px 0 20px auto;
-  display: block;
-}
-
-.state-badge {
-  vertical-align: middle;
-}
-
-.button-bar button:not(:last-child) {
-  margin-right: 1em;
-}
 
 .eui-dark-theme {
   :host {

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,9 +31,9 @@ import { ClassloggerService } from '../classlogger/classlogger.service';
 import { AppConfigService } from '../appConfig/appConfig.service';
 import { imx_SessionService } from '../session/imx-session.service';
 import { JobQueueOverviewService, JobQueueDataSlice, JobQueueGroups } from './jobqueue-overview.service';
-import { EntityColumnData, EntityData } from 'imx-qbm-dbts';
+import { EntityColumnData, EntityData } from '@imx-modules/imx-qbm-dbts';
 import { of } from 'rxjs';
-import { EventStreamConfig } from 'imx-api-qbm';
+import { EventStreamConfig } from '@imx-modules/imx-api-qbm';
 
 describe('JobQueueOverviewService', () => {
   let service: JobQueueOverviewService;

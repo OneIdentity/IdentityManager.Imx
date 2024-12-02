@@ -4,29 +4,21 @@
   margin-bottom: 10px;
 }
 
-
-.mat-card {
+.mat-mdc-card {
   width: 350px;
 
-  .mat-card-content {
+  .mat-mdc-card-content {
     padding: 19px;
   }
 
-  .mat-card-header {
+  .mat-mdc-card-header {
     height: 124px;
     display: flex;
     justify-content: center;
-
-    .mat-card-header-text {
-      margin: 0;
-      height: 0;
-    }
-
-    eui-icon {
-      line-height: 124px;
-    }
+    align-items: center;
   }
-  .mat-card-actions {
+
+  .mat-mdc-card-actions {
     padding-bottom: 20px;
     padding-right: 20px;
     display: flex;

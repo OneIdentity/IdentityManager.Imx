@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -36,24 +36,24 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 })
 export class CallsAttachmentDialogComponent implements OnInit {
   form = new FormGroup({
-    folderName: new FormControl(null, [Validators.required])
-  })
+    folderName: new FormControl(null, [Validators.required]),
+  });
   constructor(
     public matDialogRef: MatDialogRef<CallsAttachmentDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: CallsAttachmentDialogData
+    @Inject(MAT_DIALOG_DATA) public data: CallsAttachmentDialogData,
   ) {}
 
   ngOnInit(): void {}
 
-  closeDialog(action?: string, value? : string): void {
+  closeDialog(action?: string, value?: string | null): void {
     this.matDialogRef.close({ action, value });
   }
 
   get dialogTitle(): string {
-    if(this.data.actionType === CallsAttachmentActionType.addFolder){
+    if (this.data.actionType === CallsAttachmentActionType.addFolder) {
       return '#LDS#Heading Create Folder';
     }
-    if(this.data.actionType === CallsAttachmentActionType.deleteFile){
+    if (this.data.actionType === CallsAttachmentActionType.deleteFile) {
       return '#LDS#Heading Delete File';
     }
     return '#LDS#Heading Delete Folder';

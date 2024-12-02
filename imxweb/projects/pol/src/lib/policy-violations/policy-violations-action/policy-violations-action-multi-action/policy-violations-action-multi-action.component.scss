@@ -2,15 +2,6 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-
-  ::ng-deep .mat-list-base .mat-list-item .mat-list-item-content{
-    padding-left: 0%;
-  }
-
-  ::ng-deep .mat-list-base .mat-list-item{
-    height: auto;
-    margin-bottom: 16px;
-  }
 }
 
 mat-card {
@@ -30,13 +21,4 @@ mat-card-content {
 
 imx-bulk-editor {
   margin-top: 20px;
-}
-
-
-.mat-list-base .mat-list-item .mat-line{
-  margin-left: 0px;
-  overflow: auto;
-  white-space: inherit;
-  word-wrap: break-word;
-  height: auto;
 }

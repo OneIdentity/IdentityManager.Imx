@@ -19,12 +19,12 @@
 }
 
 .imx-small-message {
-  color : $black;
+  color: $black;
   display: block;
 }
 
 .eui-dark-theme {
-  :host{
+  :host {
     .imx-message {
       color: $color-gray-0;
     }
@@ -35,7 +35,7 @@
 }
 
 .eui-contrast-theme {
-  :host{
+  :host {
     .imx-message {
       color: $color-gray-2;
     }

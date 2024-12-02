@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,7 +28,6 @@ import { TimezoneInfo } from './timezone-info';
 import { clearStylesFromDOM } from '../testing/clear-styles.spec';
 
 describe('TimezoneInfo', () => {
-
   afterAll(() => {
     clearStylesFromDOM();
   });
@@ -40,10 +39,8 @@ describe('TimezoneInfo', () => {
   });
 
   it('should be created', () => {
-
     expect(() => {
       const timezoneInfo = TimezoneInfo.get();
     }).not.toThrowError();
-
   });
 });

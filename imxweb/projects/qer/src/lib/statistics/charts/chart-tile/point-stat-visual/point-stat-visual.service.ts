@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { ChartDto } from 'imx-api-qer';
+import { ChartDto } from '@imx-modules/imx-api-qer';
 import { StatisticsConstantsService } from '../../../statistics-home-page/statistics-constants.service';
 import { PointStatTyped, StatusIcon, StatusStateCSS, TrendIcon } from './point-stat-typed';
 
@@ -39,25 +39,25 @@ export class PointStatVisualService {
   constructor(private statisticsConstantService: StatisticsConstantsService) {}
 
   public extractStatus(stat: ChartDto): PointStatTyped {
-    const topDataPoint = stat.Data[0];
-    const value = topDataPoint.Points[0].Value;
+    const topDataPoint = stat.Data?.[0];
+    const value = topDataPoint?.Points?.[0].Value;
     if (this.isBetween0And1(stat.ErrorThreshold)) {
       // We have threshold less than 1, so we need to use the percentage
-      this.percentOrValue = topDataPoint.Points[0].Percentage;
-      if (topDataPoint.Points[1]) {
-        this.trend = this.percentOrValue - topDataPoint.Points[1].Percentage;
+      this.percentOrValue = topDataPoint?.Points?.[0].Percentage ?? 0;
+      if (topDataPoint?.Points?.[1] != null) {
+        this.trend = this.percentOrValue - (topDataPoint?.Points?.[1].Percentage ?? 0);
       }
     } else {
-      this.percentOrValue = topDataPoint.Points[0].Value;
-      if (topDataPoint.Points[1]) {
+      this.percentOrValue = topDataPoint?.Points?.[0].Value ?? 0;
+      if (topDataPoint?.Points?.[1] != null) {
         this.trend = this.percentOrValue - topDataPoint.Points[1].Value;
       }
     }
 
     return PointStatTyped.buildEntity({
-      displayValue: value.toString(),
-      value,
-      description: stat.Description,
+      displayValue: value?.toString() ?? '',
+      value: value ?? 0,
+      description: stat.Description ?? '',
       ...this.getTrend(),
       ...this.getStatus(stat),
     });
@@ -68,9 +68,9 @@ export class PointStatVisualService {
   }
 
   public getTrend(): { hasTrend: boolean; trend: string; trendIcon?: TrendIcon } {
-    const hasTrend = this.trend && this.trend !== 0;
+    const hasTrend = this.trend !== 0;
     let trend: string;
-    let trendIcon: TrendIcon;
+    let trendIcon: TrendIcon = 'arrowdown';
     switch (true) {
       default:
         trend = this.statisticsConstantService.pointStatusText.Stable;

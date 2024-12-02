@@ -1,0 +1,42 @@
+@import 'base/mixins';
+
+:host {
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.imx-resource-line {
+  @include flex-row-container($overflow: hidden);
+}
+
+.imx-resource-toolbar {
+  @include flex-row-container();
+}
+
+.imx-resource-line:not(:last-of-type) {
+  margin-bottom: 10px;
+}
+
+span[bold] {
+  font-weight: 700;
+}
+
+.imx-resource-content {
+  @include flex-column-container-fill();
+}
+
+.imx-scrollable-resoures {
+  @include flex-column-container-fill();
+}
+
+.hidden {
+  display: none;
+}
+
+.imx-busy {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}

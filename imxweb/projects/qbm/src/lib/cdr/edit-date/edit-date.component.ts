@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,19 +26,18 @@
 
 import { Component, ErrorHandler, EventEmitter, OnDestroy } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
+import moment, { Moment } from 'moment-timezone';
 import { Subject, Subscription } from 'rxjs';
 import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
 import { ColumnDependentReference } from '../column-dependent-reference.interface';
-import moment from 'moment-timezone';
-import { Moment } from 'moment-timezone';
 
-import { EntityColumnContainer } from '../entity-column-container';
+import { DateFormat } from '@imx-modules/imx-qbm-dbts';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
-import { DateFormat } from 'imx-qbm-dbts';
+import { EntityColumnContainer } from '../entity-column-container';
 
 /**
  * Provides a {@link CdrEditor | CDR editor} for editing / viewing date value columns
- * 
+ *
  * It uses a {@link DateComponent | date component} for editing the value.
  * When set to read-only, it uses a {@link ViewPropertyComponent | view property component} to display the content.
  */
@@ -73,8 +72,11 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
    */
   public isBusy = false;
 
+  public validateOnlyOnChange: boolean = false;
+
   private readonly subscribers: Subscription[] = [];
   private isWriting = false;
+  private previousValue: Moment | undefined;
 
   /**
    * Determines, if a time control should be added.
@@ -86,7 +88,10 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
     return dateFormat === DateFormat.DateTime || dateFormat === DateFormat.UtcDateTime;
   }
 
-  public constructor(private readonly errorHandler: ErrorHandler, private logger: ClassloggerService) {}
+  public constructor(
+    private readonly errorHandler: ErrorHandler,
+    private logger: ClassloggerService,
+  ) {}
 
   /**
    * Unsubscribes all events, after the 'OnDestroy' hook is triggered.
@@ -110,7 +115,7 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
         this.subscribers.push(
           cdref.minlengthSubject.subscribe(() => {
             this.resetControlValue();
-          })
+          }),
         );
       }
 
@@ -123,8 +128,9 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
             this.logger.trace(this, 'Control set to new value');
             this.resetControlValue();
             this.valueHasChanged.emit({ value: this.control.value });
+            this.control.updateValueAndValidity({ onlySelf: true, emitEvent: true });
           }
-        })
+        }),
       );
 
       this.setValidators();
@@ -140,7 +146,7 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
             }
             this.valueHasChanged.emit({ value: this.control.value });
           });
-        })
+        }),
       );
     }
   }
@@ -162,8 +168,8 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
     this.updateControlValue(value);
   }
 
-  private updateControlValue(value: Moment): void {
-    if (this.control.value !== value) {
+  private updateControlValue(value: Moment | undefined): void {
+    if (!this.control.value?.isSame(value)) {
       this.control.setValue(value, { emitEvent: false });
     }
   }
@@ -173,14 +179,15 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
    * @param value The Moment object, that is used as the new value for the control.
    */
   private async writeValue(value: Moment): Promise<void> {
-    if (this.control.errors) {
+    if (this.control.errors || value?.isSame(this.previousValue)) {
       return;
     }
-
+    this.previousValue = value;
     // Beware: the columnContainer used date while the date editor uses moment!!
     const date = value == null ? undefined : value.toDate();
+    const resetValue = this.columnContainer.value;
     this.logger.debug(this, 'writeValue called with value', date);
-    if (!this.columnContainer.canEdit || this.columnContainer.value === date) {
+    if (!this.columnContainer.canEdit || moment(this.columnContainer.value).isSame(value)) {
       return;
     }
 
@@ -192,6 +199,7 @@ export class EditDateComponent implements CdrEditor, OnDestroy {
       await this.columnContainer.updateValue(date);
     } catch (error) {
       this.errorHandler.handleError(error);
+      this.control?.setValue(resetValue ? moment(resetValue) : undefined);
     } finally {
       this.isBusy = false;
       this.isWriting = false;

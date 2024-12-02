@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { IClientProperty } from 'imx-qbm-dbts';
+import { IClientProperty } from '@imx-modules/imx-qbm-dbts';
 
 /**
  * Internal repesentation of a menu item in a datasource toolbar menu.

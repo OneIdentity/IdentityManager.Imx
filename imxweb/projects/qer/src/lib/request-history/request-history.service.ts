@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,15 +27,6 @@
 import { Injectable } from '@angular/core';
 
 import {
-  EntitySchema,
-  ExtendedTypedEntityCollection,
-  DataModel,
-  MethodDescriptor,
-  EntityCollectionData,
-  MethodDefinition,
-} from 'imx-qbm-dbts';
-import { ArchivedRequestHistoryLoadParameters, RequestHistoryLoadParameters } from './request-history-load-parameters.interface';
-import {
   PortalCartitem,
   PortalItshopRequests,
   ProlongationInput,
@@ -43,16 +34,28 @@ import {
   PwoUnsubscribeInput,
   PwoUnsubscribeResult,
   V2ApiClientMethodFactory,
-} from 'imx-api-qer';
-import { ItshopRequest } from './itshop-request';
-import { ItshopRequestData } from '../itshop/request-info/itshop-request-data';
-import { QerApiService } from '../qer-api-client.service';
+} from '@imx-modules/imx-api-qer';
+import {
+  DataModel,
+  EntityCollectionData,
+  EntitySchema,
+  ExtendedTypedEntityCollection,
+  MethodDefinition,
+  MethodDescriptor,
+} from '@imx-modules/imx-qbm-dbts';
 import { DataSourceToolbarExportMethod, DataSourceToolbarFilter } from 'qbm';
 import { ItshopRequestService } from '../itshop/itshop-request.service';
+import { ItshopRequestData } from '../itshop/request-info/itshop-request-data';
+import { QerApiService } from '../qer-api-client.service';
+import { ItshopRequest } from './itshop-request';
+import { ArchivedRequestHistoryLoadParameters, RequestHistoryLoadParameters } from './request-history-load-parameters.interface';
 
 @Injectable()
 export class RequestHistoryService {
-  constructor(private readonly qerClient: QerApiService, private readonly itshopRequest: ItshopRequestService) {}
+  constructor(
+    private readonly qerClient: QerApiService,
+    private readonly itshopRequest: ItshopRequestService,
+  ) {}
 
   public get PortalItshopRequestsSchema(): EntitySchema {
     return this.qerClient.typedClient.PortalItshopRequests.GetSchema();
@@ -60,18 +63,24 @@ export class RequestHistoryService {
 
   public async getRequests(
     userUid: string,
-    parameters: RequestHistoryLoadParameters
+    parameters: RequestHistoryLoadParameters,
+    signal?: AbortSignal,
   ): Promise<ExtendedTypedEntityCollection<ItshopRequest, PwoExtendedData>> {
-    const collection = await this.qerClient.typedClient.PortalItshopRequests.Get(parameters);
+    const collection = await this.qerClient.typedClient.PortalItshopRequests.Get(parameters, { signal });
+
+    const data = collection.extendedData;
 
     return {
-      tableName: collection.tableName,
-      totalCount: collection.totalCount,
-      extendedData: collection.extendedData,
+      ...collection,
       Data: collection.Data.map((element, index) => {
         const requestData = new ItshopRequestData({ ...collection.extendedData, ...{ index } });
         const parameterColumns = this.itshopRequest.createParameterColumns(element.GetEntity(), requestData.parameters);
-        return new ItshopRequest(element.GetEntity(), requestData.pwoData, parameterColumns, userUid);
+        return new ItshopRequest(
+          element.GetEntity(),
+          { ...requestData.pwoData, WorkflowSteps: data?.WorkflowSteps },
+          parameterColumns,
+          userUid,
+        );
       }),
     };
   }
@@ -93,25 +102,27 @@ export class RequestHistoryService {
 
   public async getArchivedRequests(
     userUid: string,
-    recipientId: string
+    recipientId: string,
   ): Promise<ExtendedTypedEntityCollection<ItshopRequest, PwoExtendedData>> {
     const dummy: ArchivedRequestHistoryLoadParameters = {};
     recipientId ? (dummy.uidpersonordered = recipientId) : (dummy.uidpersoninserted = userUid);
     const collection = await this.qerClient.typedClient.PortalItshopHistoryRequests.Get(new Date(), dummy);
+
+    const data = collection.extendedData;
     return {
-      tableName: collection.tableName,
-      totalCount: collection.totalCount,
-      extendedData: collection.extendedData,
+      ...collection,
       Data: collection.Data.map((element, index) => {
         const requestData = new ItshopRequestData({ ...collection.extendedData, ...{ index } });
-        const parameterColumns = this.itshopRequest.createParameterColumns(
+        const parameterColumns = this.itshopRequest.createParameterColumns(element.GetEntity(), requestData.parameters);
+        const request = new ItshopRequest(
           element.GetEntity(),
-          requestData.parameters
+          { ...requestData.pwoData, WorkflowSteps: data?.WorkflowSteps },
+          parameterColumns,
+          userUid,
         );
-        const request = new ItshopRequest(element.GetEntity(), requestData.pwoData, parameterColumns, userUid);
         request.isArchived = true;
-        return request
-      })
+        return request;
+      }),
     };
   }
 
@@ -132,11 +143,15 @@ export class RequestHistoryService {
   //   }
   // }
 
-  public async getFilterOptions(userUid: string, filterPresets: { [name: string]: string } = {}): Promise<DataSourceToolbarFilter[]> {
-    return (await this.getDataModel(userUid)).Filters.map((option: DataSourceToolbarFilter) => {
-      option.InitialValue = filterPresets[option.Name];
-      return option;
-    });
+  public async getFilterOptions(dataModel: DataModel, filterPresets: { [name: string]: string } = {}): Promise<DataSourceToolbarFilter[]> {
+    return (
+      dataModel.Filters?.map((option: DataSourceToolbarFilter) => {
+        if (option.Name) {
+          option.InitialValue = filterPresets[option.Name];
+        }
+        return option;
+      }) || []
+    );
   }
 
   public async getDataModel(userUid: string): Promise<DataModel> {
@@ -186,7 +201,7 @@ export class RequestHistoryService {
   public async copyRequest(pwo: PortalItshopRequests): Promise<PortalCartitem> {
     const item = this.qerClient.typedClient.PortalCartitem.createEntity({
       Columns: {
-        UID_AccProduct: {Value:pwo.UID_AccProduct.value}
+        UID_AccProduct: { Value: pwo.UID_AccProduct.value },
       },
     });
 

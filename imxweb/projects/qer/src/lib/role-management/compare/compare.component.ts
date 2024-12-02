@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,20 +26,20 @@
 
 import { EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
 
-import { AbstractControl, UntypedFormGroup } from '@angular/forms';
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
+import { AbstractControl, UntypedFormGroup } from '@angular/forms';
 
-import { BaseCdr, ColumnDependentReference, DataSourceToolbarSettings, MetadataService, SnackBarService } from 'qbm';
-import { RoleCompareItems, UiActionData } from 'imx-api-qer';
-import { DbObjectKey, FkCandidateBuilder, FkCandidateRouteDto, IClientProperty, ValType } from 'imx-qbm-dbts';
-import { CompareService } from './compare.service';
+import { RoleCompareItems, UiActionData } from '@imx-modules/imx-api-qer';
+import { DbObjectKey, IClientProperty, ValType } from '@imx-modules/imx-qbm-dbts';
+import { ColumnDependentReference, DataSourceToolbarSettings, MetadataService, SnackBarService } from 'qbm';
 import { RoleService } from '../role.service';
+import { CompareService } from './compare.service';
 
-import { CompareItemBuilder } from './compare-item-builder';
 import { CompareItem } from './compare-item';
+import { CompareItemBuilder } from './compare-item-builder';
 
-import { DataManagementService } from '../data-management.service';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { DataManagementService } from '../data-management.service';
 
 /** Compares two roles, with the option of merging the two roles into one. */
 @Component({
@@ -48,14 +48,14 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 })
 export class CompareComponent implements OnInit {
   // Takes place of the previous injected data
-  public roleType: string;
-  public uidRole: string;
+  public roleType: string | undefined;
+  public uidRole: string | undefined;
 
-  public compareItems: RoleCompareItems;
-  public mergeActions: UiActionData[] = [];
+  public compareItems: RoleCompareItems | undefined;
+  public mergeActions: UiActionData[] | undefined = [];
 
-  public mergePreventingReason: string;
-  public uidActions: string[] = undefined;
+  public mergePreventingReason: string | undefined;
+  public uidActions: string[] | undefined = undefined;
 
   public cdrList: ColumnDependentReference[] = [];
 
@@ -87,22 +87,22 @@ export class CompareComponent implements OnInit {
     private readonly busyService: EuiLoadingService,
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly snackbar: SnackBarService,
-    private readonly cdref: ChangeDetectorRef
+    private readonly cdref: ChangeDetectorRef,
   ) {}
 
   public roleCdr: ColumnDependentReference;
 
   public async ngOnInit(): Promise<void> {
     // Set initial values
-    this.roleType = this.dataManagementService.entityInteractive.GetEntity().TypeName;
-    this.uidRole = this.dataManagementService.entityInteractive.GetEntity().GetKeys().join(',');
+    this.roleType = this.dataManagementService.entityInteractive?.GetEntity().TypeName;
+    this.uidRole = this.dataManagementService.entityInteractive?.GetEntity().GetKeys().join(',');
 
     const candidates = await this.roleService.getComparisonConfig();
     this.roleCdr = this.compareService.createCdrRole(candidates);
   }
 
   public getTableDisplay(tableName: string) {
-    return this.metadata.tables[tableName].DisplaySingular;
+    return this.metadata.tables[tableName]?.DisplaySingular || '';
   }
 
   public resetElements(): void {
@@ -136,9 +136,13 @@ export class CompareComponent implements OnInit {
         return;
       }
       const key = DbObjectKey.FromXml(keyXml);
-      await this.compareService.mergeRoles(this.roleType, this.uidRole, key, { ActionId: this.uidActions });
+      if (this.uidRole && this.roleType) {
+        await this.compareService.mergeRoles(this.roleType, this.uidRole, key, { ActionId: this.uidActions });
+      }
       this.sidesheetRef.close(true);
-      this.snackbar.open({ key: this.LdsSuccessMessage });
+      if (this.uidRole && this.roleType) {
+        this.snackbar.open({ key: this.LdsSuccessMessage });
+      }
     } finally {
       this.busyService.hide(overlay);
     }
@@ -153,15 +157,19 @@ export class CompareComponent implements OnInit {
       const keyXml = this.roleCdr.column.GetValue();
       this.showKeyMissingError = !keyXml;
       if (!keyXml) {
-        this.compareItems = null;
+        this.compareItems = undefined;
         return;
       }
       const key = DbObjectKey.FromXml(keyXml);
 
-      const items = await this.compareService.getCompares(this.roleType, this.uidRole, key);
+      const items =
+        this.roleType == null || this.uidRole == null ? undefined : await this.compareService.getCompares(this.roleType, this.uidRole, key);
 
       this.compareItems = items;
-      const dataSource = this.compareItemBuilder.build(this.compareItemBuilder.buildEntityCollectionData(this.compareItems.Items));
+      const dataSource =
+        this.compareItems?.Items == null
+          ? undefined
+          : this.compareItemBuilder.build(this.compareItemBuilder.buildEntityCollectionData(this.compareItems.Items));
       this.dstSettings = {
         dataSource,
         entitySchema: CompareItem.GetEntitySchema(),
@@ -184,20 +192,23 @@ export class CompareComponent implements OnInit {
       this.showKeyMissingError = !keyXml;
       if (!keyXml) {
         this.mergeActions = undefined;
-        this.mergePreventingReason = null;
+        this.mergePreventingReason = undefined;
         return;
       }
       const key = DbObjectKey.FromXml(keyXml);
 
-      const actions = await this.compareService.getMergeActions(this.roleType, this.uidRole, key);
+      const actions =
+        this.roleType == null || this.uidRole == null
+          ? undefined
+          : await this.compareService.getMergeActions(this.roleType, this.uidRole, key);
 
-      if (actions.Actions) {
+      if (actions?.Actions != null) {
         this.mergeActions = actions.Actions;
       } else {
         this.mergeActions = [];
       }
-      this.mergePreventingReason = actions.MergePreventionReason;
-      this.uidActions = this.mergeActions.filter((a) => a.IsActive).map((a) => a.Id);
+      this.mergePreventingReason = actions?.MergePreventionReason;
+      this.uidActions = this.mergeActions.filter((a) => a.IsActive).map((a) => a.Id || '');
     } finally {
       this.busyService.hide(overlay);
     }

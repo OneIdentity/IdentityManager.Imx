@@ -1,4 +1,4 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
@@ -22,7 +22,7 @@
   }
 }
 
-.eui-sidesheet-actions.mat-card {
+.eui-sidesheet-actions.mat-mdc-card {
   margin: 0;
   display: flex;
   justify-content: flex-end;
@@ -51,18 +51,13 @@
   white-space: nowrap;
 }
 
-.mat-form-field {
+.mat-mdc-form-field {
   margin-bottom: -20px;
-}
-
-.imx-helper-alert {
-  margin-bottom: 20px;
-  display: block;
 }
 
 .eui-dark-theme {
   :host {
-    .eui-sidesheet-actions.mat-card {
+    .eui-sidesheet-actions.mat-mdc-card {
       background-color: $color-gray-70;
     }
   }
@@ -70,7 +65,7 @@
 
 .eui-contrast-theme {
   :host {
-    .eui-sidesheet-actions.mat-card {
+    .eui-sidesheet-actions.mat-mdc-card {
       background-color: $color-gray-90;
     }
   }

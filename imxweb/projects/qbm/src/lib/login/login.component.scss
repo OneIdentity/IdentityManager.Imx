@@ -1,7 +1,6 @@
-@import "variables.scss";
+@use '@angular/material' as mat;
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
-
-$inputWidth: calc(40vw + 2px);
+@import 'base/variables';
 
 .imx-loginPage {
   display: flex;
@@ -12,7 +11,7 @@ $inputWidth: calc(40vw + 2px);
   left: 0;
   right: 0;
   background-color: $iris-blue;
-  color: $white;
+  color: $color-gray-0;
   align-items: center;
 }
 
@@ -23,7 +22,7 @@ $inputWidth: calc(40vw + 2px);
   left: 25px;
   right: 25px;
   bottom: 25px;
-  color: $white;
+  color: $color-gray-0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -31,8 +30,6 @@ $inputWidth: calc(40vw + 2px);
   h1 {
     text-align: center;
   }
-
-
 }
 
 .imx-loginMask {
@@ -43,33 +40,24 @@ $inputWidth: calc(40vw + 2px);
 }
 
 .imx-loginInput {
-  margin: auto 12px;
-
   ::ng-deep {
-    input {
-      width: $propertylabelwidth;
-      box-sizing: content-box;
-      margin-bottom: 9px;
-      height: 30px;
-      padding-left: 6px;
-      width: calc(40vw - 6px);
+    .mat-mdc-form-field {
+      .mat-mdc-text-field-wrapper {
+        .mat-mdc-form-field-infix {
+          padding-top: 24px;
+        }
+        .mat-mdc-floating-label {
+          display: block;
+          top: 28px;
+        }
+      }
     }
-
-    .mat-form-field-infix {
-      color: $VI_Common_Color_Font;
-    }
-
-    .mat-form-field-flex {
-      background-color: $white;
-      padding-left: 6px;
-    }
-
-    .mat-form-field-appearance-legacy .mat-form-field-underline {
-      bottom: $ImxLoginControlsMargin;
-    }
-
-    .mat-form-field-appearance-legacy .mat-form-field-wrapper {
-      padding-bottom: $ImxLoginControlsMargin;
+  }
+}
+.imx-loginData {
+  ::ng-deep {
+    .mat-mdc-form-field-subscript-wrapper {
+      min-height: 12px;
     }
   }
 }
@@ -77,9 +65,6 @@ $inputWidth: calc(40vw + 2px);
 .imx-loginButtonpanel {
   text-align: center;
   padding: 30px 0;
-  margin: 0 auto;
-  width: 100%;
-  display: inline-block;
 
   button {
     margin: 0 10px;
@@ -103,7 +88,7 @@ $inputWidth: calc(40vw + 2px);
   bottom: 10px;
   left: 0;
   right: 0;
-  color: $white;
+  color: $color-gray-0;
 }
 
 .imx-loginMessageContainer {
@@ -119,11 +104,11 @@ $inputWidth: calc(40vw + 2px);
 
 .imx-loginTextBox {
   width: 224px;
-  color: $VI_Common_Color_Font !important;
+  color: $color-gray-80 !important;
 }
 
 a.imx-loginLink {
-  color: $white !important;
+  color: $color-gray-0 !important;
 }
 
 a.imx-loginLink:hover {
@@ -150,11 +135,11 @@ a.imx-loginLink:hover {
 }
 
 mat-form-field {
-  width: $inputWidth;
+  width: $IMX_Login_Input_Width;
 }
 
 // on smaller screens
-@media screen and (max-width : 600px) {
+@media screen and (max-width: 600px) {
   .imx-loginInput {
     width: 95%;
     text-align: center;
@@ -187,55 +172,31 @@ mat-form-field {
 }
 
 .eui-dark-theme {
-  :host{
-    .imx-loginPage{
+  :host {
+    .imx-loginPage {
       background-color: $color-gray-80;
     }
-    .imx-loginInput {
+    .imx-loginData {
       ::ng-deep {
-        input {
-          background-color: $color-gray-70;
-          border: none;
-          color: $color-gray-0;
+        .mat-mdc-text-field-wrapper {
+          background-color: $color-gray-70 !important;
         }
-
-        .mat-form-field-infix {
-          color: $color-gray-0
-        }
-
-        .mat-form-field-flex {
-          background-color:$color-gray-70;
-        }
-
       }
     }
-
   }
 }
 
 .eui-contrast-theme {
-  :host{
-    .imx-loginPage{
+  :host {
+    .imx-loginPage {
       background-color: $color-gray-100;
     }
-    .imx-loginInput {
+    .imx-loginData {
       ::ng-deep {
-        input {
-          background-color: $color-gray-90;
-          border: none;
-          color: $color-gray-0;
+        .mat-mdc-text-field-wrapper {
+          background-color: $color-gray-90 !important;
         }
-
-        .mat-form-field-infix {
-          color: $color-gray-0
-        }
-
-        .mat-form-field-flex {
-          background-color:$color-gray-90;
-        }
-
       }
     }
-
   }
 }

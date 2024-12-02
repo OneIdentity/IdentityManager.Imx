@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,13 +34,8 @@ import { ApiService } from './api.service';
 import { InitService } from './init.service';
 
 @NgModule({
-  declarations: [
-  ],
-  imports: [
-    CommonModule,
-    TranslateModule,
-    EuiCoreModule
-  ]
+  declarations: [],
+  imports: [CommonModule, TranslateModule, EuiCoreModule],
 })
 export class AadConfigModule {
   constructor(
@@ -48,15 +43,18 @@ export class AadConfigModule {
     private readonly initService: InitService,
     private readonly aadApiService: ApiService,
     private readonly dynamicMethodService: DynamicMethodService,
-    private readonly entlTypeService: RequestableEntitlementTypeService) {
+    private readonly entlTypeService: RequestableEntitlementTypeService,
+  ) {
     this.logger.info(this, '🔥 AAD loaded');
     this.initService.onInit();
 
     this.entlTypeService.Register(async () => [
-      new RequestableEntitlementType("AADDeniedServicePlan",
+      new RequestableEntitlementType(
+        'AADDeniedServicePlan',
         this.aadApiService.apiClient,
-        "UID_AADDeniedServicePlan",
-        this.dynamicMethodService)
+        'UID_AADDeniedServicePlan',
+        this.dynamicMethodService,
+      ),
     ]);
     this.logger.info(this, '▶️ AAD initialized');
   }

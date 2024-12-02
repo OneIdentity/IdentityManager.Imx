@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,16 @@
  *
  */
 
-import { EntityWriteDataColumn, IFkCandidateProvider, IEntityColumn, ParameterData, ReadWriteExtTypedEntity } from 'imx-qbm-dbts';
-import { ParameterContainer } from 'qer';
-import { ClassloggerService, ImxTranslationProviderService } from 'qbm';
 import { EventEmitter } from '@angular/core';
+import {
+  EntityWriteDataColumn,
+  IEntityColumn,
+  IFkCandidateProvider,
+  ParameterData,
+  ReadWriteExtTypedEntity,
+} from '@imx-modules/imx-qbm-dbts';
+import { ClassloggerService, ImxTranslationProviderService } from 'qbm';
+import { ParameterContainer } from 'qer';
 
 export class ReportParameterWrapper {
   public startWriteData = new EventEmitter<string>();
@@ -40,7 +46,7 @@ export class ReportParameterWrapper {
     private readonly logger: ClassloggerService,
     private parameters: ParameterData[],
     private getFkProviderItems: (parameter: ParameterData) => IFkCandidateProvider,
-    private typedEntity: ReadWriteExtTypedEntity<ParameterData[][],EntityWriteDataColumn[][]>
+    private typedEntity: ReadWriteExtTypedEntity<ParameterData[][], EntityWriteDataColumn[][]>,
   ) {
     this.container = new ParameterContainer(this.translationService, this.getFkProviderItems, this.logger, this.typedEntity);
     this.container.updateExtendedDataTriggered.subscribe((columnName) => {
@@ -65,7 +71,9 @@ export class ReportParameterWrapper {
         const newParameters: ParameterData[] = this.typedEntity.extendedDataRead[0];
 
         newParameters.forEach((parameter) => {
-          this.container.update(parameter.Property.ColumnName, parameter);
+          if (parameter.Property?.ColumnName) {
+            this.container.update(parameter.Property.ColumnName, parameter);
+          }
           // TODO: remove parameters not returned by the server
         });
 
@@ -76,16 +84,18 @@ export class ReportParameterWrapper {
     }
 
     this.parameters?.forEach((parameter) => {
-      const extendedDataGenerator = (newValue) => [
-        [
-          {
-            Name: parameter.Property.ColumnName,
-            Value: newValue,
-          },
-        ],
-      ];
-      const column = this.container.add(parameter.Property.ColumnName, parameter, extendedDataGenerator);
-      columns.push(column);
+      if (parameter.Property?.ColumnName) {
+        const extendedDataGenerator = (newValue) => [
+          [
+            {
+              Name: parameter?.Property?.ColumnName,
+              Value: newValue,
+            },
+          ],
+        ];
+        const column = this.container.add(parameter.Property.ColumnName, parameter, extendedDataGenerator);
+        if (column) columns.push(column);
+      }
     });
 
     return columns;

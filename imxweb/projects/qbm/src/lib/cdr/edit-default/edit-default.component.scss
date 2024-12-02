@@ -1,13 +1,9 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 
 :host {
   display: flex;
   flex-grow: 1;
   align-items: center;
-}
-
-.mat-form-field {
-  flex-grow: 1;
 }
 
 .imx-spacer {

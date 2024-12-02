@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,6 @@
  */
 
 export class SeriesInformation {
-
   /**
    * Gets the name of the serie
    */
@@ -34,7 +33,7 @@ export class SeriesInformation {
   /**
    * Gets the color of the serie
    */
-  public readonly color: string;
+  public readonly color?: string;
 
   /**
    * Gets the values of the serie
@@ -51,6 +50,6 @@ export class SeriesInformation {
    * Combines the axis data with its title, so that it's useable by the billboard.js ChartOptions
    */
   public getSerie(): any[] {
-    return ([this.name.replace(' ', '') as any]).concat(this.values);
+    return [this.name.replace(' ', '') as any].concat(this.values);
   }
 }

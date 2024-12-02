@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,7 +34,10 @@ import { MfaFormControlComponent } from './mfa-form-control/mfa-form-control.com
   providedIn: 'root',
 })
 export class InitService {
-  constructor(private readonly extService: ExtService, private readonly router: Router) {}
+  constructor(
+    private readonly extService: ExtService,
+    private readonly router: Router,
+  ) {}
 
   public onInit(routes: Route[]): void {
     this.addRoutes(routes);
@@ -42,7 +45,7 @@ export class InitService {
     this.extService.register('mfaComponent', {
       instance: MfaComponent,
     });
-    
+
     this.extService.register('authenticator', {
       instance: MfaFormControlComponent,
     });

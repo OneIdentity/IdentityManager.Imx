@@ -1,0 +1,64 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "dpr",
+  "sourceRoot": "projects/dpr/src",
+  "implicitDependencies": ["qbm"],
+  "projectType": "library",
+  "prefix": "imx",
+  "generators": {
+    "@schematics/angular:component": {
+      "style": "scss"
+    }
+  },
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:ng-packagr",
+      "options": {
+        "tsConfig": "projects/dpr/tsconfig.lib.json",
+        "project": "projects/dpr/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "projects/dpr/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "projects/dpr/tsconfig.lib.json"
+        },
+        "dynamic": {
+          "project": "projects/dpr/ng-package.dynamic.json"
+        },
+        "remote-dev": {
+          "tsConfig": "projects/dpr/tsconfig.lib.json"
+        },
+        "remote-qs": {
+          "tsConfig": "projects/dpr/tsconfig.lib.json"
+        }
+      },
+      "outputs": ["{workspaceRoot}/dist/dpr"]
+    },
+    "test": {
+      "executor": "@angular-devkit/build-angular:karma",
+      "options": {
+        "main": "projects/dpr/src/test.ts",
+        "tsConfig": "projects/dpr/tsconfig.spec.json",
+        "karmaConfig": "projects/dpr/karma.conf.js",
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "./shared/assets",
+            "./shared/scss",
+            "./node_modules",
+            "./node_modules/@elemental-ui/cadence-icon",
+            "./node_modules/@elemental-ui/core"
+          ]
+        }
+      }
+    },
+    "lint": {
+      "executor": "@angular-devkit/build-angular:tslint",
+      "options": {
+        "tsConfig": ["projects/dpr/tsconfig.lib.json", "projects/dpr/tsconfig.spec.json"],
+        "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+      }
+    }
+  }
+}

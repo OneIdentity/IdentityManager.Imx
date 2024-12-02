@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,16 +28,16 @@ import { Component, ElementRef, EventEmitter, OnDestroy, ViewChild } from '@angu
 import { UntypedFormControl, Validators } from '@angular/forms';
 import { Subject, Subscription } from 'rxjs';
 
-import { ColumnDependentReference } from '../column-dependent-reference.interface';
-import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
-import { EntityColumnContainer } from '../entity-column-container';
 import { ClassloggerService } from '../../classlogger/classlogger.service';
-import { Base64ImageService } from '../../images/base64-image.service';
 import { FileSelectorService } from '../../file-selector/file-selector.service';
+import { Base64ImageService } from '../../images/base64-image.service';
+import { CdrEditor, ValueHasChangedEventArg } from '../cdr-editor.interface';
+import { ColumnDependentReference } from '../column-dependent-reference.interface';
+import { EntityColumnContainer } from '../entity-column-container';
 
 /**
  * Provides a {@link CdrEditor | CDR editor} for editing / viewing image data columns.
- * 
+ *
  * To change its value, it uses an {@link ImageSelectComponent | image select component}.
  * When set to read-only, it uses an {@link ImageViewComponent | image view component} to display the content.
  */
@@ -55,7 +55,7 @@ export class EditImageComponent implements CdrEditor, OnDestroy {
   /**
    * Gets a small hint, if the file format is not supported.
    */
-  public get fileFormatHint(): string {
+  public get fileFormatHint(): string | undefined {
     return this.fileFormatError ? '#LDS#Please select an image in PNG format.' : undefined;
   }
 
@@ -92,11 +92,11 @@ export class EditImageComponent implements CdrEditor, OnDestroy {
   constructor(
     private readonly logger: ClassloggerService,
     private readonly imageProvider: Base64ImageService,
-    private readonly fileSelector: FileSelectorService
+    private readonly fileSelector: FileSelectorService,
   ) {
     this.subscriptions.push(
       this.fileSelector.fileFormatError.subscribe(() => (this.fileFormatError = true)),
-      this.fileSelector.fileSelected.subscribe((filepath) => this.writeValue(this.imageProvider.getImageData(filepath)))
+      this.fileSelector.fileSelected.subscribe((filepath) => this.writeValue(this.imageProvider.getImageData(filepath))),
     );
   }
 
@@ -124,7 +124,7 @@ export class EditImageComponent implements CdrEditor, OnDestroy {
         this.subscriptions.push(
           cdref.minlengthSubject.subscribe(() => {
             this.setValidators();
-          })
+          }),
         );
       }
       this.subscriptions.push(
@@ -137,7 +137,7 @@ export class EditImageComponent implements CdrEditor, OnDestroy {
             this.control.setValue(this.columnContainer.value, { emitEvent: false });
           }
           this.valueHasChanged.emit({ value: this.control.value });
-        })
+        }),
       );
 
       this.subscriptions.push(
@@ -154,7 +154,7 @@ export class EditImageComponent implements CdrEditor, OnDestroy {
             } finally {
             }
           });
-        })
+        }),
       );
     }
   }
@@ -171,8 +171,8 @@ export class EditImageComponent implements CdrEditor, OnDestroy {
    * @param files A list of files to emit as *.png.
    */
   // TODO: Check Upgrade
-  public emitFiles(files: FileList): void {
-    this.fileSelector.emitFiles(files, 'image/png');
+  public emitFiles(files: EventTarget | null): void {
+    this.fileSelector.emitFiles((files as any).files, 'image/png');
   }
 
   /**
@@ -202,7 +202,7 @@ export class EditImageComponent implements CdrEditor, OnDestroy {
    * Updates the value for the CDR.
    * @param value The new image url, that will be used as the new value.
    */
-  private async writeValue(value: string): Promise<void> {
+  private async writeValue(value: string | undefined): Promise<void> {
     this.logger.debug(this, 'writeValue called with value', value);
 
     if (!this.columnContainer.canEdit || this.columnContainer.value === value) {

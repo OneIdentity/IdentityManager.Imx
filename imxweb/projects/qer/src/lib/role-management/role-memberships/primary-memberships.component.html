@@ -1,5 +1,5 @@
-<div class="imx-tab-content-body">
-  <mat-card>
+<div class="imx-tab-content-body imx-padding-for-cards">
+  <mat-card class="imx-card-sidesheet">
     <imx-data-source-toolbar
       data-imx-identifier="roles-memberships-primary-dst"
       #dst
@@ -14,7 +14,7 @@
       #dataTable
       data-imx-identifier="roles-memberships-primary-table"
       [dst]="dst"
-      detailViewVisible="false"
+      [detailViewVisible]="false"
       mode="auto"
       [selectable]="false"
       [showSelectionInfo]="false"

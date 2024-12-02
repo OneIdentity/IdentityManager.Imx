@@ -1,10 +1,11 @@
 <div class="flex-container">
-  <h1 class="mat-headline" translate>#LDS#Configuration</h1>
+  <h2 class="mat-headline-5" translate>#LDS#Configuration</h2>
 
   <div class="config-summary">
-    <mat-form-field class="project-selector">
+    <!-- Use dynamic subscript as there are no error states -->
+    <mat-form-field class="project-selector" appearance="outline" subscriptSizing="dynamic">
       <mat-label>{{ '#LDS#Show configuration for the following API project' | translate }}</mat-label>
-      <mat-select (selectionChange)="optionSelected($event.value)" [(ngModel)]="configSvc.appId">
+      <mat-select (selectionChange)="optionSelected($event.value)" [value]="configSvc.appId">
         <mat-option *ngFor="let pr of apiProjects" [value]="pr.AppId">
           {{ pr.DisplayName }}
         </mat-option>
@@ -12,7 +13,7 @@
     </mat-form-field>
 
     <div class="config-changes">
-      <button [matMenuTriggerFor]="revertMenu" mat-raised-button color="secondary">
+      <button [matMenuTriggerFor]="revertMenu" mat-icon-button color="secondary">
         <mat-icon>more_vert</mat-icon>
       </button>
       <mat-menu #revertMenu="matMenu">
@@ -30,13 +31,24 @@
           {{ '#LDS#Create configuration key' | translate }}
         </button>
 
-        <button mat-menu-item data-imx-identifier="admin-delete-config-setting-button" (click)="openDeleteSidesheet()" *ngIf="configSvc.deletableKeys.length > 0">
+        <button
+          mat-menu-item
+          data-imx-identifier="admin-delete-config-setting-button"
+          (click)="openDeleteSidesheet()"
+          *ngIf="configSvc.deletableKeys.length > 0"
+        >
           {{ '#LDS#Delete configuration key' | translate }}
         </button>
       </mat-menu>
 
-      <button mat-raised-button color="primary" data-imx-identifier="admin-apply-config-change" [disabled]="configSvc.pendingChangeCount == 0" (click)="openApplySidesheet()">
-        {{ '#LDS#Apply' | translate | ldsReplace : [configSvc.pendingChangeCount] }}
+      <button
+        mat-flat-button
+        color="primary"
+        data-imx-identifier="admin-apply-config-change"
+        [disabled]="configSvc.pendingChangeCount == 0"
+        (click)="openApplySidesheet()"
+      >
+        {{ '#LDS#Apply' | translate | ldsReplace: [configSvc.pendingChangeCount] }}
       </button>
     </div>
   </div>
@@ -46,26 +58,27 @@
       #dataSourceToolbar
       [alwaysVisible]="true"
       [settings]="dstSettings"
-      (search)="onSearch($event)"
-      (navigationStateChanged)="getData($event)"
+      (search)="getData()"
+      (navigationStateChanged)="getData()"
       [options]="['search', 'filter']"
     >
     </imx-data-source-toolbar>
+    <imx-busy-indicator *ngIf="loading"></imx-busy-indicator>
+    <cdk-virtual-scroll-viewport itemSize="10">
+      <div class="imx-margin-bottom-2">
+        <ng-container>
+          <div *ngIf="sectionsFiltered.length == 0 && !loading" class="imx-no-results">
+            <eui-icon size="xl" [icon]="'search'"></eui-icon>
+            {{ '#LDS#There are no configuration keys matching your search.' | translate }}
+          </div>
 
-    <cdk-virtual-scroll-viewport itemSize="2">
-      <div [ngClass]="{ loading: loading }">
-        <mat-spinner *ngIf="loading" [attr.aria-label]="'#LDS#Loading...' | translate"></mat-spinner>
-
-        <ng-container *ngIf="!loading">
-          <div *ngIf="sectionsFiltered.length == 0" class="no-results"><eui-icon [icon]="'search'"></eui-icon>{{ '#LDS#There are no configuration keys matching your search.' | translate }}</div>
-
-          <ng-container *cdkVirtualFor="let section of sectionsFiltered; trackBy: sectionTrackByFn">
+          <ng-container *cdkVirtualFor="let section of sectionsFiltered">
             <h2 class="section-header">{{ section.Title }}</h2>
 
             <p class="section-subtitle">{{ section.Description }}</p>
 
-            <mat-accordion>
-              <mat-expansion-panel *ngFor="let conf of section.Keys; trackBy: confTrackByFn">
+            <mat-accordion class="imx-margin-bottom-2">
+              <mat-expansion-panel *ngFor="let conf of section.Keys; trackBy: confTrackByFn" class="imx-margin-right-5">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
                     <config-key-path [path]="conf.DisplayPath"></config-key-path>
@@ -92,7 +105,9 @@
                   </ng-container>
                   <ng-container *ngIf="!isArray(conf)">
                     <ng-container *ngIf="isBoolean(conf)">
-                      <mat-checkbox [(ngModel)]="conf.Value" (change)="onChangeEvent(conf)">{{ conf.DisplayPath[conf.DisplayPath.length - 1] }} </mat-checkbox>
+                      <mat-checkbox [(ngModel)]="conf.Value" (change)="onChangeEvent(conf)"
+                        >{{ conf.DisplayPath[conf.DisplayPath.length - 1] }}
+                      </mat-checkbox>
                       <p class="key-description">{{ conf.Description }}</p>
                     </ng-container>
                     <ng-container *ngIf="!isBoolean(conf)">
@@ -116,7 +131,15 @@
                           <input matInput [(ngModel)]="conf.Value" type="number" min="0" step="0.01" (change)="onChangeEvent(conf)" />
                         </ng-container>
                         <ng-container *ngIf="conf.Type == ConfigSettingType.RiskIndex">
-                          <input matInput [(ngModel)]="conf.Value" type="number" min="0" max="1" step="0.01" (change)="onChangeEvent(conf)" />
+                          <input
+                            matInput
+                            [(ngModel)]="conf.Value"
+                            type="number"
+                            min="0"
+                            max="1"
+                            step="0.01"
+                            (change)="onChangeEvent(conf)"
+                          />
                         </ng-container>
 
                         <ng-container *ngIf="conf.Type == ConfigSettingType.None || conf.Type == ConfigSettingType.Sql">
@@ -164,9 +187,9 @@
                       </ng-container>
                     </ng-container>
 
-                    <div class="buttonbar">
+                    <div class="imx-margin-top-15">
                       <button
-                        mat-raised-button
+                        mat-flat-button
                         matTooltip="{{ '#LDS#Resets this setting to its original value.' | translate }}"
                         color="primary"
                         data-imx-identifier="admin-revert-setting"

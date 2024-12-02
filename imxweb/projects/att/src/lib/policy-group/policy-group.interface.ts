@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,10 +24,10 @@
  *
  */
 
-import { PolicyFilterData, PortalAttestationPolicygroups } from 'imx-api-att';
+import { PolicyFilterData, PortalAttestationPolicygroups } from '@imx-modules/imx-api-att';
 export interface PolicyGroup {
   policyGroup: PortalAttestationPolicygroups;
   filterData: PolicyFilterData;
-  isNew?: boolean;
+  isNew: boolean;
   isComplienceFrameworkEnabled: boolean;
 }

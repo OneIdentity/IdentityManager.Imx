@@ -11,7 +11,7 @@
   flex: 1 1 auto;
   text-align: left;
   min-width: 0;
-  > ::ng-deep .mat-button-wrapper {
+  > ::ng-deep .mdc-button__label {
     color: $color-gray-100;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -30,10 +30,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-  mat-progress-bar {
-    flex-grow: 1;
-    width: auto;
   }
 }
 
@@ -71,7 +67,7 @@
     }
     .imx-tree-node:hover {
       background-color: $color-gray-0;
-      color: $color-gray-100
+      color: $color-gray-100;
     }
   }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,7 +34,10 @@ export class ElementVisibilityDirective implements OnInit, OnDestroy {
 
   @Output() public elementVisibile = new EventEmitter<boolean>();
 
-  constructor(private element: ElementRef<HTMLElement>, private zone: NgZone) {}
+  constructor(
+    private element: ElementRef<HTMLElement>,
+    private zone: NgZone,
+  ) {}
 
   public ngOnInit(): void {
     this.zone.runOutsideAngular(() => {

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,34 +27,35 @@
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { Component, ErrorHandler, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
-import { OverlayRef } from '@angular/cdk/overlay';
 import { MatRadioChange } from '@angular/material/radio';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
 import { AuthenticationService, BaseCdr, ISessionState } from 'qbm';
 import { PersonService } from 'qer';
-import { ClaimGroupService } from './claim-group.service';
 import { TargetSystemService } from '../target-system/target-system.service';
+import { ClaimGroupService } from './claim-group.service';
 
 @Component({
   styleUrls: ['./claim-group.component.scss'],
-  templateUrl: './claim-group.component.html'
+  templateUrl: './claim-group.component.html',
 })
 export class ClaimGroupComponent implements OnInit, OnDestroy {
-  public get ownerDisplay(): string { return this.ownerCdr ? this.ownerCdr.column.GetDisplayValue() : this.user.name; }
+  public get ownerDisplay(): string {
+    return this.ownerCdr ? this.ownerCdr.column.GetDisplayValue() : this.user.name;
+  }
 
   public entitlementCdr: BaseCdr;
   public ownerCdr: BaseCdr;
-  public ownershipOptions: { title: string; createOwnerCdr: () => BaseCdr; }[];
+  public ownershipOptions: { title: string; createOwnerCdr: () => BaseCdr | undefined }[] = [];
   public ownerAssigned = false;
   public canClaimGroup = false;
 
   public readonly entitlementForm = new UntypedFormGroup({});
   public readonly ownerForm = new UntypedFormGroup({});
 
-  private readonly entitlementFkValue: { table?: string, key?: string } = { };
-  private readonly user: { uid?: string; name?: string; } = { };
+  private readonly entitlementFkValue: { table: string; key: string } = { table: '', key: '' };
+  private readonly user: { uid: string; name: string } = { uid: '', name: '' };
   private readonly subscriptions: Subscription[] = [];
 
   constructor(
@@ -63,31 +64,32 @@ export class ClaimGroupComponent implements OnInit, OnDestroy {
     private readonly personService: PersonService,
     private readonly busyService: EuiLoadingService,
     private readonly authentication: AuthenticationService,
-    private readonly errorHandler: ErrorHandler
+    private readonly errorHandler: ErrorHandler,
   ) {
     this.initEntitlementCdr();
 
-    this.subscriptions.push(this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
-      if (sessionState) {
-        this.user.uid = sessionState.UserUid;
-        this.user.name = sessionState.Username;
-      }
-    }));
+    this.subscriptions.push(
+      this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
+        if (sessionState) {
+          this.user.uid = sessionState.UserUid!;
+          this.user.name = sessionState.Username!;
+        }
+      }),
+    );
   }
 
   public async ngOnInit(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    this.showBusyIndicator();
     try {
       // TODO wrap in cache
       this.canClaimGroup = (await this.targetSystem.getUserConfig()).CanClaimGroup;
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   public resetForms(): void {
@@ -121,12 +123,11 @@ export class ClaimGroupComponent implements OnInit, OnDestroy {
 
     let hasSuggestedOwners = false;
 
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    this.showBusyIndicator();
     try {
       hasSuggestedOwners = await this.claimGroupService.hasSuggestedOwners(this.entitlementFkValue.table, this.entitlementFkValue.key);
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
 
     const display = '#LDS#Designated owner'; // TODO: globalize;
@@ -135,57 +136,61 @@ export class ClaimGroupComponent implements OnInit, OnDestroy {
 
     this.ownershipOptions.push({
       title: '#LDS#I want to take ownership of this system entitlement',
-      createOwnerCdr: () => undefined
+      createOwnerCdr: () => undefined,
     });
 
     if (hasSuggestedOwners) {
       this.ownershipOptions.push({
         title: '#LDS#Select from the suggested possible owners',
-        createOwnerCdr: () => new BaseCdr(
-          this.claimGroupService.createColumnSuggestedOwner(this.entitlementFkValue.table, this.entitlementFkValue.key),
-          display
-        )
+        createOwnerCdr: () =>
+          new BaseCdr(
+            this.claimGroupService.createColumnSuggestedOwner(this.entitlementFkValue.table, this.entitlementFkValue.key),
+            display,
+          ),
       });
     }
 
     this.ownershipOptions.push({
       title: '#LDS#Select another owner',
-      createOwnerCdr: () => new BaseCdr(
-        this.personService.createColumnCandidatesPerson(),
-        display
-      )
+      createOwnerCdr: () => new BaseCdr(this.personService.createColumnCandidatesPerson(), display),
     });
 
     this.initOwnerCdr(this.ownershipOptions[0].createOwnerCdr());
   }
 
   public async assignOwner(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    this.showBusyIndicator();
     try {
       await this.claimGroupService.assignOwner(
         this.entitlementFkValue.table,
         this.entitlementFkValue.key,
-        this.ownerCdr ? this.ownerCdr.column.GetValue() : this.user.uid
+        this.ownerCdr ? this.ownerCdr.column.GetValue() : this.user.uid,
       );
 
       this.ownerAssigned = true;
     } catch (error) {
       this.errorHandler.handleError(error);
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
   }
 
   private initEntitlementCdr(): void {
-    Object.keys(this.entitlementForm.controls).forEach(name => this.entitlementForm.removeControl(name));
+    Object.keys(this.entitlementForm.controls).forEach((name) => this.entitlementForm.removeControl(name));
 
     this.entitlementCdr = this.claimGroupService.createCdrSystemEntitlement();
   }
 
-  private initOwnerCdr(cdr: BaseCdr): void {
-    Object.keys(this.ownerForm.controls).forEach(name => this.ownerForm.removeControl(name));
+  private initOwnerCdr(cdr: BaseCdr | undefined): void {
+    Object.keys(this.ownerForm.controls).forEach((name) => this.ownerForm.removeControl(name));
+    if (cdr) {
+      this.ownerCdr = cdr;
+    }
+  }
 
-    this.ownerCdr = cdr;
+  private showBusyIndicator(): void {
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
   }
 }

@@ -1,49 +1,47 @@
 # Adding a tile component to the dashboard
 
-The IMX Portal landing page consists of the IMX Dashboard component, which can be found in the QER library (projects\qer\src\lib\wport\start).
+The landing page of the Web Portal consists of the `IMX Dashboard` component, which can be found in the QER library (projects\qer\src\lib\wport\start).
 
-It is composed of 3 sections with different tiles.
+It consists of three sections with different tiles.
 
 ![Dashboard](../../assets/images/dashboard/1-dashboard.png)
 
-
-Tiles can be added dynamically to the dashboard. The following example gives an overview of the different types of tiles and demonstrates how to add a new element - the blue bordered tile - to the dashboard.
+Tiles can be added dynamically to the dashboard. In the following example you can get an overview of the different types of tiles and learn how to add a new element (the `Block Identity` tile) to the dashboard.
 
 
 ## Dashboard tiles
 
-The Tiles modules (projects\qbm\src\lib\tile) and (projects\qer\src\lib\tiles) offer different base components :
+The `Tiles` modules (projects\qbm\src\lib\tile and projects\qer\src\lib\tiles) offer different base components:
 
-- TileComponent (QBM)
-- BadgeTileComponent (QER)
-- IconTileComponent (QER)
-- NotificationTileComponent (QER)
+- [`TileComponent`](../../components/TileComponent.html) (QBM)
+- `BadgeTileComponent` (QER)
+- `IconTileComponent` (QER)
+- `NotificationTileComponent`(QER)
 
+These components are variations of the same concept.
 
-These components are variations of the same concept. In the further course we will implement a new tile based on the IconTileComponent.
+The new tile that is added in this example is based on the `IconTileComponent`.
 
+## Implementing a "Block Identity" tile
 
-## Implementing the "Block Identity" Tile
+This example is based on the following fictitious scenario:\
+There is a security breach and an administrator wants to block the account of the affected identity using a tile on the dashboard. The implementation of this scenario consists of several examples.
 
-What is the fictitious but realistic scenario we will implement?
-There is a security breach and an administrator wants to block the account of the affected identity. The implementation of this scenario will span several examples. Here we will first create the tile that can trigger that process.
-
-### Creating the "Block Identity" Component
-
-First we need to create the "Block Identity" component. We assume that the reader has a basic knowledge of the Angular framework and knows how to create components, services, etc.
-
-The component consists of 3 files, but we will not pay further attention to the stylesheet.
-
-![Block Identity Component](../../assets/images/dashboard/2-block-identity-component.png)
-
-### The anatomy of the "Block Identity" component
-
-Basically, the component consists of 2 parts, a Typescript file and the corresponding HTML template.
+![BlockTile](../../assets/images/dashboard/2-dashboard.png)
 
 
-The HTML template is based on the previously mentioned IconTileComponent component.
+### Creating the "Block Identity" component
 
-> Code
+At first, the `Block Identity` component has to be created.
+
+The component consists of the following files:
+- `block-identity.component.html`
+- `block-identity.component.scss`
+- `block-identity.component.ts`
+
+The main parts of the component are a Typescript file and the corresponding HTML template.
+
+The HTML template is based on the previously mentioned `IconTileComponent` component.
 
 ``` html
 <imx-icon-tile caption="Block Identity" image="userremove" [subtitle]="description">
@@ -57,15 +55,12 @@ The HTML template is based on the previously mentioned IconTileComponent compone
 </imx-icon-tile>
 ```
 
-The IconTileComponent expects some input fields like "caption", "image" or "subtitle". Which tiles components expect which inputs can be found in the Tiles Module.
+The `IconTileComponent` expects some input fields like `caption`, `image` or `subtitle`. You can find out which tile components expect which inputs in the `Tiles` module.
 
-> NOTE
+NOTE: IMX components and applications are based on the One Identity Elemental UI framework, which extends Angular Material. The `eui-icon` tag is such an Elemental UI component (https://elemental.dev.oneidentity.com/).
 
-> IMX components and applications are based on the One Identity Elemental UI framework, which in turn extends Angular Material.  The "eui-icon" tag is such an Elemental UI component (https://elemental.dev.oneidentity.com/)
+The corresponding `*.ts` component sets the `Description` property/input used in the template and implements the "block()" method.
 
-The corresponding *.ts component is not very exciting. On the other hand it sets the "Description" property/input used in the template and implements the (dummy) "block()" method.
-
-> Code
 ``` ts
 import { Component } from '@angular/core';
 
@@ -86,16 +81,12 @@ export class BlockIdentityComponent  {
 }
 ```
 
-That's all we need at this time for the "Block Identity" component.
+### Integrating the "Block Identity" component
 
-## Wiring it up
-The next step is to include the component into the dashboard.
-To do this, we must make it available to the web application, in this case the portal.
-This is done in the init service of the corresponding library (don't worry, there will be more samples on the topic).
+To include the component into the dashboard, it must be made available to the web application (in this case the Web Portal).
+This is done in the `init` service of the corresponding library.
 
-Here is the relevant section of the service.
-
-> Code
+The relevant section of the service:
 
 ``` ts
 @Injectable({ providedIn: 'root' })
@@ -110,10 +101,4 @@ export class InitService {
 
 The final result looks like this.
 
-
 ![block-identity.component.ts](../../assets/images/dashboard/5-block-identity-button.png)
-
-
-
-
-

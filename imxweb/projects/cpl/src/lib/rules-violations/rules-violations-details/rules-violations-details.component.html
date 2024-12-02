@@ -1,35 +1,48 @@
-<mat-tab-group>
+<mat-tab-group mat-stretch-tabs="false">
   <mat-tab [label]="'#LDS#Heading Information' | translate">
-    <div class="imx-mat-tab-container" eui-sidesheet-content>
+    <div class="imx-tab-container" eui-sidesheet-content>
       <mat-card>
         <div class="imx-state-caption">
           {{ data.selectedRulesViolation?.State?.GetMetadata()?.GetDisplay() }}
         </div>
-        <eui-badge [color]="data.selectedRulesViolation?.stateBadge?.color" *ngIf="data.selectedRulesViolation?.State?.value">
+        <eui-badge
+          class="imx-margin-bottom-20"
+          [color]="data.selectedRulesViolation?.stateBadge?.color"
+          *ngIf="data.selectedRulesViolation?.State?.value"
+        >
           {{ data.selectedRulesViolation?.stateBadge?.caption }}
         </eui-badge>
         <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr"></imx-cdr-editor>
         <imx-cdr-editor *ngFor="let cdr of ruleInfoCdrList" [cdr]="cdr"></imx-cdr-editor>
       </mat-card>
     </div>
-    <div eui-sidesheet-actions *ngIf="data.selectedRulesViolation?.CanUserDecide.value" >
+    <div eui-sidesheet-actions *ngIf="!!data.selectedRulesViolation?.CanUserDecide?.value">
       <button mat-stroked-button (click)="resolve()" data-imx-identifier="rules-violations-table-row-button-resolve">
         {{ '#LDS#Resolve rule violation' | translate }}
       </button>
-      <button mat-stroked-button (click)="approve()" data-imx-identifier="rules-violations-table-row-button-approve">
-        {{ '#LDS#Grant exception' | translate }}
-      </button>
-      <button mat-stroked-button (click)="deny()" data-imx-identifier="rules-violations-table-row-button-deny">
+      <button mat-flat-button color="warn" (click)="deny()" data-imx-identifier="rules-violations-table-row-button-deny">
+        <eui-icon icon="ignore"></eui-icon>
         {{ '#LDS#Deny exception' | translate }}
+      </button>
+      <button mat-flat-button color="primary" (click)="approve()" data-imx-identifier="rules-violations-table-row-button-approve">
+        <eui-icon icon="check"></eui-icon>
+        {{ '#LDS#Grant exception' | translate }}
       </button>
     </div>
   </mat-tab>
   <mat-tab *ngIf="data.isMControlPerViolation">
     <ng-template mat-tab-label>
       <span translate>#LDS#Heading Mitigating Controls</span>
-      <eui-icon  *ngIf="mitig?.isDirty" icon="save" class="imx-dirty-indicator" size="s" [attr.aria-label]="'#LDS#You have unsaved changes.' | translate"></eui-icon>
+      <eui-icon
+        *ngIf="mitig?.isDirty"
+        icon="save"
+        class="imx-dirty-indicator"
+        size="s"
+        [attr.aria-label]="'#LDS#You have unsaved changes.' | translate"
+      ></eui-icon>
     </ng-template>
-    <imx-mitigating-controls-person #mitig
+    <imx-mitigating-controls-person
+      #mitig
       [isMControlPerViolation]="data.isMControlPerViolation"
       [uidPerson]="uidPerson"
       [closeOnSave]="false"
@@ -38,6 +51,6 @@
     ></imx-mitigating-controls-person>
   </mat-tab>
   <mat-tab *ngIf="showDynamicTab" [label]="'#LDS#Heading SAP Functions' | translate">
-    <imx-ext id="RuleViolationsTab" [properties]="{'data': data}"></imx-ext>
+    <imx-ext id="RuleViolationsTab" [properties]="{ data: data }"></imx-ext>
   </mat-tab>
 </mat-tab-group>

@@ -1,39 +1,11 @@
-@import "@elemental-ui/core/src/styles/_palette.scss";
+@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
-.eui-sidesheet-content {
-  display: flex;
-  flex-direction: column;
-}
 
 :host {
-  .eui-badge ::ng-deep .eui-badge-content {
-    font-size: 12px;
-    line-height: 12px;
-    margin-bottom: 20px;
-  }
-
-  .imx-helper-alert {
-    width: 100%;
-
-    ::ng-deep .eui-alert {
-      margin-bottom: 20px;
-    }
-  }
-
   .imx-sidesheet-content {
     display: flex;
     flex-direction: column;
     height: 100%;
-  }
-
-  .eui-sidesheet-actions {
-    .justify-start {
-      margin-right: auto;
-    }
-
-    button:not(:last-of-type):not(.justify-start) {
-      margin-right: 10px;
-    }
   }
 
   .imx-errormessages {
@@ -45,22 +17,16 @@
   }
 }
 
-.eui-dark-theme{
-  :host{
+.eui-dark-theme {
+  :host {
     background-color: $color-gray-80;
     color: $color-gray-2;
-    .eui-sidesheet-actions{
-      background-color: $color-gray-70;
-    }
   }
 }
 
-.eui-contrast-theme{
-  :host{
+.eui-contrast-theme {
+  :host {
     background-color: $color-gray-100;
     color: $color-gray-2;
-    .eui-sidesheet-actions{
-      background-color: $color-gray-90;
-    }
   }
 }

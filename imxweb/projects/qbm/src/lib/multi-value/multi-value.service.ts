@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,20 +26,20 @@
 
 import { Injectable } from '@angular/core';
 
-import { MultiValue } from 'imx-qbm-dbts';
+import { MultiValue } from '@imx-modules/imx-qbm-dbts';
 
 /**
  * Service providing conversion to and from MultiValue with the default separator (MultiValueProperty.DefaultSeparator)
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MultiValueService {
-  public getValues(value: string): string[] {
-    return value != null ? MultiValue.FromString(value).GetValues() : undefined;
+  public getValues(value: string | undefined): string[] | undefined {
+    return !!value ? MultiValue.FromString(value).GetValues() : undefined;
   }
 
-  public getMultiValue(values: string[]): string {
-    return values != null ? new MultiValue(values).GetStringValue() : undefined;
+  public getMultiValue(values: string[]): string | undefined {
+    return !!values ? new MultiValue(values).GetStringValue() : undefined;
   }
 }

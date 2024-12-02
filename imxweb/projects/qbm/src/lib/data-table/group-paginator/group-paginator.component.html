@@ -1,1 +1,7 @@
-<mat-paginator [ngClass]="{'hide-paginator': !dataSourceHasData}" [showFirstLastButtons]="showFirstLastButtons" [pageSizeOptions]="pageSizeOptions" (page)="onPaginatorStateChanged($event)" data-imx-identifier="group-paginator"></mat-paginator>
+<mat-paginator
+  [ngClass]="{ 'hide-paginator': !dataSourceHasData }"
+  [showFirstLastButtons]="showFirstLastButtons"
+  [pageSizeOptions]="pageSizeOptions"
+  (page)="onPaginatorStateChanged($event)"
+  data-imx-identifier="group-paginator"
+></mat-paginator>

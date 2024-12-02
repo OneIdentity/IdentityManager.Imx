@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,30 +26,30 @@
 
 import { Injectable } from '@angular/core';
 
-import { ExtService } from 'qbm';
-
-import { ObjectOverviewPersonComponent } from './ops/objectOverviewPerson.component';
-import { ShoppingCartValidationDetailService } from './shopping-cart-validation-detail/shopping-cart-validation-detail.service';
-import { ExclusionCheckComponent } from './shopping-cart-validation-detail/exclusion-check/exclusion-check.component';
 import { DuplicateCheckComponent } from './shopping-cart-validation-detail/duplicate-check/duplicate-check.component';
-// tslint:disable-next-line: max-line-length
+import { ExclusionCheckComponent } from './shopping-cart-validation-detail/exclusion-check/exclusion-check.component';
 import { ProductDependencyCheckComponent } from './shopping-cart-validation-detail/product-dependency-check/product-dependency-check.component';
+import { ShoppingCartValidationDetailService } from './shopping-cart-validation-detail/shopping-cart-validation-detail.service';
+import { ClassloggerService, ExtService } from 'qbm';
+import { QueueStatusComponent } from './queue/queue-status/queue-status.component';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class QerService {
   constructor(
-    private extService: ExtService,
     private readonly validationDetailService: ShoppingCartValidationDetailService,
-  ) { }
+    private logger: ClassloggerService,
+    private extService: ExtService,
+  ) {}
 
   public init(): void {
-
-    this.extService.register('QBM_ops_ObjectOverview_Actions', { instance: ObjectOverviewPersonComponent });
-
     this.validationDetailService.register(ExclusionCheckComponent, 'ExclusionCheck');
     this.validationDetailService.register(DuplicateCheckComponent, 'DuplicateCheck');
     this.validationDetailService.register(ProductDependencyCheckComponent, 'ProductDependencyCheck');
+    this.logger.info(this, '▶️ QueueStatusComponent loaded');
+    this.extService.register('queueMastButton', {
+      instance: QueueStatusComponent,
+    });
   }
 }

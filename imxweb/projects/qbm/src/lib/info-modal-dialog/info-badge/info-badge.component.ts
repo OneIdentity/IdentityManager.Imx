@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,8 +30,7 @@ import { InfoDialogComponent } from '../info-dialog/info-dialog.component';
 
 @Component({
   selector: 'imx-info-badge',
-  templateUrl: './info-badge.component.html',
-  styleUrls: ['./info-badge.component.scss'],
+  templateUrl: './info-badge.component.html'
 })
 export class InfoBadgeComponent {
   // width string = '400px'. Sets the width of the appearing dialog.

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,21 +24,20 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { EuiCoreModule } from '@elemental-ui/core';
+import { NgModule } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { EuiCoreModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { QbmModule } from 'qbm';
+import { SystemOverviewModule } from '../system-overview/system-overview.module';
 import { ServiceIssueComponent } from './service-issue.component';
 import { ServiceIssuesComponent } from './service-issues.component';
 import { ServiceIssuesService } from './service-issues.service';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-
-
 
 @NgModule({
   declarations: [ServiceIssueComponent, ServiceIssuesComponent],
@@ -50,9 +49,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatProgressSpinnerModule,
     QbmModule,
     EuiCoreModule,
-    TranslateModule
+    TranslateModule,
+    SystemOverviewModule,
   ],
   providers: [ServiceIssuesService],
-  exports: [ServiceIssuesComponent]
+  exports: [ServiceIssuesComponent],
 })
-export class ServiceIssuesModule { }
+export class ServiceIssuesModule {}

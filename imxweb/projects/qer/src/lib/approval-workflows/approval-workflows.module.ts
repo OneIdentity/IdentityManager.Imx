@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,8 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
@@ -36,27 +36,26 @@ import {
   ClassloggerService,
   DataSourceToolbarModule,
   DataTableModule,
+  HELP_CONTEXTUAL,
+  HelpContextualModule,
+  InfoModalDialogModule,
   LdsReplaceModule,
   MenuItem,
   MenuService,
   RouteGuardService,
-  InfoModalDialogModule,
   SelectedElementsModule,
-  HELP_CONTEXTUAL,
-  HelpContextualModule,
 } from 'qbm';
-import { ShopAdminGuardService } from '../guards/shop-admin-guard.service';
-import { FeatureGuardService } from '../guards/feature-guard.service';
 import { hasFeatures, isShopAdmin } from '../admin/qer-permissions-helper';
-import { ApprovalWorkflowHomeComponent } from './approval-workflow-home/approval-workflow-home.component';
+import { FeatureGuardService } from '../guards/feature-guard.service';
+import { ShopAdminGuardService } from '../guards/shop-admin-guard.service';
+import { ApprovalLevelFormComponent } from './approval-level-form/approval-level-form.component';
+import { ApprovalStepFormComponent } from './approval-step-form/approval-step-form.component';
 import { ApprovalWorkflowEditComponent } from './approval-workflow-edit/approval-workflow-edit.component';
 import { ContainerDomComponent } from './approval-workflow-edit/container-dom/container-dom.component';
-import { NodeDomComponent } from './approval-workflow-edit/node-dom/node-dom.component';
 import { EdgeDomComponent } from './approval-workflow-edit/edge-dom/edge-dom.component';
+import { NodeDomComponent } from './approval-workflow-edit/node-dom/node-dom.component';
 import { ApprovalWorkflowFormComponent } from './approval-workflow-form/approval-workflow-form.component';
-import { ApprovalStepFormComponent } from './approval-step-form/approval-step-form.component';
-import { ApprovalLevelFormComponent } from './approval-level-form/approval-level-form.component';
-import { ApprovalWorkflowEditInfoComponent } from './approval-workflow-edit/approval-workflow-edit-info/approval-workflow-edit-info.component';
+import { ApprovalWorkflowHomeComponent } from './approval-workflow-home/approval-workflow-home.component';
 
 const guardedFeatures = ['Portal_Preview_WorkflowEditor'];
 const routes: Routes = [
@@ -83,7 +82,6 @@ const routes: Routes = [
     ApprovalLevelFormComponent,
     ApprovalStepFormComponent,
     ApprovalWorkflowFormComponent,
-    ApprovalWorkflowEditInfoComponent,
   ],
   imports: [
     CommonModule,
@@ -102,7 +100,10 @@ const routes: Routes = [
   ],
 })
 export class ApprovalWorkFlowModule {
-  constructor(private readonly menuService: MenuService, logger: ClassloggerService) {
+  constructor(
+    private readonly menuService: MenuService,
+    logger: ClassloggerService,
+  ) {
     logger.info(this, '▶️ ApprovalWorkFlowModule loaded');
     this.setupMenu();
   }
@@ -121,7 +122,7 @@ export class ApprovalWorkFlowModule {
       }
 
       if (items.length === 0) {
-        return null;
+        return;
       }
       return {
         id: 'ROOT_Setup',

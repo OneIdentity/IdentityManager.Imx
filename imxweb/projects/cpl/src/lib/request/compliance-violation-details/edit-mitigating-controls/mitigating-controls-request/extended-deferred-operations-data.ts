@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,28 +26,34 @@
 
 import { FormControl } from '@angular/forms';
 
-import { DeferredOperationMControlData, PortalPersonMitigatingcontrols } from 'imx-api-cpl';
-import { ValType } from 'imx-qbm-dbts';
+import { DeferredOperationMControlData, PortalPersonMitigatingcontrols } from '@imx-modules/imx-api-cpl';
+import { ValType } from '@imx-modules/imx-qbm-dbts';
 import { BaseReadonlyCdr, ColumnDependentReference, EntityService } from 'qbm';
 import { MitigatingControlData } from './mitigating-control-data.interface';
 
 export class ExtendedDeferredOperationsData implements MitigatingControlData {
-  public formControl = new FormControl<string | undefined>(undefined);
+  public formControl: FormControl<string> = new FormControl('', { nonNullable: true });
   public cdrs: ColumnDependentReference[];
   public isDeferredData = true;
   public editable: boolean = false;
-  public get uidMitigatingControl() {
-    return this.deferred.Uid;
+  public get uidMitigatingControl(): string {
+    return this.deferred.Uid || '';
+  }
+  public set uidMitigatingControl(value: string) {
+    this.deferred.Uid = value;
   }
   public get displayMitigatingControls() {
-    return this.deferred.Display;
+    return this.deferred.Display || '';
   }
 
   public isInActive = true;
 
   public data = undefined;
 
-  constructor(private readonly deferred: DeferredOperationMControlData, entiyService: EntityService) {
+  constructor(
+    private readonly deferred: DeferredOperationMControlData,
+    entiyService: EntityService,
+  ) {
     const schema = PortalPersonMitigatingcontrols.GetEntitySchema();
     this.cdrs = [
       new BaseReadonlyCdr(
@@ -60,9 +66,9 @@ export class ExtendedDeferredOperationsData implements MitigatingControlData {
           {
             Value: deferred.Uid,
             DisplayValue: deferred.Display,
-          }
+          },
         ),
-        '#LDS#Mitigating control'
+        '#LDS#Mitigating control',
       ),
       new BaseReadonlyCdr(
         entiyService.createLocalEntityColumn(
@@ -74,9 +80,9 @@ export class ExtendedDeferredOperationsData implements MitigatingControlData {
           {
             Value: true,
             DisplayValue: '#LDS#Yes',
-          }
+          },
         ),
-        '#LDS#Inactive'
+        '#LDS#Inactive',
       ),
     ];
   }

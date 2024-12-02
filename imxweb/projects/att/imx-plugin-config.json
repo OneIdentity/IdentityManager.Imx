@@ -1,14 +1,14 @@
 {
-    "qer-app-portal": [
-        {
-            "Container": "att",
-            "Name": "AttConfigModule"
-        }
-    ],
-    "qer-app-pwdportal": [
-        {
-            "Container": "att",
-            "Name": "NewUserModule"
-        }
-    ]
+  "qer-app-portal": [
+    {
+      "Container": "att",
+      "Name": "AttConfigModule"
+    }
+  ],
+  "qer-app-pwdportal": [
+    {
+      "Container": "att",
+      "Name": "NewUserModule"
+    }
+  ]
 }

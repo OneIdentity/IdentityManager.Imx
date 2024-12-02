@@ -1,39 +1,35 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 @import '../new-request-global.scss';
 
-
 @include Layout-Styles;
 @include Table-Styles;
+
 :host {
   height: 100%;
   display: flex;
   flex-direction: column;
-
-  .imx-new-request-container{
+  .imx-new-request-container {
     height: 100%;
     display: flex;
     row-gap: 10px;
     column-gap: 24px;
-    overflow: hidden;
   }
-
-  .imx-chip-container{
+  .imx-chip-container {
     margin-left: 4px;
-    .chip-label{
+    .chip-label {
       font-size: 13px;
     }
-    eui-icon{
+    eui-icon {
       font-size: 18px;
       margin-right: -10px;
     }
   }
-
   .imx-tree-root {
     display: flex;
     align-items: center;
   }
 
-  .imx-no-accessible-servicecategories {
+  .imx-no-results {
     display: flex;
     margin: 20px 0;
     flex: 1 1 auto;
@@ -41,41 +37,39 @@
     flex-direction: column;
     align-items: center;
 
-    .eui-icon {
-      font-size: 100px;
-    }
-
     p {
       margin: 0;
       font-size: 18px;
     }
   }
-  .imx-card-container{
-    imx-data-table{
-      .imx-request-col-text, .imx-request-col-display{
-        display:block;
+  .imx-card-container {
+    imx-data-table {
+      .imx-request-col-text,
+      .imx-request-col-display {
+        display: block;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
         line-height: inherit;
       }
-      .imx-request-col-text{
+      .imx-request-col-text {
         max-width: 300px;
       }
-      .imx-request-col-text-long{
+      .imx-request-col-text-long {
         max-width: 400px;
       }
-      .imx-request-col-display{
+      .imx-request-col-display {
         max-width: 350px;
       }
     }
   }
-  .imx-card-container-wide{
-    imx-data-table{
-      .imx-request-col-text, .imx-request-col-display{
+  .imx-card-container-wide {
+    imx-data-table {
+      .imx-request-col-text,
+      .imx-request-col-display {
         max-width: 400px;
       }
-      .imx-request-col-text-long{
+      .imx-request-col-text-long {
         max-width: 800px;
       }
     }
@@ -84,51 +78,30 @@
 
 // Theming
 :host {
-  .imx-tree-root--selected > .colored-icon {
-    color: $color-orange-60;
-  }
-
-  .imx-no-accessible-servicecategories {
-    .eui-icon {
-      color: $color-gray-10;
-    }
-
+  .imx-no-results {
     p {
       color: $color-gray-50;
     }
   }
 }
 
-
 .eui-dark-theme {
   :host {
-    .imx-tree-root--selected > .colored-icon {
-      color: $color-orange-40;
-    }
-
-    .imx-no-accessible-servicecategories {
-      .eui-icon {
-        color: $color-gray-20;
-      }
-
+    .imx-no-results {
       p {
         color: $color-gray-10;
       }
+    }
+
+    .imx-tree-root {
+      color: $color-gray-0;
     }
   }
 }
 
 .eui-contrast-theme {
   :host {
-    .imx-tree-root--selected > .colored-icon {
-      color: $color-orange-40;
-    }
-
-    .imx-no-accessible-servicecategories {
-      .eui-icon {
-        color: $color-gray-10;
-      }
-
+    .imx-no-results {
       p {
         color: $color-gray-0;
       }

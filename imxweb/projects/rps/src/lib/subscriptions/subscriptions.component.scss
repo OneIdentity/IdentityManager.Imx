@@ -1,11 +1,8 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
-@import '../../../../../shared/scss/common-table.scss';
+@import 'base/mixins';
 
 :host {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  height: inherit;
+  @include flex-column-container-fill();
 }
 
 imx-data-table {
@@ -17,50 +14,18 @@ imx-data-table {
   margin-right: 10px;
 }
 
-:host ::ng-deep imx-data-table .mat-header-row .mat-header-cell {
-  font-weight: 600;
-  font-size: 14px;
-  padding: 0 10px;
-}
-
-:host ::ng-deep imx-data-table .mat-row .mat-cell {
-  padding: 0 10px;
-}
-
 .imx-separate-menu-item {
   border-top: 1px solid $black-c;
 }
 
-.imx-table-container {
- @include imx-flex-fill-control-hidden-overflow();
-}
-
-:host ::ng-deep eui-sidesheet .eui-sidesheet__content {
-  display: flex;
-  flex-direction: column;
-  max-height: 100%;
-  box-sizing: content-box;
-}
-
-.mat-card {
-  display: flex;
-  flex-direction: column;
-  height: inherit;
-  overflow: hidden;
-
-  .mat-card-content {
+.mat-mdc-card {
+  .mat-mdc-card-content {
+    @include flex-column-container-fill();
     overflow-y: auto;
     overflow-x: hidden;
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
   }
 }
 
-.mat-stroked-button {
-  @include imx-icon-for-image-button();
-}
-
-.imx-button-bar {
-  @include imx-button-bar();
+.mat-mdc-outlined-button {
+  @include image-button-icon();
 }

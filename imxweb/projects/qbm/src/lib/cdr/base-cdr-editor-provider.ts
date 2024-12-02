@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,9 +24,9 @@
  *
  */
 
-import { CdrEditor } from './cdr-editor.interface';
+import { ComponentFactoryResolver, ComponentRef, ViewContainerRef } from '@angular/core';
 import { CdrEditorProvider } from './cdr-editor-provider.interface';
-import { ViewContainerRef, ComponentRef, ComponentFactoryResolver } from '@angular/core';
+import { CdrEditor } from './cdr-editor.interface';
 import { ColumnDependentReference } from './column-dependent-reference.interface';
 
 /**
@@ -44,7 +44,7 @@ export abstract class BaseCdrEditorProvider<T extends CdrEditor> implements CdrE
    * @param cdref  A column dependent reference that contains the data for the editor.
    * @returns An instance of {@link CdrEditor}, that can be used for editing data.
    */
-  public createEditor(parent: ViewContainerRef, cdref: ColumnDependentReference): ComponentRef<CdrEditor> {
+  public createEditor(parent: ViewContainerRef, cdref: ColumnDependentReference): ComponentRef<CdrEditor> | null {
     if (!this.accept(cdref)) {
       return null;
     }

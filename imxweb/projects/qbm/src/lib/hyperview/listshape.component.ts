@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { ShapeData, ShapeListEntry } from 'imx-api-qbm';
+import { ShapeData, ShapeListEntry } from '@imx-modules/imx-api-qbm';
 import { ShapeClickArgs } from './hyperview-types';
 
 /**
@@ -39,6 +39,7 @@ import { ShapeClickArgs } from './hyperview-types';
 })
 export class ListShapeComponent {
   @Input() public shape: ShapeData;
+
   @Input() public selected: EventEmitter<ShapeClickArgs> = new EventEmitter();
   @Output() public changeShapeSize = new EventEmitter<void>();
 
@@ -51,7 +52,7 @@ export class ListShapeComponent {
    */
   public click(elem: ShapeListEntry): void {
     if (this.isLinkEnabled(elem)) {
-      this.selected.emit({ objectKey: elem.ObjectKey, caption: this.shape.Caption });
+      this.selected.emit({ objectKey: elem.ObjectKey ?? '', caption: this.shape.Caption ?? '' });
     }
   }
 

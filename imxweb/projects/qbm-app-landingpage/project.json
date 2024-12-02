@@ -1,0 +1,209 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "qbm-app-landingpage",
+  "sourceRoot": "projects/qbm-app-landingpage/src",
+  "implicitDependencies": ["qbm"],
+  "projectType": "application",
+  "prefix": "imx",
+  "generators": {
+    "@schematics/angular:component": {
+      "style": "scss"
+    }
+  },
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:application",
+      "options": {
+        "aot": true,
+        "outputPath": {
+          "base": "dist/qbm-app-landingpage",
+          "browser": ""
+        },
+        "allowedCommonJsDependencies": [
+          "lodash",
+          "highlight.js",
+          "file-saver",
+          "billboard.js",
+          "moment-timezone",
+          "core-js/fn/map",
+          "core-js/fn/set",
+          "core-js/fn/weak-map",
+          "core-js/fn/array/from",
+          "core-js/fn/object/assign",
+          "core-js/es/array/from",
+          "core-js/es/object/assign",
+          "core-js/es/map",
+          "core-js/es/set",
+          "core-js/es/weak-map",
+          "lodash.debounce",
+          "lodash.clamp",
+          "moment",
+          "@elemental-ui/cadence-icon/codepoints"
+        ],
+        "index": "projects/qbm-app-landingpage/src/index.html",
+        "browser": "projects/qbm-app-landingpage/src/main.ts",
+        "polyfills": ["projects/qbm-app-landingpage/src/polyfills.ts"],
+        "tsConfig": "projects/qbm-app-landingpage/tsconfig.app.json",
+        "assets": [
+          "projects/qbm-app-landingpage/src/assets",
+          "projects/qbm-app-landingpage/src/appconfig.json",
+          {
+            "glob": "**/*",
+            "input": "./shared/assets/",
+            "output": "./assets"
+          },
+          {
+            "glob": "**/*",
+            "input": "./node_modules/@elemental-ui/core/assets",
+            "output": "./assets"
+          }
+        ],
+        "styles": [
+          "shared/scss/styles.scss",
+          "projects/qbm-app-landingpage/src/styles.scss",
+          "node_modules/swagger-ui-dist/swagger-ui.css"
+        ],
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "./shared/scss",
+            "./node_modules",
+            "./node_modules/@elemental-ui/cadence-icon",
+            "./node_modules/@elemental-ui/core"
+          ]
+        },
+        "scripts": ["node_modules/swagger-ui-dist/swagger-ui-bundle.js", "node_modules/swagger-ui-dist/swagger-ui-standalone-preset.js"]
+      },
+      "configurations": {
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "projects/qbm-app-landingpage/src/environments/environment.ts",
+              "with": "projects/qbm-app-landingpage/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": true,
+          "aot": true,
+          "extractLicenses": true,
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "20mb",
+              "maximumError": "40mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "6kb"
+            }
+          ]
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        },
+        "remote-dev": {
+          "fileReplacements": [
+            {
+              "replace": "projects/qbm-app-landingpage/src/environments/environment.ts",
+              "with": "../imxweb_envs/qbm-app-landingpage/environments/environment.remote-dev.ts"
+            }
+          ],
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        },
+        "remote-qs": {
+          "fileReplacements": [
+            {
+              "replace": "projects/qbm-app-landingpage/src/environments/environment.ts",
+              "with": "../imxweb_envs/qbm-app-landingpage/environments/environment.remote-qs.ts"
+            }
+          ],
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        },
+        "es5": {
+          "tsConfig": "./projects/qbm-app-landingpage/tsconfig-es5.app.json"
+        }
+      },
+      "outputs": ["{options.outputPath}"]
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "options": {
+        "browserTarget": "qbm-app-landingpage:build",
+        "disableHostCheck": true
+      },
+      "configurations": {
+        "production": {
+          "browserTarget": "qbm-app-landingpage:build:production"
+        },
+        "development": {
+          "browserTarget": "qbm-app-landingpage:build:development"
+        },
+        "remote-dev": {
+          "browserTarget": "qbm-app-landingpage:build:remote-dev"
+        },
+        "remote-qs": {
+          "browserTarget": "qbm-app-landingpage:build:remote-qs"
+        },
+        "es5": {
+          "browserTarget": "qbm-app-landingpage:build:es5"
+        }
+      }
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "qbm-app-landingpage:build"
+      }
+    },
+    "test": {
+      "executor": "@angular-devkit/build-angular:karma",
+      "options": {
+        "main": "projects/qbm-app-landingpage/src/test.ts",
+        "polyfills": "projects/qbm-app-landingpage/src/polyfills.ts",
+        "tsConfig": "projects/qbm-app-landingpage/tsconfig.spec.json",
+        "karmaConfig": "projects/qbm-app-landingpage/karma.conf.js",
+        "scripts": [],
+        "assets": [
+          "projects/qbm-app-landingpage/src/assets",
+          "projects/qbm-app-landingpage/src/appconfig.json",
+          {
+            "glob": "**/*",
+            "input": "./shared/assets/",
+            "output": "./assets"
+          }
+        ],
+        "styles": ["projects/qbm-app-landingpage/src/styles.scss"],
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "./shared/assets",
+            "./shared/scss",
+            "./node_modules",
+            "./node_modules/@elemental-ui/cadence-icon",
+            "./node_modules/@elemental-ui/core"
+          ]
+        }
+      }
+    },
+    "lint": {
+      "executor": "@angular-devkit/build-angular:tslint",
+      "options": {
+        "tsConfig": ["projects/qbm-app-landingpage/tsconfig.app.json", "projects/qbm-app-landingpage/tsconfig.spec.json"],
+        "exclude": ["**/node_modules/**", "**/*.spec.ts", "**/*.json"]
+      }
+    }
+  }
+}

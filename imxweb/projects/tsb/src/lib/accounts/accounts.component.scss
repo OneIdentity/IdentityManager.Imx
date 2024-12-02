@@ -1,5 +1,6 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
-@import '../../../../../shared/scss/common-table.scss';
+@import 'base/mixins';
+
 .data-explorer {
   &.data-explorer--accounts {
     > :nth-child(2) {
@@ -18,9 +19,6 @@
 .eui-dark-theme {
   :host {
     background-color: $color-gray-80;
-    .data-explorer.data-explorer--accounts .data-explorer-card-header .data-explorer-card-header-bg {
-      background-color: $color-blue-80;
-    }
   }
 }
 
@@ -35,18 +33,6 @@ div[subtitle] {
   overflow: hidden;
 }
 
-.data-explorer-bottom-button-row {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  margin-top: 15px;
-  align-self: end;
-
-  .mat-stroked-button {
-    @include imx-icon-for-image-button();
-  }
-}
-
 .hidden {
   display: none;
 }
@@ -54,8 +40,5 @@ div[subtitle] {
 .eui-contrast-theme {
   :host {
     background-color: $color-gray-100;
-    .data-explorer.data-explorer--accounts .data-explorer-card-header .data-explorer-card-header-bg {
-      background-color: $color-gray-100;
-    }
   }
 }

@@ -1,34 +1,7 @@
 @import '@elemental-ui/core/src/styles/_palette.scss';
 
-eui-icon {
-  color: $aspen-green;
-}
-
 button {
   margin-left: 10px;
-}
-
-.mat-expansion-panel {
-  margin-bottom: 20px;
-  margin-top: 20px;
-}
-
-.mat-expansion-panel-header-description {
-  justify-content: end;
-}
-
-.mat-expansion-panel-header {
-  min-height: 24px;
-  height: auto;
-  padding: 12px 24px;
-}
-
-.mat-expansion-panel-header-title {
-  flex-basis: auto;
-}
-
-.mat-expansion-panel-header-description, .mat-expansion-panel-header-title {
-  align-items: center;
 }
 
 .imx-custom-property {
@@ -44,10 +17,14 @@ button {
   margin-bottom: 10px;
 }
 
-.imx-panel-icon {
+.imx-icon-new {
   margin-right: 10px;
 }
 
 .imx-madatory-item {
   color: $corbin-orange;
+}
+
+.imx-bulk-item-description {
+  flex: initial;
 }

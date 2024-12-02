@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,8 +26,8 @@
 
 import { Injectable } from '@angular/core';
 
-import { DbObjectKey, FkCandidateBuilder, FkCandidateRouteDto, ValType } from 'imx-qbm-dbts';
-import { MergeActionList, MergeActions, RoleCompareItems, UiActionResultData } from 'imx-api-qer';
+import { DbObjectKey, FkCandidateBuilder, FkCandidateRouteDto, ValType } from '@imx-modules/imx-qbm-dbts';
+import { MergeActionList, MergeActions, RoleCompareItems, UiActionResultData } from '@imx-modules/imx-api-qer';
 import { BaseCdr, ColumnDependentReference, EntityService } from 'qbm';
 import { QerApiService } from '../../qer-api-client.service';
 
@@ -35,7 +35,10 @@ import { QerApiService } from '../../qer-api-client.service';
   providedIn: 'root',
 })
 export class CompareService {
-  constructor(private readonly apiService: QerApiService, private readonly entityService: EntityService) {}
+  constructor(
+    private readonly apiService: QerApiService,
+    private readonly entityService: EntityService,
+  ) {}
 
   public async mergeRoles(roleType: string, uidRole: string, key: DbObjectKey, actions: MergeActionList): Promise<UiActionResultData[]> {
     return this.apiService.v2Client.portal_roles_merge_post(roleType, uidRole, key.TableName, key.Keys[0], actions);
@@ -62,9 +65,9 @@ export class CompareService {
           }),
           MinLen: 1,
         },
-        fkProviderItems
+        fkProviderItems,
       ),
-      '#LDS#Comparison object'
+      '#LDS#Comparison object',
     );
   }
 }

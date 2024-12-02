@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,24 +28,23 @@ import { HvSettings } from './hyperview-types';
 import { Connector } from './connector';
 
 export interface IConnectorProvider {
-    getConnectors(settings: HvSettings): Connector[];
+  getConnectors(settings: HvSettings): Connector[];
 }
 
 export class ConnectorProvider implements IConnectorProvider {
+  private hierarchical: boolean;
 
-    private hierarchical: boolean;
+  constructor(hierarchical: boolean) {
+    this.hierarchical = hierarchical;
+  }
 
-    constructor(hierarchical: boolean) {
-        this.hierarchical = hierarchical;
+  public getConnectors(settings: HvSettings): Connector[] {
+    const es = settings.elements;
+    const res: Connector[] = [];
+    for (let i = 1; i < es.length; i++) {
+      const srcIndex = this.hierarchical ? 0 : i - 1;
+      res.push(new Connector(es[srcIndex].element, es[i].element));
     }
-
-    public getConnectors(settings: HvSettings): Connector[] {
-        const es = settings.elements;
-        const res: Connector[] = [];
-        for (let i = 1; i < es.length; i++) {
-            const srcIndex = this.hierarchical ? 0 : i - 1;
-            res.push(new Connector(es[srcIndex].element, es[i].element));
-        }
-        return res;
-    }
+    return res;
+  }
 }

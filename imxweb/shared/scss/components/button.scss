@@ -1,0 +1,247 @@
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
+@import 'base/variables';
+
+/* Elemental UI */
+
+/* Angular Material */
+.mat-mdc-button,
+.mat-mdc-stroked-button,
+.mat-mdc-flat-button,
+.mat-mdc-raised-button {
+  &:not(.mat-icon-button, .tree-item-button) {
+    // This is not applied to buttons that have a single mat-icon||eui-icon child
+    span.mat-mdc-button-wrapper:has(:not(mat-icon:only-child, eui-icon:only-child)) {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+}
+
+/* Imx */
+.imx-button {
+  color: $color-gray-0;
+  background-color: $color-blue-60;
+
+  &-hover {
+    @include ease-transition();
+
+    &-info {
+      @extend .imx-button-hover;
+
+      &:hover:not(:disabled) {
+        background-color: $color-blue-60;
+      }
+    }
+
+    &-warning {
+      @extend .imx-button-hover;
+
+      &:hover:not(:disabled) {
+        background-color: $color-orange-60;
+      }
+    }
+  }
+
+  &-icon {
+    eui-icon.small,
+    eui-icon.medium,
+    eui-icon.large,
+    eui-icon.x-large {
+      margin-right: 4px;
+    }
+
+    &-14 {
+      eui-icon.small,
+      eui-icon.medium,
+      eui-icon.large,
+      eui-icon.x-large {
+        font-size: 14px;
+        margin-right: 4px;
+      }
+    }
+
+    &-20 {
+      eui-icon.small,
+      eui-icon.medium,
+      eui-icon.large,
+      eui-icon.x-large {
+        font-size: 20px;
+        margin-right: 4px;
+      }
+    }
+
+    &-hover {
+      @include ease-transition();
+
+      &-info {
+        @extend .imx-button-hover;
+
+        &:hover:not(:disabled) {
+          color: $color-blue-60;
+        }
+      }
+
+      &-warning {
+        @extend .imx-button-hover;
+
+        &:hover:not(:disabled) {
+          color: $color-orange-60;
+        }
+      }
+    }
+  }
+
+  &-uppercase {
+    text-transform: uppercase;
+  }
+
+  &-close-dialog {
+    right: -15px;
+    top: -15px;
+  }
+
+  &-stepper {
+    @include flex-row-container();
+    margin-top: 10px;
+
+    button:not(:last-of-type) {
+      margin-right: 16px;
+    }
+
+    &-vertical {
+      @include flex-column-container();
+
+      button:not(:last-of-type) {
+        margin-bottom: 5px;
+      }
+    }
+  }
+
+  &-bar,
+  &-bar.mat-mdc-card {
+    @extend .imx-button-icon-14;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    background-color: $color-gray-0;
+
+    &-transparent {
+      @extend .imx-button-bar;
+      background-color: transparent;
+      border-top: none;
+      min-height: 48px;
+    }
+
+    .justify-start {
+      margin-right: auto;
+    }
+
+    .mat-mdc-checkbox:not(:last-child),
+    button:not(:last-child, .mdc-switch) {
+      margin-right: 16px;
+    }
+  }
+
+  &-column {
+    @extend .imx-button-bar-transparent;
+    margin-top: 0;
+    margin-right: 16px;
+
+    button:not(:last-of-type) {
+      margin-right: 5px;
+    }
+  }
+
+  &-container {
+    @include flex-row-container();
+    justify-content: flex-end;
+
+    .justify-start {
+      margin-right: auto;
+    }
+  }
+
+  &-refresh {
+    margin-right: 5px;
+    height: 50px;
+  }
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  &:focus {
+    text-decoration: none;
+    outline: 1px $color-gray-60 dotted;
+    outline-offset: 1px;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+/* Dark theme */
+.eui-dark-theme {
+  .imx-button {
+    &-bar {
+      background-color: $color-gray-70;
+    }
+  }
+}
+
+/* High-contrast theme */
+.eui-contrast-theme {
+  .imx-button {
+    &-bar {
+      background-color: $color-gray-90;
+    }
+  }
+}
+
+/* Dark theme + High-contrast theme */
+.eui-dark-theme,
+.eui-contrast-theme {
+  .imx-button {
+    &-hover {
+      &-info {
+        &:hover:not(:disabled) {
+          background-color: $color-blue-40;
+        }
+      }
+
+      &-warning {
+        &:hover:not(:disabled) {
+          background-color: $color-orange-40;
+        }
+      }
+    }
+
+    &-icon {
+      &-hover {
+        &-info {
+          &:hover:not(:disabled) {
+            color: $color-blue-40;
+          }
+        }
+
+        &-warning {
+          &:hover:not(:disabled) {
+            color: $color-orange-40;
+          }
+        }
+      }
+    }
+
+    &-bar {
+      &-transparent {
+        background-color: transparent;
+      }
+    }
+  }
+}

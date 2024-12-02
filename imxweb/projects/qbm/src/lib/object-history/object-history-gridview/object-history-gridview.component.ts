@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,15 +24,15 @@
  *
  */
 
+// eslint-disable-next-line max-classes-per-file
 import { Component, Input, OnChanges, OnInit, ViewChild } from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute } from '@angular/router';
-import { PageEvent } from '@angular/material/paginator';
-import { MatPaginator } from '@angular/material/paginator';
 import { TranslateService } from '@ngx-translate/core';
 
-import { ObjectHistoryEvent, TypedEntityCollectionData } from 'imx-qbm-dbts';
-import { ObjectHistoryParameters } from '../object-history.service';
+import { ObjectHistoryEvent, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { SettingsService } from '../../settings/settings-service';
+import { ObjectHistoryParameters } from '../object-history.service';
 
 interface IColumn {
   id: string;
@@ -46,7 +46,7 @@ class Column implements IColumn {
   public title: string;
 }
 
-function getLocalDataForPage<T>(allData: T[], state: { page: number, pageSize: number, skip: number }): T[] {
+function getLocalDataForPage<T>(allData: T[], state: { page: number; pageSize: number; skip: number }): T[] {
   if (state) {
     const currentIndex = state.page * state.pageSize;
     return allData.slice(currentIndex, currentIndex + state.pageSize);
@@ -56,18 +56,18 @@ function getLocalDataForPage<T>(allData: T[], state: { page: number, pageSize: n
 }
 
 // TODO: One class per file.
-// tslint:disable-next-line: max-classes-per-file
+// eslint-disable-next-line max-classes-per-file
 @Component({
   selector: 'imx-object-history-gridview',
   templateUrl: './object-history-gridview.component.html',
-  styleUrls: ['./object-history-gridview.component.scss']
+  styleUrls: ['./object-history-gridview.component.scss'],
 })
 export class ObjectHistoryGridviewComponent implements OnInit, OnChanges {
   @Input() public historyData: ObjectHistoryEvent[];
   @ViewChild(MatPaginator) private paginator: MatPaginator;
 
   public get columns(): string[] {
-    return this.columnDefs.map(c => c.id);
+    return this.columnDefs.map((c) => c.id);
   }
 
   public dataCollection: TypedEntityCollectionData<ObjectHistoryEvent>;
@@ -77,11 +77,11 @@ export class ObjectHistoryGridviewComponent implements OnInit, OnChanges {
     size: 5,
     sizeOptions: [20, 50, 100],
     showFirstLastButtons: false,
-    hidden: false
+    hidden: false,
   };
 
   private displayChangeTypePropertyChange = 'PropertyChange';
-  private stateCached: { page: number, pageSize: number, skip: number };
+  private stateCached: { page: number; pageSize: number; skip: number };
   private parameters: ObjectHistoryParameters;
 
   constructor(
@@ -96,31 +96,31 @@ export class ObjectHistoryGridviewComponent implements OnInit, OnChanges {
     await this.addColumnDef({
       id: 'ChangeTime',
       title: '#LDS#Modified on',
-      getValue: (row: ObjectHistoryEvent) => new Date(row.ChangeTime).toLocaleString(this.translationProvider.currentLang)
+      getValue: (row: ObjectHistoryEvent) => new Date(row.ChangeTime).toLocaleString(this.translationProvider.currentLang),
     });
     await this.addColumnDef({
       id: 'ChangeType',
       title: '#LDS#Type of change',
-      getValue: (row: ObjectHistoryEvent) => row.ChangeType
+      getValue: (row: ObjectHistoryEvent) => row.ChangeType ?? '',
     });
     await this.addColumnDef({
       id: 'LongDisplay',
       title: '#LDS#Name',
-      getValue: (row: ObjectHistoryEvent) => row.LongDisplay
+      getValue: (row: ObjectHistoryEvent) => row.LongDisplay ?? '',
     });
     await this.addColumnDef({
       id: 'Property',
       title: '#LDS#Type',
-      getValue: (row: ObjectHistoryEvent) => row.Property
+      getValue: (row: ObjectHistoryEvent) => row.Property ?? '',
     });
     await this.addColumnDef({
       id: 'User',
       title: '#LDS#User',
-      getValue: (row: ObjectHistoryEvent) => row.User
+      getValue: (row: ObjectHistoryEvent) => row.User ?? '',
     });
     this.parameters = {
       table: this.activatedRoute.snapshot.paramMap.get('table'),
-      uid: this.activatedRoute.snapshot.paramMap.get('uid')
+      uid: this.activatedRoute.snapshot.paramMap.get('uid'),
     };
 
     this.displayChangeTypePropertyChange = await this.translationProvider.get('#LDS#PropertyChange').toPromise();
@@ -129,7 +129,7 @@ export class ObjectHistoryGridviewComponent implements OnInit, OnChanges {
   public ngOnChanges(): void {
     this.parameters = {
       table: this.activatedRoute.snapshot.paramMap.get('table'),
-      uid: this.activatedRoute.snapshot.paramMap.get('uid')
+      uid: this.activatedRoute.snapshot.paramMap.get('uid'),
     };
     this.refresh();
   }
@@ -138,7 +138,7 @@ export class ObjectHistoryGridviewComponent implements OnInit, OnChanges {
     this.updateDataCollection({
       skip: e.pageIndex * e.pageSize,
       page: e.pageIndex,
-      pageSize: e.pageSize
+      pageSize: e.pageSize,
     });
   }
 
@@ -166,7 +166,7 @@ export class ObjectHistoryGridviewComponent implements OnInit, OnChanges {
     this.columnDefs.push(column);
   }
 
-  private updateDataCollection(state?: { page: number, pageSize: number, skip: number }): void {
+  private updateDataCollection(state?: { page: number; pageSize: number; skip: number }): void {
     if (state) {
       this.stateCached = state;
     }
@@ -174,14 +174,14 @@ export class ObjectHistoryGridviewComponent implements OnInit, OnChanges {
       this.stateCached = {
         skip: this.paginatorConfig.index * this.paginatorConfig.size,
         page: this.paginatorConfig.index,
-        pageSize: this.paginatorConfig.size
+        pageSize: this.paginatorConfig.size,
       };
     }
 
     this.dataCollection = {
-      tableName: this.parameters.table,
+      tableName: this.parameters.table ?? '',
       totalCount: this.historyData.length,
-      Data: getLocalDataForPage(this.historyData, this.stateCached)
+      Data: getLocalDataForPage(this.historyData, this.stateCached),
     };
   }
 }

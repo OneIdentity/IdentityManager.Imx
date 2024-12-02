@@ -1,0 +1,182 @@
+<imx-busy-indicator *ngIf="dataSource?.loading()"></imx-busy-indicator>
+<ng-container *ngIf="isGroupingApplied()">
+  <table
+    mat-table
+    [dataSource]="dataSource.groupedDataSource()"
+    multiTemplateDataRows
+    [ngClass]="{
+      'imx-hidden': dataSource?.loading() || !isGroupingApplied() || dataSource.showOnlySelected() || dataSource?.totalCount() === 0,
+    }"
+  >
+    <ng-container matColumnDef="Display">
+      <th mat-header-cell *matHeaderCellDef>
+        <span translate>#LDS#Group by</span>:
+        <span class="spaced-left">{{ dataSource.groupByColumn()?.Display }}</span>
+      </th>
+      <td mat-cell *matCellDef="let group">
+        <div>
+          {{ group?.Display[0].Display || '' }}
+        </div>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="expand">
+      <th mat-header-cell *matHeaderCellDef attr.aria-label="row actions">&nbsp;</th>
+      <td mat-cell *matCellDef="let group">
+        <button
+          mat-icon-button
+          attr.aria-label="expand row"
+          (click)="expandGroup(group); $event.stopPropagation()"
+          *ngIf="group?.Count > 0"
+          color="primary"
+        >
+          <eui-icon icon="chevrondown" *ngIf="!group.expanded"></eui-icon>
+          <eui-icon icon="chevronup" *ngIf="group.expanded"></eui-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+    <ng-container matColumnDef="expandedDetail">
+      <td mat-cell *matCellDef="let group; let i = dataIndex" [attr.colspan]="groupColumnsToDisplayWithExpand.length">
+        <div class="expanded-group-detail" [@detailExpand]="!!group.expanded ? 'expanded' : 'collapsed'">
+          <ng-container *ngIf="!!group.expanded">
+            <imx-data-view-nested-table
+              [execute]="dataSource.execute"
+              [schema]="dataSource.entitySchema()"
+              [columnsToDisplay]="dataSource.columnsToDisplay()"
+              [dataModel]="dataSource.dataModel()"
+              [filterData]="group.Filters"
+              [params]="dataSource.state()"
+              [selectable]="selectable"
+              (selectionChange)="onNestedSelectionChange($event, i)"
+              [highlightedEntity]="dataSource.highlightedEntity"
+              [selection]="getNestedSelection(i)"
+              [noDataText]="noDataText"
+              [noDataIcon]="noDataIcon"
+              [highlightedExecute]="dataSource.highlightedExecute"
+              [mode]="mode"
+              [columnDefs]="columnDefs"
+              [additionalColumns]="dataSource.additionalColumns()"
+              [itemStatus]="dataSource.itemStatus"
+            >
+            </imx-data-view-nested-table>
+          </ng-container>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="groupColumnsToDisplayWithExpand"></tr>
+    <tr
+      mat-row
+      *matRowDef="let group; columns: groupColumnsToDisplayWithExpand"
+      class="expanded-group-row"
+      [class.expanded-expanded-row]="!!group.expanded"
+      (click)="expandGroup(group)"
+    ></tr>
+    <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="expanded-detail-row"></tr>
+  </table>
+</ng-container>
+<ng-container>
+  <table
+    mat-table
+    matSort
+    (matSortChange)="dataSource?.sortChange($event)"
+    [dataSource]="dataSource"
+    [ngClass]="{
+      'imx-hidden': dataSource?.loading() || (isGroupingApplied() && !dataSource.showOnlySelected()) || dataSource?.totalCount() === 0,
+      'imx-data-table-highlightedActive': !!dataSource.highlightedExecute,
+    }"
+    role="grid"
+    tableAccessiblility
+    eui-scroll
+    [matSortActive]="dataSource.sortId()"
+    [matSortDisabled]="isGroupingApplied()"
+    [matSortDirection]="dataSource.sortDirection()"
+  >
+    <ng-container *ngIf="selectable" matColumnDef="select">
+      <th class="imx-table-column" mat-header-cell *matHeaderCellDef sticky>
+        <mat-checkbox
+          (change)="$event ? toggleAllRows() : null"
+          [checked]="dataSource.currentSelectedEntityCount() > 0 && dataSource.isAllSelected()"
+          [indeterminate]="dataSource.currentSelectedEntityCount() > 0 && !dataSource.isAllSelected()"
+          data-imx-identifier="datatable-checkbox-select-all"
+          [attr.aria-label]="dataSource.isAllSelected() ? ('#LDS#Deselect all' | translate) : ('#LDS#Select all' | translate)"
+        >
+        </mat-checkbox>
+      </th>
+      <td class="imx-table-column" mat-cell *matCellDef="let row; index as i">
+        <mat-checkbox
+          [disabled]="!dataSource.itemStatus.enabled(row)"
+          (click)="$event.stopPropagation()"
+          (change)="$event.checked ? dataSource.selection.checked(row) : dataSource.selection.unChecked(row); onRemoveSelection(row)"
+          [checked]="dataSource.selection.isSelected(row)"
+          [attr.data-imx-identifier]="'datatable-checkbox-select-row' + i"
+          [attr.aria-label]="dataSource.selection.isSelected(row) ? ('#LDS#Deselect' | translate) : ('#LDS#Select' | translate)"
+        >
+        </mat-checkbox>
+      </td>
+    </ng-container>
+    <ng-container *ngIf="mode === 'auto'">
+      <ng-container [matColumnDef]="column.ColumnName" *ngFor="let column of dataSource?.columnsToDisplay()">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          [disabled]="!dataSource.isSortable(column.ColumnName || '')"
+          class="imx-header-cell"
+        >
+          {{ dataSource.GetColumnDisplay(column.ColumnName || '', dataSource?.entitySchema()) }}
+        </th>
+        <td mat-cell class="imx-header-cell" *matCellDef="let element" role="gridcell">
+          <span>{{ element?.GetEntity()?.GetColumn(column.ColumnName)?.GetDisplayValue() }}</span>
+          <!-- TODO: Currently not needed in any auto tables, but need to think on index vs input for this feature in the future -->
+          <!-- <imx-data-view-status *ngIf="column.ColumnName == queueStatusColumnName" [status]="element.itemStatus!.status(element)" /> -->
+        </td>
+      </ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="mode === 'manual'">
+      <ng-content></ng-content>
+      <ng-container [matColumnDef]="column.ColumnName" *ngFor="let column of dataSource?.additionalColumns()">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          [disabled]="!dataSource.isSortable(column.ColumnName || '')"
+          class="imx-header-cell"
+        >
+          {{ dataSource.GetColumnDisplay(column.ColumnName || '', dataSource?.entitySchema()) }}
+        </th>
+        <td mat-cell class="imx-header-cell" *matCellDef="let element" role="gridcell">
+          <span>{{ element?.GetEntity()?.GetColumn(column.ColumnName)?.GetDisplayValue() }}</span>
+        </td>
+      </ng-container>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="namesOfDisplayedColumns; sticky: true"></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: namesOfDisplayedColumns"
+      (click)="dataSource.debouncedHighlightRow(row, $event); $event.stopPropagation()"
+      (keydown.enter)="dataSource.debouncedHighlightRow(row, $event); $event.stopPropagation()"
+    ></tr>
+  </table>
+</ng-container>
+<ng-container *ngIf="dataSource?.totalCount() === 0 && !dataSource?.loading()">
+  <div class="imx-no-results">
+    <eui-icon [icon]="noDataIcon" [size]="'150px'"></eui-icon>
+    <ng-container *ngIf="noDataText; else default">
+      <div>{{ noDataText | translate }}</div>
+    </ng-container>
+    <ng-template #default>
+      <div class="imx-no-results-title" [translate]="'#LDS#No matching data'"></div>
+      <ul>
+        <ul>
+          <li>{{ '#LDS#Check the spelling of the search terms you entered.' | translate }}</li>
+          <li>{{ '#LDS#Clear or use less filters.' | translate }}</li>
+          <li>{{ '#LDS#Enter different, more generic search terms.' | translate }}</li>
+          <li>{{ '#LDS#Fewer search terms lead to more matches. Try to reduce the search terms until you get a result.' | translate }}</li>
+        </ul>
+      </ul>
+    </ng-template>
+  </div>
+</ng-container>

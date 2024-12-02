@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,21 +25,21 @@
  */
 
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 import {
   FkProviderItem,
   IClientProperty,
-  MetaTableRelationData,
+  IEntityColumn,
   SqlColumnTypes,
   SqlTable,
   ValType,
   ValType as _valType,
-} from 'imx-qbm-dbts';
+} from '@imx-modules/imx-qbm-dbts';
 import { Subscription } from 'rxjs';
 import { BaseCdr } from '../cdr/base-cdr';
 import { EntityService } from '../entity/entity.service';
 import { SqlNodeView } from './SqlNodeView';
 import { SqlWizardApiService } from './sqlwizard-api.service';
-import { FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'imx-sqlwizard-singlevalue',
@@ -47,19 +47,6 @@ import { FormControl, Validators } from '@angular/forms';
   templateUrl: './single-value.component.html',
 })
 export class SingleValueComponent implements OnInit, OnDestroy {
-  public get selectedTable() {
-    return this._selectedTable;
-  }
-
-  public set selectedTable(val) {
-    this._selectedTable = val;
-    if (val) {
-      this._fkRelation.ParentTableName = val.Name;
-      this._fkRelation.ParentColumnName = val.ParentColumnName;
-      this._fkProviderItem.fkTableName = val.Name;
-    }
-  }
-
   get value() {
     if (this.mode == 'array' && this.expr.Data.Value) {
       return this.expr.Data.Value[this.index];
@@ -77,20 +64,24 @@ export class SingleValueComponent implements OnInit, OnDestroy {
   }
 
   get displayValue() {
-    if (!this.expr.Data.DisplayValues) {
+    if (!this.expr.Data?.DisplayValues) {
       return null;
     }
-    return this.expr.Data.DisplayValues[this.mode === 'array' ? this.index : 0];
+    if (this.mode == 'array') {
+      return this.expr.Data.DisplayValues[this.index];
+    } else {
+      return this.expr.Data.DisplayValues ? this.expr.Data.DisplayValues[0] : null;
+    }
   }
 
   set displayValue(val) {
-    if (!this.expr.Data?.DisplayValues) {
+    if (!this.expr.Data) {
       return;
     }
     if (this.mode == 'array' && this.expr.Data.DisplayValues) {
-      this.expr.Data.DisplayValues[this.index] = val;
+      this.expr.Data.DisplayValues?.splice(this.index, 1, val ?? '');
     } else {
-      this.expr.Data.DisplayValues = [val];
+      this.expr.Data.DisplayValues = [val ?? ''];
     }
   }
 
@@ -103,31 +94,21 @@ export class SingleValueComponent implements OnInit, OnDestroy {
   public ValType = _valType;
   public ColumnType = SqlColumnTypes;
   public cdr: BaseCdr;
-  public doubleFormControl = new FormControl(null, Validators.pattern(/^[+-]?\d+(\.\d+)?$/));
-  public integerFormControl = new FormControl(null, Validators.pattern(/^[+-]?\d+$/));
-
-  private _selectedTable: SqlTable;
-  private _fkRelation: MetaTableRelationData = {
-    IsMemberRelation: false,
-  };
-  private _fkProviderItem: FkProviderItem = {
-    columnName: 'dummycolumn',
-    fkTableName: 'not_set',
-    parameterNames: ['OrderBy', 'StartIndex', 'PageSize', 'filter', 'search'],
-    load: async (_, parameters = {}) => this.sqlWizardApi.getCandidates(this._fkRelation.ParentTableName, parameters),
-    getFilterTree: async () => ({ Elements: [] }),
-    getDataModel: async () => ({}),
-  };
+  public doubleFormControl = new FormControl(null, [Validators.pattern(/^[+-]?\d+(\.\d+)?$/), Validators.required]);
+  public integerFormControl = new FormControl(null, [Validators.pattern(/^[+-]?\d+$/), Validators.required]);
 
   private subscriptions: Subscription[] = [];
 
-  constructor(private readonly entityService: EntityService, private readonly sqlWizardApi: SqlWizardApiService) {}
+  constructor(
+    private readonly entityService: EntityService,
+    private readonly sqlWizardApi: SqlWizardApiService,
+  ) {}
 
   public ngOnInit(): void {
     this.subscriptions.push(
       this.expr.columnChanged.subscribe((_) => {
         this.buildCdr();
-      })
+      }),
     );
 
     this.buildCdr();
@@ -142,30 +123,33 @@ export class SingleValueComponent implements OnInit, OnDestroy {
     this.change.emit();
   }
 
+  /**
+   * @ignore Builds a cdr for the expression.
+   */
   private buildCdr() {
-    const tables = this.expr.Property.SelectionTables;
-    if (tables && tables.length > 0) {
-      this.selectedTable = tables[0];
-    } else {
-      this.selectedTable = null;
+    const tables = this.expr.Property?.SelectionTables;
+
+    if (this.expr.Property?.Type === ValType.Bool && this.expr.Data.Value === undefined) {
+      this.value = false;
     }
 
-    const property: IClientProperty = {
-      ColumnName: 'dummycolumn',
-      Type: ValType.String,
-      FkRelation: this._fkRelation,
-    };
+    let column: IEntityColumn;
 
-    if (this.expr.Property.Type === ValType.Bool && this.expr.Data.Value === undefined ) this.value = false;
+    if ((tables?.length ?? 0) > 1) {
+      column = this.buildDynamicFk(tables ?? []);
+    } else {
+      if (!!tables?.length) {
+        column = this.buildFk(tables?.[0]);
+      } else {
+        column = this.buildSimple();
+      }
+    }
+    if (!column) throw new Error('Column can not be build');
 
-    const column = this.entityService.createLocalEntityColumn(property, [this._fkProviderItem], {
-      Value: this.value,
-      DisplayValue: this.displayValue,
-    });
-    if (this.expr.Property.Type === ValType.Double) {
+    if (this.expr.Property?.Type === ValType.Double) {
       this.doubleFormControl.setValue(column.GetValue());
     }
-    if (this.expr.Property.Type === ValType.Int) {
+    if (this.expr.Property?.Type === ValType.Int) {
       this.integerFormControl.setValue(column.GetValue());
     }
 
@@ -180,6 +164,86 @@ export class SingleValueComponent implements OnInit, OnDestroy {
     this.cdr = new BaseCdr(column, '#LDS#Value');
   }
 
+  /**
+   * @ignore Builds a column, containing a dynamic fk definition, that uses multiple tables.
+   * @param tables  a list containing the SQL tables, that are used for the column's fk relation
+   * @returns an entity column, that can be used by a cdr
+   */
+  private buildDynamicFk(tables: SqlTable[]): IEntityColumn {
+    const property: IClientProperty = {
+      ColumnName: 'dummycolumn',
+      Type: ValType.String,
+      IsDynamicFk: true,
+      ValidReferencedTables: tables.map((elem) => ({ TableName: elem.Name })),
+    };
+
+    return this.buildColumn(
+      property,
+      tables.map((elem) => this.buildProviderItem(elem.Name, 'XObjectKey')),
+    );
+  }
+
+  /**
+   * @ignore Builds a column, containing a simple fk definition.
+   * @param table  the SQL table, that is used for the column's fk relation
+   * @returns an entity column, that can be used by a cdr
+   */
+  private buildFk(table: SqlTable | undefined): IEntityColumn {
+    const property: IClientProperty = {
+      ColumnName: 'dummycolumn',
+      Type: ValType.String,
+      FkRelation: {
+        IsMemberRelation: false,
+        ParentTableName: table?.Name ?? '',
+        ParentColumnName: table?.ParentColumnName,
+      },
+    };
+
+    return this.buildColumn(property, [this.buildProviderItem(table?.Name, table?.ParentColumnName)]);
+  }
+
+  /**
+   * @ignore Builds a simple entity column.
+   * @returns a simple entity column without fk providers
+   */
+  private buildSimple(): IEntityColumn {
+    const property: IClientProperty = {
+      ColumnName: 'dummycolumn',
+      Type: this.expr.Property?.Type ?? ValType.String,
+    };
+    return this.buildColumn(property, undefined);
+  }
+
+  /**
+   * @ignore Builds a single FkProviderItem.
+   * @param tableName the name of the table
+   * @returns a fk provider item
+   */
+  private buildProviderItem(tableName: string | undefined, fkColumnName?: string): FkProviderItem {
+    return {
+      columnName: 'dummycolumn',
+      fkColumnName,
+      fkTableName: tableName ?? '',
+      parameterNames: ['OrderBy', 'StartIndex', 'PageSize', 'filter', 'search'],
+      load: async (_, parameters = {}) => this.sqlWizardApi.getCandidates(tableName ?? '', parameters),
+      getFilterTree: async () => ({ Elements: [] }),
+      getDataModel: async () => ({}),
+    };
+  }
+
+  /**
+   * @ignore This is used to build the entity column in all helper methods.
+   * @param property the client property describing the column
+   * @param providerItems FkProviderItems, that are associated with the column.
+   * @returns an IEntityColumn, that can be used in the CDR
+   */
+  private buildColumn(property: IClientProperty, providerItems: FkProviderItem[] | undefined): IEntityColumn {
+    return this.entityService.createLocalEntityColumn(property, providerItems, {
+      Value: this.value,
+      DisplayValue: this.displayValue ?? '',
+    });
+  }
+
   private onFormValueChanges(): void {
     this.subscriptions.push(
       this.doubleFormControl.valueChanges.subscribe((value) => {
@@ -189,7 +253,7 @@ export class SingleValueComponent implements OnInit, OnDestroy {
         } else {
           this.value = {};
         }
-      })
+      }),
     );
     this.subscriptions.push(
       this.integerFormControl.valueChanges.subscribe((value) => {
@@ -199,8 +263,7 @@ export class SingleValueComponent implements OnInit, OnDestroy {
         } else {
           this.value = {};
         }
-      })
+      }),
     );
   }
 }
-

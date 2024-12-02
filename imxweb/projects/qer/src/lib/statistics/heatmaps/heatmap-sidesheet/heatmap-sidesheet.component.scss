@@ -1,4 +1,3 @@
-
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
 @import '../../stat-mixins.scss';
 
@@ -13,7 +12,7 @@
     overflow: hidden;
   }
 
-  .toolbar-container {
+  .toolbar-container, .status-container {
     margin-bottom: 20px;
   }
 
@@ -22,32 +21,17 @@
     flex-direction: column;
     margin-bottom: 20px;
     flex-grow: 1;
-    height: 75%;
+    height: 50%;
     justify-content: space-between;
-    @include EUI-Elevation-1;
+    @include eui-elevation-1;
   }
 
-  .chart {
-    height: 100%;
-    overflow: hidden;
-  }
-
-  .under-chart {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  }
-
-  .imx-no-data {
+  .imx-no-results {
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
-    eui-icon {
-      font-size: 100px;
-    }
 
     p {
       margin: 0;
@@ -71,17 +55,15 @@
       margin-right: 20px;
     }
   }
-
-  ::ng-deep .mat-form-field-wrapper {
-    padding-bottom: 0;
+  ::ng-deep .mat-mdc-form-field-wrapper {
     margin: 0;
   }
-
-  ::ng-deep .mat-form-field-infix {
+  ::ng-deep .mat-mdc-form-field-infix {
     width: fit-content;
   }
-
-
+  .heatmap-sidesheet-paginator{
+    width: 100%;
+  }
 }
 
 // Under card
@@ -89,9 +71,16 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  .toggle-button-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hide-button {
+    visibility: hidden;
+    height: 0 !important;
+  }
 }
-
-
 
 .legend-gradient {
   display: flex;
@@ -108,7 +97,7 @@
   }
 
   .gradient-base:hover {
-    filter: brightness(.85);
+    filter: brightness(0.85);
   }
 
   .gradient-full {
@@ -144,18 +133,6 @@
   }
 }
 
-.toggle-button-wrapper {
-  display: flex;
-  flex-direction: column;
-  button {
-    @include EUI-Elevation-1;
-  }
-}
-
-.hide-button {
-  visibility: hidden;
-  height: 0;
-}
 
 .align-right {
   margin-left: auto;
@@ -167,9 +144,7 @@
 
 .toggle-button-content {
   display: flex;
-  > .eui-icon {
-    margin-left: 24px;
-  }
+  align-items: center;
 }
 
 // Blocks
@@ -190,7 +165,7 @@
 
 .block-error:hover {
   background-color: var(--stat-error-darker);
-  border-color: rgba($color: $color-red-90, $alpha: 1.0);
+  border-color: rgba($color: $color-red-90, $alpha: 1);
 }
 
 .block-severe-warn {
@@ -200,7 +175,7 @@
 
 .block-severe-warn:hover {
   background-color: var(--stat-severe-warn-darker);
-  border-color: rgba($color: $color-orange-90, $alpha: 1.0);
+  border-color: rgba($color: $color-orange-90, $alpha: 1);
 }
 
 .block-warn {
@@ -210,7 +185,7 @@
 
 .block-warn:hover {
   background-color: var(--stat-warn-darker);
-  border-color: rgba($color: $color-yellow-90, $alpha: 1.0);
+  border-color: rgba($color: $color-yellow-90, $alpha: 1);
 }
 
 .block-light-warn {
@@ -220,7 +195,7 @@
 
 .block-light-warn:hover {
   background-color: var(--stat-light-warn-darker);
-  border-color: rgba($color: $color-green-90, $alpha: 1.0);
+  border-color: rgba($color: $color-green-90, $alpha: 1);
 }
 
 .block-ok {
@@ -231,11 +206,11 @@
 .block-ok:hover {
   border-style: solid;
   background-color: var(--stat-ok-darker);
-  border-color: rgba($color: $color-green-90, $alpha: 1.0);
+  border-color: rgba($color: $color-green-90, $alpha: 1);
 }
 
 .block-history:hover {
-  filter: brightness(.85)
+  filter: brightness(0.85);
 }
 
 .block-text {
@@ -245,23 +220,12 @@
   text-overflow: ellipsis;
 }
 
-// Tooltips
-mat-tooltip-component .mat-tooltip.custom-tooltip {
-  background: $color-gray-0;
-  color: $color-gray-100;
-  margin: 5px;
-  max-width: unset;
-  font-size: 12px;
-  border: 1px solid $color-gray-80;
-  border-radius: 4px;
-}
-
-
 // Theming
 :host {
   @include Stat-Colors;
 
-  .toolbar-container, .card-container {
+  .toolbar-container,
+  .card-container {
     border: 1px solid $color-gray-10;
   }
 
@@ -272,22 +236,19 @@ mat-tooltip-component .mat-tooltip.custom-tooltip {
 
     > :hover {
       background-color: $color-orange-20;
-      @include Ease-Transition;
+      @include ease-transition;
     }
   }
 
-  .colored-favorite-icon, .colored-favorite-text {
+  .colored-favorite-text {
     color: $color-orange-60;
   }
 
-  .colored-org-icon, .colored-org-text {
+  .colored-org-text {
     color: $color-blue-60;
   }
 
-  .imx-no-data {
-    eui-icon {
-      color: $color-gray-20;
-    }
+  .imx-no-results {
     p {
       color: $color-gray-40;
     }
@@ -298,7 +259,8 @@ mat-tooltip-component .mat-tooltip.custom-tooltip {
   :host {
     @include Stat-Colors(eui-dark-theme);
 
-    .toolbar-container, .card-container {
+    .toolbar-container,
+    .card-container {
       border: 1px solid $color-gray-50;
     }
 
@@ -309,21 +271,19 @@ mat-tooltip-component .mat-tooltip.custom-tooltip {
 
       > :hover {
         background-color: $color-orange-80;
-        @include Ease-Transition;
+        @include ease-transition;
       }
     }
 
-    .colored-favorite-icon, .colored-favorite-text {
+    .colored-favorite-text {
       color: $color-orange-40;
     }
 
-    .colored-org-icon, .colored-org-text {
+    .colored-org-text {
       color: $color-blue-40;
     }
-    .imx-no-data {
-      eui-icon {
-        color: $color-gray-20;
-      }
+
+    .imx-no-results {
       p {
         color: $color-gray-10;
       }
@@ -335,7 +295,8 @@ mat-tooltip-component .mat-tooltip.custom-tooltip {
   :host {
     @include Stat-Colors(eui-dark-theme);
 
-    .toolbar-container, .card-container {
+    .toolbar-container,
+    .card-container {
       border: 1px solid $color-gray-50;
     }
 
@@ -346,21 +307,19 @@ mat-tooltip-component .mat-tooltip.custom-tooltip {
 
       > :hover {
         background-color: $color-orange-80;
-        @include Ease-Transition;
+        @include ease-transition;
       }
     }
 
-    .colored-favorite-icon, .colored-favorite-text {
+    .colored-favorite-text {
       color: $color-orange-40;
     }
 
-    .colored-org-icon, .colored-org-text {
+    .colored-org-text {
       color: $color-blue-40;
     }
+
     .imx-no-data {
-      eui-icon {
-        color: $color-gray-10;
-      }
       p {
         color: $color-gray-0;
       }

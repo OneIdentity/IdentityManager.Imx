@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,40 +27,39 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { MatCardModule } from '@angular/material/card';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
 import { EuiCoreModule, EuiMaterialModule } from '@elemental-ui/core';
 import { TranslateModule } from '@ngx-translate/core';
 
+import { MatTableModule } from '@angular/material/table';
 import {
   CdrModule,
   DataSourceToolbarModule,
   DataTableModule,
+  DataViewModule,
   HelpContextualModule,
   MenuItem,
   MenuService,
   OrderedListModule,
   SelectedElementsModule,
   SqlWizardApiService,
-  SqlWizardModule
+  SqlWizardModule,
 } from 'qbm';
-import { EditReportComponent } from './edit-report.component';
-import { EditReportSidesheetComponent } from './edit-report-sidesheet/edit-report-sidesheet.component';
-import { EditReportSqlWizardService } from './editreport-sqlwizard.service';
 import { RpsPermissionsService } from '../admin/rps-permissions.service';
+import { EditReportSidesheetComponent } from './edit-report-sidesheet/edit-report-sidesheet.component';
+import { EditReportComponent } from './edit-report.component';
+import { EditReportSqlWizardService } from './editreport-sqlwizard.service';
 
 @NgModule({
-  declarations: [
-    EditReportComponent,
-    EditReportSidesheetComponent
-  ],
+  declarations: [EditReportComponent, EditReportSidesheetComponent],
   providers: [
     {
       // This does not work for some reason!
       provide: SqlWizardApiService,
-      useClass: EditReportSqlWizardService
+      useClass: EditReportSqlWizardService,
     },
-    RpsPermissionsService
+    RpsPermissionsService,
   ],
   imports: [
     CdrModule,
@@ -78,48 +77,39 @@ import { RpsPermissionsService } from '../admin/rps-permissions.service';
     SqlWizardModule,
     SelectedElementsModule,
     HelpContextualModule,
-  ]
+    MatTableModule,
+    DataViewModule,
+  ],
 })
 export class EditReportModule {
-
-  constructor(
-    private readonly menuService: MenuService,
-  ) {
+  constructor(private readonly menuService: MenuService) {
     this.setupMenu();
   }
 
   private setupMenu(): void {
-    this.menuService.addMenuFactories(
-      (preProps: string[], features: string[]) => {
+    this.menuService.addMenuFactories((preProps: string[], features: string[]) => {
+      const items: MenuItem[] = [];
 
-        const items: MenuItem[] = [];
+      if (preProps.includes('REPORT_SUBSCRIPTION')) {
+        items.push({
+          id: 'RPS_Reports',
+          navigationCommands: {
+            commands: ['reports'],
+          },
+          title: '#LDS#Menu Entry Reports',
+          sorting: '60-70',
+        });
+      }
 
-        if (preProps.includes('REPORT_SUBSCRIPTION')) {
-          items.push(
-            {
-              id: 'RPS_Reports',
-              navigationCommands: {
-                commands: ['reports']
-              },
-              title: '#LDS#Menu Entry Reports',
-              sorting: '60-70',
-            },
-          );
-        }
-
-        if (items.length === 0) {
-          return null;
-        }
-        return {
-          id: 'ROOT_Setup',
-          title: '#LDS#Setup',
-          sorting: '60',
-          items
-        };
-      },
-    );
+      if (items.length === 0) {
+        return undefined;
+      }
+      return {
+        id: 'ROOT_Setup',
+        title: '#LDS#Setup',
+        sorting: '60',
+        items,
+      };
+    });
   }
-
-
-
 }

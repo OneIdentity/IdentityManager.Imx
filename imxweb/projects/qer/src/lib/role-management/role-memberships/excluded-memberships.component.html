@@ -1,52 +1,69 @@
-<div class="imx-tab-content-body">
-  <eui-alert *ngIf="showHelperAlert" class="helper-alert" type="info" condensed="true" [colored]="true" [dismissable]="true" (dismissed)="onHelperDismissed()">
-    <span>{{ LdsMembersByDynamicRole | translate }}</span>
-  </eui-alert>
+<div class="imx-tab-content-sidesheet-with-table imx-sidesheet-content__overflow">
+  <div eui-sidesheet-content class="imx-card-fill">
+    <eui-alert
+      *ngIf="showHelperAlert"
+      type="info"
+      [condensed]="true"
+      [colored]="true"
+      [dismissable]="true"
+      (dismissed)="onHelperDismissed()"
+    >
+      <span>{{ LdsMembersByDynamicRole | translate }}</span>
+    </eui-alert>
 
-  <mat-card>
-    <imx-data-source-toolbar
-      #dstExcluded
-      [settings]="dstSettingsExcludedMembers"
-      [options]="['search', 'filter']"
-      [hiddenFilters]="['namespace']"
-      [searchBoxText]="'#LDS#Search' | translate"
-      (navigationStateChanged)="onNavigationStateExcludedChanged($event)"
-      (search)="onSearchExcluded($event)"
-    ></imx-data-source-toolbar>
+    <mat-card class="imx-card-fill">
+      <imx-data-source-toolbar
+        #dstExcluded
+        [settings]="dstSettingsExcludedMembers"
+        [options]="['search', 'filter']"
+        [hiddenFilters]="['namespace']"
+        [searchBoxText]="'#LDS#Search' | translate"
+        (navigationStateChanged)="onNavigationStateExcludedChanged($event)"
+        (search)="onSearchExcluded($event)"
+      ></imx-data-source-toolbar>
 
-    <ng-container *ngIf="schema?.Columns">
-      <imx-data-table
-        class="no-row-selection"
-        #dataTableExclusions
-        [dst]="dstExcluded"
-        detailViewVisible="false"
-        [selectable]="true"
-        (selectionChanged)="onExclusionSelected($event)"
-        mode="manual"
-        noDataText="#LDS#There are currently no excluded members."
-        noDataIcon="usergroup"
-        noMatchingDataText="#LDS#There are no excluded members matching your search."
-      >
-        <imx-data-table-column [entityColumn]="schema.Columns.UID_Person" data-imx-identifier="exclusions-table-column-identity">
-          <ng-template let-item>
-            {{ item.UID_Person.Column.GetDisplayValue() }}
-            <eui-badge class="not-matched-badge" *ngIf="item.IsNotMatched.value">{{ LdsNotIncludedInDynamicRole | translate }}</eui-badge>
-          </ng-template>
-        </imx-data-table-column>
-        <imx-data-table-column [entityColumn]="schema.Columns.Description" data-imx-identifier="exclusions-table-column-identity">
-          <ng-template let-item>
-            {{ item.Description.Column.GetDisplayValue() }}
-          </ng-template>
-        </imx-data-table-column>
-      </imx-data-table>
-      <imx-data-source-paginator [dst]="dstExcluded"></imx-data-source-paginator>
-    </ng-container>
-  </mat-card>
-</div>
+      <ng-container *ngIf="schema?.Columns">
+        <imx-data-table
+          class="no-row-selection"
+          #dataTableExclusions
+          [dst]="dstExcluded"
+          [detailViewVisible]="false"
+          [selectable]="true"
+          (selectionChanged)="onExclusionSelected($event)"
+          mode="manual"
+          noDataText="#LDS#There are currently no excluded members."
+          noDataIcon="usergroup"
+          noMatchingDataText="#LDS#There are no excluded members matching your search."
+        >
+          <imx-data-table-column [entityColumn]="schema.Columns?.UID_Person" data-imx-identifier="exclusions-table-column-identity">
+            <ng-template let-item>
+              {{ item.UID_Person.Column.GetDisplayValue() }}
+              <eui-badge class="imx-margin-left-15" *ngIf="item.IsNotMatched.value">{{
+                LdsNotIncludedInDynamicRole | translate
+              }}</eui-badge>
+            </ng-template>
+          </imx-data-table-column>
+          <imx-data-table-column [entityColumn]="schema.Columns?.Description" data-imx-identifier="exclusions-table-column-identity">
+            <ng-template let-item>
+              {{ item.Description.Column.GetDisplayValue() }}
+            </ng-template>
+          </imx-data-table-column>
+        </imx-data-table>
+        <imx-data-source-paginator [dst]="dstExcluded"></imx-data-source-paginator>
+      </ng-container>
+    </mat-card>
+  </div>
 
-<div eui-sidesheet-actions>
-  <button mat-stroked-button color="warn" [disabled]="selectedExclusions.length === 0" data-imx-identifier="remove-member-exclusion" (click)="removeExclusions()">
-    <eui-icon icon="delete"></eui-icon>
-    <span translate>#LDS#Remove exclusion</span>
-  </button>
+  <div eui-sidesheet-actions>
+    <button
+      mat-stroked-button
+      color="warn"
+      [disabled]="selectedExclusions.length === 0"
+      data-imx-identifier="remove-member-exclusion"
+      (click)="removeExclusions()"
+    >
+      <eui-icon icon="delete"></eui-icon>
+      <span translate>#LDS#Remove exclusion</span>
+    </button>
+  </div>
 </div>

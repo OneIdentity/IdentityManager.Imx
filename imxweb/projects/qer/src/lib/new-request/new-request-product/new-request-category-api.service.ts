@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,8 +26,8 @@
 
 import { Injectable } from '@angular/core';
 
-import { PortalServicecategories } from 'imx-api-qer';
-import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+import { PortalServicecategories } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 
 import { QerApiService } from '../../qer-api-client.service';
 import { NewRequestOrchestrationService } from '../new-request-orchestration.service';
@@ -36,13 +36,18 @@ import { NewRequestOrchestrationService } from '../new-request-orchestration.ser
   providedIn: 'root',
 })
 export class NewRequestCategoryApiService {
-  constructor(private readonly orchestration: NewRequestOrchestrationService, private readonly qerApi: QerApiService) {}
+  constructor(
+    private readonly orchestration: NewRequestOrchestrationService,
+    private readonly qerApi: QerApiService,
+  ) {}
 
   public get schema(): EntitySchema {
     return PortalServicecategories.GetEntitySchema();
   }
 
   public async get(parameters: CollectionLoadParameters = {}): Promise<ExtendedTypedEntityCollection<any, unknown>> {
-    return await this.qerApi.typedClient.PortalShopCategories.Get(parameters, { signal: this.orchestration.serviceCategoryAbortController.signal });
+    return await this.qerApi.typedClient.PortalShopCategories.Get(parameters, {
+      signal: this.orchestration.serviceCategoryAbortController.signal,
+    });
   }
 }

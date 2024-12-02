@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,21 +30,10 @@ import { JustificationService } from './justification.service';
 import { DecisionReasonComponent } from './decision-reason/decision-reason.component';
 import { CdrModule } from 'qbm';
 
-
-
 @NgModule({
-  declarations: [
-    DecisionReasonComponent
-  ],
-  imports: [
-    CdrModule,
-    CommonModule
-  ],
-  providers: [
-    JustificationService
-  ],
-  exports: [
-    DecisionReasonComponent
-  ]
+  declarations: [DecisionReasonComponent],
+  imports: [CdrModule, CommonModule],
+  providers: [JustificationService],
+  exports: [DecisionReasonComponent],
 })
-export class JustificationModule { }
+export class JustificationModule {}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,19 +24,19 @@
  *
  */
 
-import { ColumnDependentReference } from 'qbm';
+import { BaseCdr } from 'qbm';
 
 /**
- * Defines the {@link ColumnDependentReference} for an action that can be performed on a policy violation
+ * Defines the {@link BaseCdr} for an action that can be performed on a policy violation
  */
 export interface PolicyViolationsActionParameters {
   /**
    * A free text field for a reason
    */
-  reason: ColumnDependentReference;
+  reason: BaseCdr;
 
   /**
    * A FK-Editor for standard justifications
    */
-  justification?: ColumnDependentReference;
+  justification?: BaseCdr;
 }

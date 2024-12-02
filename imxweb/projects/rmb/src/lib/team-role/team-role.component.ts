@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,11 +25,12 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { PortalAdminRoleOrg, PortalRespOrg, TeamRoleData } from 'imx-api-rmb';
 import { ActivatedRoute } from '@angular/router';
-import { IEntity, ReadOnlyEntity } from 'imx-qbm-dbts';
 import { EuiSidesheetService } from '@elemental-ui/core';
+import { PortalAdminRoleOrg, TeamRoleData } from '@imx-modules/imx-api-rmb';
+import { IEntity, ReadOnlyEntity } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
+import { calculateSidesheetWidth, SnackBarService } from 'qbm';
 import {
   DataManagementService,
   QerPermissionsService,
@@ -40,12 +41,10 @@ import {
   RoleService,
 } from 'qer';
 import { RmbApiService } from '../rmb-api-client.service';
-import { MetadataService } from 'qbm';
 
 @Component({
   selector: 'imx-team-role',
   templateUrl: './team-role.component.html',
-  styleUrls: ['./team-role.component.scss'],
 })
 export class TeamRoleComponent implements OnInit {
   public teamRole: TeamRoleData;
@@ -61,12 +60,14 @@ export class TeamRoleComponent implements OnInit {
     private readonly route: ActivatedRoute,
     private readonly permissionService: QerPermissionsService,
     private readonly roleEntitlementActionService: RoleEntitlementActionService,
+    private readonly snackbar: SnackBarService,
   ) {}
 
   async ngOnInit(): Promise<void> {
-    if(await this.permissionService.isPersonManager()){
-      this.showTeamRole = true;
+    const canCreate = (await this.rmbApiService.client.portal_roles_config_businessroles_get()).EnableNewTeamRole;
+    if (await this.permissionService.isPersonManager()) {
       await this.getTeamRole();
+      this.showTeamRole = canCreate || this.existTeamRole;
     }
   }
 
@@ -74,22 +75,32 @@ export class TeamRoleComponent implements OnInit {
    * Load team role data and open details sidesheet
    */
   public async onManageTeamRole(): Promise<void> {
+    if (!this.teamRole.Uid) {
+      return;
+    }
     try {
       this.loadingState = true;
-      const roleItemCollection = await this.roleService.targetMap.get(this.orgTag).interactiveResp.Get_byid(this.teamRole.Uid);
-      const roleItem = roleItemCollection.Data[0].GetEntity();
+      const roleItem = (
+        await this.roleService.targetMap.get(this.orgTag)?.interactiveResp?.Get_byid(this.teamRole.Uid)
+      )?.Data[0].GetEntity();
+      if (!roleItem) {
+        throw new Error('There was an error getting details about this role');
+      }
       await this.setRoleData(roleItem);
       await this.dataManagementService.setInteractive();
-      this.sidesheetService.open(RoleDetailComponent, {
-        title: this.translateService.instant('#LDS#Heading Edit Team Role'),
-        subTitle: roleItem.GetDisplay(),
-        padding: '0px',
-        width: 'max(768px, 80%)',
-        disableClose: true,
-        testId: `${this.orgTag}-role-detail-sidesheet`,
-      }).afterClosed().subscribe(() =>{
-        this.getTeamRole();
-      })
+      this.sidesheetService
+        .open(RoleDetailComponent, {
+          title: this.translateService.instant('#LDS#Heading Edit Team Role'),
+          subTitle: roleItem.GetDisplay(),
+          padding: '0px',
+          width: calculateSidesheetWidth(1250, 0.7),
+          disableClose: true,
+          testId: `${this.orgTag}-role-detail-sidesheet`,
+        })
+        .afterClosed()
+        .subscribe(() => {
+          this.getTeamRole();
+        });
     } finally {
       this.loadingState = false;
     }
@@ -105,23 +116,26 @@ export class TeamRoleComponent implements OnInit {
         .open(RoleRecommendationsComponent, {
           title: this.translateService.instant('#LDS#Heading Create Team Role'),
           padding: '0px',
-          width: 'max(650px, 65%)',
+          width: calculateSidesheetWidth(1000),
           testId: 'role-recommendation-sidesheet',
           data: {
             recommendation: teamRoleRecommendOptions.Items || [],
             canEdit: true,
             infoText:
-              '#LDS#Here you can create a team role. To do this, select the entitlements that are currently assigned individually to the members of your team. This team role will then be automatically assigned to all members of your team (along with the previously mentioned entitlements).',
+              '#LDS#Here you can create a team role. To do this, select the entitlements that are currently assigned individually to the members of your team. After you have created the team role, the entitlements are added to your shopping cart and you must submit the request. This team role will then be automatically assigned to all members of your team (along with the aforementioned entitlements).',
             selectionTitle: '#LDS#Selected entitlements',
             submitButtonTitle: '#LDS#Create team role',
             actionColumnTitle: '#LDS#Distribution among the team',
-            hideActionConfirmation: true
+            hideActionConfirmation: true,
+            applyWithoutSelection: true,
+            noDataText:
+              '#LDS#Currently, no entitlements can be recommended. You can still create the team role and assign entitlements later.',
           },
         })
         .afterClosed()
-        .subscribe((result: RoleRecommendationResultItem[]) => {
+        .subscribe((result: { items: RoleRecommendationResultItem[] }) => {
           if (!!result) {
-            this.saveRecommendations(result);
+            this.saveRecommendations(result.items);
           }
         });
     } finally {
@@ -155,11 +169,19 @@ export class TeamRoleComponent implements OnInit {
     try {
       // It can take a moment for the team role to become visible over the ownerships API because of DBQUeue calculations.
       this.loadingState = true;
-      const collectionData = await this.rmbApiService.client.portal_resp_team_teamrole_post({ObjectKeys: resultItem.map(item => item.ObjectKey.value)});
+      const collectionData = await this.rmbApiService.client.portal_resp_team_teamrole_post({
+        ObjectKeys: resultItem.map((item) => item.ObjectKey.value),
+      });
       // This entity represents the new team role.
+      if (!collectionData.Entities) {
+        throw new Error('There was an error posting this role recommendation');
+      }
       const entity = new ReadOnlyEntity(PortalAdminRoleOrg.GetEntitySchema(), collectionData.Entities[0]);
       await this.setRoleData(entity);
-      await this.roleEntitlementActionService.addRecommendation(entity, resultItem);
+      const count = await this.roleEntitlementActionService.addRecommendation(entity, resultItem);
+      if (count > 0) {
+        this.snackbar.open({ key: '#LDS#The entitlement assignments have been successfully added to your shopping cart.' }, '#LDS#Close');
+      }
       this.getTeamRole();
     } finally {
       this.loadingState = false;
@@ -170,7 +192,7 @@ export class TeamRoleComponent implements OnInit {
    * Set role service sidesheet data with the required params.
    * @param IEntity
    */
-  private async setRoleData(entity: IEntity): Promise<void>{
+  private async setRoleData(entity: IEntity): Promise<void> {
     const isAdmin = this.route.snapshot?.url[0]?.path === 'admin';
     const isStructureAdmin = await this.permissionService.isStructAdmin();
     this.roleService.setSidesheetData({

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -34,7 +34,7 @@ import {
   TypedEntity,
   TypedEntityBuilder,
   ValType,
-} from 'imx-qbm-dbts';
+} from '@imx-modules/imx-qbm-dbts';
 
 // Types
 export type StatusStateCSS = 'is-ok' | 'is-warn' | 'is-error';

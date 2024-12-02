@@ -1,0 +1,14 @@
+<p>
+  {{ '#LDS#The following activity has been logged for this resource in the last {0} days.' | translate | ldsReplace: interval }}
+</p>
+
+<imx-data-source-toolbar #dst [settings]="dstSettings" [options]="[]"> </imx-data-source-toolbar>
+<imx-data-table [dst]="dst" [detailViewVisible]="false" mode="manual">
+  <imx-data-table-column
+    [entityColumn]="entitySchema.Columns.UID_QAMTrustee"
+    [columnLabel]="'#LDS#Display name' | translate"
+  ></imx-data-table-column>
+  <imx-data-table-column [entityColumn]="entitySchema.Columns.Activities"></imx-data-table-column>
+  <imx-data-table-column [entityColumn]="entitySchema.Columns.Operation"></imx-data-table-column>
+  <imx-data-table-column [entityColumn]="entitySchema.Columns.Resources"></imx-data-table-column>
+</imx-data-table>

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -44,30 +44,27 @@ import {
   ObjectHistoryModule,
   ObjectHistoryApiService,
   QbmModule,
+  BusyIndicatorModule,
 } from 'qbm';
 import { ObjectHyperviewModule, ObjectHyperviewService, OpsModule } from 'qer';
 import { ObjectOverviewComponent } from './object-overview.component';
 import { ObjectOverviewService } from './object-overview.service';
 import { OpSupportHistoryApiService } from './opsupport-history-api.service';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { OpsHyperviewService } from '../hyperview/ops-hyperview.service';
 
-
 @NgModule({
-  declarations: [
-    ObjectOverviewComponent,
-  ],
+  declarations: [ObjectOverviewComponent],
   imports: [
     CommonModule,
     ObjectHistoryModule,
     DataTableModule,
     DataSourceToolbarModule,
+    BusyIndicatorModule,
     EuiCoreModule,
     FormsModule,
     MatTabsModule,
     MatButtonModule,
     MatCardModule,
-    MatProgressSpinnerModule,
     MatTooltipModule,
     MatFormFieldModule,
     MatSelectModule,
@@ -77,18 +74,18 @@ import { OpsHyperviewService } from '../hyperview/ops-hyperview.service';
     MatTableModule,
     MatPaginatorModule,
     OpsModule,
-    QbmModule
+    QbmModule,
   ],
   providers: [
     {
       provide: ObjectHistoryApiService,
-      useClass: OpSupportHistoryApiService
-    },    
+      useClass: OpSupportHistoryApiService,
+    },
     {
       provide: ObjectHyperviewService,
-      useClass: OpsHyperviewService
-    }, 
-    ObjectOverviewService
-  ]
+      useClass: OpsHyperviewService,
+    },
+    ObjectOverviewService,
+  ],
 })
-export class ObjectOverviewModule { }
+export class ObjectOverviewModule {}

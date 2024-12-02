@@ -1,17 +1,33 @@
 <div class="imx-report-listing">
-  <eui-search class="report-selector-eui-search" data-imx-identifier="report-selector-eui-search"
-    [placeholder]="'#LDS#Search' | translate" [searchControl]="searchControl" size="small">
+  <eui-search
+    class="report-selector-eui-search"
+    data-imx-identifier="report-selector-eui-search"
+    [placeholder]="'#LDS#Search' | translate"
+    [searchControl]="searchControl"
+    size="small"
+  >
   </eui-search>
-  <div >
-    <mat-spinner diameter="16" *ngIf="loading"></mat-spinner>
+  <div>
+    <mat-spinner class="imx-margin-top-10 imx-margin-left-5" diameter="16" *ngIf="loading"></mat-spinner>
   </div>
 </div>
 <mat-form-field appearance="outline">
   <mat-label>{{ '#LDS#Report' | translate }}</mat-label>
-  <input value="_hidden" matInput hidden [required]="true">
-  <mat-selection-list class="imx-candidate-list" [multiple]="false" [ngStyle]="{'height': controlHeigth + 'px'}" (selectionChange)="updateSelected($event)" data-imx-identifier="report-selector-selectionList">
-    <mat-list-option *ngFor="let candidate of candidates; index as i" [value]="candidate"
-      class="imx-candidate-option" [attr.data-imx-identifier]="'report-selector-selectionList-element-' + i">
+  <input value="_hidden" matInput hidden [required]="true" class="input-hidden" />
+  <mat-selection-list
+    class="imx-candidate-list"
+    [multiple]="false"
+    [ngStyle]="{ height: controlHeigth + 'px' }"
+    [hideSingleSelectionIndicator]="true"
+    (selectionChange)="updateSelected($event)"
+    data-imx-identifier="report-selector-selectionList"
+  >
+    <mat-list-option
+      *ngFor="let candidate of candidates; index as i"
+      [value]="candidate"
+      class="imx-candidate-option"
+      [attr.data-imx-identifier]="'report-selector-selectionList-element-' + i"
+    >
       <div class="imx-candidate-content">
         <div class="imx-candidate-display">{{ candidate.GetEntity().GetDisplay() }}</div>
         <div class="imx-candidate-longdisplay">{{ candidate.Description.Column.GetDisplayValue() }}</div>

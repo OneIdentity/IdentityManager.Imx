@@ -1,5 +1,5 @@
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
-@import '../../../../../shared/scss/common-table.scss';
+@import 'base/mixins';
 
 :host {
   display: flex;
@@ -12,23 +12,13 @@
   display: flex;
   align-items: flex-start;
 
-  .helper-alert {
-    display: flex;
-    margin: 0 0 20px auto;
-    align-self: flex-end;
-    width: 50%;
-    span {
-      display: block;
-    }
-
-    .imx-image-info {
-      margin-top: 5px;
-    }
+  .imx-image-info {
+    margin-top: 5px;
   }
 }
 
 .imx-data-tree {
- @include imx-flex-fill-control-hidden-overflow();
+  @include flex-column-container-fill();
   margin-bottom: 3px;
   margin-right: 3px;
   background-color: $color-gray-0;
@@ -47,10 +37,6 @@
     display: flex;
     flex-direction: column;
   }
-}
-
-.imx-button-bar {
-  @include imx-button-bar();
 }
 
 .eui-dark-theme {

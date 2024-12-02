@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,11 +24,29 @@
  *
  */
 
-import { TypedEntity } from 'imx-qbm-dbts';
+import { TypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { QueuedActionState } from '../processing-queue/processing-queue.interface';
 import { DataTileBadge } from './data-tile-badge.interface';
 
 export interface DataSourceItemStatus {
-  enabled: (item: TypedEntity) => boolean;
-  getBadges?: (input: TypedEntity) => DataTileBadge[];  
+  /**
+   * Function of the row to determine if the checkbox is clickable.
+   * @param item row entity
+   * @returns if the checkbox is clickable
+   */
+  enabled: (item?: TypedEntity) => boolean;
+  /**
+   * Function of the row to determine if the row action should be allowed. We may want to prevent an entity from being interacted with while it is being processed.
+   * @param item row entity
+   * @returns if the row should be clickable
+   */
+  rowEnabled?: (item?: TypedEntity) => boolean;
+  /**
+   * Function to return the status of a entity in the queue.
+   * @param item row entity
+   * @returns the state of this item in the queue
+   */
+  status?: (item: TypedEntity) => QueuedActionState;
+  getBadges?: (input: TypedEntity) => DataTileBadge[];
   getImagePath?: (item: TypedEntity) => Promise<string>;
 }

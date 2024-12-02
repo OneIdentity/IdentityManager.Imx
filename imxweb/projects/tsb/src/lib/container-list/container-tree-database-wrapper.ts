@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,22 +24,18 @@
  *
  */
 
-import { CollectionLoadParameters, IEntity } from 'imx-qbm-dbts';
+import { CollectionLoadParameters, IEntity } from '@imx-modules/imx-qbm-dbts';
 import { BusyService, EntityTreeDatabase } from 'qbm';
 import { DeHelperService } from '../de-helper.service';
 
 export class ContainerTreeDatabaseWrapper {
-
   public get targetSystemFilterValue(): string {
     return this.system;
   }
 
   public set targetSystemFilterValue(value: string) {
     this.system = value;
-    this.entityTreeDatabase = new EntityTreeDatabase(
-      parameters => this.getEntities(parameters, value),
-      this.busyService
-    );
+    this.entityTreeDatabase = new EntityTreeDatabase((parameters) => this.getEntities(parameters, value), this.busyService);
   }
 
   public selectionEnabled = false;
@@ -50,12 +46,9 @@ export class ContainerTreeDatabaseWrapper {
 
   constructor(
     private readonly busyService: BusyService,
-    private readonly dataHelper: DeHelperService
+    private readonly dataHelper: DeHelperService,
   ) {
-    this.entityTreeDatabase = new EntityTreeDatabase(
-      parameters => this.getEntities(parameters),
-      this.busyService
-    );
+    this.entityTreeDatabase = new EntityTreeDatabase((parameters) => this.getEntities(parameters), this.busyService);
   }
 
   private async getEntities(parameters: CollectionLoadParameters = {}, system: string = ''): Promise<IEntity[]> {
@@ -67,6 +60,6 @@ export class ContainerTreeDatabaseWrapper {
       navigationState.system = system;
     }
     const containerData = await this.dataHelper.getContainers(navigationState);
-    return containerData.Data.map(element => element.GetEntity());
+    return containerData.Data.map((element) => element.GetEntity());
   }
 }

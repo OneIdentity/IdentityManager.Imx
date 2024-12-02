@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -54,9 +54,9 @@ export class NewRequestSelectedProductsComponent implements OnInit {
     private sidesheetService: EuiSidesheetService,
     private sidesheetRef: EuiSidesheetRef,
     private readonly _liveAnnouncer: LiveAnnouncer,
-    @Inject(EUI_SIDESHEET_DATA) public data?: SelectedSidesheetData
+    @Inject(EUI_SIDESHEET_DATA) public data?: SelectedSidesheetData,
   ) {
-    const initialData = this.convertDataSource(this.data?.candidates);
+    const initialData = this.convertDataSource(this.data?.candidates || []);
     this.dataSource = new MatTableDataSource(initialData);
     this.selection = new SelectionModel<any>(true, initialData);
 

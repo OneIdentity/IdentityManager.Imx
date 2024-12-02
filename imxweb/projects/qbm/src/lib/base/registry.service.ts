@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,10 +28,11 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class RegistryService<T> {
+  public get Registry(): { [id: string]: T[] } {
+    return this.registry;
+  }
 
-  public get Registry(): { [id: string]: T[]; } { return this.registry; }
-
-  private registry: { [id: string]: T[]; } = {};
+  private registry: { [id: string]: T[] } = {};
 
   public register(key: string, obj: T): void {
     if (!this.registry[key]) {
@@ -39,5 +40,4 @@ export class RegistryService<T> {
     }
     this.registry[key].push(obj);
   }
-
 }

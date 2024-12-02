@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,50 +24,35 @@
  *
  */
 
-import { Component, Inject, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
-import { EuiLoadingService, EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { AbstractControl, AsyncValidatorFn, UntypedFormControl, UntypedFormGroup, ValidatorFn } from '@angular/forms';
 import { OverlayRef } from '@angular/cdk/overlay';
+import { Component, Inject, OnDestroy } from '@angular/core';
+import { AbstractControl, AsyncValidatorFn, UntypedFormControl, UntypedFormGroup, ValidatorFn } from '@angular/forms';
+import { Router } from '@angular/router';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
+import { PolicyValidationResult } from '@imx-modules/imx-api-qer';
 import { ConfirmationService, SnackBarService } from 'qbm';
-import { PolicyValidationResult } from 'imx-api-qer';
 import { PasswordHelper } from './password-helper';
 import { PasswordService } from './password.service';
 
 @Component({
   templateUrl: './check-passwords.component.html',
-  styleUrls: ['./check-passwords.component.scss']
+  styleUrls: ['./check-passwords.component.scss'],
 })
 export class CheckPasswordsComponent implements OnDestroy {
-
-  public get passwordRepeatControl(): AbstractControl {
+  public get passwordRepeatControl(): AbstractControl | null {
     return this.passwordForm.get('passwordRepeat');
   }
 
-  public get passwordControl(): AbstractControl {
+  public get passwordControl(): AbstractControl | null {
     return this.passwordForm.get('password');
   }
 
   public passwordHide = true;
   public passwordRepeatHide = true;
 
-  public passwordForm = new UntypedFormGroup({
-    password: new UntypedFormControl('',
-      {
-        asyncValidators: CheckPasswordsComponent.validateOnServer(this.passwordSvc, this.passwordHelper),
-        updateOn: 'blur'
-      }),
-    passwordRepeat: new UntypedFormControl('',
-      {
-        updateOn: 'blur'
-      }),
-  }, {
-    validators: CheckPasswordsComponent.sameValue(),
-    updateOn: 'blur'
-  });
-
+  public passwordForm: UntypedFormGroup;
 
   private closeClickSubscription: Subscription;
 
@@ -78,10 +63,25 @@ export class CheckPasswordsComponent implements OnDestroy {
     private readonly busyService: EuiLoadingService,
     private readonly confirmation: ConfirmationService,
     private passwordSvc: PasswordService,
-    private router: Router) {
+    private router: Router,
+  ) {
+    this.passwordForm = new UntypedFormGroup(
+      {
+        password: new UntypedFormControl('', {
+          asyncValidators: CheckPasswordsComponent.validateOnServer(this.passwordSvc, this.passwordHelper),
+          updateOn: 'blur',
+        }),
+        passwordRepeat: new UntypedFormControl('', {
+          updateOn: 'blur',
+        }),
+      },
+      {
+        validators: CheckPasswordsComponent.sameValue(),
+        updateOn: 'blur',
+      },
+    );
     this.closeClickSubscription = this.sidesheetRef.closeClicked().subscribe(async () => {
-      if (!this.passwordForm.dirty
-        || await this.confirmation.confirmLeaveWithUnsavedChanges()) {
+      if (!this.passwordForm.dirty || (await this.confirmation.confirmLeaveWithUnsavedChanges())) {
         this.sidesheetRef.close();
       }
     });
@@ -93,32 +93,36 @@ export class CheckPasswordsComponent implements OnDestroy {
 
   public async savePassword(): Promise<void> {
     let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
 
     let results: PolicyValidationResult[];
     try {
-      results = await this.passwordSvc.postOrCheckPassword({
-        NewPassword: this.passwordControl.value,
-        CheckOnly: false,
-        Ids: [this.passwordHelper.selectedPassword.Id]
-      }, this.passwordHelper.uidPerson);
+      results = await this.passwordSvc.postOrCheckPassword(
+        {
+          NewPassword: this.passwordControl?.value,
+          CheckOnly: false,
+          Ids: this.passwordHelper.selectedPassword.Id != null ? [this.passwordHelper.selectedPassword.Id] : undefined,
+        },
+        this.passwordHelper.uidPerson,
+      );
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
 
     if (results.length === 0) {
       this.sidesheetRef.close();
       this.snackBar.open({ key: '#LDS#Your password has been successfully changed.' });
-      if (!this.passwordHelper.embedded)
-        this.router.navigate(['']);
+      if (!this.passwordHelper.embedded) this.router.navigate(['']);
     } else {
-      this.passwordControl.setErrors({ checkResult: results });
+      this.passwordControl?.setErrors({ checkResult: results });
     }
   }
 
   public isSamePassword(): boolean {
-    const passwordValue = this.passwordForm.get('password').value;
-    const passwordRepeatValue = this.passwordForm.get('passwordRepeat').value;
+    const passwordValue = this.passwordControl?.value;
+    const passwordRepeatValue = this.passwordRepeatControl?.value;
 
     return passwordValue === passwordRepeatValue;
   }
@@ -135,25 +139,26 @@ export class CheckPasswordsComponent implements OnDestroy {
 
       helper.isValidating = true;
       try {
-        check = await svc.postOrCheckPassword({
-          NewPassword: value,
-          CheckOnly: true,
-          Ids: [helper.selectedPassword.Id]
-        }, helper.uidPerson);
+        check = await svc.postOrCheckPassword(
+          {
+            NewPassword: value,
+            CheckOnly: true,
+            Ids: helper.selectedPassword.Id != null ? [helper.selectedPassword.Id] : undefined,
+          },
+          helper.uidPerson,
+        );
       } finally {
         helper.isValidating = false;
       }
 
       return check != null && check.length === 0 ? null : { checkResult: check };
     };
-
   }
 
   private static sameValue(): ValidatorFn {
     return (control: UntypedFormGroup): { [key: string]: boolean } | null => {
-
-      const passwordValue = control.get('password').value;
-      const passwordRepeatValue = control.get('passwordRepeat').value;
+      const passwordValue = control.get('password')?.value;
+      const passwordRepeatValue = control.get('passwordRepeat')?.value;
 
       if (passwordValue !== '' && passwordRepeatValue === '') {
         return null;

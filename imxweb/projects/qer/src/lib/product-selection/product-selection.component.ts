@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,55 +26,57 @@
 
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatTabChangeEvent, MatTabGroup } from '@angular/material/tabs';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EuiLoadingService, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
-import { MatSelectChange } from '@angular/material/select';
 import { Subscription } from 'rxjs';
 
-import { IWriteValue, EntityValue, LocalProperty, ValueStruct, MultiValue } from 'imx-qbm-dbts';
 import {
-  PortalShopServiceitems,
-  PortalShopCategories,
-  PortalItshopPeergroupMemberships,
-  RequestableProductForPerson,
-  QerProjectConfig,
   PortalItshopPatternRequestable,
-} from 'imx-api-qer';
+  PortalItshopPeergroupMemberships,
+  PortalShopCategories,
+  PortalShopServiceitems,
+  QerProjectConfig,
+  RequestableProductForPerson,
+} from '@imx-modules/imx-api-qer';
+import { EntityValue, IWriteValue, LocalProperty, MultiValue, TypedEntity, ValueStruct } from '@imx-modules/imx-qbm-dbts';
 
+import { MatRadioChange } from '@angular/material/radio';
 import {
-  ColumnDependentReference,
-  FkAdvancedPickerComponent,
-  EntityService,
-  BaseReadonlyCdr,
-  BaseCdr,
   AuthenticationService,
-  LdsReplacePipe,
+  BaseCdr,
+  BaseReadonlyCdr,
+  calculateSidesheetWidth,
+  ColumnDependentReference,
   DataTileMenuItem,
+  EntityService,
+  FkAdvancedPickerComponent,
+  ISessionState,
+  LdsReplacePipe,
   SnackBarService,
 } from 'qbm';
-import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
-import { UserModelService } from '../user/user-model.service';
-import { PersonService } from '../person/person.service';
-import { ServiceItemsService } from '../service-items/service-items.service';
-import { CartItemsService } from '../shopping-cart/cart-items.service';
-import { QerApiService } from '../qer-api-client.service';
-import { ServiceCategoryListComponent } from './servicecategory-list/servicecategory-list.component';
-import { ServiceitemListComponent } from '../service-items/serviceitem-list/serviceitem-list.component';
-import { CategoryTreeComponent } from './servicecategory-list/category-tree.component';
-import { RoleMembershipsComponent } from './role-memberships/role-memberships.component';
-import { RecipientsWrapper } from './recipients-wrapper';
 import { ShelfService } from '../itshop/shelf.service';
-import { ProductDetailsSidesheetComponent } from './product-details-sidesheet/product-details-sidesheet.component';
-import { PatternDetailsSidesheetComponent } from './pattern-details-sidesheet/pattern-details-sidesheet.component';
-import { PatternItemService } from '../pattern-item-list/pattern-item.service';
 import { PatternItemListComponent } from '../pattern-item-list/pattern-item-list.component';
-import { OptionalItemsSidesheetComponent } from './optional-items-sidesheet/optional-items-sidesheet.component';
-import { ServiceItemOrder } from './service-item-order.interface';
+import { PatternItemService } from '../pattern-item-list/pattern-item.service';
+import { PersonService } from '../person/person.service';
+import { ProjectConfigurationService } from '../project-configuration/project-configuration.service';
+import { QerApiService } from '../qer-api-client.service';
+import { ServiceItemsService } from '../service-items/service-items.service';
+import { ServiceitemListComponent } from '../service-items/serviceitem-list/serviceitem-list.component';
+import { CartItemsService } from '../shopping-cart/cart-items.service';
+import { UserModelService } from '../user/user-model.service';
 import { DependencyService } from './optional-items-sidesheet/dependency.service';
+import { OptionalItemsSidesheetComponent } from './optional-items-sidesheet/optional-items-sidesheet.component';
+import { PatternDetailsSidesheetComponent } from './pattern-details-sidesheet/pattern-details-sidesheet.component';
+import { ProductDetailsSidesheetComponent } from './product-details-sidesheet/product-details-sidesheet.component';
+import { RecipientsWrapper } from './recipients-wrapper';
+import { RoleMembershipsComponent } from './role-memberships/role-memberships.component';
+import { ServiceItemOrder } from './service-item-order.interface';
+import { CategoryTreeComponent } from './servicecategory-list/category-tree.component';
+import { ServiceCategoryListComponent } from './servicecategory-list/servicecategory-list.component';
 
-/** 
- * Main entry component for the product selection page. 
+/**
+ * Main entry component for the product selection page.
  * @deprecated Use NewRequestComponent
  */
 @Component({
@@ -99,12 +101,11 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
   public selectedItems: PortalShopServiceitems[] = [];
   public selectedTemplates: PortalItshopPatternRequestable[] = [];
   public selectedRoles: PortalItshopPeergroupMemberships[] = [];
-  public employeePreselected: boolean;
   public canSelectFromTemplate: boolean;
   public canSelectByRefUser: boolean;
-  public selectedCategory: PortalShopCategories;
-  public referenceUser: ValueStruct<string>;
-  public uidPersonPeerGroup: string;
+  public selectedCategory: PortalShopCategories | undefined;
+  public referenceUser: ValueStruct<string> | undefined;
+  public uidPersonPeerGroup: string | undefined;
   public displayProducts = true;
   public recipientType: 'self' | 'others' = 'self';
   public showTemplates = false;
@@ -159,15 +160,14 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     private readonly entityService: EntityService,
     private readonly ldsReplace: LdsReplacePipe,
     private readonly snackbar: SnackBarService,
-    authentication: AuthenticationService
+    authentication: AuthenticationService,
   ) {
-    this.authSubscription = authentication.onSessionResponse.subscribe((elem) => {
-      this.userUid = elem.UserUid;
+    this.authSubscription = authentication.onSessionResponse.subscribe((session: ISessionState) => {
+      this.userUid = session.UserUid || '';
     });
   }
 
   public async ngOnInit(): Promise<void> {
-
     // define the recipients as a multi-valued property
     const recipientsProperty = new LocalProperty();
     recipientsProperty.IsMultiValued = true;
@@ -179,8 +179,8 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     const fkProviderItems = this.qerClient.client.getFkProviderItems('portal/cartitem').map((item) => ({
       ...item,
       load: (_, parameters = {}) => item.load(dummyCartItemEntity, parameters),
-      getDataModel: async (entity) => item.getDataModel(entity),
-      getFilterTree: async (entity, parentKey) => item.getFilterTree(entity, parentKey),
+      getDataModel: async (entity) => item?.getDataModel?.(entity) || {},
+      getFilterTree: async (entity, parentKey) => item?.getFilterTree?.(entity, parentKey) || {},
     }));
 
     const column = this.entityService.createLocalEntityColumn(recipientsProperty, fkProviderItems, { Value: this.userUid });
@@ -191,7 +191,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     this.canRequestForSomebodyElse = (await this.userModelSvc.getUserConfig()).CanRequestForSomebodyElse;
 
     // TODO activatedRoute parameters may change, must subscribe to changes
-    
+
     this.uidaccproduct = this.activatedRoute.snapshot.queryParams.UID_AccProduct;
     if (this.uidaccproduct) {
       // TODO load all according to this.categoryModel.SelectedCategory
@@ -218,9 +218,8 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
 
     // apply project configuration
     this.projectConfig = await this.projectConfigService.getConfig();
-    this.employeePreselected = this.projectConfig.ITShopConfig.VI_ITShop_Employee_Preselected;
-    this.canSelectFromTemplate = this.projectConfig.ITShopConfig.VI_ITShop_ProductSelectionFromTemplate;
-    this.canSelectByRefUser = this.projectConfig.ITShopConfig.VI_ITShop_ProductSelectionByReferenceUser;
+    this.canSelectFromTemplate = this.projectConfig.ITShopConfig?.VI_ITShop_ProductSelectionFromTemplate || false;
+    this.canSelectByRefUser = this.projectConfig.ITShopConfig?.VI_ITShop_ProductSelectionByReferenceUser || false;
 
     this.cartItemRecipients = new BaseCdr(this.recipients.Column, '#LDS#Recipients');
 
@@ -234,7 +233,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
   public async openCategoryTree(): Promise<void> {
     const sidesheetRef = this.sideSheetService.open(CategoryTreeComponent, {
       title: await this.translate.get('#LDS#Heading Select Service Category').toPromise(),
-      width: '600px',
+      width: calculateSidesheetWidth(600, 0.4),
       testId: 'categorytree-sidesheet',
       data: {
         selectedServiceCategory: this.selectedCategory,
@@ -252,9 +251,9 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     });
   }
 
-  public onServiceCategorySelected(selectedCategory: PortalShopCategories): void {
+  public onServiceCategorySelected(selectedCategory: PortalShopCategories | null): void {
     this.serviceitemListComponent.resetKeywords();
-    this.selectedCategory = selectedCategory;
+    this.selectedCategory = selectedCategory == null ? undefined : selectedCategory;
 
     if (this.selectedCategory == null) {
       this.serviceCategoryListComponent.resetCategory();
@@ -289,7 +288,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
       .open(FkAdvancedPickerComponent, {
         title: await this.translate.get('#LDS#Heading Select Reference User').toPromise(),
         padding: '0',
-        width: '600px',
+        width: calculateSidesheetWidth(600, 0.4),
         testId: 'referenceUser-sidesheet',
         data: {
           displayValue: '',
@@ -323,7 +322,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  public setPeerGroupPerson(uidPerson: string): void {
+  public setPeerGroupPerson(uidPerson: string | undefined): void {
     this.showTemplates = false;
     this.uidPersonPeerGroup = uidPerson;
     this.selectedCategory = undefined;
@@ -356,8 +355,8 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     return this.recipientsWrapper?.uids?.length > 0;
   }
 
-  public onSelectionChanged(items: PortalShopServiceitems[]): void {
-    this.selectedItems = items;
+  public onSelectionChanged(items: TypedEntity[]): void {
+    this.selectedItems = items as PortalShopServiceitems[];
   }
 
   public onTemplateSelectionChanged(items: PortalItshopPatternRequestable[]): void {
@@ -379,11 +378,11 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
 
   public async handlePatternItemAction(action: {
     name: string;
-    serviceItems?: PortalShopServiceitems[];
+    serviceItems?: (PortalShopServiceitems | undefined)[];
     patternItem?: PortalItshopPatternRequestable;
   }): Promise<void> {
-    if (action.name === 'details' && action.serviceItems) {
-      this.requestTemplateDetails(action.serviceItems, action.patternItem);
+    if (action.name === 'details' && action.serviceItems && action.patternItem != null) {
+      this.requestTemplateDetails(action.serviceItems || [], action.patternItem);
     }
     if (action.name === 'addTemplateToCart' && action.patternItem) {
       this.addTemplateToCart(action.patternItem);
@@ -394,9 +393,9 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     const outgoingOrder: ServiceItemOrder = {
       serviceItems: this.selectedItems,
     };
-    this.projectConfig.ITShopConfig.VI_ITShop_AddOptionalProductsOnInsert
-    ? await this.openOptionalSideSheet(outgoingOrder)
-    : await this.orderSelected(outgoingOrder, this.selectedTemplates, this.selectedRoles);
+    this.projectConfig.ITShopConfig?.VI_ITShop_AddOptionalProductsOnInsert
+      ? await this.openOptionalSideSheet(outgoingOrder)
+      : await this.orderSelected(outgoingOrder, this.selectedTemplates, this.selectedRoles);
   }
 
   public async addItemToCart(serviceItem: PortalShopServiceitems): Promise<void> {
@@ -404,18 +403,20 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
       serviceItems: [serviceItem],
     };
     this.projectConfig?.ITShopConfig?.VI_ITShop_AddOptionalProductsOnInsert
-    ? await this.openOptionalSideSheet(outgoingOrder)
-    : await this.orderSelected(outgoingOrder, this.selectedTemplates, this.selectedRoles);
+      ? await this.openOptionalSideSheet(outgoingOrder)
+      : await this.orderSelected(outgoingOrder, this.selectedTemplates, this.selectedRoles);
   }
 
   public async openOptionalSideSheet(outgoingOrder: ServiceItemOrder): Promise<void> {
-    const serviceItemTree = await this.optionalItemsService.checkForOptionalTree(outgoingOrder.serviceItems, this.recipients);
+    const serviceItemTree = outgoingOrder.serviceItems
+      ? await this.optionalItemsService.checkForOptionalTree(outgoingOrder.serviceItems, this.recipients)
+      : {};
     if (serviceItemTree?.totalOptional && serviceItemTree?.totalOptional > 0) {
       const selectedOptionalOrder: ServiceItemOrder = await this.sideSheetService
         .open(OptionalItemsSidesheetComponent, {
           title: this.translate.instant('#LDS#Heading Request Optional Products'),
           padding: '0px',
-          width: 'max(700px, 60%)',
+          width: calculateSidesheetWidth(1000),
           testId: 'optional-items-sidesheet',
           disableClose: true,
           data: {
@@ -453,7 +454,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     await this.serviceitemListComponent.getData();
   }
 
-  public async selectedRecipientTypeChanged(arg: MatSelectChange): Promise<void> {
+  public async selectedRecipientTypeChanged(arg: MatRadioChange): Promise<void> {
     if (arg.value === 'self') {
       await this.recipients.Column.PutValueStruct({
         DataValue: this.userUid,
@@ -532,31 +533,30 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
   }
 
   public updateInfoTooltip(): void {
-
     this.infoboxTooltip = '';
 
     if (this.referenceUser) {
       if (this.displayProducts) {
         this.infoboxTooltip = this.ldsReplace.transform(
           this.translate.instant('#LDS#The following products are assigned to {0}.'),
-          this.referenceUser.DisplayValue
+          this.referenceUser.DisplayValue,
         );
       } else {
         this.infoboxTooltip = this.ldsReplace.transform(
           this.translate.instant('#LDS#{0} is a member of the following organizational structures.'),
-          this.referenceUser.DisplayValue
+          this.referenceUser.DisplayValue,
         );
       }
     } else {
       if (this.displayProducts) {
         this.infoboxTooltip = this.ldsReplace.transform(
           this.translate.instant('#LDS#Other identities of the peer group of {0} requested the following products.'),
-          this.recipients.Column.GetDisplayValue()
+          this.recipients.Column.GetDisplayValue(),
         );
       } else {
         this.infoboxTooltip = this.ldsReplace.transform(
           this.translate.instant('#LDS#Other identities of the peer group of {0} are members of the following organizational structures.'),
-          this.recipients.Column.GetDisplayValue()
+          this.recipients.Column.GetDisplayValue(),
         );
       }
     }
@@ -564,7 +564,9 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     if (this.displayProducts) {
       this.infoboxTooltip += this.translate.instant('#LDS#Select the products you also want to request for the selected recipient.');
     } else {
-      this.infoboxTooltip += this.translate.instant('#LDS#Select the organizational structures in which the selected recipient should also be a member.');
+      this.infoboxTooltip += this.translate.instant(
+        '#LDS#Select the organizational structures in which the selected recipient should also be a member.',
+      );
     }
   }
 
@@ -574,7 +576,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
         title: this.translate.instant('#LDS#Heading View Product Details'),
         subTitle: item.GetEntity().GetDisplay(),
         padding: '0px',
-        width: 'max(700px, 60%)',
+        width: calculateSidesheetWidth(1000),
         testId: 'product-details-sidesheet',
         data: {
           item,
@@ -585,13 +587,16 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
       .toPromise();
   }
 
-  private async requestTemplateDetails(items: PortalShopServiceitems[], patternItem: PortalItshopPatternRequestable): Promise<void> {
+  private async requestTemplateDetails(
+    items: (PortalShopServiceitems | undefined)[],
+    patternItem: PortalItshopPatternRequestable,
+  ): Promise<void> {
     await this.sideSheetService
       .open(PatternDetailsSidesheetComponent, {
         title: this.translate.instant('#LDS#Heading View Product Bundle Details'),
         subTitle: patternItem.GetEntity().GetDisplay(),
         padding: '0px',
-        width: 'max(700px, 60%)',
+        width: calculateSidesheetWidth(1000),
         testId: 'template-details-sidesheet',
         data: {
           items,
@@ -605,28 +610,31 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
   private copyShopInfoForDups(serviceItemsForPersons: RequestableProductForPerson[]): void {
     // This function is used to copy info for the service items that were duplicated under different parents
     const itemsWithItShop = serviceItemsForPersons.filter((item) => item.UidITShopOrg && item.UidITShopOrg.length > 0);
-    if (itemsWithItShop.length === serviceItemsForPersons.length ) {
+    if (itemsWithItShop.length === serviceItemsForPersons.length) {
       // All items have itshops, we can skip
-      return
+      return;
     }
     itemsWithItShop.forEach((itemWithItShop) => {
       // Loop over all items that have an ITShop, get any service items that match its uid and also have no itshop set yet, and set them
       serviceItemsForPersons
-        .filter((item) => !item.UidITShopOrg && item.UidAccProduct === itemWithItShop.UidAccProduct && item.UidPerson === itemWithItShop.UidPerson)
+        .filter(
+          (item) =>
+            !item.UidITShopOrg && item.UidAccProduct === itemWithItShop.UidAccProduct && item.UidPerson === itemWithItShop.UidPerson,
+        )
         .forEach((item) => (item.UidITShopOrg = itemWithItShop.UidITShopOrg));
     });
     return;
   }
 
   private async orderSelected(
-    outgoingOrder: ServiceItemOrder,
-    templateItems: PortalItshopPatternRequestable[],
-    roles?: PortalItshopPeergroupMemberships[]
+    outgoingOrder: ServiceItemOrder | undefined,
+    templateItems: PortalItshopPatternRequestable[] | undefined,
+    roles?: PortalItshopPeergroupMemberships[],
   ): Promise<void> {
     if (!this.recipients) {
       // We need recipients to continue
       this.snackbar.open({
-        key: '#LDS#You have not selected a recipient for this request. Select at least one recipient.'
+        key: '#LDS#You have not selected a recipient for this request. Select at least one recipient.',
       });
       return;
     }
@@ -645,7 +653,7 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
           recipientsUids.map((uid, index) => ({
             DataValue: uid,
             DisplayValue: recipientsDisplays[index],
-          }))
+          })),
         );
         if (outgoingOrder?.requestables) {
           serviceItemsForPersons.push(...outgoingOrder.requestables);
@@ -656,15 +664,15 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
       if (serviceItemsForPersons && serviceItemsForPersons.length > 0) {
         const hasItems = await this.shelfService.setShops(serviceItemsForPersons);
         if (hasItems) {
-          setTimeout(() => this.busyIndicator.show());
+          this.showBusyIndicator();
           try {
-
             this.copyShopInfoForDups(serviceItemsForPersons);
-            const items = serviceItemsForPersons.filter((item) => item.UidITShopOrg?.length > 0);
-            possibleItems = items.length;
-            savedItems = await this.cartItemsProvider.addItems(items);
+            const items = serviceItemsForPersons.filter((item) => !!item.UidITShopOrg?.length);
+            const itemResult = await this.cartItemsProvider.addItems(items);
+            possibleItems = itemResult.possibleItems;
+            savedItems = itemResult.savedItems;
           } finally {
-            setTimeout(() => this.busyIndicator.hide());
+            this.busyIndicator.hide();
           }
         }
       }
@@ -678,47 +686,51 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
           recipientsUids.map((uid, index) => ({
             DataValue: uid,
             DisplayValue: recipientsDisplays[index],
-          }))
+          })),
         );
       } finally {
-        setTimeout(() => this.busyIndicator.hide());
+        this.busyIndicator.hide();
       }
       if (templateItemsForPersons && templateItemsForPersons.length > 0) {
         const hasItems = await this.shelfService.setShops(templateItemsForPersons);
         if (hasItems) {
-          setTimeout(() => this.busyIndicator.show());
+          this.showBusyIndicator();
           try {
-            const items = templateItemsForPersons.filter((item) => item.UidITShopOrg?.length > 0);
-            possibleItems = items.length;
-            savedItems = await this.cartItemsProvider.addItems(items);
+            const items = templateItemsForPersons.filter((item) => !!item.UidITShopOrg?.length);
+            const itemResult = await this.cartItemsProvider.addItems(items);
+            possibleItems = itemResult.possibleItems;
+            savedItems = itemResult.savedItems;
           } finally {
-            setTimeout(() => this.busyIndicator.hide());
+            this.busyIndicator.hide();
           }
         }
       }
     }
 
     if (roles && roles.length > 0) {
-      setTimeout(() => this.busyIndicator.show());
+      this.showBusyIndicator();
       try {
         await this.cartItemsProvider.addItemsFromRoles(
           roles.map((item) => item.XObjectKey.value),
-          this.recipientsWrapper?.uids
+          this.recipientsWrapper?.uids,
         );
         possibleItems = roles.length;
         savedItems = roles.length;
       } finally {
-        setTimeout(() => this.busyIndicator.hide());
+        this.busyIndicator.hide();
       }
     }
 
     if (savedItems !== possibleItems) {
       this.snackbar.open({
-        key: savedItems === 0 ? '#LDS#No product could be added to your shopping cart.' : '#LDS#{0} of {1} products could not be added to your shopping cart.',
+        key:
+          savedItems === 0
+            ? '#LDS#No product could be added to your shopping cart.'
+            : '#LDS#{0} of {1} products could not be added to your shopping cart.',
         parameters: [possibleItems - savedItems, possibleItems],
       });
     }
-    if (savedItems > 0) {      
+    if (savedItems > 0) {
       await this.userModelSvc.reloadPendingItems();
       this.router.navigate(['shoppingcart']);
     } else {
@@ -733,5 +745,11 @@ export class ProductSelectionComponent implements OnInit, OnDestroy {
     }
 
     return uid;
+  }
+
+  private showBusyIndicator(): void {
+    if (this.busyIndicator.overlayRefs.length === 0) {
+      this.busyIndicator.show();
+    }
   }
 }

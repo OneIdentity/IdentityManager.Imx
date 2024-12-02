@@ -4,7 +4,7 @@
       {{ columnLabel }}
     </ng-container>
     <ng-container *ngIf="columnLabel == null">
-      {{ translateProvider.GetColumnDisplay(entityColumn?.ColumnName, entitySchema) }}
+      {{ translateProvider.GetColumnDisplay(entityColumn?.ColumnName ?? '', entitySchema) }}
     </ng-container>
   </th>
   <td class="imx-table-column" mat-cell *matCellDef="let entity" [style.text-align]="align">

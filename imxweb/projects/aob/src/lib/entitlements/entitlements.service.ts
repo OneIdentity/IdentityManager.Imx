@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,23 +24,33 @@
  *
  */
 
-import { Injectable, ErrorHandler } from '@angular/core';
+import { ErrorHandler, Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { CollectionLoadParameters, TypedEntityCollectionData, IWriteValue, FilterType, CompareOperator, EntitySchema, TypedEntity, DataModel, ExtendedTypedEntityCollection, FilterData, FilterTreeData } from 'imx-qbm-dbts';
-import { DataTileBadge, ApiClientService, ClassloggerService } from 'qbm';
 import {
-  PortalEntitlement,
-  PortalApplication,
   EntitlementSystemRoleInput,
   portal_entitlementcandidates_UNSGroup_filtertree_get_args,
-} from 'imx-api-aob';
-import { EntitlementFilter } from './entitlement-filter';
+  PortalApplication,
+  PortalEntitlement,
+} from '@imx-modules/imx-api-aob';
+import {
+  CollectionLoadParameters,
+  CompareOperator,
+  DataModel,
+  EntitySchema,
+  FilterTreeData,
+  FilterType,
+  IWriteValue,
+  TypedEntity,
+  TypedEntityCollectionData,
+} from '@imx-modules/imx-qbm-dbts';
+import { ApiClientService, ClassloggerService, DataTileBadge } from 'qbm';
 import { AobApiService } from '../aob-api-client.service';
+import { EntitlementFilter } from './entitlement-filter';
 import { EntitlementsType } from './entitlements.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EntitlementsService {
   private readonly filter = new EntitlementFilter();
@@ -52,27 +62,34 @@ export class EntitlementsService {
     private readonly apiProvider: ApiClientService,
     private readonly logger: ClassloggerService,
     private readonly errorHandler: ErrorHandler,
-    translate: TranslateService) {
-    translate.get('#LDS#Published').subscribe((value: string) => this.badgePublished = {
-      content: value,
-      color: '#618f3e'
-    });
+    translate: TranslateService,
+  ) {
+    translate.get('#LDS#Published').subscribe(
+      (value: string) =>
+        (this.badgePublished = {
+          content: value,
+          color: '#618f3e',
+        }),
+    );
 
-    translate.get('#LDS#Will be published').subscribe((value: string) => this.badgeWillPublish = {
-      content: value,
-      color: '#f4770b'
-    });
+    translate.get('#LDS#Will be published').subscribe(
+      (value: string) =>
+        (this.badgeWillPublish = {
+          content: value,
+          color: '#f4770b',
+        }),
+    );
   }
 
   public get entitlementSchema(): EntitySchema {
     return this.aobClient.typedClient.PortalEntitlement.GetSchema();
   }
 
-  public async get(parameters: CollectionLoadParameters = {}): Promise<TypedEntityCollectionData<PortalEntitlement>> {
+  public async get(parameters: CollectionLoadParameters = {}): Promise<TypedEntityCollectionData<PortalEntitlement> | undefined> {
     return this.apiProvider.request(() => this.aobClient.typedClient.PortalEntitlement.Get(parameters));
   }
 
-  public async getInteractive(uid: string): Promise<TypedEntityCollectionData<PortalEntitlement>> {
+  public async getInteractive(uid: string): Promise<TypedEntityCollectionData<PortalEntitlement> | undefined> {
     return this.apiProvider.request(() => this.aobClient.typedClient.PortalEntitlementInteractive.Get_byid(uid));
   }
 
@@ -97,9 +114,10 @@ export class EntitlementsService {
     }
   }
 
-
-  public async getCandidates(type: EntitlementsType, parameters: CollectionLoadParameters = {}):
-    Promise<TypedEntityCollectionData<TypedEntity>> {
+  public async getCandidates(
+    type: EntitlementsType,
+    parameters: CollectionLoadParameters = {},
+  ): Promise<TypedEntityCollectionData<TypedEntity> | undefined> {
     switch (type) {
       case EntitlementsType.Eset:
         return this.apiProvider.request(() => this.aobClient.typedClient.PortalEntitlementcandidatesEset.Get(parameters));
@@ -116,42 +134,40 @@ export class EntitlementsService {
     }
   }
 
-  public async getDataModel(type: EntitlementsType): Promise<DataModel> {
+  public async getDataModel(type: EntitlementsType): Promise<DataModel | undefined> {
     if (type === EntitlementsType.UnsGroup) {
       return this.aobClient.client.portal_entitlementcandidates_UNSGroup_datamodel_get(undefined);
     }
     return undefined;
   }
 
-
-
-  public async getEntitlementsForApplication(application: PortalApplication, collectionLoadParameters: CollectionLoadParameters = {}):
-    Promise<TypedEntityCollectionData<PortalEntitlement>> {
+  public async getEntitlementsForApplication(
+    application: PortalApplication,
+    collectionLoadParameters: CollectionLoadParameters = {},
+  ): Promise<TypedEntityCollectionData<PortalEntitlement> | undefined> {
     return this.get({
       ...collectionLoadParameters,
       ...{
         filter: [
+          ...(collectionLoadParameters.filter || []),
           {
             ColumnName: 'UID_AOBApplication',
             Type: FilterType.Compare,
             CompareOp: CompareOperator.Equal,
-            Value1: application.UID_AOBApplication.value
-          }
-        ]
-      }
+            Value1: application.UID_AOBApplication.value,
+          },
+        ],
+      },
     });
   }
 
-  public async reload(entitlement: PortalEntitlement): Promise<PortalEntitlement> {
+  public async reload(entitlement: PortalEntitlement): Promise<PortalEntitlement | undefined> {
     const collection = await this.getInteractive(entitlement.UID_AOBEntitlement.value);
 
     return collection && collection.Data && collection.Data.length > 0 ? collection.Data[0] : undefined;
   }
 
-  public async assign(
-    application: PortalApplication,
-    candidates: TypedEntity[]
-  ): Promise<number> {
+  public async assign(application: PortalApplication, candidates: TypedEntity[]): Promise<number> {
     let assignCount = 0;
 
     for (const candidate of candidates) {
@@ -170,7 +186,7 @@ export class EntitlementsService {
 
   public async unassign(entitlements: PortalEntitlement[]): Promise<any> {
     return this.apiProvider.request(async () => {
-      let result = null;
+      let result;
       for (const entitlement of entitlements) {
         result = await this.aobClient.client.portal_entitlement_delete(entitlement.UID_AOBEntitlement.value);
       }
@@ -178,15 +194,16 @@ export class EntitlementsService {
     });
   }
 
-  public async publish(entitlements: PortalEntitlement[], publishData: { publishFuture: boolean, date: Date }): Promise<number> {
+  public async publish(entitlements: PortalEntitlement[], publishData: { publishFuture: boolean; date: Date }): Promise<number> {
     let publishCount = 0;
 
     for (const entitlement of entitlements) {
-      const interactive = (await this.aobClient.typedClient.PortalEntitlementInteractive.Get_byid(entitlement.GetEntity().GetKeys()[0])).Data[0];
+      const interactive = (await this.aobClient.typedClient.PortalEntitlementInteractive.Get_byid(entitlement.GetEntity().GetKeys()[0]))
+        .Data[0];
       if (!publishData.publishFuture) {
-       await interactive.IsInActive.Column.PutValue(publishData.publishFuture);
+        await interactive.IsInActive.Column.PutValue(publishData.publishFuture);
       } else {
-       await interactive.ActivationDate.Column.PutValue(publishData.date);
+        await interactive.ActivationDate.Column.PutValue(publishData.date);
       }
 
       this.logger.debug(this, 'Commit change: publish entitlement...');
@@ -202,7 +219,8 @@ export class EntitlementsService {
     let unpublishCount = 0;
 
     for (const entitlement of entitlements) {
-      const interactive = (await this.aobClient.typedClient.PortalEntitlementInteractive.Get_byid(entitlement.GetEntity().GetKeys()[0])).Data[0];
+      const interactive = (await this.aobClient.typedClient.PortalEntitlementInteractive.Get_byid(entitlement.GetEntity().GetKeys()[0]))
+        .Data[0];
 
       await interactive.IsInActive.Column.PutValue(true);
       await interactive.ActivationDate.Column.PutValue(null);
@@ -228,7 +246,6 @@ export class EntitlementsService {
   }
 
   public getEntitlementBadges(entitlement: PortalEntitlement): DataTileBadge[] {
-
     if (this.filter.published(entitlement)) {
       return [this.badgePublished];
     }
@@ -240,17 +257,14 @@ export class EntitlementsService {
     return [];
   }
 
-  public async getEntitlementsFilterTree(options: portal_entitlementcandidates_UNSGroup_filtertree_get_args): Promise<FilterTreeData>{
+  public async getEntitlementsFilterTree(options: portal_entitlementcandidates_UNSGroup_filtertree_get_args): Promise<FilterTreeData> {
     return this.aobClient.client.portal_entitlementcandidates_UNSGroup_filtertree_get(options);
   }
 
-  private async createNew(
-    element: TypedEntity,
-    uidAobApplication: IWriteValue<string>
-  ): Promise<PortalEntitlement> {
+  private async createNew(element: TypedEntity, uidAobApplication: IWriteValue<string>): Promise<PortalEntitlement> {
     const entitlement = (await this.aobClient.typedClient.PortalEntitlementInteractive.Get()).Data[0];
-    entitlement.ObjectKeyElement.value = element.GetEntity().GetColumn('XObjectKey').GetValue(),
-      entitlement.UID_AOBApplication.value = uidAobApplication.value;
+    (entitlement.ObjectKeyElement.value = element.GetEntity().GetColumn('XObjectKey').GetValue()),
+      (entitlement.UID_AOBApplication.value = uidAobApplication.value);
     return entitlement;
   }
 }

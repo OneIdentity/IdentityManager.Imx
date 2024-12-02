@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,11 +30,9 @@ import { ListReportViewerComponent } from './list-report-viewer.component';
 import { DataSourceToolbarModule, DataTableModule } from 'qbm';
 import { MatCardModule } from '@angular/material/card';
 
-
-
 @NgModule({
   declarations: [ListReportViewerComponent],
-  imports: [CommonModule,MatCardModule, DataSourceToolbarModule,DataTableModule],
+  imports: [CommonModule, MatCardModule, DataSourceToolbarModule, DataTableModule],
   exports: [ListReportViewerComponent],
 })
 export class ListReportViewerModule {}

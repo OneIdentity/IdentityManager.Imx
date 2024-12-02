@@ -1,11 +1,9 @@
-
 :host {
   overflow: hidden;
   display: flex;
   flex-direction: column;
   height: 100%;
 }
-
 
 .imx-memberships {
   flex: 1 1 auto;
@@ -22,6 +20,12 @@
   margin-top: 20px;
 }
 
-.helper-alert  {
-  margin: 20px 2px;
+.fill-cell {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+
+  eui-badge {
+    align-self: flex-end;
+  }
 }

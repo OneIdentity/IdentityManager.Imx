@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,42 +24,55 @@
  *
  */
 
-import { Pipe, PipeTransform, Component, Input } from '@angular/core';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { Component, Input, Pipe, PipeTransform } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatRadioModule } from '@angular/material/radio';
-import { HttpClientModule } from '@angular/common/http';
 import { EuiCoreModule } from '@elemental-ui/core';
+import { TranslateFakeLoader, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { LoggerTestingModule } from 'ngx-logger/testing';
-import { TranslateModule, TranslateLoader, TranslateFakeLoader } from '@ngx-translate/core';
 
-import { LifecycleActionComponent } from './lifecycle-action.component';
-import { LdsReplacePipe, clearStylesFromDOM, MetadataService } from 'qbm';
-import { LifecycleAction } from './lifecycle-action.enum';
+import { MatTableModule } from '@angular/material/table';
+import { PortalApplication, PortalEntitlement } from '@imx-modules/imx-api-aob';
+import {
+  ClassloggerService,
+  ConfirmationService,
+  DataViewModule,
+  DataViewSource,
+  FakeDataViewSource,
+  LdsReplacePipe,
+  MessageDialogService,
+  MetadataService,
+  SqlWizardApiService,
+  clearStylesFromDOM,
+} from 'qbm';
 import { AobApiService } from '../aob-api-client.service';
-import { PortalApplication, PortalEntitlement } from 'imx-api-aob';
+import { LifecycleActionComponent } from './lifecycle-action.component';
+import { LifecycleAction } from './lifecycle-action.enum';
 
 const mockMatDialogRef = {
-  close: jasmine.createSpy('close')
+  close: jasmine.createSpy('close'),
 };
 
 @Pipe({ name: 'ldsReplace' })
 class MockLdsReplacePipe implements PipeTransform {
-  transform() { }
+  transform() {}
 }
 
 const mockLdsReplacePipe = {
-  transform: jasmine.createSpy('transform').and.callFake((value: string) => value)
+  transform: jasmine.createSpy('transform').and.callFake((value: string) => value),
 };
 
 @Component({
   selector: 'imx-data-source-toolbar',
-  template: '<p>MockDataSourceToolbarComponent</p>'
+  template: '<p>MockDataSourceToolbarComponent</p>',
 })
 class MockDataSourceToolbarComponent {
   @Input() public dst: any;
@@ -69,7 +82,7 @@ class MockDataSourceToolbarComponent {
 
 @Component({
   selector: 'imx-data-table',
-  template: '<p>MockDataTableComponent</p>'
+  template: '<p>MockDataTableComponent</p>',
 })
 class MockDataTableComponent {
   @Input() public dst: any;
@@ -77,7 +90,7 @@ class MockDataTableComponent {
 
 @Component({
   selector: 'imx-data-table-column',
-  template: '<p>MockDataTableColumnComponent</p>'
+  template: '<p>MockDataTableColumnComponent</p>',
 })
 class MockDataTableColumnComponent {
   @Input() public entityColumn: any;
@@ -97,8 +110,8 @@ describe('LifecycleActionComponent', () => {
       ImageId: '',
       IsDeactivated: false,
       IsMAllTable: false,
-      IsMNTable: false
-    })
+      IsMNTable: false,
+    }),
   );
 
   const moduleDef = {
@@ -107,12 +120,11 @@ describe('LifecycleActionComponent', () => {
       MockDataSourceToolbarComponent,
       MockDataTableComponent,
       MockDataTableColumnComponent,
-      MockLdsReplacePipe
+      MockLdsReplacePipe,
     ],
     imports: [
       EuiCoreModule,
       FormsModule,
-      HttpClientModule,
       LoggerTestingModule,
       MatButtonModule,
       MatCardModule,
@@ -124,43 +136,52 @@ describe('LifecycleActionComponent', () => {
       TranslateModule.forRoot({
         loader: {
           provide: TranslateLoader,
-          useClass: TranslateFakeLoader
-        }
-      })
+          useClass: TranslateFakeLoader,
+        },
+      }),
+      DataViewModule,
+      MatTableModule,
     ],
     providers: [
       {
         provide: MatDialogRef,
-        useValue: mockMatDialogRef
+        useValue: mockMatDialogRef,
       },
       {
         provide: MAT_DIALOG_DATA,
-        useValue: { action: LifecycleAction.Publish, elements: [], shops: [], type: 'AobApplication' }
+        useValue: { action: LifecycleAction.Publish, elements: [], shops: [], type: 'AobApplication' },
       },
       {
         provide: LdsReplacePipe,
-        useValue: mockLdsReplacePipe
+        useValue: mockLdsReplacePipe,
       },
       {
         provide: AobApiService,
         useValue: {
           typedClient: {
             PortalApplication: {
-              GetSchema: () => PortalApplication.GetEntitySchema()
+              GetSchema: () => PortalApplication.GetEntitySchema(),
             },
             PortalEntitlement: {
-              GetSchema: () => PortalEntitlement.GetEntitySchema()
-            }
-          }
-        }
+              GetSchema: () => PortalEntitlement.GetEntitySchema(),
+            },
+          },
+        },
       },
       {
         provide: MetadataService,
         useClass: class {
           GetTableMetadata = getTableMetadataSpy;
-        }
-      }
-    ]
+        },
+      },
+      { provide: MessageDialogService, useValue: {} },
+      { provide: ClassloggerService, useValue: { debug: () => {}, info: () => {} } },
+      { provide: SqlWizardApiService, useValue: {} },
+      { provide: ConfirmationService, useValue: {} },
+      { provide: DataViewSource, useValue: FakeDataViewSource },
+      provideHttpClient(withInterceptorsFromDi()),
+      provideHttpClientTesting(),
+    ],
   };
 
   beforeEach(waitForAsync(() => {
@@ -185,98 +206,105 @@ describe('LifecycleActionComponent', () => {
 
     tick();
 
-    expect(component.dstSettings.dataSource).toBeTruthy();
+    expect(component.dataSource).toBeTruthy();
   }));
 
   [
     {
       whenToPublish: 'now',
-      expectedIsInActive: false
+      expectedIsInActive: false,
     },
     {
       whenToPublish: 'future',
-      expectedIsInActive: false
-    }
-  ].forEach(testcase =>
+      expectedIsInActive: false,
+    },
+  ].forEach((testcase) =>
     it('should return publishData of entitlements in publish mode', () => {
       initComponent();
       component.data.action = LifecycleAction.Publish;
       component.data.elements = [];
-      component.whenToPublish = testcase.whenToPublish as ('now' | 'future');
+      component.whenToPublish = testcase.whenToPublish as 'now' | 'future';
       component.submitData();
-      expect(mockMatDialogRef.close).toHaveBeenCalledWith({ publishFuture: testcase.expectedIsInActive, date: component.datepickerFormControl.value.toDate() });
-    }));
+      expect(mockMatDialogRef.close).toHaveBeenCalledWith({
+        publishFuture: testcase.expectedIsInActive,
+        date: component.datepickerFormControl.value.toDate(),
+      });
+    }),
+  );
 
   [
     {
       action: LifecycleAction.Unassign,
-      mode: 'Unassign'
+      mode: 'Unassign',
     },
     {
       action: LifecycleAction.Unpublish,
-      mode: 'Unpublish'
-    }
-  ].forEach(testcase =>
+      mode: 'Unpublish',
+    },
+  ].forEach((testcase) =>
     it(`should return true in ${testcase.mode} mode`, () => {
       initComponent();
       component.data.action = testcase.action;
       component.data.elements = [];
       component.submitData();
       expect(mockMatDialogRef.close).toHaveBeenCalledWith(true);
-    })
+    }),
   );
-
 
   [
     {
-      type: 'AobApplication' as 'AobEntitlement' | 'AobApplication'
+      type: 'AobApplication' as 'AobEntitlement' | 'AobApplication',
     },
     {
-      type: 'AobEntitlement' as 'AobEntitlement' | 'AobApplication'
-    }
-  ].forEach(maintestcase =>
+      type: 'AobEntitlement' as 'AobEntitlement' | 'AobApplication',
+    },
+  ].forEach((maintestcase) =>
     [
       {
         action: LifecycleAction.Unassign,
         mode: 'Unassign',
-        entitlementsCount: 1
+        entitlementsCount: 1,
       },
       {
         action: LifecycleAction.Unassign,
         mode: 'Unassign',
-        entitlementsCount: 2
+        entitlementsCount: 2,
       },
       {
         action: LifecycleAction.Publish,
         mode: 'Publish',
-        entitlementsCount: 1
+        entitlementsCount: 1,
       },
       {
         action: LifecycleAction.Publish,
         mode: 'Publish',
-        entitlementsCount: 2
+        entitlementsCount: 2,
       },
       {
         action: LifecycleAction.Unpublish,
         mode: 'Unpublish',
-        entitlementsCount: 1
+        entitlementsCount: 1,
       },
       {
         action: LifecycleAction.Unpublish,
         mode: 'Unpublish',
-        entitlementsCount: 2
-      }
-    ].forEach(testcase =>
+        entitlementsCount: 2,
+      },
+    ].forEach((testcase) =>
       it(`should init the component with mode=${testcase.mode} and ${testcase.entitlementsCount} entitlements`, () => {
-
-        let dummyEntitlements = [];
+        let dummyEntitlements: any[] = [];
         for (let n = 0; n < testcase.entitlementsCount; n++) {
           dummyEntitlements.push({});
         }
 
         moduleDef.providers[1] = {
           provide: MAT_DIALOG_DATA,
-          useValue: { action: testcase.action, elements: dummyEntitlements, shops: [], type: (maintestcase.type as 'AobEntitlement' | 'AobApplication') }
+          useValue: {
+            action: testcase.action,
+            elements: dummyEntitlements,
+            shops: [],
+            type: maintestcase.type as 'AobEntitlement' | 'AobApplication',
+          },
         };
 
         TestBed.configureTestingModule(moduleDef).compileComponents();
@@ -293,7 +321,7 @@ describe('LifecycleActionComponent', () => {
         expect(component.isUnassign()).toBe(testcase.action === LifecycleAction.Unassign);
         expect(component.isPublish()).toBe(testcase.action === LifecycleAction.Publish);
         expect(component.isUnpublish()).toBe(testcase.action === LifecycleAction.Unpublish);
-      })));
-
-
+      }),
+    ),
+  );
 });

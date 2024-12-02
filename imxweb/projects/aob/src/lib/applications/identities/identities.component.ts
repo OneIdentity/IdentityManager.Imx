@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,8 +26,7 @@
 
 import { Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { EuiSidesheetService } from '@elemental-ui/core';
-import { TranslateService } from '@ngx-translate/core';
-import { PortalApplication, PortalApplicationIdentities } from 'imx-api-aob';
+import { PortalApplication, PortalApplicationIdentities } from '@imx-modules/imx-api-aob';
 import {
   CollectionLoadParameters,
   DisplayColumns,
@@ -35,8 +34,9 @@ import {
   ExtendedTypedEntityCollection,
   IClientProperty,
   TypedEntity,
-} from 'imx-qbm-dbts';
-import { BusyService, DataSourceToolbarSettings, DataTableComponent, DataTileMenuItem } from 'qbm';
+} from '@imx-modules/imx-qbm-dbts';
+import { TranslateService } from '@ngx-translate/core';
+import { BusyService, calculateSidesheetWidth, DataSourceToolbarSettings, DataTableComponent, DataTileMenuItem } from 'qbm';
 import { IdentityDetailData } from './identity-detail-data';
 import { IdentityDetailComponent } from './identity-detail/identity-detail.component';
 import { IdentityService } from './identity.service';
@@ -65,7 +65,7 @@ export class IdentitiesComponent implements OnChanges {
   constructor(
     private readonly identityService: IdentityService,
     private readonly sidesheetService: EuiSidesheetService,
-    private readonly translateService: TranslateService
+    private readonly translateService: TranslateService,
   ) {
     this.entitySchema = this.identityService.getSchema();
     this.initNavigationState();
@@ -130,7 +130,7 @@ export class IdentitiesComponent implements OnChanges {
    * Opens a side sheet that displays identity details
    * @param item the identity, that details should be opened
    */
-  public async onOpenDetails(item: TypedEntity): Promise<void> {
+  public async onOpenDetails(item?: TypedEntity): Promise<void> {
     const data: IdentityDetailData = {
       application: this.application,
       selectedItem: item,
@@ -138,8 +138,8 @@ export class IdentitiesComponent implements OnChanges {
 
     this.sidesheetService.open(IdentityDetailComponent, {
       title: await this.translateService.get('#LDS#Heading View Application Entitlements').toPromise(),
-      subTitle: data.selectedItem.GetEntity().GetDisplay(),
-      width: 'max(768px, 70%)',
+      subTitle: data.selectedItem?.GetEntity().GetDisplay(),
+      width: calculateSidesheetWidth(1100, 0.7),
       testId: 'identity-view-application-entitlements',
       data: data,
     });
@@ -171,7 +171,7 @@ export class IdentitiesComponent implements OnChanges {
     this.navigationState = {
       PageSize: 25,
       StartIndex: 0,
-      search: null,
+      search: '',
     };
   }
 }

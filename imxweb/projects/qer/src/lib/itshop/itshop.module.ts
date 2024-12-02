@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -52,14 +52,9 @@ import { MatExpansionModule } from '@angular/material/expansion';
     NonRequestableItemsComponent,
     PeerGroupComponent,
     ServiceItemDetailComponent,
-    ProductEntitlementsComponent
+    ProductEntitlementsComponent,
   ],
-  exports: [
-    RequestInfoComponent,
-    PeerGroupComponent,
-    ServiceItemDetailComponent,
-    ProductEntitlementsComponent
-  ],
+  exports: [RequestInfoComponent, PeerGroupComponent, ServiceItemDetailComponent, ProductEntitlementsComponent],
   imports: [
     BusyIndicatorModule,
     CdrModule,
@@ -77,11 +72,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
     ExtModule,
     DateModule,
     DataTableModule,
-    DataSourceToolbarModule
+    DataSourceToolbarModule,
   ],
-  providers: [
-    ItshopService,
-    ShelfService
-  ],
+  providers: [ItshopService, ShelfService],
 })
-export class ItshopModule { }
+export class ItshopModule {}

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,20 +24,20 @@
  *
  */
 
-import { OverlayRef } from '@angular/cdk/overlay';
 import { Injectable } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
-import { TranslateService } from '@ngx-translate/core';
 
-import { PortalRolesExclusions, PortalShopConfigMembers, PortalShopConfigStructure } from 'imx-api-qer';
+import { PortalRolesExclusions, PortalShopConfigMembers, PortalShopConfigStructure } from '@imx-modules/imx-api-qer';
 import {
   CollectionLoadParameters,
   CompareOperator,
   EntityCollectionData,
   EntitySchema,
+  FilterData,
   FilterType,
+  TypedEntity,
   TypedEntityCollectionData,
-} from 'imx-qbm-dbts';
+} from '@imx-modules/imx-qbm-dbts';
 import { ClassloggerService, SnackBarService } from 'qbm';
 import { QerApiService } from '../qer-api-client.service';
 import { IRequestableEntitlementType } from './irequestable-entitlement-type';
@@ -55,17 +55,15 @@ export interface SelectedShopStructureData {
 })
 export class RequestsService {
   public shelvesBlockedDeleteStatus: { [shelfId: string]: boolean } = {};
-  private busyIndicator: OverlayRef;
 
   constructor(
     private readonly qerApiClient: QerApiService,
     private readonly logger: ClassloggerService,
     private readonly snackbar: SnackBarService,
-    private readonly translate: TranslateService,
-    private readonly busyService: EuiLoadingService
+    private readonly busyService: EuiLoadingService,
   ) {}
 
-  public selectedEntitlementType: IRequestableEntitlementType;
+  public selectedEntitlementType: IRequestableEntitlementType | null;
 
   public get shopStructureSchema(): EntitySchema {
     return this.qerApiClient.typedClient.PortalShopConfigStructure.GetSchema();
@@ -81,26 +79,31 @@ export class RequestsService {
 
   public async getShopStructures(
     navigationState: CollectionLoadParameters,
-    parentId: string = ''
+    parentId: string = '',
+    signal?: AbortSignal,
   ): Promise<TypedEntityCollectionData<PortalShopConfigStructure>> {
-    let params: any = navigationState;
+    let params: CollectionLoadParameters = navigationState;
     if (!params) {
       params = {};
     }
-    if (parentId == '') {
-      params.filter = [
-        {
-          ColumnName: 'ITShopInfo',
-          CompareOp: CompareOperator.Equal,
-          Type: FilterType.Compare,
-          Value1: 'SH',
-        },
-      ];
+    if (parentId === '') {
+      const itShopColumnFilter: { filter: FilterData[] } = {
+        filter: [
+          {
+            ColumnName: 'ITShopInfo',
+            CompareOp: CompareOperator.Equal,
+            Type: FilterType.Compare,
+            Value1: 'SH',
+          },
+        ],
+      };
+      const filter = itShopColumnFilter.filter.concat(params.filter ?? []);
+      params = { ...params, filter };
     }
     params.ParentKey = parentId;
     this.logger.debug(this, `Retrieving shop config structures`);
     this.logger.trace('Navigation state', navigationState);
-    return this.qerApiClient.typedClient.PortalShopConfigStructure.Get(params);
+    return this.qerApiClient.typedClient.PortalShopConfigStructure.Get(params, { signal });
   }
 
   public createRequestConfigEntity(): PortalShopConfigStructure {
@@ -117,7 +120,7 @@ export class RequestsService {
 
   public getRequestConfigMembers(
     customerNodeId: string,
-    navigationState: CollectionLoadParameters
+    navigationState: CollectionLoadParameters,
   ): Promise<TypedEntityCollectionData<PortalShopConfigMembers>> {
     return this.qerApiClient.typedClient.PortalShopConfigMembers.Get(customerNodeId, navigationState);
   }
@@ -134,13 +137,13 @@ export class RequestsService {
 
   public createRequestConfigMember(
     customerNodeId: string,
-    newMember: PortalShopConfigMembers
+    newMember: PortalShopConfigMembers,
   ): Promise<TypedEntityCollectionData<PortalShopConfigMembers>> {
     return this.qerApiClient.typedClient.PortalShopConfigMembers.Post(customerNodeId, newMember);
   }
 
   public addMultipleRequestConfigMembers(values: string[], customerNodeId: string): Promise<any> {
-    const promises = [];
+    const promises: Promise<any>[] = [];
     values.forEach((value) => {
       const entity = this.qerApiClient.typedClient.PortalShopConfigMembers.createEntity();
       entity.UID_Person.value = value;
@@ -152,13 +155,13 @@ export class RequestsService {
   public removeRequestConfigMembers(
     customerNodeId: string,
     uidDynamicGroup: string,
-    members: PortalShopConfigMembers[],
-    description?: string
+    members: TypedEntity[],
+    description?: string,
   ): Promise<any> {
-    const promises = [];
-    members.forEach((member) => {
+    const promises: Promise<any>[] = [];
+    members.forEach((member: PortalShopConfigMembers) => {
       // If the member is managed by a dynamic group, add an exclusion
-      // tslint:disable-next-line:no-bitwise
+      // eslint-disable-next-line no-bitwise
       if ((member.XOrigin?.value & 4) > 0) {
         const exclusionData = this.qerApiClient.typedClient.PortalRolesExclusions.createEntity();
         exclusionData.UID_Person.value = member.UID_Person.value;
@@ -172,9 +175,9 @@ export class RequestsService {
     return Promise.all(promises);
   }
 
-  public removeRequestConfigMemberExclusions(uidDynamicGroup: string, exclusions: PortalRolesExclusions[]): Promise<any> {
-    const promises = [];
-    exclusions.forEach((exclusion) => {
+  public removeRequestConfigMemberExclusions(uidDynamicGroup: string, exclusions: TypedEntity[]): Promise<any> {
+    const promises: Promise<any>[] = [];
+    exclusions.forEach((exclusion: PortalRolesExclusions) => {
       const memberUid = exclusion.UID_Person?.value;
       promises.push(this.removeDynamicRoleExclusion(uidDynamicGroup, memberUid));
     });
@@ -209,18 +212,13 @@ export class RequestsService {
   }
 
   public handleOpenLoader(): void {
-    if (!this.busyIndicator) {
-      this.busyIndicator = this.busyService.show();
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
     }
   }
 
   public handleCloseLoader(): void {
-    if (this.busyIndicator) {
-      setTimeout(() => {
-        this.busyService.hide(this.busyIndicator);
-        this.busyIndicator = undefined;
-      });
-    }
+    this.busyService.hide();
   }
 
   public LdsSpecifyMembers = '#LDS#Here you can specify who can request the products assigned to the shop.';

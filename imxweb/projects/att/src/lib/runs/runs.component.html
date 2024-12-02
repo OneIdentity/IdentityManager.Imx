@@ -1,11 +1,18 @@
-<div class="heading-wrapper">
-  <h1 class="mat-headline" >
+<div class="imx-header-toolbar">
+  <h2 class="mat-headline-5">
     <span translate>#LDS#Heading Attestation Runs</span>
     <imx-help-contextual></imx-help-contextual>
-  </h1>
+  </h2>
+
+  <ng-container *ngIf="!!dataSource()">
+    <imx-data-view-toolbar
+      [dataSource]="dataSource()"
+      (updateConfig)="runsGridComponent.updateConfig($event)"
+      (deleteConfigById)="runsGridComponent.deleteConfigById($event)"
+    ></imx-data-view-toolbar>
+  </ng-container>
 </div>
 
 <div class="imx-runs-grid">
-<imx-runs-grid></imx-runs-grid>
+  <imx-runs-grid #runsGridComponent></imx-runs-grid>
 </div>
-

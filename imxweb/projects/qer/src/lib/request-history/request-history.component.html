@@ -1,7 +1,14 @@
-<div class="imx-header">
-  <h1 class="mat-headline">
+<div class="imx-header-toolbar">
+  <h2 class="mat-headline-5">
     <span>{{ '#LDS#Heading Request History' | translate }}</span>
     <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
-  </h1>
+  </h2>
+  <ng-container *ngIf="!!dataSource()">
+    <imx-data-view-toolbar
+      [dataSource]="dataSource()"
+      (updateConfig)="requestTableComponent.updateConfig($event)"
+      (deleteConfigById)="requestTableComponent.deleteConfigById($event)"
+    ></imx-data-view-toolbar>
+  </ng-container>
 </div>
-<imx-request-table></imx-request-table>
+<imx-request-table [filterByDelegations]="filterByDelegations" #requestTable [filterMyPendings]="filterMyPendings"></imx-request-table>

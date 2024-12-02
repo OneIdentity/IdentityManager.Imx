@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,81 +24,49 @@
  *
  */
 
-import { Component, OnDestroy, OnInit, Input } from '@angular/core';
-import { ChartOptions } from 'billboard.js';
-import { ImxConfig, MethodSetInfo, PingResult, SystemInfo, UpdaterState, V2ApiClientMethodFactory } from 'imx-api-qbm';
-import { Observable, interval } from 'rxjs';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ImxConfig, MethodSetInfo, PingResult, SystemInfo, UpdaterState, V2ApiClientMethodFactory } from '@imx-modules/imx-api-qbm';
+import { TranslateService } from '@ngx-translate/core';
+import { Chart, ChartOptions } from 'billboard.js';
+import { Observable, Subscription, interval } from 'rxjs';
 import { AppConfigService } from '../appConfig/appConfig.service';
 import { LineChartOptions } from '../chart-options/line-chart-options';
 import { SeriesInformation } from '../chart-options/series-information';
 import { XAxisInformation } from '../chart-options/x-axis-information';
 import { YAxisInformation } from '../chart-options/y-axis-information';
 import { ClassloggerService } from '../classlogger/classlogger.service';
-import { SystemInfoService } from '../system-info/system-info.service';
-import { ImxTranslationProviderService } from '../translation/imx-translation-provider.service';
-import { StatusService } from './status.service';
 import { SideNavigationComponent } from '../side-navigation-view/side-navigation-view-interfaces';
+import { SnackBarService } from '../snackbar/snack-bar.service';
+import { SystemInfoService } from '../system-info/system-info.service';
+import { StatusService } from './status.service';
 
-export class StatusInfo {
+class StatusInfo {
   date?: string;
   sessions?: number;
 }
-export class StatusInfo2 {
-  date?: string[];
-  sessions?: number[];
-}
-export class StatusBuffer {
-  private len: number;
-  private buffer: StatusInfo[];
-  private data: number[][];
-  private pos: number;
-  private labels: any = [];
 
-  constructor(len: number) {
-    const buffer = new Array<StatusInfo>(len);
+class StatusBuffer {
+  private buffer: StatusInfo[] = [];
 
-    this.len = len;
-    this.buffer = buffer;
-    this.pos = 0;
-
-    this.labels = new Array<string>(len);
-    this.data = new Array<number[]>(1);
-
-    for (let i = 0; i < 1; i++) {
-      this.data[i] = new Array<number>(len);
-    }
-  }
+  constructor(private len: number) {}
 
   public push(info: StatusInfo) {
-    this.buffer[this.pos] = info;
-    this.pos++;
-    if (this.pos >= this.len) this.pos = 0;
-  }
-
-  buildLabels(): string[] {
-    this.forEach((i, s) => (this.labels[i] = s.date));
-    return this.labels;
-  }
-
-  buildData(): number[][] {
-    this.forEach((i, s) => {
-      this.data[0][i] = s.sessions ?? 0;
-    });
-    return this.data;
-  }
-
-  private forEach(fn: (arg0: number, arg1: StatusInfo) => void) {
-    let pos = 0;
-
-    for (let i = this.pos; i < this.len; i++) {
-      const data = this.buffer[i];
-      if (data) fn(pos++, data);
+    this.buffer.push(info);
+    if (this.buffer.length >= this.len) {
+      this.buffer.shift();
     }
+  }
 
-    for (let i = 0; i < this.pos; i++) {
-      const data = this.buffer[i];
-      if (data) fn(pos++, data);
-    }
+  public buildLabels(): string[] {
+    const dates = this.buffer.map((elem) => elem.date ?? '');
+    dates.unshift('x');
+    return dates;
+  }
+
+  public buildData(caption: string): any[] {
+    const data: any[] = this.buffer.map((elem) => elem.sessions ?? 0);
+    data.unshift(caption);
+    return data;
   }
 }
 
@@ -111,28 +79,23 @@ export class StatusBuffer {
   },
 })
 export class StatusComponent implements OnInit, OnDestroy, SideNavigationComponent {
-  @Input() public isAdmin: boolean;
+  @Input() isAdmin: boolean;
 
-  constructor(
-    private readonly appConfigService: AppConfigService,
-    private readonly systemInfoService: SystemInfoService,
-    private readonly logger: ClassloggerService,
-    private readonly translator: ImxTranslationProviderService,
-    private statusService: StatusService
-  ) {}
+  public pingResult: PingResult;
+  public apiProjects: MethodSetInfo[];
+  public updaterState: UpdaterState;
+  public systemInfo: SystemInfo;
+  public config: ImxConfig;
+  public dataReady: boolean;
+  public UpdateText: string;
 
-  pingResult: PingResult;
-  apiProjects: MethodSetInfo[];
-  updaterState: UpdaterState;
-  systemInfo: SystemInfo;
-  config: ImxConfig;
-  dataReady: boolean;
-  UpdateText: string;
+  public UpdaterState = UpdaterState;
+  public stream: EventSource;
 
-  UpdaterState = UpdaterState;
-  stream: EventSource;
+  private chart: Chart;
+  private seriesName: string = '';
 
-  statusData: {
+  public statusData: {
     CacheHits: number;
     CacheMisses: number;
     OpenSessions: number;
@@ -140,25 +103,34 @@ export class StatusComponent implements OnInit, OnDestroy, SideNavigationCompone
   };
 
   private buffer: StatusBuffer;
-  public chartOptions: ChartOptions = null;
-  public show: boolean;
+  public chartOptions: ChartOptions | null = null;
+  public updatesStarted = false;
+  private routine: Subscription;
 
-  ngOnDestroy() {
-    if (this.stream) this.stream.close();
+  constructor(
+    private readonly appConfigService: AppConfigService,
+    private readonly systemInfoService: SystemInfoService,
+    private readonly logger: ClassloggerService,
+    private readonly translator: TranslateService,
+    private statusService: StatusService,
+    private readonly snackbar: SnackBarService,
+  ) {
+    this.routine = interval(1000).subscribe(async () => {
+      await this.reloadChart();
+    });
   }
 
-  async ngOnInit() {
+  public ngOnDestroy() {
+    if (this.stream) this.stream.close();
+    this.routine.unsubscribe();
+  }
+
+  public async ngOnInit() {
+    this.seriesName = this.translator.instant('#LDS#Active sessions');
     this.Reload();
 
     this.buffer = new StatusBuffer(120);
-    const routine = interval(1000);
     await this.statusService.setUp(this.appConfigService.BaseUrl);
-    routine.subscribe(async () => {
-      (await this.getStatus()).subscribe((x) => {
-        this.buffer?.push(x);
-        this.updateChart();
-      });
-    });
 
     // set up status stream
     this.stream = new EventSource(this.appConfigService.BaseUrl + new V2ApiClientMethodFactory().admin_status_get().path, {
@@ -169,17 +141,19 @@ export class StatusComponent implements OnInit, OnDestroy, SideNavigationCompone
       this.logger.debug(this, 'Status stream has been opened');
     };
 
-    this.stream.onmessage = (evt) => {
-      const changeData = JSON.parse(evt.data);
-    };
+    await this.buildOptions();
 
-    this.stream.onerror = (err) => {};
+    await this.reloadChart();
   }
 
-  async Reload() {
+  public onChart(chart: Chart) {
+    this.chart = chart;
+  }
+
+  public async Reload() {
     this.dataReady = false;
 
-    this.UpdateText = await this.translator.Translate('#LDS#Installs updates and restarts the server.').toPromise();
+    this.UpdateText = this.translator.instant('#LDS#Installs updates and restarts the server.');
 
     const client = this.appConfigService.client;
     this.pingResult = await client.imx_ping_get();
@@ -192,29 +166,35 @@ export class StatusComponent implements OnInit, OnDestroy, SideNavigationCompone
     this.dataReady = true;
   }
 
-  StartUpdate() {
-    this.appConfigService.client.admin_systeminfo_software_update_post();
+  public async StartUpdate() {
+    await this.appConfigService.client.admin_systeminfo_software_update_post();
+    const key =
+      '#LDS#The installation of the updates has started successfully. The application will automatically restart after the updates are installed.';
+    this.snackbar.open({ key });
+    this.updatesStarted = true;
   }
 
-  private async buildOptions(chart: StatusInfo2): Promise<void> {
-    let seriesname = await this.translator.Translate('#LDS#Active sessions').toPromise();
-    const yAxis = new YAxisInformation([
-      new SeriesInformation(
-        seriesname,
-        chart.sessions.map((point: number) => point),
-        'blue'
-      ),
-    ]);
+  private async reloadChart() {
+    (await this.getStatus()).subscribe((x) => {
+      this.buffer?.push(x);
+      this.updateChart();
+    });
+  }
+
+  private async buildOptions(): Promise<void> {
+    const yAxis = new YAxisInformation([new SeriesInformation(this.seriesName, [], 'blue')]);
     yAxis.tickConfiguration = {
       format: (l) => l.toString(),
     };
     const lineChartOptions = new LineChartOptions(
-      new XAxisInformation(
-        'string',
-        chart.date.map((point: string) => point),
-        { culling: { max: 5, lines: false }, fit: true, centered: true, autorotate: true, multiline: false }
-      ),
-      yAxis
+      new XAxisInformation('string', [], {
+        culling: { max: 5, lines: false },
+        fit: true,
+        centered: true,
+        autorotate: true,
+        multiline: false,
+      }),
+      yAxis,
     );
     lineChartOptions.useCurvedLines = false;
     lineChartOptions.hideLegend = false;
@@ -224,7 +204,7 @@ export class StatusComponent implements OnInit, OnDestroy, SideNavigationCompone
     this.chartOptions = lineChartOptions.options;
   }
 
-  async getStatus(): Promise<Observable<StatusInfo>> {
+  private async getStatus(): Promise<Observable<StatusInfo>> {
     return new Observable((subscriber) => {
       let msg: StatusInfo = {
         sessions: this.statusService.getStatusSessionData(),
@@ -234,18 +214,7 @@ export class StatusComponent implements OnInit, OnDestroy, SideNavigationCompone
     });
   }
 
-  forceChartRefresh() {
-    this.show = false;
-    setTimeout(() => {
-      this.show = true;
-    }, 0);
-  }
-
-  updateChart() {
-    this.forceChartRefresh();
-    const sessions = this.buffer.buildData();
-    const dates = this.buffer.buildLabels();
-    const session: StatusInfo2 = { sessions: sessions[0], date: dates };
-    this.buildOptions(session);
+  private updateChart() {
+    this.chart?.load({ columns: [this.buffer.buildLabels(), this.buffer.buildData(this.seriesName)] });
   }
 }

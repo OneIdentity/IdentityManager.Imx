@@ -1,5 +1,5 @@
-@import "variables.scss";
-
+@import 'base/variables';
+@import '../../../../shared/scss/components/top-navigation.scss';
 .page {
   display: flex;
   flex-direction: column;
@@ -7,7 +7,7 @@
   height: 100vh;
 }
 
-.page .mat-tab-links {
+.page .mat-mdc-tab-links {
   margin-left: 31px;
 }
 
@@ -16,7 +16,7 @@
   flex-direction: column;
   overflow: hidden;
   height: inherit;
-  margin: 40px 60px;
+  margin: 24px;
 
   &--full-page {
     margin: 0;
@@ -35,23 +35,6 @@
 
     &--full-page {
       margin: 0;
-    }
-  }
-}
-
-@media only screen and (max-width: 768px) {
-
-  .eui-top-navigation-mobile {
-    .eui-top-navigation-mobile-footer {
-      .mat-button {
-        &.imx-masthead--icon-button {
-          width: 100%;
-
-          .mat-button-wrapper span {
-            display: inline-block;
-          }
-        }
-      }
     }
   }
 }

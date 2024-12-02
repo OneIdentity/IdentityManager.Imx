@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,14 +24,14 @@
  *
  */
 
-import { Injectable } from "@angular/core";
-import { AppConfigService } from "qbm";
+import { Injectable } from '@angular/core';
+import { AppConfigService } from 'qbm';
 
 @Injectable()
 export class OrgChartService {
+  constructor(private readonly appConfig: AppConfigService) {}
 
-  constructor(private readonly appConfig: AppConfigService) { }
-
-  public get BaseUrl() { return this.appConfig.BaseUrl; };
-
+  public get BaseUrl() {
+    return this.appConfig.BaseUrl;
+  }
 }

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,28 +24,23 @@
  *
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PoliciesComponent } from './policies.component';
-import { PoliciesSidesheetComponent } from './policies-sidesheet/policies-sidesheet.component';
-import { CdrModule, DataSourceToolbarModule, DataTableModule, HelpContextualModule } from 'qbm';
+import { NgModule } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { TranslateModule } from '@ngx-translate/core';
-import { EuiCoreModule } from '@elemental-ui/core';
+import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
+import { EuiCoreModule } from '@elemental-ui/core';
+import { TranslateModule } from '@ngx-translate/core';
+import { CdrModule, DataSourceToolbarModule, DataTableModule, DataViewModule, HelpContextualModule } from 'qbm';
 import { ObjectHyperviewModule, StatisticsModule } from 'qer';
 import { PolicyViolationsModule } from '../policy-violations/policy-violations.module';
 import { MitigatingControlsPolicyComponent } from './mitigating-controls-policy/mitigating-controls-policy.component';
-
-
+import { PoliciesSidesheetComponent } from './policies-sidesheet/policies-sidesheet.component';
+import { PoliciesComponent } from './policies.component';
 
 @NgModule({
-  declarations: [
-    PoliciesComponent,
-    PoliciesSidesheetComponent,
-    MitigatingControlsPolicyComponent,
-  ],
+  declarations: [PoliciesComponent, PoliciesSidesheetComponent, MitigatingControlsPolicyComponent],
   imports: [
     CommonModule,
     EuiCoreModule,
@@ -60,6 +55,8 @@ import { MitigatingControlsPolicyComponent } from './mitigating-controls-policy/
     ObjectHyperviewModule,
     HelpContextualModule,
     PolicyViolationsModule,
-  ]
+    DataViewModule,
+    MatTableModule,
+  ],
 })
-export class PoliciesModule { }
+export class PoliciesModule {}

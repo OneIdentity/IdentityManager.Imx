@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,11 +30,12 @@ import { MyResponsibilitiesRegistryService } from 'qer';
 import { SoftwareComponent } from './software/software.component';
 import { HELP_CONTEXTUAL } from 'qbm';
 
-
-
 @Injectable({ providedIn: 'root' })
 export class InitService {
-  constructor(private readonly router: Router, private readonly myResponsibilitiesRegistryService: MyResponsibilitiesRegistryService) {}
+  constructor(
+    private readonly router: Router,
+    private readonly myResponsibilitiesRegistryService: MyResponsibilitiesRegistryService,
+  ) {}
 
   public onInit(routes: Route[]): void {
     this.addRoutes(routes);
@@ -59,7 +60,7 @@ export class InitService {
         TableName: 'Application',
         Count: 0,
       },
-      contextId: HELP_CONTEXTUAL.MyResponsibilitiesApplication
+      contextId: HELP_CONTEXTUAL.MyResponsibilitiesApplication,
     }));
   }
 }

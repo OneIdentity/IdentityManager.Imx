@@ -1,38 +1,22 @@
-@import '@elemental-ui/core/src/styles/_palette.scss';
 @import '@elemental-ui/core/src/styles/_eui_palette.scss';
+@import 'base/mixins';
 
 :host {
-
   .eui-sidesheet-content {
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
-  }
-
-  ::ng-deep .eui-alert {
-    margin-bottom: 20px;
-  }
-
-  .mat-tree {
-    flex-grow: 1;
+    @include flex-column-container($overflow: auto);
   }
 
   .service-tree-invisible {
     display: none;
   }
-
   ::ng-deep .mat-checkbox-label {
     line-height: 20px;
   }
 
-  .eui-badge {
-    padding-left: 10px;
-  }
-
   .imx-subtext {
     font-size: smaller;
-    color: $black-b;
-}
+    color: $color-gray-30;
+  }
 
   .imx-menu-spacer {
     flex-grow: 1;
@@ -46,29 +30,23 @@
     margin: 0;
     line-height: 36px;
   }
-
-  ::ng-deep .imx-badge.eui-badge .eui-badge-content {
-    font-size: 14px;
-    line-height: 14px;
-    margin-left: 10px;
-  }
 }
 
-.eui-dark-theme{
+.eui-dark-theme {
   :host {
     background-color: $color-gray-80;
     color: $color-gray-0;
-    .eui-sidesheet-actions.mat-card.eui-sidesheet-actions--white{
+    .eui-sidesheet-actions.mat-mdc-card.eui-sidesheet-actions--white {
       background-color: $color-gray-70;
     }
   }
 }
 
-.eui-contrast-theme{
+.eui-contrast-theme {
   :host {
     background-color: $color-gray-100;
     color: $color-gray-0;
-    .eui-sidesheet-actions.mat-card.eui-sidesheet-actions--white{
+    .eui-sidesheet-actions.mat-mdc-card.eui-sidesheet-actions--white {
       background-color: $color-gray-90;
     }
   }

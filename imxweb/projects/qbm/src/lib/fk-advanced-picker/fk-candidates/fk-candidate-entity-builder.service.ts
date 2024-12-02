@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,18 +26,23 @@
 
 import { Injectable } from '@angular/core';
 
-import { EntityCollectionData, TypedEntityBuilder, TypedEntityCollectionData } from 'imx-qbm-dbts';
+import { EntityCollectionData, EntitySchema, TypedEntityBuilder, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 import { CandidateEntity } from '../candidate-entity';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FkCandidateEntityBuilderService {
-  public readonly entitySchema = CandidateEntity.GetEntitySchema();
+  public entitySchema: EntitySchema;
 
   private readonly builder = new TypedEntityBuilder(CandidateEntity);
 
-  public build(entityCollectionData: EntityCollectionData): TypedEntityCollectionData<CandidateEntity> {
+  public build(
+    entityCollectionData: EntityCollectionData,
+    parentColumnName?: string,
+    tablename?: string,
+  ): TypedEntityCollectionData<CandidateEntity> {
+    this.entitySchema = CandidateEntity.GetEntitySchema(parentColumnName, tablename);
     return this.builder.buildReadWriteEntities(entityCollectionData, this.entitySchema);
   }
 }

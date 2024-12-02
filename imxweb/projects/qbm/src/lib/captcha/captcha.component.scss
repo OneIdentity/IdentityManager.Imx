@@ -1,0 +1,18 @@
+@import 'common/captcha-login';
+
+:host {
+  display: block;
+}
+
+.captcha-container {
+  display: flex;
+
+  .mat-mdc-form-field {
+    flex: 1 1 auto;
+  }
+
+  img {
+    padding-right: 1em;
+    height: 34px;
+  }
+}

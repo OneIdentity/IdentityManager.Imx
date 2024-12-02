@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,14 +24,14 @@
  *
  */
 
-import { Injectable, ErrorHandler, ViewContainerRef, ComponentFactoryResolver, ComponentRef } from '@angular/core';
+import { ComponentFactoryResolver, ComponentRef, ErrorHandler, Injectable, ViewContainerRef } from '@angular/core';
 
+import { ClassloggerService } from '../classlogger/classlogger.service';
 import { CdrEditorProviderRegistry } from './cdr-editor-provider-registry.interface';
 import { CdrEditorProvider } from './cdr-editor-provider.interface';
-import { ColumnDependentReference } from './column-dependent-reference.interface';
 import { CdrEditor } from './cdr-editor.interface';
+import { ColumnDependentReference } from './column-dependent-reference.interface';
 import { EditDefaultComponent } from './edit-default/edit-default.component';
-import { ClassloggerService } from '../classlogger/classlogger.service';
 
 /**
  * A service that is capable of {@link create|creating} an {@link CdrEditor|editor}
@@ -45,10 +45,9 @@ import { ClassloggerService } from '../classlogger/classlogger.service';
  * @see CdrEditorProvider
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CdrRegistryService implements CdrEditorProviderRegistry {
-
   /**
    * This array contains the registered (@see register) providers.
    */
@@ -61,8 +60,11 @@ export class CdrRegistryService implements CdrEditorProviderRegistry {
    * @param logger The logger used for logging messages.
    * @throws {Error} Throws an error if the given error handler is null or undefined.
    */
-  constructor(private componentFactoryResolver: ComponentFactoryResolver,
-              private errorHandler: ErrorHandler, private logger: ClassloggerService) { }
+  constructor(
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private errorHandler: ErrorHandler,
+    private logger: ClassloggerService,
+  ) {}
 
   /**
    * Registers an editor provider for column dependent references.
@@ -76,12 +78,15 @@ export class CdrRegistryService implements CdrEditorProviderRegistry {
       throw new Error('The provider must not be null or undefined.');
     }
 
-    if (this.registeredProviders.find(p => p === provider)) {
+    if (this.registeredProviders.find((p) => p === provider)) {
       throw new Error('This provider has already been registered.');
     }
 
-    this.logger.debug(this, `Registering '${this.className(provider)}' as
-    column dependent reference editor provider #${this.registeredProviders.length + 1}.`);
+    this.logger.debug(
+      this,
+      `Registering '${this.className(provider)}' as
+    column dependent reference editor provider #${this.registeredProviders.length + 1}.`,
+    );
     this.registeredProviders.push(provider);
   }
 
@@ -100,7 +105,7 @@ export class CdrRegistryService implements CdrEditorProviderRegistry {
    * @param cdref The column dependent reference for which an editor shall be created
    * @throws {Error} Throws an error if the given column dependent reference is null or undefined.
    */
-  public createEditor(parent: ViewContainerRef, cdref: ColumnDependentReference): ComponentRef<CdrEditor> {
+  public createEditor(parent: ViewContainerRef, cdref: ColumnDependentReference): ComponentRef<CdrEditor> | null {
     if (cdref == null) {
       throw new Error('The cdref must not be null or undefined.');
     }
@@ -113,16 +118,26 @@ export class CdrRegistryService implements CdrEditorProviderRegistry {
         const editor = provider.createEditor(parent, cdref);
 
         if (!editor) {
-          this.logger.debug(this, `Provider '${this.className(provider)}' returned '${this.className(editor)}'
-           for '${this.className(cdref)}' -> skipping it.'`);
+          this.logger.debug(
+            this,
+            `Provider '${this.className(provider)}' returned '${this.className(editor)}'
+           for '${this.className(cdref)}' -> skipping it.'`,
+          );
         } else {
-          this.logger.debug(this, `Returning editor '${this.className(editor.instance)}'
-           for '${this.className(cdref)}' created by '${this.className(provider)}'.`);
+          this.logger.debug(
+            this,
+            `Returning editor '${this.className(editor.instance)}'
+           for '${this.className(cdref)}' created by '${this.className(provider)}'.`,
+          );
           return editor;
         }
       } catch (e) {
-        this.logger.error(this, `Error during attempt to create editor through provider ${this.className(provider)}
-         -> skipping the provider this time.`, e);
+        this.logger.error(
+          this,
+          `Error during attempt to create editor through provider ${this.className(provider)}
+         -> skipping the provider this time.`,
+          e,
+        );
         this.errorHandler.handleError(e);
       }
     }

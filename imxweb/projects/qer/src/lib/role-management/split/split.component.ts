@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,17 +24,17 @@
  *
  */
 
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { DbObjectKey, IEntity, WriteExtTypedEntity } from 'imx-qbm-dbts';
-import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
-import { IRoleSplitItem, RoleExtendedDataWrite, UiActionData } from 'imx-api-qer';
-import { EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
-import { RoleService } from '../role.service';
-import { CdrFactoryService, ColumnDependentReference, MetadataService, SnackBarService } from 'qbm';
-import { TranslateService } from '@ngx-translate/core';
-import { AbstractControl, UntypedFormGroup } from '@angular/forms';
-import { DataManagementService } from '../data-management.service';
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { AbstractControl, UntypedFormGroup } from '@angular/forms';
+import { EuiLoadingService, EuiSidesheetRef } from '@elemental-ui/core';
+import { IRoleSplitItem, RoleExtendedDataWrite, UiActionData } from '@imx-modules/imx-api-qer';
+import { DbObjectKey, IEntity, WriteExtTypedEntity } from '@imx-modules/imx-qbm-dbts';
+import { TranslateService } from '@ngx-translate/core';
+import { CdrFactoryService, ColumnDependentReference, MetadataService, SnackBarService } from 'qbm';
+import { ProjectConfigurationService } from '../../project-configuration/project-configuration.service';
+import { DataManagementService } from '../data-management.service';
+import { RoleService } from '../role.service';
 import { SplitService } from './split.service';
 
 @Component({
@@ -55,9 +55,9 @@ export class SplitComponent implements OnInit {
     display: string;
   }[] = [];
   public canChangeRoleType: boolean;
-  public newRole: IEntity;
-  public typedEntity: WriteExtTypedEntity<RoleExtendedDataWrite>;
-  public cdrList: ColumnDependentReference[] = [];
+  public newRole: IEntity | undefined;
+  public typedEntity: WriteExtTypedEntity<RoleExtendedDataWrite> | undefined;
+  public cdrList: (ColumnDependentReference | undefined)[] = [];
   public uidActions: string[] = [];
   public types: string[] = [];
   public readonly newRoleFormGroup = new UntypedFormGroup({});
@@ -83,15 +83,15 @@ export class SplitComponent implements OnInit {
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly qerConfig: ProjectConfigurationService,
     private readonly metadata: MetadataService,
-    private readonly cdrFactoryService: CdrFactoryService
+    private readonly cdrFactoryService: CdrFactoryService,
   ) {}
 
   public async ngOnInit(): Promise<void> {
     this.busy = true;
     try {
       // Set initial values
-      this.roleType = this.dataManagementService.entityInteractive.GetEntity().TypeName;
-      this.uidRole = this.dataManagementService.entityInteractive.GetEntity().GetKeys().join(',');
+      this.roleType = this.dataManagementService.entityInteractive?.GetEntity().TypeName || '';
+      this.uidRole = this.dataManagementService.entityInteractive?.GetEntity().GetKeys().join(',') || '';
       this.types = [
         await this.translate.get('#LDS#Keep and do not copy or move to new object').toPromise(),
         await this.translate.get('#LDS#Keep and copy to new object').toPromise(),
@@ -103,11 +103,11 @@ export class SplitComponent implements OnInit {
       this.candidateTables = tableNames.map((t) => {
         return {
           tableName: t,
-          display: this.metadata.tables[t].DisplaySingular,
+          display: this.metadata.tables[t]?.DisplaySingular || '',
         };
       });
 
-      this.canChangeRoleType = config.RoleMgmtConfig.Allow_Roles_Split_Different_Organisation_Type;
+      this.canChangeRoleType = config?.RoleMgmtConfig?.Allow_Roles_Split_Different_Organisation_Type || false;
 
       // pre-select role type
       this.newRoleType = this.roleType.slice();
@@ -128,42 +128,46 @@ export class SplitComponent implements OnInit {
   }
 
   public getTableDisplay(name: string): string {
-    return this.metadata.tables[name].DisplaySingular;
+    return this.metadata.tables[name]?.DisplaySingular || '';
   }
 
   public async roleTypeChanged(): Promise<void> {
     if (this.cdrList.length > 0) {
-      this.cdrList.forEach((elem) => this.newRoleFormGroup.removeControl(elem.column.ColumnName));
+      this.cdrList.forEach((elem) => this.newRoleFormGroup.removeControl(elem?.column.ColumnName ?? ''));
     }
     const b = this.busySvc.show();
     try {
       this.typedEntity = await this.roleService.getInteractiveNew(this.newRoleType);
       // set the source role
-      await this.typedEntity.setExtendedData({
+      await this.typedEntity?.setExtendedData({
         RoleSplit: {
           SourceRoleObjectKey: new DbObjectKey(this.roleType, this.uidRole).ToXmlString(),
         },
       });
-      this.newRole = this.typedEntity.GetEntity();
-      this.cdrList = this.cdrFactoryService.buildCdrFromColumnList(
-        this.newRole,
-        await this.roleService.getEditableFields(this.newRoleType, this.newRole, true)
-      );
+      this.newRole = this.typedEntity?.GetEntity();
+      if (this.newRole != null) {
+        this.cdrList = this.cdrFactoryService.buildCdrFromColumnList(
+          this.newRole,
+          await this.roleService.getEditableFields(this.newRoleType, this.newRole, true),
+        );
+      }
     } finally {
       this.busySvc.hide(b);
     }
   }
 
-  public addControl(group: UntypedFormGroup, name: string, control: AbstractControl): void {
-    group.addControl(name, control);
-    this.cdref.detectChanges();
+  public addControl(group: UntypedFormGroup, name: string | undefined, control: AbstractControl): void {
+    if (name != null) {
+      group.addControl(name, control);
+      this.cdref.detectChanges();
+    }
   }
 
   public async execute(): Promise<void> {
     const b = this.busySvc.show();
     try {
       // set extended data with the split information
-      await this.typedEntity.setExtendedData({
+      await this.typedEntity?.setExtendedData({
         RoleSplit: {
           ActionIds: this.uidActions,
           SplitItems: this.splitItems.map((i) => {
@@ -174,7 +178,7 @@ export class SplitComponent implements OnInit {
           }),
         },
       });
-      this.newRole.Commit();
+      this.newRole?.Commit();
 
       this.sidesheetRef.close(true);
       this.snackbar.open({ key: this.ldsSuccessMessage });
@@ -187,7 +191,7 @@ export class SplitComponent implements OnInit {
     const b = this.busySvc.show();
     try {
       this.isLoading = true;
-      const items = await this.splitService.getSplitItems(this.roleType, this.uidRole, this.newRoleType, this.newRole.GetKeys()[0]);
+      const items = await this.splitService.getSplitItems(this.roleType, this.uidRole, this.newRoleType, this.newRole?.GetKeys()[0] ?? '');
 
       await this.metadata.updateNonExisting(items.map((i) => i.ObjectType));
 
@@ -203,15 +207,21 @@ export class SplitComponent implements OnInit {
     const b = this.busySvc.show();
     try {
       this.isLoading = true;
-      this.actions = await this.splitService.getSplitOptions(this.roleType, this.uidRole, this.newRoleType, this.newRole.GetKeys()[0], {
-        SplitItems: this.splitItems.map((i) => {
-          return {
-            Item: i.Uid,
-            Type: i.SplitType,
-          };
-        }),
-      });
-      this.uidActions = this.actions.filter((a) => a.IsActive).map((a) => a.Id);
+      this.actions = await this.splitService.getSplitOptions(
+        this.roleType,
+        this.uidRole,
+        this.newRoleType,
+        this.newRole?.GetKeys()[0] ?? '',
+        {
+          SplitItems: this.splitItems.map((i) => {
+            return {
+              Item: i.Uid,
+              Type: i.SplitType,
+            };
+          }),
+        },
+      );
+      this.uidActions = this.actions.filter((a) => a.IsActive).map((a) => a.Id ?? '') ?? [];
     } finally {
       this.isLoading = false;
       this.busySvc.hide(b);

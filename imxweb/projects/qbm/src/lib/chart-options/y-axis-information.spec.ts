@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,7 +28,6 @@ import { YAxisInformation } from './y-axis-information';
 import { clearStylesFromDOM } from '../testing/clear-styles.spec';
 
 describe('YAxisInformationGroup', () => {
-
   afterAll(() => {
     clearStylesFromDOM();
   });

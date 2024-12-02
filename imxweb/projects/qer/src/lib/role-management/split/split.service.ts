@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,7 +25,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { IRoleSplitItem, RoleSplitInput, UiActionData } from 'imx-api-qer';
+import { IRoleSplitItem, RoleSplitInput, UiActionData } from '@imx-modules/imx-api-qer';
 import { QerApiService } from '../../qer-api-client.service';
 
 @Injectable({
@@ -38,13 +38,12 @@ export class SplitService {
     return await this.apiService.v2Client.portal_roles_split_get(roletype, uidrole, newroletype, newroleid);
   }
 
-  public async getSplitOptions
-(
+  public async getSplitOptions(
     roletype: string,
     uidrole: string,
     newroletype: string,
     newroleid: string,
-    inputData: RoleSplitInput
+    inputData: RoleSplitInput,
   ): Promise<UiActionData[]> {
     return await this.apiService.v2Client.portal_roles_split_post(roletype, uidrole, newroletype, newroleid, inputData);
   }

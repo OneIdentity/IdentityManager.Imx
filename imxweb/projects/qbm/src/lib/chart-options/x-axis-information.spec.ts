@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,7 +28,6 @@ import { XAxisInformation } from './x-axis-information';
 import { clearStylesFromDOM } from '../testing/clear-styles.spec';
 
 describe('XAxisInformation', () => {
-
   afterAll(() => {
     clearStylesFromDOM();
   });
@@ -47,5 +46,4 @@ describe('XAxisInformation', () => {
     const info = new XAxisInformation('number', [1, 2, 3], {});
     expect(info.getAxisData()).toEqual(['x', 1, 2, 3]);
   });
-
 });

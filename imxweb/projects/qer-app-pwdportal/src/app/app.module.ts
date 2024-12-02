@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -33,6 +33,8 @@ import { MissingTranslationHandler, TranslateLoader, TranslateModule, TranslateS
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 
 import { APP_BASE_HREF } from '@angular/common';
+import { MatPaginatorIntl } from '@angular/material/paginator';
+import { RECAPTCHA_V3_SITE_KEY } from 'ng-recaptcha-2';
 import {
   AuthenticationModule,
   CustomThemeModule,
@@ -41,18 +43,16 @@ import {
   ImxTranslateLoader,
   LdsReplacePipe,
   MastHeadModule,
-  MenuModule,
   Paginator,
   SqlWizardApiService,
   UserMessageModule,
 } from 'qbm';
+import { PasscodeLoginModule, PasswordModule, QaLoginModule, QerModule } from 'qer';
+import appConfigJson from '../appconfig.json';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AppService } from './app.service';
-import { MatPaginatorIntl } from '@angular/material/paginator';
-import { PasswordModule, QaLoginModule, PasscodeLoginModule, ProfileModule, QerModule } from 'qer';
-import appConfigJson from '../appconfig.json';
 import { PwdSqlWizardApiService } from './pwd-sql-wizard-api.service';
 
 export const HEADLESS_BASEHREF = '/headless';
@@ -61,6 +61,7 @@ export function getBaseHref(): string {
 }
 @NgModule({
   declarations: [AppComponent],
+  bootstrap: [AppComponent],
   imports: [
     AppRoutingModule,
     AuthenticationModule,
@@ -68,10 +69,8 @@ export function getBaseHref(): string {
     BrowserModule,
     EuiCoreModule,
     EuiMaterialModule,
-    HttpClientModule,
     LoggerModule.forRoot({ level: NgxLoggerLevel.DEBUG, serverLogLevel: NgxLoggerLevel.OFF }),
     MastHeadModule,
-    MenuModule,
     QaLoginModule,
     QerModule,
     PasscodeLoginModule,
@@ -88,7 +87,6 @@ export function getBaseHref(): string {
       },
     }),
     UserMessageModule,
-    ProfileModule,
   ],
   providers: [
     { provide: 'environment', useValue: environment },
@@ -116,7 +114,14 @@ export function getBaseHref(): string {
       provide: SqlWizardApiService,
       useClass: PwdSqlWizardApiService,
     },
+    {
+      provide: RECAPTCHA_V3_SITE_KEY,
+      useFactory: (config: AppService) => {
+        return config.recaptchaSiteKeyV3;
+      },
+      deps: [AppService],
+    },
+    provideHttpClient(withInterceptorsFromDi()),
   ],
-  bootstrap: [AppComponent],
 })
 export class AppModule {}

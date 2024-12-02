@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,10 +26,10 @@
 
 import { Injectable } from '@angular/core';
 
-import { TypedClient, V2Client } from 'imx-api-qbm';
-import { ISessionState, SessionState } from './session-state';
+import { PreAuthResponseData, TypedClient, V2Client } from '@imx-modules/imx-api-qbm';
 import { AppConfigService } from '../appConfig/appConfig.service';
 import { ClassloggerService } from '../classlogger/classlogger.service';
+import { ISessionState, SessionState } from './session-state';
 
 @Injectable()
 export class imx_SessionService {
@@ -46,7 +46,8 @@ export class imx_SessionService {
 
   constructor(
     private appConfigService: AppConfigService,
-    private readonly logger: ClassloggerService) { }
+    private readonly logger: ClassloggerService,
+  ) {}
 
   public async getSessionState(): Promise<ISessionState> {
     this.logger.debug(this, 'getSessionState');
@@ -57,7 +58,7 @@ export class imx_SessionService {
   public async login(loginData: { [key: string]: string }): Promise<ISessionState> {
     this.logger.debug(this, 'login');
     const sr = await this.appConfigService.client.imx_login_post(this.appConfigService.Config.WebAppIndex, loginData, {
-      noxsrf: false
+      noxsrf: false,
     });
     return (this.sessionState = new SessionState(sr));
   }
@@ -66,5 +67,18 @@ export class imx_SessionService {
     this.logger.debug(this, 'logout');
     const sr = await this.appConfigService.client.imx_logout_post(this.appConfigService.Config.WebAppIndex);
     return (this.sessionState = new SessionState(sr));
+  }
+
+  public async preAuth(preAuthData: { [key: string]: string }): Promise<PreAuthResponseData> {
+    return this.appConfigService.client.imx_login_preauth_post(this.appConfigService.Config.WebAppIndex, { AuthProps: preAuthData });
+  }
+
+  public async preAuthVerify(captchaCode: string): Promise<boolean> {
+    return await this.appConfigService.client
+      .imx_login_preauth_verify_post(this.appConfigService.Config.WebAppIndex, { Code: captchaCode })
+      .then(() => true)
+      .catch((error) => {
+        throw Error(error);
+      });
   }
 }

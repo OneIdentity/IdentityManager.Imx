@@ -1,11 +1,6 @@
-@import "@elemental-ui/core/src/styles/_eui_palette.scss";
+@import '@elemental-ui/core/src/styles/_eui_palette.scss';
 
 :host {
-  overflow: hidden;
-}
-
-.mat-tab-group {
-  flex: 1 1 auto;
   overflow: hidden;
 }
 
@@ -17,56 +12,15 @@
   overflow-x: hidden;
 }
 
-.imx-button-bar {
-  background-color: $color-gray-0;
-  display: flex;
-  justify-content: flex-end;
-  border-top: $color-gray-20 1px solid;
-  padding: 0px 20px 20px 8px;
-  flex-wrap: wrap;
-}
-
-.imx-justify-right {
-  margin-right: auto;
-  justify-self: flex-start;
-}
-
 .eui-sidesheet-actions {
   > * {
-    margin-left: 10px;
-  }
-}
-
-.eui-sidesheet-actions {
-  > * {
-    margin-left: 16px;
     .mat-icon {
       margin-right: 5px;
       font-size: 24px;
     }
   }
 }
-
-.eui-dark-theme {
-  :host {
-    .imx-button-bar {
-      background-color: $color-gray-70;
-    }
-
-    .mat-tab-labels {
-      background-color: $color-gray-70;
-    }
-  }
-}
-
-.eui-contrast-theme {
-  :host {
-    .imx-button-bar {
-      background-color: $color-gray-90;
-    }
-
-    .mat-tab-labels {
-      background-color: $color-gray-90;
-    }
-  }
+.imx-attestation-history-hyperview {
+  display: flex;
+  flex-direction: column;
 }

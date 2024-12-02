@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,21 +26,20 @@
 
 import { Overlay } from '@angular/cdk/overlay';
 import { HttpClient } from '@angular/common/http';
-import { Component, Injector, OnInit } from '@angular/core';
-import { EuiDownloadDirective, EuiLoadingService } from '@elemental-ui/core';
+import { Component, ElementRef, Injector, OnInit } from '@angular/core';
+import { EuiDownloadDirective, EuiDownloadService, EuiLoadingService } from '@elemental-ui/core';
 
-import { IEntity } from 'imx-qbm-dbts';
-import { FilterTreeEntityWrapperService, FilterTreeDatabase, ElementalUiConfigService } from 'qbm';
+import { IEntity } from '@imx-modules/imx-qbm-dbts';
+import { ElementalUiConfigService, FilterTreeDatabase, FilterTreeEntityWrapperService } from 'qbm';
 import { AccountsReportsService } from '../accounts-reports.service';
 import { AccountsService } from '../accounts.service';
 
 @Component({
   selector: 'imx-target-system-report',
   templateUrl: './target-system-report.component.html',
-  styleUrls: ['./target-system-report.component.scss']
+  styleUrls: ['./target-system-report.component.scss'],
 })
 export class TargetSystemReportComponent implements OnInit {
-
   public showHelperAlert = true;
   public database: FilterTreeDatabase;
   public selectedEntity: IEntity;
@@ -54,19 +53,20 @@ export class TargetSystemReportComponent implements OnInit {
     private readonly http: HttpClient,
     private readonly injector: Injector,
     private readonly overlay: Overlay,
-  ) { }
+    private readonly downloadService: EuiDownloadService,
+  ) {}
 
   public async ngOnInit(): Promise<void> {
-    this.database = new FilterTreeDatabase(this.entityWrapper,
+    this.database = new FilterTreeDatabase(
+      this.entityWrapper,
       async (parentkey) => {
         return this.accountsService.getFilterTree({
           parentkey,
-          container: undefined,
-          system: undefined,
-          filter: undefined
+          filter: undefined,
         });
-      }
-      , this.busyService);
+      },
+      this.busyService,
+    );
   }
 
   public onHelperDismissed(): void {
@@ -74,7 +74,7 @@ export class TargetSystemReportComponent implements OnInit {
   }
 
   public onNodeSelected(entity: IEntity): void {
-      this.selectedEntity = entity;
+    this.selectedEntity = entity;
   }
 
   public loadReport(): void {
@@ -87,18 +87,25 @@ export class TargetSystemReportComponent implements OnInit {
     const columnName = val.ColumnName;
     if (columnName === 'UID_UNSRoot') {
       url = this.accountReport.accountsByRootReport(30, val.Value1);
-    }
-    else if (columnName === 'UID_UNSContainer') {
+    } else if (columnName === 'UID_UNSContainer') {
       url = this.accountReport.accountsByContainerReport(30, val.Value1);
+    } else {
+      return;
     }
-    const directive = new EuiDownloadDirective(null, this.http, this.overlay, this.injector);
+    const directive = new EuiDownloadDirective(
+      new ElementRef('') /* no element */,
+      this.http,
+      this.overlay,
+      this.injector,
+      this.downloadService,
+    );
 
     if (directive && url !== '') {
       directive.downloadOptions = {
-        ... this.elementalUiConfigService.Config.downloadOptions,
+        ...this.elementalUiConfigService.Config.downloadOptions,
         url,
         fileName: `${this.selectedEntity.GetDisplay()}.pdf`,
-        disableElement: false
+        disableElement: false,
       };
       directive.onClick();
     }

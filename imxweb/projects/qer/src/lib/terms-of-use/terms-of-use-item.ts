@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,8 @@
  *
  */
 
-import { IReadValue } from 'imx-qbm-dbts';
+import { IReadValue, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 
-export interface TermsOfUseItem {
-  UID_QERTermsOfUse: IReadValue<string>;
+export interface TermsOfUseItem extends TypedEntity {
+  UID_QERTermsOfUse: IReadValue<string> | undefined;
 }

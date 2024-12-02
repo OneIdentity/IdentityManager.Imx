@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,24 +24,16 @@
  *
  */
 
-import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
 
-import { PortalItshopPatternPrivate, } from 'imx-api-qer';
-import { TypedEntity } from 'imx-qbm-dbts';
+import { PortalItshopPatternPrivate } from '@imx-modules/imx-api-qer';
 
-import {
-  BaseCdr,
-  ClassloggerService,
-  ColumnDependentReference,
-  ConfirmationService,
-  DataTableComponent,
-  ErrorService,
-} from 'qbm';
-import { ItshopPatternService } from '../itshop-pattern.service';
+import { BaseCdr, ClassloggerService, ColumnDependentReference, ConfirmationService, ErrorService } from 'qbm';
 import { ItShopPatternChangedType } from '../itshop-pattern-changed.enum';
+import { ItshopPatternService } from '../itshop-pattern.service';
 
 /**
  * Component displayed in a sidesheet with a form to create a itshop pattern.
@@ -49,39 +41,39 @@ import { ItShopPatternChangedType } from '../itshop-pattern-changed.enum';
 @Component({
   selector: 'imx-itshop-pattern-create-sidesheet',
   templateUrl: './itshop-pattern-create-sidesheet.component.html',
-  styleUrls: ['./itshop-pattern-create-sidesheet.component.scss']
+  styleUrls: ['./itshop-pattern-create-sidesheet.component.scss'],
 })
 export class ItshopPatternCreateSidesheetComponent implements OnInit, OnDestroy {
-
   public get formArray(): UntypedFormArray {
     return this.detailsFormGroup.get('formArray') as UntypedFormArray;
   }
   public cdrList: ColumnDependentReference[] = [];
   public readonly detailsFormGroup: UntypedFormGroup;
 
-  @ViewChild(DataTableComponent) public table: DataTableComponent<TypedEntity>;
-
   private closeSubscription: Subscription;
   private disposable: () => void;
 
   constructor(
     formBuilder: UntypedFormBuilder,
-    @Inject(EUI_SIDESHEET_DATA) public data: {
-      pattern: PortalItshopPatternPrivate
+    @Inject(EUI_SIDESHEET_DATA)
+    public data: {
+      pattern: PortalItshopPatternPrivate;
     },
     private readonly patternService: ItshopPatternService,
     private readonly sideSheetRef: EuiSidesheetRef,
     private readonly logger: ClassloggerService,
     errorService: ErrorService,
-    confirmation: ConfirmationService
+    confirmation: ConfirmationService,
   ) {
     this.detailsFormGroup = new UntypedFormGroup({ formArray: formBuilder.array([]) });
 
     this.closeSubscription = this.sideSheetRef.closeClicked().subscribe(async () => {
-      if (await confirmation.confirm({
-        Title: '#LDS#Heading Cancel Creating',
-        Message: '#LDS#Are you sure you want to cancel creating the product bundle?'
-      })) {
+      if (
+        await confirmation.confirm({
+          Title: '#LDS#Heading Cancel Creating',
+          Message: '#LDS#Are you sure you want to cancel creating the product bundle?',
+        })
+      ) {
         this.sideSheetRef.close();
       }
     });
@@ -115,11 +107,6 @@ export class ItshopPatternCreateSidesheetComponent implements OnInit, OnDestroy 
   }
 
   private async setupDetailsTab(): Promise<void> {
-
-    this.cdrList = [
-      new BaseCdr(this.data.pattern.Ident_ShoppingCartPattern.Column),
-      new BaseCdr(this.data.pattern.Description.Column),
-    ];
-
+    this.cdrList = [new BaseCdr(this.data.pattern.Ident_ShoppingCartPattern.Column), new BaseCdr(this.data.pattern.Description.Column)];
   }
 }

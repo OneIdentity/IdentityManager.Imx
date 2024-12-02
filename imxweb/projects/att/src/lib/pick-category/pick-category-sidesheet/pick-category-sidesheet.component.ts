@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,61 +24,55 @@
  *
  */
 
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { Component, Inject, OnInit } from '@angular/core';
+import { EUI_SIDESHEET_DATA, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { PortalPickcategory, PortalPickcategoryItems } from 'imx-api-qer';
-import { CollectionLoadParameters, DisplayColumns, TypedEntity } from 'imx-qbm-dbts';
+import { PortalPickcategory, PortalPickcategoryItems } from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, DisplayColumns, EntitySchema, TypedEntity, TypedEntityCollectionData } from '@imx-modules/imx-qbm-dbts';
 
+import { UntypedFormGroup } from '@angular/forms';
 import {
   BaseCdr,
+  calculateSidesheetWidth,
   ClassloggerService,
   ConfirmationService,
-  DataSourceToolbarSettings,
-  DataSourceWrapper,
-  DataTableComponent,
+  DataViewInitParameters,
+  DataViewSource,
   SnackBarService,
 } from 'qbm';
 import { PickCategorySelectIdentitiesComponent } from '../pick-category-select-identities/pick-category-select-identities.component';
 import { PickCategoryService } from '../pick-category.service';
-import { UntypedFormGroup } from '@angular/forms';
 
 @Component({
   selector: 'imx-pick-category-sidesheet',
   templateUrl: './pick-category-sidesheet.component.html',
-  styleUrls: ['./pick-category-sidesheet.component.scss']
+  styleUrls: ['./pick-category-sidesheet.component.scss'],
+  providers: [DataViewSource],
 })
 export class PickCategorySidesheetComponent implements OnInit {
-
-  public readonly dstWrapper: DataSourceWrapper<PortalPickcategoryItems>;
   public readonly form = new UntypedFormGroup({});
-  public dstSettings: DataSourceToolbarSettings;
   public selectedPickedItems: PortalPickcategoryItems[] = [];
   public displayNameCdr: any;
-
-  @ViewChild(DataTableComponent) private table: DataTableComponent<TypedEntity>;
+  public entitySchema: EntitySchema;
+  public DisplayColumns = DisplayColumns;
 
   private uidPickCategory: string;
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public data: {
-      pickCategory: PortalPickcategory
+    @Inject(EUI_SIDESHEET_DATA)
+    public data: {
+      pickCategory: PortalPickcategory;
     },
     private readonly sidesheet: EuiSidesheetService,
     private readonly snackBar: SnackBarService,
     private readonly confirmationService: ConfirmationService,
     private readonly pickCategoryService: PickCategoryService,
     private readonly translate: TranslateService,
-    private readonly logger: ClassloggerService
+    private readonly logger: ClassloggerService,
+    public dataSource: DataViewSource<PortalPickcategoryItems>,
   ) {
-    const entitySchema = this.pickCategoryService.pickcategoryItemsSchema;
-
-    this.dstWrapper = new DataSourceWrapper(
-      state => this.pickCategoryService.getPickCategoryItems(this.uidPickCategory, state),
-      [entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]],
-      entitySchema
-    );
+    this.entitySchema = this.pickCategoryService.pickcategoryItemsSchema;
   }
 
   public async ngOnInit(): Promise<void> {
@@ -88,50 +82,55 @@ export class PickCategorySidesheetComponent implements OnInit {
     await this.getData();
   }
 
-  public async getData(newState?: CollectionLoadParameters): Promise<void> {
-    this.pickCategoryService.handleOpenLoader();
-    try {
-      this.dstSettings = await this.dstWrapper.getDstSettings(newState);
-    } finally {
-      this.pickCategoryService.handleCloseLoader();
-    }
+  public async getData(): Promise<void> {
+    const dataViewInitParameters: DataViewInitParameters<PortalPickcategoryItems> = {
+      execute: (params: CollectionLoadParameters): Promise<TypedEntityCollectionData<PortalPickcategoryItems>> =>
+        this.pickCategoryService.getPickCategoryItems(this.uidPickCategory, params),
+      schema: this.entitySchema,
+      columnsToDisplay: [this.entitySchema.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]],
+      selectionChange: (selection: Array<PortalPickcategoryItems>) => this.onSelectionChanged(selection),
+    };
+    this.dataSource.init(dataViewInitParameters);
   }
 
   public selectedItemsCanBeDeleted(): boolean {
-    return this.selectedPickedItems != null &&
-      this.selectedPickedItems.length > 0 &&
-      this.data.pickCategory.IsManual.value;
+    return this.selectedPickedItems != null && this.selectedPickedItems.length > 0 && this.data.pickCategory.IsManual.value;
   }
 
-  public onSelectionChanged(items: PortalPickcategoryItems[]): void {
+  public onSelectionChanged(items: TypedEntity[]): void {
     this.logger.trace(this, 'selection changed', items);
-    this.selectedPickedItems = items;
+    this.selectedPickedItems = items as PortalPickcategoryItems[];
   }
 
   public async assignPickedItems(): Promise<void> {
-    const selection = await this.sidesheet.open(PickCategorySelectIdentitiesComponent, {
-      title: await this.translate.get('#LDS#Heading Assign Identities').toPromise(),
-      subTitle: this.data.pickCategory.GetEntity().GetDisplay(),
-      padding: '0px',
-      width: '700px',
-      disableClose: false,
-      testId: 'pick-category-select-identities',
-      data: this.dstSettings.dataSource.Data
-    }).afterClosed().toPromise();
+    const selection = await this.sidesheet
+      .open(PickCategorySelectIdentitiesComponent, {
+        title: await this.translate.get('#LDS#Heading Assign Identities').toPromise(),
+        subTitle: this.data.pickCategory.GetEntity().GetDisplay(),
+        padding: '0px',
+        width: calculateSidesheetWidth(700, 0.4),
+        disableClose: false,
+        testId: 'pick-category-select-identities',
+        data: this.dataSource?.data,
+      })
+      .afterClosed()
+      .toPromise();
 
     if (selection && (await this.pickCategoryService.createPickedItems(selection, this.uidPickCategory)) > 0) {
-      await this.getData();
+      this.dataSource.updateState();
     }
   }
 
   public async removePickedItems(): Promise<void> {
-    if (await this.confirmationService.confirm({
-      Title: '#LDS#Heading Remove Identities',
-      Message: '#LDS#Are you sure you want to remove the selected identities?'
-    })) {
-      if (await this.pickCategoryService.deletePickedItems(this.uidPickCategory, this.selectedPickedItems) > 0) {
-        await this.getData();
-        this.table?.clearSelection();
+    if (
+      await this.confirmationService.confirm({
+        Title: '#LDS#Heading Remove Identities',
+        Message: '#LDS#Are you sure you want to remove the selected identities?',
+      })
+    ) {
+      if ((await this.pickCategoryService.deletePickedItems(this.uidPickCategory, this.selectedPickedItems)) > 0) {
+        this.dataSource.updateState();
+        this.dataSource.selection.clear();
       }
     }
   }
@@ -149,5 +148,4 @@ export class PickCategorySidesheetComponent implements OnInit {
       }
     }
   }
-
 }

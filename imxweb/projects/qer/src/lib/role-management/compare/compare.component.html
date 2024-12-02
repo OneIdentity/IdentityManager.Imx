@@ -1,9 +1,16 @@
 <div eui-sidesheet-content>
   <mat-card class="imx-stepper-card">
     <mat-stepper orientation="vertical" [linear]="true" (selectionChange)="selectedStepChanged($event)">
-      <mat-step [stepControl]="roleForm" label="{{ '#LDS#Select the object with which the selected object should be compared' | translate }}">
+      <mat-step
+        [stepControl]="roleForm"
+        label="{{ '#LDS#Select the object with which the selected object should be compared' | translate }}"
+      >
         <form [formGroup]="roleForm">
-          <imx-cdr-editor [cdr]="roleCdr" (valueChange)="resetElements()" (controlCreated)="roleForm.addControl(roleCdr.column.ColumnName, $event)"></imx-cdr-editor>
+          <imx-cdr-editor
+            [cdr]="roleCdr"
+            (valueChange)="resetElements()"
+            (controlCreated)="roleForm.addControl(roleCdr?.column?.ColumnName ?? '', $event)"
+          ></imx-cdr-editor>
         </form>
         <div class="imx-step-button" *ngIf="roleCdr">
           <button mat-stroked-button color="primary" data-imx-identifier="compare-step-1-next" matStepperNext [disabled]="roleForm.invalid">
@@ -12,16 +19,17 @@
         </div>
       </mat-step>
       <mat-step label="{{ '#LDS#View comparison result' | translate }}">
-        <eui-alert class="imx-top-alert" type="error" [condensed]="true" [colored]="true" *ngIf="showKeyMissingError">
+        <eui-alert type="error" [condensed]="true" [colored]="true" *ngIf="showKeyMissingError">
           {{ ldsKeyNotAvailable | translate }}
         </eui-alert>
         <ng-container *ngIf="compareItems && !showKeyMissingError">
-          <imx-data-source-toolbar #dst data-imx-identifier="compare-data-source-toolbar" [settings]="dstSettings" [options]=""> </imx-data-source-toolbar>
+          <imx-data-source-toolbar #dst data-imx-identifier="compare-data-source-toolbar" [settings]="dstSettings" [options]="">
+          </imx-data-source-toolbar>
           <div class="imx-step-data-table">
             <imx-data-table
               data-imx-identifier="compare-data-table"
               [dst]="dst"
-              detailViewVisible="false"
+              [detailViewVisible]="false"
               mode="manual"
               noDataText="#LDS#Currently, no objects are assigned to the two selected objects."
             >
@@ -33,38 +41,46 @@
               </imx-data-table-generic-column>
               <imx-data-table-generic-column columnName="current" [columnLabel]="'#LDS#This object' | translate">
                 <ng-template let-item>
-                  <imx-role-compareitem class="compareitem" [val]="item.XOriginRole1.value" [captions]="compareItems.OriginCaptions"> </imx-role-compareitem>
+                  <imx-role-compareitem class="compareitem" [val]="item.XOriginRole1.value" [captions]="compareItems.OriginCaptions">
+                  </imx-role-compareitem>
                 </ng-template>
               </imx-data-table-generic-column>
               <imx-data-table-generic-column columnName="other" [columnLabel]="'#LDS#Comparison object' | translate">
                 <ng-template let-item>
-                  <imx-role-compareitem class="compareitem" [val]="item.XOriginRole2.value" [captions]="compareItems.OriginCaptions"> </imx-role-compareitem>
+                  <imx-role-compareitem class="compareitem" [val]="item.XOriginRole2.value" [captions]="compareItems.OriginCaptions">
+                  </imx-role-compareitem>
                 </ng-template>
               </imx-data-table-generic-column>
             </imx-data-table>
           </div>
         </ng-container>
 
-        <div class="imx-step-button">
+        <div class="imx-button-stepper">
           <button mat-stroked-button data-imx-identifier="compare-step-2-back" matStepperPrevious>{{ '#LDS#Back' | translate }}</button>
-          <button mat-stroked-button data-imx-identifier="compare-step-2-next" matStepperNext [matTooltip]="LdsPrepareMergeExplanation | translate" color="primary">
+          <button
+            mat-stroked-button
+            data-imx-identifier="compare-step-2-next"
+            matStepperNext
+            [matTooltip]="LdsPrepareMergeExplanation | translate"
+            color="primary"
+          >
             {{ '#LDS#Next' | translate }}
           </button>
         </div>
       </mat-step>
 
       <mat-step label="{{ '#LDS#Verify actions' | translate }}">
-        <eui-alert class="imx-top-alert" type="error" [condensed]="true" [colored]="true" *ngIf="showKeyMissingError">
+        <eui-alert type="error" [condensed]="true" [colored]="true" *ngIf="showKeyMissingError">
           {{ ldsKeyNotAvailable | translate }}
         </eui-alert>
         <ng-container *ngIf="!showKeyMissingError">
-          <eui-alert class="imx-top-alert" type="info" [condensed]="true" [colored]="true" *ngIf="mergeActions != null && mergeActions?.length === 0">
+          <eui-alert type="info" [condensed]="true" [colored]="true" *ngIf="mergeActions != null && mergeActions?.length === 0">
             <ng-container *ngIf="mergePreventingReason">{{ mergePreventingReason }}</ng-container>
             <ng-container *ngIf="!mergePreventingReason">{{ noChangesText | translate }}</ng-container>
           </eui-alert>
 
-          <ng-container *ngIf="mergeActions != null && mergeActions?.length > 0">
-            <eui-alert class="imx-top-alert" type="info" [condensed]="true" [colored]="true">
+          <ng-container *ngIf="mergeActions != null && !!mergeActions?.length">
+            <eui-alert type="info" [condensed]="true" [colored]="true">
               {{ LdsMergeExplanation | translate }}
             </eui-alert>
 
@@ -83,9 +99,16 @@
           </ng-container>
         </ng-container>
 
-        <div class="imx-step-button">
+        <div class="imx-button-stepper">
           <button mat-stroked-button data-imx-identifier="compare-step-3-back" matStepperPrevious>{{ '#LDS#Back' | translate }}</button>
-          <button mat-stroked-button data-imx-identifier="compare-step-3-next" color="primary" matStepperNext [disabled]="uidActions?.length === 0" (click)="execute()">
+          <button
+            mat-stroked-button
+            data-imx-identifier="compare-step-3-next"
+            color="primary"
+            matStepperNext
+            [disabled]="uidActions?.length === 0"
+            (click)="execute()"
+          >
             {{ '#LDS#Merge' | translate }}
           </button>
         </div>

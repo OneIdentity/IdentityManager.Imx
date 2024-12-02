@@ -1,5 +1,3 @@
-
-
 /*
  * ONE IDENTITY LLC. PROPRIETARY INFORMATION
  *
@@ -11,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -30,7 +28,6 @@
  * Interface for the object that is used to create a new pattern item.
  */
 export interface PatternItemCandidate {
-
   /**
    * the display of the pattern item candidate.
    */
@@ -41,5 +38,3 @@ export interface PatternItemCandidate {
    */
   uidAccProduct: string;
 }
-
-

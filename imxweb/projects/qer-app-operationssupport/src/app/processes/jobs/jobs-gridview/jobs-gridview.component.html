@@ -10,25 +10,35 @@
   >
     <imx-data-source-toolbar-custom [customContentTemplate]="customToolbarTemplate"></imx-data-source-toolbar-custom>
   </imx-data-source-toolbar>
-  <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual" [selectable]="withActions" [noDataText]="noData" (highlightedEntityChanged)="viewDetails($event)" (selectionChanged)="onSelectionChanged($event)">
-    <imx-data-table-column [columnLabel]="'#LDS#Process name and task' | translate" [entityColumn]="entitySchemaJobs?.Columns.JobChainName">
+  <imx-data-table
+    [dst]="dst"
+    [detailViewVisible]="false"
+    mode="manual"
+    [selectable]="withActions"
+    [noDataText]="noData"
+    (highlightedEntityChanged)="viewDetails($event)"
+    (selectionChanged)="onSelectionChanged($event)"
+  >
+    <imx-data-table-column [columnLabel]="'#LDS#Process name and task' | translate" [entityColumn]="entitySchemaJobs.Columns.JobChainName">
       <ng-template let-dataItem>
         <div>{{ dataItem.JobChainName.Column.GetDisplayValue() }}</div>
         <div subtitle>{{ dataItem.TaskName.Column.GetDisplayValue() }}</div>
       </ng-template>
     </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaJobs?.Columns.CombinedStatus"> </imx-data-table-column>
-    <imx-data-table-column [entityColumn]="entitySchemaJobs?.Columns.XDateInserted"> </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchemaJobs.Columns.CombinedStatus"> </imx-data-table-column>
+    <imx-data-table-column [entityColumn]="entitySchemaJobs.Columns.XDateInserted"> </imx-data-table-column>
     <imx-data-table-generic-column columnName="actions">
       <ng-template let-dataItem>
-        <button [disabled]="!isFrozen(dataItem)" mat-button color="primary" (click)="retryJob(dataItem)">{{ '#LDS#Retry' | translate }}</button>
+        <button [disabled]="!isFrozen(dataItem)" mat-button color="primary" (click)="retryJob(dataItem)">
+          {{ '#LDS#Retry' | translate }}
+        </button>
       </ng-template>
     </imx-data-table-generic-column>
   </imx-data-table>
   <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
 </div>
-<div class="imx-button-bar">
-  <button mat-raised-button class="rightButtonFloat" *ngIf="withActions" [disabled]="!itemsAreSelected()" [matMenuTriggerFor]="ActionMenu">
+<div class="imx-button-bar-transparent">
+  <button mat-flat-button color="primary" *ngIf="withActions" [disabled]="!itemsAreSelected()" [matMenuTriggerFor]="ActionMenu">
     {{ '#LDS#Actions' | translate }}
   </button>
   <mat-menu #ActionMenu="matMenu" yPosition="below">
@@ -45,7 +55,7 @@
 </div>
 
 <ng-template #customToolbarTemplate>
-  <button mat-stroked-button color="primary" class="imx-refresh-button" (click)="refresh()">
+  <button mat-stroked-button color="primary" class="imx-button-icon" (click)="refresh()">
     <eui-icon icon="sync"></eui-icon>
     <span>{{ '#LDS#Refresh' | translate }}</span>
   </button>

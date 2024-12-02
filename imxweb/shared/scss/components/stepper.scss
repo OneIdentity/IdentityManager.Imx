@@ -1,0 +1,34 @@
+/* Elemental UI */
+
+/* Angular Material */
+
+/* Imx */
+.imx-stepper-samples.mat-mdc-stepper-vertical {
+  @include flex-column-container($max-height: 100%);
+
+  .mat-mdc-step {
+    @include flex-column-container($max-height: calc(100% - 144px));
+    flex: 1 1 auto;
+
+    .mat-mdc-vertical-content-container {
+      @include flex-column-container($height: calc(100% - 72px));
+
+      .mat-mdc-vertical-content {
+        @include flex-column-container-fill();
+        height: 100%;
+
+        imx-pick-category-select-identities {
+          @include flex-column-container($max-height: calc(100% - 36px));
+        }
+      }
+    }
+  }
+
+  .imx-summary-intro {
+    margin: 15px 0;
+  }
+}
+
+/* Dark theme */
+
+/* High-contrast theme */

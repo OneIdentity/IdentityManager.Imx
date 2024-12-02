@@ -1,7 +1,10 @@
 <div class="identity-photo" *ngIf="identity">
-  <div class="identity-photo-overlay"
-    [ngStyle]="{'background-image': 'url(\''+ orgChartService.BaseUrl + '/portal/person/image/' + identity.GetEntity().GetKeys()[0]+'\')'}">
-  </div>
+  <div
+    class="identity-photo-overlay"
+    [ngStyle]="{
+      'background-image': 'url(\'' + orgChartService.BaseUrl + '/portal/person/image/' + identity.GetEntity().GetKeys()[0] + '\')'
+    }"
+  ></div>
   <eui-icon icon="user"></eui-icon>
 </div>
 <div class="identity-info" *ngIf="identity">

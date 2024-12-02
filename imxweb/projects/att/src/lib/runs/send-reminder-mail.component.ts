@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -31,7 +31,7 @@ import { Subscription } from 'rxjs';
 
 @Component({
   templateUrl: './send-reminder-mail.component.html',
-  styleUrls: ['./send-reminder-mail.component.scss']
+  styleUrls: ['./send-reminder-mail.component.scss'],
 })
 export class SendReminderMailComponent implements OnDestroy {
   public showHelper = true;
@@ -40,13 +40,16 @@ export class SendReminderMailComponent implements OnDestroy {
 
   private readonly subscriptions: Subscription[] = [];
 
-  constructor(@Inject(EUI_SIDESHEET_DATA) data: { message: string }, public readonly sideSheetRef: EuiSidesheetRef) {
+  constructor(
+    @Inject(EUI_SIDESHEET_DATA) data: { message: string },
+    public readonly sideSheetRef: EuiSidesheetRef,
+  ) {
     this.message = new UntypedFormControl(data.message);
-    this.subscriptions.push(this.message.valueChanges.subscribe(value => data.message = value));
+    this.subscriptions.push(this.message.valueChanges.subscribe((value) => (data.message = value)));
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   public onHelperDismissed(): void {

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,8 +24,8 @@
  *
  */
 
-import { IEntity, IEntityColumn } from 'imx-qbm-dbts';
-import { PwoData } from 'imx-api-qer';
+import { PwoData } from '@imx-modules/imx-api-qer';
+import { IEntity, IEntityColumn } from '@imx-modules/imx-qbm-dbts';
 
 export interface ItshopRequestEntityWrapper {
   entity: IEntity;
@@ -33,5 +33,5 @@ export interface ItshopRequestEntityWrapper {
   uidCurrentUser?: string;
   isChiefApproval?: boolean;
   parameterColumns: IEntityColumn[];
-  commit?: () => Promise<void>;
+  commit: () => Promise<void>;
 }

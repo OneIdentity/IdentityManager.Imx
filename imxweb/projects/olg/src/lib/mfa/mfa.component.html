@@ -1,6 +1,9 @@
 <div eui-sidesheet-content class="imx-flex-sheet">
-  <eui-alert class="imx-info" type="info" condensed="true" colored="true">
-    <span>{{ '#LDS#You must authenticate before you can proceed. To do this, use one of the following multi-factor authentication methods.' | translate }}</span>
+  <eui-alert class="imx-info" type="info" [condensed]="true" [colored]="true">
+    <span>{{
+      '#LDS#You must authenticate before you can proceed. To do this, use one of the following multi-factor authentication methods.'
+        | translate
+    }}</span>
   </eui-alert>
   <mat-card>
     <imx-busy-indicator *ngIf="isLoading"></imx-busy-indicator>

@@ -1,6 +1,6 @@
 # Identity management base module
 
-This library contains the basic components for identity management. 
+The `qer` library contains the basic components for identity management. 
 That includes, but is not limited to, role management, the IT shop and identity administration.
 
 See the following pages for more details on the code structure.

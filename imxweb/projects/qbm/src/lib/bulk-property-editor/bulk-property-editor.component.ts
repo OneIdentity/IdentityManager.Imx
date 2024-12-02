@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -33,7 +33,7 @@ import { BulkItemComponent } from './bulk-item/bulk-item.component';
 @Component({
   selector: 'imx-bulk-editor',
   templateUrl: './bulk-property-editor.component.html',
-  styleUrls: ['./bulk-property-editor.component.scss']
+  styleUrls: ['./bulk-property-editor.component.scss'],
 })
 export class BulkPropertyEditorComponent implements OnInit {
   public formGroup = new UntypedFormGroup({});
@@ -50,8 +50,8 @@ export class BulkPropertyEditorComponent implements OnInit {
 
   public ngOnInit(): void {
     this.entities.sort((a, b) => {
-      let typeA = a.properties.every(p => p.isReadOnly());
-      let typeB = b.properties.every(p => p.isReadOnly());
+      let typeA = a.properties.every((p) => p.isReadOnly());
+      let typeB = b.properties.every((p) => p.isReadOnly());
 
       if (typeA && typeB) {
         return 0;
@@ -61,8 +61,8 @@ export class BulkPropertyEditorComponent implements OnInit {
         return 1;
       }
 
-      typeA = a.properties.some(p => p.column.GetMetadata().GetMinLength() > 0);
-      typeB = b.properties.some(p => p.column.GetMetadata().GetMinLength() > 0);
+      typeA = a.properties.some((p) => p.column.GetMetadata().GetMinLength() > 0);
+      typeB = b.properties.some((p) => p.column.GetMetadata().GetMinLength() > 0);
 
       if (typeA && typeB) {
         return 0;

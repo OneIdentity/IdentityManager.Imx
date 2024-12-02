@@ -1,68 +1,165 @@
 <mat-card class="data-explorer data-explorer--identities" [class.identities--fullscreen]="showFullscreen">
-  <div class="data-explorer-card-header">
-    <div class="data-explorer-card-header-bg">
-      <span translate>#LDS#Identities</span>
+  <div class="imx-card-data-explorer-header">
+    <div class="imx-card-data-explorer-header-bg">
+      <h3 translate>#LDS#Identities</h3>
       <imx-help-contextual [contextId]="contextId"></imx-help-contextual>
     </div>
   </div>
-  <imx-data-source-toolbar #dst [settings]="dstSettings" [options]="['search', 'sort', 'filter', 'groupBy', 'settings']" [busyService]="busyService"
-    [searchBoxText]="'#LDS#Search' | translate" (navigationStateChanged)="onNavigationStateChanged($event)"
-    (search)="onSearch($event)" (updateConfig)="updateConfig($event)" (deleteConfigById)="deleteConfigById($event)"></imx-data-source-toolbar>
+  <imx-data-view-toolbar
+    [dataSource]="dataSource"
+    (updateConfig)="updateConfig($event)"
+    (deleteConfigById)="deleteConfigById($event)"
+  ></imx-data-view-toolbar>
   <div class="data-explorer-table">
-    <imx-data-table [dst]="dst" (highlightedEntityChanged)="onIdentityChanged($event)" detailViewVisible="false"
-      data-imx-identifier="identities-tabledata-table" mode="manual" [groupData]="groupData"
-      (groupDataChanged)="onGroupingChange($event)">
-      <imx-data-table-column [entityColumn]="entitySchemaPersonReports?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]">
-        <ng-template let-item>
+    <imx-data-view-auto-table
+      [dataSource]="dataSource"
+      mode="manual"
+      matSort
+      (matSortChange)="dataSource?.sortChange($event)"
+      [matSortActive]="dataSource.sortId()"
+      [matSortDirection]="dataSource.sortDirection()"
+    >
+      <ng-container [matColumnDef]="DisplayColumns.DISPLAY_PROPERTYNAME">
+        <th mat-header-cell *matHeaderCellDef>
+          {{ entitySchemaPersonReports?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]?.Display }}
+        </th>
+        <td mat-cell *matCellDef="let item" role="gridcell" class="imx-table-cell">
           <div data-imx-identifier="identities-tabledata-display">{{ item.GetEntity().GetDisplay() }}</div>
-          <div subtitle data-imx-identifier="identities-tabledata-description">{{
-            item.DefaultEmailAddress.Column.GetDisplayValue() }}</div>
-        </ng-template>
-      </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchemaPersonReports?.Columns.IsSecurityIncident" columnLabel="">
-        <ng-template let-item>
+          <div subtitle data-imx-identifier="identities-tabledata-description">{{ item.DefaultEmailAddress.Column.GetDisplayValue() }}</div>
+        </td>
+      </ng-container>
+      <ng-container [matColumnDef]="entitySchemaPersonReports.Columns.IsSecurityIncident.ColumnName">
+        <ng-container *ngIf="dataSource.isSortable(entitySchemaPersonReports.Columns.IsSecurityIncident?.ColumnName)">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ entitySchemaPersonReports?.Columns?.IsSecurityIncident?.Display }}
+          </th>
+        </ng-container>
+        <ng-container *ngIf="!dataSource.isSortable(entitySchemaPersonReports.Columns.IsSecurityIncident?.ColumnName)">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ entitySchemaPersonReports?.Columns?.IsSecurityIncident?.Display }}
+          </th>
+        </ng-container>
+        <td mat-cell *matCellDef="let item" role="gridcell">
           <div *ngIf="item.IsSecurityIncident.value">
             <eui-badge color="red">{{ '#LDS#Security risk' | translate }}</eui-badge>
           </div>
-        </ng-template>
-      </imx-data-table-column>
-      <imx-data-table-column [entityColumn]="entitySchemaPersonReports?.Columns.UID_Department">
-      </imx-data-table-column>
-      <imx-data-table-column *ngIf="!this.isAdmin" [entityColumn]="entitySchemaPersonReports?.Columns.IdentityType">
-      </imx-data-table-column>
-      <imx-data-table-column *ngIf="!this.isAdmin" [entityColumn]="entitySchemaPersonReports?.Columns.EmployeeType">
-      </imx-data-table-column>
-      <imx-data-table-column *ngIf="!this.isAdmin" [entityColumn]="entitySchemaPersonReports?.Columns.IsExternal">
-      </imx-data-table-column>
-      <imx-data-table-generic-column alignHeader="center" alignContent="center"
-        [columnName]="entitySchemaPersonReports?.Columns.XMarkedForDeletion.ColumnName">
-        <ng-template let-item>
+        </td>
+      </ng-container>
+      <ng-container [matColumnDef]="entitySchemaPersonReports.Columns.UID_Department.ColumnName">
+        <th mat-header-cell *matHeaderCellDef>{{ entitySchemaPersonReports?.Columns?.UID_Department?.Display }}</th>
+        <td mat-cell *matCellDef="let item" role="gridcell">
+          <div data-imx-identifier="identities-tabledata-display">
+            <span>
+              {{ item.GetEntity().GetColumn('UID_Department').GetDisplayValue() }}
+            </span>
+          </div>
+        </td>
+      </ng-container>
+      <ng-container [matColumnDef]="entitySchemaPersonReports.Columns.XMarkedForDeletion.ColumnName">
+        <ng-container *ngIf="dataSource.isSortable(entitySchemaPersonReports.Columns.XMarkedForDeletion?.ColumnName)">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ entitySchemaPersonReports?.Columns?.XMarkedForDeletion?.Display }}
+          </th>
+        </ng-container>
+        <ng-container *ngIf="!dataSource.isSortable(entitySchemaPersonReports.Columns.XMarkedForDeletion?.ColumnName)">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ entitySchemaPersonReports?.Columns?.XMarkedForDeletion?.Display }}
+          </th>
+        </ng-container>
+        <td mat-cell *matCellDef="let item" role="gridcell">
           <div *ngIf="item.XMarkedForDeletion.value !== 0">
             <eui-badge color="gray">{{ item.XMarkedForDeletion.Column.GetDisplayValue() }}</eui-badge>
           </div>
-        </ng-template>
-      </imx-data-table-generic-column>
-    </imx-data-table>
-
-    <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+        </td>
+      </ng-container>
+      <ng-container *ngIf="!isAdmin" [matColumnDef]="entitySchemaPersonReports.Columns.IdentityType.ColumnName">
+        <ng-container *ngIf="dataSource.isSortable(entitySchemaPersonReports.Columns.IdentityType?.ColumnName)">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ entitySchemaPersonReports?.Columns?.IdentityType?.Display }}
+          </th>
+        </ng-container>
+        <ng-container *ngIf="!dataSource.isSortable(entitySchemaPersonReports.Columns.IdentityType?.ColumnName)">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ entitySchemaPersonReports?.Columns?.IdentityType?.Display }}
+          </th>
+        </ng-container>
+        <td mat-cell *matCellDef="let item" role="gridcell">
+          <span>
+            {{ item.IdentityType.Column.GetDisplayValue() }}
+          </span>
+        </td>
+      </ng-container>
+      <ng-container *ngIf="!isAdmin" [matColumnDef]="entitySchemaPersonReports.Columns.EmployeeType.ColumnName">
+        <ng-container *ngIf="dataSource.isSortable(entitySchemaPersonReports.Columns.EmployeeType?.ColumnName)">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ entitySchemaPersonReports?.Columns?.EmployeeType?.Display }}
+          </th>
+        </ng-container>
+        <ng-container *ngIf="!dataSource.isSortable(entitySchemaPersonReports.Columns.EmployeeType?.ColumnName)">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ entitySchemaPersonReports?.Columns?.EmployeeType?.Display }}
+          </th>
+        </ng-container>
+        <td mat-cell *matCellDef="let item" role="gridcell">
+          <span>
+            {{ item.EmployeeType.Column.GetDisplayValue() }}
+          </span>
+        </td>
+      </ng-container>
+      <ng-container *ngIf="!isAdmin" [matColumnDef]="entitySchemaPersonReports.Columns.IsExternal.ColumnName">
+        <ng-container *ngIf="dataSource.isSortable(entitySchemaPersonReports.Columns.IsExternal?.ColumnName)">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ entitySchemaPersonReports?.Columns?.IsExternal?.Display }}
+          </th>
+        </ng-container>
+        <ng-container *ngIf="!dataSource.isSortable(entitySchemaPersonReports.Columns.IsExternal?.ColumnName)">
+          <th mat-header-cell *matHeaderCellDef>
+            {{ entitySchemaPersonReports?.Columns?.IsExternal?.Display }}
+          </th>
+        </ng-container>
+        <td mat-cell *matCellDef="let item" role="gridcell">
+          <span>
+            {{ item.IsExternal.Column.GetDisplayValue() }}
+          </span>
+        </td>
+      </ng-container>
+    </imx-data-view-auto-table>
+    <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
   </div>
 </mat-card>
-<div class="data-explorer-bottom-button-row">
-  <button mat-button [matMenuTriggerFor]="menu" data-imx-identifier="identities-button-actions" *ngIf="isManagerForPersons || isAuditor">
+<div class="imx-button-bar-transparent">
+  <button
+    mat-stroked-button
+    [matMenuTriggerFor]="menu"
+    data-imx-identifier="identities-button-actions"
+    *ngIf="isManagerForPersons || isAuditor"
+  >
     <eui-icon icon="ellipsisvertical"></eui-icon>
-    {{'#LDS#Actions' | translate}}
+    {{ '#LDS#Actions' | translate }}
   </button>
-  <button *ngIf="isPersonAdmin || isManagerForPersons" mat-raised-button color="primary" data-imx-identifier="identities-button-create-new-identity" (click)="createNewIdentity()" class="imx-right-button">
+  <button
+    *ngIf="(isPersonAdmin || isManagerForPersons) && isCreationAllowed"
+    mat-flat-button
+    color="primary"
+    data-imx-identifier="identities-button-create-new-identity"
+    (click)="createNewIdentity()"
+    class="imx-right-button"
+  >
     <eui-icon icon="add"></eui-icon>
     <span translate>#LDS#Create identity</span>
   </button>
   <mat-menu #menu="matMenu">
-    <button *ngIf="isManagerForPersons && !isAdmin" mat-menu-item data-imx-identifier="identities-menu-item-download-report" (click)="personsManagedReport()">
-      {{'#LDS#Download report on identities you are directly responsible for' | translate}}
+    <button
+      *ngIf="isManagerForPersons && !isAdmin"
+      mat-menu-item
+      data-imx-identifier="identities-menu-item-download-report"
+      (click)="personsManagedReport()"
+    >
+      {{ '#LDS#View identities you are directly responsible for' | translate }}
     </button>
     <!-- Created this way because of the accessibility -->
     <ng-container *ngFor="let extension of extensions; let index">
-      <button mat-menu-item (click)="showDynamicReport(extension)">{{extension?.inputData?.caption | translate}}</button>
+      <button mat-menu-item (click)="showDynamicReport(extension)">{{ extension?.inputData?.caption | translate }}</button>
     </ng-container>
   </mat-menu>
 </div>

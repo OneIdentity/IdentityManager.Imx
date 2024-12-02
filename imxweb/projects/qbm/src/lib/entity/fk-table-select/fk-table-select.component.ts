@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,7 +28,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { EuiSelectOption } from '@elemental-ui/core';
 
-import { IForeignKeyInfo } from 'imx-qbm-dbts';
+import { IForeignKeyInfo } from '@imx-modules/imx-qbm-dbts';
 import { MetadataService } from '../../base/metadata.service';
 
 @Component({
@@ -66,8 +66,12 @@ export class FkTableSelectComponent implements OnInit {
     return option.display.toString().toUpperCase().trim().includes(searchInputValue.toUpperCase().trim());
   }
 
-  // TODO: Check Upgrade
-  // public onChange(event: any): void {
-  //   this.selectionChanged.emit(event.value);
-  // }
+  public selectionUpdated(event: EuiSelectOption | EuiSelectOption[]) {
+    if (Object.hasOwn(event, 'value')) {
+      // is a EuiSelectOption
+      this.selectionChanged.emit((event as EuiSelectOption).value);
+    } else {
+      this.selectionChanged.emit(event[0].option);
+    }
+  }
 }

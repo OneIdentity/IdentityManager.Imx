@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -28,20 +28,21 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { EuiCoreModule } from '@elemental-ui/core';
 
 import { ClassloggerService, HELP_CONTEXTUAL, RouteGuardService } from 'qbm';
-import { InitService } from './init.service';
 import { TilesModule } from 'qer';
 import { DashboardPluginComponent } from './dashboard-plugin/dashboard-plugin.component';
-import { PolicyViolationsComponent } from './policy-violations/policy-violations.component';
-import { PoliciesModule } from './policies/policies.module';
-import { PolicyViolationsModule } from './policy-violations/policy-violations.module';
-import { PoliciesComponent } from './policies/policies.component';
 import { PolicyAdminGuardService } from './guards/policy-admin-guard.service';
+import { PolicyAdminOrOwnerGuardService } from './guards/policy-owner-or-admin-guard.service';
+import { InitService } from './init.service';
+import { PoliciesComponent } from './policies/policies.component';
+import { PoliciesModule } from './policies/policies.module';
+import { PolicyViolationsComponent } from './policy-violations/policy-violations.component';
+import { PolicyViolationsModule } from './policy-violations/policy-violations.module';
 
 const routes: Routes = [
   {
@@ -49,34 +50,32 @@ const routes: Routes = [
     component: PolicyViolationsComponent,
     canActivate: [RouteGuardService, PolicyAdminGuardService],
     resolve: [RouteGuardService],
-    data:{
-      contextId: HELP_CONTEXTUAL.CompliancePolicyViolations
-    }
+    data: {
+      contextId: HELP_CONTEXTUAL.CompliancePolicyViolations,
+    },
   },
   {
     path: 'compliance/policyviolations',
     component: PolicyViolationsComponent,
     canActivate: [RouteGuardService, PolicyAdminGuardService],
     resolve: [RouteGuardService],
-    data:{
-      contextId: HELP_CONTEXTUAL.CompliancePolicyViolations
-    }
+    data: {
+      contextId: HELP_CONTEXTUAL.CompliancePolicyViolations,
+    },
   },
   {
     path: 'compliance/policies',
     component: PoliciesComponent,
-    canActivate: [RouteGuardService, PolicyAdminGuardService],
+    canActivate: [RouteGuardService, PolicyAdminOrOwnerGuardService],
     resolve: [RouteGuardService],
-    data:{
-      contextId: HELP_CONTEXTUAL.CompanyPolicies
-    }
+    data: {
+      contextId: HELP_CONTEXTUAL.CompanyPolicies,
+    },
   },
 ];
 
 @NgModule({
-  declarations: [
-    DashboardPluginComponent,
-  ],
+  declarations: [DashboardPluginComponent],
   imports: [
     CommonModule,
     TilesModule,
@@ -87,11 +86,13 @@ const routes: Routes = [
     EuiCoreModule,
     PoliciesModule,
     PolicyViolationsModule,
-  ]
+  ],
 })
 export class PolConfigModule {
   constructor(
-    private readonly initializer: InitService, private readonly logger: ClassloggerService) {
+    private readonly initializer: InitService,
+    private readonly logger: ClassloggerService,
+  ) {
     this.logger.info(this, '🔥 POL loaded');
     this.initializer.onInit(routes);
     this.logger.info(this, '▶️ POL initialized');

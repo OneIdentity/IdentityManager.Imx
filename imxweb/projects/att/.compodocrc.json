@@ -1,6 +1,6 @@
 {
   "name": "IMX Web - ATT Library",
-  "output": "../../documentation/v92/att",
+  "output": "../../documentation/v93/att",
   "theme": "material",
   "assetsFolder": "../../compodoc/assets",
   "customLogo": "../../compodoc/assets/images/oneidentity-logo.png",

@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,7 +24,7 @@
  *
  */
 
-import { TypedEntity, EntitySchema, DisplayColumns, ValType, IReadValue } from 'imx-qbm-dbts';
+import { TypedEntity, EntitySchema, DisplayColumns, ValType, IReadValue } from '@imx-modules/imx-qbm-dbts';
 
 export class SapComplianceByAbilityEntity extends TypedEntity {
   public readonly Ident_SAPProfile: IReadValue<string> = this.GetEntityValue('Ident_SAPProfile');

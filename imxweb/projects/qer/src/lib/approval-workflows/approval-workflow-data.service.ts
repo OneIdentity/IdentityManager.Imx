@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,13 +29,11 @@ import { Injectable } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 import {
   PortalRequestsWorkflowsSubmethods,
-  PortalRequestsWorkflowsSubmethodsInteractive,
   PortalRequestsWorkflowsSubmethodsSteps,
-  PortalRequestsWorkflowsSubmethodsStepsInteractive,
   WorkflowStepBulk,
   WorkflowStepBulkData,
-} from 'imx-api-qer';
-import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection } from 'imx-qbm-dbts';
+} from '@imx-modules/imx-api-qer';
+import { CollectionLoadParameters, EntitySchema, ExtendedTypedEntityCollection } from '@imx-modules/imx-qbm-dbts';
 import { QerApiService } from '../qer-api-client.service';
 import { GroupedData } from './approval-workflow.interface';
 
@@ -45,7 +43,10 @@ import { GroupedData } from './approval-workflow.interface';
 export class ApprovalWorkflowDataService {
   private busyIndicator: OverlayRef;
 
-  constructor(private readonly qerClient: QerApiService, private readonly busyService: EuiLoadingService) {}
+  constructor(
+    private readonly qerClient: QerApiService,
+    private readonly busyService: EuiLoadingService,
+  ) {}
 
   public get approvalWorkFlowRequestColumns(): string[] {
     return ['Ident_PWODecisionSubMethod', 'Description', 'DaysToAbort'];
@@ -99,20 +100,20 @@ export class ApprovalWorkflowDataService {
     return this.qerClient.typedClient.PortalRequestsWorkflowsSubmethodsSteps.GetSchema();
   }
 
-  public async getNewWorkFlow(): Promise<PortalRequestsWorkflowsSubmethodsInteractive> {
+  public async getNewWorkFlow(): Promise<PortalRequestsWorkflowsSubmethods> {
     const entities = await this.qerClient.typedClient.PortalRequestsWorkflowsSubmethodsInteractive.Get();
     return entities.Data[0];
   }
 
   public async getWorkFlows(
-    parameters: CollectionLoadParameters
+    parameters: CollectionLoadParameters,
   ): Promise<ExtendedTypedEntityCollection<PortalRequestsWorkflowsSubmethods, unknown>> {
     return this.qerClient.typedClient.PortalRequestsWorkflowsSubmethods.Get(parameters);
   }
 
   public async getWorkFlowSteps(
     entityWorkFlowUid: string,
-    parameters?: CollectionLoadParameters
+    parameters?: CollectionLoadParameters,
   ): Promise<PortalRequestsWorkflowsSubmethodsSteps[]> {
     return (await this.qerClient.typedClient.PortalRequestsWorkflowsSubmethodsSteps.Get(entityWorkFlowUid, parameters)).Data;
   }
@@ -122,7 +123,7 @@ export class ApprovalWorkflowDataService {
     return entities.Data;
   }
 
-  public async getNewWorkflowStep(entityWorkFlowUid: string): Promise<PortalRequestsWorkflowsSubmethodsStepsInteractive> {
+  public async getNewWorkflowStep(entityWorkFlowUid: string): Promise<PortalRequestsWorkflowsSubmethodsSteps> {
     const entities = await this.qerClient.typedClient.PortalRequestsWorkflowsSubmethodsStepsInteractive.Get(entityWorkFlowUid);
     return entities.Data[0];
   }
@@ -135,7 +136,7 @@ export class ApprovalWorkflowDataService {
     await this.qerClient.client.portal_requests_workflows_submethods_steps_delete(workflowUid, stepUid);
   }
 
-  public async getWorkFlowInteractve(workFlowUid: string): Promise<PortalRequestsWorkflowsSubmethodsInteractive> {
+  public async getWorkFlowInteractve(workFlowUid: string): Promise<PortalRequestsWorkflowsSubmethods> {
     const workFlowCollection = await this.qerClient.typedClient.PortalRequestsWorkflowsSubmethodsInteractive.Get_byid(workFlowUid);
 
     if (workFlowCollection == null || workFlowCollection.Data == null || workFlowCollection.Data.length === 0) {
@@ -145,13 +146,10 @@ export class ApprovalWorkflowDataService {
     return workFlowCollection.Data[0];
   }
 
-  public async getWorkFlowStepsInteractive(
-    workFlowUid: string,
-    stepUid: string
-  ): Promise<PortalRequestsWorkflowsSubmethodsStepsInteractive> {
+  public async getWorkFlowStepsInteractive(workFlowUid: string, stepUid: string): Promise<PortalRequestsWorkflowsSubmethodsSteps> {
     const workFlowStepCollection = await this.qerClient.typedClient.PortalRequestsWorkflowsSubmethodsStepsInteractive.Get_byid(
       workFlowUid,
-      stepUid
+      stepUid,
     );
 
     if (workFlowStepCollection == null || workFlowStepCollection.Data == null || workFlowStepCollection.Data.length === 0) {
@@ -161,8 +159,10 @@ export class ApprovalWorkflowDataService {
     return workFlowStepCollection.Data[0];
   }
 
-  public async deleteWorkFlowStep(workflowUid: string, stepInteractive: PortalRequestsWorkflowsSubmethodsStepsInteractive): Promise<void> {
-    await this.qerClient.typedClient.PortalRequestsWorkflowsSubmethodsStepsInteractive.Delete(workflowUid, stepInteractive);
+  public async deleteWorkFlowStep(workflowUid: string, stepInteractive: PortalRequestsWorkflowsSubmethodsSteps | undefined): Promise<void> {
+    if (stepInteractive) {
+      await this.qerClient.typedClient.PortalRequestsWorkflowsSubmethodsStepsInteractive.Delete(workflowUid, stepInteractive);
+    }
   }
 
   public async saveDiffData(diffData: WorkflowStepBulkData[]): Promise<void> {
@@ -180,7 +180,6 @@ export class ApprovalWorkflowDataService {
   public handleCloseLoader(): void {
     if (this.busyIndicator) {
       this.busyService.hide(this.busyIndicator);
-      this.busyIndicator = undefined;
     }
   }
 

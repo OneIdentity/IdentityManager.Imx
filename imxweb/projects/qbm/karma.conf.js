@@ -13,10 +13,10 @@ module.exports = function (config) {
       require('karma-coverage-istanbul-reporter'),
       require('@angular-devkit/build-angular/plugins/karma'),
       require('karma-junit-reporter'),
-      require('karma-viewport')
+      require('karma-viewport'),
     ],
     client: {
-      clearContext: false // leave Jasmine Spec Runner output visible in browser
+      clearContext: false, // leave Jasmine Spec Runner output visible in browser
     },
     coverageIstanbulReporter: {
       dir: require('path').join(__dirname, 'results'),
@@ -24,7 +24,7 @@ module.exports = function (config) {
       fixWebpackSourcePaths: true,
       'report-config': {
         html: {
-          subdir: 'coverage-html'
+          subdir: 'coverage-html',
         },
       },
       thresholds: {
@@ -42,41 +42,40 @@ module.exports = function (config) {
     port: 9876,
     captureTimeout: 210000,
     browserDisconnectTolerance: 3,
-    browserDisconnectTimeout : 210000,
-    browserNoActivityTimeout : 210000,
+    browserDisconnectTimeout: 210000,
+    browserNoActivityTimeout: 210000,
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
     browsers: ['Chrome'],
     singleRun: false,
-    files: [
-      '../../node_modules/hammerjs/hammer.min.js'
-    ],
+    failOnEmptyTestSuite: false,
+    files: ['../../node_modules/hammerjs/hammer.min.js'],
     // Viewport configuration
     viewport: {
       breakpoints: [
         {
-          name: "mobile",
+          name: 'mobile',
           size: {
             width: 760,
-            height: 1000
-          }
+            height: 1000,
+          },
         },
         {
-          name: "tablet",
+          name: 'tablet',
           size: {
             width: 1024,
-            height: 1000
-          }
+            height: 1000,
+          },
         },
         {
-          name: "small-desktop",
+          name: 'small-desktop',
           size: {
             width: 1200,
-            height: 1000
-          }
-        }
-      ]
-    }
+            height: 1000,
+          },
+        },
+      ],
+    },
   });
 };

@@ -1,45 +1,54 @@
-<mat-tab-group>
+<mat-tab-group mat-stretch-tabs="false">
   <mat-tab>
     <ng-template mat-tab-label>
       <div [matTooltip]="(detailsFormGroup.dirty ? '#LDS#You have unsaved changes' : '') | translate">
         <span translate>#LDS#Heading Main Data</span>&nbsp;
-        <eui-icon *ngIf="detailsFormGroup.dirty" icon="save" class="imx-dirty-indicator" size="s" [attr.aria-label]="'#LDS#You have unsaved changes.' | translate"></eui-icon>
+        <eui-icon
+          *ngIf="detailsFormGroup.dirty"
+          class="imx-icon-warning"
+          icon="save"
+          size="s"
+          [attr.aria-label]="'#LDS#You have unsaved changes.' | translate"
+        ></eui-icon>
       </div>
     </ng-template>
-    <div eui-sidesheet-content class="governance-sidesheet__tab-content">
-      <div class="governance-sidesheet__tab-content-body">
-        <mat-card>
-          <form [formGroup]="detailsFormGroup">
-            <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="formArray.push($event)"> </imx-cdr-editor>
-          </form>
-        </mat-card>
-      </div>
-      <div eui-sidesheet-actions>
-        <div class="justify-start imx-breakable">
-          <button mat-stroked-button color="primary" [euiDownload]="reportDownload" data-imx-identifier="group-sidesheet-button-download-report">
-            <span translate>#LDS#Download report</span>
-          </button>
-          <imx-ext id="buttonBarExtensionComponent" [referrer]="buttonBarExtensionReferrer"></imx-ext>
-          <button
-            *ngIf="!groupServiceItem && canCreateServiceItem"
-            mat-stroked-button
-            color="primary"
-            data-imx-identifier="group-sidesheet-button-create-service-item"
-            (click)="createServiceItem()"
-          >
-            <span translate>#LDS#Create service item</span>
-          </button>
-        </div>
+    <div eui-sidesheet-content>
+      <mat-card class="imx-tab-card">
+        <form [formGroup]="detailsFormGroup">
+          <imx-cdr-editor *ngFor="let cdr of cdrList" [cdr]="cdr" (controlCreated)="formArray.push($event)"> </imx-cdr-editor>
+        </form>
+      </mat-card>
+    </div>
+    <div eui-sidesheet-actions>
+      <div class="justify-start imx-breakable">
         <button
-          mat-flat-button
+          mat-stroked-button
           color="primary"
-          data-imx-identifier="group-sidesheet-button-save-group"
-          (click)="saveGroup()"
-          [disabled]="!detailsFormGroup.dirty || detailsFormGroup.invalid"
+          [euiDownload]="reportDownload"
+          data-imx-identifier="group-sidesheet-button-download-report"
         >
-          <span translate>#LDS#Save</span>
+          <span translate>#LDS#Download report</span>
+        </button>
+        <imx-ext id="buttonBarExtensionComponent" [referrer]="buttonBarExtensionReferrer"></imx-ext>
+        <button
+          *ngIf="!groupServiceItem && canCreateServiceItem"
+          mat-stroked-button
+          color="primary"
+          data-imx-identifier="group-sidesheet-button-create-service-item"
+          (click)="createServiceItem()"
+        >
+          <span translate>#LDS#Create service item</span>
         </button>
       </div>
+      <button
+        mat-flat-button
+        color="primary"
+        data-imx-identifier="group-sidesheet-button-save-group"
+        (click)="saveGroup()"
+        [disabled]="!detailsFormGroup.dirty || detailsFormGroup.invalid"
+      >
+        <span translate>#LDS#Save</span>
+      </button>
     </div>
   </mat-tab>
 
@@ -48,36 +57,51 @@
       <div [matTooltip]="(serviceItemFormGroup.dirty ? '#LDS#You have unsaved changes' : '') | translate">
         <span translate>#LDS#Heading Service Item</span>
         &nbsp;
-        <eui-icon *ngIf="serviceItemFormGroup.dirty" icon="save" class="imx-dirty-indicator" size="s" [attr.aria-label]="'#LDS#You have unsaved changes.' | translate"></eui-icon>
+        <eui-icon
+          *ngIf="serviceItemFormGroup.dirty"
+          class="imx-icon-warning"
+          icon="save"
+          size="s"
+          [attr.aria-label]="'#LDS#You have unsaved changes.' | translate"
+        ></eui-icon>
       </div>
     </ng-template>
-    <div eui-sidesheet-content class="governance-sidesheet__tab-content">
-      <div class="governance-sidesheet__tab-content-body">
-        <imx-service-items-edit-form #serviceItemsEditForm *ngIf="groupServiceItem" [serviceItem]="groupServiceItem" (formControlCreated)="this.siFormArray.push($event)">
-        </imx-service-items-edit-form>
-      </div>
-      <div eui-sidesheet-actions>
-        <button
-          mat-flat-button
-          color="primary"
-          data-imx-identifier="group-sidesheet-button-save-groupserviceitem"
-          (click)="saveGroupServiceItem()"
-          [disabled]="!serviceItemFormGroup.dirty || serviceItemFormGroup.invalid"
-        >
-          <span translate>#LDS#Save</span>
-        </button>
-      </div>
+    <div eui-sidesheet-content>
+      <imx-service-items-edit-form
+        #serviceItemsEditForm
+        *ngIf="groupServiceItem"
+        [serviceItem]="groupServiceItem"
+        (formControlCreated)="siFormArray.push($event)"
+      >
+      </imx-service-items-edit-form>
+    </div>
+    <div eui-sidesheet-actions>
+      <button
+        mat-flat-button
+        color="primary"
+        data-imx-identifier="group-sidesheet-button-save-groupserviceitem"
+        (click)="saveGroupServiceItem()"
+        [disabled]="!serviceItemFormGroup.dirty || serviceItemFormGroup.invalid"
+      >
+        <span translate>#LDS#Save</span>
+      </button>
     </div>
   </mat-tab>
 
   <mat-tab [label]="'#LDS#Heading Memberships' | translate" *ngIf="unsGroupDbObjectKey">
     <ng-template matTabContent>
-      <div eui-sidesheet-content class="governance-sidesheet__tab-content">
-        <div class="governance-sidesheet__tab-content-body">
-          <imx-group-members #groupMembers [unsGroupDbObjectKey]="unsGroupDbObjectKey"></imx-group-members>
-        </div>
-        <div eui-sidesheet-actions *ngIf="groupMembers.membershipView === 'direct'">
-          <button mat-button (click)="requestMembership()" data-imx-identifier="group-sidesheet-button-membership-new" *ngIf="isRequestable">
+      <div eui-sidesheet-content>
+        <imx-group-members #groupMembers [unsGroupDbObjectKey]="unsGroupDbObjectKey"></imx-group-members>
+      </div>
+      <div eui-sidesheet-actions>
+        <ng-container *ngIf="groupMembers.membershipView === 'direct'">
+          <button
+            mat-flat-button
+            color="primary"
+            (click)="requestMembership()"
+            data-imx-identifier="group-sidesheet-button-membership-new"
+            *ngIf="isRequestable"
+          >
             <span translate>#LDS#Request memberships</span>
           </button>
 
@@ -100,57 +124,46 @@
           >
             <span translate>#LDS#Unsubscribe</span>
           </button>
-        </div>
-        <div eui-sidesheet-actions>
-          <button
-            mat-flat-button
-            color="primary"
-            data-imx-identifier="group-sidesheet-button-save-groupserviceitem"
-            (click)="saveGroupServiceItem()"
-            [disabled]="!serviceItemFormGroup.dirty || serviceItemFormGroup.invalid"
-          >
-            <span translate>#LDS#Save</span>
-          </button>
-        </div>
+        </ng-container>
       </div>
     </ng-template>
   </mat-tab>
 
   <mat-tab [label]="'#LDS#Heading Child System Entitlements' | translate">
     <ng-template matTabContent>
-      <div eui-sidesheet-content class="governance-sidesheet__tab-content">
-        <div class="governance-sidesheet__tab-content-body">
-          <imx-child-system-entitlements #childEntitlements [isAdmin]="isAdmin" [groupId]="groupId"> </imx-child-system-entitlements>
-        </div>
+      <div eui-sidesheet-content>
+        <imx-child-system-entitlements #childEntitlements [isAdmin]="isAdmin" [groupId]="groupId"> </imx-child-system-entitlements>
       </div>
     </ng-template>
   </mat-tab>
 
   <mat-tab label="{{ '#LDS#Heading Hyperview' | translate }}">
     <ng-template matTabContent>
-      <div eui-sidesheet-content class="imx-hyperview-sidesheet">
-        <imx-object-hyperview [objectType]="sidesheetData?.group?.GetEntity()?.TypeName" [objectUid]="sidesheetData?.group.GetEntity()?.GetKeys()[0]"> </imx-object-hyperview>
+      <div eui-sidesheet-content>
+        <imx-object-hyperview
+          [objectType]="sidesheetData?.group?.GetEntity()?.TypeName"
+          [objectUid]="sidesheetData?.group?.GetEntity()?.GetKeys()?.[0]"
+        >
+        </imx-object-hyperview>
       </div>
     </ng-template>
   </mat-tab>
 
   <mat-tab data-imx-identifier="groups-sidesheet-tab-history" [label]="'#LDS#History' | translate">
     <ng-template matTabContent>
-      <div eui-sidesheet-content class="governance-sidesheet__tab-content">
-        <div class="governance-sidesheet__tab-content-body">
+      <div eui-sidesheet-content>
+        <mat-card>
           <imx-object-history objectType="UNSGroup" [showTitle]="false" [objectUid]="groupId"> </imx-object-history>
-        </div>
+        </mat-card>
       </div>
     </ng-template>
   </mat-tab>
 
   <ng-container *ngFor="let tab of dynamicTabs">
-    <mat-tab [imxDataProvider]="this.parameters" [label]="tab.inputData.label | translate">
+    <mat-tab [imxDataProvider]="parameters" [label]="tab.inputData.label | translate">
       <ng-template matTabContent>
-        <div eui-sidesheet-content class="governance-sidesheet__tab-content">
-          <div class="governance-sidesheet__tab-content-body imx-flex-child">
-            <ng-container style.flex="1 1 auto" *ngComponentOutlet="tab.instance"></ng-container>
-          </div>
+        <div class="imx-dynamic-content">
+          <ng-container *ngComponentOutlet="tab.instance"></ng-container>
         </div>
       </ng-template>
     </mat-tab>

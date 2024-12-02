@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,7 +26,7 @@
 
 import { TestBed } from '@angular/core/testing';
 
-import { ValType, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
+import { ValType, EntitySchema, IClientProperty } from '@imx-modules/imx-qbm-dbts';
 import { imx_SessionService } from 'qbm';
 
 export interface ClientPropertyMock {
@@ -39,11 +39,11 @@ export interface ClientPropertyMock {
 export function CreateEntitySchema(properties: ClientPropertyMock[]): EntitySchema {
   const columns: { [id: string]: IClientProperty } = {};
   properties.forEach(
-    property =>
+    (property) =>
       (columns[property.name] = {
         Type: property.type ? property.type : ValType.String,
         Display: property.Display,
-      })
+      }),
   );
   return { Columns: columns };
 }
@@ -56,16 +56,20 @@ export interface TypedEntityReadOnlyProviderTestConfig<TEntity, TParameters> {
   typedClient?: any;
 }
 
-export function testTypedEntityReadOnlyProvider<TEntity, TParameters>(testconfig: TypedEntityReadOnlyProviderTestConfig<TEntity, TParameters>): void {
-  beforeEach(() => TestBed.configureTestingModule({
-    providers: [
-      testconfig.type,
-      {
-        provide: imx_SessionService,
-        useValue: { TypedClient: testconfig.typedClient }
-      }
-    ]
-  }));
+export function testTypedEntityReadOnlyProvider<TEntity, TParameters>(
+  testconfig: TypedEntityReadOnlyProviderTestConfig<TEntity, TParameters>,
+): void {
+  beforeEach(() =>
+    TestBed.configureTestingModule({
+      providers: [
+        testconfig.type,
+        {
+          provide: imx_SessionService,
+          useValue: { TypedClient: testconfig.typedClient },
+        },
+      ],
+    }),
+  );
 
   it('should be created', () => {
     expect(TestBed.get(testconfig.type)).toBeTruthy();

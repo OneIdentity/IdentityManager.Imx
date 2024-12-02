@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,26 +26,26 @@
 
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { PermissionInfo, SessionInfoData } from 'imx-api-qbm';
-import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
-import { BusyService } from '../base/busy.service';
-import { SnackBarService } from '../snackbar/snack-bar.service';
-import { BaseReadonlyCdr } from '../cdr/base-readonly-cdr';
 import { FormControl } from '@angular/forms';
-import { distinctUntilChanged } from 'rxjs/operators';
-import { ColumnDependentReference } from '../cdr/column-dependent-reference.interface';
-import { EntityService } from '../entity/entity.service';
-import { ValType } from 'imx-qbm-dbts';
-import { ISessionState } from '../session/session-state';
-import { AuthenticationService } from '../authentication/authentication.service';
-import { Subscription } from 'rxjs';
-import { ConnectionSessionInfoData, SystemUsers } from './connection';
+import { EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { PermissionInfo } from '@imx-modules/imx-api-qbm';
+import { ValType } from '@imx-modules/imx-qbm-dbts';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
+import { AuthenticationService } from '../authentication/authentication.service';
+import { BusyService } from '../base/busy.service';
+import { BaseReadonlyCdr } from '../cdr/base-readonly-cdr';
+import { ColumnDependentReference } from '../cdr/column-dependent-reference.interface';
+import { DataSourceToolbarSettings } from '../data-source-toolbar/data-source-toolbar-settings';
+import { EntityService } from '../entity/entity.service';
+import { ISessionState } from '../session/session-state';
+import { SnackBarService } from '../snackbar/snack-bar.service';
+import { ConnectionSessionInfoData, SystemUsers } from './connection';
 
 @Component({
   templateUrl: './connection.component.html',
-  styleUrls: ['./connection.component.scss']
+  styleUrls: ['./connection.component.scss'],
 })
 
 /** Shows connection data and can copy data for support */
@@ -53,11 +53,11 @@ export class ConnectionComponent implements OnInit, OnDestroy {
   public busyService = new BusyService();
   public systemUsers: SystemUsers;
   public dstSettings: DataSourceToolbarSettings;
-  public displayedColumns = ['Display','Description'];
+  public displayedColumns = ['Display', 'Description'];
   public search: FormControl = new FormControl('');
   public searchValue: string;
   public permissionGroups: PermissionInfo[] = [];
-  public cdrList:ColumnDependentReference[] = [];
+  public cdrList: ColumnDependentReference[] = [];
   public sessionState: ISessionState;
 
   private readonly subscriptions: Subscription[] = [];
@@ -68,24 +68,28 @@ export class ConnectionComponent implements OnInit, OnDestroy {
     private readonly snackbar: SnackBarService,
     private readonly entityService: EntityService,
     private readonly authentication: AuthenticationService,
-    private readonly translate: TranslateService
+    private readonly translate: TranslateService,
   ) {
-    this.subscriptions.push(this.authentication.onSessionResponse.subscribe((sessionState: ISessionState) => (this.sessionState = sessionState)));
+    this.subscriptions.push(
+      this.authentication.onSessionResponse.subscribe((sessionState: ISessionState) => (this.sessionState = sessionState)),
+    );
   }
 
   ngOnInit() {
-    const { FeatureGroups, PermissionGroups, ...systemUsers} = this.data;
-    this.systemUsers = {...systemUsers};
-    this.systemUsers.UserUid = this.data.UserUid =  this.sessionState?.UserUid;
+    const { FeatureGroups, PermissionGroups, ...systemUsers } = this.data;
+    this.systemUsers = { ...systemUsers };
+    this.systemUsers.UserUid = this.data.UserUid = this.sessionState?.UserUid ?? '';
     this.cdrList = this.createCdrList();
-    this.permissionGroups = this.data.PermissionGroups;
-    this.subscriptions.push(this.search.valueChanges.pipe(distinctUntilChanged()).subscribe(() => {
-      const searchValue = this.search.value.toLowerCase();
-      this.permissionGroups = this.data.PermissionGroups.filter(permission => {
-        return permission.Display.toLowerCase().includes(searchValue)
-          || permission.Description.toLowerCase().includes(searchValue);
-      });
-    }));
+    this.permissionGroups = this.data.PermissionGroups ?? [];
+    this.subscriptions.push(
+      this.search.valueChanges.pipe(distinctUntilChanged()).subscribe(() => {
+        const searchValue = this.search.value.toLowerCase();
+        this.permissionGroups =
+          this.data.PermissionGroups?.filter((permission) => {
+            return permission.Display?.toLowerCase().includes(searchValue) || permission.Description?.toLowerCase().includes(searchValue);
+          }) ?? [];
+      }),
+    );
   }
 
   /**
@@ -96,23 +100,31 @@ export class ConnectionComponent implements OnInit, OnDestroy {
     const cdrList: BaseReadonlyCdr[] = [];
     const columnNames: string[] = Object.keys(this.systemUsers);
     const ldsKeys = {
-      AuthenticatedBy: "#LDS#Authentication used",
-      CultureFormat: "#LDS#Language for value formatting",
-      CultureUi: "#LDS#Language",
-      DialogUserUid: "#LDS#System user UID",
-      IsReadOnly: "#LDS#Read-only",
-      TimeZone: "#LDS#Time zone",
-      UserUid: "#LDS#User UID",
-    }
+      AuthenticatedBy: '#LDS#Authentication used',
+      CultureFormat: '#LDS#Language for value formatting',
+      CultureUi: '#LDS#Language',
+      DialogUserUid: '#LDS#System user UID',
+      IsReadOnly: '#LDS#Read-only',
+      TimeZone: '#LDS#Time zone',
+      UserUid: '#LDS#User UID',
+    };
 
     columnNames?.forEach((name) => {
       try {
-        cdrList.push(new BaseReadonlyCdr(this.entityService.createLocalEntityColumn(
-          { Type: typeof(this.systemUsers[name]) === "boolean" ? ValType.Bool : ValType.String, ColumnName: name, Display: this.translate.instant(ldsKeys[name] ?? "") },
-          undefined,
-          { Value: this.systemUsers[name] }
-        )));
-      } catch(e) {}
+        cdrList.push(
+          new BaseReadonlyCdr(
+            this.entityService.createLocalEntityColumn(
+              {
+                Type: typeof this.systemUsers[name] === 'boolean' ? ValType.Bool : ValType.String,
+                ColumnName: name,
+                Display: this.translate.instant(ldsKeys[name] ?? ''),
+              },
+              undefined,
+              { Value: this.systemUsers[name] },
+            ),
+          ),
+        );
+      } catch (e) {}
     });
 
     //Sort cdrs in ascending order
@@ -131,7 +143,7 @@ export class ConnectionComponent implements OnInit, OnDestroy {
    */
   public copyConnectionData(): void {
     this.clipboard.copy(JSON.stringify(this.data));
-    this.snackbar.open({ key: '#LDS#The connection information has been successfully copied to the clipboard.'});
+    this.snackbar.open({ key: '#LDS#The connection information has been successfully copied to the clipboard.' });
   }
 
   ngOnDestroy(): void {

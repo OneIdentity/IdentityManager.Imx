@@ -1,41 +1,52 @@
-<h1 class="mat-headline">
-  <span>{{ '#LDS#Heading Company Policies' | translate }}</span>
-  <imx-help-contextual></imx-help-contextual>
-</h1>
-<mat-card>
+<div class="imx-header-toolbar">
+  <h2 class="mat-headline-5">
+    <span>{{ '#LDS#Heading Company Policies' | translate }}</span>
+    <imx-help-contextual></imx-help-contextual>
+  </h2>
+  <imx-data-view-toolbar [dataSource]="dataSource" [showSettings]="false" [showGrouping]="false"></imx-data-view-toolbar>
+</div>
+<mat-card class="imx-card-fill">
   <div class="imx-table-container">
-    <imx-data-source-toolbar
-      #dst
-      [settings]="dstSettings"
-      [options]="['search', 'filter']"
-      [busyService]="busyService"
-      (search)="navigate({ search: $event })"
-      (navigationStateChanged)="navigate($event)"
-    >
-    </imx-data-source-toolbar>
-    <div class="imx-table-container">
-      <imx-data-table [dst]="dst" detailViewVisible="false" mode="manual" data-imx-identifier="policies-table" (highlightedEntityChanged)="showDetails($event)">
-        <imx-data-table-column [entityColumn]="policySchema?.Columns[DisplayColumns.DISPLAY_PROPERTYNAME]" data-imx-identifier="policies-table-column-Display">
-          <ng-template let-item>
-            <div class="imx-display-column" data-imx-identifier="runs-button-show-details">
-              <div>
-                <div data-imx-identifier="policies-table-display">{{ item.GetEntity().GetDisplay() }}</div>
-                <div subtitle data-imx-identifier="policies-table-description">{{ item.Description.Column.GetDisplayValue() }}</div>
-              </div>
-              <eui-badge class="imx-badge" *ngIf="item.IsInActive.value" color="gray">{{ '#LDS#Deactivated' | translate }}</eui-badge>
+    <imx-data-view-auto-table [dataSource]="dataSource" mode="manual">
+      <ng-container [matColumnDef]="DisplayColumns.DISPLAY_PROPERTYNAME">
+        <th mat-header-cell *matHeaderCellDef>
+          {{ policySchema?.Columns?.[DisplayColumns.DISPLAY_PROPERTYNAME]?.Display }}
+        </th>
+        <td mat-cell *matCellDef="let item" role="gridcell" class="imx-table-cell">
+          <div class="imx-display-column" data-imx-identifier="runs-button-show-details">
+            <div class="imx-display-column-main">
+              <div data-imx-identifier="policies-table-display">{{ item.GetEntity().GetDisplay() }}</div>
+              <div subtitle data-imx-identifier="policies-table-description">{{ item.Description.Column.GetDisplayValue() }}</div>
             </div>
-          </ng-template>
-        </imx-data-table-column>
-
-        <imx-data-table-generic-column columnName="cases" data-imx-identifier="policies-table-column-Count" [columnLabel]="'#LDS#Policy violations' | translate" width="15%">
-          <ng-template let-policy>
-            {{ policy.CountOpen.value + policy.CountClosed.value }}
-          </ng-template>
-        </imx-data-table-generic-column>
-
-        <imx-data-table-column [entityColumn]="policySchema.Columns.CountOpen" data-imx-identifier="policies-table-column-CountOpen" width="15%"> </imx-data-table-column>
-      </imx-data-table>
-    </div>
-    <imx-data-source-paginator [dst]="dst"></imx-data-source-paginator>
+            <eui-badge class="imx-badge" *ngIf="item.IsInActive.value" color="gray">{{ '#LDS#Deactivated' | translate }}</eui-badge>
+          </div>
+        </td>
+      </ng-container>
+      <ng-container [matColumnDef]="'cases'">
+        <ng-container>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ '#LDS#Policy violations' | translate }}
+          </th>
+        </ng-container>
+        <td mat-cell *matCellDef="let item" role="gridcell">
+          <span>
+            {{ item.CountOpen.value + item.CountClosed.value }}
+          </span>
+        </td>
+      </ng-container>
+      <ng-container [matColumnDef]="policySchema?.Columns?.CountOpen?.ColumnName">
+        <ng-container>
+          <th mat-header-cell *matHeaderCellDef>
+            {{ policySchema?.Columns?.CountOpen?.Display }}
+          </th>
+        </ng-container>
+        <td mat-cell *matCellDef="let item" role="gridcell">
+          <span>
+            {{ item.CountOpen.Column.GetDisplayValue() }}
+          </span>
+        </td>
+      </ng-container>
+    </imx-data-view-auto-table>
+    <imx-data-view-paginator [dataSource]="dataSource"></imx-data-view-paginator>
   </div>
 </mat-card>

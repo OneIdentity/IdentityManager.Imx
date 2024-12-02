@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,9 +26,9 @@
 
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSelectionListChange } from '@angular/material/list';
-import { DataModel, EntitySchema, IClientProperty } from 'imx-qbm-dbts';
+import { DataModel, EntitySchema, IClientProperty } from '@imx-modules/imx-qbm-dbts';
 import { ClientPropertyForTableColumns } from '../client-property-for-table-columns';
 
 @Component({
@@ -37,13 +37,13 @@ import { ClientPropertyForTableColumns } from '../client-property-for-table-colu
   styleUrls: ['./additional-infos.component.scss'],
 })
 export class AdditionalInfosComponent implements OnInit {
-  public possibleProperties: IClientProperty[];
+  public possibleProperties: ClientPropertyForTableColumns[];
 
   public infoText = '#LDS#Select the columns you want to add.';
   public infoTextLong =
     '#LDS#Here you can add additional columns to your table. Additionally, you can change the order using drag and drop. Move the mouse pointer over the shaded area and drag the element to the desired location.';
 
-  public get result(): any {
+  public get result(): { all: IClientProperty[]; optionals: IClientProperty[] } {
     return { all: this.data.preselectedProperties, optionals: this.optionals };
   }
 
@@ -62,7 +62,7 @@ export class AdditionalInfosComponent implements OnInit {
       additionalColumns: ClientPropertyForTableColumns[];
       type: 'list' | 'columns';
     },
-    public dialogRef: MatDialogRef<AdditionalInfosComponent>
+    public dialogRef: MatDialogRef<AdditionalInfosComponent>,
   ) {}
 
   public ngOnInit(): void {
@@ -112,8 +112,8 @@ export class AdditionalInfosComponent implements OnInit {
 
   private static compareNames(column1: IClientProperty, column2: IClientProperty): number {
     if (column1.Display == null || column2?.Display == null) {
-      return column1.ColumnName?.localeCompare(column2.ColumnName);
+      return column1.ColumnName?.localeCompare(column2.ColumnName ?? '') ?? 0;
     }
-    return column1.ColumnName?.localeCompare(column2.ColumnName);
+    return column1.ColumnName?.localeCompare(column2.ColumnName ?? '') ?? 0;
   }
 }

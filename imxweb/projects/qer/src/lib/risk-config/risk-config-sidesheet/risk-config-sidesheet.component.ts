@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -26,9 +26,9 @@
 
 import { Component, Inject, OnDestroy } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { EuiSidesheetRef, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
-import { PortalRiskFunctions, RiskIndexExtendedData, RiskIndexSourceTable } from 'imx-api-qer';
-import { IEntity } from 'imx-qbm-dbts';
+import { EUI_SIDESHEET_DATA, EuiSidesheetRef } from '@elemental-ui/core';
+import { PortalRiskFunctions, RiskIndexExtendedData, RiskIndexSourceTable } from '@imx-modules/imx-api-qer';
+import { IEntity } from '@imx-modules/imx-qbm-dbts';
 import { BaseCdr, ColumnDependentReference, ConfirmationService, SnackBarService } from 'qbm';
 import { Subscription } from 'rxjs';
 import { RiskConfigService } from '../risk-config.service';
@@ -49,19 +49,16 @@ export class RiskConfigSidesheetComponent implements OnDestroy {
     private readonly sidesheetRef: EuiSidesheetRef,
     private readonly snackbar: SnackBarService,
     confirmation: ConfirmationService,
-    @Inject(EUI_SIDESHEET_DATA) public data: { riskFunction: PortalRiskFunctions; extendedData: RiskIndexExtendedData }
+    @Inject(EUI_SIDESHEET_DATA) public data: { riskFunction: PortalRiskFunctions; extendedData: RiskIndexExtendedData },
   ) {
     const entity = data.riskFunction.GetEntity();
     this.subscriptions.push(
       this.sidesheetRef.closeClicked().subscribe(async () => {
-        if (
-          (entity.GetDiffData()?.Data?.length > 0 || !this.formGroup.pristine) &&
-          !(await confirmation.confirmLeaveWithUnsavedChanges())
-        ) {
+        if ((!!entity?.GetDiffData()?.Data?.length || !this.formGroup.pristine) && !(await confirmation.confirmLeaveWithUnsavedChanges())) {
           return;
         }
         this.sidesheetRef.close();
-      })
+      }),
     );
     this.cdrList = this.createCdrList(entity);
   }
@@ -86,12 +83,12 @@ export class RiskConfigSidesheetComponent implements OnDestroy {
   }
 
   public getRiskIndexDataSource(): RiskIndexSourceTable[] {
-    return this.data.extendedData?.Sources?.[0];
+    return this.data.extendedData?.Sources?.[0] ?? [];
   }
 
   private createCdrList(entity: IEntity): BaseCdr[] {
-    const cdrList = [];
-    const columnNames: string[] = ['TargetTable', 'Description', 'IsExecuteImmediate', 'IsInActive', 'TypeOfCalculation', 'Weight'];
+    const cdrList: BaseCdr[] = [];
+    const columnNames: string[] = ['TargetTable', 'Description', 'IsInActive', 'TypeOfCalculation', 'Weight'];
     columnNames?.forEach((name) => {
       try {
         cdrList.push(new BaseCdr(entity.GetColumn(name)));

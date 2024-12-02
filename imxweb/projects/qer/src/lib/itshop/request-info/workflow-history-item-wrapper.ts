@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -24,18 +24,20 @@
  *
  */
 
-import { PortalItshopApproveHistory } from 'imx-api-qer';
-import { IReadValue } from 'imx-qbm-dbts';
+import { PortalItshopApproveHistory } from '@imx-modules/imx-api-qer';
+import { IReadValue } from '@imx-modules/imx-qbm-dbts';
 import { BaseReadonlyCdr, ColumnDependentReference } from 'qbm';
 import { DecisionHistoryService } from '../decision-history.service';
 
 export class WorkflowHistoryItemWrapper {
-  public readonly approver: ColumnDependentReference;
-  public readonly columns: ColumnDependentReference[];
+  public readonly approver: ColumnDependentReference | undefined;
+  public readonly columns: (ColumnDependentReference | undefined)[];
 
-  constructor(public readonly approveHistory: PortalItshopApproveHistory, public readonly decisionHistory: DecisionHistoryService) {
-    this.approver = this.createApproverCdr(this.approveHistory),
-      this.columns = this.createCdrList(this.approveHistory);
+  constructor(
+    public readonly approveHistory: PortalItshopApproveHistory,
+    public readonly decisionHistory: DecisionHistoryService,
+  ) {
+    (this.approver = this.createApproverCdr(this.approveHistory)), (this.columns = this.createCdrList(this.approveHistory));
   }
 
   public getReasonDisplay(): string {
@@ -48,10 +50,12 @@ export class WorkflowHistoryItemWrapper {
     return this.approveHistory.ReasonHead.GetMetadata().GetDisplay();
   }
 
-  private createApproverCdr(historyItem: PortalItshopApproveHistory): BaseReadonlyCdr {
+  private createApproverCdr(historyItem: PortalItshopApproveHistory): BaseReadonlyCdr | undefined {
     if (historyItem.DisplayPersonHead.value) {
-      return new BaseReadonlyCdr(historyItem.DisplayPersonHead.Column,
-        this.decisionHistory.getColumnDescriptionForDisplayPersonHead(historyItem.DecisionType.value));
+      return new BaseReadonlyCdr(
+        historyItem.DisplayPersonHead.Column,
+        this.decisionHistory.getColumnDescriptionForDisplayPersonHead(historyItem.DecisionType.value),
+      );
     }
 
     if (historyItem.IsDecisionBySystem.value) {
@@ -61,7 +65,7 @@ export class WorkflowHistoryItemWrapper {
     return undefined;
   }
 
-  private createCdrList(historyItem: PortalItshopApproveHistory): BaseReadonlyCdr[] {
+  private createCdrList(historyItem: PortalItshopApproveHistory): (BaseReadonlyCdr | undefined)[] {
     const properties = [
       historyItem.RulerLevel.value !== 0 ? historyItem.RulerLevel : undefined,
       historyItem.UID_PWODecisionRule,
@@ -69,7 +73,7 @@ export class WorkflowHistoryItemWrapper {
       historyItem.IsFromDelegation,
       historyItem.ValidUntil,
       historyItem.ValidUntilProlongation,
-      historyItem.ValidUntilUnsubscribe
+      historyItem.ValidUntilUnsubscribe,
     ];
 
     const customDisplays = {
@@ -77,19 +81,25 @@ export class WorkflowHistoryItemWrapper {
         historyItem.DecisionType.value === 'AddInsteadOf'
           ? '#LDS#Delegated approver'
           : historyItem.DecisionType.value === 'AddAdditional'
-          ? '#LDS#Additional approver'
-          : historyItem.DecisionType.value === 'Query'
-          ? '#LDS#Recipient'
-          : undefined,
+            ? '#LDS#Additional approver'
+            : historyItem.DecisionType.value === 'Query'
+              ? '#LDS#Recipient'
+              : undefined,
     };
 
-    return properties.filter(property => this.isToView(property)).map(property =>
-      new BaseReadonlyCdr(property.Column, customDisplays[property.Column.ColumnName])
-    );
+    return properties
+      .filter((property) => property?.Column != null && this.isToView(property))
+      .map((property) => {
+        return property?.Column == null
+          ? undefined
+          : new BaseReadonlyCdr(property?.Column, customDisplays[property?.Column.ColumnName || '']);
+      });
   }
 
-  private isToView(property: IReadValue<any>): boolean {
-    if (!property || property.value == null || property.value === '') { return false; }
+  private isToView(property: IReadValue<any> | undefined): boolean {
+    if (!property || property.value == null || property.value === '') {
+      return false;
+    }
     return property.Column.ColumnName !== 'IsFromDelegation' || property.value;
   }
 }

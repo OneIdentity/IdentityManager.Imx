@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -27,7 +27,6 @@
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { Component, ErrorHandler, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
-import { OverlayRef } from '@angular/cdk/overlay';
 import { MatRadioChange } from '@angular/material/radio';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { Subscription } from 'rxjs';
@@ -38,14 +37,16 @@ import { ClaimDeviceService } from './claim-device.service';
 
 @Component({
   styleUrls: ['./claim-device.component.scss'],
-  templateUrl: './claim-device.component.html'
+  templateUrl: './claim-device.component.html',
 })
 export class ClaimDeviceComponent implements OnDestroy, OnInit {
-  public get ownerDisplay(): string { return this.ownerCdr ? this.ownerCdr.column.GetDisplayValue() : this.user.name; }
+  public get ownerDisplay(): string {
+    return this.ownerCdr ? this.ownerCdr.column.GetDisplayValue() : this.user.name || '';
+  }
 
   public deviceCdr: BaseCdr;
   public ownerCdr: BaseCdr;
-  public ownershipOptions: { title: string; createOwnerCdr: () => BaseCdr; }[];
+  public ownershipOptions: { title: string; createOwnerCdr: () => BaseCdr | undefined }[] = [];
   public ownerAssigned = false;
   public canClaimDevice = false;
 
@@ -53,7 +54,7 @@ export class ClaimDeviceComponent implements OnDestroy, OnInit {
   public readonly ownerForm = new UntypedFormGroup({});
 
   private deviceKey: string;
-  private readonly user: { uid?: string; name?: string; } = {};
+  private readonly user: { uid?: string; name?: string } = {};
   private readonly subscriptions: Subscription[] = [];
 
   constructor(
@@ -61,30 +62,33 @@ export class ClaimDeviceComponent implements OnDestroy, OnInit {
     private readonly personService: PersonService,
     private readonly busyService: EuiLoadingService,
     private readonly authentication: AuthenticationService,
-    private readonly errorHandler: ErrorHandler
+    private readonly errorHandler: ErrorHandler,
   ) {
     this.initDeviceCdr();
 
-    this.subscriptions.push(this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
-      if (sessionState) {
-        this.user.uid = sessionState.UserUid;
-        this.user.name = sessionState.Username;
-      }
-    }));
+    this.subscriptions.push(
+      this.authentication.onSessionResponse.subscribe(async (sessionState: ISessionState) => {
+        if (sessionState) {
+          this.user.uid = sessionState.UserUid || '';
+          this.user.name = sessionState.Username || '';
+        }
+      }),
+    );
   }
 
   public async ngOnInit(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
     try {
-     this.canClaimDevice = await this.claimDeviceService.canClaimDevice();
+      this.canClaimDevice = await this.claimDeviceService.canClaimDevice();
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
   }
 
   public ngOnDestroy(): void {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   public resetForms(): void {
@@ -107,7 +111,7 @@ export class ClaimDeviceComponent implements OnDestroy, OnInit {
   }
 
   public async loadSuggestedOwners(): Promise<void> {
-    const fkValue = this.deviceCdr.column.GetValue(); 
+    const fkValue = this.deviceCdr.column.GetValue();
 
     if (this.deviceKey === fkValue) {
       return;
@@ -118,46 +122,42 @@ export class ClaimDeviceComponent implements OnDestroy, OnInit {
     this.ownershipOptions = [];
     this.ownershipOptions.push({
       title: '#LDS#I want to take ownership of this device',
-      createOwnerCdr: () => undefined
+      createOwnerCdr: () => undefined,
     });
 
     this.ownershipOptions.push({
       title: '#LDS#Select another owner',
-      createOwnerCdr: () => new BaseCdr(
-        this.personService.createColumnCandidatesPerson(),
-        display
-      )
+      createOwnerCdr: () => new BaseCdr(this.personService.createColumnCandidatesPerson(), display),
     });
 
     this.initOwnerCdr(this.ownershipOptions[0].createOwnerCdr());
   }
 
   public async assignOwner(): Promise<void> {
-    let overlayRef: OverlayRef;
-    setTimeout(() => overlayRef = this.busyService.show());
+    if (this.busyService.overlayRefs.length === 0) {
+      this.busyService.show();
+    }
     try {
-      await this.claimDeviceService.assignOwner(
-        this.deviceKey,
-        this.ownerCdr ? this.ownerCdr.column.GetValue() : this.user.uid
-      );
+      await this.claimDeviceService.assignOwner(this.deviceKey, this.ownerCdr ? this.ownerCdr.column.GetValue() : this.user.uid);
 
       this.ownerAssigned = true;
     } catch (error) {
       this.errorHandler.handleError(error);
     } finally {
-      setTimeout(() => this.busyService.hide(overlayRef));
+      this.busyService.hide();
     }
   }
 
   private initDeviceCdr(): void {
-    Object.keys(this.deviceForm.controls).forEach(name => this.deviceForm.removeControl(name));
+    Object.keys(this.deviceForm.controls).forEach((name) => this.deviceForm.removeControl(name));
 
     this.deviceCdr = this.claimDeviceService.createCdrForDevice();
   }
 
-  private initOwnerCdr(cdr: BaseCdr): void {
-    Object.keys(this.ownerForm.controls).forEach(name => this.ownerForm.removeControl(name));
-
-    this.ownerCdr = cdr;
+  private initOwnerCdr(cdr?: BaseCdr): void {
+    if (cdr) {
+      Object.keys(this.ownerForm.controls).forEach((name) => this.ownerForm.removeControl(name));
+      this.ownerCdr = cdr;
+    }
   }
 }

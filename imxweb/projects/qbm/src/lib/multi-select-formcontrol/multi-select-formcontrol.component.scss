@@ -7,28 +7,9 @@
   gap: 12px;
 }
 
-.imx-selected-candidates{
+.imx-selected-candidates {
   height: 218px;
   overflow: auto;
-}
-
-.mat-spinner {
-  margin-top: 15px;
-}
-
-.multi-select-formcontrol-eui-search {
-  width: 100%;
-  display: flex;
-
-  .eui-search {
-    width: 100%;
-  }
-
-  ::ng-deep .eui-search.mat-form-field.mat-form-field-appearance-outline {
-    min-width: 280px;
-    flex: 1;
-    margin-bottom: 10px;
-  }
 }
 
 .imx-multi-select-formcontrol-container {
@@ -36,7 +17,7 @@
   flex-direction: column;
 }
 
-.mat-list {
+.mat-mdc-list {
   flex: 1;
 }
 
@@ -76,27 +57,9 @@
   }
 }
 
-.mat-form-field {
-  flex: 1;
-}
-
-mat-list-item:hover {
-  background-color: $color-gray-2;
-}
-
 eui-icon {
   cursor: pointer;
 }
-
-mat-form-field {
-  button {
-    eui-icon {
-      font-size: 14px;
-      margin-right: 4px;
-    }
-  }
-}
-
 
 @media only screen and (max-width: 1024px) {
   :host > div {

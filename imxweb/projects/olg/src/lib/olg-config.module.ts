@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -44,8 +44,7 @@ import { MfaService } from './mfa/mfa.service';
 import { PortalMfaService } from './mfa/portal-mfa.service';
 import { MfaFormControlComponent } from './mfa-form-control/mfa-form-control.component';
 
-const routes: Routes = [
-];
+const routes: Routes = [];
 
 @NgModule({
   imports: [
@@ -62,21 +61,17 @@ const routes: Routes = [
     EuiCoreModule,
     CdrModule,
     BusyIndicatorModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
   ],
-  declarations: [
-    MfaComponent,
-    MfaFormControlComponent
-  ],
-  providers: [
-    PortalMfaService
-  ],
-  exports: [
-    MfaFormControlComponent
-  ]
+  declarations: [MfaComponent, MfaFormControlComponent],
+  providers: [PortalMfaService],
+  exports: [MfaFormControlComponent],
 })
 export class OlgConfigModule {
-  constructor(private readonly initializer: InitService, private readonly logger: ClassloggerService) {
+  constructor(
+    private readonly initializer: InitService,
+    private readonly logger: ClassloggerService,
+  ) {
     this.logger.info(this, '🔥 OLG loaded');
     this.initializer.onInit(routes);
     this.logger.info(this, '▶️ OLG initialized');

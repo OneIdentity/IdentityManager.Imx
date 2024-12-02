@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -29,7 +29,7 @@ import { Injectable } from '@angular/core';
 import { EuiLoadingService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 
-import { ComplianceFeatureConfig, PortalRules, PortalRulesViolations, V2ApiClientMethodFactory } from 'imx-api-cpl';
+import { ComplianceFeatureConfig, PortalRules, PortalRulesViolations, V2ApiClientMethodFactory } from '@imx-modules/imx-api-cpl';
 import {
   CollectionLoadParameters,
   CompareOperator,
@@ -42,7 +42,7 @@ import {
   GroupInfoData,
   MethodDefinition,
   MethodDescriptor,
-} from 'imx-qbm-dbts';
+} from '@imx-modules/imx-qbm-dbts';
 
 import { ClassloggerService, DataSourceToolbarExportMethod, SystemInfoService } from 'qbm';
 import { ApiService } from '../api.service';
@@ -56,7 +56,7 @@ import { RulesViolationsLoadParameters } from './rules-violations-load-parameter
   providedIn: 'root',
 })
 export class RulesViolationsService {
-  private busyIndicator: OverlayRef;
+  private busyIndicator: OverlayRef | undefined;
   private busyIndicatorCounter = 0;
 
   constructor(
@@ -64,7 +64,7 @@ export class RulesViolationsService {
     private readonly logger: ClassloggerService,
     private readonly busyService: EuiLoadingService,
     private readonly translate: TranslateService,
-    private readonly systemInfoService: SystemInfoService
+    private readonly systemInfoService: SystemInfoService,
   ) {}
 
   public async featureConfig(): Promise<ComplianceFeatureConfig> {
@@ -104,16 +104,20 @@ export class RulesViolationsService {
    * @returns a list of {@link PortalRulesViolations|PortalRulesViolationss}
    */
   public async getRulesViolationsApprove(
-    parameters?: CollectionLoadParameters
+    parameters?: CollectionLoadParameters,
+    signal?: AbortSignal,
   ): Promise<ExtendedTypedEntityCollection<RulesViolationsApproval, unknown>> {
     this.logger.debug(this, `Retrieving all rule violations to approve`);
     this.logger.trace('Navigation state', parameters);
-    const collection = await this.cplClient.typedClient.PortalRulesViolations.Get({
-      approvable: true,
-      ...parameters,
-    });
+    const collection = await this.cplClient.typedClient.PortalRulesViolations.Get(
+      {
+        approvable: true,
+        ...parameters,
+      },
+      { signal },
+    );
 
-    const hasRiskIndex = (await this.systemInfoService.get()).PreProps.includes('RISKINDEX');
+    const hasRiskIndex = !!(await this.systemInfoService.get()).PreProps?.includes('RISKINDEX');
     return {
       tableName: collection.tableName,
       totalCount: collection.totalCount,
@@ -121,7 +125,7 @@ export class RulesViolationsService {
     };
   }
 
-  public exportRulesViolations(parameters: CollectionLoadParameters): DataSourceToolbarExportMethod {
+  public exportRulesViolations(parameters?: CollectionLoadParameters, signal?: AbortSignal): DataSourceToolbarExportMethod {
     const factory = new V2ApiClientMethodFactory();
     return {
       getMethod: (withProperties: string, PageSize?: number) => {
@@ -141,7 +145,7 @@ export class RulesViolationsService {
    */
   public handleOpenLoader(): void {
     if (this.busyIndicatorCounter === 0) {
-      setTimeout(() => (this.busyIndicator = this.busyService.show()));
+      this.busyService.show();
     }
     this.busyIndicatorCounter++;
   }
@@ -151,10 +155,7 @@ export class RulesViolationsService {
    */
   public handleCloseLoader(): void {
     if (this.busyIndicatorCounter === 1) {
-      setTimeout(() => {
-        this.busyService.hide(this.busyIndicator);
-        this.busyIndicator = undefined;
-      });
+      this.busyService.hide();
     }
     this.busyIndicatorCounter--;
   }

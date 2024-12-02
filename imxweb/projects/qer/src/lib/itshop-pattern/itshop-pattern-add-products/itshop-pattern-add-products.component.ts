@@ -9,7 +9,7 @@
  * those terms.
  *
  *
- * Copyright 2023 One Identity LLC.
+ * Copyright 2024 One Identity LLC.
  * ALL RIGHTS RESERVED.
  *
  * ONE IDENTITY LLC. MAKES NO REPRESENTATIONS OR
@@ -25,15 +25,23 @@
  */
 
 import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatSelectChange } from '@angular/material/select';
-import { EuiLoadingService, EuiSidesheetRef, EuiSidesheetService, EUI_SIDESHEET_DATA } from '@elemental-ui/core';
+import { MatRadioChange } from '@angular/material/radio';
+import { EUI_SIDESHEET_DATA, EuiLoadingService, EuiSidesheetRef, EuiSidesheetService } from '@elemental-ui/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 
-import { PortalShopCategories, PortalShopServiceitems, QerProjectConfig } from 'imx-api-qer';
-import { EntityValue, IWriteValue, LocalProperty } from 'imx-qbm-dbts';
+import { PortalShopCategories, PortalShopServiceitems, QerProjectConfig } from '@imx-modules/imx-api-qer';
+import { EntityValue, IWriteValue, LocalProperty, TypedEntity } from '@imx-modules/imx-qbm-dbts';
 
-import { AuthenticationService, BaseCdr, ColumnDependentReference, DataTileMenuItem, EntityService } from 'qbm';
+import {
+  AuthenticationService,
+  BaseCdr,
+  calculateSidesheetWidth,
+  ColumnDependentReference,
+  DataTileMenuItem,
+  EntityService,
+  ISessionState,
+} from 'qbm';
 
 import { PersonService } from '../../person/person.service';
 import { ProductDetailsSidesheetComponent } from '../../product-selection/product-details-sidesheet/product-details-sidesheet.component';
@@ -51,10 +59,9 @@ import { PatternItemCandidate } from '../pattern-item-candidate.interface';
 @Component({
   selector: 'imx-itshop-pattern-add-products',
   templateUrl: './itshop-pattern-add-products.component.html',
-  styleUrls: ['./itshop-pattern-add-products.component.scss']
+  styleUrls: ['./itshop-pattern-add-products.component.scss'],
 })
 export class ItshopPatternAddProductsComponent implements OnInit, OnDestroy {
-
   @ViewChild(ServiceitemListComponent) public serviceitemListComponent: ServiceitemListComponent;
 
   public readonly dataSourceView = { selected: 'cardlist' };
@@ -65,17 +72,18 @@ export class ItshopPatternAddProductsComponent implements OnInit, OnDestroy {
   public canRequestForSomebodyElse: boolean;
   public recipientType: 'self' | 'others' = 'self';
 
-  public description = '#LDS#Here you can add products to this product bundle that are available for you. You can also select another identity to view the products available for that identity.';
+  public description =
+    '#LDS#Here you can add products to this product bundle that are available for you. You can also select another identity to view the products available for that identity.';
 
   public serviceItemActions: DataTileMenuItem[] = [
     {
       name: 'details',
-      description: '#LDS#Details'
+      description: '#LDS#Details',
     },
     {
       name: 'addToTemplate',
-      description: '#LDS#Add'
-    }
+      description: '#LDS#Add',
+    },
   ];
 
   private projectConfig: QerProjectConfig;
@@ -83,8 +91,9 @@ export class ItshopPatternAddProductsComponent implements OnInit, OnDestroy {
   private userUid: string;
 
   constructor(
-    @Inject(EUI_SIDESHEET_DATA) public data: {
-      shoppingCartPatternUid: string
+    @Inject(EUI_SIDESHEET_DATA)
+    public data: {
+      shoppingCartPatternUid: string;
     },
     private readonly busyIndicator: EuiLoadingService,
     private readonly entityService: EntityService,
@@ -96,12 +105,11 @@ export class ItshopPatternAddProductsComponent implements OnInit, OnDestroy {
     private readonly sideSheetRef: EuiSidesheetRef,
     private readonly translate: TranslateService,
     private readonly userModelService: UserModelService,
-    authentication: AuthenticationService
+    authentication: AuthenticationService,
   ) {
-    this.authSubscription = authentication.onSessionResponse.subscribe(elem => {
-      this.userUid = elem.UserUid;
+    this.authSubscription = authentication.onSessionResponse.subscribe((session: ISessionState) => {
+      this.userUid = session.UserUid || '';
     });
-
   }
 
   public async ngOnInit(): Promise<void> {
@@ -113,11 +121,11 @@ export class ItshopPatternAddProductsComponent implements OnInit, OnDestroy {
     this.authSubscription.unsubscribe();
   }
 
-  public onSelectionChanged(items: PortalShopServiceitems[]): void {
-    this.selectedItems = items;
+  public onSelectionChanged(items: TypedEntity[]): void {
+    this.selectedItems = items as PortalShopServiceitems[];
   }
 
-  public async handlePatternItemAction(action: { name: string, item: PortalShopServiceitems }): Promise<void> {
+  public async handlePatternItemAction(action: { name: string; item: PortalShopServiceitems }): Promise<void> {
     if (action.name === 'addToTemplate') {
       this.addTemplateItem([action.item]);
     }
@@ -127,49 +135,53 @@ export class ItshopPatternAddProductsComponent implements OnInit, OnDestroy {
   }
 
   public async requestDetails(item: PortalShopServiceitems): Promise<void> {
-    await this.sidesheet.open(ProductDetailsSidesheetComponent, {
-      title: await this.translate.get('#LDS#Heading View Product Details').toPromise(),
-      subTitle: item.GetEntity().GetDisplay(),
-      padding: '0px',
-      width: 'max(700px, 60%)',
-      testId: 'product-details-sidesheet',
-      data: {
-        item,
-        projectConfig: this.projectConfig
-      }
-    }).afterClosed().toPromise();
+    await this.sidesheet
+      .open(ProductDetailsSidesheetComponent, {
+        title: await this.translate.get('#LDS#Heading View Product Details').toPromise(),
+        subTitle: item.GetEntity().GetDisplay(),
+        padding: '0px',
+        width: calculateSidesheetWidth(1000),
+        testId: 'product-details-sidesheet',
+        data: {
+          item,
+          projectConfig: this.projectConfig,
+        },
+      })
+      .afterClosed()
+      .toPromise();
   }
 
   public async addTemplateItem(serviceItems: PortalShopServiceitems[]): Promise<void> {
-    const newPatternItems = serviceItems.map(item => { 
-      return { 
-        uidAccProduct: item.GetEntity().GetKeys()[0], 
-        display:  item.GetEntity().GetDisplay() 
+    const newPatternItems = serviceItems.map((item) => {
+      return {
+        uidAccProduct: item.GetEntity().GetKeys()[0],
+        display: item.GetEntity().GetDisplay(),
       } as PatternItemCandidate;
     });
-    setTimeout(() => this.busyIndicator.show());
+    if (this.busyIndicator.overlayRefs.length === 0) {
+      this.busyIndicator.show();
+    }
     try {
-      const assignedPatterns = await this.patternCreateService.assignItemsToPattern(
-        newPatternItems, this.data.shoppingCartPatternUid);
-  
+      const assignedPatterns = await this.patternCreateService.assignItemsToPattern(newPatternItems, this.data.shoppingCartPatternUid);
+
       if (assignedPatterns > 0) {
         this.sideSheetRef.close(assignedPatterns);
       }
     } finally {
-      setTimeout(() => this.busyIndicator.hide());
-    }  
+      this.busyIndicator.hide();
+    }
   }
 
   public async openCategoryTree(): Promise<void> {
     const sidesheetRef = this.sidesheet.open(CategoryTreeComponent, {
       title: await this.translate.get('#LDS#Heading Select Service Category').toPromise(),
-      width: '600px',
+      width: calculateSidesheetWidth(600, 0.4),
       testId: 'categorytree-sidesheet',
       data: {
         selectedServiceCategory: this.selectedCategory,
         recipients: this.recipients,
-        showImage: false
-      }
+        showImage: false,
+      },
     });
 
     sidesheetRef.afterClosed().subscribe((category: PortalShopCategories) => {
@@ -186,23 +198,22 @@ export class ItshopPatternAddProductsComponent implements OnInit, OnDestroy {
     this.selectedCategory = selectedCategory;
   }
 
-  public async selectedRecipientTypeChanged(arg: MatSelectChange): Promise<void> {
+  public async selectedRecipientTypeChanged(arg: MatRadioChange): Promise<void> {
     if (arg.value === 'self') {
       await this.recipients.Column.PutValueStruct({
         DataValue: this.userUid,
-        DisplayValue: await this.getPersonDisplay(this.userUid)
+        DisplayValue: await this.getPersonDisplay(this.userUid),
       });
     } else {
       await this.recipients.Column.PutValueStruct({
         DataValue: '',
-        DisplayValue: ''
+        DisplayValue: '',
       });
     }
     this.onRecipientsChanged();
   }
 
   public async onRecipientsChanged(recipient?: string): Promise<void> {
-
     if (this.serviceitemListComponent) {
       this.serviceitemListComponent.deselectAll();
       this.serviceitemListComponent.getData();
@@ -218,33 +229,23 @@ export class ItshopPatternAddProductsComponent implements OnInit, OnDestroy {
     recipientsProperty.FkRelation = this.qerClient.typedClient.PortalCartitem.GetSchema().Columns.UID_PersonOrdered.FkRelation;
 
     const dummyCartItemEntity = this.qerClient.typedClient.PortalCartitem.createEntity().GetEntity();
-    const fkProviderItems = this.qerClient.client.getFkProviderItems('portal/cartitem').map(item => ({
+    const fkProviderItems = this.qerClient.client.getFkProviderItems('portal/cartitem').map((item) => ({
       ...item,
       load: (_, parameters = {}) => item.load(dummyCartItemEntity, parameters),
-      getDataModel: async (entity) =>
-        item.getDataModel(entity),
-      getFilterTree: async (entity, parentKey) => item.getFilterTree(entity, parentKey)
+      getDataModel: async (entity) => item.getDataModel?.(entity) || {},
+      getFilterTree: async (entity, parentKey) => item.getFilterTree?.(entity, parentKey) || {},
     }));
 
-    const column = this.entityService.createLocalEntityColumn(
-      recipientsProperty,
-      fkProviderItems,
-      { Value: this.userUid }
-    );
+    const column = this.entityService.createLocalEntityColumn(recipientsProperty, fkProviderItems, { Value: this.userUid });
     this.recipients = new EntityValue(column);
 
     // preset recipient to the current user
     await this.recipients.Column.PutValueStruct({
       DataValue: this.userUid,
-      DisplayValue: await this.getPersonDisplay(this.userUid)
+      DisplayValue: await this.getPersonDisplay(this.userUid),
     });
 
-
-    this.cartItemRecipients = new BaseCdr(
-      this.recipients.Column,
-      '#LDS#Identity'
-    );
-
+    this.cartItemRecipients = new BaseCdr(this.recipients.Column, '#LDS#Identity');
   }
 
   private async getPersonDisplay(uid: string): Promise<string> {
@@ -254,5 +255,4 @@ export class ItshopPatternAddProductsComponent implements OnInit, OnDestroy {
     }
     return uid;
   }
-
 }
